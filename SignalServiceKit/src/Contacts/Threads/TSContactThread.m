@@ -23,6 +23,9 @@ NSString *const TSContactThreadPrefix = @"c";
     OWSAssertDebug(contactId.length > 0);
 
     self = [super initWithUniqueId:uniqueIdentifier];
+    
+    // No session reset ongoing
+    _sessionResetState = TSContactThreadSessionResetStateNone;
 
     return self;
 }

@@ -89,7 +89,6 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 {
     TSOutgoingMessage *message = [TSOutgoingMessage createEmptyOutgoingMessageInThread:thread];
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [message saveWithTransaction:transaction];
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
     return message;

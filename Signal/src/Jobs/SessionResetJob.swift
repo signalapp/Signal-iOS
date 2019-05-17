@@ -108,6 +108,9 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
     override public func run() {
         assert(self.durableOperationDelegate != nil)
 
+        /* Loki Original Code
+         * We don't want to delete session. Ref: SignalServiceKit/Loki/Docs/SessionReset.md
+         * ==================
         if firstAttempt {
             self.dbConnection.readWrite { transaction in
                 Logger.info("deleting sessions for recipient: \(self.recipientId)")
@@ -115,6 +118,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             }
             firstAttempt = false
         }
+        */
 
         let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.contactThread)
 
@@ -128,10 +132,25 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                 // Otherwise if we send another message before them, they wont have the session to decrypt it.
                 self.primaryStorage.archiveAllSessions(forContact: self.recipientId, protocolContext: transaction)
 
+                /* Loki original code
+                 * ==================
                 let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                             in: self.contactThread,
                                             messageType: TSInfoMessageType.typeSessionDidEnd)
                 message.save(with: transaction)
+                */
+                
+                if (self.contactThread.sessionResetState != .requestReceived) {
+                    let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                                in: self.contactThread,
+                                                messageType: .typeLokiSessionResetProgress)
+                    message.save(with: transaction)
+                    
+                    /// Loki: We have initiated a session reset
+                    Logger.debug("[Loki Session Reset] Session reset has been initiated")
+                    self.contactThread.sessionResetState = .initiated
+                    self.contactThread.save(with: transaction)
+                }
             }
             self.reportSuccess()
         }.catch { error in

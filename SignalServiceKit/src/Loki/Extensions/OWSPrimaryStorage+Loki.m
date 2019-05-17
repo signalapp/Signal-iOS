@@ -1,13 +1,16 @@
 #import "OWSPrimaryStorage+Loki.h"
 #import "OWSPrimaryStorage+PreKeyStore.h"
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
+#import "OWSPrimaryStorage+keyFromIntLong.h"
 #import "OWSDevice.h"
 #import "OWSIdentityManager.h"
 #import "TSAccountManager.h"
 #import "TSPreKeyManager.h"
 #import "YapDatabaseConnection+OWS.h"
+#import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 
+#define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
 #define LokiPreKeyContactCollection @"LokiPreKeyContactCollection"
 #define LokiPreKeyBundleCollection @"LokiPreKeyBundleCollection"
 
@@ -28,6 +31,20 @@
 - (BOOL)hasPreKeyForContact:(NSString *)pubKey {
     int preKeyId = [self.dbReadWriteConnection intForKey:pubKey inCollection:LokiPreKeyContactCollection];
     return preKeyId > 0;
+}
+
+- (PreKeyRecord *_Nullable)getPreKeyForContact:(NSString *)pubKey transaction:(YapDatabaseReadTransaction *)transaction {
+    OWSAssertDebug(pubKey.length > 0);
+    int preKeyId = [transaction intForKey:pubKey inCollection:LokiPreKeyContactCollection];
+    
+    // If we don't have an id then return nil
+    if (preKeyId <= 0) {
+        return nil;
+    }
+    
+    /// thows_loadPreKey doesn't allow us to pass transaction ;(
+    return [transaction preKeyRecordForKey:[self keyFromInt:preKeyId]
+                              inCollection:OWSPrimaryStoragePreKeyStoreCollection];
 }
 
 - (PreKeyRecord *)getOrCreatePreKeyForContact:(NSString *)pubKey {

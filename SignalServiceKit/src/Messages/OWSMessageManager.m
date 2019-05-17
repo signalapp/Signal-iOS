@@ -33,6 +33,7 @@
 #import "OWSSyncGroupsMessage.h"
 #import "OWSSyncGroupsRequestMessage.h"
 #import "ProfileManagerProtocol.h"
+#import "SessionCipher+Loki.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
@@ -85,10 +86,20 @@ NS_ASSUME_NONNULL_BEGIN
     _primaryStorage = primaryStorage;
     _dbConnection = primaryStorage.newDatabaseConnection;
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithPrimaryStorage:primaryStorage];
+    
+    /// Loki: Add observation for new session
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(onNewSessionAdopted:)
+                                                 name:kNSNotificationName_SessionAdopted
+                                               object:nil];
 
     OWSSingletonAssert();
 
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Dependencies
@@ -994,9 +1005,32 @@ NS_ASSUME_NONNULL_BEGIN
     // MJK TODO - safe to remove senderTimestamp
     [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                      inThread:thread
+                                  messageType:TSInfoMessageTypeLokiSessionResetProgress] saveWithTransaction:transaction];
+    /* Loki original code
+     * ==================
+    [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                     inThread:thread
                                   messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
+     */
 
+    /// Loki: Archive all our sessions
+    /// Ref: SignalServiceKit/Loki/Docs/SessionReset.md
+    [self.primaryStorage archiveAllSessionsForContact:envelope.source protocolContext:transaction];
+    
+    /// Loki: Set our session reset state
+    thread.sessionResetState = TSContactThreadSessionResetStateRequestReceived;
+    [thread saveWithTransaction:transaction];
+    
+    /// Loki: Send an empty message to trigger the session reset code for both parties
+    TSOutgoingMessage *emptyMessage = [TSOutgoingMessage createEmptyOutgoingMessageInThread:thread];
+    [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
+
+    OWSLogDebug(@"[Loki Session Reset] Session reset has been received from %@", envelope.source);
+    
+    /* Loki Original Code
+     * ===================
     [self.primaryStorage deleteAllSessionsForContact:envelope.source protocolContext:transaction];
+     */
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope
@@ -1641,6 +1675,39 @@ NS_ASSUME_NONNULL_BEGIN
             [self.profileManager fetchLocalUsersProfile];
         });
     }
+}
+
+# pragma mark - Loki Session
+
+- (void)onNewSessionAdopted:(NSNotification *)notification {
+    NSString *pubKey = notification.userInfo[kNSNotificationKey_ContactPubKey];
+    if (pubKey.length == 0) {
+        return;
+    }
+    
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        
+        TSContactThread *_Nullable thread = [TSContactThread getThreadWithContactId:pubKey transaction:transaction];
+        if (!thread) {
+            OWSLogDebug(@"[Loki Session Reset] New session was adopted but we failed to get the thread for %@", pubKey);
+            return;
+        }
+        
+        // If we were the ones to initiate the reset then we need to send back an empty message
+        if (thread.sessionResetState == TSContactThreadSessionResetStateInitiated) {
+            TSOutgoingMessage *emptyMessage = [TSOutgoingMessage createEmptyOutgoingMessageInThread:thread];
+            [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
+        }
+        
+        // Show session reset done message
+        [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         inThread:thread
+                                      messageType:TSInfoMessageTypeLokiSessionResetDone] saveWithTransaction:transaction];
+        
+        /// Loki: Set our session reset state to none
+        thread.sessionResetState = TSContactThreadSessionResetStateNone;
+        [thread saveWithTransaction:transaction];
+    }];
 }
 
 @end

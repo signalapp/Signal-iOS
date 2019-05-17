@@ -19,6 +19,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Get the `PreKeyRecord` associated with the given contact.
+ 
+ @param pubKey The hex encoded public key of the contact.
+ @param transaction A `YapDatabaseReadTransaction`.
+ @return The record associated with the contact or nil if it didn't exist.
+ */
+- (PreKeyRecord *_Nullable)getPreKeyForContact:(NSString *)pubKey transaction:(YapDatabaseReadTransaction *)transaction;
+
+/**
+ Get the `PreKeyRecord` associated with the given contact.
  If the record doesn't exist then this will create a new one.
 
  @param pubKey The hex encoded public key of the contact.
