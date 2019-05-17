@@ -1462,6 +1462,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleFriendRequestIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope message:(TSIncomingMessage *)message thread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssertIsOnMainThread() // TODO: This will probably crash
     if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
         if (thread.hasCurrentUserSentFriendRequest) {
             // This can happen if Alice sent Bob a friend request, Bob declined, but then Bob changed his
