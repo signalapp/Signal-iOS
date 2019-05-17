@@ -108,11 +108,11 @@ public class StickerManager: NSObject {
             StickerManager.shared.warmTooltipState()
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
+            StickerManager.cleanupOrphans()
+
             if TSAccountManager.sharedInstance().isRegisteredAndReady() {
                 StickerManager.refreshContents()
             }
-
-            StickerManager.cleanupOrphans()
         }
     }
 
