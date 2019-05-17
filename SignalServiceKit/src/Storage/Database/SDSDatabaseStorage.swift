@@ -96,72 +96,72 @@ public class SDSDatabaseStorage: NSObject {
 
     // GRDB TODO: add read/write flavors
     public func uiReadThrows(block: @escaping (SDSAnyReadTransaction) throws -> Void) throws {
-        try autoreleasepool {
-            if useGRDB {
-                try grdbStorage.uiReadThrows { transaction in
+        if useGRDB {
+            try grdbStorage.uiReadThrows { transaction in
+                try autoreleasepool {
                     try block(transaction.asAnyRead)
                 }
-            } else {
-                try yapStorage.uiReadThrows { transaction in
-                    try block(transaction.asAnyRead)
-                }
+            }
+        } else {
+            try yapStorage.uiReadThrows { transaction in
+                try block(transaction.asAnyRead)
             }
         }
     }
 
     @objc
     public func uiRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        autoreleasepool {
-            if useGRDB {
-                do {
-                    try grdbStorage.uiRead { transaction in
+        if useGRDB {
+            do {
+                try grdbStorage.uiRead { transaction in
+                    autoreleasepool {
                         block(transaction.asAnyRead)
                     }
-                } catch {
-                    owsFail("error: \(error)")
                 }
-            } else {
-                yapStorage.uiRead { transaction in
-                    block(transaction.asAnyRead)
-                }
+            } catch {
+                owsFail("error: \(error)")
+            }
+        } else {
+            yapStorage.uiRead { transaction in
+                block(transaction.asAnyRead)
             }
         }
     }
 
     @objc
     public func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        autoreleasepool {
-            if useGRDB {
-                do {
-                    try grdbStorage.read { transaction in
+        if useGRDB {
+            do {
+                try grdbStorage.read { transaction in
+                    autoreleasepool {
                         block(transaction.asAnyRead)
                     }
-                } catch {
-                    owsFail("error: \(error)")
                 }
-            } else {
-                yapStorage.read { transaction in
-                    block(transaction.asAnyRead)
-                }
+            } catch {
+                owsFail("error: \(error)")
+            }
+        } else {
+            yapStorage.read { transaction in
+                block(transaction.asAnyRead)
             }
         }
     }
 
     @objc
     public func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        autoreleasepool {
-            if useGRDB {
-                do {
-                    try grdbStorage.write { transaction in
+        if useGRDB {
+            do {
+                try grdbStorage.write { transaction in
+                    autoreleasepool {
                         block(transaction.asAnyWrite)
                     }
-                } catch {
-                    owsFail("error: \(error)")
                 }
-            } else {
-                yapStorage.write { transaction in
-                    block(transaction.asAnyWrite)
-                }
+            } catch {
+                owsFail("error: \(error)")
+            }
+        } else {
+            yapStorage.write { transaction in
+                block(transaction.asAnyWrite)
             }
         }
 
