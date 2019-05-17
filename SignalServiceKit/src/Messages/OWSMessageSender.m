@@ -1111,7 +1111,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSInteger *messageType = ((NSNumber *)signalMessage[@"type"]).integerValue;
     if (messageType == TSFriendRequestMessageType) {
         [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestSending withTransaction:nil];
-        [message setIsFriendRequest:YES withTransaction:nil];
     }
     BOOL isPoWRequired = YES; // TODO: Base on message type
     [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId timestamp:message.timestamp requiringPoW:isPoWRequired]

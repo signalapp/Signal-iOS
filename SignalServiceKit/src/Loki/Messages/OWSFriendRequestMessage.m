@@ -5,6 +5,8 @@
 
 @implementation OWSFriendRequestMessage
 
+-(BOOL)isFriendRequest { return YES; }
+
 - (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = [super contentBuilder:recipient];
     
