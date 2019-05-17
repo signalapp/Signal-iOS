@@ -710,7 +710,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 - (BOOL)hasPendingFriendRequest
 {
-    return self.friendRequestStatus == TSThreadFriendRequestStatusPendingSend || self.friendRequestStatus == TSThreadFriendRequestStatusRequestSent
+    return self.friendRequestStatus == TSThreadFriendRequestStatusRequestSending || self.friendRequestStatus == TSThreadFriendRequestStatusRequestSent
         || self.friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
 }
 

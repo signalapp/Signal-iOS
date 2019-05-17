@@ -1446,12 +1446,32 @@ NS_ASSUME_NONNULL_BEGIN
     // ========
     if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
         if (thread.hasCurrentUserSentFriendRequest) {
+            // This can happen if Alice sent Bob a friend request, Bob declined, but then Bob changed his
+            // mind and sent a friend request to Alice. In this case we want Alice to auto-accept the request
+            // and send a friend request accepted message back to Bob. We don't check that sending the
+            // friend request accepted message succeeded. Even if it doesn't, the thread's current friend
+            // request status will be set to TSThreadFriendRequestStatusFriends for Alice making it possible
+            // for Alice to send messages to Bob. When Bob receives a message, his thread's friend request status
+            // will then be set to TSThreadFriendRequestStatusFriends. If we do check for a successful send
+            // before updating Alice's thread's friend request status to TSThreadFriendRequestStatusFriends,
+            // we can end up in a deadlock where both users' threads' friend request statuses are
+            // TSThreadFriendRequestStatusRequestSent.
             [thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
-        } else {
+            // The two lines below are equivalent to calling [ThreadUtil enqueueAcceptFriendRequestMessageInThread:thread]
+            TSOutgoingMessage *message = [TSOutgoingMessage createEmptyOutgoingMessageInThread:thread];
+            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        } else if (!thread.isContactFriend) {
+            // Checking that the sender of the message isn't already a friend is necessary because otherwise
+            // the following situation can occur: Alice and Bob are friends. Bob loses his database and his
+            // friend request status is reset to TSThreadFriendRequestStatusNone. Bob now sends Alice a friend
+            // request. Alice's thread's friend request status is reset to
+            // TSThreadFriendRequestStatusRequestReceived.
             [thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestReceived withTransaction:transaction];
             incomingMessage.isFriendRequest = YES; // Saved below
         }
     } else if (!thread.isContactFriend) {
+        // If the thread's friend request status is not TSThreadFriendRequestStatusFriends, but we're receiving a message,
+        // it must be a friend request accepted message. Declining a friend request doesn't send a message.
         [thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
     }
     // ========

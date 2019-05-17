@@ -31,17 +31,17 @@ extern ConversationColorName const kConversationColorName_Default;
 
 // Loki: Friend request state
 typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
-    // New conversation, no messages sent or received
+    /// New conversation, no messages sent or received
     TSThreadFriendRequestStatusNone,
-    // This state is used to lock the input early while sending
-    TSThreadFriendRequestStatusPendingSend,
-    // Friend request sent, awaiting response
+    /// This state is used to lock the input early while sending
+    TSThreadFriendRequestStatusRequestSending,
+    /// Friend request sent, awaiting response
     TSThreadFriendRequestStatusRequestSent,
-    // Friend request received, awaiting user input
+    /// Friend request received, awaiting user input
     TSThreadFriendRequestStatusRequestReceived,
-    // We are friends with the user of this thread
+    /// We are friends with the user of this thread
     TSThreadFriendRequestStatusFriends,
-    // Friend request sent but it timed out (user didn't accept within x time)
+    /// Friend request sent but it timed out (user didn't accept within x time)
     TSThreadFriendRequestStatusRequestExpired
 };
 
@@ -54,13 +54,15 @@ typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
 @property (nonatomic, readonly) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
 // Loki friend request handling
+// ========
 @property (nonatomic) TSThreadFriendRequestStatus friendRequestStatus;
-/// Shorthand for checking that `friendRequestStatus` is `TSThreadFriendRequestStatusPendingSend`, `TSThreadFriendRequestStatusRequestSent`
+/// Shorthand for checking that `friendRequestStatus` is `TSThreadFriendRequestStatusRequestSending`, `TSThreadFriendRequestStatusRequestSent`
 /// or `TSThreadFriendRequestStatusRequestReceived`.
 @property (nonatomic, readonly) BOOL hasPendingFriendRequest;
 @property (nonatomic, readonly) BOOL isContactFriend;
 @property (nonatomic, readonly) BOOL hasCurrentUserSentFriendRequest;
 @property (nonatomic, readonly) BOOL hasCurrentUserReceivedFriendRequest;
+// ========
 
 /**
  *  Whether the object is a group thread or not.
