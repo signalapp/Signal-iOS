@@ -738,21 +738,6 @@ public struct %s: SDSRecord {
     }
 ''' % ( record_name, )
 
-#         swift_body += '''
-#     var insertState: SDSInsertState {
-#         let state = SDSInsertState()
-#
-# '''
-#         for property in (base_properties + subclass_properties):
-#             custom_column_name = custom_column_name_for_property(property)
-#             coding_key_name = custom_column_name if custom_column_name is not None else property.name
-#             swift_body += '''        state.append(columnName: %s.columnName(.%s), value: %s)
-# ''' % ( record_name, coding_key_name, coding_key_name)
-#         swift_body += '''
-#         return state
-#     }
-# '''
-
         swift_body += '''}
 
 // MARK: - StringInterpolation
@@ -927,6 +912,8 @@ extension %s {
 
             if let grdbId = record.id {
                 model.grdbId = NSNumber(value: grdbId)
+            } else {
+                owsFailDebug("Missing GRDB id.")
             }
             return model
 
