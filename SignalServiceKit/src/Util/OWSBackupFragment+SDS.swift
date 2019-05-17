@@ -11,10 +11,10 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct BackupFragmentRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct BackupFragmentRecord: SDSRecord {
     public static let databaseTableName: String = OWSBackupFragmentSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -44,7 +44,6 @@ public struct BackupFragmentRecord: Codable, FetchableRecord, PersistableRecord,
     public static func columnName(_ column: BackupFragmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -67,6 +66,10 @@ extension OWSBackupFragment {
     // the corresponding model class.
     class func fromRecord(_ record: BackupFragmentRecord) throws -> OWSBackupFragment {
 
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
+
         switch record.recordType {
         case .backupFragment:
 
@@ -78,13 +81,18 @@ extension OWSBackupFragment {
             let relativeFilePath: String? = record.relativeFilePath
             let uncompressedDataLength: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.uncompressedDataLength, name: "uncompressedDataLength", conversion: { NSNumber(value: $0) })
 
-            return OWSBackupFragment(uniqueId: uniqueId,
-                                     attachmentId: attachmentId,
-                                     downloadFilePath: downloadFilePath,
-                                     encryptionKey: encryptionKey,
-                                     recordName: recordName,
-                                     relativeFilePath: relativeFilePath,
-                                     uncompressedDataLength: uncompressedDataLength)
+            let model = OWSBackupFragment(uniqueId: uniqueId,
+                                          attachmentId: attachmentId,
+                                          downloadFilePath: downloadFilePath,
+                                          encryptionKey: encryptionKey,
+                                          recordName: recordName,
+                                          relativeFilePath: relativeFilePath,
+                                          uncompressedDataLength: uncompressedDataLength)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -103,6 +111,16 @@ extension OWSBackupFragment: SDSSerializable {
         switch self {
         default:
             return OWSBackupFragmentSerializer(model: self)
+        }
+    }
+
+    public func asRecord(forUpdate: Bool) throws -> BackupFragmentRecord {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        switch self {
+        default:
+            return try OWSBackupFragmentSerializer(model: self).toRecord(forUpdate: forUpdate)
         }
     }
 }
@@ -143,12 +161,43 @@ extension OWSBackupFragmentSerializer {
 
 @objc
 extension OWSBackupFragment {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
+            do {
+                let database = grdbTransaction.database
+                var record = try asRecord(forUpdate: false)
+                try record.insert(database)
+
+                guard self.grdbId == nil else {
+                    owsFailDebug("Model unexpectedly already has grdbId.")
+                    return
+                }
+                guard let grdbId = record.id else {
+                    owsFailDebug("Record missing grdbId.")
+                    return
+                }
+                self.grdbId = NSNumber(value: grdbId)
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
+        }
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            save(with: ydbTransaction)
+        case .grdbWrite(let grdbTransaction):
+            do {
+                let database = grdbTransaction.database
+                let record = try asRecord(forUpdate: true)
+                try record.update(database, columns: serializer.updateColumnNames())
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
         }
     }
 
@@ -176,21 +225,22 @@ extension OWSBackupFragment {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (OWSBackupFragment) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSBackupFragment) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -368,37 +418,42 @@ class OWSBackupFragmentSerializer: SDSSerializer {
         self.model = model
     }
 
+    // MARK: - Record
+
+    func toRecord(forUpdate: Bool) throws -> BackupFragmentRecord {
+        var id: Int64?
+        if forUpdate {
+            guard let grdbId: NSNumber = model.grdbId else {
+                owsFailDebug("Model is missing grdbId.")
+                throw SDSError.missingRequiredField
+            }
+            id = grdbId.int64Value
+        }
+
+        let recordType: SDSRecordType = .backupFragment
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
+        }
+
+        // Base class properties
+        let attachmentId: String? = model.attachmentId
+        let downloadFilePath: String? = model.downloadFilePath
+        let encryptionKey: Data = model.encryptionKey
+        let recordName: String = model.recordName
+        let relativeFilePath: String? = model.relativeFilePath
+        let uncompressedDataLength: UInt64? = archiveOptionalNSNumber(model.uncompressedDataLength, conversion: { $0.uint64Value })
+
+        return BackupFragmentRecord(id: id, recordType: recordType, uniqueId: uniqueId, attachmentId: attachmentId, downloadFilePath: downloadFilePath, encryptionKey: encryptionKey, recordName: recordName, relativeFilePath: relativeFilePath, uncompressedDataLength: uncompressedDataLength)
+    }
+
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
         return OWSBackupFragmentSerializer.table
     }
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            OWSBackupFragmentSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
-
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.backupFragment.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
-        }
-        return result
-    }
-
     public func updateColumnNames() -> [String] {
         return [
+            OWSBackupFragmentSerializer.idColumn,
             OWSBackupFragmentSerializer.attachmentIdColumn,
             OWSBackupFragmentSerializer.downloadFilePathColumn,
             OWSBackupFragmentSerializer.encryptionKeyColumn,
@@ -406,24 +461,6 @@ class OWSBackupFragmentSerializer: SDSSerializer {
             OWSBackupFragmentSerializer.relativeFilePathColumn,
             OWSBackupFragmentSerializer.uncompressedDataLengthColumn
             ].map { $0.columnName }
-    }
-
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.attachmentId ?? DatabaseValue.null,
-            self.model.downloadFilePath ?? DatabaseValue.null,
-            self.model.encryptionKey,
-            self.model.recordName,
-            self.model.relativeFilePath ?? DatabaseValue.null,
-            self.model.uncompressedDataLength ?? DatabaseValue.null
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
     }
 
     public func uniqueIdColumnName() -> String {

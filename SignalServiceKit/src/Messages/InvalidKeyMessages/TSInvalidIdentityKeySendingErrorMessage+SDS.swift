@@ -20,37 +20,90 @@ class TSInvalidIdentityKeySendingErrorMessageSerializer: SDSSerializer {
         self.model = model
     }
 
+    // MARK: - Record
+
+    func toRecord(forUpdate: Bool) throws -> InteractionRecord {
+        var id: Int64?
+        if forUpdate {
+            guard let grdbId: NSNumber = model.grdbId else {
+                owsFailDebug("Model is missing grdbId.")
+                throw SDSError.missingRequiredField
+            }
+            id = grdbId.int64Value
+        }
+
+        let recordType: SDSRecordType = .invalidIdentityKeySendingErrorMessage
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
+        }
+
+        // Base class properties
+        let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
+        let timestamp: UInt64 = model.timestamp
+        let threadUniqueId: String = model.uniqueThreadId
+
+        // Subclass properties
+        let attachmentFilenameMap: Data? = nil
+        let attachmentIds: Data? = optionalArchive(model.attachmentIds)
+        let authorId: String? = nil
+        let beforeInteractionId: String? = nil
+        let body: String? = model.body
+        let callSchemaVersion: UInt? = nil
+        let callType: RPRecentCallType? = nil
+        let configurationDurationSeconds: UInt32? = nil
+        let configurationIsEnabled: Bool? = nil
+        let contactId: String? = nil
+        let contactShare: Data? = optionalArchive(model.contactShare)
+        let createdByRemoteName: String? = nil
+        let createdInExistingGroup: Bool? = nil
+        let customMessage: String? = nil
+        let envelopeData: Data? = nil
+        let ephemeralMessage: Data? = optionalArchive(model.ephemeralMessage)
+        let errorMessageSchemaVersion: UInt? = model.errorMessageSchemaVersion
+        let errorType: TSErrorMessageType? = model.errorType
+        let expireStartedAt: UInt64? = model.expireStartedAt
+        let expiresAt: UInt64? = model.expiresAt
+        let expiresInSeconds: UInt32? = model.expiresInSeconds
+        let groupMetaMessage: TSGroupMetaMessage? = nil
+        let hasAddToContactsOffer: Bool? = nil
+        let hasAddToProfileWhitelistOffer: Bool? = nil
+        let hasBlockOffer: Bool? = nil
+        let hasLegacyMessageState: Bool? = nil
+        let hasSyncedTranscript: Bool? = nil
+        let infoMessageSchemaVersion: UInt? = nil
+        let isFromLinkedDevice: Bool? = nil
+        let isLocalChange: Bool? = nil
+        let isVoiceMessage: Bool? = nil
+        let legacyMessageState: TSOutgoingMessageState? = nil
+        let legacyWasDelivered: Bool? = nil
+        let linkPreview: Data? = optionalArchive(model.linkPreview)
+        let messageId: String? = model.messageId
+        let messageSticker: Data? = optionalArchive(model.messageSticker)
+        let messageType: TSInfoMessageType? = nil
+        let mostRecentFailureText: String? = nil
+        let preKeyBundle: Data? = optionalArchive(model.preKeyBundle)
+        let quotedMessage: Data? = optionalArchive(model.quotedMessage)
+        let read: Bool? = model.wasRead
+        let recipientId: String? = model.recipientId
+        let recipientStateMap: Data? = nil
+        let schemaVersion: UInt? = model.schemaVersion
+        let serverTimestamp: UInt64? = nil
+        let sourceDeviceId: UInt32? = nil
+        let unregisteredRecipientId: String? = nil
+        let verificationState: OWSVerificationState? = nil
+        let wasReceivedByUD: Bool? = nil
+
+        return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentFilenameMap: attachmentFilenameMap, attachmentIds: attachmentIds, authorId: authorId, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, ephemeralMessage: ephemeralMessage, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, quotedMessage: quotedMessage, read: read, recipientId: recipientId, recipientStateMap: recipientStateMap, schemaVersion: schemaVersion, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, unregisteredRecipientId: unregisteredRecipientId, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
+    }
+
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
         return TSInteractionSerializer.table
     }
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
-
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
-        }
-        return result
-    }
-
     public func updateColumnNames() -> [String] {
         return [
+            TSInteractionSerializer.idColumn,
             TSInteractionSerializer.receivedAtTimestampColumn,
             TSInteractionSerializer.timestampColumn,
             TSInteractionSerializer.uniqueThreadIdColumn,
@@ -72,38 +125,6 @@ class TSInvalidIdentityKeySendingErrorMessageSerializer: SDSSerializer {
             TSInteractionSerializer.messageIdColumn,
             TSInteractionSerializer.preKeyBundleColumn
             ].map { $0.columnName }
-    }
-
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.receivedAtTimestamp,
-            self.model.timestamp,
-            self.model.uniqueThreadId,
-            SDSDeserializer.archive(self.model.attachmentIds) ?? DatabaseValue.null,
-            self.model.body ?? DatabaseValue.null,
-            SDSDeserializer.archive(self.model.contactShare) ?? DatabaseValue.null,
-            SDSDeserializer.archive(self.model.ephemeralMessage) ?? DatabaseValue.null,
-            self.model.expireStartedAt,
-            self.model.expiresAt,
-            self.model.expiresInSeconds,
-            SDSDeserializer.archive(self.model.linkPreview) ?? DatabaseValue.null,
-            SDSDeserializer.archive(self.model.messageSticker) ?? DatabaseValue.null,
-            SDSDeserializer.archive(self.model.quotedMessage) ?? DatabaseValue.null,
-            self.model.schemaVersion,
-            self.model.errorMessageSchemaVersion,
-            self.model.errorType.rawValue,
-            self.model.wasRead,
-            self.model.recipientId ?? DatabaseValue.null,
-            self.model.messageId,
-            SDSDeserializer.archive(self.model.preKeyBundle) ?? DatabaseValue.null
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
     }
 
     public func uniqueIdColumnName() -> String {

@@ -11,10 +11,10 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct RecipientReadReceiptRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct RecipientReadReceiptRecord: SDSRecord {
     public static let databaseTableName: String = TSRecipientReadReceiptSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -36,7 +36,6 @@ public struct RecipientReadReceiptRecord: Codable, FetchableRecord, PersistableR
     public static func columnName(_ column: RecipientReadReceiptRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -59,6 +58,10 @@ extension TSRecipientReadReceipt {
     // the corresponding model class.
     class func fromRecord(_ record: RecipientReadReceiptRecord) throws -> TSRecipientReadReceipt {
 
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
+
         switch record.recordType {
         case .recipientReadReceipt:
 
@@ -67,9 +70,14 @@ extension TSRecipientReadReceipt {
             let recipientMap: [String: NSNumber] = try SDSDeserialization.unarchive(recipientMapSerialized, name: "recipientMap")
             let sentTimestamp: UInt64 = record.sentTimestamp
 
-            return TSRecipientReadReceipt(uniqueId: uniqueId,
-                                          recipientMap: recipientMap,
-                                          sentTimestamp: sentTimestamp)
+            let model = TSRecipientReadReceipt(uniqueId: uniqueId,
+                                               recipientMap: recipientMap,
+                                               sentTimestamp: sentTimestamp)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -88,6 +96,16 @@ extension TSRecipientReadReceipt: SDSSerializable {
         switch self {
         default:
             return TSRecipientReadReceiptSerializer(model: self)
+        }
+    }
+
+    public func asRecord(forUpdate: Bool) throws -> RecipientReadReceiptRecord {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        switch self {
+        default:
+            return try TSRecipientReadReceiptSerializer(model: self).toRecord(forUpdate: forUpdate)
         }
     }
 }
@@ -120,12 +138,43 @@ extension TSRecipientReadReceiptSerializer {
 
 @objc
 extension TSRecipientReadReceipt {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
+            do {
+                let database = grdbTransaction.database
+                var record = try asRecord(forUpdate: false)
+                try record.insert(database)
+
+                guard self.grdbId == nil else {
+                    owsFailDebug("Model unexpectedly already has grdbId.")
+                    return
+                }
+                guard let grdbId = record.id else {
+                    owsFailDebug("Record missing grdbId.")
+                    return
+                }
+                self.grdbId = NSNumber(value: grdbId)
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
+        }
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            save(with: ydbTransaction)
+        case .grdbWrite(let grdbTransaction):
+            do {
+                let database = grdbTransaction.database
+                let record = try asRecord(forUpdate: true)
+                try record.update(database, columns: serializer.updateColumnNames())
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
         }
     }
 
@@ -153,21 +202,22 @@ extension TSRecipientReadReceipt {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (TSRecipientReadReceipt) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSRecipientReadReceipt) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -345,54 +395,41 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
         self.model = model
     }
 
+    // MARK: - Record
+
+    func toRecord(forUpdate: Bool) throws -> RecipientReadReceiptRecord {
+        var id: Int64?
+        if forUpdate {
+            guard let grdbId: NSNumber = model.grdbId else {
+                owsFailDebug("Model is missing grdbId.")
+                throw SDSError.missingRequiredField
+            }
+            id = grdbId.int64Value
+        }
+
+        let recordType: SDSRecordType = .recipientReadReceipt
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
+        }
+
+        // Base class properties
+        let recipientMap: Data = requiredArchive(model.recipientMap)
+        let sentTimestamp: UInt64 = model.sentTimestamp
+
+        return RecipientReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, recipientMap: recipientMap, sentTimestamp: sentTimestamp)
+    }
+
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
         return TSRecipientReadReceiptSerializer.table
     }
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            TSRecipientReadReceiptSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
-
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.recipientReadReceipt.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
-        }
-        return result
-    }
-
     public func updateColumnNames() -> [String] {
         return [
+            TSRecipientReadReceiptSerializer.idColumn,
             TSRecipientReadReceiptSerializer.recipientMapColumn,
             TSRecipientReadReceiptSerializer.sentTimestampColumn
             ].map { $0.columnName }
-    }
-
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSDeserializer.archive(self.model.recipientMap) ?? DatabaseValue.null,
-            self.model.sentTimestamp
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
     }
 
     public func uniqueIdColumnName() -> String {

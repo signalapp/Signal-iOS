@@ -11,10 +11,10 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct MessageContentJobRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct MessageContentJobRecord: SDSRecord {
     public static let databaseTableName: String = OWSMessageContentJobSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -40,7 +40,6 @@ public struct MessageContentJobRecord: Codable, FetchableRecord, PersistableReco
     public static func columnName(_ column: MessageContentJobRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -63,6 +62,10 @@ extension OWSMessageContentJob {
     // the corresponding model class.
     class func fromRecord(_ record: MessageContentJobRecord) throws -> OWSMessageContentJob {
 
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
+
         switch record.recordType {
         case .messageContentJob:
 
@@ -72,11 +75,16 @@ extension OWSMessageContentJob {
             let plaintextData: Data? = SDSDeserialization.optionalData(record.plaintextData, name: "plaintextData")
             let wasReceivedByUD: Bool = record.wasReceivedByUD
 
-            return OWSMessageContentJob(uniqueId: uniqueId,
-                                        createdAt: createdAt,
-                                        envelopeData: envelopeData,
-                                        plaintextData: plaintextData,
-                                        wasReceivedByUD: wasReceivedByUD)
+            let model = OWSMessageContentJob(uniqueId: uniqueId,
+                                             createdAt: createdAt,
+                                             envelopeData: envelopeData,
+                                             plaintextData: plaintextData,
+                                             wasReceivedByUD: wasReceivedByUD)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -95,6 +103,16 @@ extension OWSMessageContentJob: SDSSerializable {
         switch self {
         default:
             return OWSMessageContentJobSerializer(model: self)
+        }
+    }
+
+    public func asRecord(forUpdate: Bool) throws -> MessageContentJobRecord {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        switch self {
+        default:
+            return try OWSMessageContentJobSerializer(model: self).toRecord(forUpdate: forUpdate)
         }
     }
 }
@@ -131,12 +149,43 @@ extension OWSMessageContentJobSerializer {
 
 @objc
 extension OWSMessageContentJob {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
+            do {
+                let database = grdbTransaction.database
+                var record = try asRecord(forUpdate: false)
+                try record.insert(database)
+
+                guard self.grdbId == nil else {
+                    owsFailDebug("Model unexpectedly already has grdbId.")
+                    return
+                }
+                guard let grdbId = record.id else {
+                    owsFailDebug("Record missing grdbId.")
+                    return
+                }
+                self.grdbId = NSNumber(value: grdbId)
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
+        }
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            save(with: ydbTransaction)
+        case .grdbWrite(let grdbTransaction):
+            do {
+                let database = grdbTransaction.database
+                let record = try asRecord(forUpdate: true)
+                try record.update(database, columns: serializer.updateColumnNames())
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
         }
     }
 
@@ -164,21 +213,22 @@ extension OWSMessageContentJob {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (OWSMessageContentJob) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSMessageContentJob) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -356,58 +406,45 @@ class OWSMessageContentJobSerializer: SDSSerializer {
         self.model = model
     }
 
+    // MARK: - Record
+
+    func toRecord(forUpdate: Bool) throws -> MessageContentJobRecord {
+        var id: Int64?
+        if forUpdate {
+            guard let grdbId: NSNumber = model.grdbId else {
+                owsFailDebug("Model is missing grdbId.")
+                throw SDSError.missingRequiredField
+            }
+            id = grdbId.int64Value
+        }
+
+        let recordType: SDSRecordType = .messageContentJob
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
+        }
+
+        // Base class properties
+        let createdAt: Date = model.createdAt
+        let envelopeData: Data = model.envelopeData
+        let plaintextData: Data? = model.plaintextData
+        let wasReceivedByUD: Bool = model.wasReceivedByUD
+
+        return MessageContentJobRecord(id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD)
+    }
+
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
         return OWSMessageContentJobSerializer.table
     }
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            OWSMessageContentJobSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
-
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.messageContentJob.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
-        }
-        return result
-    }
-
     public func updateColumnNames() -> [String] {
         return [
+            OWSMessageContentJobSerializer.idColumn,
             OWSMessageContentJobSerializer.createdAtColumn,
             OWSMessageContentJobSerializer.envelopeDataColumn,
             OWSMessageContentJobSerializer.plaintextDataColumn,
             OWSMessageContentJobSerializer.wasReceivedByUDColumn
             ].map { $0.columnName }
-    }
-
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.createdAt,
-            self.model.envelopeData,
-            self.model.plaintextData ?? DatabaseValue.null,
-            self.model.wasReceivedByUD
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
     }
 
     public func uniqueIdColumnName() -> String {

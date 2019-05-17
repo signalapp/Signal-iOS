@@ -20,37 +20,49 @@ class TSContactThreadSerializer: SDSSerializer {
         self.model = model
     }
 
+    // MARK: - Record
+
+    func toRecord(forUpdate: Bool) throws -> ThreadRecord {
+        var id: Int64?
+        if forUpdate {
+            guard let grdbId: NSNumber = model.grdbId else {
+                owsFailDebug("Model is missing grdbId.")
+                throw SDSError.missingRequiredField
+            }
+            id = grdbId.int64Value
+        }
+
+        let recordType: SDSRecordType = .contactThread
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
+        }
+
+        // Base class properties
+        let archivalDate: Date? = model.archivalDate
+        let archivedAsOfMessageSortId: Bool? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { $0.boolValue })
+        let conversationColorName: String = model.conversationColorName.rawValue
+        let creationDate: Date = model.creationDate
+        let isArchivedByLegacyTimestampForSorting: Bool = model.isArchivedByLegacyTimestampForSorting
+        let lastMessageDate: Date? = model.lastMessageDate
+        let messageDraft: String? = model.messageDraft
+        let mutedUntilDate: Date? = model.mutedUntilDate
+        let shouldThreadBeVisible: Bool = model.shouldThreadBeVisible
+
+        // Subclass properties
+        let groupModel: Data? = nil
+        let hasDismissedOffers: Bool? = model.hasDismissedOffers
+
+        return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+    }
+
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
         return TSThreadSerializer.table
     }
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            TSThreadSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
-
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.contactThread.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
-        }
-        return result
-    }
-
     public func updateColumnNames() -> [String] {
         return [
+            TSThreadSerializer.idColumn,
             TSThreadSerializer.archivalDateColumn,
             TSThreadSerializer.archivedAsOfMessageSortIdColumn,
             TSThreadSerializer.conversationColorNameColumn,
@@ -62,28 +74,6 @@ class TSContactThreadSerializer: SDSSerializer {
             TSThreadSerializer.shouldThreadBeVisibleColumn,
             TSThreadSerializer.hasDismissedOffersColumn
             ].map { $0.columnName }
-    }
-
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.archivalDate ?? DatabaseValue.null,
-            self.model.archivedAsOfMessageSortId ?? DatabaseValue.null,
-            self.model.conversationColorName.rawValue,
-            self.model.creationDate,
-            self.model.isArchivedByLegacyTimestampForSorting,
-            self.model.lastMessageDate ?? DatabaseValue.null,
-            self.model.messageDraft ?? DatabaseValue.null,
-            self.model.mutedUntilDate ?? DatabaseValue.null,
-            self.model.shouldThreadBeVisible,
-            self.model.hasDismissedOffers
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
     }
 
     public func uniqueIdColumnName() -> String {

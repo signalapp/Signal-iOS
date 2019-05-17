@@ -11,10 +11,10 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct InteractionRecord: SDSRecord {
     public static let databaseTableName: String = TSInteractionSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -138,7 +138,6 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -161,12 +160,16 @@ extension TSInteraction {
     // the corresponding model class.
     class func fromRecord(_ record: InteractionRecord) throws -> TSInteraction {
 
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
+
         switch record.recordType {
         case .addToContactsOfferMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -195,34 +198,39 @@ extension TSInteraction {
             let unregisteredRecipientId: String? = record.unregisteredRecipientId
             let contactId: String = try SDSDeserialization.required(record.contactId, name: "contactId")
 
-            return OWSAddToContactsOfferMessage(uniqueId: uniqueId,
-                                                receivedAtTimestamp: receivedAtTimestamp,
-                                                sortId: sortId,
-                                                timestamp: timestamp,
-                                                uniqueThreadId: uniqueThreadId,
-                                                attachmentIds: attachmentIds,
-                                                body: body,
-                                                contactShare: contactShare,
-                                                ephemeralMessage: ephemeralMessage,
-                                                expireStartedAt: expireStartedAt,
-                                                expiresAt: expiresAt,
-                                                expiresInSeconds: expiresInSeconds,
-                                                linkPreview: linkPreview,
-                                                messageSticker: messageSticker,
-                                                quotedMessage: quotedMessage,
-                                                schemaVersion: schemaVersion,
-                                                customMessage: customMessage,
-                                                infoMessageSchemaVersion: infoMessageSchemaVersion,
-                                                messageType: messageType,
-                                                read: read,
-                                                unregisteredRecipientId: unregisteredRecipientId,
-                                                contactId: contactId)
+            let model = OWSAddToContactsOfferMessage(uniqueId: uniqueId,
+                                                     receivedAtTimestamp: receivedAtTimestamp,
+                                                     sortId: sortId,
+                                                     timestamp: timestamp,
+                                                     uniqueThreadId: uniqueThreadId,
+                                                     attachmentIds: attachmentIds,
+                                                     body: body,
+                                                     contactShare: contactShare,
+                                                     ephemeralMessage: ephemeralMessage,
+                                                     expireStartedAt: expireStartedAt,
+                                                     expiresAt: expiresAt,
+                                                     expiresInSeconds: expiresInSeconds,
+                                                     linkPreview: linkPreview,
+                                                     messageSticker: messageSticker,
+                                                     quotedMessage: quotedMessage,
+                                                     schemaVersion: schemaVersion,
+                                                     customMessage: customMessage,
+                                                     infoMessageSchemaVersion: infoMessageSchemaVersion,
+                                                     messageType: messageType,
+                                                     read: read,
+                                                     unregisteredRecipientId: unregisteredRecipientId,
+                                                     contactId: contactId)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .addToProfileWhitelistOfferMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -251,34 +259,39 @@ extension TSInteraction {
             let unregisteredRecipientId: String? = record.unregisteredRecipientId
             let contactId: String = try SDSDeserialization.required(record.contactId, name: "contactId")
 
-            return OWSAddToProfileWhitelistOfferMessage(uniqueId: uniqueId,
-                                                        receivedAtTimestamp: receivedAtTimestamp,
-                                                        sortId: sortId,
-                                                        timestamp: timestamp,
-                                                        uniqueThreadId: uniqueThreadId,
-                                                        attachmentIds: attachmentIds,
-                                                        body: body,
-                                                        contactShare: contactShare,
-                                                        ephemeralMessage: ephemeralMessage,
-                                                        expireStartedAt: expireStartedAt,
-                                                        expiresAt: expiresAt,
-                                                        expiresInSeconds: expiresInSeconds,
-                                                        linkPreview: linkPreview,
-                                                        messageSticker: messageSticker,
-                                                        quotedMessage: quotedMessage,
-                                                        schemaVersion: schemaVersion,
-                                                        customMessage: customMessage,
-                                                        infoMessageSchemaVersion: infoMessageSchemaVersion,
-                                                        messageType: messageType,
-                                                        read: read,
-                                                        unregisteredRecipientId: unregisteredRecipientId,
-                                                        contactId: contactId)
+            let model = OWSAddToProfileWhitelistOfferMessage(uniqueId: uniqueId,
+                                                             receivedAtTimestamp: receivedAtTimestamp,
+                                                             sortId: sortId,
+                                                             timestamp: timestamp,
+                                                             uniqueThreadId: uniqueThreadId,
+                                                             attachmentIds: attachmentIds,
+                                                             body: body,
+                                                             contactShare: contactShare,
+                                                             ephemeralMessage: ephemeralMessage,
+                                                             expireStartedAt: expireStartedAt,
+                                                             expiresAt: expiresAt,
+                                                             expiresInSeconds: expiresInSeconds,
+                                                             linkPreview: linkPreview,
+                                                             messageSticker: messageSticker,
+                                                             quotedMessage: quotedMessage,
+                                                             schemaVersion: schemaVersion,
+                                                             customMessage: customMessage,
+                                                             infoMessageSchemaVersion: infoMessageSchemaVersion,
+                                                             messageType: messageType,
+                                                             read: read,
+                                                             unregisteredRecipientId: unregisteredRecipientId,
+                                                             contactId: contactId)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .contactOffersInteraction:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let beforeInteractionId: String = try SDSDeserialization.required(record.beforeInteractionId, name: "beforeInteractionId")
@@ -287,22 +300,27 @@ extension TSInteraction {
             let hasBlockOffer: Bool = try SDSDeserialization.required(record.hasBlockOffer, name: "hasBlockOffer")
             let recipientId: String = try SDSDeserialization.required(record.recipientId, name: "recipientId")
 
-            return OWSContactOffersInteraction(uniqueId: uniqueId,
-                                               receivedAtTimestamp: receivedAtTimestamp,
-                                               sortId: sortId,
-                                               timestamp: timestamp,
-                                               uniqueThreadId: uniqueThreadId,
-                                               beforeInteractionId: beforeInteractionId,
-                                               hasAddToContactsOffer: hasAddToContactsOffer,
-                                               hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer,
-                                               hasBlockOffer: hasBlockOffer,
-                                               recipientId: recipientId)
+            let model = OWSContactOffersInteraction(uniqueId: uniqueId,
+                                                    receivedAtTimestamp: receivedAtTimestamp,
+                                                    sortId: sortId,
+                                                    timestamp: timestamp,
+                                                    uniqueThreadId: uniqueThreadId,
+                                                    beforeInteractionId: beforeInteractionId,
+                                                    hasAddToContactsOffer: hasAddToContactsOffer,
+                                                    hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer,
+                                                    hasBlockOffer: hasBlockOffer,
+                                                    recipientId: recipientId)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .disappearingConfigurationUpdateInfoMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -334,37 +352,42 @@ extension TSInteraction {
             let createdByRemoteName: String? = record.createdByRemoteName
             let createdInExistingGroup: Bool = try SDSDeserialization.required(record.createdInExistingGroup, name: "createdInExistingGroup")
 
-            return OWSDisappearingConfigurationUpdateInfoMessage(uniqueId: uniqueId,
-                                                                 receivedAtTimestamp: receivedAtTimestamp,
-                                                                 sortId: sortId,
-                                                                 timestamp: timestamp,
-                                                                 uniqueThreadId: uniqueThreadId,
-                                                                 attachmentIds: attachmentIds,
-                                                                 body: body,
-                                                                 contactShare: contactShare,
-                                                                 ephemeralMessage: ephemeralMessage,
-                                                                 expireStartedAt: expireStartedAt,
-                                                                 expiresAt: expiresAt,
-                                                                 expiresInSeconds: expiresInSeconds,
-                                                                 linkPreview: linkPreview,
-                                                                 messageSticker: messageSticker,
-                                                                 quotedMessage: quotedMessage,
-                                                                 schemaVersion: schemaVersion,
-                                                                 customMessage: customMessage,
-                                                                 infoMessageSchemaVersion: infoMessageSchemaVersion,
-                                                                 messageType: messageType,
-                                                                 read: read,
-                                                                 unregisteredRecipientId: unregisteredRecipientId,
-                                                                 configurationDurationSeconds: configurationDurationSeconds,
-                                                                 configurationIsEnabled: configurationIsEnabled,
-                                                                 createdByRemoteName: createdByRemoteName,
-                                                                 createdInExistingGroup: createdInExistingGroup)
+            let model = OWSDisappearingConfigurationUpdateInfoMessage(uniqueId: uniqueId,
+                                                                      receivedAtTimestamp: receivedAtTimestamp,
+                                                                      sortId: sortId,
+                                                                      timestamp: timestamp,
+                                                                      uniqueThreadId: uniqueThreadId,
+                                                                      attachmentIds: attachmentIds,
+                                                                      body: body,
+                                                                      contactShare: contactShare,
+                                                                      ephemeralMessage: ephemeralMessage,
+                                                                      expireStartedAt: expireStartedAt,
+                                                                      expiresAt: expiresAt,
+                                                                      expiresInSeconds: expiresInSeconds,
+                                                                      linkPreview: linkPreview,
+                                                                      messageSticker: messageSticker,
+                                                                      quotedMessage: quotedMessage,
+                                                                      schemaVersion: schemaVersion,
+                                                                      customMessage: customMessage,
+                                                                      infoMessageSchemaVersion: infoMessageSchemaVersion,
+                                                                      messageType: messageType,
+                                                                      read: read,
+                                                                      unregisteredRecipientId: unregisteredRecipientId,
+                                                                      configurationDurationSeconds: configurationDurationSeconds,
+                                                                      configurationIsEnabled: configurationIsEnabled,
+                                                                      createdByRemoteName: createdByRemoteName,
+                                                                      createdInExistingGroup: createdInExistingGroup)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .unknownContactBlockOfferMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -392,33 +415,38 @@ extension TSInteraction {
             let recipientId: String? = record.recipientId
             let contactId: String = try SDSDeserialization.required(record.contactId, name: "contactId")
 
-            return OWSUnknownContactBlockOfferMessage(uniqueId: uniqueId,
-                                                      receivedAtTimestamp: receivedAtTimestamp,
-                                                      sortId: sortId,
-                                                      timestamp: timestamp,
-                                                      uniqueThreadId: uniqueThreadId,
-                                                      attachmentIds: attachmentIds,
-                                                      body: body,
-                                                      contactShare: contactShare,
-                                                      ephemeralMessage: ephemeralMessage,
-                                                      expireStartedAt: expireStartedAt,
-                                                      expiresAt: expiresAt,
-                                                      expiresInSeconds: expiresInSeconds,
-                                                      linkPreview: linkPreview,
-                                                      messageSticker: messageSticker,
-                                                      quotedMessage: quotedMessage,
-                                                      schemaVersion: schemaVersion,
-                                                      errorMessageSchemaVersion: errorMessageSchemaVersion,
-                                                      errorType: errorType,
-                                                      read: read,
-                                                      recipientId: recipientId,
-                                                      contactId: contactId)
+            let model = OWSUnknownContactBlockOfferMessage(uniqueId: uniqueId,
+                                                           receivedAtTimestamp: receivedAtTimestamp,
+                                                           sortId: sortId,
+                                                           timestamp: timestamp,
+                                                           uniqueThreadId: uniqueThreadId,
+                                                           attachmentIds: attachmentIds,
+                                                           body: body,
+                                                           contactShare: contactShare,
+                                                           ephemeralMessage: ephemeralMessage,
+                                                           expireStartedAt: expireStartedAt,
+                                                           expiresAt: expiresAt,
+                                                           expiresInSeconds: expiresInSeconds,
+                                                           linkPreview: linkPreview,
+                                                           messageSticker: messageSticker,
+                                                           quotedMessage: quotedMessage,
+                                                           schemaVersion: schemaVersion,
+                                                           errorMessageSchemaVersion: errorMessageSchemaVersion,
+                                                           errorType: errorType,
+                                                           read: read,
+                                                           recipientId: recipientId,
+                                                           contactId: contactId)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .verificationStateChangeMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -451,36 +479,41 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
 
-            return OWSVerificationStateChangeMessage(uniqueId: uniqueId,
-                                                     receivedAtTimestamp: receivedAtTimestamp,
-                                                     sortId: sortId,
-                                                     timestamp: timestamp,
-                                                     uniqueThreadId: uniqueThreadId,
-                                                     attachmentIds: attachmentIds,
-                                                     body: body,
-                                                     contactShare: contactShare,
-                                                     ephemeralMessage: ephemeralMessage,
-                                                     expireStartedAt: expireStartedAt,
-                                                     expiresAt: expiresAt,
-                                                     expiresInSeconds: expiresInSeconds,
-                                                     linkPreview: linkPreview,
-                                                     messageSticker: messageSticker,
-                                                     quotedMessage: quotedMessage,
-                                                     schemaVersion: schemaVersion,
-                                                     customMessage: customMessage,
-                                                     infoMessageSchemaVersion: infoMessageSchemaVersion,
-                                                     messageType: messageType,
-                                                     read: read,
-                                                     unregisteredRecipientId: unregisteredRecipientId,
-                                                     isLocalChange: isLocalChange,
-                                                     recipientId: recipientId,
-                                                     verificationState: verificationState)
+            let model = OWSVerificationStateChangeMessage(uniqueId: uniqueId,
+                                                          receivedAtTimestamp: receivedAtTimestamp,
+                                                          sortId: sortId,
+                                                          timestamp: timestamp,
+                                                          uniqueThreadId: uniqueThreadId,
+                                                          attachmentIds: attachmentIds,
+                                                          body: body,
+                                                          contactShare: contactShare,
+                                                          ephemeralMessage: ephemeralMessage,
+                                                          expireStartedAt: expireStartedAt,
+                                                          expiresAt: expiresAt,
+                                                          expiresInSeconds: expiresInSeconds,
+                                                          linkPreview: linkPreview,
+                                                          messageSticker: messageSticker,
+                                                          quotedMessage: quotedMessage,
+                                                          schemaVersion: schemaVersion,
+                                                          customMessage: customMessage,
+                                                          infoMessageSchemaVersion: infoMessageSchemaVersion,
+                                                          messageType: messageType,
+                                                          read: read,
+                                                          unregisteredRecipientId: unregisteredRecipientId,
+                                                          isLocalChange: isLocalChange,
+                                                          recipientId: recipientId,
+                                                          verificationState: verificationState)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .call:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let callSchemaVersion: UInt = try SDSDeserialization.required(record.callSchemaVersion, name: "callSchemaVersion")
@@ -489,20 +522,25 @@ extension TSInteraction {
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
 
-            return TSCall(uniqueId: uniqueId,
-                          receivedAtTimestamp: receivedAtTimestamp,
-                          sortId: sortId,
-                          timestamp: timestamp,
-                          uniqueThreadId: uniqueThreadId,
-                          callSchemaVersion: callSchemaVersion,
-                          callType: callType,
-                          read: read)
+            let model = TSCall(uniqueId: uniqueId,
+                               receivedAtTimestamp: receivedAtTimestamp,
+                               sortId: sortId,
+                               timestamp: timestamp,
+                               uniqueThreadId: uniqueThreadId,
+                               callSchemaVersion: callSchemaVersion,
+                               callType: callType,
+                               read: read)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .errorMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -529,32 +567,37 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientId: String? = record.recipientId
 
-            return TSErrorMessage(uniqueId: uniqueId,
-                                  receivedAtTimestamp: receivedAtTimestamp,
-                                  sortId: sortId,
-                                  timestamp: timestamp,
-                                  uniqueThreadId: uniqueThreadId,
-                                  attachmentIds: attachmentIds,
-                                  body: body,
-                                  contactShare: contactShare,
-                                  ephemeralMessage: ephemeralMessage,
-                                  expireStartedAt: expireStartedAt,
-                                  expiresAt: expiresAt,
-                                  expiresInSeconds: expiresInSeconds,
-                                  linkPreview: linkPreview,
-                                  messageSticker: messageSticker,
-                                  quotedMessage: quotedMessage,
-                                  schemaVersion: schemaVersion,
-                                  errorMessageSchemaVersion: errorMessageSchemaVersion,
-                                  errorType: errorType,
-                                  read: read,
-                                  recipientId: recipientId)
+            let model = TSErrorMessage(uniqueId: uniqueId,
+                                       receivedAtTimestamp: receivedAtTimestamp,
+                                       sortId: sortId,
+                                       timestamp: timestamp,
+                                       uniqueThreadId: uniqueThreadId,
+                                       attachmentIds: attachmentIds,
+                                       body: body,
+                                       contactShare: contactShare,
+                                       ephemeralMessage: ephemeralMessage,
+                                       expireStartedAt: expireStartedAt,
+                                       expiresAt: expiresAt,
+                                       expiresInSeconds: expiresInSeconds,
+                                       linkPreview: linkPreview,
+                                       messageSticker: messageSticker,
+                                       quotedMessage: quotedMessage,
+                                       schemaVersion: schemaVersion,
+                                       errorMessageSchemaVersion: errorMessageSchemaVersion,
+                                       errorType: errorType,
+                                       read: read,
+                                       recipientId: recipientId)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .incomingMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -580,33 +623,38 @@ extension TSInteraction {
             let sourceDeviceId: UInt32 = try SDSDeserialization.required(record.sourceDeviceId, name: "sourceDeviceId")
             let wasReceivedByUD: Bool = try SDSDeserialization.required(record.wasReceivedByUD, name: "wasReceivedByUD")
 
-            return TSIncomingMessage(uniqueId: uniqueId,
-                                     receivedAtTimestamp: receivedAtTimestamp,
-                                     sortId: sortId,
-                                     timestamp: timestamp,
-                                     uniqueThreadId: uniqueThreadId,
-                                     attachmentIds: attachmentIds,
-                                     body: body,
-                                     contactShare: contactShare,
-                                     ephemeralMessage: ephemeralMessage,
-                                     expireStartedAt: expireStartedAt,
-                                     expiresAt: expiresAt,
-                                     expiresInSeconds: expiresInSeconds,
-                                     linkPreview: linkPreview,
-                                     messageSticker: messageSticker,
-                                     quotedMessage: quotedMessage,
-                                     schemaVersion: schemaVersion,
-                                     authorId: authorId,
-                                     read: read,
-                                     serverTimestamp: serverTimestamp,
-                                     sourceDeviceId: sourceDeviceId,
-                                     wasReceivedByUD: wasReceivedByUD)
+            let model = TSIncomingMessage(uniqueId: uniqueId,
+                                          receivedAtTimestamp: receivedAtTimestamp,
+                                          sortId: sortId,
+                                          timestamp: timestamp,
+                                          uniqueThreadId: uniqueThreadId,
+                                          attachmentIds: attachmentIds,
+                                          body: body,
+                                          contactShare: contactShare,
+                                          ephemeralMessage: ephemeralMessage,
+                                          expireStartedAt: expireStartedAt,
+                                          expiresAt: expiresAt,
+                                          expiresInSeconds: expiresInSeconds,
+                                          linkPreview: linkPreview,
+                                          messageSticker: messageSticker,
+                                          quotedMessage: quotedMessage,
+                                          schemaVersion: schemaVersion,
+                                          authorId: authorId,
+                                          read: read,
+                                          serverTimestamp: serverTimestamp,
+                                          sourceDeviceId: sourceDeviceId,
+                                          wasReceivedByUD: wasReceivedByUD)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .infoMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -634,47 +682,57 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let unregisteredRecipientId: String? = record.unregisteredRecipientId
 
-            return TSInfoMessage(uniqueId: uniqueId,
-                                 receivedAtTimestamp: receivedAtTimestamp,
-                                 sortId: sortId,
-                                 timestamp: timestamp,
-                                 uniqueThreadId: uniqueThreadId,
-                                 attachmentIds: attachmentIds,
-                                 body: body,
-                                 contactShare: contactShare,
-                                 ephemeralMessage: ephemeralMessage,
-                                 expireStartedAt: expireStartedAt,
-                                 expiresAt: expiresAt,
-                                 expiresInSeconds: expiresInSeconds,
-                                 linkPreview: linkPreview,
-                                 messageSticker: messageSticker,
-                                 quotedMessage: quotedMessage,
-                                 schemaVersion: schemaVersion,
-                                 customMessage: customMessage,
-                                 infoMessageSchemaVersion: infoMessageSchemaVersion,
-                                 messageType: messageType,
-                                 read: read,
-                                 unregisteredRecipientId: unregisteredRecipientId)
+            let model = TSInfoMessage(uniqueId: uniqueId,
+                                      receivedAtTimestamp: receivedAtTimestamp,
+                                      sortId: sortId,
+                                      timestamp: timestamp,
+                                      uniqueThreadId: uniqueThreadId,
+                                      attachmentIds: attachmentIds,
+                                      body: body,
+                                      contactShare: contactShare,
+                                      ephemeralMessage: ephemeralMessage,
+                                      expireStartedAt: expireStartedAt,
+                                      expiresAt: expiresAt,
+                                      expiresInSeconds: expiresInSeconds,
+                                      linkPreview: linkPreview,
+                                      messageSticker: messageSticker,
+                                      quotedMessage: quotedMessage,
+                                      schemaVersion: schemaVersion,
+                                      customMessage: customMessage,
+                                      infoMessageSchemaVersion: infoMessageSchemaVersion,
+                                      messageType: messageType,
+                                      read: read,
+                                      unregisteredRecipientId: unregisteredRecipientId)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .interaction:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
 
-            return TSInteraction(uniqueId: uniqueId,
-                                 receivedAtTimestamp: receivedAtTimestamp,
-                                 sortId: sortId,
-                                 timestamp: timestamp,
-                                 uniqueThreadId: uniqueThreadId)
+            let model = TSInteraction(uniqueId: uniqueId,
+                                      receivedAtTimestamp: receivedAtTimestamp,
+                                      sortId: sortId,
+                                      timestamp: timestamp,
+                                      uniqueThreadId: uniqueThreadId)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .invalidIdentityKeyErrorMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -701,32 +759,37 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let recipientId: String? = record.recipientId
 
-            return TSInvalidIdentityKeyErrorMessage(uniqueId: uniqueId,
-                                                    receivedAtTimestamp: receivedAtTimestamp,
-                                                    sortId: sortId,
-                                                    timestamp: timestamp,
-                                                    uniqueThreadId: uniqueThreadId,
-                                                    attachmentIds: attachmentIds,
-                                                    body: body,
-                                                    contactShare: contactShare,
-                                                    ephemeralMessage: ephemeralMessage,
-                                                    expireStartedAt: expireStartedAt,
-                                                    expiresAt: expiresAt,
-                                                    expiresInSeconds: expiresInSeconds,
-                                                    linkPreview: linkPreview,
-                                                    messageSticker: messageSticker,
-                                                    quotedMessage: quotedMessage,
-                                                    schemaVersion: schemaVersion,
-                                                    errorMessageSchemaVersion: errorMessageSchemaVersion,
-                                                    errorType: errorType,
-                                                    read: read,
-                                                    recipientId: recipientId)
+            let model = TSInvalidIdentityKeyErrorMessage(uniqueId: uniqueId,
+                                                         receivedAtTimestamp: receivedAtTimestamp,
+                                                         sortId: sortId,
+                                                         timestamp: timestamp,
+                                                         uniqueThreadId: uniqueThreadId,
+                                                         attachmentIds: attachmentIds,
+                                                         body: body,
+                                                         contactShare: contactShare,
+                                                         ephemeralMessage: ephemeralMessage,
+                                                         expireStartedAt: expireStartedAt,
+                                                         expiresAt: expiresAt,
+                                                         expiresInSeconds: expiresInSeconds,
+                                                         linkPreview: linkPreview,
+                                                         messageSticker: messageSticker,
+                                                         quotedMessage: quotedMessage,
+                                                         schemaVersion: schemaVersion,
+                                                         errorMessageSchemaVersion: errorMessageSchemaVersion,
+                                                         errorType: errorType,
+                                                         read: read,
+                                                         recipientId: recipientId)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .invalidIdentityKeyReceivingErrorMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -755,34 +818,39 @@ extension TSInteraction {
             let authorId: String = try SDSDeserialization.required(record.authorId, name: "authorId")
             let envelopeData: Data? = SDSDeserialization.optionalData(record.envelopeData, name: "envelopeData")
 
-            return TSInvalidIdentityKeyReceivingErrorMessage(uniqueId: uniqueId,
-                                                             receivedAtTimestamp: receivedAtTimestamp,
-                                                             sortId: sortId,
-                                                             timestamp: timestamp,
-                                                             uniqueThreadId: uniqueThreadId,
-                                                             attachmentIds: attachmentIds,
-                                                             body: body,
-                                                             contactShare: contactShare,
-                                                             ephemeralMessage: ephemeralMessage,
-                                                             expireStartedAt: expireStartedAt,
-                                                             expiresAt: expiresAt,
-                                                             expiresInSeconds: expiresInSeconds,
-                                                             linkPreview: linkPreview,
-                                                             messageSticker: messageSticker,
-                                                             quotedMessage: quotedMessage,
-                                                             schemaVersion: schemaVersion,
-                                                             errorMessageSchemaVersion: errorMessageSchemaVersion,
-                                                             errorType: errorType,
-                                                             read: read,
-                                                             recipientId: recipientId,
-                                                             authorId: authorId,
-                                                             envelopeData: envelopeData)
+            let model = TSInvalidIdentityKeyReceivingErrorMessage(uniqueId: uniqueId,
+                                                                  receivedAtTimestamp: receivedAtTimestamp,
+                                                                  sortId: sortId,
+                                                                  timestamp: timestamp,
+                                                                  uniqueThreadId: uniqueThreadId,
+                                                                  attachmentIds: attachmentIds,
+                                                                  body: body,
+                                                                  contactShare: contactShare,
+                                                                  ephemeralMessage: ephemeralMessage,
+                                                                  expireStartedAt: expireStartedAt,
+                                                                  expiresAt: expiresAt,
+                                                                  expiresInSeconds: expiresInSeconds,
+                                                                  linkPreview: linkPreview,
+                                                                  messageSticker: messageSticker,
+                                                                  quotedMessage: quotedMessage,
+                                                                  schemaVersion: schemaVersion,
+                                                                  errorMessageSchemaVersion: errorMessageSchemaVersion,
+                                                                  errorType: errorType,
+                                                                  read: read,
+                                                                  recipientId: recipientId,
+                                                                  authorId: authorId,
+                                                                  envelopeData: envelopeData)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .invalidIdentityKeySendingErrorMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -812,34 +880,39 @@ extension TSInteraction {
             let preKeyBundleSerialized: Data? = record.preKeyBundle
             let preKeyBundle: PreKeyBundle = try SDSDeserialization.unarchive(preKeyBundleSerialized, name: "preKeyBundle")
 
-            return TSInvalidIdentityKeySendingErrorMessage(uniqueId: uniqueId,
-                                                           receivedAtTimestamp: receivedAtTimestamp,
-                                                           sortId: sortId,
-                                                           timestamp: timestamp,
-                                                           uniqueThreadId: uniqueThreadId,
-                                                           attachmentIds: attachmentIds,
-                                                           body: body,
-                                                           contactShare: contactShare,
-                                                           ephemeralMessage: ephemeralMessage,
-                                                           expireStartedAt: expireStartedAt,
-                                                           expiresAt: expiresAt,
-                                                           expiresInSeconds: expiresInSeconds,
-                                                           linkPreview: linkPreview,
-                                                           messageSticker: messageSticker,
-                                                           quotedMessage: quotedMessage,
-                                                           schemaVersion: schemaVersion,
-                                                           errorMessageSchemaVersion: errorMessageSchemaVersion,
-                                                           errorType: errorType,
-                                                           read: read,
-                                                           recipientId: recipientId,
-                                                           messageId: messageId,
-                                                           preKeyBundle: preKeyBundle)
+            let model = TSInvalidIdentityKeySendingErrorMessage(uniqueId: uniqueId,
+                                                                receivedAtTimestamp: receivedAtTimestamp,
+                                                                sortId: sortId,
+                                                                timestamp: timestamp,
+                                                                uniqueThreadId: uniqueThreadId,
+                                                                attachmentIds: attachmentIds,
+                                                                body: body,
+                                                                contactShare: contactShare,
+                                                                ephemeralMessage: ephemeralMessage,
+                                                                expireStartedAt: expireStartedAt,
+                                                                expiresAt: expiresAt,
+                                                                expiresInSeconds: expiresInSeconds,
+                                                                linkPreview: linkPreview,
+                                                                messageSticker: messageSticker,
+                                                                quotedMessage: quotedMessage,
+                                                                schemaVersion: schemaVersion,
+                                                                errorMessageSchemaVersion: errorMessageSchemaVersion,
+                                                                errorType: errorType,
+                                                                read: read,
+                                                                recipientId: recipientId,
+                                                                messageId: messageId,
+                                                                preKeyBundle: preKeyBundle)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .message:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -860,28 +933,33 @@ extension TSInteraction {
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
 
-            return TSMessage(uniqueId: uniqueId,
-                             receivedAtTimestamp: receivedAtTimestamp,
-                             sortId: sortId,
-                             timestamp: timestamp,
-                             uniqueThreadId: uniqueThreadId,
-                             attachmentIds: attachmentIds,
-                             body: body,
-                             contactShare: contactShare,
-                             ephemeralMessage: ephemeralMessage,
-                             expireStartedAt: expireStartedAt,
-                             expiresAt: expiresAt,
-                             expiresInSeconds: expiresInSeconds,
-                             linkPreview: linkPreview,
-                             messageSticker: messageSticker,
-                             quotedMessage: quotedMessage,
-                             schemaVersion: schemaVersion)
+            let model = TSMessage(uniqueId: uniqueId,
+                                  receivedAtTimestamp: receivedAtTimestamp,
+                                  sortId: sortId,
+                                  timestamp: timestamp,
+                                  uniqueThreadId: uniqueThreadId,
+                                  attachmentIds: attachmentIds,
+                                  body: body,
+                                  contactShare: contactShare,
+                                  ephemeralMessage: ephemeralMessage,
+                                  expireStartedAt: expireStartedAt,
+                                  expiresAt: expiresAt,
+                                  expiresInSeconds: expiresInSeconds,
+                                  linkPreview: linkPreview,
+                                  messageSticker: messageSticker,
+                                  quotedMessage: quotedMessage,
+                                  schemaVersion: schemaVersion)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .outgoingMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -919,47 +997,57 @@ extension TSInteraction {
             let recipientStateMapSerialized: Data? = record.recipientStateMap
             let recipientStateMap: [String: TSOutgoingMessageRecipientState]? = try SDSDeserialization.optionalUnarchive(recipientStateMapSerialized, name: "recipientStateMap")
 
-            return TSOutgoingMessage(uniqueId: uniqueId,
-                                     receivedAtTimestamp: receivedAtTimestamp,
-                                     sortId: sortId,
-                                     timestamp: timestamp,
-                                     uniqueThreadId: uniqueThreadId,
-                                     attachmentIds: attachmentIds,
-                                     body: body,
-                                     contactShare: contactShare,
-                                     ephemeralMessage: ephemeralMessage,
-                                     expireStartedAt: expireStartedAt,
-                                     expiresAt: expiresAt,
-                                     expiresInSeconds: expiresInSeconds,
-                                     linkPreview: linkPreview,
-                                     messageSticker: messageSticker,
-                                     quotedMessage: quotedMessage,
-                                     schemaVersion: schemaVersion,
-                                     attachmentFilenameMap: attachmentFilenameMap,
-                                     customMessage: customMessage,
-                                     groupMetaMessage: groupMetaMessage,
-                                     hasLegacyMessageState: hasLegacyMessageState,
-                                     hasSyncedTranscript: hasSyncedTranscript,
-                                     isFromLinkedDevice: isFromLinkedDevice,
-                                     isVoiceMessage: isVoiceMessage,
-                                     legacyMessageState: legacyMessageState,
-                                     legacyWasDelivered: legacyWasDelivered,
-                                     mostRecentFailureText: mostRecentFailureText,
-                                     recipientStateMap: recipientStateMap)
+            let model = TSOutgoingMessage(uniqueId: uniqueId,
+                                          receivedAtTimestamp: receivedAtTimestamp,
+                                          sortId: sortId,
+                                          timestamp: timestamp,
+                                          uniqueThreadId: uniqueThreadId,
+                                          attachmentIds: attachmentIds,
+                                          body: body,
+                                          contactShare: contactShare,
+                                          ephemeralMessage: ephemeralMessage,
+                                          expireStartedAt: expireStartedAt,
+                                          expiresAt: expiresAt,
+                                          expiresInSeconds: expiresInSeconds,
+                                          linkPreview: linkPreview,
+                                          messageSticker: messageSticker,
+                                          quotedMessage: quotedMessage,
+                                          schemaVersion: schemaVersion,
+                                          attachmentFilenameMap: attachmentFilenameMap,
+                                          customMessage: customMessage,
+                                          groupMetaMessage: groupMetaMessage,
+                                          hasLegacyMessageState: hasLegacyMessageState,
+                                          hasSyncedTranscript: hasSyncedTranscript,
+                                          isFromLinkedDevice: isFromLinkedDevice,
+                                          isVoiceMessage: isVoiceMessage,
+                                          legacyMessageState: legacyMessageState,
+                                          legacyWasDelivered: legacyWasDelivered,
+                                          mostRecentFailureText: mostRecentFailureText,
+                                          recipientStateMap: recipientStateMap)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .unreadIndicatorInteraction:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
 
-            return TSUnreadIndicatorInteraction(uniqueId: uniqueId,
-                                                receivedAtTimestamp: receivedAtTimestamp,
-                                                sortId: sortId,
-                                                timestamp: timestamp,
-                                                uniqueThreadId: uniqueThreadId)
+            let model = TSUnreadIndicatorInteraction(uniqueId: uniqueId,
+                                                     receivedAtTimestamp: receivedAtTimestamp,
+                                                     sortId: sortId,
+                                                     timestamp: timestamp,
+                                                     uniqueThreadId: uniqueThreadId)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -1026,6 +1114,64 @@ extension TSInteraction: SDSSerializable {
             return OWSContactOffersInteractionSerializer(model: model)
         default:
             return TSInteractionSerializer(model: self)
+        }
+    }
+
+    public func asRecord(forUpdate: Bool) throws -> InteractionRecord {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        switch self {
+        case let model as TSUnreadIndicatorInteraction:
+            assert(type(of: model) == TSUnreadIndicatorInteraction.self)
+            return try TSUnreadIndicatorInteractionSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as TSOutgoingMessage:
+            assert(type(of: model) == TSOutgoingMessage.self)
+            return try TSOutgoingMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as OWSVerificationStateChangeMessage:
+            assert(type(of: model) == OWSVerificationStateChangeMessage.self)
+            return try OWSVerificationStateChangeMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as OWSDisappearingConfigurationUpdateInfoMessage:
+            assert(type(of: model) == OWSDisappearingConfigurationUpdateInfoMessage.self)
+            return try OWSDisappearingConfigurationUpdateInfoMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as OWSAddToProfileWhitelistOfferMessage:
+            assert(type(of: model) == OWSAddToProfileWhitelistOfferMessage.self)
+            return try OWSAddToProfileWhitelistOfferMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as OWSAddToContactsOfferMessage:
+            assert(type(of: model) == OWSAddToContactsOfferMessage.self)
+            return try OWSAddToContactsOfferMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as TSInfoMessage:
+            assert(type(of: model) == TSInfoMessage.self)
+            return try TSInfoMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as TSIncomingMessage:
+            assert(type(of: model) == TSIncomingMessage.self)
+            return try TSIncomingMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as TSInvalidIdentityKeySendingErrorMessage:
+            assert(type(of: model) == TSInvalidIdentityKeySendingErrorMessage.self)
+            return try TSInvalidIdentityKeySendingErrorMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as TSInvalidIdentityKeyReceivingErrorMessage:
+            assert(type(of: model) == TSInvalidIdentityKeyReceivingErrorMessage.self)
+            return try TSInvalidIdentityKeyReceivingErrorMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as TSInvalidIdentityKeyErrorMessage:
+            assert(type(of: model) == TSInvalidIdentityKeyErrorMessage.self)
+            return try TSInvalidIdentityKeyErrorMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as OWSUnknownContactBlockOfferMessage:
+            assert(type(of: model) == OWSUnknownContactBlockOfferMessage.self)
+            return try OWSUnknownContactBlockOfferMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as TSErrorMessage:
+            assert(type(of: model) == TSErrorMessage.self)
+            return try TSErrorMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as TSMessage:
+            assert(type(of: model) == TSMessage.self)
+            return try TSMessageSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as TSCall:
+            assert(type(of: model) == TSCall.self)
+            return try TSCallSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as OWSContactOffersInteraction:
+            assert(type(of: model) == OWSContactOffersInteraction.self)
+            return try OWSContactOffersInteractionSerializer(model: model).toRecord(forUpdate: forUpdate)
+        default:
+            return try TSInteractionSerializer(model: self).toRecord(forUpdate: forUpdate)
         }
     }
 }
@@ -1159,12 +1305,43 @@ extension TSInteractionSerializer {
 
 @objc
 extension TSInteraction {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
+            do {
+                let database = grdbTransaction.database
+                var record = try asRecord(forUpdate: false)
+                try record.insert(database)
+
+                guard self.grdbId == nil else {
+                    owsFailDebug("Model unexpectedly already has grdbId.")
+                    return
+                }
+                guard let grdbId = record.id else {
+                    owsFailDebug("Record missing grdbId.")
+                    return
+                }
+                self.grdbId = NSNumber(value: grdbId)
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
+        }
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            save(with: ydbTransaction)
+        case .grdbWrite(let grdbTransaction):
+            do {
+                let database = grdbTransaction.database
+                let record = try asRecord(forUpdate: true)
+                try record.update(database, columns: serializer.updateColumnNames())
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
         }
     }
 
@@ -1192,21 +1369,22 @@ extension TSInteraction {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (TSInteraction) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSInteraction) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -1384,56 +1562,94 @@ class TSInteractionSerializer: SDSSerializer {
         self.model = model
     }
 
+    // MARK: - Record
+
+    func toRecord(forUpdate: Bool) throws -> InteractionRecord {
+        var id: Int64?
+        if forUpdate {
+            guard let grdbId: NSNumber = model.grdbId else {
+                owsFailDebug("Model is missing grdbId.")
+                throw SDSError.missingRequiredField
+            }
+            id = grdbId.int64Value
+        }
+
+        let recordType: SDSRecordType = .interaction
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
+        }
+
+        // Base class properties
+        let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
+        let timestamp: UInt64 = model.timestamp
+        let threadUniqueId: String = model.uniqueThreadId
+
+        // Subclass properties
+        let attachmentFilenameMap: Data? = nil
+        let attachmentIds: Data? = nil
+        let authorId: String? = nil
+        let beforeInteractionId: String? = nil
+        let body: String? = nil
+        let callSchemaVersion: UInt? = nil
+        let callType: RPRecentCallType? = nil
+        let configurationDurationSeconds: UInt32? = nil
+        let configurationIsEnabled: Bool? = nil
+        let contactId: String? = nil
+        let contactShare: Data? = nil
+        let createdByRemoteName: String? = nil
+        let createdInExistingGroup: Bool? = nil
+        let customMessage: String? = nil
+        let envelopeData: Data? = nil
+        let ephemeralMessage: Data? = nil
+        let errorMessageSchemaVersion: UInt? = nil
+        let errorType: TSErrorMessageType? = nil
+        let expireStartedAt: UInt64? = nil
+        let expiresAt: UInt64? = nil
+        let expiresInSeconds: UInt32? = nil
+        let groupMetaMessage: TSGroupMetaMessage? = nil
+        let hasAddToContactsOffer: Bool? = nil
+        let hasAddToProfileWhitelistOffer: Bool? = nil
+        let hasBlockOffer: Bool? = nil
+        let hasLegacyMessageState: Bool? = nil
+        let hasSyncedTranscript: Bool? = nil
+        let infoMessageSchemaVersion: UInt? = nil
+        let isFromLinkedDevice: Bool? = nil
+        let isLocalChange: Bool? = nil
+        let isVoiceMessage: Bool? = nil
+        let legacyMessageState: TSOutgoingMessageState? = nil
+        let legacyWasDelivered: Bool? = nil
+        let linkPreview: Data? = nil
+        let messageId: String? = nil
+        let messageSticker: Data? = nil
+        let messageType: TSInfoMessageType? = nil
+        let mostRecentFailureText: String? = nil
+        let preKeyBundle: Data? = nil
+        let quotedMessage: Data? = nil
+        let read: Bool? = nil
+        let recipientId: String? = nil
+        let recipientStateMap: Data? = nil
+        let schemaVersion: UInt? = nil
+        let serverTimestamp: UInt64? = nil
+        let sourceDeviceId: UInt32? = nil
+        let unregisteredRecipientId: String? = nil
+        let verificationState: OWSVerificationState? = nil
+        let wasReceivedByUD: Bool? = nil
+
+        return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentFilenameMap: attachmentFilenameMap, attachmentIds: attachmentIds, authorId: authorId, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, ephemeralMessage: ephemeralMessage, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, quotedMessage: quotedMessage, read: read, recipientId: recipientId, recipientStateMap: recipientStateMap, schemaVersion: schemaVersion, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, unregisteredRecipientId: unregisteredRecipientId, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
+    }
+
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
         return TSInteractionSerializer.table
     }
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
-
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.interaction.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
-        }
-        return result
-    }
-
     public func updateColumnNames() -> [String] {
         return [
+            TSInteractionSerializer.idColumn,
             TSInteractionSerializer.receivedAtTimestampColumn,
             TSInteractionSerializer.timestampColumn,
             TSInteractionSerializer.uniqueThreadIdColumn
             ].map { $0.columnName }
-    }
-
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.receivedAtTimestamp,
-            self.model.timestamp,
-            self.model.uniqueThreadId
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
     }
 
     public func uniqueIdColumnName() -> String {

@@ -11,10 +11,10 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct JobRecordRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct JobRecordRecord: SDSRecord {
     public static let databaseTableName: String = SSKJobRecordSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -52,7 +52,6 @@ public struct JobRecordRecord: Codable, FetchableRecord, PersistableRecord, Tabl
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -75,59 +74,78 @@ extension SSKJobRecord {
     // the corresponding model class.
     class func fromRecord(_ record: JobRecordRecord) throws -> SSKJobRecord {
 
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
+
         switch record.recordType {
         case .sessionResetJobRecord:
 
             let uniqueId: String = record.uniqueId
             let failureCount: UInt = record.failureCount
             let label: String = record.label
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let status: SSKJobRecordStatus = record.status
             let contactThreadId: String = try SDSDeserialization.required(record.contactThreadId, name: "contactThreadId")
 
-            return OWSSessionResetJobRecord(uniqueId: uniqueId,
-                                            failureCount: failureCount,
-                                            label: label,
-                                            sortId: sortId,
-                                            status: status,
-                                            contactThreadId: contactThreadId)
+            let model = OWSSessionResetJobRecord(uniqueId: uniqueId,
+                                                 failureCount: failureCount,
+                                                 label: label,
+                                                 sortId: sortId,
+                                                 status: status,
+                                                 contactThreadId: contactThreadId)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .jobRecord:
 
             let uniqueId: String = record.uniqueId
             let failureCount: UInt = record.failureCount
             let label: String = record.label
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let status: SSKJobRecordStatus = record.status
 
-            return SSKJobRecord(uniqueId: uniqueId,
-                                failureCount: failureCount,
-                                label: label,
-                                sortId: sortId,
-                                status: status)
+            let model = SSKJobRecord(uniqueId: uniqueId,
+                                     failureCount: failureCount,
+                                     label: label,
+                                     sortId: sortId,
+                                     status: status)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .messageDecryptJobRecord:
 
             let uniqueId: String = record.uniqueId
             let failureCount: UInt = record.failureCount
             let label: String = record.label
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let status: SSKJobRecordStatus = record.status
             let envelopeData: Data? = SDSDeserialization.optionalData(record.envelopeData, name: "envelopeData")
 
-            return SSKMessageDecryptJobRecord(uniqueId: uniqueId,
-                                              failureCount: failureCount,
-                                              label: label,
-                                              sortId: sortId,
-                                              status: status,
-                                              envelopeData: envelopeData)
+            let model = SSKMessageDecryptJobRecord(uniqueId: uniqueId,
+                                                   failureCount: failureCount,
+                                                   label: label,
+                                                   sortId: sortId,
+                                                   status: status,
+                                                   envelopeData: envelopeData)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         case .messageSenderJobRecord:
 
             let uniqueId: String = record.uniqueId
             let failureCount: UInt = record.failureCount
             let label: String = record.label
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let status: SSKJobRecordStatus = record.status
             let invisibleMessageSerialized: Data? = record.invisibleMessage
             let invisibleMessage: TSOutgoingMessage? = try SDSDeserialization.optionalUnarchive(invisibleMessageSerialized, name: "invisibleMessage")
@@ -135,15 +153,20 @@ extension SSKJobRecord {
             let removeMessageAfterSending: Bool = try SDSDeserialization.required(record.removeMessageAfterSending, name: "removeMessageAfterSending")
             let threadId: String? = record.threadId
 
-            return SSKMessageSenderJobRecord(uniqueId: uniqueId,
-                                             failureCount: failureCount,
-                                             label: label,
-                                             sortId: sortId,
-                                             status: status,
-                                             invisibleMessage: invisibleMessage,
-                                             messageId: messageId,
-                                             removeMessageAfterSending: removeMessageAfterSending,
-                                             threadId: threadId)
+            let model = SSKMessageSenderJobRecord(uniqueId: uniqueId,
+                                                  failureCount: failureCount,
+                                                  label: label,
+                                                  sortId: sortId,
+                                                  status: status,
+                                                  invisibleMessage: invisibleMessage,
+                                                  messageId: messageId,
+                                                  removeMessageAfterSending: removeMessageAfterSending,
+                                                  threadId: threadId)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -171,6 +194,25 @@ extension SSKJobRecord: SDSSerializable {
             return OWSSessionResetJobRecordSerializer(model: model)
         default:
             return SSKJobRecordSerializer(model: self)
+        }
+    }
+
+    public func asRecord(forUpdate: Bool) throws -> JobRecordRecord {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        switch self {
+        case let model as SSKMessageSenderJobRecord:
+            assert(type(of: model) == SSKMessageSenderJobRecord.self)
+            return try SSKMessageSenderJobRecordSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as SSKMessageDecryptJobRecord:
+            assert(type(of: model) == SSKMessageDecryptJobRecord.self)
+            return try SSKMessageDecryptJobRecordSerializer(model: model).toRecord(forUpdate: forUpdate)
+        case let model as OWSSessionResetJobRecord:
+            assert(type(of: model) == OWSSessionResetJobRecord.self)
+            return try OWSSessionResetJobRecordSerializer(model: model).toRecord(forUpdate: forUpdate)
+        default:
+            return try SSKJobRecordSerializer(model: self).toRecord(forUpdate: forUpdate)
         }
     }
 }
@@ -218,12 +260,43 @@ extension SSKJobRecordSerializer {
 
 @objc
 extension SSKJobRecord {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
+            do {
+                let database = grdbTransaction.database
+                var record = try asRecord(forUpdate: false)
+                try record.insert(database)
+
+                guard self.grdbId == nil else {
+                    owsFailDebug("Model unexpectedly already has grdbId.")
+                    return
+                }
+                guard let grdbId = record.id else {
+                    owsFailDebug("Record missing grdbId.")
+                    return
+                }
+                self.grdbId = NSNumber(value: grdbId)
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
+        }
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            save(with: ydbTransaction)
+        case .grdbWrite(let grdbTransaction):
+            do {
+                let database = grdbTransaction.database
+                let record = try asRecord(forUpdate: true)
+                try record.update(database, columns: serializer.updateColumnNames())
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
         }
     }
 
@@ -251,21 +324,22 @@ extension SSKJobRecord {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (SSKJobRecord) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (SSKJobRecord) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -443,56 +517,51 @@ class SSKJobRecordSerializer: SDSSerializer {
         self.model = model
     }
 
+    // MARK: - Record
+
+    func toRecord(forUpdate: Bool) throws -> JobRecordRecord {
+        var id: Int64?
+        if forUpdate {
+            guard let grdbId: NSNumber = model.grdbId else {
+                owsFailDebug("Model is missing grdbId.")
+                throw SDSError.missingRequiredField
+            }
+            id = grdbId.int64Value
+        }
+
+        let recordType: SDSRecordType = .jobRecord
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
+        }
+
+        // Base class properties
+        let failureCount: UInt = model.failureCount
+        let label: String = model.label
+        let status: SSKJobRecordStatus = model.status
+
+        // Subclass properties
+        let contactThreadId: String? = nil
+        let envelopeData: Data? = nil
+        let invisibleMessage: Data? = nil
+        let messageId: String? = nil
+        let removeMessageAfterSending: Bool? = nil
+        let threadId: String? = nil
+
+        return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
+    }
+
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
         return SSKJobRecordSerializer.table
     }
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            SSKJobRecordSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
-
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.jobRecord.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
-        }
-        return result
-    }
-
     public func updateColumnNames() -> [String] {
         return [
+            SSKJobRecordSerializer.idColumn,
             SSKJobRecordSerializer.failureCountColumn,
             SSKJobRecordSerializer.labelColumn,
             SSKJobRecordSerializer.statusColumn
             ].map { $0.columnName }
-    }
-
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.failureCount,
-            self.model.label,
-            self.model.status.rawValue
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
     }
 
     public func uniqueIdColumnName() -> String {

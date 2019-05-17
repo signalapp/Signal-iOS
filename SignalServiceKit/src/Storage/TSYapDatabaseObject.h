@@ -13,8 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TSYapDatabaseObject : MTLModel
 
-@property (nonatomic, nullable) NSNumber *grdbId;
-
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 /**

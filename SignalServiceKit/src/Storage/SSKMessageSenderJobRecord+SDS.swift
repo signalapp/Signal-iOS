@@ -20,37 +20,47 @@ class SSKMessageSenderJobRecordSerializer: SDSSerializer {
         self.model = model
     }
 
+    // MARK: - Record
+
+    func toRecord(forUpdate: Bool) throws -> JobRecordRecord {
+        var id: Int64?
+        if forUpdate {
+            guard let grdbId: NSNumber = model.grdbId else {
+                owsFailDebug("Model is missing grdbId.")
+                throw SDSError.missingRequiredField
+            }
+            id = grdbId.int64Value
+        }
+
+        let recordType: SDSRecordType = .messageSenderJobRecord
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
+        }
+
+        // Base class properties
+        let failureCount: UInt = model.failureCount
+        let label: String = model.label
+        let status: SSKJobRecordStatus = model.status
+
+        // Subclass properties
+        let contactThreadId: String? = nil
+        let envelopeData: Data? = nil
+        let invisibleMessage: Data? = optionalArchive(model.invisibleMessage)
+        let messageId: String? = model.messageId
+        let removeMessageAfterSending: Bool? = model.removeMessageAfterSending
+        let threadId: String? = model.threadId
+
+        return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
+    }
+
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
         return SSKJobRecordSerializer.table
     }
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            SSKJobRecordSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
-
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.messageSenderJobRecord.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
-        }
-        return result
-    }
-
     public func updateColumnNames() -> [String] {
         return [
+            SSKJobRecordSerializer.idColumn,
             SSKJobRecordSerializer.failureCountColumn,
             SSKJobRecordSerializer.labelColumn,
             SSKJobRecordSerializer.statusColumn,
@@ -59,25 +69,6 @@ class SSKMessageSenderJobRecordSerializer: SDSSerializer {
             SSKJobRecordSerializer.removeMessageAfterSendingColumn,
             SSKJobRecordSerializer.threadIdColumn
             ].map { $0.columnName }
-    }
-
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.failureCount,
-            self.model.label,
-            self.model.status.rawValue,
-            SDSDeserializer.archive(self.model.invisibleMessage) ?? DatabaseValue.null,
-            self.model.messageId ?? DatabaseValue.null,
-            self.model.removeMessageAfterSending,
-            self.model.threadId ?? DatabaseValue.null
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
     }
 
     public func uniqueIdColumnName() -> String {

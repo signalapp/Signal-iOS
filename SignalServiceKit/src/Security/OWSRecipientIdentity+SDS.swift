@@ -11,10 +11,10 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct RecipientIdentityRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct RecipientIdentityRecord: SDSRecord {
     public static let databaseTableName: String = OWSRecipientIdentitySerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -42,7 +42,6 @@ public struct RecipientIdentityRecord: Codable, FetchableRecord, PersistableReco
     public static func columnName(_ column: RecipientIdentityRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -65,6 +64,10 @@ extension OWSRecipientIdentity {
     // the corresponding model class.
     class func fromRecord(_ record: RecipientIdentityRecord) throws -> OWSRecipientIdentity {
 
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
+
         switch record.recordType {
         case .recipientIdentity:
 
@@ -75,12 +78,17 @@ extension OWSRecipientIdentity {
             let recipientId: String = record.recipientId
             let verificationState: OWSVerificationState = record.verificationState
 
-            return OWSRecipientIdentity(uniqueId: uniqueId,
-                                        createdAt: createdAt,
-                                        identityKey: identityKey,
-                                        isFirstKnownKey: isFirstKnownKey,
-                                        recipientId: recipientId,
-                                        verificationState: verificationState)
+            let model = OWSRecipientIdentity(uniqueId: uniqueId,
+                                             createdAt: createdAt,
+                                             identityKey: identityKey,
+                                             isFirstKnownKey: isFirstKnownKey,
+                                             recipientId: recipientId,
+                                             verificationState: verificationState)
+
+            if let grdbId = record.id {
+                model.grdbId = NSNumber(value: grdbId)
+            }
+            return model
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -99,6 +107,16 @@ extension OWSRecipientIdentity: SDSSerializable {
         switch self {
         default:
             return OWSRecipientIdentitySerializer(model: self)
+        }
+    }
+
+    public func asRecord(forUpdate: Bool) throws -> RecipientIdentityRecord {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        switch self {
+        default:
+            return try OWSRecipientIdentitySerializer(model: self).toRecord(forUpdate: forUpdate)
         }
     }
 }
@@ -137,12 +155,43 @@ extension OWSRecipientIdentitySerializer {
 
 @objc
 extension OWSRecipientIdentity {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
+            do {
+                let database = grdbTransaction.database
+                var record = try asRecord(forUpdate: false)
+                try record.insert(database)
+
+                guard self.grdbId == nil else {
+                    owsFailDebug("Model unexpectedly already has grdbId.")
+                    return
+                }
+                guard let grdbId = record.id else {
+                    owsFailDebug("Record missing grdbId.")
+                    return
+                }
+                self.grdbId = NSNumber(value: grdbId)
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
+        }
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            save(with: ydbTransaction)
+        case .grdbWrite(let grdbTransaction):
+            do {
+                let database = grdbTransaction.database
+                let record = try asRecord(forUpdate: true)
+                try record.update(database, columns: serializer.updateColumnNames())
+            } catch {
+                owsFail("Write failed: \(error)")
+            }
         }
     }
 
@@ -170,21 +219,22 @@ extension OWSRecipientIdentity {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (OWSRecipientIdentity) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSRecipientIdentity) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -362,60 +412,47 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
         self.model = model
     }
 
+    // MARK: - Record
+
+    func toRecord(forUpdate: Bool) throws -> RecipientIdentityRecord {
+        var id: Int64?
+        if forUpdate {
+            guard let grdbId: NSNumber = model.grdbId else {
+                owsFailDebug("Model is missing grdbId.")
+                throw SDSError.missingRequiredField
+            }
+            id = grdbId.int64Value
+        }
+
+        let recordType: SDSRecordType = .recipientIdentity
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
+        }
+
+        // Base class properties
+        let createdAt: Date = model.createdAt
+        let identityKey: Data = model.identityKey
+        let isFirstKnownKey: Bool = model.isFirstKnownKey
+        let recipientId: String = model.recipientId
+        let verificationState: OWSVerificationState = model.verificationState
+
+        return RecipientIdentityRecord(id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, identityKey: identityKey, isFirstKnownKey: isFirstKnownKey, recipientId: recipientId, verificationState: verificationState)
+    }
+
     public func serializableColumnTableMetadata() -> SDSTableMetadata {
         return OWSRecipientIdentitySerializer.table
     }
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            OWSRecipientIdentitySerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
-
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.recipientIdentity.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
-        }
-        return result
-    }
-
     public func updateColumnNames() -> [String] {
         return [
+            OWSRecipientIdentitySerializer.idColumn,
             OWSRecipientIdentitySerializer.createdAtColumn,
             OWSRecipientIdentitySerializer.identityKeyColumn,
             OWSRecipientIdentitySerializer.isFirstKnownKeyColumn,
             OWSRecipientIdentitySerializer.recipientIdColumn,
             OWSRecipientIdentitySerializer.verificationStateColumn
             ].map { $0.columnName }
-    }
-
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.createdAt,
-            self.model.identityKey,
-            self.model.isFirstKnownKey,
-            self.model.recipientId,
-            self.model.verificationState.rawValue
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
     }
 
     public func uniqueIdColumnName() -> String {
