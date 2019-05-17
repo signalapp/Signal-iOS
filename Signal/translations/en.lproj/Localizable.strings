@@ -2345,12 +2345,6 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "None";
 
-/* Label for the 'share to contacts' section in sticker views. */
-"STICKER_PACK_SHARE_TO_CONTACT_SECTION" = "Share to Contact";
-
-/* Label for the 'share to phone number' section in sticker views. */
-"STICKER_PACK_SHARE_TO_PHONE_NUMBER_SECTION" = "Share to Phone Number";
-
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Sticker pack installed";
 
@@ -2494,9 +2488,6 @@
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
-
-/* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Learn more in your privacy settings.";
 
 /* Body text for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Why use words when you can use stickers? Tap this icon on your keyboard:";
