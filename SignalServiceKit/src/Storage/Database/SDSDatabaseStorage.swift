@@ -8,9 +8,10 @@ import GRDBCipher
 @objc
 public class SDSDatabaseStorage: NSObject {
 
-    // TODO hoist to environment
     @objc
-    public static let shared: SDSDatabaseStorage = SDSDatabaseStorage()
+    public static var shared: SDSDatabaseStorage {
+        return SSKEnvironment.shared.databaseStorage
+    }
 
     static public var shouldLogDBQueries: Bool = false
 

@@ -37,6 +37,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
 @property (nonatomic) StickerManager *stickerManager;
+@property (nonatomic) SDSDatabaseStorage *databaseStorage;
 
 @end
 
@@ -78,6 +79,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                        typingIndicators:(id<OWSTypingIndicators>)typingIndicators
                     attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads
                          stickerManager:(StickerManager *)stickerManager
+                        databaseStorage:(SDSDatabaseStorage *)databaseStorage
 {
     self = [super init];
     if (!self) {
@@ -111,6 +113,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(typingIndicators);
     OWSAssertDebug(attachmentDownloads);
     OWSAssertDebug(stickerManager);
+    OWSAssertDebug(databaseStorage);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -139,6 +142,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _typingIndicators = typingIndicators;
     _attachmentDownloads = attachmentDownloads;
     _stickerManager = stickerManager;
+    _databaseStorage = databaseStorage;
 
     return self;
 }
