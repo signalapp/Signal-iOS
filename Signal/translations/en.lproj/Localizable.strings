@@ -701,6 +701,27 @@
 /* The day before today. */
 "DATE_YESTERDAY" = "Yesterday";
 
+/* The day Sunday abbreviated to the first 3 letters. */
+"DATE_SUNDAY_ABBREVIATED" = "Sun";
+
+/* The day Monday abbreviated to the first 3 letters. */
+"DATE_MONDAY_ABBREVIATED" = "Mon";
+
+/* The day Tuesday abbreviated to the first 3 letters. */
+"DATE_TUESDAY_ABBREVIATED" = "Tue";
+
+/* The day Wednesday abbreviated to the first 3 letters. */
+"DATE_WEDNESDAY_ABBREVIATED" = "Wed";
+
+/* The day Thursday abbreviated to the first 3 letters. */
+"DATE_THURSDAY_ABBREVIATED" = "Thu";
+
+/* The day Friday abbreviated to the first 3 letters. */
+"DATE_FRIDAY_ABBREVIATED" = "Fri";
+
+/* The day Saterday abbreviated to the first 3 letters. */
+"DATE_SATERDAY_ABBREVIATED" = "Sat";
+
 /* Error indicating that the debug logs could not be copied. */
 "DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
 
