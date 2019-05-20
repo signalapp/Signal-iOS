@@ -51,6 +51,7 @@
 #import "TSQuotedMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/NSObject.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
@@ -1475,7 +1476,10 @@ NS_ASSUME_NONNULL_BEGIN
             // we can end up in a deadlock where both users' threads' friend request statuses are
             // TSThreadFriendRequestStatusRequestSent.
             [thread saveFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
-            [message saveFriendRequestStatus:TSMessageFriendRequestStatusAccepted withTransaction:transaction];
+            TSOutgoingMessage *existingFriendRequestMessage = (TSOutgoingMessage *)[thread.lastInteraction as:TSOutgoingMessage.class];
+            if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
+                [existingFriendRequestMessage saveFriendRequestStatus:TSMessageFriendRequestStatusAccepted withTransaction:transaction];
+            }
             // The two lines below are equivalent to calling [ThreadUtil enqueueAcceptFriendRequestMessageInThread:thread]
             OWSEphemeralMessage *emptyMessage = [OWSEphemeralMessage createEmptyOutgoingMessageInThread:thread];
             [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
@@ -1486,13 +1490,16 @@ NS_ASSUME_NONNULL_BEGIN
             // request. Alice's thread's friend request status is reset to
             // TSThreadFriendRequestStatusRequestReceived.
             [thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestReceived withTransaction:transaction];
-            [message saveFriendRequestStatus:TSMessageFriendRequestStatusPending withTransaction:transaction];
+            message.friendRequestStatus = TSMessageFriendRequestStatusPending; // Don't save yet. This is done in finalizeIncomingMessage:thread:envelope:transaction.
         }
     } else if (!thread.isContactFriend) {
         // If the thread's friend request status is not TSThreadFriendRequestStatusFriends, but we're receiving a message,
         // it must be a friend request accepted message. Declining a friend request doesn't send a message.
         [thread saveFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
-        [message saveFriendRequestStatus:TSMessageFriendRequestStatusAccepted withTransaction:transaction];
+        TSOutgoingMessage *existingFriendRequestMessage = (TSOutgoingMessage *)[thread.lastInteraction as:TSOutgoingMessage.class];
+        if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
+            [existingFriendRequestMessage saveFriendRequestStatus:TSMessageFriendRequestStatusAccepted withTransaction:transaction];
+        }
     }
 }
 

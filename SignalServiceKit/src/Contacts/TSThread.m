@@ -281,6 +281,16 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     }];
 }
 
+- (TSInteraction *)lastInteraction
+{
+    __block TSInteraction *interaction;
+    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        YapDatabaseViewTransaction *interactions = [transaction ext:TSMessageDatabaseViewExtensionName];
+        interaction = [interactions lastObjectInGroup:self.uniqueId];
+    }];
+    return interaction;
+}
+
 /**
  * Useful for tests and debugging. In production use an enumeration method.
  */

@@ -53,6 +53,7 @@ typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
+@property (nonatomic, readonly) TSInteraction *lastInteraction;
 // Loki friend request handling
 // ========
 @property (nonatomic) TSThreadFriendRequestStatus friendRequestStatus;
