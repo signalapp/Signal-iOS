@@ -111,6 +111,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                     contactShare:(nullable OWSContact *)contactShare
+                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
@@ -138,6 +139,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                      attachmentIds:attachmentIds
                               body:body
                       contactShare:contactShare
+                  ephemeralMessage:ephemeralMessage
                    expireStartedAt:expireStartedAt
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
@@ -310,7 +312,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                         expiresInSeconds:0
                            quotedMessage:nil
                              linkPreview:nil
-                          messageSticker:nil];
+                          messageSticker:nil
+                        ephemeralMessage:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -324,7 +327,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                         expiresInSeconds:expiresInSeconds
                            quotedMessage:nil
                              linkPreview:nil
-                          messageSticker:nil];
+                          messageSticker:nil
+                        ephemeralMessage:nil];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -334,6 +338,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             linkPreview:(nullable OWSLinkPreview *)linkPreview
                          messageSticker:(nullable MessageSticker *)messageSticker
+                       ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
 {
     NSMutableArray<NSString *> *attachmentIds = [NSMutableArray new];
     if (attachmentId) {
@@ -352,7 +357,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                          quotedMessage:quotedMessage
                                                           contactShare:nil
                                                            linkPreview:linkPreview
-                                                        messageSticker:messageSticker];
+                                                        messageSticker:messageSticker
+                                                      ephemeralMessage:ephemeralMessage];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -371,7 +377,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                          quotedMessage:nil
                                                           contactShare:nil
                                                            linkPreview:nil
-                                                        messageSticker:nil];
+                                                        messageSticker:nil
+                                                      ephemeralMessage:nil];
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -386,6 +393,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
+                                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
 {
     self = [super initMessageWithTimestamp:timestamp
                                   inThread:thread
@@ -396,7 +404,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                              quotedMessage:quotedMessage
                               contactShare:contactShare
                                linkPreview:linkPreview
-                            messageSticker:messageSticker];
+                            messageSticker:messageSticker
+                          ephemeralMessage:ephemeralMessage];
     if (!self) {
         return self;
     }

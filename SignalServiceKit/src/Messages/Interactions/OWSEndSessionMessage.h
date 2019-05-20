@@ -20,7 +20,8 @@ NS_SWIFT_NAME(EndSessionMessage)
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
-                                  messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
+                                  messageSticker:(nullable MessageSticker *)messageSticker
+                                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage NS_UNAVAILABLE;
 
 // MJK TODO can we remove the sender timestamp?
 - (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread NS_DESIGNATED_INITIALIZER;

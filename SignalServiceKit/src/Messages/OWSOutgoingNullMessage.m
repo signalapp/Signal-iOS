@@ -36,7 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      quotedMessage:nil
                                       contactShare:nil
                                        linkPreview:nil
-                                    messageSticker:nil];
+                                    messageSticker:nil
+                                  ephemeralMessage:nil];
     if (!self) {
         return self;
     }

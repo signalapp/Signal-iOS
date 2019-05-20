@@ -47,6 +47,7 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                     contactShare:(nullable OWSContact *)contactShare
+                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
@@ -69,6 +70,7 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                      attachmentIds:attachmentIds
                               body:body
                       contactShare:contactShare
+                  ephemeralMessage:ephemeralMessage
                    expireStartedAt:expireStartedAt
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
