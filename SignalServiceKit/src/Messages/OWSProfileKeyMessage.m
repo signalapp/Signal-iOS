@@ -25,7 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      quotedMessage:nil
                                       contactShare:nil
                                        linkPreview:nil
-                                    messageSticker:nil];
+                                    messageSticker:nil
+                                  ephemeralMessage:nil];
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder

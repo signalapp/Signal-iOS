@@ -187,7 +187,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                                   ephemeralMessage:nil];
 
     [BenchManager
         benchAsyncWithTitle:@"Saving outgoing message"
@@ -202,7 +203,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                       [self linkPreviewForLinkPreviewDraft:linkPreviewDraft
                                                                transaction:writeTransaction];
                                   if (linkPreview) {
-                                      [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
+                                      [message updateWithLinkPreview:linkPreview
+                                                         transaction:writeTransaction.asAnyWrite];
                                   }
 
                                   NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
@@ -242,7 +244,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:nil
                                                        contactShare:contactShare
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                                   ephemeralMessage:nil];
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [message saveWithTransaction:transaction];
@@ -275,7 +278,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                                   ephemeralMessage:nil];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Load the sticker data async.
@@ -300,11 +304,56 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                 return;
             }
 
-            [message saveWithMessageSticker:messageSticker transaction:transaction];
+            [message saveWithTransaction:transaction];
+            [message updateWithMessageSticker:messageSticker transaction:transaction.asAnyWrite];
 
             [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
         }];
     });
+
+    return message;
+}
+
++ (TSOutgoingMessage *)enqueueMessageWithEphemeralMessage:(EphemeralMessageDraft *)ephemeralMessageDraft
+                                                 inThread:(TSThread *)thread
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(ephemeralMessageDraft);
+    OWSAssertDebug(thread);
+
+    OWSDisappearingMessagesConfiguration *configuration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
+
+    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
+
+    TSOutgoingMessage *message =
+        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                           inThread:thread
+                                                        messageBody:nil
+                                                      attachmentIds:[NSMutableArray new]
+                                                   expiresInSeconds:expiresInSeconds
+                                                    expireStartedAt:0
+                                                     isVoiceMessage:NO
+                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
+                                                      quotedMessage:nil
+                                                       contactShare:nil
+                                                        linkPreview:nil
+                                                     messageSticker:nil
+                                                   ephemeralMessage:nil];
+
+    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        EphemeralMessage *_Nullable ephemeralMessage =
+            [self ephemeralMessageForDraft:ephemeralMessageDraft transaction:transaction];
+        if (!ephemeralMessage) {
+            OWSFailDebug(@"Couldn't send ephemeral message.");
+            return;
+        }
+
+        [message saveWithTransaction:transaction];
+        [message updateWithEphemeralMessage:ephemeralMessage transaction:transaction.asAnyWrite];
+
+        [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
+    }];
 
     return message;
 }
@@ -422,7 +471,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:nil
                                                        contactShare:contactShare
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                                   ephemeralMessage:nil];
 
     [messageSender sendMessage:message
         success:^{
@@ -455,6 +505,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                                                         error:&linkPreviewError];
     if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
         OWSLogError(@"linkPreviewError: %@", linkPreviewError);
+        return nil;
     }
     return linkPreview;
 }
@@ -471,8 +522,26 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                         error:&error];
     if (error && ![MessageSticker isNoStickerError:error]) {
         OWSFailDebug(@"error: %@", error);
+        return nil;
     }
     return messageSticker;
+}
+
++ (nullable EphemeralMessage *)ephemeralMessageForDraft:(EphemeralMessageDraft *)ephemeralMessageDraft
+                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    NSError *error;
+    EphemeralMessage *_Nullable ephemeralMessage =
+        [EphemeralMessage buildValidatedEphemeralMessageFromDraft:ephemeralMessageDraft
+                                                      transaction:transaction.asAnyWrite
+                                                            error:&error];
+    if (error && ![EphemeralMessage isNoEphemeralMessageError:error]) {
+        OWSFailDebug(@"error: %@", error);
+        return nil;
+    }
+    return ephemeralMessage;
 }
 
 #pragma mark - Dynamic Interactions

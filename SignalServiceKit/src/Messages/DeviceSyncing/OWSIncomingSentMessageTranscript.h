@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class EphemeralMessage;
 @class MessageSticker;
 @class OWSContact;
 @class OWSLinkPreview;
@@ -39,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) OWSContact *contact;
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
+@property (nonatomic, readonly, nullable) EphemeralMessage *ephemeralMessage;
 @property (nonatomic, readonly) BOOL isRecipientUpdate;
 
 // If either nonUdRecipientIds or udRecipientIds is nil,

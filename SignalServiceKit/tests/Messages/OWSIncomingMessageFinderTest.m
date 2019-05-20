@@ -57,6 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                         contactShare:nil
                                                                                          linkPreview:nil
                                                                                       messageSticker:nil
+                                                                                    ephemeralMessage:nil
                                                                                      serverTimestamp:nil
                                                                                      wasReceivedByUD:NO];
     [incomingMessage save];

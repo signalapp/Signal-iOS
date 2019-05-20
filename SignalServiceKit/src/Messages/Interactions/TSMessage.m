@@ -52,6 +52,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @property (nonatomic, nullable) MessageSticker *messageSticker;
 
+@property (nonatomic, nullable) EphemeralMessage *ephemeralMessage;
+
 @end
 
 #pragma mark -
@@ -68,6 +70,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                             contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
                           messageSticker:(nullable MessageSticker *)messageSticker
+                        ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
@@ -86,6 +89,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _contactShare = contactShare;
     _linkPreview = linkPreview;
     _messageSticker = messageSticker;
+    _ephemeralMessage = ephemeralMessage;
 
     return self;
 }
@@ -104,6 +108,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                     contactShare:(nullable OWSContact *)contactShare
+                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
@@ -125,6 +130,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _attachmentIds = attachmentIds ? [attachmentIds mutableCopy] : [NSMutableArray new];
     _body = body;
     _contactShare = contactShare;
+    _ephemeralMessage = ephemeralMessage;
     _expireStartedAt = expireStartedAt;
     _expiresAt = expiresAt;
     _expiresInSeconds = expiresInSeconds;
@@ -270,6 +276,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (self.messageSticker.attachmentId) {
         [result addObject:self.messageSticker.attachmentId];
+    }
+
+    if (self.ephemeralMessage != nil) {
+        [result addObjectsFromArray:self.ephemeralMessage.attachmentIds];
     }
 
     // Use a set to de-duplicate the result.
@@ -451,14 +461,25 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         return [[self.contactShare.name.displayName rtlSafeAppend:@" "] rtlSafeAppend:@"👤"];
     } else if (self.messageSticker) {
         return [TSAttachment emojiForMimeType:OWSMimeTypeImageWebp];
-    } else {
-        if (transaction.transitional_yapReadTransaction) {
-            // some cases aren't yet handled by GRDB
-            OWSFailDebug(@"message has neither body nor attachment.");
+    } else if (self.ephemeralMessage != nil) {
+        for (NSString *attachmentId in self.ephemeralMessage.attachmentIds) {
+            if (transaction.transitional_yapReadTransaction) {
+                TSAttachment *_Nullable attachment =
+                    [TSAttachment fetchObjectWithUniqueID:attachmentId
+                                              transaction:transaction.transitional_yapReadTransaction];
+                if (attachment != nil && attachment.description.length > 0) {
+                    return attachment.description;
+                }
+            }
         }
-        // TODO: We should do better here.
-        return @"";
     }
+
+    if (transaction.transitional_yapReadTransaction) {
+        // some cases aren't yet handled by GRDB
+        OWSFailDebug(@"message has neither body nor attachment.");
+    }
+    // TODO: We should do better here.
+    return @"";
 }
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -539,35 +560,52 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(expireStartedAt > 0);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSMessage *message) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 TSMessage *message = (TSMessage *)interaction;
                                  [message setExpireStartedAt:expireStartedAt];
                              }];
 }
 
-- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(linkPreview);
     OWSAssertDebug(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSMessage *message) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 TSMessage *message = (TSMessage *)interaction;
                                  [message setLinkPreview:linkPreview];
                              }];
 }
 
-- (void)saveWithMessageSticker:(MessageSticker *)messageSticker
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSticker);
     OWSAssertDebug(transaction);
 
-    self.messageSticker = messageSticker;
-    [self saveWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 TSMessage *message = (TSMessage *)interaction;
+                                 message.messageSticker = messageSticker;
+                             }];
+}
+
+- (void)updateWithEphemeralMessage:(EphemeralMessage *)ephemeralMessage
+                       transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(ephemeralMessage);
+    OWSAssertDebug(transaction);
+
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 TSMessage *message = (TSMessage *)interaction;
+                                 [message setEphemeralMessage:ephemeralMessage];
+                             }];
 }
 
 @end

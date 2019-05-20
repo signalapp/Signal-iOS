@@ -71,4 +71,7 @@ public class FeatureFlags: NSObject {
     // Don't enable this flag until the Desktop changes have been in production for a while.
     @objc
     public static let strictSyncTranscriptTimestamps = false
+
+    @objc
+    public static let ephemeralMessageSend = true
 }

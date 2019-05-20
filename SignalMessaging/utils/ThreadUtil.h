@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class EphemeralMessageDraft;
 @class OWSBlockingManager;
 @class OWSContact;
 @class OWSContactsManager;
@@ -62,6 +63,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread;
 + (TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
++ (TSOutgoingMessage *)enqueueMessageWithEphemeralMessage:(EphemeralMessageDraft *)ephemeralMessageDraft
+                                                 inThread:(TSThread *)thread;
 
 #pragma mark - Non-Durable Sending
 
