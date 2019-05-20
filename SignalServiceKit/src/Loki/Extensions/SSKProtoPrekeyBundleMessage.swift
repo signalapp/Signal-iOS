@@ -16,13 +16,7 @@
     
     @objc public func createPreKeyBundle(withTransaction transaction: YapDatabaseReadWriteTransaction) -> PreKeyBundle? {
         let registrationId = TSAccountManager.sharedInstance().getOrGenerateRegistrationId(transaction)
-        return PreKeyBundle(registrationId: Int32(registrationId),
-                            deviceId: Int32(deviceID),
-                            preKeyId: Int32(prekeyID),
-                            preKeyPublic: prekey,
-                            signedPreKeyPublic: signedKey,
-                            signedPreKeyId: Int32(signedKeyID),
-                            signedPreKeySignature: signature,
-                            identityKey: identityKey)
+        return PreKeyBundle(registrationId: Int32(registrationId), deviceId: Int32(deviceID), preKeyId: Int32(prekeyID), preKeyPublic: prekey,
+            signedPreKeyPublic: signedKey, signedPreKeyId: Int32(signedKeyID), signedPreKeySignature: signature, identityKey: identityKey)
     }
 }

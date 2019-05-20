@@ -83,27 +83,22 @@
         switch kind {
         case .incoming:
             guard let message = message as? TSIncomingMessage else { preconditionFailure() }
-            buttonStackView.isHidden = didAcceptRequest || didDeclineRequest
-            let text: String = {
-                if didAcceptRequest {
-                    return String(format: NSLocalizedString("You've accepted %@'s friend request", comment: ""), message.authorId)
-                } else if didDeclineRequest {
-                    return String(format: NSLocalizedString("You've declined %@'s friend request", comment: ""), message.authorId)
-                } else {
-                    return String(format: NSLocalizedString("%@ sent you a friend request", comment: ""), message.authorId)
-                }
+            buttonStackView.isHidden = didAcceptRequest || didDeclineRequest || message.isFriendRequestExpired
+            let format: String = {
+                if didAcceptRequest { return NSLocalizedString("You've accepted %@'s friend request", comment: "") }
+                else if didDeclineRequest { return NSLocalizedString("You've declined %@'s friend request", comment: "") }
+                else if message.isFriendRequestExpired { return NSLocalizedString("%@'s friend request has expired", comment: "") }
+                else { return NSLocalizedString("%@ sent you a friend request", comment: "") }
             }()
-            label.text = text
+            label.text = String(format: format, message.authorId)
         case .outgoing:
             guard let message = message as? TSOutgoingMessage else { preconditionFailure() }
-            let text: String = {
-                if didAcceptRequest {
-                    return String(format: NSLocalizedString("%@ accepted your friend request", comment: ""), message.thread.contactIdentifier()!)
-                } else {
-                    return String(format: NSLocalizedString("You've sent %@ a friend request", comment: ""), message.thread.contactIdentifier()!)
-                }
+            let format: String = {
+                if didAcceptRequest { return NSLocalizedString("%@ accepted your friend request", comment: "") }
+                else if message.isFriendRequestExpired { return NSLocalizedString("Your friend request to %@ has expired", comment: "") }
+                else { return NSLocalizedString("You've sent %@ a friend request", comment: "") }
             }()
-            label.text = text
+            label.text = String(format: format, message.thread.contactIdentifier()!)
         }
     }
     
