@@ -200,6 +200,16 @@ typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
 
 - (void)saveFriendRequestStatus:(TSThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
+/**
+ Remove any outgoing friend request message which failed to send
+ */
+- (void)removeOutgoingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+/**
+ Remove any old incoming friend request message that is still pending
+ */
+- (void)removeIncomingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -698,6 +698,49 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 #pragma mark - Loki Friend Request Handling
 
+- (void)removeOutgoingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self removeFriendRequestMessages:false withTransaction:transaction];
+}
+
+- (void)removeIncomingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self removeFriendRequestMessages:true withTransaction:transaction];
+}
+
+- (void)removeFriendRequestMessages:(BOOL)incoming withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    // If we're friends with the person then we don't need to remove any friend request messages
+    if (self.friendRequestStatus == TSThreadFriendRequestStatusFriends) {
+        return;
+    }
+    
+    OWSInteractionType interactionType = incoming ? OWSInteractionType_IncomingMessage : OWSInteractionType_OutgoingMessage;
+    
+    [self enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction * _Nonnull interaction, YapDatabaseReadTransaction * _Nonnull transaction) {
+        if (interaction.interactionType != interactionType) {
+            return;
+        }
+        
+        BOOL removeMessage = false;
+        TSMessage *message = (TSMessage *)interaction;
+        
+        // We want to remove any old incoming friend request messages
+        if (interactionType == OWSInteractionType_IncomingMessage) {
+            removeMessage = message.isFriendRequest;
+        } else {
+            // Or if we're sending then remove any failed friend request messages
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
+            removeMessage = outgoingMessage.messageState == TSOutgoingMessageStateFailed;
+        }
+        
+        if (removeMessage) {
+            [interaction removeWithTransaction:transaction];
+        }
+        
+    }];
+}
+
 - (void)saveFriendRequestStatus:(TSThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
     self.friendRequestStatus = friendRequestStatus;

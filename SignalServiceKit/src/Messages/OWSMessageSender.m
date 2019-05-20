@@ -1118,12 +1118,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Loki
             // ========
             if (messageType == TSFriendRequestMessageType) {
-                [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:nil];
-                
-                // We also want to expire the message after 72 hours
-                NSTimeInterval expireTimeInterval = 72 * kHourInterval;
-                NSDate *expireDate = [[NSDate new] dateByAddingTimeInterval:expireTimeInterval];
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:transaction];
+                    [message.thread removeOutgoingFriendRequestMessagesWithTransaction:transaction];
+                    
+                    // We also want to expire the message after 72 hours
+                    NSTimeInterval expireTimeInterval = 72 * kHourInterval;
+                    NSDate *expireDate = [[NSDate new] dateByAddingTimeInterval:expireTimeInterval];
                     [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expireDate] withTransaction:transaction];
                 }];
             }
