@@ -703,12 +703,15 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     self.friendRequestStatus = friendRequestStatus;
     if (transaction == nil) {
         [self save];
+        [self.dbReadWriteConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{
+            [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.threadFriendRequestStatusChanged object:self.uniqueId];
+        }];
     } else {
         [self saveWithTransaction:transaction];
+        [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{
+            [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.threadFriendRequestStatusChanged object:self.uniqueId];
+        }];
     }
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [NSNotificationCenter.defaultCenter postNotificationName:@"threadFriendRequestStatusChanged" object:self.uniqueId];
-    });
 }
 
 - (BOOL)hasPendingFriendRequest

@@ -407,7 +407,7 @@ typedef enum : NSUInteger {
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleThreadFriendRequestStatusChangedNotification:)
-                                                 name:@"threadFriendRequestStatusChanged"
+                                                 name:NSNotification.threadFriendRequestStatusChanged
                                                object:nil];
 }
 
@@ -474,7 +474,12 @@ typedef enum : NSUInteger {
 
 - (void)handleThreadFriendRequestStatusChangedNotification:(NSNotification *)notification
 {
+    // Check thread
+    NSString *threadID = (NSString *)notification.object;
+    if (![threadID isEqualToString:self.thread.uniqueId]) { return; }
+    // Ensure thread instance is up to date
     [self.thread reload];
+    // Update UI
     [self.viewItems.lastObject clearCachedLayoutState]; // Presumably a cell with a friend request view
     [self resetContentAndLayout];
     [self updateInputToolbar];
