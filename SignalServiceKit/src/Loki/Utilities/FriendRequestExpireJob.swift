@@ -150,7 +150,6 @@ public class FriendRequestExpireJob: NSObject {
                     guard message.thread.friendRequestStatus == .requestSent else {
                         // Set message to not expire, so our other logic works correctly
                         message.saveFriendRequestExpires(at: 0, with: transaction)
-                        message.saveIsFriendRequestExpired(true, with: transaction)
                         return;
                     }
                     
