@@ -12,6 +12,10 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct DatabaseMigrationRecord: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return OWSDatabaseMigrationSerializer.table
+    }
+
     public static let databaseTableName: String = OWSDatabaseMigrationSerializer.table.tableName
 
     public var id: Int64?
@@ -61,122 +65,67 @@ extension OWSDatabaseMigration {
 
             let uniqueId: String = record.uniqueId
 
-            let model = OWS100RemoveTSRecipientsMigration(uniqueId: uniqueId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWS100RemoveTSRecipientsMigration(uniqueId: uniqueId)
 
         case ._101ExistingUsersBlockOnIdentityChange:
 
             let uniqueId: String = record.uniqueId
 
-            let model = OWS101ExistingUsersBlockOnIdentityChange(uniqueId: uniqueId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWS101ExistingUsersBlockOnIdentityChange(uniqueId: uniqueId)
 
         case ._102MoveLoggingPreferenceToUserDefaults:
 
             let uniqueId: String = record.uniqueId
 
-            let model = OWS102MoveLoggingPreferenceToUserDefaults(uniqueId: uniqueId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWS102MoveLoggingPreferenceToUserDefaults(uniqueId: uniqueId)
 
         case ._103EnableVideoCalling:
 
             let uniqueId: String = record.uniqueId
 
-            let model = OWS103EnableVideoCalling(uniqueId: uniqueId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWS103EnableVideoCalling(uniqueId: uniqueId)
 
         case ._104CreateRecipientIdentities:
 
             let uniqueId: String = record.uniqueId
 
-            let model = OWS104CreateRecipientIdentities(uniqueId: uniqueId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWS104CreateRecipientIdentities(uniqueId: uniqueId)
 
         case ._105AttachmentFilePaths:
 
             let uniqueId: String = record.uniqueId
 
-            let model = OWS105AttachmentFilePaths(uniqueId: uniqueId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWS105AttachmentFilePaths(uniqueId: uniqueId)
 
         case ._107LegacySounds:
 
             let uniqueId: String = record.uniqueId
 
-            let model = OWS107LegacySounds(uniqueId: uniqueId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWS107LegacySounds(uniqueId: uniqueId)
 
         case ._108CallLoggingPreference:
 
             let uniqueId: String = record.uniqueId
 
-            let model = OWS108CallLoggingPreference(uniqueId: uniqueId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWS108CallLoggingPreference(uniqueId: uniqueId)
 
         case ._109OutgoingMessageState:
 
             let uniqueId: String = record.uniqueId
 
-            let model = OWS109OutgoingMessageState(uniqueId: uniqueId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWS109OutgoingMessageState(uniqueId: uniqueId)
 
         case .databaseMigration:
 
             let uniqueId: String = record.uniqueId
 
-            let model = OWSDatabaseMigration(uniqueId: uniqueId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWSDatabaseMigration(uniqueId: uniqueId)
 
         case .resaveCollectionDBMigration:
 
             let uniqueId: String = record.uniqueId
 
-            let model = OWSResaveCollectionDBMigration(uniqueId: uniqueId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWSResaveCollectionDBMigration(uniqueId: uniqueId)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -228,43 +177,43 @@ extension OWSDatabaseMigration: SDSSerializable {
         }
     }
 
-    public func asRecord(forUpdate: Bool) throws -> DatabaseMigrationRecord {
+    public func asRecord() throws -> DatabaseMigrationRecord {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
         case let model as OWS109OutgoingMessageState:
             assert(type(of: model) == OWS109OutgoingMessageState.self)
-            return try OWS109OutgoingMessageStateSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try OWS109OutgoingMessageStateSerializer(model: model).toRecord()
         case let model as OWSResaveCollectionDBMigration:
             assert(type(of: model) == OWSResaveCollectionDBMigration.self)
-            return try OWSResaveCollectionDBMigrationSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try OWSResaveCollectionDBMigrationSerializer(model: model).toRecord()
         case let model as OWS108CallLoggingPreference:
             assert(type(of: model) == OWS108CallLoggingPreference.self)
-            return try OWS108CallLoggingPreferenceSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try OWS108CallLoggingPreferenceSerializer(model: model).toRecord()
         case let model as OWS107LegacySounds:
             assert(type(of: model) == OWS107LegacySounds.self)
-            return try OWS107LegacySoundsSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try OWS107LegacySoundsSerializer(model: model).toRecord()
         case let model as OWS105AttachmentFilePaths:
             assert(type(of: model) == OWS105AttachmentFilePaths.self)
-            return try OWS105AttachmentFilePathsSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try OWS105AttachmentFilePathsSerializer(model: model).toRecord()
         case let model as OWS104CreateRecipientIdentities:
             assert(type(of: model) == OWS104CreateRecipientIdentities.self)
-            return try OWS104CreateRecipientIdentitiesSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try OWS104CreateRecipientIdentitiesSerializer(model: model).toRecord()
         case let model as OWS103EnableVideoCalling:
             assert(type(of: model) == OWS103EnableVideoCalling.self)
-            return try OWS103EnableVideoCallingSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try OWS103EnableVideoCallingSerializer(model: model).toRecord()
         case let model as OWS102MoveLoggingPreferenceToUserDefaults:
             assert(type(of: model) == OWS102MoveLoggingPreferenceToUserDefaults.self)
-            return try OWS102MoveLoggingPreferenceToUserDefaultsSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try OWS102MoveLoggingPreferenceToUserDefaultsSerializer(model: model).toRecord()
         case let model as OWS101ExistingUsersBlockOnIdentityChange:
             assert(type(of: model) == OWS101ExistingUsersBlockOnIdentityChange.self)
-            return try OWS101ExistingUsersBlockOnIdentityChangeSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try OWS101ExistingUsersBlockOnIdentityChangeSerializer(model: model).toRecord()
         case let model as OWS100RemoveTSRecipientsMigration:
             assert(type(of: model) == OWS100RemoveTSRecipientsMigration.self)
-            return try OWS100RemoveTSRecipientsMigrationSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try OWS100RemoveTSRecipientsMigrationSerializer(model: model).toRecord()
         default:
-            return try OWSDatabaseMigrationSerializer(model: self).toRecord(forUpdate: forUpdate)
+            return try OWSDatabaseMigrationSerializer(model: self).toRecord()
         }
     }
 }
@@ -290,46 +239,36 @@ extension OWSDatabaseMigrationSerializer {
 
 // MARK: - Save/Remove/Update
 
-@objc
-extension OWSDatabaseMigration {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+fileprivate extension OWSDatabaseMigration {
+    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
-                let database = grdbTransaction.database
-                var record = try asRecord(forUpdate: false)
-                try record.insert(database)
-
-                guard self.grdbId == nil else {
-                    owsFailDebug("Model unexpectedly already has grdbId.")
-                    return
-                }
-                guard let grdbId = record.id else {
-                    owsFailDebug("Record missing grdbId.")
-                    return
-                }
-                self.grdbId = NSNumber(value: grdbId)
+                let record = try asRecord()
+                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
             } catch {
                 owsFail("Write failed: \(error)")
             }
         }
     }
+}
+
+// MARK: - Save/Remove/Update
+
+@objc
+extension OWSDatabaseMigration {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
 
     public func anyUpdate(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let database = grdbTransaction.database
-                let record = try asRecord(forUpdate: true)
-                try record.update(database, columns: serializer.updateColumnNames())
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -379,7 +318,12 @@ extension OWSDatabaseMigration {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
@@ -551,15 +495,8 @@ class OWSDatabaseMigrationSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord(forUpdate: Bool) throws -> DatabaseMigrationRecord {
-        var id: Int64?
-        if forUpdate {
-            guard let grdbId: NSNumber = model.grdbId else {
-                owsFailDebug("Model is missing grdbId.")
-                throw SDSError.missingRequiredField
-            }
-            id = grdbId.int64Value
-        }
+    func toRecord() throws -> DatabaseMigrationRecord {
+        let id: Int64? = nil
 
         let recordType: SDSRecordType = .databaseMigration
         guard let uniqueId: String = model.uniqueId else {

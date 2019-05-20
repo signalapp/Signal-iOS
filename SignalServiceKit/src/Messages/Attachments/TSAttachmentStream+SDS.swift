@@ -22,15 +22,8 @@ class TSAttachmentStreamSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord(forUpdate: Bool) throws -> AttachmentRecord {
-        var id: Int64?
-        if forUpdate {
-            guard let grdbId: NSNumber = model.grdbId else {
-                owsFailDebug("Model is missing grdbId.")
-                throw SDSError.missingRequiredField
-            }
-            id = grdbId.int64Value
-        }
+    func toRecord() throws -> AttachmentRecord {
+        let id: Int64? = nil
 
         let recordType: SDSRecordType = .attachmentStream
         guard let uniqueId: String = model.uniqueId else {

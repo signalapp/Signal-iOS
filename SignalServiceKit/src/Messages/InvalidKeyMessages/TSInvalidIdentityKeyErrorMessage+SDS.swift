@@ -22,15 +22,8 @@ class TSInvalidIdentityKeyErrorMessageSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord(forUpdate: Bool) throws -> InteractionRecord {
-        var id: Int64?
-        if forUpdate {
-            guard let grdbId: NSNumber = model.grdbId else {
-                owsFailDebug("Model is missing grdbId.")
-                throw SDSError.missingRequiredField
-            }
-            id = grdbId.int64Value
-        }
+    func toRecord() throws -> InteractionRecord {
+        let id: Int64? = nil
 
         let recordType: SDSRecordType = .invalidIdentityKeyErrorMessage
         guard let uniqueId: String = model.uniqueId else {

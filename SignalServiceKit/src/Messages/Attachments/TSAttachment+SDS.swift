@@ -12,6 +12,10 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct AttachmentRecord: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return TSAttachmentSerializer.table
+    }
+
     public static let databaseTableName: String = TSAttachmentSerializer.table.tableName
 
     public var id: Int64?
@@ -125,22 +129,17 @@ extension TSAttachment {
             let serverId: UInt64 = record.serverId
             let sourceFilename: String? = record.sourceFilename
 
-            let model = TSAttachment(uniqueId: uniqueId,
-                                     albumMessageId: albumMessageId,
-                                     attachmentSchemaVersion: attachmentSchemaVersion,
-                                     attachmentType: attachmentType,
-                                     byteCount: byteCount,
-                                     caption: caption,
-                                     contentType: contentType,
-                                     encryptionKey: encryptionKey,
-                                     isDownloaded: isDownloaded,
-                                     serverId: serverId,
-                                     sourceFilename: sourceFilename)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return TSAttachment(uniqueId: uniqueId,
+                                albumMessageId: albumMessageId,
+                                attachmentSchemaVersion: attachmentSchemaVersion,
+                                attachmentType: attachmentType,
+                                byteCount: byteCount,
+                                caption: caption,
+                                contentType: contentType,
+                                encryptionKey: encryptionKey,
+                                isDownloaded: isDownloaded,
+                                serverId: serverId,
+                                sourceFilename: sourceFilename)
 
         case .attachmentPointer:
 
@@ -166,28 +165,23 @@ extension TSAttachment {
                throw SDSError.missingRequiredField
             }
 
-            let model = TSAttachmentPointer(uniqueId: uniqueId,
-                                            albumMessageId: albumMessageId,
-                                            attachmentSchemaVersion: attachmentSchemaVersion,
-                                            attachmentType: attachmentType,
-                                            byteCount: byteCount,
-                                            caption: caption,
-                                            contentType: contentType,
-                                            encryptionKey: encryptionKey,
-                                            isDownloaded: isDownloaded,
-                                            serverId: serverId,
-                                            sourceFilename: sourceFilename,
-                                            digest: digest,
-                                            lazyRestoreFragmentId: lazyRestoreFragmentId,
-                                            mediaSize: mediaSize,
-                                            mostRecentFailureLocalizedText: mostRecentFailureLocalizedText,
-                                            pointerType: pointerType,
-                                            state: state)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return TSAttachmentPointer(uniqueId: uniqueId,
+                                       albumMessageId: albumMessageId,
+                                       attachmentSchemaVersion: attachmentSchemaVersion,
+                                       attachmentType: attachmentType,
+                                       byteCount: byteCount,
+                                       caption: caption,
+                                       contentType: contentType,
+                                       encryptionKey: encryptionKey,
+                                       isDownloaded: isDownloaded,
+                                       serverId: serverId,
+                                       sourceFilename: sourceFilename,
+                                       digest: digest,
+                                       lazyRestoreFragmentId: lazyRestoreFragmentId,
+                                       mediaSize: mediaSize,
+                                       mostRecentFailureLocalizedText: mostRecentFailureLocalizedText,
+                                       pointerType: pointerType,
+                                       state: state)
 
         case .attachmentStream:
 
@@ -213,32 +207,27 @@ extension TSAttachment {
             let localRelativeFilePath: String? = record.localRelativeFilePath
             let shouldAlwaysPad: Bool = try SDSDeserialization.required(record.shouldAlwaysPad, name: "shouldAlwaysPad")
 
-            let model = TSAttachmentStream(uniqueId: uniqueId,
-                                           albumMessageId: albumMessageId,
-                                           attachmentSchemaVersion: attachmentSchemaVersion,
-                                           attachmentType: attachmentType,
-                                           byteCount: byteCount,
-                                           caption: caption,
-                                           contentType: contentType,
-                                           encryptionKey: encryptionKey,
-                                           isDownloaded: isDownloaded,
-                                           serverId: serverId,
-                                           sourceFilename: sourceFilename,
-                                           cachedAudioDurationSeconds: cachedAudioDurationSeconds,
-                                           cachedImageHeight: cachedImageHeight,
-                                           cachedImageWidth: cachedImageWidth,
-                                           creationTimestamp: creationTimestamp,
-                                           digest: digest,
-                                           isUploaded: isUploaded,
-                                           isValidImageCached: isValidImageCached,
-                                           isValidVideoCached: isValidVideoCached,
-                                           localRelativeFilePath: localRelativeFilePath,
-                                           shouldAlwaysPad: shouldAlwaysPad)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return TSAttachmentStream(uniqueId: uniqueId,
+                                      albumMessageId: albumMessageId,
+                                      attachmentSchemaVersion: attachmentSchemaVersion,
+                                      attachmentType: attachmentType,
+                                      byteCount: byteCount,
+                                      caption: caption,
+                                      contentType: contentType,
+                                      encryptionKey: encryptionKey,
+                                      isDownloaded: isDownloaded,
+                                      serverId: serverId,
+                                      sourceFilename: sourceFilename,
+                                      cachedAudioDurationSeconds: cachedAudioDurationSeconds,
+                                      cachedImageHeight: cachedImageHeight,
+                                      cachedImageWidth: cachedImageWidth,
+                                      creationTimestamp: creationTimestamp,
+                                      digest: digest,
+                                      isUploaded: isUploaded,
+                                      isValidImageCached: isValidImageCached,
+                                      isValidVideoCached: isValidVideoCached,
+                                      localRelativeFilePath: localRelativeFilePath,
+                                      shouldAlwaysPad: shouldAlwaysPad)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -266,19 +255,19 @@ extension TSAttachment: SDSSerializable {
         }
     }
 
-    public func asRecord(forUpdate: Bool) throws -> AttachmentRecord {
+    public func asRecord() throws -> AttachmentRecord {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
         case let model as TSAttachmentStream:
             assert(type(of: model) == TSAttachmentStream.self)
-            return try TSAttachmentStreamSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try TSAttachmentStreamSerializer(model: model).toRecord()
         case let model as TSAttachmentPointer:
             assert(type(of: model) == TSAttachmentPointer.self)
-            return try TSAttachmentPointerSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try TSAttachmentPointerSerializer(model: model).toRecord()
         default:
-            return try TSAttachmentSerializer(model: self).toRecord(forUpdate: forUpdate)
+            return try TSAttachmentSerializer(model: self).toRecord()
         }
     }
 }
@@ -356,46 +345,36 @@ extension TSAttachmentSerializer {
 
 // MARK: - Save/Remove/Update
 
-@objc
-extension TSAttachment {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+fileprivate extension TSAttachment {
+    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
-                let database = grdbTransaction.database
-                var record = try asRecord(forUpdate: false)
-                try record.insert(database)
-
-                guard self.grdbId == nil else {
-                    owsFailDebug("Model unexpectedly already has grdbId.")
-                    return
-                }
-                guard let grdbId = record.id else {
-                    owsFailDebug("Record missing grdbId.")
-                    return
-                }
-                self.grdbId = NSNumber(value: grdbId)
+                let record = try asRecord()
+                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
             } catch {
                 owsFail("Write failed: \(error)")
             }
         }
     }
+}
+
+// MARK: - Save/Remove/Update
+
+@objc
+extension TSAttachment {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
 
     public func anyUpdate(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let database = grdbTransaction.database
-                let record = try asRecord(forUpdate: true)
-                try record.update(database, columns: serializer.updateColumnNames())
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -445,7 +424,12 @@ extension TSAttachment {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
@@ -617,15 +601,8 @@ class TSAttachmentSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord(forUpdate: Bool) throws -> AttachmentRecord {
-        var id: Int64?
-        if forUpdate {
-            guard let grdbId: NSNumber = model.grdbId else {
-                owsFailDebug("Model is missing grdbId.")
-                throw SDSError.missingRequiredField
-            }
-            id = grdbId.int64Value
-        }
+    func toRecord() throws -> AttachmentRecord {
+        let id: Int64? = nil
 
         let recordType: SDSRecordType = .attachment
         guard let uniqueId: String = model.uniqueId else {

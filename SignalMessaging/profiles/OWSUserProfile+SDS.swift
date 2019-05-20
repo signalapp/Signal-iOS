@@ -12,6 +12,10 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct UserProfileRecord: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return OWSUserProfileSerializer.table
+    }
+
     public static let databaseTableName: String = OWSUserProfileSerializer.table.tableName
 
     public var id: Int64?
@@ -79,17 +83,12 @@ extension OWSUserProfile {
             let profileName: String? = record.profileName
             let recipientId: String = record.recipientId
 
-            let model = OWSUserProfile(uniqueId: uniqueId,
-                                       avatarFileName: avatarFileName,
-                                       avatarUrlPath: avatarUrlPath,
-                                       profileKey: profileKey,
-                                       profileName: profileName,
-                                       recipientId: recipientId)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return OWSUserProfile(uniqueId: uniqueId,
+                                  avatarFileName: avatarFileName,
+                                  avatarUrlPath: avatarUrlPath,
+                                  profileKey: profileKey,
+                                  profileName: profileName,
+                                  recipientId: recipientId)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -111,13 +110,13 @@ extension OWSUserProfile: SDSSerializable {
         }
     }
 
-    public func asRecord(forUpdate: Bool) throws -> UserProfileRecord {
+    public func asRecord() throws -> UserProfileRecord {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
         default:
-            return try OWSUserProfileSerializer(model: self).toRecord(forUpdate: forUpdate)
+            return try OWSUserProfileSerializer(model: self).toRecord()
         }
     }
 }
@@ -154,46 +153,36 @@ extension OWSUserProfileSerializer {
 
 // MARK: - Save/Remove/Update
 
-@objc
-extension OWSUserProfile {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+fileprivate extension OWSUserProfile {
+    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
-                let database = grdbTransaction.database
-                var record = try asRecord(forUpdate: false)
-                try record.insert(database)
-
-                guard self.grdbId == nil else {
-                    owsFailDebug("Model unexpectedly already has grdbId.")
-                    return
-                }
-                guard let grdbId = record.id else {
-                    owsFailDebug("Record missing grdbId.")
-                    return
-                }
-                self.grdbId = NSNumber(value: grdbId)
+                let record = try asRecord()
+                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
             } catch {
                 owsFail("Write failed: \(error)")
             }
         }
     }
+}
+
+// MARK: - Save/Remove/Update
+
+@objc
+extension OWSUserProfile {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
 
     public func anyUpdate(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let database = grdbTransaction.database
-                let record = try asRecord(forUpdate: true)
-                try record.update(database, columns: serializer.updateColumnNames())
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -243,7 +232,12 @@ extension OWSUserProfile {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
@@ -415,15 +409,8 @@ class OWSUserProfileSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord(forUpdate: Bool) throws -> UserProfileRecord {
-        var id: Int64?
-        if forUpdate {
-            guard let grdbId: NSNumber = model.grdbId else {
-                owsFailDebug("Model is missing grdbId.")
-                throw SDSError.missingRequiredField
-            }
-            id = grdbId.int64Value
-        }
+    func toRecord() throws -> UserProfileRecord {
+        let id: Int64? = nil
 
         let recordType: SDSRecordType = .userProfile
         guard let uniqueId: String = model.uniqueId else {

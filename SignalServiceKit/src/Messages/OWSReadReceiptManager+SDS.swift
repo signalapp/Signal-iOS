@@ -12,6 +12,10 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct RecipientReadReceiptRecord: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return TSRecipientReadReceiptSerializer.table
+    }
+
     public static let databaseTableName: String = TSRecipientReadReceiptSerializer.table.tableName
 
     public var id: Int64?
@@ -70,14 +74,9 @@ extension TSRecipientReadReceipt {
             let recipientMap: [String: NSNumber] = try SDSDeserialization.unarchive(recipientMapSerialized, name: "recipientMap")
             let sentTimestamp: UInt64 = record.sentTimestamp
 
-            let model = TSRecipientReadReceipt(uniqueId: uniqueId,
-                                               recipientMap: recipientMap,
-                                               sentTimestamp: sentTimestamp)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return TSRecipientReadReceipt(uniqueId: uniqueId,
+                                          recipientMap: recipientMap,
+                                          sentTimestamp: sentTimestamp)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -99,13 +98,13 @@ extension TSRecipientReadReceipt: SDSSerializable {
         }
     }
 
-    public func asRecord(forUpdate: Bool) throws -> RecipientReadReceiptRecord {
+    public func asRecord() throws -> RecipientReadReceiptRecord {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
         default:
-            return try TSRecipientReadReceiptSerializer(model: self).toRecord(forUpdate: forUpdate)
+            return try TSRecipientReadReceiptSerializer(model: self).toRecord()
         }
     }
 }
@@ -136,46 +135,36 @@ extension TSRecipientReadReceiptSerializer {
 
 // MARK: - Save/Remove/Update
 
-@objc
-extension TSRecipientReadReceipt {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+fileprivate extension TSRecipientReadReceipt {
+    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
-                let database = grdbTransaction.database
-                var record = try asRecord(forUpdate: false)
-                try record.insert(database)
-
-                guard self.grdbId == nil else {
-                    owsFailDebug("Model unexpectedly already has grdbId.")
-                    return
-                }
-                guard let grdbId = record.id else {
-                    owsFailDebug("Record missing grdbId.")
-                    return
-                }
-                self.grdbId = NSNumber(value: grdbId)
+                let record = try asRecord()
+                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
             } catch {
                 owsFail("Write failed: \(error)")
             }
         }
     }
+}
+
+// MARK: - Save/Remove/Update
+
+@objc
+extension TSRecipientReadReceipt {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
 
     public func anyUpdate(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let database = grdbTransaction.database
-                let record = try asRecord(forUpdate: true)
-                try record.update(database, columns: serializer.updateColumnNames())
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -225,7 +214,12 @@ extension TSRecipientReadReceipt {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
@@ -397,15 +391,8 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord(forUpdate: Bool) throws -> RecipientReadReceiptRecord {
-        var id: Int64?
-        if forUpdate {
-            guard let grdbId: NSNumber = model.grdbId else {
-                owsFailDebug("Model is missing grdbId.")
-                throw SDSError.missingRequiredField
-            }
-            id = grdbId.int64Value
-        }
+    func toRecord() throws -> RecipientReadReceiptRecord {
+        let id: Int64? = nil
 
         let recordType: SDSRecordType = .recipientReadReceipt
         guard let uniqueId: String = model.uniqueId else {

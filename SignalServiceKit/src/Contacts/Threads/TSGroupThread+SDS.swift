@@ -22,15 +22,8 @@ class TSGroupThreadSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord(forUpdate: Bool) throws -> ThreadRecord {
-        var id: Int64?
-        if forUpdate {
-            guard let grdbId: NSNumber = model.grdbId else {
-                owsFailDebug("Model is missing grdbId.")
-                throw SDSError.missingRequiredField
-            }
-            id = grdbId.int64Value
-        }
+    func toRecord() throws -> ThreadRecord {
+        let id: Int64? = nil
 
         let recordType: SDSRecordType = .groupThread
         guard let uniqueId: String = model.uniqueId else {

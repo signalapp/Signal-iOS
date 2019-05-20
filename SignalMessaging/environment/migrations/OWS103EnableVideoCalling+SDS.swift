@@ -22,15 +22,8 @@ class OWS103EnableVideoCallingSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord(forUpdate: Bool) throws -> DatabaseMigrationRecord {
-        var id: Int64?
-        if forUpdate {
-            guard let grdbId: NSNumber = model.grdbId else {
-                owsFailDebug("Model is missing grdbId.")
-                throw SDSError.missingRequiredField
-            }
-            id = grdbId.int64Value
-        }
+    func toRecord() throws -> DatabaseMigrationRecord {
+        let id: Int64? = nil
 
         let recordType: SDSRecordType = ._103EnableVideoCalling
         guard let uniqueId: String = model.uniqueId else {
