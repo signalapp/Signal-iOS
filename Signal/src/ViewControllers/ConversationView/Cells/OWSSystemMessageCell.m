@@ -273,7 +273,7 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageAddGroupToProfileWhitelistOffer:
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
-            case TSInfoMessageTypeLokiSessionResetProgress:
+            case TSInfoMessageTypeLokiSessionResetInProgress:
             case TSInfoMessageTypeLokiSessionResetDone:
                 return nil;
             case TSInfoMessageTypeDisappearingMessagesUpdate: {
@@ -461,7 +461,7 @@ typedef void (^SystemMessageActionBlock)(void);
     switch (message.messageType) {
         case TSInfoMessageUserNotRegistered:
         case TSInfoMessageTypeSessionDidEnd:
-        case TSInfoMessageTypeLokiSessionResetProgress:
+        case TSInfoMessageTypeLokiSessionResetInProgress:
         case TSInfoMessageTypeLokiSessionResetDone:
             return nil;
         case TSInfoMessageTypeUnsupportedMessage:

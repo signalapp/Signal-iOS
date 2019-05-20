@@ -10,9 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, TSContactThreadSessionResetState) {
     // No ongoing session reset
     TSContactThreadSessionResetStateNone,
-    // We initiated session reset
+    // We initiated a session reset
     TSContactThreadSessionResetStateInitiated,
-    // We received the session reset
+    // We received a session reset
     TSContactThreadSessionResetStateRequestReceived,
 };
 
@@ -20,7 +20,7 @@ extern NSString *const TSContactThreadPrefix;
 
 @interface TSContactThread : TSThread
 
-// Loki: The current session reset state with this thread
+// Loki: The current session reset state for this thread
 @property (atomic) TSContactThreadSessionResetState sessionResetState;
 
 @property (nonatomic) BOOL hasDismissedOffers;

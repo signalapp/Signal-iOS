@@ -1,4 +1,4 @@
-/// Loki: Refer to Docs/SessionReset.md for explanations
+// Loki: Refer to Docs/SessionReset.md for explanations
 
 #import "SessionCipher+Loki.h"
 #import "NSNotificationCenter+OWS.h"
@@ -47,36 +47,26 @@ NSString *const kNSNotificationKey_ContactPubKey = @"kNSNotificationKey_ContactP
     SessionState *state = record.sessionState;
     
     // Check if session is initialized
-    if (!state.hasSenderChain) {
-        return nil;
-    }
+    if (!state.hasSenderChain) { return nil; }
     
     return state;
 }
 
-/// Handle any loki session reset stuff
-- (void)handleSessionReset:(id<CipherMessage>)whisperMessage
-             previousState:(SessionState *_Nullable)previousState
-           protocolContext:(nullable id)protocolContext
+/// Handle any Loki session reset stuff
+- (void)handleSessionReset:(id<CipherMessage>)whisperMessage previousState:(SessionState *_Nullable)previousState protocolContext:(nullable id)protocolContext
 {
     // Don't bother doing anything if we didn't have a session before
-    if (!previousState) {
-        return;
-    }
+    if (!previousState) { return; }
     
     OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
     
     // Get the thread
     TSContactThread *thread = [TSContactThread getThreadWithContactId:self.recipientId transaction:transaction];
-    if (!thread) {
-        return;
-    }
+    if (!thread) { return; }
     
     // Bail early if no session reset is in progress
-    if (thread.sessionResetState == TSContactThreadSessionResetStateNone) {
-        return;
-    }
+    if (thread.sessionResetState == TSContactThreadSessionResetStateNone) { return; }
     
     BOOL sessionResetReceived = thread.sessionResetState == TSContactThreadSessionResetStateRequestReceived;
     SessionState *_Nullable currentState = [self getCurrentState:protocolContext];
@@ -106,12 +96,8 @@ NSString *const kNSNotificationKey_ContactPubKey = @"kNSNotificationKey_ContactP
 /// Send a notification about a new session being adopted
 - (void)notifySessionAdopted
 {
-    [[NSNotificationCenter defaultCenter]
-     postNotificationNameAsync:kNSNotificationName_SessionAdopted
-     object:nil
-     userInfo:@{
-                kNSNotificationKey_ContactPubKey : self.recipientId,
-                }];
+    NSDictionary *userInfo = @{ kNSNotificationKey_ContactPubKey : self.recipientId };
+    [NSNotificationCenter.defaultCenter postNotificationNameAsync:kNSNotificationName_SessionAdopted object:nil userInfo:userInfo];
 }
 
 /// Delete all other sessions except the given one
@@ -121,10 +107,7 @@ NSString *const kNSNotificationKey_ContactPubKey = @"kNSNotificationKey_ContactP
     [record removePreviousSessionStates];
     [record setState:state];
     
-    [self.sessionStore storeSession:self.recipientId
-                           deviceId:self.deviceId
-                            session:record
-                    protocolContext:protocolContext];
+    [self.sessionStore storeSession:self.recipientId deviceId:self.deviceId session:record protocolContext:protocolContext];
 }
 
 /// Set the given session as the active one while archiving the old one
@@ -136,17 +119,14 @@ NSString *const kNSNotificationKey_ContactPubKey = @"kNSNotificationKey_ContactP
     [record.previousSessionStates enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(SessionState *obj, NSUInteger idx, BOOL *stop) {
         if ([state.aliceBaseKey isEqualToData:obj.aliceBaseKey]) {
             [record.previousSessionStates removeObjectAtIndex:idx];
-            *stop = true;
+            *stop = YES;
         }
     }];
     
     // Promote it so the previous state gets archived
     [record promoteState:state];
     
-    [self.sessionStore storeSession:self.recipientId
-                           deviceId:self.deviceId
-                            session:record
-                    protocolContext:protocolContext];
+    [self.sessionStore storeSession:self.recipientId deviceId:self.deviceId session:record protocolContext:protocolContext];
 }
 
 /// Check that we have matching prekeys in the case of a `PreKeyWhisperMessage`
@@ -155,26 +135,22 @@ NSString *const kNSNotificationKey_ContactPubKey = @"kNSNotificationKey_ContactP
     OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadTransaction class]]);
     YapDatabaseReadTransaction *transaction = protocolContext;
     
-    /// We only want to look at `PreKeyWhisperMessage`
-    if (![whisperMessage isKindOfClass:[PreKeyWhisperMessage class]]) {
-        return;
-    }
+    // We only want to look at `PreKeyWhisperMessage`
+    if (![whisperMessage isKindOfClass:[PreKeyWhisperMessage class]]) { return; }
 
-    /// We need the primary storage to access contact prekeys
-    if (![self.prekeyStore isKindOfClass:[OWSPrimaryStorage class]]) {
-        return;
-    }
+    // We need the primary storage to access contact prekeys
+    if (![self.prekeyStore isKindOfClass:[OWSPrimaryStorage class]]) { return; }
     
     PreKeyWhisperMessage *preKeyMessage = whisperMessage;
     OWSPrimaryStorage *primaryStorage = self.prekeyStore;
     
     PreKeyRecord *_Nullable storedPreKey = [primaryStorage getPreKeyForContact:self.recipientId transaction:transaction];
-    if(!storedPreKey) {
-        OWSRaiseException(@"LokiInvalidPreKey", @"Received a friend request from a pubkey for which no prekey bundle was created");
+    if (!storedPreKey) {
+        OWSRaiseException(@"LokiInvalidPreKey", @"Received a friend request from a public key for which no prekey bundle was created.");
     }
     
     if (storedPreKey.Id != preKeyMessage.prekeyID) {
-        OWSRaiseException(@"LokiPreKeyIdsDontMatch", @"Received a preKeyWhisperMessage (friend request accept) from an unknown source");
+        OWSRaiseException(@"LokiPreKeyIdsDontMatch", @"Received a PreKeyWhisperMessage (friend request accept) from an unknown source.");
     }
 }
 

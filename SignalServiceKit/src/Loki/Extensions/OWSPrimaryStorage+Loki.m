@@ -38,13 +38,10 @@
     int preKeyId = [transaction intForKey:pubKey inCollection:LokiPreKeyContactCollection];
     
     // If we don't have an id then return nil
-    if (preKeyId <= 0) {
-        return nil;
-    }
+    if (preKeyId <= 0) { return nil; }
     
-    /// thows_loadPreKey doesn't allow us to pass transaction ;(
-    return [transaction preKeyRecordForKey:[self keyFromInt:preKeyId]
-                              inCollection:OWSPrimaryStoragePreKeyStoreCollection];
+    /// throws_loadPreKey doesn't allow us to pass transaction ;(
+    return [transaction preKeyRecordForKey:[self keyFromInt:preKeyId] inCollection:OWSPrimaryStoragePreKeyStoreCollection];
 }
 
 - (PreKeyRecord *)getOrCreatePreKeyForContact:(NSString *)pubKey {

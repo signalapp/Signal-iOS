@@ -1,4 +1,4 @@
-/// Loki: Refer to Docs/SessionReset.md for explanations
+// Loki: Refer to Docs/SessionReset.md for explanations
 
 #import "SessionCipher.h"
 
@@ -11,14 +11,14 @@ extern NSString *const kNSNotificationKey_ContactPubKey;
 
 /**
  Decrypt the given `CipherMessage`.
- This function is a wrapper around `throws_decrypt:protocolContext:` and adds on the custom loki session handling ontop.
- Refer to SignalServiceKit/Loki/Docs/SessionReset.md for overview on how it works.
+ This function is a wrapper around `throws_decrypt:protocolContext:` and adds on the custom Loki session handling.
+ Refer to SignalServiceKit/Loki/Docs/SessionReset.md for an overview of how it works.
 
  @param whisperMessage The cipher message.
- @param protocolContext The protocol context (YapDatabaseReadWriteTransaction)
+ @param protocolContext The protocol context (a `YapDatabaseReadWriteTransaction`).
  @return The decrypted data.
  */
-- (NSData *)throws_lokiDecrypt:(id<CipherMessage>)whisperMessage protocolContext:(nullable id)protocolContext NS_SWIFT_UNAVAILABLE("throws objc exceptions");
+- (NSData *)throws_lokiDecrypt:(id<CipherMessage>)whisperMessage protocolContext:(nullable id)protocolContext NS_SWIFT_UNAVAILABLE("throws Obj-C exceptions");
 
 @end
 

@@ -438,10 +438,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 NSData *_Nullable plaintextData =
                     [[cipher throws_lokiDecrypt:cipherMessage protocolContext:transaction] removePadding];
                 
-                /* Loki original code
-                 * =================
+                /* Loki: Original code
+                 * ================
                 NSData *_Nullable plaintextData =
                     [[cipher throws_decrypt:cipherMessage protocolContext:transaction] removePadding];
+                 * ================
                  */
                 OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                                                     plaintextData:plaintextData
