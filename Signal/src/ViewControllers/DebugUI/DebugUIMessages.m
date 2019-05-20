@@ -927,6 +927,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                     contactShare:nil
                                                      linkPreview:nil
                                                   messageSticker:nil
+                                                ephemeralMessage:nil
                                                      transaction:transaction];
 
     // This is a hack to "back-date" the message.
@@ -1836,6 +1837,7 @@ NS_ASSUME_NONNULL_BEGIN
                                contactShare:nil
                                 linkPreview:nil
                              messageSticker:nil
+                           ephemeralMessage:nil
                                 transaction:transaction];
         }];
 }
@@ -1886,6 +1888,7 @@ NS_ASSUME_NONNULL_BEGIN
                                contactShare:nil
                                 linkPreview:nil
                              messageSticker:nil
+                           ephemeralMessage:nil
                                 transaction:transaction];
         }];
 }
@@ -2076,6 +2079,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                  contactShare:nil
                                                                                   linkPreview:nil
                                                                                messageSticker:nil
+                                                                             ephemeralMessage:nil
                                                                                   transaction:transaction];
                 OWSAssertDebug(messageToQuote);
 
@@ -2115,6 +2119,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    contactShare:nil
                                     linkPreview:nil
                                  messageSticker:nil
+                               ephemeralMessage:nil
                                     transaction:transaction];
             }
         }
@@ -2966,6 +2971,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                             contactShare:nil
                                                              linkPreview:nil
                                                           messageSticker:nil
+                                                        ephemeralMessage:nil
                                                              transaction:transaction];
             [message setReceivedAtTimestamp:(uint64_t)((int64_t)[NSDate ows_millisecondTimeStamp] + dateOffset)];
             [message anySaveWithTransaction:transaction];
@@ -3038,6 +3044,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                             contactShare:contact
                                                              linkPreview:nil
                                                           messageSticker:nil
+                                                        ephemeralMessage:nil
                                                              transaction:transaction];
             [message anySaveWithTransaction:transaction];
         }];
@@ -3854,6 +3861,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                    contactShare:nil
                                                                     linkPreview:nil
                                                                  messageSticker:nil
+                                                               ephemeralMessage:nil
                                                                 serverTimestamp:nil
                                                                 wasReceivedByUD:NO];
                 if (transaction.transitional_yapWriteTransaction) {
@@ -3876,6 +3884,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                    contactShare:nil
                                     linkPreview:nil
                                  messageSticker:nil
+                               ephemeralMessage:nil
                                     transaction:transaction];
                 break;
             }
@@ -3910,6 +3919,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                    contactShare:nil
                                                                     linkPreview:nil
                                                                  messageSticker:nil
+                                                               ephemeralMessage:nil
                                                                 serverTimestamp:nil
                                                                 wasReceivedByUD:NO];
                 if (transaction.transitional_yapWriteTransaction) {
@@ -3949,6 +3959,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                    contactShare:nil
                                     linkPreview:nil
                                  messageSticker:nil
+                               ephemeralMessage:nil
                                     transaction:transaction];
                 break;
             }
@@ -4331,7 +4342,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                quotedMessage:nil
                                 contactShare:nil
                                  linkPreview:nil
-                              messageSticker:nil];
+                              messageSticker:nil
+                            ephemeralMessage:nil];
         OWSLogError(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
@@ -4400,6 +4412,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                    contactShare:nil
                                                                     linkPreview:nil
                                                                  messageSticker:nil
+                                                               ephemeralMessage:nil
                                                                 serverTimestamp:nil
                                                                 wasReceivedByUD:NO];
                 if (transaction.transitional_yapWriteTransaction) {
@@ -4423,7 +4436,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                   quotedMessage:nil
                                                                    contactShare:nil
                                                                     linkPreview:nil
-                                                                 messageSticker:nil];
+                                                                 messageSticker:nil
+                                                               ephemeralMessage:nil];
                 [message anySaveWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
                 if (transaction.transitional_yapWriteTransaction) {
@@ -4462,6 +4476,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                             contactShare:nil
                              linkPreview:nil
                           messageSticker:nil
+                        ephemeralMessage:nil
                          serverTimestamp:nil
                          wasReceivedByUD:NO];
     // private setter to avoid starting expire machinery.
@@ -4696,6 +4711,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
+                                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
                                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
@@ -4724,6 +4740,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                               contactShare:contactShare
                                linkPreview:linkPreview
                             messageSticker:messageSticker
+                          ephemeralMessage:ephemeralMessage
                                transaction:transaction];
 }
 
@@ -4739,6 +4756,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
+                                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
                                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
@@ -4763,7 +4781,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                       quotedMessage:quotedMessage
                                                        contactShare:contactShare
                                                         linkPreview:linkPreview
-                                                     messageSticker:messageSticker];
+                                                     messageSticker:messageSticker
+                                                   ephemeralMessage:ephemeralMessage];
 
     if (attachmentId.length > 0 && filename.length > 0) {
         message.attachmentFilenameMap[attachmentId] = filename;
@@ -4863,6 +4882,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
+                                                   ephemeralMessage:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO];
     if (transaction.transitional_yapWriteTransaction) {

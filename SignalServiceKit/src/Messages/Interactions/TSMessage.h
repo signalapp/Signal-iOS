@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  Abstract message class.
  */
 
+@class EphemeralMessage;
 @class MessageSticker;
 @class OWSContact;
 @class OWSLinkPreview;
@@ -33,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
+@property (nonatomic, readonly, nullable) EphemeralMessage *ephemeralMessage;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -45,7 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
-                          messageSticker:(nullable MessageSticker *)messageSticker NS_DESIGNATED_INITIALIZER;
+                          messageSticker:(nullable MessageSticker *)messageSticker
+                        ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -61,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                     contactShare:(nullable OWSContact *)contactShare
+                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
@@ -68,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:ephemeralMessage:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:));
 
 // clang-format on
 
@@ -102,8 +106,11 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)saveWithMessageSticker:(MessageSticker *)messageSticker
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithMessageSticker:(MessageSticker *)messageSticker
+                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+- (void)updateWithEphemeralMessage:(EphemeralMessage *)ephemeralMessage
+                       transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

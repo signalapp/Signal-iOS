@@ -451,6 +451,7 @@ private class MockIncomingMessage: TSIncomingMessage {
                    contactShare: nil,
                    linkPreview: nil,
                    messageSticker: nil,
+                   ephemeralMessage: nil,
                    serverTimestamp: nil,
                    wasReceivedByUD: false)
     }
@@ -482,7 +483,8 @@ private class MockOutgoingMessage: TSOutgoingMessage {
                    quotedMessage: nil,
                    contactShare: nil,
                    linkPreview: nil,
-                   messageSticker: nil)
+                   messageSticker: nil,
+                   ephemeralMessage: nil)
     }
 
     required init?(coder: NSCoder) {

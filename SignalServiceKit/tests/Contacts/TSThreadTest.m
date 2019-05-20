@@ -51,6 +51,7 @@
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
+                                                   ephemeralMessage:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO];
     [incomingMessage save];
@@ -67,7 +68,8 @@
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                                   ephemeralMessage:nil];
     [outgoingMessage save];
 
     XCTAssertEqual(2, [thread numberOfInteractions]);
@@ -106,6 +108,7 @@
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
+                                                   ephemeralMessage:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO];
     [incomingMessage save];
@@ -130,7 +133,8 @@
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                                   ephemeralMessage:nil];
     [outgoingMessage save];
 
     // Sanity check

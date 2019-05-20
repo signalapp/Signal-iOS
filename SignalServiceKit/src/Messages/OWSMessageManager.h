@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageHandler.h"
@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSPrimaryStorage;
 @class SSKProtoEnvelope;
+@class TSMessage;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
 
@@ -26,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This should be invoked by the main app when the app is ready.
 - (void)startObserving;
+
++ (BOOL)messageHasRenderableContent:(TSMessage *)message;
 
 @end
 
