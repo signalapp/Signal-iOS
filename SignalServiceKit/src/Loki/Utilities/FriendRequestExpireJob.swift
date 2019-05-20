@@ -1,22 +1,21 @@
+
 /*
  This class is used for settings friend requests to expired
  This is modelled after `OWSDisappearingMessagesJob`.
  */
-
 @objc(OWSLokiFriendRequestExpireJob)
-public class FriendRequestExpireJob : NSObject {
-    
+public final class FriendRequestExpireJob : NSObject {
     private let databaseConnection: YapDatabaseConnection
     private let messageFinder = FriendRequestExpireMessageFinder()
     
-    // These three properties should only be accessed on the main thread.
+    // These properties should only be accessed on the main thread.
     private var hasStarted = false
     private var fallbackTimer: Timer?
     private var nextExpireTimer: Timer?
     private var nextExpireDate: Date?
     
     // Our queue
-    public static let serialQueue = DispatchQueue(label: "network.loki.friendrequest.expire")
+    fileprivate static let serialQueue = DispatchQueue(label: "network.loki.friendrequest.expire")
     
     /// Create a `FriendRequestExpireJob`.
     /// This will create a auto-running job which will set friend requests to expired.
@@ -31,14 +30,12 @@ public class FriendRequestExpireJob : NSObject {
         
         // Setup a timer that runs periodically to check for new friend request messages that will soon expire
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            if (CurrentAppContext().isMainApp) {
+            if CurrentAppContext().isMainApp {
                 let fallbackInterval = 5 * kMinuteInterval
                 self.fallbackTimer = WeakTimer.scheduledTimer(timeInterval: fallbackInterval, target: self, userInfo: nil, repeats: true) { [weak self] _ in
                     AssertIsOnMainThread()
                     
-                    guard let strongSelf = self else {
-                        return
-                    }
+                    guard let strongSelf = self else { return }
                     
                     strongSelf.timerDidFire(mainTimer: false)
                 }
@@ -56,9 +53,7 @@ public class FriendRequestExpireJob : NSObject {
     /// Start the job if we haven't done it yet
     @objc public func startIfNecessary() {
         DispatchQueue.main.async {
-            guard !self.hasStarted else {
-                return
-            }
+            guard !self.hasStarted else { return }
             
             self.hasStarted = true;
             FriendRequestExpireJob.serialQueue.async {
@@ -72,20 +67,17 @@ public class FriendRequestExpireJob : NSObject {
         AssertIsOnFriendRequestExpireQueue();
         
         // Expire any messages
-        self.expireMessages()
+        expireMessages()
         
         var nextExpirationTimestamp: UInt64? = nil
-        self.databaseConnection.readWrite { transaction in
+        databaseConnection.readWrite { transaction in
             nextExpirationTimestamp = self.messageFinder.nextExpirationTimestamp(with: transaction)
         }
         
-        guard let timestamp = nextExpirationTimestamp,
-            let nextExpireDate = NSDate.ows_date(withMillisecondsSince1970: timestamp) as? Date else {
-            return
-        }
+        guard let timestamp = nextExpirationTimestamp, let nextExpireDate = NSDate.ows_date(withMillisecondsSince1970: timestamp) as? Date else { return }
         
         // Schedule the next timer
-        self.scheduleRun(by: nextExpireDate)
+        scheduleRun(by: nextExpireDate)
     }
     
     // Schedule the next timer to run
@@ -96,7 +88,7 @@ public class FriendRequestExpireJob : NSObject {
                 return
             }
             
-            let minDelaySeconds: TimeInterval = 1.0
+            let minDelaySeconds: TimeInterval = 1
             let delaySeconds = max(minDelaySeconds, date.timeIntervalSinceNow)
             let newTimerScheduleDate = Date(timeIntervalSinceNow: delaySeconds)
             
@@ -109,9 +101,7 @@ public class FriendRequestExpireJob : NSObject {
             self.resetNextExpireTimer()
             self.nextExpireDate = newTimerScheduleDate
             self.nextExpireTimer = WeakTimer.scheduledTimer(timeInterval: delaySeconds, target: self, userInfo: nil, repeats: false) { [weak self] _ in
-                guard let strongSelf = self else {
-                    return
-                }
+                guard let strongSelf = self else { return }
                 
                 strongSelf.timerDidFire(mainTimer: true)
             }
@@ -126,13 +116,9 @@ public class FriendRequestExpireJob : NSObject {
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
             AssertIsOnMainThread()
             
-            guard status == .expired else {
-                return
-            }
+            guard status == .success else { return }
             
-            guard let strongSelf = self else {
-                return
-            }
+            guard let strongSelf = self else { return }
             
             strongSelf.databaseConnection.readWrite { transaction in
                 strongSelf.messageFinder.enumurateExpiredMessages(with: { message in
@@ -144,7 +130,7 @@ public class FriendRequestExpireJob : NSObject {
                     }
                     
                     // Check that we only expire sent messages
-                    guard message.thread.friendRequestStatus == .requestSent else {
+                    guard message is TSOutgoingMessage && message.isFriendRequest else {
                         // Set message to not expire, so our other logic works correctly
                         message.saveFriendRequestExpires(at: 0, with: transaction)
                         return;
@@ -202,6 +188,7 @@ private extension FriendRequestExpireJob {
 
 // MARK: Asserts
 private extension FriendRequestExpireJob {
+    
     func AssertIsOnFriendRequestExpireQueue() {
         #if DEBUG
             guard #available(iOS 10.0, *) else { return }

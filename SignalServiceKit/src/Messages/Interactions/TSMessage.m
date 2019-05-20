@@ -463,7 +463,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)saveIsFriendRequestExpired:(BOOL)isFriendRequestExpired withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
-    self.isFriendRequest = isFriendRequestExpired;
+    self.isFriendRequestExpired = isFriendRequestExpired;
     if (transaction == nil) {
         [self save];
     } else {

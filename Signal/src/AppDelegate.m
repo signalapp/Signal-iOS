@@ -688,7 +688,7 @@ static NSTimeInterval launchStartedAt;
                 // and continue cleaning in the background.
                 [self.disappearingMessagesJob startIfNecessary];
                 
-                // Start loki friend request expire job
+                // Start Loki friend request expire job
                 [self.lokiFriendRequestExpireJob startIfNecessary];
 
                 [self enableBackgroundRefreshIfNecessary];
@@ -1326,7 +1326,7 @@ static NSTimeInterval launchStartedAt;
         [self.disappearingMessagesJob startIfNecessary];
         [self.profileManager ensureLocalProfileCached];
         
-        // Start loki friend request expire job
+        // Start Loki friend request expire job
         [self.lokiFriendRequestExpireJob startIfNecessary];
 
         // For non-legacy users, read receipts are on by default.

@@ -480,7 +480,14 @@ typedef enum : NSUInteger {
     // Ensure thread instance is up to date
     [self.thread reload];
     // Update UI
-    [self.viewItems.lastObject clearCachedLayoutState]; // Presumably a cell with a friend request view
+    id<ConversationViewItem> lastItem = self.viewItems.lastObject;
+    [lastItem clearCachedLayoutState];
+    UICollectionViewCell *cell = self.collectionView.visibleCells.lastObject;
+    OWSMessageCell *messageCell = (OWSMessageCell *)[cell as:OWSMessageCell.class];
+    if (messageCell != nil) {
+        [messageCell.friendRequestView.message reload];
+        [messageCell.friendRequestView handleMessageChanged];
+    }
     [self resetContentAndLayout];
     [self updateInputToolbar];
 }

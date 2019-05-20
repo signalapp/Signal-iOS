@@ -78,7 +78,7 @@
     }
     
     // MARK: Updating
-    private func handleMessageChanged() {
+    @objc func handleMessageChanged() {
         precondition(message != nil)
         switch kind {
         case .incoming:
