@@ -19,7 +19,7 @@ class DefaultStickerPack {
     }
 
     private class func parseAll() -> [StickerPackInfo: DefaultStickerPack] {
-        guard OWSIsDebugBuild() else {
+        guard FeatureFlags.testBuiltInStickerPacks else {
             return [:]
         }
 

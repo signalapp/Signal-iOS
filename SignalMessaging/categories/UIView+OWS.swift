@@ -445,6 +445,15 @@ public extension UIButton {
 @objc
 public extension UIImageView {
     @objc
+    func setImage(imageName: String) {
+        guard let image = UIImage(named: imageName) else {
+            owsFailDebug("Couldn't load image: \(imageName)")
+            return
+        }
+        self.image = image
+    }
+
+    @objc
     func setTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) {
         guard let templateImage = templateImage else {
             owsFailDebug("Missing image")

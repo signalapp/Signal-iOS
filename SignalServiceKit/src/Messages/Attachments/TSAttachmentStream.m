@@ -53,7 +53,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
                      albumMessageId:(nullable NSString *)albumMessageId
-                  isOutgoingSticker:(BOOL)isOutgoingSticker
+                  shouldAlwaysPad:(BOOL)shouldAlwaysPad
 {
     self = [super initAttachmentWithContentType:contentType
                                       byteCount:byteCount
@@ -71,7 +71,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     _isUploaded = NO;
     _creationTimestamp = [NSDate new];
 
-    _isOutgoingSticker = isOutgoingSticker;
+    _shouldAlwaysPad = shouldAlwaysPad;
 
     [self ensureFilePath];
 
@@ -140,11 +140,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
                creationTimestamp:(NSDate *)creationTimestamp
                           digest:(nullable NSData *)digest
-               isOutgoingSticker:(BOOL)isOutgoingSticker
                       isUploaded:(BOOL)isUploaded
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
+                 shouldAlwaysPad:(BOOL)shouldAlwaysPad
 {
     self = [super initWithUniqueId:uniqueId
                     albumMessageId:albumMessageId
@@ -167,11 +167,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     _cachedImageWidth = cachedImageWidth;
     _creationTimestamp = creationTimestamp;
     _digest = digest;
-    _isOutgoingSticker = isOutgoingSticker;
     _isUploaded = isUploaded;
     _isValidImageCached = isValidImageCached;
     _isValidVideoCached = isValidVideoCached;
     _localRelativeFilePath = localRelativeFilePath;
+    _shouldAlwaysPad = shouldAlwaysPad;
 
     return self;
 }
@@ -894,7 +894,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                          sourceFilename:thumbnailName
                                                 caption:nil
                                          albumMessageId:nil
-                                      isOutgoingSticker:NO];
+                                      shouldAlwaysPad:NO];
 
     NSError *error;
     BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];

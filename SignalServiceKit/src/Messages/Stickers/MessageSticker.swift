@@ -165,7 +165,7 @@ public class MessageSticker: MTLModel {
             return nil
         }
         let contentType = dataProto.contentType ?? OWSMimeTypeImageWebp
-        let attachment = TSAttachmentStream(contentType: contentType, byteCount: fileSize.uint32Value, sourceFilename: nil, caption: nil, albumMessageId: nil, isOutgoingSticker: false)
+        let attachment = TSAttachmentStream(contentType: contentType, byteCount: fileSize.uint32Value, sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: false)
         guard attachment.write(dataSource) else {
             owsFailDebug("Could not write data source for path: \(filePath)")
             return nil
@@ -209,7 +209,7 @@ public class MessageSticker: MTLModel {
             owsFailDebug("Could not create data source for path: \(filePath)")
             throw StickerError.assertionFailure
         }
-        let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil, isOutgoingSticker: true)
+        let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: true)
         guard attachment.write(dataSource) else {
             owsFailDebug("Could not write data source for path: \(filePath)")
             throw StickerError.assertionFailure

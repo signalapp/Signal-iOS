@@ -54,19 +54,19 @@ public class FeatureFlags: NSObject {
     // StickerManager.isStickerSendEnabled.  Sticker sending is
     // auto-enabled once the user receives any sticker content.
     @objc
-    public static let stickerSend = true
+    public static let stickerSend = false
 
     @objc
-    public static let stickerAutoEnable = false
+    public static let stickerAutoEnable = true
 
     @objc
     public static let stickerSearch = false
 
     @objc
-    public static let stickerPackSharing = true
+    public static let stickerPackOrdering = false
 
     @objc
-    public static let stickerPackOrdering = false
+    public static let testBuiltInStickerPacks = false
 
     // Don't enable this flag until the Desktop changes have been in production for a while.
     @objc

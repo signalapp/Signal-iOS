@@ -159,6 +159,11 @@ static NSTimeInterval launchStartedAt;
     return AppEnvironment.shared.legacyNotificationActionHandler;
 }
 
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -603,6 +608,9 @@ static NSTimeInterval launchStartedAt;
                 }
             }
         } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
+            if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
+                return NO;
+            }
             StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];
             if (stickerPackInfo == nil) {
                 OWSFailDebug(@"Invalid URL: %@", url);
@@ -622,6 +630,7 @@ static NSTimeInterval launchStartedAt;
             } else {
                 [rootViewController presentViewController:packView animated:NO completion:nil];
             }
+            return YES;
         } else {
             OWSFailDebug(@"Application opened with an unknown URL action: %@", url.host);
         }
@@ -1357,10 +1366,9 @@ static NSTimeInterval launchStartedAt;
     if ([self.tsAccountManager isRegistered]) {
         OWSLogInfo(@"localNumber: %@", [self.tsAccountManager localNumber]);
 
-        [self.primaryStorage.newDatabaseConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
-            }];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
+        }];
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
         [self.disappearingMessagesJob startIfNecessary];

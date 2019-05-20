@@ -27,7 +27,7 @@ typedef void (^OWSThumbnailFailure)(void);
                      sourceFilename:(nullable NSString *)sourceFilename
                             caption:(nullable NSString *)caption
                      albumMessageId:(nullable NSString *)albumMessageId
-                  isOutgoingSticker:(BOOL)isOutgoingSticker NS_DESIGNATED_INITIALIZER;
+                  shouldAlwaysPad:(BOOL)shouldAlwaysPad NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
@@ -54,12 +54,12 @@ typedef void (^OWSThumbnailFailure)(void);
                 cachedImageWidth:(nullable NSNumber *)cachedImageWidth
                creationTimestamp:(NSDate *)creationTimestamp
                           digest:(nullable NSData *)digest
-               isOutgoingSticker:(BOOL)isOutgoingSticker
                       isUploaded:(BOOL)isUploaded
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
-NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isOutgoingSticker:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
+                 shouldAlwaysPad:(BOOL)shouldAlwaysPad
+NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentType:byteCount:caption:contentType:encryptionKey:isDownloaded:serverId:sourceFilename:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:shouldAlwaysPad:));
 
 // clang-format on
 
@@ -121,7 +121,9 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 // This method should only be invoked by OWSThumbnailService.
 - (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints;
 
-@property (nonatomic, readonly) BOOL isOutgoingSticker;
+// When uploading, always apply adding to this attachment,
+// regardless of feature flags.
+@property (nonatomic, readonly) BOOL shouldAlwaysPad;
 
 #pragma mark - Validation
 

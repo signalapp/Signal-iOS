@@ -254,7 +254,7 @@
 		34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B0796B1FCF46B000E248C2 /* MainAppContext.m */; };
 		34B3F8751E8DF1700035BE1A /* CallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83B1E8DF1700035BE1A /* CallViewController.swift */; };
 		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
-		34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */; };
+		34B3F87B1E8DF1700035BE1A /* ExperienceUpgradeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* ExperienceUpgradeViewController.swift */; };
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
 		34B3F8821E8DF1700035BE1A /* NewContactThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */; };
 		34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
@@ -980,7 +980,7 @@
 		34B3F83A1E8DF1700035BE1A /* AttachmentSharing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AttachmentSharing.m; sourceTree = "<group>"; };
 		34B3F83B1E8DF1700035BE1A /* CallViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CallViewController.swift; sourceTree = "<group>"; };
 		34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactsPicker.swift; sourceTree = "<group>"; };
-		34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradesPageViewController.swift; sourceTree = "<group>"; };
+		34B3F8441E8DF1700035BE1A /* ExperienceUpgradeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeViewController.swift; sourceTree = "<group>"; };
 		34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteFlow.swift; sourceTree = "<group>"; };
 		34B3F84F1E8DF1700035BE1A /* NewContactThreadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewContactThreadViewController.h; sourceTree = "<group>"; };
 		34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewContactThreadViewController.m; sourceTree = "<group>"; };
@@ -1976,7 +1976,7 @@
 				3448BFC01EDF0EA7005B2D69 /* ConversationView */,
 				346B66301F4E29B200E5122F /* CropScaleImageViewController.swift */,
 				34D8C0221ED3673300188D7C /* DebugUI */,
-				34B3F8441E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift */,
+				34B3F8441E8DF1700035BE1A /* ExperienceUpgradeViewController.swift */,
 				34BECE2C1F7ABCE000D7438D /* GifPicker */,
 				34386A4C207D0C01009F5D9C /* HomeView */,
 				34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */,
@@ -3717,7 +3717,7 @@
 				452037D11EE84975004E4CDF /* DebugUISessionState.m in Sources */,
 				D221A09A169C9E5E00537ABF /* main.m in Sources */,
 				3496957221A301A100DCFE74 /* OWSBackup.m in Sources */,
-				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradesPageViewController.swift in Sources */,
+				34B3F87B1E8DF1700035BE1A /* ExperienceUpgradeViewController.swift in Sources */,
 				3448E1622213585C004B052E /* OnboardingBaseViewController.swift in Sources */,
 				34E5DC8220D8050D00C08145 /* RegistrationUtils.m in Sources */,
 				45638BDC1F3DD0D400128435 /* DebugUICalling.swift in Sources */,

@@ -189,4 +189,13 @@ public class OWSFlatButton: UIView {
     public var font: UIFont? {
         return button.titleLabel?.font
     }
+
+    @objc
+    public func autoSetHeightUsingFont() {
+        guard let font = font else {
+            owsFailDebug("Missing button font.")
+            return
+        }
+        autoSetDimension(.height, toSize: font.lineHeight * 2.5)
+    }
 }
