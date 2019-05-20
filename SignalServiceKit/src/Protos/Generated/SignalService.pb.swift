@@ -1342,7 +1342,6 @@ struct SignalServiceProtos_DataMessage {
     /// Clears the value of `expireTimer`. Subsequent reads from it will return its default value.
     mutating func clearExpireTimer() {self._expireTimer = nil}
 
-    /// @required
     var attachments: [SignalServiceProtos_AttachmentPointer] = []
 
     var unknownFields = SwiftProtobuf.UnknownStorage()

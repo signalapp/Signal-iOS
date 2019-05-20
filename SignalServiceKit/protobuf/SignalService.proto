@@ -226,7 +226,6 @@ message DataMessage {
   message EphemeralMessage {
     // @required
     optional uint32            expireTimer = 1;
-    // @required
     repeated AttachmentPointer attachments = 2;
   }
 

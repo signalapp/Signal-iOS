@@ -2952,13 +2952,14 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
     // MARK: - SSKProtoDataMessageEphemeralMessageBuilder
 
-    @objc public class func builder(expireTimer: UInt32, attachments: [SSKProtoAttachmentPointer]) -> SSKProtoDataMessageEphemeralMessageBuilder {
-        return SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer, attachments: attachments)
+    @objc public class func builder(expireTimer: UInt32) -> SSKProtoDataMessageEphemeralMessageBuilder {
+        return SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoDataMessageEphemeralMessageBuilder {
-        let builder = SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer, attachments: attachments)
+        let builder = SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer)
+        builder.setAttachments(attachments)
         return builder
     }
 
@@ -2968,11 +2969,10 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(expireTimer: UInt32, attachments: [SSKProtoAttachmentPointer]) {
+        @objc fileprivate init(expireTimer: UInt32) {
             super.init()
 
             setExpireTimer(expireTimer)
-            setAttachments(attachments)
         }
 
         @objc public func setExpireTimer(_ valueParam: UInt32) {
@@ -3028,10 +3028,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         }
         let expireTimer = proto.expireTimer
 
-        guard proto.hasAttachments else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: attachments")
-        }
-        let attachments = try SSKProtoAttachmentPointer.parseProto(proto.attachments)
+        var attachments: [SSKProtoAttachmentPointer] = []
+        attachments = try proto.attachments.map { try SSKProtoAttachmentPointer.parseProto($0) }
 
         // MARK: - Begin Validation Logic for SSKProtoDataMessageEphemeralMessage -
 
