@@ -153,16 +153,16 @@ class ParsedClass:
      
      def is_sds_model(self):
          if self.super_class_name is None:
-             print 'is_sds_model (1):', self.name, self.super_class_name
+             # print 'is_sds_model (1):', self.name, self.super_class_name
              return False
          if not self.super_class_name in global_class_map:
-             print 'is_sds_model (2):', self.name, self.super_class_name
+             # print 'is_sds_model (2):', self.name, self.super_class_name
              return False
          if self.super_class_name == BASE_MODEL_CLASS_NAME:
-             print 'is_sds_model (3):', self.name, self.super_class_name
+             # print 'is_sds_model (3):', self.name, self.super_class_name
              return True
          super_class = global_class_map[self.super_class_name]
-         print 'is_sds_model (4):', self.name, self.super_class_name
+         # print 'is_sds_model (4):', self.name, self.super_class_name
          return super_class.is_sds_model()
      
      def has_sds_superclass(self):
@@ -674,6 +674,10 @@ import SignalCoreKit
         record_name = remove_prefix_from_class_name(clazz.name) + 'Record'
         swift_body += '''
 public struct %s: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return %sSerializer.table
+    }
+    
     public static let databaseTableName: String = %sSerializer.table.tableName
 
     public var id: Int64?
@@ -683,7 +687,7 @@ public struct %s: SDSRecord {
     public let recordType: SDSRecordType
     public let uniqueId: String
 
-''' % ( record_name, str(clazz.name), )
+''' % ( record_name, str(clazz.name), str(clazz.name), )
 
         def write_record_property(property, force_optional=False):
             column_name = to_swift_identifier_name(property.name)
@@ -904,18 +908,11 @@ extension %s {
 
             # --- Invoke Initializer
             
-            initializer_invocation = '            let model = %s(' % str(deserialize_class.name)
+            initializer_invocation = '            return %s(' % str(deserialize_class.name)
             swift_body += initializer_invocation
             swift_body += (',\n' + ' ' * len(initializer_invocation)).join(initializer_params)
             swift_body += ')'
             swift_body += '''
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            } else {
-                owsFailDebug("Missing GRDB id.")
-            }
-            return model
 
 '''
 
@@ -971,7 +968,7 @@ extension %s: SDSSerializable {
         }
     }
     
-    public func asRecord(forUpdate: Bool) throws -> %s {
+    public func asRecord() throws -> %s {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
@@ -984,11 +981,11 @@ extension %s: SDSSerializable {
             swift_body += '''
         case let model as %s:
             assert(type(of: model) == %s.self)
-            return try %sSerializer(model: model).toRecord(forUpdate: forUpdate)''' % ( str(subclass.name), str(subclass.name), str(subclass.name), )
+            return try %sSerializer(model: model).toRecord()''' % ( str(subclass.name), str(subclass.name), str(subclass.name), )
 
         swift_body += '''
         default:
-            return try %sSerializer(model: self).toRecord(forUpdate: forUpdate)
+            return try %sSerializer(model: self).toRecord()
         }
     }
 }
@@ -1064,46 +1061,36 @@ extension %sSerializer {
         swift_body += '''
 // MARK: - Save/Remove/Update
 
-@objc
-extension %s {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+fileprivate extension %s {
+    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
-                let database = grdbTransaction.database
-                var record = try asRecord(forUpdate: false)
-                try record.insert(database)
-
-                guard self.grdbId == nil else {
-                    owsFailDebug("Model unexpectedly already has grdbId.")
-                    return
-                }
-                guard let grdbId = record.id else {
-                    owsFailDebug("Record missing grdbId.")
-                    return
-                }
-                self.grdbId = NSNumber(value: grdbId)
+                let record = try asRecord()
+                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
             } catch {
                 owsFail("Write failed: \(error)")
             }
         }
     }
+}
+
+// MARK: - Save/Remove/Update
+
+@objc
+extension %s {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
     
     public func anyUpdate(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let database = grdbTransaction.database
-                let record = try asRecord(forUpdate: true)
-                try record.update(database, columns: serializer.updateColumnNames())
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+    
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
     
     // This method is used by "updateWith..." methods.
@@ -1153,12 +1140,17 @@ extension %s {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
 
-''' % ( ( str(clazz.name), ) * 2 )
+''' % ( ( str(clazz.name), ) * 3 )
 
 
         # ---- Cursor ----
@@ -1370,15 +1362,8 @@ class %sSerializer: SDSSerializer {
     swift_body += '''
     // MARK: - Record
 
-    func toRecord(forUpdate: Bool) throws -> %s {
-        var id: Int64?
-        if forUpdate {
-            guard let grdbId: NSNumber = model.grdbId else {
-                owsFailDebug("Model is missing grdbId.")
-                throw SDSError.missingRequiredField
-            }
-            id = grdbId.int64Value
-        }
+    func toRecord() throws -> %s {
+        let id: Int64? = nil
 
         let recordType: SDSRecordType = .%s
         guard let uniqueId: String = model.uniqueId else {

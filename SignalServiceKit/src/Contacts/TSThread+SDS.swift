@@ -12,6 +12,10 @@ import SignalCoreKit
 // MARK: - Record
 
 public struct ThreadRecord: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return TSThreadSerializer.table
+    }
+
     public static let databaseTableName: String = TSThreadSerializer.table.tableName
 
     public var id: Int64?
@@ -97,22 +101,17 @@ extension TSThread {
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
             let hasDismissedOffers: Bool = try SDSDeserialization.required(record.hasDismissedOffers, name: "hasDismissedOffers")
 
-            let model = TSContactThread(uniqueId: uniqueId,
-                                        archivalDate: archivalDate,
-                                        archivedAsOfMessageSortId: archivedAsOfMessageSortId,
-                                        conversationColorName: conversationColorName,
-                                        creationDate: creationDate,
-                                        isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
-                                        lastMessageDate: lastMessageDate,
-                                        messageDraft: messageDraft,
-                                        mutedUntilDate: mutedUntilDate,
-                                        shouldThreadBeVisible: shouldThreadBeVisible,
-                                        hasDismissedOffers: hasDismissedOffers)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return TSContactThread(uniqueId: uniqueId,
+                                   archivalDate: archivalDate,
+                                   archivedAsOfMessageSortId: archivedAsOfMessageSortId,
+                                   conversationColorName: conversationColorName,
+                                   creationDate: creationDate,
+                                   isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
+                                   lastMessageDate: lastMessageDate,
+                                   messageDraft: messageDraft,
+                                   mutedUntilDate: mutedUntilDate,
+                                   shouldThreadBeVisible: shouldThreadBeVisible,
+                                   hasDismissedOffers: hasDismissedOffers)
 
         case .groupThread:
 
@@ -129,22 +128,17 @@ extension TSThread {
             let groupModelSerialized: Data? = record.groupModel
             let groupModel: TSGroupModel = try SDSDeserialization.unarchive(groupModelSerialized, name: "groupModel")
 
-            let model = TSGroupThread(uniqueId: uniqueId,
-                                      archivalDate: archivalDate,
-                                      archivedAsOfMessageSortId: archivedAsOfMessageSortId,
-                                      conversationColorName: conversationColorName,
-                                      creationDate: creationDate,
-                                      isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
-                                      lastMessageDate: lastMessageDate,
-                                      messageDraft: messageDraft,
-                                      mutedUntilDate: mutedUntilDate,
-                                      shouldThreadBeVisible: shouldThreadBeVisible,
-                                      groupModel: groupModel)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return TSGroupThread(uniqueId: uniqueId,
+                                 archivalDate: archivalDate,
+                                 archivedAsOfMessageSortId: archivedAsOfMessageSortId,
+                                 conversationColorName: conversationColorName,
+                                 creationDate: creationDate,
+                                 isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
+                                 lastMessageDate: lastMessageDate,
+                                 messageDraft: messageDraft,
+                                 mutedUntilDate: mutedUntilDate,
+                                 shouldThreadBeVisible: shouldThreadBeVisible,
+                                 groupModel: groupModel)
 
         case .thread:
 
@@ -159,21 +153,16 @@ extension TSThread {
             let mutedUntilDate: Date? = record.mutedUntilDate
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
 
-            let model = TSThread(uniqueId: uniqueId,
-                                 archivalDate: archivalDate,
-                                 archivedAsOfMessageSortId: archivedAsOfMessageSortId,
-                                 conversationColorName: conversationColorName,
-                                 creationDate: creationDate,
-                                 isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
-                                 lastMessageDate: lastMessageDate,
-                                 messageDraft: messageDraft,
-                                 mutedUntilDate: mutedUntilDate,
-                                 shouldThreadBeVisible: shouldThreadBeVisible)
-
-            if let grdbId = record.id {
-                model.grdbId = NSNumber(value: grdbId)
-            }
-            return model
+            return TSThread(uniqueId: uniqueId,
+                            archivalDate: archivalDate,
+                            archivedAsOfMessageSortId: archivedAsOfMessageSortId,
+                            conversationColorName: conversationColorName,
+                            creationDate: creationDate,
+                            isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
+                            lastMessageDate: lastMessageDate,
+                            messageDraft: messageDraft,
+                            mutedUntilDate: mutedUntilDate,
+                            shouldThreadBeVisible: shouldThreadBeVisible)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -201,19 +190,19 @@ extension TSThread: SDSSerializable {
         }
     }
 
-    public func asRecord(forUpdate: Bool) throws -> ThreadRecord {
+    public func asRecord() throws -> ThreadRecord {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
         // We need to do a "depth first" search by type.
         switch self {
         case let model as TSGroupThread:
             assert(type(of: model) == TSGroupThread.self)
-            return try TSGroupThreadSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try TSGroupThreadSerializer(model: model).toRecord()
         case let model as TSContactThread:
             assert(type(of: model) == TSContactThread.self)
-            return try TSContactThreadSerializer(model: model).toRecord(forUpdate: forUpdate)
+            return try TSContactThreadSerializer(model: model).toRecord()
         default:
-            return try TSThreadSerializer(model: self).toRecord(forUpdate: forUpdate)
+            return try TSThreadSerializer(model: self).toRecord()
         }
     }
 }
@@ -263,46 +252,36 @@ extension TSThreadSerializer {
 
 // MARK: - Save/Remove/Update
 
-@objc
-extension TSThread {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+fileprivate extension TSThread {
+    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
-                let database = grdbTransaction.database
-                var record = try asRecord(forUpdate: false)
-                try record.insert(database)
-
-                guard self.grdbId == nil else {
-                    owsFailDebug("Model unexpectedly already has grdbId.")
-                    return
-                }
-                guard let grdbId = record.id else {
-                    owsFailDebug("Record missing grdbId.")
-                    return
-                }
-                self.grdbId = NSNumber(value: grdbId)
+                let record = try asRecord()
+                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
             } catch {
                 owsFail("Write failed: \(error)")
             }
         }
     }
+}
+
+// MARK: - Save/Remove/Update
+
+@objc
+extension TSThread {
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
 
     public func anyUpdate(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let database = grdbTransaction.database
-                let record = try asRecord(forUpdate: true)
-                try record.update(database, columns: serializer.updateColumnNames())
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -352,7 +331,12 @@ extension TSThread {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
@@ -524,15 +508,8 @@ class TSThreadSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord(forUpdate: Bool) throws -> ThreadRecord {
-        var id: Int64?
-        if forUpdate {
-            guard let grdbId: NSNumber = model.grdbId else {
-                owsFailDebug("Model is missing grdbId.")
-                throw SDSError.missingRequiredField
-            }
-            id = grdbId.int64Value
-        }
+    func toRecord() throws -> ThreadRecord {
+        let id: Int64? = nil
 
         let recordType: SDSRecordType = .thread
         guard let uniqueId: String = model.uniqueId else {
