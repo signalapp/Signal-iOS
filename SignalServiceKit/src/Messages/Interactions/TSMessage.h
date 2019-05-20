@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic) BOOL isFriendRequest; // Loki
 @property (nonatomic) uint64_t friendRequestExpiresAt;
+@property (nonatomic) BOOL isFriendRequestExpired;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -72,8 +73,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Loki Friend Request Handling
 
-- (void)setIsFriendRequest:(BOOL)isFriendRequest withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)saveIsFriendRequest:(BOOL)isFriendRequest withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 - (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+- (void)saveIsFriendRequestExpired:(BOOL)isFriendRequestExpired withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 @end
 

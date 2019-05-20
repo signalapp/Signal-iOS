@@ -1110,7 +1110,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // Update the thread's friend request status if needed
     NSInteger *messageType = ((NSNumber *)signalMessage[@"type"]).integerValue;
     if (messageType == TSFriendRequestMessageType) {
-        [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestSending withTransaction:nil];
+        [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSending withTransaction:nil];
     }
     BOOL isPoWRequired = YES; // TODO: Base on message type
     [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId timestamp:message.timestamp requiringPoW:isPoWRequired]
@@ -1118,7 +1118,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Loki
             // ========
             if (messageType == TSFriendRequestMessageType) {
-                [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:nil];
+                [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:nil];
                 
                 // We also want to expire the message after 72 hours
                 NSTimeInterval expireTimeInterval = 72 * kHourInterval;
@@ -1136,7 +1136,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Loki
             // ========
             if (messageType == TSFriendRequestMessageType) {
-                [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:nil];
+                [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:nil];
             }
             // ========
             // Handle the error

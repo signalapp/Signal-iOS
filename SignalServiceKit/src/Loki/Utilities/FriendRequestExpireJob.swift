@@ -150,12 +150,14 @@ public class FriendRequestExpireJob: NSObject {
                     guard message.thread.friendRequestStatus == .requestSent else {
                         // Set message to not expire, so our other logic works correctly
                         message.saveFriendRequestExpires(at: 0, with: transaction)
+                        message.saveIsFriendRequestExpired(true, with: transaction)
                         return;
                     }
                     
                     // Loki: Expire the friend request message
-                    message.thread.setFriendRequestStatus(.requestExpired, with: transaction)
+                    message.thread.saveFriendRequestStatus(.requestExpired, with: transaction)
                     message.saveFriendRequestExpires(at: 0, with: transaction)
+                    message.saveIsFriendRequestExpired(true, with: transaction)
                 }, transaction: transaction)
             }
         })

@@ -1474,7 +1474,7 @@ NS_ASSUME_NONNULL_BEGIN
             // before updating Alice's thread's friend request status to TSThreadFriendRequestStatusFriends,
             // we can end up in a deadlock where both users' threads' friend request statuses are
             // TSThreadFriendRequestStatusRequestSent.
-            [thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
+            [thread saveFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
             
             // The two lines below are equivalent to calling [ThreadUtil enqueueAcceptFriendRequestMessageInThread:thread]
             OWSEphemeralMessage *emptyMessage = [OWSEphemeralMessage createEmptyOutgoingMessageInThread:thread];
@@ -1485,13 +1485,13 @@ NS_ASSUME_NONNULL_BEGIN
             // friend request status is reset to TSThreadFriendRequestStatusNone. Bob now sends Alice a friend
             // request. Alice's thread's friend request status is reset to
             // TSThreadFriendRequestStatusRequestReceived.
-            [thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestReceived withTransaction:transaction];
+            [thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestReceived withTransaction:transaction];
             message.isFriendRequest = YES;
         }
     } else if (!thread.isContactFriend) {
         // If the thread's friend request status is not TSThreadFriendRequestStatusFriends, but we're receiving a message,
         // it must be a friend request accepted message. Declining a friend request doesn't send a message.
-        [thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
+        [thread saveFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
     }
 }
 

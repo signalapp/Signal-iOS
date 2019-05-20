@@ -441,7 +441,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Loki Friend Request Handling
 
-- (void)setIsFriendRequest:(BOOL)isFriendRequest withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)saveIsFriendRequest:(BOOL)isFriendRequest withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
     self.isFriendRequest = isFriendRequest;
     if (transaction == nil) {
@@ -454,6 +454,16 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
     self.friendRequestExpiresAt = expiresAt;
+    if (transaction == nil) {
+        [self save];
+    } else {
+        [self saveWithTransaction:transaction];
+    }
+}
+
+- (void)saveIsFriendRequestExpired:(BOOL)isFriendRequestExpired withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+{
+    self.isFriendRequest = isFriendRequestExpired;
     if (transaction == nil) {
         [self save];
     } else {
