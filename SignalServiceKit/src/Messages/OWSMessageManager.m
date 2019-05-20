@@ -1476,6 +1476,7 @@ NS_ASSUME_NONNULL_BEGIN
             // we can end up in a deadlock where both users' threads' friend request statuses are
             // TSThreadFriendRequestStatusRequestSent.
             [thread setFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:transaction];
+            
             // The two lines below are equivalent to calling [ThreadUtil enqueueAcceptFriendRequestMessageInThread:thread]
             OWSEphemeralMessage *emptyMessage = [OWSEphemeralMessage createEmptyOutgoingMessageInThread:thread];
             [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];

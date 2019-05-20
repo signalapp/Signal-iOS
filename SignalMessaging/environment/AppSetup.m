@@ -125,6 +125,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       syncManager:syncManager
                                                                  typingIndicators:typingIndicators
                                                               attachmentDownloads:attachmentDownloads]];
+        
+        // Loki
+        OWSLokiFriendRequestExpireJob *lokiFriendRequestExpireJob = [[OWSLokiFriendRequestExpireJob alloc] initWithPrimaryStorage:primaryStorage];
+        [SSKEnvironment.shared setLokiFriendRequestExpireJob:lokiFriendRequestExpireJob];
 
         appSpecificSingletonBlock();
 

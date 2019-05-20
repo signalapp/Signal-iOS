@@ -27,6 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSSocketManager;
 @class YapDatabaseConnection;
 
+// Loki
+@class OWSLokiFriendRequestExpireJob;
+
 @protocol ContactsManagerProtocol;
 @protocol NotificationsProtocol;
 @protocol OWSCallMessageHandler;
@@ -110,6 +113,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, readonly) YapDatabaseConnection *sessionStoreDBConnection;
 @property (atomic, readonly) YapDatabaseConnection *migrationDBConnection;
 @property (atomic, readonly) YapDatabaseConnection *analyticsDBConnection;
+
+// Loki
+@property (nonatomic, readonly) OWSLokiFriendRequestExpireJob *lokiFriendRequestExpireJob;
+- (void)setLokiFriendRequestExpireJob:(OWSLokiFriendRequestExpireJob *)lokiFriendRequestExpireJob;
 
 - (BOOL)isComplete;
 

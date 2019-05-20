@@ -1119,6 +1119,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // ========
             if (messageType == TSFriendRequestMessageType) {
                 [message.thread setFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:nil];
+                
+                // We also want to expire the message after 72 hours
+                NSTimeInterval expireTimeInterval = 72 * kHourInterval;
+                NSDate *expireDate = [[NSDate new] dateByAddingTimeInterval:expireTimeInterval];
+                [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expireDate] withTransaction:nil];
             }
             // ========
             // Invoke the completion handler

@@ -82,6 +82,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _quotedMessage = quotedMessage;
     _contactShare = contactShare;
     _linkPreview = linkPreview;
+    _friendRequestExpiresAt = 0;
 
     return self;
 }
@@ -443,6 +444,16 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (void)setIsFriendRequest:(BOOL)isFriendRequest withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     self.isFriendRequest = isFriendRequest;
+    if (transaction == nil) {
+        [self save];
+    } else {
+        [self saveWithTransaction:transaction];
+    }
+}
+
+- (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+{
+    self.friendRequestExpiresAt = expiresAt;
     if (transaction == nil) {
         [self save];
     } else {
