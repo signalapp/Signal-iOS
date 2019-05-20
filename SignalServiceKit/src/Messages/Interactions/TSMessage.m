@@ -444,10 +444,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (void)saveFriendRequestStatus:(TSMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
     self.friendRequestStatus = friendRequestStatus;
+    void (^postNotification)() = ^() {
+        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageFriendRequestStatusChanged object:self.uniqueId];
+    };
     if (transaction == nil) {
         [self save];
+        [self.dbReadWriteConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ postNotification(); }];
     } else {
         [self saveWithTransaction:transaction];
+        [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ postNotification(); }];
     }
 }
 

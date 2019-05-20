@@ -66,10 +66,21 @@
         }
         addSubview(mainStackView)
         mainStackView.autoPin(toEdgesOf: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleFriendRequestStatusChangedNotification), name: .messageFriendRequestStatusChanged, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: Updating
-    @objc func handleMessageChanged() {
+    @objc private func handleFriendRequestStatusChangedNotification(_ notification: Notification) {
+        guard let messageID = notification.object as? String, messageID == message?.uniqueId else { return }
+        message.reload()
+        handleMessageChanged()
+    }
+    
+    @objc private func handleMessageChanged() {
         precondition(message != nil)
         switch kind {
         case .incoming:
@@ -108,7 +119,6 @@
         guard let message = message as? TSIncomingMessage else { preconditionFailure() }
         message.saveFriendRequestStatus(.declined, with: nil)
         delegate?.declineFriendRequest(message)
-        handleMessageChanged() // Update UI
     }
     
     // MARK: Measuring
