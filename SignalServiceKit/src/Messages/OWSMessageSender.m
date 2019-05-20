@@ -1121,10 +1121,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:transaction];
                     [message.thread removeOutgoingFriendRequestMessagesWithTransaction:transaction];
-                    
-                    // We also want to expire the message after 72 hours
-                    NSTimeInterval expireTimeInterval = 72 * kHourInterval;
-                    NSDate *expireDate = [[NSDate new] dateByAddingTimeInterval:expireTimeInterval];
+                    // Set the expiration date
+                    NSTimeInterval expirationInterval = 72 * kHourInterval;
+                    NSDate *expireDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
                     [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expireDate] withTransaction:transaction];
                 }];
             }

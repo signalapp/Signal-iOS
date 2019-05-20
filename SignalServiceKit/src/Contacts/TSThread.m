@@ -700,25 +700,22 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 - (void)removeOutgoingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self removeFriendRequestMessages:false withTransaction:transaction];
+    [self removeFriendRequestMessages:OWSInteractionType_OutgoingMessage withTransaction:transaction];
 }
 
 - (void)removeIncomingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self removeFriendRequestMessages:true withTransaction:transaction];
+    [self removeFriendRequestMessages:OWSInteractionType_IncomingMessage withTransaction:transaction];
 }
 
-- (void)removeFriendRequestMessages:(BOOL)incoming withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeFriendRequestMessages:(OWSInteractionType)interactionType withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // If we're friends with the person then we don't need to remove any friend request messages
-    if (self.friendRequestStatus == TSThreadFriendRequestStatusFriends) {
-        return;
-    }
+    if (self.friendRequestStatus == TSThreadFriendRequestStatusFriends) { return; }
     
     NSMutableArray<NSString *> *idsToRemove = [NSMutableArray new];
     __block TSMessage *_Nullable messageToKeep = nil; // We want to keep this interaction and not remove it
-    OWSInteractionType interactionType = incoming ? OWSInteractionType_IncomingMessage : OWSInteractionType_OutgoingMessage;
-    
+
     [self enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction * _Nonnull interaction, YapDatabaseReadTransaction * _Nonnull transaction) {
         if (interaction.interactionType != interactionType) {
             return;
