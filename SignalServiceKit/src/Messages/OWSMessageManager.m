@@ -88,11 +88,8 @@ NS_ASSUME_NONNULL_BEGIN
     _dbConnection = primaryStorage.newDatabaseConnection;
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithPrimaryStorage:primaryStorage];
     
-    /// Loki: Add observation for new session
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(onNewSessionAdopted:)
-                                                 name:kNSNotificationName_SessionAdopted
-                                               object:nil];
+    // Loki: Add observation for new session
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onNewSessionAdopted:) name:kNSNotificationName_SessionAdopted object:nil];
 
     OWSSingletonAssert();
 
@@ -100,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 #pragma mark - Dependencies
@@ -1004,14 +1001,15 @@ NS_ASSUME_NONNULL_BEGIN
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
     // MJK TODO - safe to remove senderTimestamp
-    [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+    [[[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp
                                      inThread:thread
-                                  messageType:TSInfoMessageTypeLokiSessionResetProgress] saveWithTransaction:transaction];
-    /* Loki original code
-     * ==================
+                                  messageType:TSInfoMessageTypeLokiSessionResetInProgress] saveWithTransaction:transaction];
+    /* Loki: Original code
+     * ================
     [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                      inThread:thread
                                   messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
+     * ================
      */
 
     /// Loki: Archive all our sessions
@@ -1026,11 +1024,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSEphemeralMessage *emptyMessage = [OWSEphemeralMessage createEmptyOutgoingMessageInThread:thread];
     [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
 
-    OWSLogDebug(@"[Loki Session Reset] Session reset has been received from %@", envelope.source);
+    OWSLogDebug(@"[Loki] Session reset has been received from %@.", envelope.source);
     
-    /* Loki Original Code
-     * ===================
+    /* Loki: Original code
+     * ================
     [self.primaryStorage deleteAllSessionsForContact:envelope.source protocolContext:transaction];
+     * ================
      */
 }
 
@@ -1689,15 +1688,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)onNewSessionAdopted:(NSNotification *)notification {
     NSString *pubKey = notification.userInfo[kNSNotificationKey_ContactPubKey];
-    if (pubKey.length == 0) {
-        return;
-    }
+    if (pubKey.length == 0) { return; }
     
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         
         TSContactThread *_Nullable thread = [TSContactThread getThreadWithContactId:pubKey transaction:transaction];
         if (!thread) {
-            OWSLogDebug(@"[Loki Session Reset] New session was adopted but we failed to get the thread for %@", pubKey);
+            OWSLogDebug(@"[Loki] New session was adopted but we failed to get the thread for %@.", pubKey);
             return;
         }
         
@@ -1708,7 +1705,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         
         // Show session reset done message
-        [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+        [[[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp
                                          inThread:thread
                                       messageType:TSInfoMessageTypeLokiSessionResetDone] saveWithTransaction:transaction];
         
