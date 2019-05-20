@@ -24,14 +24,14 @@ public class FriendRequestExpireMessageFinder : NSObject {
         return expireTime
     }
     
-    public func enumurateExpiredMessages(with block: (TSMessage) -> Void, transaction: YapDatabaseReadTransaction) {
-        for messageId in fetchExpiredMessageIds(with: transaction) {
+    public func enumurateMessagesPendingExpiration(with block: (TSMessage) -> Void, transaction: YapDatabaseReadTransaction) {
+        for messageId in fetchMessagePendingExpirationIds(with: transaction) {
             guard let message = TSMessage.fetch(uniqueId: messageId, transaction: transaction) else { continue }
             block(message)
         }
     }
     
-    private func fetchExpiredMessageIds(with transaction: YapDatabaseReadTransaction) -> [String] {
+    private func fetchMessagePendingExpirationIds(with transaction: YapDatabaseReadTransaction) -> [String] {
         var messageIds = [String]()
         let now = NSDate.ows_millisecondTimeStamp()
 
@@ -60,7 +60,7 @@ public extension FriendRequestExpireMessageFinder {
         let handler = YapDatabaseSecondaryIndexHandler.withObjectBlock { (transaction, dict, collection, key, object) in
             guard let message = object as? TSMessage else { return }
             
-            // Only select messages whose status is sent
+            // Only select sent friend requests
             guard message is TSOutgoingMessage && message.isFriendRequest else { return }
             
             // TODO: Replace this with unlock timer
