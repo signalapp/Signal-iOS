@@ -1422,7 +1422,7 @@ NS_ASSUME_NONNULL_BEGIN
             [incomingMessage.attachmentIds addObject:pointer.uniqueId];
         }
 
-        if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
+        if (body.length == 0 && attachmentPointers.count < 1 && !contact && !messageSticker) {
             OWSLogWarn(@"ignoring empty incoming message from: %@ with timestamp: %lu",
                 envelopeAddress(envelope),
                 (unsigned long)timestamp);
