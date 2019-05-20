@@ -36,7 +36,7 @@ public class FriendRequestExpireMessageFinder : NSObject {
         let now = NSDate.ows_millisecondTimeStamp()
 
         let query = "WHERE \(FriendRequestExpireMessageFinder.friendRequestExpireColumn) > 0 AND \(FriendRequestExpireMessageFinder.friendRequestExpireColumn) <= \(now)"
-        // When (expireAt == 0) then the friend request SHOULD NOT expire
+        // When (friendRequestExpiresAt == 0) then the friend request SHOULD NOT be set to expired
         let dbQuery = YapDatabaseQuery(string: query, parameters: [])
         if let ext = transaction.ext(FriendRequestExpireMessageFinder.friendRequestExpireIndex) as? YapDatabaseSecondaryIndexTransaction {
             ext.enumerateKeys(matching: dbQuery) { (_, key, _) in
@@ -60,10 +60,9 @@ public extension FriendRequestExpireMessageFinder {
         let handler = YapDatabaseSecondaryIndexHandler.withObjectBlock { (transaction, dict, collection, key, object) in
             guard let message = object as? TSMessage else { return }
             
-            // Only select sent friend requests
-            guard message is TSOutgoingMessage && message.isFriendRequest else { return }
+            // Only select sent friend requests which are pending
+            guard message is TSOutgoingMessage && message.friendRequestStatus == .pending else { return }
             
-            // TODO: Replace this with unlock timer
             dict[friendRequestExpireColumn] = message.friendRequestExpiresAt
         }
         

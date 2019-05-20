@@ -729,13 +729,13 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
             messageToKeep = message;
         }
         
-        // We want to remove any old incoming friend request messages
+        // We want to remove any old incoming friend request messages which are pending
         if (interactionType == OWSInteractionType_IncomingMessage) {
-            removeMessage = message.isFriendRequest;
+            removeMessage = message.friendRequestStatus == TSMessageFriendRequestStatusPending;
         } else {
             // Or if we're sending then remove any failed friend request messages
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
-            removeMessage = outgoingMessage.messageState == TSOutgoingMessageStateFailed;
+            removeMessage = outgoingMessage.isFriendRequest && outgoingMessage.messageState == TSOutgoingMessageStateFailed;
         }
         
         if (removeMessage) {
