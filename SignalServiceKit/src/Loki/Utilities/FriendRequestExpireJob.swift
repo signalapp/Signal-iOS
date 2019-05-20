@@ -121,7 +121,7 @@ public final class FriendRequestExpireJob : NSObject {
             guard let strongSelf = self else { return }
             
             strongSelf.databaseConnection.readWrite { transaction in
-                strongSelf.messageFinder.enumurateExpiredMessages(with: { message in
+                strongSelf.messageFinder.enumurateMessagesPendingExpiration(with: { message in
                     
                     // Sanity check
                     guard message.friendRequestExpiresAt <= now else {
@@ -129,7 +129,7 @@ public final class FriendRequestExpireJob : NSObject {
                         return;
                     }
                     
-                    // Check that we only expire sent messages
+                    // Check that we only expire sent friend requests
                     guard message is TSOutgoingMessage && message.isFriendRequest else {
                         // Set message to not expire, so our other logic works correctly
                         message.saveFriendRequestExpires(at: 0, with: transaction)
