@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
-@class YapDatabaseReadWriteTransaction;
 
 @interface TSMessage : TSInteraction <OWSPreviewText>
 
@@ -102,15 +101,14 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)updateWithMessageSticker:(MessageSticker *)messageSticker
-                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)updateWithEphemeralMessage:(EphemeralMessage *)ephemeralMessage
-                       transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                       transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

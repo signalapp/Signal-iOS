@@ -203,7 +203,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                       [self linkPreviewForLinkPreviewDraft:linkPreviewDraft
                                                                transaction:writeTransaction];
                                   if (linkPreview) {
-                                      [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
+                                      [message updateWithLinkPreview:linkPreview
+                                                         transaction:writeTransaction.asAnyWrite];
                                   }
 
                                   NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
@@ -304,7 +305,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
             }
 
             [message saveWithTransaction:transaction];
-            [message updateWithMessageSticker:messageSticker transaction:transaction];
+            [message updateWithMessageSticker:messageSticker transaction:transaction.asAnyWrite];
 
             [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
         }];
@@ -340,21 +341,19 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                      messageSticker:nil
                                                    ephemeralMessage:nil];
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            EphemeralMessage *_Nullable ephemeralMessage =
-                [self ephemeralMessageForDraft:ephemeralMessageDraft transaction:transaction];
-            if (!ephemeralMessage) {
-                OWSFailDebug(@"Couldn't send ephemeral message.");
-                return;
-            }
+    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        EphemeralMessage *_Nullable ephemeralMessage =
+            [self ephemeralMessageForDraft:ephemeralMessageDraft transaction:transaction];
+        if (!ephemeralMessage) {
+            OWSFailDebug(@"Couldn't send ephemeral message.");
+            return;
+        }
 
-            [message saveWithTransaction:transaction];
-            [message updateWithEphemeralMessage:ephemeralMessage transaction:transaction];
+        [message saveWithTransaction:transaction];
+        [message updateWithEphemeralMessage:ephemeralMessage transaction:transaction.asAnyWrite];
 
-            [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
-        }];
-    });
+        [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
+    }];
 
     return message;
 }

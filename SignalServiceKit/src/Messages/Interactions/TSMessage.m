@@ -560,45 +560,52 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(expireStartedAt > 0);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSMessage *message) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 TSMessage *message = (TSMessage *)interaction;
                                  [message setExpireStartedAt:expireStartedAt];
                              }];
 }
 
-- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(linkPreview);
     OWSAssertDebug(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSMessage *message) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 TSMessage *message = (TSMessage *)interaction;
                                  [message setLinkPreview:linkPreview];
                              }];
 }
 
-- (void)updateWithMessageSticker:(MessageSticker *)messageSticker
-                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSticker);
     OWSAssertDebug(transaction);
 
-    self.messageSticker = messageSticker;
-    [self saveWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 TSMessage *message = (TSMessage *)interaction;
+                                 message.messageSticker = messageSticker;
+                             }];
 }
 
 - (void)updateWithEphemeralMessage:(EphemeralMessage *)ephemeralMessage
-                       transaction:(YapDatabaseReadWriteTransaction *)transaction
+                       transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(ephemeralMessage);
     OWSAssertDebug(transaction);
 
-    self.ephemeralMessage = ephemeralMessage;
-    [self saveWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 TSMessage *message = (TSMessage *)interaction;
+                                 [message setEphemeralMessage:ephemeralMessage];
+                             }];
 }
 
 @end
