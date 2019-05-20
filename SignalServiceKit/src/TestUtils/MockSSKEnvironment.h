@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKEnvironment.h"
@@ -32,6 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) ContactDiscoveryService *contactDiscoveryService;
 @property (nonatomic) OWSReadReceiptManager *readReceiptManager;
 @property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManager;
+@property (nonatomic) id<OWSSyncManagerProtocol> syncManager;
+@property (nonatomic) id<SSKReachabilityManager> reachabilityManager;
+@property (nonatomic) id<OWSTypingIndicators> typingIndicators;
+@property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
+@property (nonatomic) StickerManager *stickerManager;
+@property (nonatomic) SDSDatabaseStorage *databaseStorage;
 
 @end
 
