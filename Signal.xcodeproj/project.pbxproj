@@ -303,6 +303,7 @@
 		34C6B0AC1FA0E46F00D35993 /* test-mp4.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */; };
 		34C6B0AE1FA0E4AA00D35993 /* test-jpg.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */; };
 		34C758DA2289DDDD00802527 /* StickerSharingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C758D92289DDDC00802527 /* StickerSharingViewController.swift */; };
+		34C758DD228DD81C00802527 /* StickerTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34C758DC228DD81C00802527 /* StickerTooltip.swift */; };
 		34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CA631A2097806E00E526A0 /* OWSContactShareView.m */; };
 		34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34CE88E61F2FB9A10098030F /* ProfileViewController.m */; };
 		34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */ = {isa = PBXBuildFile; fileRef = 34CF0783203E6B77005C4D61 /* busy_tone_ansi.caf */; };
@@ -1034,6 +1035,7 @@
 		34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "test-mp4.mp4"; sourceTree = "<group>"; };
 		34C6B0AD1FA0E4AA00D35993 /* test-jpg.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "test-jpg.jpg"; sourceTree = "<group>"; };
 		34C758D92289DDDC00802527 /* StickerSharingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerSharingViewController.swift; sourceTree = "<group>"; };
+		34C758DC228DD81C00802527 /* StickerTooltip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StickerTooltip.swift; sourceTree = "<group>"; };
 		34CA1C261F7156F300E51C51 /* MessageDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageDetailViewController.swift; sourceTree = "<group>"; };
 		34CA63192097806E00E526A0 /* OWSContactShareView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareView.h; sourceTree = "<group>"; };
 		34CA631A2097806E00E526A0 /* OWSContactShareView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareView.m; sourceTree = "<group>"; };
@@ -1902,6 +1904,7 @@
 				34AC0A0D211B39EA00997B47 /* ThreadViewHelper.h */,
 				34AC0A0B211B39EA00997B47 /* ThreadViewHelper.m */,
 				4CA5F792211E1F06008C2708 /* Toast.swift */,
+				34C758DB228DD81C00802527 /* Tooltips */,
 				346E35BD224283B000E55D5F /* UIAlertController+OWS.swift */,
 				34AC0A04211B39E800997B47 /* VideoPlayerView.swift */,
 			);
@@ -2091,6 +2094,14 @@
 				34C6B0A81FA0E46F00D35993 /* test-mp4.mp4 */,
 			);
 			path = Assets;
+			sourceTree = "<group>";
+		};
+		34C758DB228DD81C00802527 /* Tooltips */ = {
+			isa = PBXGroup;
+			children = (
+				34C758DC228DD81C00802527 /* StickerTooltip.swift */,
+			);
+			path = Tooltips;
 			sourceTree = "<group>";
 		};
 		34D1F0951F867BFC0066283D /* Cells */ = {
@@ -3585,6 +3596,7 @@
 				340872CB2239563500CB25B0 /* AttachmentPrepViewController.swift in Sources */,
 				342BF25B227B2D4E005CEAA9 /* OWS101ExistingUsersBlockOnIdentityChange+SDS.swift in Sources */,
 				34C758DA2289DDDD00802527 /* StickerSharingViewController.swift in Sources */,
+				34C758DD228DD81C00802527 /* StickerTooltip.swift in Sources */,
 				34AC0A16211B39EA00997B47 /* OWSNavigationBar.swift in Sources */,
 				34BEDB0B21C2FA3D007B0EAE /* OWS114RemoveDynamicInteractions.swift in Sources */,
 				34AC0A1A211B39EA00997B47 /* CommonStrings.swift in Sources */,

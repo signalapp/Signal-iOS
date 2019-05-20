@@ -192,7 +192,9 @@ public class StickerPackViewController: OWSViewController {
         }
         let coverInfo = stickerPack.coverInfo
         guard let filePath = dataSource.filePath(forSticker: coverInfo) else {
-            owsFailDebug("Missing sticker data file path.")
+            // This can happen if the pack hasn't been saved yet, e.g.
+            // this view was opened from a sticker pack URL or share.
+            Logger.warn("Missing sticker data file path.")
             coverView.isHidden = true
             return
         }
