@@ -2952,13 +2952,13 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
     // MARK: - SSKProtoDataMessageEphemeralMessageBuilder
 
-    @objc public class func builder(expireTimer: UInt32, data: [SSKProtoAttachmentPointer]) -> SSKProtoDataMessageEphemeralMessageBuilder {
-        return SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer, data: data)
+    @objc public class func builder(expireTimer: UInt32, attachments: [SSKProtoAttachmentPointer]) -> SSKProtoDataMessageEphemeralMessageBuilder {
+        return SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer, attachments: attachments)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoDataMessageEphemeralMessageBuilder {
-        let builder = SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer, data: data)
+        let builder = SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer, attachments: attachments)
         return builder
     }
 
@@ -2968,25 +2968,25 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(expireTimer: UInt32, data: [SSKProtoAttachmentPointer]) {
+        @objc fileprivate init(expireTimer: UInt32, attachments: [SSKProtoAttachmentPointer]) {
             super.init()
 
             setExpireTimer(expireTimer)
-            setData(data)
+            setAttachments(attachments)
         }
 
         @objc public func setExpireTimer(_ valueParam: UInt32) {
             proto.expireTimer = valueParam
         }
 
-        @objc public func addData(_ valueParam: SSKProtoAttachmentPointer) {
-            var items = proto.data
+        @objc public func addAttachments(_ valueParam: SSKProtoAttachmentPointer) {
+            var items = proto.attachments
             items.append(valueParam.proto)
-            proto.data = items
+            proto.attachments = items
         }
 
-        @objc public func setData(_ wrappedItems: [SSKProtoAttachmentPointer]) {
-            proto.data = wrappedItems.map { $0.proto }
+        @objc public func setAttachments(_ wrappedItems: [SSKProtoAttachmentPointer]) {
+            proto.attachments = wrappedItems.map { $0.proto }
         }
 
         @objc public func build() throws -> SSKProtoDataMessageEphemeralMessage {
@@ -3002,14 +3002,14 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
     @objc public let expireTimer: UInt32
 
-    @objc public let data: [SSKProtoAttachmentPointer]
+    @objc public let attachments: [SSKProtoAttachmentPointer]
 
     private init(proto: SignalServiceProtos_DataMessage.EphemeralMessage,
                  expireTimer: UInt32,
-                 data: [SSKProtoAttachmentPointer]) {
+                 attachments: [SSKProtoAttachmentPointer]) {
         self.proto = proto
         self.expireTimer = expireTimer
-        self.data = data
+        self.attachments = attachments
     }
 
     @objc
@@ -3028,10 +3028,10 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         }
         let expireTimer = proto.expireTimer
 
-        guard proto.hasData else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: data")
+        guard proto.hasAttachments else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: attachments")
         }
-        let data = try SSKProtoAttachmentPointer.parseProto(proto.data)
+        let attachments = try SSKProtoAttachmentPointer.parseProto(proto.attachments)
 
         // MARK: - Begin Validation Logic for SSKProtoDataMessageEphemeralMessage -
 
@@ -3039,7 +3039,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
         let result = SSKProtoDataMessageEphemeralMessage(proto: proto,
                                                          expireTimer: expireTimer,
-                                                         data: data)
+                                                         attachments: attachments)
         return result
     }
 

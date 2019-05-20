@@ -1343,7 +1343,7 @@ struct SignalServiceProtos_DataMessage {
     mutating func clearExpireTimer() {self._expireTimer = nil}
 
     /// @required
-    var data: [SignalServiceProtos_AttachmentPointer] = []
+    var attachments: [SignalServiceProtos_AttachmentPointer] = []
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -3946,14 +3946,14 @@ extension SignalServiceProtos_DataMessage.EphemeralMessage: SwiftProtobuf.Messag
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".EphemeralMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "expireTimer"),
-    4: .same(proto: "data"),
+    2: .same(proto: "attachments"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt32Field(value: &self._expireTimer)
-      case 4: try decoder.decodeRepeatedMessageField(value: &self.data)
+      case 2: try decoder.decodeRepeatedMessageField(value: &self.attachments)
       default: break
       }
     }
@@ -3963,15 +3963,15 @@ extension SignalServiceProtos_DataMessage.EphemeralMessage: SwiftProtobuf.Messag
     if let v = self._expireTimer {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 1)
     }
-    if !self.data.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.data, fieldNumber: 4)
+    if !self.attachments.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.attachments, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_DataMessage.EphemeralMessage, rhs: SignalServiceProtos_DataMessage.EphemeralMessage) -> Bool {
     if lhs._expireTimer != rhs._expireTimer {return false}
-    if lhs.data != rhs.data {return false}
+    if lhs.attachments != rhs.attachments {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

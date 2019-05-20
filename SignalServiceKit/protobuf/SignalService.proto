@@ -227,7 +227,7 @@ message DataMessage {
     // @required
     optional uint32            expireTimer = 1;
     // @required
-    repeated AttachmentPointer data        = 4;
+    repeated AttachmentPointer attachments = 2;
   }
 
   optional string            body             =  1;
