@@ -17,6 +17,20 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSQuotedMessage;
 @class YapDatabaseReadWriteTransaction;
 
+// Loki: Friend request status
+typedef NS_ENUM(NSInteger, TSMessageFriendRequestStatus) {
+    /// Not a friend request message.
+    TSMessageFriendRequestStatusNone,
+    /// A pending friend request.
+    TSMessageFriendRequestStatusPending,
+    /// A friend request that has been accepted.
+    TSMessageFriendRequestStatusAccepted,
+    /// A friend request that has been declined.
+    TSMessageFriendRequestStatusDeclined,
+    /// A friend request that has expired.
+    TSMessageFriendRequestStatusExpired
+};
+
 @interface TSMessage : TSInteraction <OWSPreviewText>
 
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
@@ -28,9 +42,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
-@property (nonatomic) BOOL isFriendRequest; // Loki
+// Loki friend request handling
+// ========
+@property (nonatomic) TSMessageFriendRequestStatus friendRequestStatus;
 @property (nonatomic) uint64_t friendRequestExpiresAt;
-@property (nonatomic) BOOL isFriendRequestExpired;
+@property (nonatomic, readonly) BOOL isFriendRequest;
+// ========
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -73,9 +90,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Loki Friend Request Handling
 
-- (void)saveIsFriendRequest:(BOOL)isFriendRequest withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+- (void)saveFriendRequestStatus:(TSMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 - (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
-- (void)saveIsFriendRequestExpired:(BOOL)isFriendRequestExpired withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 @end
 

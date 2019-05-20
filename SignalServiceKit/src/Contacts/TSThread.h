@@ -29,7 +29,7 @@ extern ConversationColorName const ConversationColorNameSteel;
 
 extern ConversationColorName const kConversationColorName_Default;
 
-// Loki: Friend request state
+// Loki: Friend request status
 typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
     /// New conversation, no messages sent or received
     TSThreadFriendRequestStatusNone,

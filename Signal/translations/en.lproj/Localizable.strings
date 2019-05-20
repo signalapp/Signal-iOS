@@ -2579,6 +2579,7 @@
 "Secure session reset in progress" = "Secure session reset in progress";
 "Secure session reset done" = "Secure session reset done";
 "Session" = "Session";
+"You've sent %@ a friend request" = "You've sent %@ a friend request";
 "You've declined %@'s friend request" = "You've declined %@'s friend request";
 "You've accepted %@'s friend request" = "You've accepted %@'s friend request";
 "%@ accepted your friend request" = "%@ accepted your friend request";

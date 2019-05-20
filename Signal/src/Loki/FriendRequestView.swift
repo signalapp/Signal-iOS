@@ -4,15 +4,6 @@
     @objc weak var delegate: FriendRequestViewDelegate?
     private let kind: Kind
 
-    private var didAcceptRequest: Bool {
-        return message.thread.friendRequestStatus == .friends
-    }
-
-    private var didDeclineRequest: Bool {
-        guard let message = message as? TSIncomingMessage else { preconditionFailure() }
-        return message.thread.friendRequestStatus == .none
-    }
-
     // MARK: Types
     enum Kind : String { case incoming, outgoing }
     
@@ -83,20 +74,24 @@
         switch kind {
         case .incoming:
             guard let message = message as? TSIncomingMessage else { preconditionFailure() }
-            buttonStackView.isHidden = didAcceptRequest || didDeclineRequest || message.isFriendRequestExpired
+            buttonStackView.isHidden = !(message.friendRequestStatus == .pending)
             let format: String = {
-                if didAcceptRequest { return NSLocalizedString("You've accepted %@'s friend request", comment: "") }
-                else if didDeclineRequest { return NSLocalizedString("You've declined %@'s friend request", comment: "") }
-                else if message.isFriendRequestExpired { return NSLocalizedString("%@'s friend request has expired", comment: "") }
-                else { return NSLocalizedString("%@ sent you a friend request", comment: "") }
+                switch (message.friendRequestStatus) {
+                case .accepted: return NSLocalizedString("You've accepted %@'s friend request", comment: "")
+                case .declined: return NSLocalizedString("You've declined %@'s friend request", comment: "")
+                case .expired: return NSLocalizedString("%@'s friend request has expired", comment: "")
+                default: return NSLocalizedString("%@ sent you a friend request", comment: "")
+                }
             }()
             label.text = String(format: format, message.authorId)
         case .outgoing:
             guard let message = message as? TSOutgoingMessage else { preconditionFailure() }
             let format: String = {
-                if didAcceptRequest { return NSLocalizedString("%@ accepted your friend request", comment: "") }
-                else if message.isFriendRequestExpired { return NSLocalizedString("Your friend request to %@ has expired", comment: "") }
-                else { return NSLocalizedString("You've sent %@ a friend request", comment: "") }
+                switch (message.friendRequestStatus) {
+                case .accepted: return NSLocalizedString("%@ accepted your friend request", comment: "")
+                case .expired: return NSLocalizedString("Your friend request to %@ has expired", comment: "")
+                default: return NSLocalizedString("You've sent %@ a friend request", comment: "")
+                }
             }()
             label.text = String(format: format, message.thread.contactIdentifier()!)
         }
@@ -105,11 +100,13 @@
     // MARK: Interaction
     @objc private func accept() {
         guard let message = message as? TSIncomingMessage else { preconditionFailure() }
+        message.saveFriendRequestStatus(.accepted, with: nil)
         delegate?.acceptFriendRequest(message)
     }
     
     @objc private func decline() {
         guard let message = message as? TSIncomingMessage else { preconditionFailure() }
+        message.saveFriendRequestStatus(.declined, with: nil)
         delegate?.declineFriendRequest(message)
         handleMessageChanged() // Update UI
     }
