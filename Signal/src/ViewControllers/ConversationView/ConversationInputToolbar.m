@@ -500,23 +500,35 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 }
 
-- (BOOL)tryToShowStickerTooltip
+- (void)showStickerTooltipIfNecessary
 {
+    if (!StickerManager.shared.shouldShowStickerTooltip) {
+        return;
+    }
+
+    dispatch_block_t markTooltipAsShown = ^{
+        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [StickerManager.shared stickerTooltipWasShownWithTransaction:transaction];
+        }];
+    };
+
     __block StickerPack *_Nullable stickerPack;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         stickerPack = [StickerManager installedStickerPacksWithTransaction:transaction].firstObject;
     }];
     if (stickerPack == nil) {
-        return NO;
+        return;
     }
     if (self.stickerTooltip != nil) {
-        return YES;
+        markTooltipAsShown();
+        return;
     }
     if (self.isStickerKeyboardActive) {
         // The intent of this tooltip is to prod users to activate the
         // sticker keyboard.  If it's already active, we can skip the
         // tooltip.
-        return YES;
+        markTooltipAsShown();
+        return;
     }
 
     __weak ConversationInputToolbar *weakSelf = self;
@@ -535,8 +547,8 @@ const CGFloat kMaxTextViewHeight = 98;
                    dispatch_get_main_queue(), ^{
                        [weakSelf removeStickerTooltip];
                    });
-    
-    return YES;
+
+    markTooltipAsShown();
 }
 
 - (void)removeStickerTooltip
@@ -612,13 +624,7 @@ const CGFloat kMaxTextViewHeight = 98;
         updateBlock();
     }
 
-    if (StickerManager.shared.shouldShowStickerTooltip) {
-        if ([self tryToShowStickerTooltip]) {
-            [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                [StickerManager.shared stickerTooltipWasShownWithTransaction:transaction];
-            }];
-        }
-    }
+    [self showStickerTooltipIfNecessary];
 }
 
 // iOS doesn't always update the safeAreaInsets correctly & in a timely

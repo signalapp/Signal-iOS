@@ -207,11 +207,8 @@ public class StickerTooltip: UIView {
         guard sender.state == .recognized else {
             return
         }
-        // TODO:
         Logger.verbose("")
         removeFromSuperview()
-        if let block = block {
-            block()
-        }
+        block?()
     }
 }
