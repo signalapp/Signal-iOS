@@ -128,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
         
         // Loki
         OWSLokiFriendRequestExpireJob *lokiFriendRequestExpireJob = [[OWSLokiFriendRequestExpireJob alloc] initWithPrimaryStorage:primaryStorage];
-        [SSKEnvironment.shared setLokiFriendRequestExpireJob:lokiFriendRequestExpireJob];
+        SSKEnvironment.shared.lokiFriendRequestExpireJob = lokiFriendRequestExpireJob;
 
         appSpecificSingletonBlock();
 

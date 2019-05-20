@@ -4,10 +4,10 @@
  */
 
 @objc(OWSLokiFriendRequestExpireJob)
-public class FriendRequestExpireJob: NSObject {
+public class FriendRequestExpireJob : NSObject {
     
     private let databaseConnection: YapDatabaseConnection
-    private let messageFinder: FriendRequestExpireMessageFinder
+    private let messageFinder = FriendRequestExpireMessageFinder()
     
     // These three properties should only be accessed on the main thread.
     private var hasStarted = false
@@ -16,9 +16,7 @@ public class FriendRequestExpireJob: NSObject {
     private var nextExpireDate: Date?
     
     // Our queue
-    public static var serialQueue: DispatchQueue = {
-        return DispatchQueue(label: "network.loki.friendrequest.expire")
-    }()
+    public static let serialQueue = DispatchQueue(label: "network.loki.friendrequest.expire")
     
     /// Create a `FriendRequestExpireJob`.
     /// This will create a auto-running job which will set friend requests to expired.
@@ -26,7 +24,6 @@ public class FriendRequestExpireJob: NSObject {
     /// - Parameter primaryStorage: The primary storage.
     @objc public init(withPrimaryStorage primaryStorage: OWSPrimaryStorage) {
         databaseConnection = primaryStorage.newDatabaseConnection()
-        messageFinder = FriendRequestExpireMessageFinder()
         super.init()
         
         // This makes sure we only ever have one instance of this class
