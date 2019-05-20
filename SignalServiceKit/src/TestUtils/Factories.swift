@@ -457,7 +457,7 @@ class AttachmentStreamFactory: NSObject, Factory {
                                                   sourceFilename: sourceFilenameBuilder(),
                                                   caption: captionBuilder(),
                                                   albumMessageId: albumMessageIdBuilder(),
-                                                  isOutgoingSticker: false)
+                                                  shouldAlwaysPad: false)
 
         return attachmentStream
     }
