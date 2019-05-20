@@ -715,6 +715,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         return;
     }
     
+    NSMutableArray<NSString *> *idsToRemove = [NSMutableArray new];
+    __block TSMessage *_Nullable messageToKeep = nil; // We want to keep this interaction and not remove it
     OWSInteractionType interactionType = incoming ? OWSInteractionType_IncomingMessage : OWSInteractionType_OutgoingMessage;
     
     [self enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction * _Nonnull interaction, YapDatabaseReadTransaction * _Nonnull transaction) {
@@ -724,6 +726,11 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         
         BOOL removeMessage = false;
         TSMessage *message = (TSMessage *)interaction;
+        
+        // We want to keep the most recent message
+        if (!messageToKeep || messageToKeep.timestamp < message.timestamp) {
+            messageToKeep = message;
+        }
         
         // We want to remove any old incoming friend request messages
         if (interactionType == OWSInteractionType_IncomingMessage) {
@@ -735,10 +742,24 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         }
         
         if (removeMessage) {
-            [interaction removeWithTransaction:transaction];
+            [idsToRemove addObject:interaction.uniqueId];
+        }
+    }];
+    
+    for (NSString *interactionId in idsToRemove) {
+        // Don't delete the recent message
+        if (messageToKeep && interactionId == messageToKeep.uniqueId) {
+            continue;
         }
         
-    }];
+        // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
+        TSInteraction *_Nullable interaction = [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
+        if (!interaction) {
+            OWSFailDebug(@"couldn't load thread's interaction for deletion.");
+            continue;
+        }
+        [interaction removeWithTransaction:transaction];
+    }
 }
 
 - (void)saveFriendRequestStatus:(TSThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
