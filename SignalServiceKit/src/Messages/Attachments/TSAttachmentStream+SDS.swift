@@ -66,11 +66,11 @@ class TSAttachmentStreamSerializer: SDSSerializer {
             TSAttachmentSerializer.cachedImageWidthColumn,
             TSAttachmentSerializer.creationTimestampColumn,
             TSAttachmentSerializer.digestColumn,
-            TSAttachmentSerializer.isOutgoingStickerColumn,
             TSAttachmentSerializer.isUploadedColumn,
             TSAttachmentSerializer.isValidImageCachedColumn,
             TSAttachmentSerializer.isValidVideoCachedColumn,
-            TSAttachmentSerializer.localRelativeFilePathColumn
+            TSAttachmentSerializer.localRelativeFilePathColumn,
+            TSAttachmentSerializer.shouldAlwaysPadColumn
             ].map { $0.columnName }
     }
 
@@ -91,11 +91,11 @@ class TSAttachmentStreamSerializer: SDSSerializer {
             self.model.cachedImageWidth ?? DatabaseValue.null,
             self.model.creationTimestamp,
             self.model.digest ?? DatabaseValue.null,
-            self.model.isOutgoingSticker,
             self.model.isUploaded,
             self.model.isValidImageCached ?? DatabaseValue.null,
             self.model.isValidVideoCached ?? DatabaseValue.null,
-            self.model.localRelativeFilePath ?? DatabaseValue.null
+            self.model.localRelativeFilePath ?? DatabaseValue.null,
+            self.model.shouldAlwaysPad
 
         ]
         if OWSIsDebugBuild() {

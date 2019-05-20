@@ -497,7 +497,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
                                                                             sourceFilename:nil
                                                                                    caption:nil
                                                                             albumMessageId:nil
-                                                                         isOutgoingSticker:NO];
+                                                                         shouldAlwaysPad:NO];
 
     NSError *error;
     BOOL success = [attachmentStream writeData:imageData error:&error];

@@ -3930,7 +3930,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                                         sourceFilename:filename
                                                                                                caption:nil
                                                                                         albumMessageId:nil
-                                                                                     isOutgoingSticker:NO];
+                                                                                     shouldAlwaysPad:NO];
 
                 NSError *error;
                 BOOL success = [attachmentStream writeData:[self createRandomNSDataOfSize:filesize] error:&error];
@@ -4893,7 +4893,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                                 sourceFilename:filename
                                                                                        caption:nil
                                                                                 albumMessageId:nil
-                                                                             isOutgoingSticker:NO];
+                                                                             shouldAlwaysPad:NO];
         NSError *error;
         BOOL success = [attachmentStream writeData:dataSource.data error:&error];
         OWSAssertDebug(success && !error);

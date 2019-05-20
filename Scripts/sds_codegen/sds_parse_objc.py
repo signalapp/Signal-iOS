@@ -112,7 +112,7 @@ class ParsedClass:
             
             protocol = self.namespace.find_class(protocol_name)
             if protocol is None:
-                if protocol_name.startswith('NS') or protocol_name.startswith('AV') or protocol_name.startswith('UI') or protocol_name.startswith('MF'):
+                if protocol_name.startswith('NS') or protocol_name.startswith('AV') or protocol_name.startswith('UI') or protocol_name.startswith('MF') or protocol_name.startswith('UN'):
                     # Ignore built in protocols.
                     continue
                 print 'clazz:', self.name

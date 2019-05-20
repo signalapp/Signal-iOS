@@ -1897,7 +1897,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                  sourceFilename:attachmentInfo.sourceFilename
                                                         caption:attachmentInfo.caption
                                                  albumMessageId:attachmentInfo.albumMessageId
-                                              isOutgoingSticker:NO];
+                                              shouldAlwaysPad:NO];
             if (outgoingMessage.isVoiceMessage) {
                 attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
             }

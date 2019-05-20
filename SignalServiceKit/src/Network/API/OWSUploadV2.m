@@ -325,7 +325,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
         return nil;
     }
 
-    BOOL shouldPad = SSKFeatureFlags.shouldPadAllOutgoingAttachments || self.attachmentStream.isOutgoingSticker;
+    BOOL shouldPad = SSKFeatureFlags.shouldPadAllOutgoingAttachments || self.attachmentStream.shouldAlwaysPad;
 
     NSData *_Nullable encryptedAttachmentData =
         [Cryptography encryptAttachmentData:attachmentData
