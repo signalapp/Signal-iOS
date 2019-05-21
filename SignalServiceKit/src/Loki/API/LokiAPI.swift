@@ -8,11 +8,12 @@ import PromiseKit
     
     // MARK: Settings
     private static let version = "v1"
+    private static let defaultSnodePort: UInt16 = 8080
     private static let targetSnodeCount = 2
     public static let defaultMessageTTL: UInt64 = 4 * 24 * 60 * 60
     
     // MARK: Types
-    fileprivate struct Target : Hashable {
+    private struct Target : Hashable {
         let address: String
         let port: UInt16
         
@@ -34,8 +35,6 @@ import PromiseKit
             }
         }
     }
-    
-    public typealias MessagesPromise = Promise<[SSKProtoEnvelope]> // To keep the return type of getMessages() readable
     
     // MARK: Lifecycle
     override private init() { }
@@ -65,7 +64,7 @@ import PromiseKit
     }
     
     // MARK: Public API
-    public static func getMessages() -> Promise<[MessagesPromise]> {
+    public static func getMessages() -> Promise<Set<Promise<Set<SSKProtoEnvelope>>>> {
         let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
             let lastHash = getLastHash(for: targetSnode) ?? ""
@@ -77,20 +76,24 @@ import PromiseKit
                 }
                 return parseProtoEnvelopes(from: rawResponse)
             }
-        }
+        }.map { Set($0) }
     }
     
-    public static func sendMessage(_ lokiMessage: Message) -> Promise<RawResponse> {
-        return getRandomSnode().then { invoke(.sendMessage, on: $0, with: lokiMessage.toJSON()) } // TODO: Use getSwarm()
+    public static func sendMessage(_ lokiMessage: Message) -> Promise<[Promise<RawResponse>]> {
+        let parameters = lokiMessage.toJSON()
+        return getTargetSnodes(for: lokiMessage.destination).mapValues { invoke(.sendMessage, on: $0, with: parameters)
+            .recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }
     }
     
-    public static func ping(_ hexEncodedPublicKey: String) -> Promise<RawResponse> {
-        return getRandomSnode().then { invoke(.sendMessage, on: $0, with: [ "pubKey" : hexEncodedPublicKey ]) } // TODO: Use getSwarm() and figure out correct parameters
+    public static func ping(_ hexEncodedPublicKey: String) -> Promise<[Promise<RawResponse>]> {
+        let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ] // TODO: Figure out correct parameters
+        return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, with: parameters)
+            .recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }
     }
     
     // MARK: Public API (Obj-C)
     @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64, requiringPoW isPoWRequired: Bool) -> AnyPromise {
-        let promise = Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired).then(sendMessage).recoverNetworkErrorIfNeeded(on: DispatchQueue.global())
+        let promise = Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired).then(sendMessage)
         let anyPromise = AnyPromise(promise)
         anyPromise.retainUntilComplete()
         return anyPromise
@@ -113,12 +116,13 @@ import PromiseKit
     
     // MARK: Parsing
     private static func parseTargets(from rawResponse: Any) -> Set<Target> {
-        notImplemented()
+        guard let json = rawResponse as? JSON, let addresses = json["snodes"] as? [String] else { return [] }
+        return Set(addresses.map { Target(address: $0, port: defaultSnodePort) })
     }
     
-    private static func parseProtoEnvelopes(from rawResponse: Any) -> [SSKProtoEnvelope] {
+    private static func parseProtoEnvelopes(from rawResponse: Any) -> Set<SSKProtoEnvelope> {
         guard let json = rawResponse as? JSON, let messages = json["messages"] as? [JSON] else { return [] }
-        return messages.compactMap { message in
+        return Set(messages.compactMap { message in
             guard let base64EncodedData = message["data"] as? String, let data = Data(base64Encoded: base64EncodedData) else {
                 Logger.warn("[Loki] Failed to decode data for message: \(message).")
                 return nil
@@ -128,7 +132,7 @@ import PromiseKit
                 return nil
             }
             return envelope
-        }
+        })
     }
 }
 
