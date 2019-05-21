@@ -240,7 +240,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
         }
     }
 
-    @available(*, deprecated : 2.6, message : "Use speed property instead")
+    @available(iOS, deprecated: 2.6, message : "Use speed property instead")
     @IBInspectable open var scrollDuration: CGFloat {
         get {
             switch speed {
@@ -253,7 +253,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
         }
     }
 
-    @available(*, deprecated : 2.6, message : "Use speed property instead")
+    @available(iOS, deprecated: 2.6, message : "Use speed property instead")
     @IBInspectable open var scrollRate: CGFloat {
         get {
             switch speed {
