@@ -1,7 +1,8 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSMessageManager.h"
 #import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
 #import "MockSSKEnvironment.h"
@@ -9,10 +10,11 @@
 #import "OWSFakeMessageSender.h"
 #import "OWSFakeNetworkManager.h"
 #import "OWSIdentityManager.h"
-#import "OWSMessageManager.h"
 #import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
+#import "OWSSyncGroupsMessage.h"
 #import "SSKBaseTestObjC.h"
+#import "TSAccountManager.h"
 #import "TSGroupThread.h"
 #import "TSNetworkManager.h"
 #import <SignalCoreKit/Cryptography.h>
@@ -20,22 +22,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const kAliceRecipientId = @"+13213214321";
+
 @interface OWSMessageManager (Testing)
 
-// Private init for stubbing dependencies
-
-- (instancetype)initWithNetworkManager:(TSNetworkManager *)networkManager
-                        storageManager:(OWSPrimaryStorage *)storageManager
-                    callMessageHandler:(id<OWSCallMessageHandler>)callMessageHandler
-                       contactsManager:(id<ContactsManagerProtocol>)contactsManager
-                       contactsUpdater:(ContactsUpdater *)contactsUpdater
-                       identityManager:(OWSIdentityManager *)identityManager
-                         messageSender:(OWSMessageSender *)messageSender;
-
 // private method we are testing
-- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)messageEnvelope withSyncMessage:(SSKProtoSyncMessage *)syncMessage;
+- (void)throws_handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
+                      withSyncMessage:(SSKProtoSyncMessage *)syncMessage
+                          transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)messageEnvelope withDataMessage:(SSKProtoDataMessage *)dataMessage;
+- (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
+               withDataMessage:(SSKProtoDataMessage *)dataMessage
+               wasReceivedByUD:(BOOL)wasReceivedByUD
+                   transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 
@@ -49,39 +48,61 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSMessageManagerTest
 
+#pragma mark - Dependencies
+
+- (OWSMessageManager *)messagesManager
+{
+    return SSKEnvironment.shared.messageManager;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (MessageSenderJobQueue *)messageSenderJobQueue
+{
+    return SSKEnvironment.shared.messageSenderJobQueue;
+}
+
+#pragma mark -
+
 - (void)setUp
 {
     [super setUp];
+    [self.tsAccountManager registerForTestsWithLocalNumber:kAliceRecipientId];
+    [self.messageSenderJobQueue setup];
 }
 
-#ifdef BROKEN_TESTS
+#pragma mark -
 
-- (void)testIncomingSyncContactMessage
+- (void)test_IncomingSyncGroupsMessage
 {
     XCTestExpectation *messageWasSent = [self expectationWithDescription:@"message was sent"];
 
     OWSAssert([SSKEnvironment.shared.messageSender isKindOfClass:[OWSFakeMessageSender class]]);
     OWSFakeMessageSender *fakeMessageSender = (OWSFakeMessageSender *)SSKEnvironment.shared.messageSender;
-    fakeMessageSender.sendTemporaryAttachmentWasCalledBlock = ^{
+    fakeMessageSender.sendMessageWasCalledBlock = ^(TSOutgoingMessage *sentMessage) {
+        XCTAssert([sentMessage isKindOfClass:[OWSSyncGroupsMessage class]]);
         [messageWasSent fulfill];
     };
 
-    OWSMessageManager *messagesManager = OWSMessageManager.sharedManager;
-
-    SSKProtoSyncMessageRequestBuilder *requestBuilder = [SSKProtoSyncMessageRequest builder];
-    [requestBuilder setType:SSKProtoSyncMessageRequestTypeGroups];
+    SSKProtoSyncMessageRequestBuilder *requestBuilder =
+        [SSKProtoSyncMessageRequest builderWithType:SSKProtoSyncMessageRequestTypeGroups];
 
     SSKProtoSyncMessageBuilder *messageBuilder = [SSKProtoSyncMessage builder];
     [messageBuilder setRequest:[requestBuilder buildIgnoringErrors]];
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builder];
-    [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
-    [envelopeBuilder setSource:@"+13213214321"];
+    SSKProtoEnvelopeBuilder *envelopeBuilder =
+        [SSKProtoEnvelope builderWithType:SSKProtoEnvelopeTypeCiphertext timestamp:12345];
+    [envelopeBuilder setSource:kAliceRecipientId];
     [envelopeBuilder setSourceDevice:1];
-    [envelopeBuilder setTimestamp:12345];
 
-    [messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
-                            withSyncMessage:[messageBuilder buildIgnoringErrors]];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.messagesManager throws_handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
+                                            withSyncMessage:[messageBuilder buildIgnoringErrors]
+                                                transaction:transaction];
+    }];
 
     [self waitForExpectationsWithTimeout:5
                                  handler:^(NSError *error) {
@@ -89,96 +110,82 @@ NS_ASSUME_NONNULL_BEGIN
                                  }];
 }
 
-- (void)testGroupUpdate
+- (void)test_GroupUpdate
 {
-    NSData *groupIdData = [Cryptography generateRandomBytes:32];
+    NSData *groupIdData = [Cryptography generateRandomBytes:kGroupIdLength];
     NSString *groupThreadId = [TSGroupThread threadIdFromGroupId:groupIdData];
-    TSGroupThread *groupThread = [TSGroupThread fetchObjectWithUniqueID:groupThreadId];
-    XCTAssertNil(groupThread);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        TSGroupThread *groupThread
+            = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
+        XCTAssertNil(groupThread);
+    }];
 
-    OWSMessageManager *messagesManager = SSKEnvironment.shared.messageManager;
+    SSKProtoEnvelopeBuilder *envelopeBuilder =
+        [SSKProtoEnvelope builderWithType:SSKProtoEnvelopeTypeCiphertext timestamp:12345];
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builder];
-
-    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContext builder];
-    groupContextBuilder.name = @"Newly created Group Name";
-    groupContextBuilder.id = groupIdData;
-    groupContextBuilder.type = SSKProtoGroupContextTypeUpdate;
+    SSKProtoGroupContextBuilder *groupContextBuilder =
+        [SSKProtoGroupContext builderWithId:groupIdData type:SSKProtoGroupContextTypeUpdate];
+    [groupContextBuilder setName:@"Newly created Group Name"];
 
     SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessage builder];
     messageBuilder.group = [groupContextBuilder buildIgnoringErrors];
 
-    [messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
-                            withDataMessage:[messageBuilder buildIgnoringErrors]];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
+                                     withDataMessage:[messageBuilder buildIgnoringErrors]
+                                     wasReceivedByUD:NO
+                                         transaction:transaction];
+    }];
 
-    groupThread = [TSGroupThread fetchObjectWithUniqueID:groupThreadId];
-    XCTAssertNotNil(groupThread);
-    XCTAssertEqualObjects(@"Newly created Group Name", groupThread.name);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        TSGroupThread *groupThread
+            = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
+        XCTAssertNotNil(groupThread);
+        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.name);
+    }];
 }
 
-- (void)testGroupUpdateWithAvatar
+
+- (void)test_GroupUpdateWithAvatar
 {
-    NSData *groupIdData = [Cryptography generateRandomBytes:32];
+    NSData *groupIdData = [Cryptography generateRandomBytes:kGroupIdLength];
     NSString *groupThreadId = [TSGroupThread threadIdFromGroupId:groupIdData];
-    TSGroupThread *groupThread = [TSGroupThread fetchObjectWithUniqueID:groupThreadId];
-    XCTAssertNil(groupThread);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        TSGroupThread *groupThread
+            = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
+        XCTAssertNil(groupThread);
+    }];
 
-    OWSMessageManager *messagesManager = SSKEnvironment.shared.messageManager;
+    SSKProtoEnvelopeBuilder *envelopeBuilder =
+        [SSKProtoEnvelope builderWithType:SSKProtoEnvelopeTypeCiphertext timestamp:12345];
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builder];
+    SSKProtoGroupContextBuilder *groupContextBuilder =
+        [SSKProtoGroupContext builderWithId:groupIdData type:SSKProtoGroupContextTypeUpdate];
+    [groupContextBuilder setName:@"Newly created Group Name"];
 
-    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContext builder];
-    groupContextBuilder.name = @"Newly created Group with Avatar Name";
-    groupContextBuilder.id = groupIdData;
-    groupContextBuilder.type = SSKProtoGroupContextTypeUpdate;
-
-    SSKProtoAttachmentPointerBuilder *attachmentBuilder = [SSKProtoAttachmentPointer builder];
-    attachmentBuilder.id = 1234;
-    attachmentBuilder.contentType = @"image/png";
-    attachmentBuilder.key = [NSData new];
-    attachmentBuilder.size = 123;
-    groupContextBuilder.avatar = [attachmentBuilder buildIgnoringErrors];
-
-    SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessage builder];
-    messageBuilder.group = [groupContextBuilder buildIgnoringErrors];
-
-    [messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
-                            withDataMessage:[messageBuilder buildIgnoringErrors]];
-
-    groupThread = [TSGroupThread fetchObjectWithUniqueID:groupThreadId];
-    XCTAssertNotNil(groupThread);
-    XCTAssertEqualObjects(@"Newly created Group with Avatar Name", groupThread.name);
-}
-
-- (void)testUnknownGroupMessageIsIgnored
-{
-    NSData *groupIdData = [Cryptography generateRandomBytes:32];
-    TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupId:groupIdData];
-
-    // Sanity check
-    XCTAssertEqual(0, groupThread.numberOfInteractions);
-
-    OWSMessageManager *messagesManager = SSKEnvironment.shared.messageManager;
-
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builder];
-
-    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContext builder];
-    groupContextBuilder.name = @"Newly created Group with Avatar Name";
-    groupContextBuilder.id = groupIdData;
-
-    // e.g. some future feature sent from another device that we don't yet support.
-    groupContextBuilder.type = 666;
+    SSKProtoAttachmentPointerBuilder *attachmentBuilder = [SSKProtoAttachmentPointer builderWithId:1234];
+    [attachmentBuilder setContentType:@"image/png"];
+    [attachmentBuilder setKey:[Cryptography generateRandomBytes:32]];
+    [attachmentBuilder setSize:123];
+    [groupContextBuilder setAvatar:[attachmentBuilder buildIgnoringErrors]];
 
     SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessage builder];
     messageBuilder.group = [groupContextBuilder buildIgnoringErrors];
 
-    [messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
-                            withDataMessage:[messageBuilder buildIgnoringErrors]];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
+                                     withDataMessage:[messageBuilder buildIgnoringErrors]
+                                     wasReceivedByUD:NO
+                                         transaction:transaction];
+    }];
 
-    XCTAssertEqual(0, groupThread.numberOfInteractions);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        TSGroupThread *groupThread
+            = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
+        XCTAssertNotNil(groupThread);
+        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.name);
+    }];
 }
-
-#endif
 
 @end
 

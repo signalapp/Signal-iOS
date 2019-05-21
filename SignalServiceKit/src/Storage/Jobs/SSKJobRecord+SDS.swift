@@ -28,6 +28,7 @@ public struct JobRecordRecord: Codable, FetchableRecord, PersistableRecord, Tabl
 
     // Subclass properties
     public let contactThreadId: String?
+    public let envelopeData: Data?
     public let invisibleMessage: Data?
     public let messageId: String?
     public let removeMessageAfterSending: Bool?
@@ -41,6 +42,7 @@ public struct JobRecordRecord: Codable, FetchableRecord, PersistableRecord, Tabl
         case label
         case status
         case contactThreadId
+        case envelopeData
         case invisibleMessage
         case messageId
         case removeMessageAfterSending
@@ -106,6 +108,22 @@ extension SSKJobRecord {
                                 sortId: sortId,
                                 status: status)
 
+        case .messageDecryptJobRecord:
+
+            let uniqueId: String = record.uniqueId
+            let failureCount: UInt = record.failureCount
+            let label: String = record.label
+            let sortId: UInt64 = record.id
+            let status: SSKJobRecordStatus = record.status
+            let envelopeData: Data? = SDSDeserialization.optionalData(record.envelopeData, name: "envelopeData")
+
+            return SSKMessageDecryptJobRecord(uniqueId: uniqueId,
+                                              failureCount: failureCount,
+                                              label: label,
+                                              sortId: sortId,
+                                              status: status,
+                                              envelopeData: envelopeData)
+
         case .messageSenderJobRecord:
 
             let uniqueId: String = record.uniqueId
@@ -147,6 +165,9 @@ extension SSKJobRecord: SDSSerializable {
         case let model as SSKMessageSenderJobRecord:
             assert(type(of: model) == SSKMessageSenderJobRecord.self)
             return SSKMessageSenderJobRecordSerializer(model: model)
+        case let model as SSKMessageDecryptJobRecord:
+            assert(type(of: model) == SSKMessageDecryptJobRecord.self)
+            return SSKMessageDecryptJobRecordSerializer(model: model)
         case let model as OWSSessionResetJobRecord:
             assert(type(of: model) == OWSSessionResetJobRecord.self)
             return OWSSessionResetJobRecordSerializer(model: model)
@@ -171,10 +192,11 @@ extension SSKJobRecordSerializer {
     static let statusColumn = SDSColumnMetadata(columnName: "status", columnType: .int, columnIndex: 5)
     // Subclass properties
     static let contactThreadIdColumn = SDSColumnMetadata(columnName: "contactThreadId", columnType: .unicodeString, isOptional: true, columnIndex: 6)
-    static let invisibleMessageColumn = SDSColumnMetadata(columnName: "invisibleMessage", columnType: .blob, isOptional: true, columnIndex: 7)
-    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 8)
-    static let removeMessageAfterSendingColumn = SDSColumnMetadata(columnName: "removeMessageAfterSending", columnType: .int, isOptional: true, columnIndex: 9)
-    static let threadIdColumn = SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true, columnIndex: 10)
+    static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true, columnIndex: 7)
+    static let invisibleMessageColumn = SDSColumnMetadata(columnName: "invisibleMessage", columnType: .blob, isOptional: true, columnIndex: 8)
+    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 9)
+    static let removeMessageAfterSendingColumn = SDSColumnMetadata(columnName: "removeMessageAfterSending", columnType: .int, isOptional: true, columnIndex: 10)
+    static let threadIdColumn = SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true, columnIndex: 11)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -186,6 +208,7 @@ extension SSKJobRecordSerializer {
         labelColumn,
         statusColumn,
         contactThreadIdColumn,
+        envelopeDataColumn,
         invisibleMessageColumn,
         messageIdColumn,
         removeMessageAfterSendingColumn,
@@ -252,6 +275,25 @@ extension SSKJobRecordSerializer {
                                 label: label,
                                 sortId: sortId,
                                 status: status)
+
+        case .messageDecryptJobRecord:
+
+            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
+            let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
+            let label = try deserializer.string(at: labelColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
+            let statusRaw = UInt(try deserializer.int(at: statusColumn.columnIndex))
+            guard let status = SSKJobRecordStatus(rawValue: statusRaw) else {
+               throw SDSError.invalidValue
+            }
+            let envelopeData = try deserializer.optionalBlob(at: envelopeDataColumn.columnIndex)
+
+            return SSKMessageDecryptJobRecord(uniqueId: uniqueId,
+                                              failureCount: failureCount,
+                                              label: label,
+                                              sortId: sortId,
+                                              status: status,
+                                              envelopeData: envelopeData)
 
         case .messageSenderJobRecord:
 

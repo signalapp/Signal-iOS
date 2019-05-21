@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark Internal Settings
 
-#define TSStorageInternalSettingsCollection @"TSStorageInternalSettingsCollection"
 #define TSStorageInternalSettingsVersion @"TSLastLaunchedVersion"
 
 #endif

@@ -7,9 +7,10 @@
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
 #import "OWSMessageManager.h"
-#import "OWSPrimaryStorage+SessionStore.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "SSKEnvironment.h"
+#import "SSKSessionStore.h"
 #import "TSAttachmentPointer.h"
 #import "TSGroupThread.h"
 #import "TSInfoMessage.h"
@@ -30,6 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
 
     return SSKEnvironment.shared.primaryStorage;
+}
+
++ (SSKSessionStore *)sessionStore
+{
+    return SSKEnvironment.shared.sessionStore;
 }
 
 + (TSNetworkManager *)networkManager
@@ -79,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (transcript.isEndSessionMessage) {
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientId);
-        [self.primaryStorage deleteAllSessionsForContact:transcript.recipientId transaction:transaction];
+        [self.sessionStore deleteAllSessionsForContact:transcript.recipientId transaction:transaction.asAnyWrite];
 
         // MJK TODO - we don't use this timestamp, safe to remove
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp

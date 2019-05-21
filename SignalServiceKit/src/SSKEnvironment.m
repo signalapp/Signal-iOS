@@ -48,7 +48,6 @@ static SSKEnvironment *sharedSSKEnvironment;
 @synthesize callMessageHandler = _callMessageHandler;
 @synthesize notificationsManager = _notificationsManager;
 @synthesize objectReadWriteConnection = _objectReadWriteConnection;
-@synthesize sessionStoreDBConnection = _sessionStoreDBConnection;
 @synthesize migrationDBConnection = _migrationDBConnection;
 @synthesize analyticsDBConnection = _analyticsDBConnection;
 
@@ -63,6 +62,9 @@ static SSKEnvironment *sharedSSKEnvironment;
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
+                           sessionStore:(SSKSessionStore *)sessionStore
+                      signedPreKeyStore:(SSKSignedPreKeyStore *)signedPreKeyStore
+                            preKeyStore:(SSKPreKeyStore *)preKeyStore
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
@@ -97,6 +99,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(messageManager);
     OWSAssertDebug(blockingManager);
     OWSAssertDebug(identityManager);
+    OWSAssertDebug(sessionStore);
+    OWSAssertDebug(signedPreKeyStore);
+    OWSAssertDebug(preKeyStore);
     OWSAssertDebug(udManager);
     OWSAssertDebug(messageDecrypter);
     OWSAssertDebug(batchMessageProcessor);
@@ -126,6 +131,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageManager = messageManager;
     _blockingManager = blockingManager;
     _identityManager = identityManager;
+    _sessionStore = sessionStore;
+    _signedPreKeyStore = signedPreKeyStore;
+    _preKeyStore = preKeyStore;
     _udManager = udManager;
     _messageDecrypter = messageDecrypter;
     _batchMessageProcessor = batchMessageProcessor;
@@ -219,15 +227,6 @@ static SSKEnvironment *sharedSSKEnvironment;
             _objectReadWriteConnection = self.primaryStorage.newDatabaseConnection;
         }
         return _objectReadWriteConnection;
-    }
-}
-
-- (YapDatabaseConnection *)sessionStoreDBConnection {
-    @synchronized(self) {
-        if (!_sessionStoreDBConnection) {
-            _sessionStoreDBConnection = self.primaryStorage.newDatabaseConnection;
-        }
-        return _sessionStoreDBConnection;
     }
 }
 

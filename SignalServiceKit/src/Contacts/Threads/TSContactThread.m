@@ -8,6 +8,7 @@
 #import "NotificationsProtocol.h"
 #import "OWSIdentityManager.h"
 #import "SSKEnvironment.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -85,6 +86,22 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 }
 
 + (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
+                                anyTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(contactId.length > 0);
+
+    NSString *uniqueId = [self threadIdFromContactId:contactId];
+    TSContactThread *thread = (TSContactThread *)[self anyFetchWithUniqueId:uniqueId transaction:transaction];
+
+    if (!thread) {
+        thread = [[TSContactThread alloc] initWithContactId:contactId];
+        [thread anySaveWithTransaction:transaction];
+    }
+
+    return thread;
+}
+
++ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
 {
     OWSAssertDebug(contactId.length > 0);
 
@@ -100,6 +117,13 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
                                     transaction:(YapDatabaseReadTransaction *)transaction
 {
     return [TSContactThread fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
+}
+
++ (nullable instancetype)getThreadWithContactId:(NSString *)contactId
+                                 anyTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return (TSContactThread *)[TSContactThread anyFetchWithUniqueId:[self threadIdFromContactId:contactId]
+                                                        transaction:transaction];
 }
 
 - (NSString *)contactIdentifier {

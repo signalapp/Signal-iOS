@@ -6,7 +6,8 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <SignalServiceKit/SSKSessionStore.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -17,6 +18,25 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return @"Session State";
 }
+
+#pragma mark -  Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+- (SSKSessionStore *)sessionStore
+{
+    return SSKEnvironment.shared.sessionStore;
+}
+
+- (OWSSessionResetJobQueue *)sessionResetJobQueue
+{
+    return AppEnvironment.shared.sessionResetJobQueue;
+}
+
+#pragma mark -
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)threadParameter
 {
@@ -30,7 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
                             }],
             [OWSTableItem itemWithTitle:@"Log All Sessions"
                             actionBlock:^{
-                                [[OWSPrimaryStorage sharedManager] printAllSessions];
+                                [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                    [self.sessionStore printAllSessionsWithTransaction:transaction];
+                                }];
                             }],
             [OWSTableItem itemWithTitle:@"Toggle Key Change"
                             actionBlock:^{
@@ -51,87 +73,50 @@ NS_ASSUME_NONNULL_BEGIN
                             }],
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{
-                                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                    [[OWSPrimaryStorage sharedManager]
-                                        deleteAllSessionsForContact:thread.contactIdentifier
-                                                        transaction:transaction];
+                                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                    [self.sessionStore deleteAllSessionsForContact:thread.contactIdentifier
+                                                                       transaction:transaction];
                                 }];
                             }],
             [OWSTableItem itemWithTitle:@"Archive all sessions"
                             actionBlock:^{
-                                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                    [[OWSPrimaryStorage sharedManager]
-                                        archiveAllSessionsForContact:thread.contactIdentifier
-                                                         transaction:transaction];
+                                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                    [self.sessionStore archiveAllSessionsForContact:thread.contactIdentifier
+                                                                        transaction:transaction];
                                 }];
                             }],
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
-                                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                    [self.sessionResetJobQueue addContactThread:thread transaction:transaction];
+                                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                    if (!transaction.transitional_yapWriteTransaction) {
+                                        OWSFailDebug(@"GRDB TODO");
+                                    }
+                                    [self.sessionResetJobQueue
+                                        addContactThread:thread
+                                             transaction:transaction.transitional_yapWriteTransaction];
                                 }];
                             }],
         ]];
     }
 
 #if DEBUG
-    [items addObjectsFromArray:@[
-        [OWSTableItem itemWithTitle:@"Clear Session and Identity Store"
-                        actionBlock:^{
-                            [DebugUISessionState clearSessionAndIdentityStore];
-                        }],
-        [OWSTableItem itemWithTitle:@"Snapshot Session and Identity Store"
-                        actionBlock:^{
-                            [DebugUISessionState snapshotSessionAndIdentityStore];
-                        }],
-        [OWSTableItem itemWithTitle:@"Restore Session and Identity Store"
-                        actionBlock:^{
-                            [DebugUISessionState restoreSessionAndIdentityStore];
-                        }]
-    ]];
+    [items addObjectsFromArray:@[ [OWSTableItem itemWithTitle:@"Clear Session and Identity Store"
+                                                  actionBlock:^{
+                                                      [self clearSessionAndIdentityStore];
+                                                  }] ]];
 #endif
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
-#pragma mark - Dependencies
-
-- (OWSSessionResetJobQueue *)sessionResetJobQueue
-{
-    return AppEnvironment.shared.sessionResetJobQueue;
-}
-
-- (YapDatabaseConnection *)dbConnection
-{
-    return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
-}
 
 #if DEBUG
-+ (void)clearSessionAndIdentityStore
+- (void)clearSessionAndIdentityStore
 {
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [[OWSPrimaryStorage sharedManager] resetSessionStore:transaction];
-            [[OWSIdentityManager sharedManager] clearIdentityState:transaction];
-        }];
-}
-
-+ (void)snapshotSessionAndIdentityStore
-{
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [[OWSPrimaryStorage sharedManager] snapshotSessionStore:transaction];
-            [[OWSIdentityManager sharedManager] snapshotIdentityState:transaction];
-        }];
-}
-
-+ (void)restoreSessionAndIdentityStore
-{
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [[OWSPrimaryStorage sharedManager] restoreSessionStore:transaction];
-            [[OWSIdentityManager sharedManager] restoreIdentityState:transaction];
-        }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.sessionStore resetSessionStore:transaction];
+        [[OWSIdentityManager sharedManager] clearIdentityState:transaction];
+    }];
 }
 #endif
 

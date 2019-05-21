@@ -69,14 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [self objectForKey:key inCollection:collection ofExpectedType:[PreKeyRecord class]];
 }
 
-- (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection
-{
-    OWSAssertDebug(key.length > 0);
-    OWSAssertDebug(collection.length > 0);
-
-    return [self objectForKey:key inCollection:collection ofExpectedType:[SignedPreKeyRecord class]];
-}
-
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection
 {
     OWSAssertDebug(key.length > 0);

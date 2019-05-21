@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
@@ -42,7 +42,7 @@
     // Sanity Check
     XCTAssertNotNil(self.localNumber);
 
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [SignalRecipient markRecipientAsRegisteredAndGet:self.localNumber transaction:transaction];
 
         XCTAssertTrue([SignalRecipient isRegisteredRecipient:self.localNumber transaction:transaction]);
@@ -54,7 +54,7 @@
     // Sanity Check
     XCTAssertNotNil(self.localNumber);
     NSString *recipientId = @"+15551231234";
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
         
         XCTAssertTrue([SignalRecipient isRegisteredRecipient:recipientId transaction:transaction]);

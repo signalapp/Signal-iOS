@@ -5,6 +5,7 @@
 #import "TSGroupThread.h"
 #import "TSAttachmentStream.h"
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -107,6 +108,14 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId] transaction:transaction];
 }
 
++ (nullable instancetype)threadWithGroupId:(NSData *)groupId anyTransaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(groupId.length > 0);
+
+    NSString *uniqueId = [self threadIdFromGroupId:groupId];
+    return (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:uniqueId transaction:transaction];
+}
+
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
                                  transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
@@ -120,6 +129,21 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     }
     return thread;
 }
+
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId anyTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(groupId.length > 0);
+    OWSAssertDebug(transaction);
+
+    NSString *uniqueId = [self threadIdFromGroupId:groupId];
+    TSGroupThread *thread = (TSGroupThread *)[self anyFetchWithUniqueId:uniqueId transaction:transaction];
+    if (!thread) {
+        thread = [[self alloc] initWithGroupId:groupId];
+        [thread anySaveWithTransaction:transaction];
+    }
+    return thread;
+}
+
 
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
 {
@@ -191,21 +215,29 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 // @note If this becomes a hotspot we can extract into a YapDB View.
 // As is, the number of groups should be small (dozens, *maybe* hundreds), and we only enumerate them upon SN changes.
 + (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId
-                                              transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                              transaction:(SDSAnyReadTransaction *)transaction
 {
+
+    if (!transaction.transitional_yapReadTransaction) {
+        OWSFailDebug(@"GRDB TODO");
+        return @[];
+    }
+
     OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug(transaction);
 
     NSMutableArray<TSGroupThread *> *groupThreads = [NSMutableArray new];
 
-    [self enumerateCollectionObjectsWithTransaction:transaction usingBlock:^(id obj, BOOL *stop) {
-        if ([obj isKindOfClass:[TSGroupThread class]]) {
-            TSGroupThread *groupThread = (TSGroupThread *)obj;
-            if ([groupThread.groupModel.groupMemberIds containsObject:recipientId]) {
-                [groupThreads addObject:groupThread];
-            }
-        }
-    }];
+    [self
+        enumerateCollectionObjectsWithTransaction:transaction.transitional_yapReadTransaction
+                                       usingBlock:^(id obj, BOOL *stop) {
+                                           if ([obj isKindOfClass:[TSGroupThread class]]) {
+                                               TSGroupThread *groupThread = (TSGroupThread *)obj;
+                                               if ([groupThread.groupModel.groupMemberIds containsObject:recipientId]) {
+                                                   [groupThreads addObject:groupThread];
+                                               }
+                                           }
+                                       }];
 
     return [groupThreads copy];
 }

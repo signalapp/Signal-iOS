@@ -173,7 +173,7 @@ public class FullTextSearchFinder: NSObject {
         var result = recipientIndexer.index(recipientId, transaction: transaction)
 
         if IsNoteToSelfEnabled(),
-            let localNumber = tsAccountManager.storedOrCachedLocalNumber(transaction),
+            let localNumber = tsAccountManager.storedOrCachedLocalNumber(transaction.asAnyRead),
             localNumber == recipientId {
 
             let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")

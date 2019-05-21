@@ -41,6 +41,7 @@ public enum SDSRecordType: UInt {
     case userProfile = 41
     case verificationStateChangeMessage = 13
     case jobRecord = 34
+    case messageDecryptJobRecord = 53
     case messageSenderJobRecord = 35
     case signalAccount = 30
     case signalRecipient = 31

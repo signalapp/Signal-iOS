@@ -4,7 +4,6 @@
 
 #import "OWSRecipientIdentity.h"
 #import "OWSIdentityManager.h"
-#import "OWSPrimaryStorage+SessionStore.h"
 #import "OWSPrimaryStorage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -150,15 +149,15 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 // --- CODE GENERATION MARKER
 
 - (void)updateWithVerificationState:(OWSVerificationState)verificationState
-                        transaction:(YapDatabaseReadWriteTransaction *)transaction
+                        transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
     // Ensure changes are persisted without clobbering any work done on another thread or instance.
-    [self updateWithChangeBlock:^(OWSRecipientIdentity *_Nonnull obj) {
-        obj.verificationState = verificationState;
-    }
-                    transaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(OWSRecipientIdentity *_Nonnull obj) {
+                                 obj.verificationState = verificationState;
+                             }];
 }
 
 - (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock

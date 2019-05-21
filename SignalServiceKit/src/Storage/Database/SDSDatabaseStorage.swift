@@ -94,6 +94,15 @@ public class SDSDatabaseStorage: NSObject {
 
     var useGRDB: Bool = FeatureFlags.useGRDB
 
+    @objc
+    public func newDatabaseQueue() -> SDSAnyDatabaseQueue {
+        if useGRDB {
+            return grdbStorage.newDatabaseQueue().asAnyQueue
+        } else {
+            return yapStorage.newDatabaseQueue().asAnyQueue
+        }
+    }
+
     // GRDB TODO: add read/write flavors
     public func uiReadThrows(block: @escaping (SDSAnyReadTransaction) throws -> Void) throws {
         if useGRDB {
@@ -365,6 +374,10 @@ extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
             block(yapTransaction)
         }
     }
+
+    func newDatabaseQueue() -> YAPDBDatabaseQueue {
+        return YAPDBDatabaseQueue(databaseConnection: storage.newDatabaseConnection())
+    }
 }
 
 @objc
@@ -403,6 +416,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
     }
 
+    func newDatabaseQueue() -> GRDBDatabaseQueue {
+        return GRDBDatabaseQueue(databaseQueue: storage.newDatabaseQueue())
+    }
+
     public func add(function: DatabaseFunction) {
         pool.add(function: function)
     }
@@ -418,6 +435,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             try KnownStickerPackSerializer.table.createTable(database: db)
             try TSAttachmentSerializer.table.createTable(database: db)
             try SSKJobRecordSerializer.table.createTable(database: db)
+            try OWSMessageContentJobSerializer.table.createTable(database: db)
+            try OWSRecipientIdentitySerializer.table.createTable(database: db)
 
             try db.create(index: "index_interactions_on_id_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,
@@ -578,7 +597,11 @@ private struct Storage {
 
     let pool: DatabasePool
 
+    private let dbURL: URL
+    private let configuration: Configuration
+
     init(dbURL: URL, keyServiceName: String, keyName: String) throws {
+        self.dbURL = dbURL
         let keyspec = KeySpecSource(keyServiceName: keyServiceName, keyName: keyName)
 
         var configuration = Configuration()
@@ -591,16 +614,37 @@ private struct Storage {
         }
         configuration.label = "Modern (GRDB) Storage"      // Useful when your app opens multiple databases
         configuration.maximumReaderCount = 10   // The default is 5
+        configuration.busyMode = .callback({ (retryCount: Int) -> Bool in
+            // sleep 50 milliseconds
+            let millis = 50
+            usleep(useconds_t(millis * 1000))
 
+            Logger.verbose("retryCount: \(retryCount)")
+            let accumulatedWait = millis * (retryCount + 1)
+            if accumulatedWait > 0, (accumulatedWait % 250) == 0 {
+                Logger.warn("Database busy for \(accumulatedWait)ms")
+            }
+
+            return true
+        })
         configuration.passphraseBlock = { try keyspec.fetchString() }
         configuration.prepareDatabase = { (db: Database) in
             try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
         }
+        self.configuration = configuration
 
         pool = try DatabasePool(path: dbURL.path, configuration: configuration)
         Logger.debug("dbURL: \(dbURL)")
 
         OWSFileSystem.protectFileOrFolder(atPath: dbURL.path)
+    }
+
+    public func newDatabaseQueue() -> DatabaseQueue {
+        do {
+            return try DatabaseQueue(path: dbURL.path, configuration: configuration)
+        } catch {
+            owsFail("error: \(error)")
+        }
     }
 }
 

@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "SSKBaseTestObjC.h"
+#import "SSKSignedPreKeyStore.h"
 #import "TSPreKeyManager.h"
 #import <AxolotlKit/SignedPrekeyRecord.h>
 
@@ -19,8 +19,6 @@
 
 @implementation SignedPreKeyDeletionTests
 
-#ifdef BROKEN_TESTS
-
 - (void)setUp {
     [super setUp];
 }
@@ -29,10 +27,18 @@
     [super tearDown];
 }
 
+- (SSKSignedPreKeyStore *)signedPreKeyStore
+{
+    return SSKEnvironment.shared.signedPreKeyStore;
+}
+
+- (NSUInteger)signedPreKeyCount
+{
+    return [self.signedPreKeyStore loadSignedPreKeys].count;
+}
+
 - (void)testSignedPreKeyDeletion {
-    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        XCTAssertEqual(0, [transaction numberOfKeysInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection]);
-    }];
+    XCTAssertEqual(0, self.signedPreKeyCount);
 
     int days = 20;
     int lastPreKeyId = days;
@@ -45,26 +51,23 @@
                                                                     keyPair:[Curve25519 generateKeyPair]
                                                                   signature:[NSData new]
                                                                 generatedAt:generatedAt];
-        [[OWSPrimaryStorage sharedManager] storeSignedPreKey:i signedPreKeyRecord:record];
+        [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record];
     }
 
-    NSArray<SignedPreKeyRecord *> *signedPreKeys = [[OWSPrimaryStorage sharedManager] loadSignedPreKeys];
     // Sanity check
-    XCTAssert(signedPreKeys.count == 21);
+    XCTAssertEqual(21, self.signedPreKeyCount);
 
     [TSPreKeyManager clearSignedPreKeyRecordsWithKeyId:@(lastPreKeyId)];
-    XCTAssert([[OWSPrimaryStorage sharedManager] loadSignedPrekey:lastPreKeyId] != nil);
+
+    XCTAssert([self.signedPreKeyStore loadSignedPreKey:lastPreKeyId] != nil);
 
     // We'll delete every key created 7 or more days ago.
-    signedPreKeys = [[OWSPrimaryStorage sharedManager] loadSignedPreKeys];
-    XCTAssert(signedPreKeys.count == 7);
+    XCTAssertEqual(7, self.signedPreKeyCount);
 }
 
 - (void)testSignedPreKeyDeletionKeepsSomeOldKeys
 {
-    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        XCTAssertEqual(0, [transaction numberOfKeysInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection]);
-    }];
+    XCTAssertEqual(0, self.signedPreKeyCount);
 
     int lastPreKeyId = 10;
     for (int i = 0; i <= 10; i++) {
@@ -78,29 +81,23 @@
                                                                 generatedAt:generatedAt];
         // we only retain accepted keys
         [record markAsAcceptedByService];
-        [[OWSPrimaryStorage sharedManager] storeSignedPreKey:i signedPreKeyRecord:record];
+        [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record];
     }
 
-
-    NSArray<SignedPreKeyRecord *> *signedPreKeys = [[OWSPrimaryStorage sharedManager] loadSignedPreKeys];
     // Sanity check
-    XCTAssert(signedPreKeys.count == 11);
+    XCTAssertEqual(11, self.signedPreKeyCount);
 
     [TSPreKeyManager clearSignedPreKeyRecordsWithKeyId:@(lastPreKeyId)];
 
-    XCTAssert([[OWSPrimaryStorage sharedManager] loadSignedPrekey:lastPreKeyId] != nil);
-
-    signedPreKeys = [[OWSPrimaryStorage sharedManager] loadSignedPreKeys];
+    XCTAssert([self.signedPreKeyStore loadSignedPreKey:lastPreKeyId] != nil);
 
     // We need to keep 3 "old" keys, plus the "current" key
-    XCTAssert(signedPreKeys.count == 4);
+    XCTAssertEqual(4, self.signedPreKeyCount);
 }
 
-- (void)testOlderRecordsNotDeletedIfNoReplacement {
-
-    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        XCTAssertEqual(0, [transaction numberOfKeysInCollection:OWSPrimaryStorageSignedPreKeyStoreCollection]);
-    }];
+- (void)testOlderRecordsNotDeletedIfNoReplacement
+{
+    XCTAssertEqual(0, self.signedPreKeyCount);
 
     int days = 3;
     int lastPreKeyId = days;
@@ -113,21 +110,17 @@
                                                                     keyPair:[Curve25519 generateKeyPair]
                                                                   signature:[NSData new]
                                                                 generatedAt:generatedAt];
-        [[OWSPrimaryStorage sharedManager] storeSignedPreKey:i signedPreKeyRecord:record];
+        [self.signedPreKeyStore storeSignedPreKey:i signedPreKeyRecord:record];
     }
 
-    NSArray<SignedPreKeyRecord *> *signedPreKeys = [[OWSPrimaryStorage sharedManager] loadSignedPreKeys];
     // Sanity check
-    XCTAssert(signedPreKeys.count == 4);
+    XCTAssertEqual(4, self.signedPreKeyCount);
 
     [TSPreKeyManager clearSignedPreKeyRecordsWithKeyId:@(lastPreKeyId)];
-    XCTAssert([[OWSPrimaryStorage sharedManager] loadSignedPrekey:lastPreKeyId] != nil);
+    XCTAssert([self.signedPreKeyStore loadSignedPreKey:lastPreKeyId] != nil);
 
-    // All three records should still be stored.
-    signedPreKeys = [[OWSPrimaryStorage sharedManager] loadSignedPreKeys];
-    XCTAssert(signedPreKeys.count == 4);
+    // All records should still be stored.
+    XCTAssertEqual(4, self.signedPreKeyCount);
 }
-
-#endif
 
 @end

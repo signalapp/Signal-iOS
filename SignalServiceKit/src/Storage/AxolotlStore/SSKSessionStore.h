@@ -2,48 +2,50 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSPrimaryStorage.h"
 #import <AxolotlKit/SessionStore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSPrimaryStorage (SessionStore) <SessionStore>
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+
+extern NSString *const OWSPrimaryStorageSessionStoreCollection;
+
+@interface SSKSessionStore : NSObject <SessionStore>
 
 - (SessionRecord *)loadSession:(NSString *)contactIdentifier
                       deviceId:(int)deviceId
-                   transaction:(YapDatabaseReadTransaction *)transaction;
+                   transaction:(SDSAnyReadTransaction *)transaction;
 
-- (NSArray *)subDevicesSessions:(NSString *)contactIdentifier transaction:(YapDatabaseReadTransaction *)transaction;
+- (NSArray *)subDevicesSessions:(NSString *)contactIdentifier transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)storeSession:(NSString *)contactIdentifier
             deviceId:(int)deviceId
              session:(SessionRecord *)session
-         transaction:(YapDatabaseReadWriteTransaction *)transaction;
+         transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)containsSession:(NSString *)contactIdentifier
                deviceId:(int)deviceId
-            transaction:(YapDatabaseReadTransaction *)transaction;
+            transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)deleteSessionForContact:(NSString *)contactIdentifier
                        deviceId:(int)deviceId
-                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                    transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)deleteAllSessionsForContact:(NSString *)contactIdentifier
-                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)deleteAllSessionsForContact:(NSString *)contactIdentifier transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier
-                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Debug
 
-- (void)resetSessionStore:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)resetSessionStore:(SDSAnyWriteTransaction *)transaction;
 
 #if DEBUG
-- (void)snapshotSessionStore:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)restoreSessionStore:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)snapshotSessionStore:(SDSAnyWriteTransaction *)transaction;
+- (void)restoreSessionStore:(SDSAnyWriteTransaction *)transaction;
 #endif
 
-- (void)printAllSessions;
+- (void)printAllSessionsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 // MARK: - SessionStore methods. Prefer to use the strongly typed `transaction:` flavors above instead.
 

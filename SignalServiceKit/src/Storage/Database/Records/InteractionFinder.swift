@@ -12,11 +12,13 @@ protocol InteractionFinderAdapter {
 
     static func mostRecentSortId(transaction: ReadTransaction) -> UInt64
 
+    static func existsIncomingMessage(timestamp: UInt64, sourceId: String, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
+
     func mostRecentInteraction(transaction: ReadTransaction) -> TSInteraction?
     func mostRecentInteractionForInbox(transaction: ReadTransaction) -> TSInteraction?
 
     func sortIndex(interactionUniqueId: String, transaction: ReadTransaction) throws -> UInt?
-    func count(transaction: ReadTransaction) throws -> UInt
+    func count(transaction: ReadTransaction) -> UInt
     func unreadCount(transaction: ReadTransaction) throws -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
 
@@ -66,6 +68,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
+    @objc
+    public class func existsIncomingMessage(timestamp: UInt64, sourceId: String, sourceDeviceId: UInt32, transaction: SDSAnyReadTransaction) -> Bool {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return YAPDBInteractionFinderAdapter.existsIncomingMessage(timestamp: timestamp, sourceId: sourceId, sourceDeviceId: sourceDeviceId, transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinderAdapter.existsIncomingMessage(timestamp: timestamp, sourceId: sourceId, sourceDeviceId: sourceDeviceId, transaction: grdbRead)
+        }
+    }
+
     // MARK: - instance methods
 
     @objc
@@ -99,12 +111,13 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    public func count(transaction: SDSAnyReadTransaction) throws -> UInt {
+    @objc
+    public func count(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.count(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.count(transaction: grdbRead)
+            return grdbAdapter.count(transaction: grdbRead)
         }
     }
 
@@ -152,6 +165,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     static func mostRecentSortId(transaction: YapDatabaseReadTransaction) -> UInt64 {
         return SSKIncrementingIdFinder.previousId(key: TSInteraction.collection(), transaction: transaction)
+    }
+
+    static func existsIncomingMessage(timestamp: UInt64, sourceId: String, sourceDeviceId: UInt32, transaction: YapDatabaseReadTransaction) -> Bool {
+        return OWSIncomingMessageFinder().existsMessage(withTimestamp: timestamp, sourceId: sourceId, sourceDeviceId: sourceDeviceId, transaction: transaction)
     }
 
     // MARK: - instance methods
@@ -284,6 +301,21 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
     }
 
+    static func existsIncomingMessage(timestamp: UInt64, sourceId: String, sourceDeviceId: UInt32, transaction: GRDBReadTransaction) -> Bool {
+        let sql = """
+            SELECT EXISTS(
+                SELECT 1
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .timestamp) = ?
+                  AND \(interactionColumn: .authorId) = ?
+                  AND \(interactionColumn: .sourceDeviceId) = ?
+            )
+        """
+        let arguments: StatementArguments = [timestamp, sourceId, sourceDeviceId]
+
+        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+    }
+
     // MARK: - instance methods
 
     func mostRecentInteraction(transaction: GRDBReadTransaction) -> TSInteraction? {
@@ -327,17 +359,21 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             arguments: [threadUniqueId, interactionUniqueId])
     }
 
-    func count(transaction: GRDBReadTransaction) throws -> UInt {
-        guard let count = try UInt.fetchOne(transaction.database,
-                                            sql: """
-            SELECT COUNT(*)
-            FROM \(InteractionRecord.databaseTableName)
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            """,
-            arguments: [threadUniqueId]) else {
-                throw assertionError("count was unexpectedly nil")
+    func count(transaction: GRDBReadTransaction) -> UInt {
+        do {
+            guard let count = try UInt.fetchOne(transaction.database,
+                                                sql: """
+                SELECT COUNT(*)
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .threadUniqueId) = ?
+                """,
+                arguments: [threadUniqueId]) else {
+                    throw assertionError("count was unexpectedly nil")
+            }
+            return count
+        } catch {
+            owsFail("error: \(error)")
         }
-        return count
     }
 
     func unreadCount(transaction: GRDBReadTransaction) throws -> UInt {

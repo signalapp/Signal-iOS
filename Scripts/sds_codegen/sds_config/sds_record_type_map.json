@@ -30,6 +30,7 @@
     "OWSUserProfile": 41, 
     "OWSVerificationStateChangeMessage": 13, 
     "SSKJobRecord": 34, 
+    "SSKMessageDecryptJobRecord": 53, 
     "SSKMessageSenderJobRecord": 35, 
     "SignalAccount": 30, 
     "SignalRecipient": 31, 

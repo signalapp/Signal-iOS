@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -20,8 +20,12 @@ public class RefreshPreKeysOperation: OWSOperation {
         return AccountServiceClient.shared
     }
 
-    private var primaryStorage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
+    private var signedPreKeyStore: SSKSignedPreKeyStore {
+        return SSKEnvironment.shared.signedPreKeyStore
+    }
+
+    private var preKeyStore: SSKPreKeyStore {
+        return SSKEnvironment.shared.preKeyStore
     }
 
     private var identityKeyManager: OWSIdentityManager {
@@ -40,24 +44,24 @@ public class RefreshPreKeysOperation: OWSOperation {
             self.accountServiceClient.getPreKeysCount()
         }.then(on: DispatchQueue.global()) { preKeysCount -> Promise<Void> in
             Logger.debug("preKeysCount: \(preKeysCount)")
-            guard preKeysCount < kEphemeralPreKeysMinimumCount || self.primaryStorage.currentSignedPrekeyId() == nil else {
+            guard preKeysCount < kEphemeralPreKeysMinimumCount || self.signedPreKeyStore.currentSignedPrekeyId() == nil else {
                 Logger.debug("Available keys sufficient: \(preKeysCount)")
                 return Promise.value(())
             }
 
             let identityKey: Data = self.identityKeyManager.identityKeyPair()!.publicKey
-            let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
-            let preKeyRecords: [PreKeyRecord] = self.primaryStorage.generatePreKeyRecords()
+            let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
+            let preKeyRecords: [PreKeyRecord] = self.preKeyStore.generatePreKeyRecords()
 
-            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-            self.primaryStorage.storePreKeyRecords(preKeyRecords)
+            self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            self.preKeyStore.storePreKeyRecords(preKeyRecords)
 
             return firstly {
                 self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
             }.done {
                 signedPreKeyRecord.markAsAcceptedByService()
-                self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-                self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+                self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+                self.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
                 TSPreKeyManager.clearPreKeyUpdateFailureCount()
                 TSPreKeyManager.clearSignedPreKeyRecords()

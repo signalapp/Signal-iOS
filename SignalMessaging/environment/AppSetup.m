@@ -58,6 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
                                              fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
         OWSAssert(success);
 
+        SDSDatabaseStorage *databaseStorage = [[SDSDatabaseStorage alloc] init];
+
         OWSPreferences *preferences = [OWSPreferences new];
 
         TSNetworkManager *networkManager = [[TSNetworkManager alloc] initDefault];
@@ -67,16 +69,18 @@ NS_ASSUME_NONNULL_BEGIN
         OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithPrimaryStorage:primaryStorage];
         MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSMessageManager *messageManager = [[OWSMessageManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSMessageManager *messageManager = [OWSMessageManager new];
         OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
+        SSKSessionStore *sessionStore = [SSKSessionStore new];
+        SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
+        SSKPreKeyStore *preKeyStore = [SSKPreKeyStore new];
         id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
-        OWSMessageDecrypter *messageDecrypter = [[OWSMessageDecrypter alloc] initWithPrimaryStorage:primaryStorage];
-        OWSBatchMessageProcessor *batchMessageProcessor =
-            [[OWSBatchMessageProcessor alloc] initWithPrimaryStorage:primaryStorage];
+        OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
+        OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
         OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
         TSSocketManager *socketManager = [[TSSocketManager alloc] init];
-        TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
+        TSAccountManager *tsAccountManager = [TSAccountManager new];
         OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSDisappearingMessagesJob *disappearingMessagesJob =
             [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
@@ -90,7 +94,6 @@ NS_ASSUME_NONNULL_BEGIN
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
         OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
         StickerManager *stickerManager = [[StickerManager alloc] init];
-        SDSDatabaseStorage *databaseStorage = [[SDSDatabaseStorage alloc] init];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
@@ -114,6 +117,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    messageManager:messageManager
                                                                   blockingManager:blockingManager
                                                                   identityManager:identityManager
+                                                                     sessionStore:sessionStore
+                                                                signedPreKeyStore:signedPreKeyStore
+                                                                      preKeyStore:preKeyStore
                                                                         udManager:udManager
                                                                  messageDecrypter:messageDecrypter
                                                             batchMessageProcessor:batchMessageProcessor

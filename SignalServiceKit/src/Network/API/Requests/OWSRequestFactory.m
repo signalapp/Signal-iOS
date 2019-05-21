@@ -216,7 +216,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSRequest *)updateAttributesRequest
 {
-    NSString *authKey = self.tsAccountManager.serverAuthToken;
+    NSString *authKey = self.tsAccountManager.storedServerAuthToken;
     OWSAssertDebug(authKey.length > 0);
     NSString *_Nullable pin = [self.ows2FAManager pinCode];
 

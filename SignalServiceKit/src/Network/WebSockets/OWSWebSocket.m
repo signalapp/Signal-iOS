@@ -773,7 +773,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
                 BOOL useSignalingKey = [message.headers containsObject:@"X-Signal-Key: true"];
                 NSData *_Nullable decryptedPayload;
                 if (useSignalingKey) {
-                    NSString *_Nullable signalingKey = TSAccountManager.signalingKey;
+                    NSString *_Nullable signalingKey = self.tsAccountManager.storedSignalingKey;
                     OWSAssertDebug(signalingKey);
                     decryptedPayload =
                         [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:signalingKey];
@@ -900,7 +900,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 {
     return [NSString stringWithFormat:@"?login=%@&password=%@",
                      [[TSAccountManager localNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
-                     [TSAccountManager serverAuthToken]];
+                     self.tsAccountManager.storedServerAuthToken];
 }
 
 #pragma mark - Socket LifeCycle

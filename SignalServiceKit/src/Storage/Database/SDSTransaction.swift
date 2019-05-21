@@ -125,6 +125,7 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction {
         }
     }
 
+    @objc
     public func addCompletion(queue: DispatchQueue = DispatchQueue.main, block: @escaping () -> Void) {
         switch writeTransaction {
         case .yapWrite(let yapWrite):
