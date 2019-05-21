@@ -4,6 +4,9 @@
 #import "OWSPrimaryStorage+keyFromIntLong.h"
 #import "OWSDevice.h"
 #import "OWSIdentityManager.h"
+#import "NSDate+OWS.h"
+#import "PreKeyRecord.h"
+#import "PreKeyBundle.h"
 #import "TSAccountManager.h"
 #import "TSPreKeyManager.h"
 #import "YapDatabaseConnection+OWS.h"
@@ -13,6 +16,7 @@
 #define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
 #define LokiPreKeyContactCollection @"LokiPreKeyContactCollection"
 #define LokiPreKeyBundleCollection @"LokiPreKeyBundleCollection"
+#define LokiLastHashCollection @"LokiLastHashCollection"
 
 @implementation OWSPrimaryStorage (Loki)
 
@@ -116,6 +120,39 @@
 
 - (void)removePreKeyBundleForContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
     [transaction removeObjectForKey:pubKey inCollection:LokiPreKeyBundleCollection];
+}
+
+# pragma mark - Last Hash
+
+- (NSString *_Nullable)getLastMessageHashForServiceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    NSDictionary *_Nullable dict = [transaction objectForKey:serviceNode inCollection:LokiLastHashCollection];
+    if (!dict) { return nil; }
+    
+    NSString *_Nullable hash = dict[@"hash"];
+    if (!hash) { return nil; }
+    
+    // Check if the hash isn't expired
+    uint64_t now = NSDate.ows_millisecondTimeStamp;
+    NSNumber *_Nullable expiresAt = dict[@"expiresAt"];
+    if (expiresAt && expiresAt.unsignedLongLongValue <= now) {
+        // The last message has expired from the storage server
+        [self removeLastMessageHashForServiceNode:serviceNode transaction:transaction];
+        return nil;
+    }
+    
+    return hash;
+}
+
+- (void)setLastMessageHash:(NSString *)hash expiresAt:(u_int64_t)expiresAt serviceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    NSDictionary *dict = @{
+                           @"hash": hash,
+                           @"expiresAt": @(expiresAt)
+                           };
+    [transaction setObject:dict forKey:serviceNode inCollection:LokiLastHashCollection];
+}
+
+- (void)removeLastMessageHashForServiceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    [transaction removeObjectForKey:serviceNode inCollection:LokiLastHashCollection];
 }
 
 @end

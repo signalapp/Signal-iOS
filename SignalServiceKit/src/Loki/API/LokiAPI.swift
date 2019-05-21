@@ -102,3 +102,26 @@ private extension Promise {
         }
     }
 }
+
+// MARK: Last Hash
+
+extension LokiAPI {
+    
+    private var primaryStorage: OWSPrimaryStorage {
+        return OWSPrimaryStorage.shared()
+    }
+    
+    fileprivate func updateLastHash(for node: Target, hash: String, expiresAt: UInt64) {
+        primaryStorage.dbReadWriteConnection.readWrite { transaction in
+            self.primaryStorage.setLastMessageHash(hash, expiresAt: expiresAt, serviceNode: node.address, transaction: transaction)
+        }
+    }
+    
+    fileprivate func getLastHash(for node: Target) -> String? {
+        var lastHash: String? = nil
+        primaryStorage.dbReadWriteConnection.readWrite { transaction in
+            lastHash = self.primaryStorage.getLastMessageHash(forServiceNode: node.address, transaction: transaction)
+        }
+        return lastHash
+    }
+}
