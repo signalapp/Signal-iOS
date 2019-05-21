@@ -1,4 +1,4 @@
-#import "NSObject.h"
+#import "NSObject+Casting.h"
 
 @implementation NSObject (Casting)
 

@@ -77,7 +77,7 @@
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/DataSource.h>
-#import <SignalServiceKit/ECKeyPair.h>
+#import <SignalServiceKit/ECKeyPair+Loki.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
@@ -90,10 +90,10 @@
 #import <SignalServiceKit/OWSContactsOutputStream.h>
 #import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSEndSessionMessage.h>
-#import <SignalServiceKit/OWSEphemeralMessage.h>
+#import <SignalServiceKit/LKEphemeralMessage.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSFriendRequestMessage.h>
+#import <SignalServiceKit/LKFriendRequestMessage.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMediaGalleryFinder.h>
 #import <SignalServiceKit/OWSMessageManager.h>

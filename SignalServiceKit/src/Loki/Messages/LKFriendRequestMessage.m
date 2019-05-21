@@ -1,9 +1,9 @@
-#import "OWSFriendRequestMessage.h"
+#import "LKFriendRequestMessage.h"
 #import "OWSPrimaryStorage+Loki.h"
 #import "SignalRecipient.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-@implementation OWSFriendRequestMessage
+@implementation LKFriendRequestMessage
 
 -(BOOL)isFriendRequest { return YES; }
 

@@ -19,7 +19,7 @@
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "OWSEphemeralMessage.h"
+#import "LKEphemeralMessage.h"
 #import "OWSIdentityManager.h"
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncomingSentMessageTranscript.h"
@@ -51,7 +51,7 @@
 #import "TSQuotedMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/NSObject.h>
+#import <SignalServiceKit/NSObject+Casting.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
@@ -1022,10 +1022,10 @@ NS_ASSUME_NONNULL_BEGIN
     [thread saveWithTransaction:transaction];
     
     /// Loki: Send an empty message to trigger the session reset code for both parties
-    OWSEphemeralMessage *emptyMessage = [OWSEphemeralMessage createEmptyOutgoingMessageInThread:thread];
+    LKEphemeralMessage *emptyMessage = [LKEphemeralMessage createEmptyOutgoingMessageInThread:thread];
     [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
 
-    OWSLogDebug(@"[Loki] Session reset has been received from %@.", envelope.source);
+    OWSLogDebug(@"[Loki] Session reset received from %@.", envelope.source);
     
     /* Loki: Original code
      * ================
@@ -1481,7 +1481,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [existingFriendRequestMessage saveFriendRequestStatus:TSMessageFriendRequestStatusAccepted withTransaction:transaction];
             }
             // The two lines below are equivalent to calling [ThreadUtil enqueueAcceptFriendRequestMessageInThread:thread]
-            OWSEphemeralMessage *emptyMessage = [OWSEphemeralMessage createEmptyOutgoingMessageInThread:thread];
+            LKEphemeralMessage *emptyMessage = [LKEphemeralMessage createEmptyOutgoingMessageInThread:thread];
             [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
         } else if (!thread.isContactFriend) {
             // Checking that the sender of the message isn't already a friend is necessary because otherwise
@@ -1707,13 +1707,13 @@ NS_ASSUME_NONNULL_BEGIN
         
         TSContactThread *_Nullable thread = [TSContactThread getThreadWithContactId:pubKey transaction:transaction];
         if (!thread) {
-            OWSLogDebug(@"[Loki] New session was adopted but we failed to get the thread for %@.", pubKey);
+            OWSLogDebug(@"[Loki] A new session was adopted but we failed to get the thread for %@.", pubKey);
             return;
         }
         
         // If we were the ones to initiate the reset then we need to send back an empty message
         if (thread.sessionResetState == TSContactThreadSessionResetStateInitiated) {
-            OWSEphemeralMessage *emptyMessage = [OWSEphemeralMessage createEmptyOutgoingMessageInThread:thread];
+            LKEphemeralMessage *emptyMessage = [LKEphemeralMessage createEmptyOutgoingMessageInThread:thread];
             [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
         }
         

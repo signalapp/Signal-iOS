@@ -38,7 +38,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
 
 // Loki
-@property (nonatomic) OWSLokiFriendRequestExpireJob *lokiFriendRequestExpireJob;
+@property (nonatomic) LKFriendRequestExpirationJob *lokiFriendRequestExpireJob;
 
 @end
 
@@ -199,7 +199,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     }
 }
 
-- (void)setLokiFriendRequestExpireJob:(OWSLokiFriendRequestExpireJob *)lokiFriendRequestExpireJob {
+- (void)setLokiFriendRequestExpireJob:(LKFriendRequestExpirationJob *)lokiFriendRequestExpireJob {
     @synchronized(self) {
         OWSAssertDebug(lokiFriendRequestExpireJob);
         OWSAssertDebug(!_lokiFriendRequestExpireJob);

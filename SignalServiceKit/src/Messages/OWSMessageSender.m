@@ -43,7 +43,7 @@
 #import "TSRequest.h"
 #import "TSSocketManager.h"
 #import "TSThread.h"
-#import "OWSFriendRequestMessage.h"
+#import "LKFriendRequestMessage.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/CipherMessage.h>
 #import <AxolotlKit/PreKeyBundle.h>
@@ -1573,7 +1573,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             
             // A friend request means we don't have a session with the person
             // There's no point to check for it
-            Boolean isFriendRequest = [messageSend.message isKindOfClass:OWSFriendRequestMessage.class];
+            Boolean isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
             if (!isFriendRequest) {
                 [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
             }
@@ -1818,7 +1818,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(recipientId.length > 0);
     
     // Loki: Handle friend requests differently
-    Boolean isFriendRequest = [messageSend.message isKindOfClass:OWSFriendRequestMessage.class];
+    Boolean isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
     if (isFriendRequest) {
         return [self throws_encryptedFriendMessageForMessageSend:messageSend deviceId:deviceId plainText:plainText];
     }

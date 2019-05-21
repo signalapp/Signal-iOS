@@ -1,4 +1,4 @@
-#import "ECKeyPair.h"
+#import "ECKeyPair+Loki.h"
 
 extern void curve25519_donna(unsigned char *output, const unsigned char *a, const unsigned char *b);
 

@@ -158,7 +158,7 @@ static NSTimeInterval launchStartedAt;
     return AppEnvironment.shared.legacyNotificationActionHandler;
 }
 
-- (OWSLokiFriendRequestExpireJob *)lokiFriendRequestExpireJob
+- (LKFriendRequestExpirationJob *)lokiFriendRequestExpireJob
 {
     return SSKEnvironment.shared.lokiFriendRequestExpireJob;
 }

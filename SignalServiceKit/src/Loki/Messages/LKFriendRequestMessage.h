@@ -3,7 +3,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NS_SWIFT_NAME(FriendRequestMessage)
-@interface OWSFriendRequestMessage : TSOutgoingMessage
+@interface LKFriendRequestMessage : TSOutgoingMessage
 
 @end
 

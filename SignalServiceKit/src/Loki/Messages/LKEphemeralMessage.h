@@ -3,10 +3,10 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NS_SWIFT_NAME(EphemeralMessage)
-@interface OWSEphemeralMessage : TSOutgoingMessage
+@interface LKEphemeralMessage : TSOutgoingMessage
 
 /// Used to establish sessions.
-+ (OWSEphemeralMessage *)createEmptyOutgoingMessageInThread:(TSThread *)thread;
++ (LKEphemeralMessage *)createEmptyOutgoingMessageInThread:(TSThread *)thread;
 
 @end
 

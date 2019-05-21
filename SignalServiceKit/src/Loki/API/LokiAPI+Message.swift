@@ -37,7 +37,7 @@ public extension LokiAPI {
                         let destination = signalMessage["destination"] as! String
                         let ttl = LokiAPI.defaultMessageTTL
                         if isPoWRequired {
-                            // Storage server takes a time interval in milliseconds
+                            // The storage server takes a time interval in milliseconds
                             let now = NSDate.ows_millisecondTimeStamp()
                             if let nonce = ProofOfWork.calculate(data: data, pubKey: destination, timestamp: now, ttl: ttl) {
                                 let result = Message(destination: destination, data: data, ttl: ttl, timestamp: now, nonce: nonce)

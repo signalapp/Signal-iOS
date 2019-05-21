@@ -1,18 +1,19 @@
 
 /*
- This class is used for finding friend request messages which are expired.
- This is modelled after `OWSDisappearingMessagesFinder`.
+ This class is used for finding friend request messages which are pending expiration.
+ Modeled after `OWSDisappearingMessagesFinder`.
  */
-@objc(OWSLokiFriendRequestExpireMessageFinder)
-public class FriendRequestExpireMessageFinder : NSObject {
-    public static let friendRequestExpireColumn = "friend_request_expires_at"
-    public static let friendRequestExpireIndex = "loki_index_friend_request_expires_at"
+@objc(LKFriendRequestExpirationMessageFinder)
+public final class FriendRequestExpirationMessageFinder : NSObject {
+    
+    private static let friendRequestExpireColumn = "friend_request_expires_at"
+    private static let friendRequestExpireIndex = "loki_index_friend_request_expires_at"
     
     public func nextExpirationTimestamp(with transaction: YapDatabaseReadTransaction) -> UInt64? {
-        let query = "WHERE \(FriendRequestExpireMessageFinder.friendRequestExpireColumn) > 0 ORDER BY \(FriendRequestExpireMessageFinder.friendRequestExpireColumn) ASC"
+        let query = "WHERE \(FriendRequestExpirationMessageFinder.friendRequestExpireColumn) > 0 ORDER BY \(FriendRequestExpirationMessageFinder.friendRequestExpireColumn) ASC"
         
         let dbQuery = YapDatabaseQuery(string: query, parameters: [])
-        let ext = transaction.ext(FriendRequestExpireMessageFinder.friendRequestExpireIndex) as? YapDatabaseSecondaryIndexTransaction
+        let ext = transaction.ext(FriendRequestExpirationMessageFinder.friendRequestExpireIndex) as? YapDatabaseSecondaryIndexTransaction
         var firstMessage: TSMessage? = nil
         ext?.enumerateKeysAndObjects(matching: dbQuery) { (collection, key, object, stop) in
             firstMessage = object as? TSMessage
@@ -35,10 +36,10 @@ public class FriendRequestExpireMessageFinder : NSObject {
         var messageIds = [String]()
         let now = NSDate.ows_millisecondTimeStamp()
 
-        let query = "WHERE \(FriendRequestExpireMessageFinder.friendRequestExpireColumn) > 0 AND \(FriendRequestExpireMessageFinder.friendRequestExpireColumn) <= \(now)"
+        let query = "WHERE \(FriendRequestExpirationMessageFinder.friendRequestExpireColumn) > 0 AND \(FriendRequestExpirationMessageFinder.friendRequestExpireColumn) <= \(now)"
         // When (friendRequestExpiresAt == 0) then the friend request SHOULD NOT be set to expired
         let dbQuery = YapDatabaseQuery(string: query, parameters: [])
-        if let ext = transaction.ext(FriendRequestExpireMessageFinder.friendRequestExpireIndex) as? YapDatabaseSecondaryIndexTransaction {
+        if let ext = transaction.ext(FriendRequestExpirationMessageFinder.friendRequestExpireIndex) as? YapDatabaseSecondaryIndexTransaction {
             ext.enumerateKeys(matching: dbQuery) { (_, key, _) in
                 messageIds.append(key)
             }
@@ -49,9 +50,9 @@ public class FriendRequestExpireMessageFinder : NSObject {
     
 }
 
-// MARK: YapDatabaseExtension
+// MARK: Database Extension
 
-public extension FriendRequestExpireMessageFinder {
+public extension FriendRequestExpirationMessageFinder {
     
     @objc public static var indexDatabaseExtension: YapDatabaseSecondaryIndex {
         let setup = YapDatabaseSecondaryIndexSetup()

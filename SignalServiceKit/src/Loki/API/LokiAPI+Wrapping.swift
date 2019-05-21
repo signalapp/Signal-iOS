@@ -46,7 +46,7 @@ extension LokiAPI {
             let envelope = webSocketMessage.request!.body!
             return try SSKProtoEnvelope.parseData(envelope)
         } catch let error {
-            owsFailDebug("[Loki API] Failed to unwrap data: \(error).")
+            owsFailDebug("[Loki] Failed to unwrap data: \(error).")
             throw WrappingError.failedToUnwrapData
         }
     }
@@ -60,7 +60,7 @@ extension LokiAPI {
             messageBuilder.setRequest(try requestBuilder.build())
             return try messageBuilder.build()
         } catch let error {
-            owsFailDebug("[Loki API] - Failed to wrap envelope in web socket message: \(error).")
+            owsFailDebug("[Loki] Failed to wrap envelope in web socket message: \(error).")
             throw WrappingError.failedToWrapEnvelopeInWebSocketMessage
         }
     }
@@ -68,14 +68,14 @@ extension LokiAPI {
     /// Wrap a `SignalMessage` in an `SSKProtoEnvelope`.
     private static func createEnvelope(around signalMessage: SignalMessage, timestamp: UInt64) throws -> SSKProtoEnvelope {
         guard let keyPair = SSKEnvironment.shared.identityManager.identityKeyPair() else {
-            owsFailDebug("[Loki API] - Failed to wrap message in envelope: identityManager.identityKeyPair() is invalid.")
+            owsFailDebug("[Loki] Failed to wrap message in envelope: identityManager.identityKeyPair() is invalid.")
             throw WrappingError.failedToWrapMessageInEnvelope
         }
         do {
             let hexEncodedPublicKey = keyPair.hexEncodedPublicKey
             let parameters = ParamParser(dictionary: signalMessage)
             let rawType: Int32 = try parameters.required(key: "type")
-            guard let type: SSKProtoEnvelope.SSKProtoEnvelopeType = SSKProtoEnvelope.SSKProtoEnvelopeType(rawValue: rawType) else {
+            guard let type = SSKProtoEnvelope.SSKProtoEnvelopeType(rawValue: rawType) else {
                 Logger.error("Invalid envelope type: \(rawType).")
                 throw ParamParser.ParseError.invalidFormat("type")
             }
@@ -87,7 +87,7 @@ extension LokiAPI {
             }
             return try builder.build()
         } catch let error {
-            owsFailDebug("[Loki API] Failed to wrap message in envelope: \(error).")
+            owsFailDebug("[Loki] Failed to wrap message in envelope: \(error).")
             throw WrappingError.failedToWrapMessageInEnvelope
         }
     }

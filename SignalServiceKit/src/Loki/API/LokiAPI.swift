@@ -54,11 +54,11 @@ import PromiseKit
             guard let json = rawResponse as? JSON, let messages = json["messages"] as? [JSON] else { return [] }
             return messages.compactMap { message in
                 guard let base64EncodedData = message["data"] as? String, let data = Data(base64Encoded: base64EncodedData) else {
-                    Logger.warn("[Loki API] Failed to decode data for message: \(message).")
+                    Logger.warn("[Loki] Failed to decode data for message: \(message).")
                     return nil
                 }
                 guard let envelope = try? unwrap(data: data) else {
-                    Logger.warn("[Loki API] Failed to unwrap data for message: \(message).")
+                    Logger.warn("[Loki] Failed to unwrap data for message: \(message).")
                     return nil
                 }
                 return envelope
@@ -82,7 +82,7 @@ import PromiseKit
     @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64, requiringPoW isPoWRequired: Bool) -> AnyPromise {
         let promise = Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired)
             .then(sendMessage)
-            .recoverNetworkError(on: DispatchQueue.global())
+            .recoverNetworkErrorIfNeeded(on: DispatchQueue.global())
         let anyPromise = AnyPromise(promise)
         anyPromise.retainUntilComplete()
         return anyPromise
@@ -93,13 +93,11 @@ import PromiseKit
 
 private extension Promise {
 
-    func recoverNetworkError(on queue: DispatchQueue) -> Promise<T> {
+    func recoverNetworkErrorIfNeeded(on queue: DispatchQueue) -> Promise<T> {
         return self.recover(on: queue) { error -> Promise<T> in
             switch error {
-            case NetworkManagerError.taskError(_, let underlyingError):
-                throw underlyingError
-            default:
-                throw error
+            case NetworkManagerError.taskError(_, let underlyingError): throw underlyingError
+            default: throw error
             }
         }
     }
