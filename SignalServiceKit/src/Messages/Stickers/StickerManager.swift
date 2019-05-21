@@ -6,8 +6,6 @@ import Foundation
 import PromiseKit
 import HKDFKit
 
-// TODO: Determine how views can be notified of sticker downloads.
-//
 // Stickers
 //
 // * Stickers are either "installed" or not.
@@ -82,6 +80,8 @@ public class StickerManager: NSObject {
     private static let store = SDSKeyValueStore(collection: "recentStickers")
     private static let emojiMapStore = SDSKeyValueStore(collection: "emojiMap")
 
+    private static let serialQueue = DispatchQueue(label: "org.signal.stickers")
+
     @objc
     public enum InstallMode: Int {
         case doNotInstall
@@ -101,15 +101,16 @@ public class StickerManager: NSObject {
 
         // Resume sticker and sticker pack downloads when app is ready.
         AppReadiness.runNowOrWhenAppWillBecomeReady {
-            StickerManager.shared.updateIsStickerSendEnabled()
+            // Warm the caches.
+            StickerManager.shared.warmIsStickerSendEnabled()
+            StickerManager.shared.warmTooltipState()
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
+            StickerManager.cleanupOrphans()
+
             if TSAccountManager.sharedInstance().isRegisteredAndReady() {
                 StickerManager.refreshContents()
             }
-
-            StickerManager.cleanupOrphans()
-
         }
     }
 
@@ -130,7 +131,6 @@ public class StickerManager: NSObject {
 
     // MARK: - Paths
 
-    // TODO: Clean up sticker data if user deletes all user data.
     @objc
     public class func cacheDirUrl() -> URL {
         var url = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())
@@ -325,6 +325,8 @@ public class StickerManager: NSObject {
                 stickerPack.anySave(transaction: transaction)
             }
 
+            self.shared.stickerPackWasInstalled(transaction: transaction)
+
             enqueueStickerSyncMessage(operationType: .install,
                                       packs: [stickerPack.info],
                                       transaction: transaction)
@@ -450,6 +452,18 @@ public class StickerManager: NSObject {
         } else {
             return nil
         }
+    }
+
+    @objc
+    public class func filepathsForAllInstalledStickers(transaction: SDSAnyReadTransaction) -> [String] {
+
+        var filePaths = [String]()
+        let installedStickers = InstalledSticker.anyFetchAll(transaction: transaction)
+        for installedSticker in installedStickers {
+            let filePath = stickerUrl(stickerInfo: installedSticker.info).path
+            filePaths.append(filePath)
+        }
+        return filePaths
     }
 
     @objc
@@ -695,7 +709,6 @@ public class StickerManager: NSObject {
 
     // MARK: - Known Sticker Packs
 
-    // TODO: We may want to cull these in the orphan data cleaner.
     @objc
     public class func addKnownStickerInfo(_ stickerInfo: StickerInfo,
                                           transaction: SDSAnyWriteTransaction) {
@@ -843,8 +856,8 @@ public class StickerManager: NSObject {
     // MARK: - Auto-Enable
 
     private let kHasReceivedStickersKey = "hasReceivedStickersKey"
+    // This property should only be accessed on serialQueue.
     private var isStickerSendEnabledCached = false
-    private static let serialQueue = DispatchQueue(label: "org.signal.stickers")
 
     @objc
     public func setHasUsedStickers(transaction: SDSAnyWriteTransaction) {
@@ -876,13 +889,75 @@ public class StickerManager: NSObject {
         }
     }
 
-    private func updateIsStickerSendEnabled() {
+    private func warmIsStickerSendEnabled() {
         let value = databaseStorage.readReturningResult { transaction in
             return StickerManager.store.getBool(self.kHasReceivedStickersKey, defaultValue: false, transaction: transaction)
         }
 
         StickerManager.serialQueue.sync {
             isStickerSendEnabledCached = value
+        }
+    }
+
+    // MARK: - Tooltips
+
+    @objc
+    public enum TooltipState: UInt {
+        case unknown = 1
+        case shouldShowTooltip = 2
+        case hasShownTooltip = 3
+    }
+
+    private let kShouldShowTooltipKey = "shouldShowTooltip"
+    // This property should only be accessed on serialQueue.
+    private var tooltipState = TooltipState.unknown
+
+    private func stickerPackWasInstalled(transaction: SDSAnyWriteTransaction) {
+        setTooltipState(.shouldShowTooltip, transaction: transaction)
+    }
+
+    @objc
+    public func stickerTooltipWasShown(transaction: SDSAnyWriteTransaction) {
+        setTooltipState(.hasShownTooltip, transaction: transaction)
+    }
+
+    @objc
+    public func setTooltipState(_ value: TooltipState, transaction: SDSAnyWriteTransaction) {
+        var shouldSet = false
+        StickerManager.serialQueue.sync {
+            // Don't "downgrade" this state; only raise to higher values.
+            guard self.tooltipState.rawValue < value.rawValue else {
+                return
+            }
+            self.tooltipState = value
+            shouldSet = true
+        }
+        guard shouldSet else {
+            return
+        }
+
+        StickerManager.store.setUInt(value.rawValue, key: kShouldShowTooltipKey, transaction: transaction)
+    }
+
+    @objc
+    public var shouldShowStickerTooltip: Bool {
+        guard isStickerSendEnabled else {
+            return false
+        }
+        return StickerManager.serialQueue.sync {
+            return self.tooltipState == .shouldShowTooltip
+        }
+    }
+
+    private func warmTooltipState() {
+        let value = databaseStorage.readReturningResult { transaction in
+            return StickerManager.store.getUInt(self.kShouldShowTooltipKey, defaultValue: TooltipState.unknown.rawValue, transaction: transaction)
+        }
+
+        StickerManager.serialQueue.sync {
+            if let tooltipState = TooltipState(rawValue: value) {
+                self.tooltipState = tooltipState
+            }
         }
     }
 

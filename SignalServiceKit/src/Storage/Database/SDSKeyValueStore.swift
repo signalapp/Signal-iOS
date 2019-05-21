@@ -90,6 +90,23 @@ public class SDSKeyValueStore: NSObject {
         write(NSNumber(booleanLiteral: value), forKey: key, transaction: transaction)
     }
 
+    // MARK: - UInt
+
+    // TODO: Handle numerics more generally.
+    @objc
+    public func getUInt(_ key: String, defaultValue: UInt, transaction: SDSAnyReadTransaction) -> UInt {
+        if let value: NSNumber = read(key, transaction: transaction) {
+            return value.uintValue
+        } else {
+            return defaultValue
+        }
+    }
+
+    @objc
+    public func setUInt(_ value: UInt, key: String, transaction: SDSAnyWriteTransaction) {
+        write(NSNumber(value: value), forKey: key, transaction: transaction)
+    }
+
     // MARK: - Data
 
     @objc

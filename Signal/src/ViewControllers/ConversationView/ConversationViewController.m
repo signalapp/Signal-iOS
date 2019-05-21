@@ -1284,6 +1284,7 @@ typedef enum : NSUInteger {
 
     [self updateInputToolbarLayout];
     [self ensureScrollDownButton];
+    [self.inputToolbar viewDidAppear];
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,

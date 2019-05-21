@@ -12,6 +12,7 @@
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSInteraction.h>
 #import <SignalServiceKit/TSMessage.h>
@@ -268,11 +269,18 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         return nil;
     }
 
+    NSString *stickersDirPath = StickerManager.cacheDirUrl.path;
+    NSSet<NSString *> *_Nullable allStickerFilePaths = [self filePathsInDirectorySafe:stickersDirPath];
+    if (!allStickerFilePaths || !self.isMainAppAndActive) {
+        return nil;
+    }
+
     NSMutableSet<NSString *> *allOnDiskFilePaths = [NSMutableSet new];
     [allOnDiskFilePaths unionSet:legacyAttachmentFilePaths];
     [allOnDiskFilePaths unionSet:sharedDataAttachmentFilePaths];
     [allOnDiskFilePaths unionSet:legacyProfileAvatarsFilePaths];
     [allOnDiskFilePaths unionSet:sharedDataProfileAvatarFilePaths];
+    [allOnDiskFilePaths unionSet:allStickerFilePaths];
     [allOnDiskFilePaths addObjectsFromArray:tempFilePaths];
 
     NSSet<NSString *> *profileAvatarFilePaths = [OWSUserProfile allProfileAvatarFilePaths];
@@ -298,6 +306,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // Messages
     NSMutableSet<NSString *> *orphanInteractionIds = [NSMutableSet new];
     NSMutableSet<NSString *> *allMessageAttachmentIds = [NSMutableSet new];
+    // Stickers
+    NSMutableSet<NSString *> *activeStickerFilePaths = [NSMutableSet new];
     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [transaction
             enumerateKeysAndObjectsInCollection:TSAttachmentStream.collection
@@ -351,6 +361,13 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                                          TSMessage *message = (TSMessage *)interaction;
                                          [allMessageAttachmentIds addObjectsFromArray:message.allAttachmentIds];
                                      }];
+
+        if (shouldAbort) {
+            return;
+        }
+
+        [activeStickerFilePaths
+            addObjectsFromArray:[StickerManager filepathsForAllInstalledStickersWithTransaction:transaction.asAnyRead]];
     }];
     if (shouldAbort) {
         return nil;
@@ -364,6 +381,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSMutableSet<NSString *> *orphanFilePaths = [allOnDiskFilePaths mutableCopy];
     [orphanFilePaths minusSet:allAttachmentFilePaths];
     [orphanFilePaths minusSet:profileAvatarFilePaths];
+    [orphanFilePaths minusSet:activeStickerFilePaths];
     NSMutableSet<NSString *> *missingAttachmentFilePaths = [allAttachmentFilePaths mutableCopy];
     [missingAttachmentFilePaths minusSet:allOnDiskFilePaths];
 
