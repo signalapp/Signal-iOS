@@ -458,6 +458,18 @@ public class StickerManager: NSObject {
     }
 
     @objc
+    public class func filepathsForAllInstalledStickers(transaction: SDSAnyReadTransaction) -> [String] {
+
+        var filePaths = [String]()
+        let installedStickers = InstalledSticker.anyFetchAll(transaction: transaction)
+        for installedSticker in installedStickers {
+            let filePath = stickerUrl(stickerInfo: installedSticker.info).path
+            filePaths.append(filePath)
+        }
+        return filePaths
+    }
+
+    @objc
     public class func isStickerInstalled(stickerInfo: StickerInfo) -> Bool {
         var result = false
         databaseStorage.read { (transaction) in
@@ -700,7 +712,6 @@ public class StickerManager: NSObject {
 
     // MARK: - Known Sticker Packs
 
-    // TODO: We may want to cull these in the orphan data cleaner.
     @objc
     public class func addKnownStickerInfo(_ stickerInfo: StickerInfo,
                                           transaction: SDSAnyWriteTransaction) {
