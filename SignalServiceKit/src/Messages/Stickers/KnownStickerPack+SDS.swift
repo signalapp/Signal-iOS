@@ -52,8 +52,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension KnownStickerPack {
     // This method defines how to deserialize a model, given a
@@ -116,47 +114,6 @@ extension KnownStickerPackSerializer {
         infoColumn,
         referenceCountColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension KnownStickerPackSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> KnownStickerPack {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .knownStickerPack:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let infoSerialized: Data = try deserializer.blob(at: infoColumn.columnIndex)
-            let info: StickerPackInfo = try SDSDeserializer.unarchive(infoSerialized)
-            let referenceCount = Int(try deserializer.int64(at: referenceCountColumn.columnIndex))
-
-            return KnownStickerPack(uniqueId: uniqueId,
-                                    info: info,
-                                    referenceCount: referenceCount)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -227,19 +184,31 @@ extension KnownStickerPack {
 
 @objc
 public class KnownStickerPackCursor: NSObject {
-    private let cursor: SDSCursor<KnownStickerPack>
+    private let cursor: RecordCursor<KnownStickerPackRecord>?
 
-    init(cursor: SDSCursor<KnownStickerPack>) {
+    init(cursor: RecordCursor<KnownStickerPackRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> KnownStickerPack? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try KnownStickerPack.fromRecord(record)
     }
 
     public func all() throws -> [KnownStickerPack] {
-        return try cursor.all()
+        var result = [KnownStickerPack]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -256,9 +225,14 @@ public class KnownStickerPackCursor: NSObject {
 @objc
 extension KnownStickerPack {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> KnownStickerPackCursor {
-        return KnownStickerPackCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: KnownStickerPackSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: KnownStickerPackSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try KnownStickerPackRecord.fetchCursor(database)
+            return KnownStickerPackCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return KnownStickerPackCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -325,14 +299,21 @@ extension KnownStickerPack {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return KnownStickerPackCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return KnownStickerPackCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: KnownStickerPackSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try KnownStickerPackRecord.fetchCursor(statement, arguments: statementArguments)
+            return KnownStickerPackCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return KnownStickerPackCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

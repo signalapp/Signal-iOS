@@ -68,8 +68,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension SSKJobRecord {
     // This method defines how to deserialize a model, given a
@@ -214,117 +212,6 @@ extension SSKJobRecordSerializer {
         removeMessageAfterSendingColumn,
         threadIdColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension SSKJobRecordSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> SSKJobRecord {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .sessionResetJobRecord:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
-            let label = try deserializer.string(at: labelColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
-            let statusRaw = UInt(try deserializer.int(at: statusColumn.columnIndex))
-            guard let status = SSKJobRecordStatus(rawValue: statusRaw) else {
-               throw SDSError.invalidValue
-            }
-            let contactThreadId = try deserializer.string(at: contactThreadIdColumn.columnIndex)
-
-            return OWSSessionResetJobRecord(uniqueId: uniqueId,
-                                            failureCount: failureCount,
-                                            label: label,
-                                            sortId: sortId,
-                                            status: status,
-                                            contactThreadId: contactThreadId)
-
-        case .jobRecord:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
-            let label = try deserializer.string(at: labelColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
-            let statusRaw = UInt(try deserializer.int(at: statusColumn.columnIndex))
-            guard let status = SSKJobRecordStatus(rawValue: statusRaw) else {
-               throw SDSError.invalidValue
-            }
-
-            return SSKJobRecord(uniqueId: uniqueId,
-                                failureCount: failureCount,
-                                label: label,
-                                sortId: sortId,
-                                status: status)
-
-        case .messageDecryptJobRecord:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
-            let label = try deserializer.string(at: labelColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
-            let statusRaw = UInt(try deserializer.int(at: statusColumn.columnIndex))
-            guard let status = SSKJobRecordStatus(rawValue: statusRaw) else {
-               throw SDSError.invalidValue
-            }
-            let envelopeData = try deserializer.optionalBlob(at: envelopeDataColumn.columnIndex)
-
-            return SSKMessageDecryptJobRecord(uniqueId: uniqueId,
-                                              failureCount: failureCount,
-                                              label: label,
-                                              sortId: sortId,
-                                              status: status,
-                                              envelopeData: envelopeData)
-
-        case .messageSenderJobRecord:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let failureCount = UInt(try deserializer.int64(at: failureCountColumn.columnIndex))
-            let label = try deserializer.string(at: labelColumn.columnIndex)
-            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
-            let statusRaw = UInt(try deserializer.int(at: statusColumn.columnIndex))
-            guard let status = SSKJobRecordStatus(rawValue: statusRaw) else {
-               throw SDSError.invalidValue
-            }
-            let invisibleMessageSerialized: Data? = try deserializer.optionalBlob(at: invisibleMessageColumn.columnIndex)
-            let invisibleMessage: TSOutgoingMessage? = try SDSDeserializer.optionalUnarchive(invisibleMessageSerialized)
-            let messageId = try deserializer.optionalString(at: messageIdColumn.columnIndex)
-            let removeMessageAfterSending = try deserializer.bool(at: removeMessageAfterSendingColumn.columnIndex)
-            let threadId = try deserializer.optionalString(at: threadIdColumn.columnIndex)
-
-            return SSKMessageSenderJobRecord(uniqueId: uniqueId,
-                                             failureCount: failureCount,
-                                             label: label,
-                                             sortId: sortId,
-                                             status: status,
-                                             invisibleMessage: invisibleMessage,
-                                             messageId: messageId,
-                                             removeMessageAfterSending: removeMessageAfterSending,
-                                             threadId: threadId)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -395,19 +282,31 @@ extension SSKJobRecord {
 
 @objc
 public class SSKJobRecordCursor: NSObject {
-    private let cursor: SDSCursor<SSKJobRecord>
+    private let cursor: RecordCursor<JobRecordRecord>?
 
-    init(cursor: SDSCursor<SSKJobRecord>) {
+    init(cursor: RecordCursor<JobRecordRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> SSKJobRecord? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try SSKJobRecord.fromRecord(record)
     }
 
     public func all() throws -> [SSKJobRecord] {
-        return try cursor.all()
+        var result = [SSKJobRecord]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -424,9 +323,14 @@ public class SSKJobRecordCursor: NSObject {
 @objc
 extension SSKJobRecord {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> SSKJobRecordCursor {
-        return SSKJobRecordCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: SSKJobRecordSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: SSKJobRecordSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try JobRecordRecord.fetchCursor(database)
+            return SSKJobRecordCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return SSKJobRecordCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -493,14 +397,21 @@ extension SSKJobRecord {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return SSKJobRecordCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return SSKJobRecordCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: SSKJobRecordSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try JobRecordRecord.fetchCursor(statement, arguments: statementArguments)
+            return SSKJobRecordCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return SSKJobRecordCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

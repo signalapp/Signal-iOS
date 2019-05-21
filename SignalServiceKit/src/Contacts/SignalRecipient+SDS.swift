@@ -50,8 +50,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension SignalRecipient {
     // This method defines how to deserialize a model, given a
@@ -110,45 +108,6 @@ extension SignalRecipientSerializer {
         uniqueIdColumn,
         devicesColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension SignalRecipientSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> SignalRecipient {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .signalRecipient:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let devicesSerialized: Data = try deserializer.blob(at: devicesColumn.columnIndex)
-            let devices: NSOrderedSet = try SDSDeserializer.unarchive(devicesSerialized)
-
-            return SignalRecipient(uniqueId: uniqueId,
-                                   devices: devices)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -219,19 +178,31 @@ extension SignalRecipient {
 
 @objc
 public class SignalRecipientCursor: NSObject {
-    private let cursor: SDSCursor<SignalRecipient>
+    private let cursor: RecordCursor<SignalRecipientRecord>?
 
-    init(cursor: SDSCursor<SignalRecipient>) {
+    init(cursor: RecordCursor<SignalRecipientRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> SignalRecipient? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try SignalRecipient.fromRecord(record)
     }
 
     public func all() throws -> [SignalRecipient] {
-        return try cursor.all()
+        var result = [SignalRecipient]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -248,9 +219,14 @@ public class SignalRecipientCursor: NSObject {
 @objc
 extension SignalRecipient {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> SignalRecipientCursor {
-        return SignalRecipientCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: SignalRecipientSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: SignalRecipientSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try SignalRecipientRecord.fetchCursor(database)
+            return SignalRecipientCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return SignalRecipientCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -317,14 +293,21 @@ extension SignalRecipient {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return SignalRecipientCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return SignalRecipientCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: SignalRecipientSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try SignalRecipientRecord.fetchCursor(statement, arguments: statementArguments)
+            return SignalRecipientCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return SignalRecipientCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

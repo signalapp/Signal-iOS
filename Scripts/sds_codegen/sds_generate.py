@@ -784,8 +784,6 @@ public extension String.StringInterpolation {
         swift_body += '''
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension %s {
     // This method defines how to deserialize a model, given a 
@@ -1051,184 +1049,8 @@ extension %sSerializer {
             swift_body += '''        %sColumn,
 ''' % ( str(column_property_name) )
         swift_body += '''        ])
-''' 
-
-        swift_body += '''
 }
-
-// MARK: - Deserialization
-
-extension %sSerializer {
-    // This method defines how to deserialize a model, given a 
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> %s {
-''' % ( str(clazz.name), str(clazz.name) )
-        swift_body += '''
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-        
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
 '''
-
-        deserialize_classes = all_descendents_of_class(clazz) + [clazz]
-        deserialize_classes.sort(key=lambda value: value.name)
-        
-        for deserialize_class in deserialize_classes:
-            if should_ignore_class(deserialize_class):
-                continue
-            
-            initializer_params = []
-            objc_initializer_params = []
-            objc_super_initializer_args = []
-            objc_initializer_assigns = []
-            deserialize_record_type = get_record_type_enum_name(deserialize_class.name)
-            swift_body += '''        case .%s:
-''' % ( str(deserialize_record_type), )
-
-            swift_body += '''
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-'''
-
-            deserialize_properties = properties_and_inherited_properties(deserialize_class)
-            has_local_properties = False
-            for property in deserialize_properties:
-                database_column_type = property.database_column_type()
-                column_index_name = '%sColumn.columnIndex' % property.column_source()
-                value_name = '%s' % property.name
-                
-                if property.name != 'uniqueId':
-                    for statement in property.deserializer_invocation(column_index_name, value_name):
-                        # print 'statement', statement, type(statement)
-                        swift_body += '            %s\n' % ( str(statement), )
-                
-                initializer_params.append('%s: %s' % ( str(property.name), value_name, ) )
-                objc_initializer_type = str(property.objc_type_safe())
-                if objc_initializer_type.startswith('NSMutable'):
-                    objc_initializer_type = 'NS' + objc_initializer_type[len('NSMutable'):]
-                if property.is_optional:
-                    objc_initializer_type = 'nullable ' + objc_initializer_type
-                objc_initializer_params.append('%s:(%s)%s' % ( str(property.name), objc_initializer_type, str(property.name), ) )
-                
-                is_superclass_property = property.class_name != deserialize_class.name
-                if is_superclass_property:
-                    objc_super_initializer_args.append('%s:%s' % ( str(property.name), str(property.name), ) )
-                else:
-                    has_local_properties = True
-                    if str(property.objc_type_safe()).startswith('NSMutableArray'):
-                        objc_initializer_assigns.append('_%s = %s ? [%s mutableCopy] : [NSMutableArray new];' % ( str(property.name), str(property.name), str(property.name), ) )
-                    elif str(property.objc_type_safe()).startswith('NSMutableDictionary'):
-                        objc_initializer_assigns.append('_%s = %s ? [%s mutableCopy] : [NSMutableDictionary new];' % ( str(property.name), str(property.name), str(property.name), ) )
-                    else:
-                        objc_initializer_assigns.append('_%s = %s;' % ( str(property.name), str(property.name), ) )
-                
-            # --- Initializer Snippets
-
-            h_snippet = ''
-            h_snippet += '''
-// clang-format off
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-'''
-            for objc_initializer_param in objc_initializer_params[1:]:
-                alignment = max(0, len('- (instancetype)initWithUniqueId') - objc_initializer_param.index(':'))
-                h_snippet += (' ' * alignment) + objc_initializer_param + '\n'
-
-            h_snippet += 'NS_SWIFT_NAME(init(%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
-            h_snippet += '''
-// clang-format on
-'''
-            
-            m_snippet = ''
-            m_snippet += '''
-// clang-format off
-
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-'''
-            for objc_initializer_param in objc_initializer_params[1:]:
-                alignment = max(0, len('- (instancetype)initWithUniqueId') - objc_initializer_param.index(':'))
-                m_snippet += (' ' * alignment) + objc_initializer_param + '\n'
-
-            if len(objc_super_initializer_args) == 1:
-                suffix = '];'
-            else:
-                suffix = ''
-            m_snippet += '''{
-    self = [super initWithUniqueId:uniqueId%s
-''' % (suffix)
-            for index, objc_super_initializer_arg in enumerate(objc_super_initializer_args[1:]):
-                alignment = max(0, len('    self = [super initWithUniqueId') - objc_super_initializer_arg.index(':'))
-                if index == len(objc_super_initializer_args) - 2:
-                    suffix = '];'
-                else:
-                    suffix = ''
-                m_snippet += (' ' * alignment) + objc_super_initializer_arg + suffix + '\n'
-            m_snippet += '''    
-    if (!self) {
-        return self;
-    }
-    
-'''
-            for objc_initializer_assign in objc_initializer_assigns:
-                m_snippet += (' ' * 4) + objc_initializer_assign + '\n'
-
-            if deserialize_class.finalize_method_name is not None:
-                m_snippet += '''    
-    [self %s];
-''' % ( str(deserialize_class.finalize_method_name), )
-
-            m_snippet += '''    
-    return self;
-}
-
-// clang-format on
-'''
-
-            # Skip initializer generation for classes without any properties.
-            if not has_local_properties:
-                h_snippet = ''
-                m_snippet = ''
-            
-            if deserialize_class.filepath.endswith('.m'):
-                m_filepath = deserialize_class.filepath
-                h_filepath = m_filepath[:-2] + '.h'
-                update_objc_snippet(h_filepath, h_snippet)            
-                update_objc_snippet(m_filepath, m_snippet)            
-            
-            swift_body += '''
-'''
-
-            # --- Invoke Initializer
-            
-            initializer_invocation = '            return %s(' % str(deserialize_class.name)
-            swift_body += initializer_invocation
-            swift_body += (',\n' + ' ' * len(initializer_invocation)).join(initializer_params)
-            swift_body += ')\n\n'
-
-            # TODO: We could generate a comment with the Obj-C (or Swift) model initializer 
-            #       that this deserialization code expects.
-
-        swift_body += '''        default:
-            owsFail("Invalid record type \(recordType)")
-'''
-
-        swift_body += '''        }
-''' 
-        swift_body += '''    }
-''' 
-        swift_body += '''}
-''' 
 
         # ---- Fetch ----
 
@@ -1307,22 +1129,34 @@ extension %s {
 
 @objc
 public class %sCursor: NSObject {
-    private let cursor: SDSCursor<%s>
-    
-    init(cursor: SDSCursor<%s>) {
+    private let cursor: RecordCursor<%s>?
+
+    init(cursor: RecordCursor<%s>?) {
         self.cursor = cursor
     }
-    
-    // TODO: Revisit error handling in this class.
+
     public func next() throws -> %s? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try %s.fromRecord(record)
     }
     
     public func all() throws -> [%s] {
-        return try cursor.all()
+        var result = [%s]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
-''' % ( ( str(clazz.name), ) * 6 )
+''' % ( str(clazz.name), str(clazz.name), record_name, record_name, str(clazz.name), str(clazz.name), str(clazz.name), str(clazz.name), )
 
         # ---- Fetch ----
 
@@ -1340,11 +1174,16 @@ public class %sCursor: NSObject {
 @objc
 extension %s {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %sCursor {
-        return %sCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: %sSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: %sSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try %s.fetchCursor(database)
+            return %sCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return %sCursor(cursor: nil)
+        }
     }
-''' % ( ( str(clazz.name), ) * 5 )
+''' % ( str(clazz.name), str(clazz.name), record_name, str(clazz.name), str(clazz.name), )
 
         swift_body += '''
     // Fetches a single model by "unique id".
@@ -1417,17 +1256,24 @@ extension %s {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return %sCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return %sCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: %sSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try %s.fetchCursor(statement, arguments: statementArguments)
+            return %sCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return %sCursor(cursor: nil)
+        }
     }
 
-''' % ( ( str(clazz.name), ) * 4 )
+''' % ( str(clazz.name), str(clazz.name), str(clazz.name), record_name, str(clazz.name), str(clazz.name), )
 
 
         string_interpolation_name = remove_prefix_from_class_name(clazz.name)

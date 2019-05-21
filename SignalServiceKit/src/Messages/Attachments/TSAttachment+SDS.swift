@@ -100,8 +100,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension TSAttachment {
     // This method defines how to deserialize a model, given a
@@ -320,162 +318,6 @@ extension TSAttachmentSerializer {
         shouldAlwaysPadColumn,
         stateColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension TSAttachmentSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> TSAttachment {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .attachment:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let albumMessageId = try deserializer.optionalString(at: albumMessageIdColumn.columnIndex)
-            let attachmentSchemaVersion = UInt(try deserializer.int64(at: attachmentSchemaVersionColumn.columnIndex))
-            let attachmentTypeRaw = UInt(try deserializer.int(at: attachmentTypeColumn.columnIndex))
-            guard let attachmentType = TSAttachmentType(rawValue: attachmentTypeRaw) else {
-               throw SDSError.invalidValue
-            }
-            let byteCount = UInt32(try deserializer.int64(at: byteCountColumn.columnIndex))
-            let caption = try deserializer.optionalString(at: captionColumn.columnIndex)
-            let contentType = try deserializer.string(at: contentTypeColumn.columnIndex)
-            let encryptionKey = try deserializer.optionalBlob(at: encryptionKeyColumn.columnIndex)
-            let isDownloaded = try deserializer.bool(at: isDownloadedColumn.columnIndex)
-            let serverId = try deserializer.uint64(at: serverIdColumn.columnIndex)
-            let sourceFilename = try deserializer.optionalString(at: sourceFilenameColumn.columnIndex)
-
-            return TSAttachment(uniqueId: uniqueId,
-                                albumMessageId: albumMessageId,
-                                attachmentSchemaVersion: attachmentSchemaVersion,
-                                attachmentType: attachmentType,
-                                byteCount: byteCount,
-                                caption: caption,
-                                contentType: contentType,
-                                encryptionKey: encryptionKey,
-                                isDownloaded: isDownloaded,
-                                serverId: serverId,
-                                sourceFilename: sourceFilename)
-
-        case .attachmentPointer:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let albumMessageId = try deserializer.optionalString(at: albumMessageIdColumn.columnIndex)
-            let attachmentSchemaVersion = UInt(try deserializer.int64(at: attachmentSchemaVersionColumn.columnIndex))
-            let attachmentTypeRaw = UInt(try deserializer.int(at: attachmentTypeColumn.columnIndex))
-            guard let attachmentType = TSAttachmentType(rawValue: attachmentTypeRaw) else {
-               throw SDSError.invalidValue
-            }
-            let byteCount = UInt32(try deserializer.int64(at: byteCountColumn.columnIndex))
-            let caption = try deserializer.optionalString(at: captionColumn.columnIndex)
-            let contentType = try deserializer.string(at: contentTypeColumn.columnIndex)
-            let encryptionKey = try deserializer.optionalBlob(at: encryptionKeyColumn.columnIndex)
-            let isDownloaded = try deserializer.bool(at: isDownloadedColumn.columnIndex)
-            let serverId = try deserializer.uint64(at: serverIdColumn.columnIndex)
-            let sourceFilename = try deserializer.optionalString(at: sourceFilenameColumn.columnIndex)
-            let digest = try deserializer.optionalBlob(at: digestColumn.columnIndex)
-            let lazyRestoreFragmentId = try deserializer.optionalString(at: lazyRestoreFragmentIdColumn.columnIndex)
-            let mediaSizeSerialized: Data = try deserializer.blob(at: mediaSizeColumn.columnIndex)
-            let mediaSize: CGSize = try SDSDeserializer.unarchive(mediaSizeSerialized)
-            let mostRecentFailureLocalizedText = try deserializer.optionalString(at: mostRecentFailureLocalizedTextColumn.columnIndex)
-            let pointerTypeRaw = UInt(try deserializer.int(at: pointerTypeColumn.columnIndex))
-            guard let pointerType = TSAttachmentPointerType(rawValue: pointerTypeRaw) else {
-               throw SDSError.invalidValue
-            }
-            let stateRaw = UInt(try deserializer.int(at: stateColumn.columnIndex))
-            guard let state = TSAttachmentPointerState(rawValue: stateRaw) else {
-               throw SDSError.invalidValue
-            }
-
-            return TSAttachmentPointer(uniqueId: uniqueId,
-                                       albumMessageId: albumMessageId,
-                                       attachmentSchemaVersion: attachmentSchemaVersion,
-                                       attachmentType: attachmentType,
-                                       byteCount: byteCount,
-                                       caption: caption,
-                                       contentType: contentType,
-                                       encryptionKey: encryptionKey,
-                                       isDownloaded: isDownloaded,
-                                       serverId: serverId,
-                                       sourceFilename: sourceFilename,
-                                       digest: digest,
-                                       lazyRestoreFragmentId: lazyRestoreFragmentId,
-                                       mediaSize: mediaSize,
-                                       mostRecentFailureLocalizedText: mostRecentFailureLocalizedText,
-                                       pointerType: pointerType,
-                                       state: state)
-
-        case .attachmentStream:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let albumMessageId = try deserializer.optionalString(at: albumMessageIdColumn.columnIndex)
-            let attachmentSchemaVersion = UInt(try deserializer.int64(at: attachmentSchemaVersionColumn.columnIndex))
-            let attachmentTypeRaw = UInt(try deserializer.int(at: attachmentTypeColumn.columnIndex))
-            guard let attachmentType = TSAttachmentType(rawValue: attachmentTypeRaw) else {
-               throw SDSError.invalidValue
-            }
-            let byteCount = UInt32(try deserializer.int64(at: byteCountColumn.columnIndex))
-            let caption = try deserializer.optionalString(at: captionColumn.columnIndex)
-            let contentType = try deserializer.string(at: contentTypeColumn.columnIndex)
-            let encryptionKey = try deserializer.optionalBlob(at: encryptionKeyColumn.columnIndex)
-            let isDownloaded = try deserializer.bool(at: isDownloadedColumn.columnIndex)
-            let serverId = try deserializer.uint64(at: serverIdColumn.columnIndex)
-            let sourceFilename = try deserializer.optionalString(at: sourceFilenameColumn.columnIndex)
-            let cachedAudioDurationSeconds = try deserializer.optionalDoubleAsNSNumber(at: cachedAudioDurationSecondsColumn.columnIndex)
-            let cachedImageHeight = try deserializer.optionalDoubleAsNSNumber(at: cachedImageHeightColumn.columnIndex)
-            let cachedImageWidth = try deserializer.optionalDoubleAsNSNumber(at: cachedImageWidthColumn.columnIndex)
-            let creationTimestamp = try deserializer.date(at: creationTimestampColumn.columnIndex)
-            let digest = try deserializer.optionalBlob(at: digestColumn.columnIndex)
-            let isUploaded = try deserializer.bool(at: isUploadedColumn.columnIndex)
-            let isValidImageCached = try deserializer.optionalBoolAsNSNumber(at: isValidImageCachedColumn.columnIndex)
-            let isValidVideoCached = try deserializer.optionalBoolAsNSNumber(at: isValidVideoCachedColumn.columnIndex)
-            let localRelativeFilePath = try deserializer.optionalString(at: localRelativeFilePathColumn.columnIndex)
-            let shouldAlwaysPad = try deserializer.bool(at: shouldAlwaysPadColumn.columnIndex)
-
-            return TSAttachmentStream(uniqueId: uniqueId,
-                                      albumMessageId: albumMessageId,
-                                      attachmentSchemaVersion: attachmentSchemaVersion,
-                                      attachmentType: attachmentType,
-                                      byteCount: byteCount,
-                                      caption: caption,
-                                      contentType: contentType,
-                                      encryptionKey: encryptionKey,
-                                      isDownloaded: isDownloaded,
-                                      serverId: serverId,
-                                      sourceFilename: sourceFilename,
-                                      cachedAudioDurationSeconds: cachedAudioDurationSeconds,
-                                      cachedImageHeight: cachedImageHeight,
-                                      cachedImageWidth: cachedImageWidth,
-                                      creationTimestamp: creationTimestamp,
-                                      digest: digest,
-                                      isUploaded: isUploaded,
-                                      isValidImageCached: isValidImageCached,
-                                      isValidVideoCached: isValidVideoCached,
-                                      localRelativeFilePath: localRelativeFilePath,
-                                      shouldAlwaysPad: shouldAlwaysPad)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -546,19 +388,31 @@ extension TSAttachment {
 
 @objc
 public class TSAttachmentCursor: NSObject {
-    private let cursor: SDSCursor<TSAttachment>
+    private let cursor: RecordCursor<AttachmentRecord>?
 
-    init(cursor: SDSCursor<TSAttachment>) {
+    init(cursor: RecordCursor<AttachmentRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> TSAttachment? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try TSAttachment.fromRecord(record)
     }
 
     public func all() throws -> [TSAttachment] {
-        return try cursor.all()
+        var result = [TSAttachment]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -575,9 +429,14 @@ public class TSAttachmentCursor: NSObject {
 @objc
 extension TSAttachment {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSAttachmentCursor {
-        return TSAttachmentCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: TSAttachmentSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: TSAttachmentSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try AttachmentRecord.fetchCursor(database)
+            return TSAttachmentCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return TSAttachmentCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -644,14 +503,21 @@ extension TSAttachment {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return TSAttachmentCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return TSAttachmentCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: TSAttachmentSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try AttachmentRecord.fetchCursor(statement, arguments: statementArguments)
+            return TSAttachmentCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return TSAttachmentCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

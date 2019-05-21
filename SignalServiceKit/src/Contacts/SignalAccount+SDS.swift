@@ -56,8 +56,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension SignalAccount {
     // This method defines how to deserialize a model, given a
@@ -128,51 +126,6 @@ extension SignalAccountSerializer {
         multipleAccountLabelTextColumn,
         recipientIdColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension SignalAccountSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> SignalAccount {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .signalAccount:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let contactSerialized: Data? = try deserializer.optionalBlob(at: contactColumn.columnIndex)
-            let contact: Contact? = try SDSDeserializer.optionalUnarchive(contactSerialized)
-            let hasMultipleAccountContact = try deserializer.bool(at: hasMultipleAccountContactColumn.columnIndex)
-            let multipleAccountLabelText = try deserializer.string(at: multipleAccountLabelTextColumn.columnIndex)
-            let recipientId = try deserializer.string(at: recipientIdColumn.columnIndex)
-
-            return SignalAccount(uniqueId: uniqueId,
-                                 contact: contact,
-                                 hasMultipleAccountContact: hasMultipleAccountContact,
-                                 multipleAccountLabelText: multipleAccountLabelText,
-                                 recipientId: recipientId)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -243,19 +196,31 @@ extension SignalAccount {
 
 @objc
 public class SignalAccountCursor: NSObject {
-    private let cursor: SDSCursor<SignalAccount>
+    private let cursor: RecordCursor<SignalAccountRecord>?
 
-    init(cursor: SDSCursor<SignalAccount>) {
+    init(cursor: RecordCursor<SignalAccountRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> SignalAccount? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try SignalAccount.fromRecord(record)
     }
 
     public func all() throws -> [SignalAccount] {
-        return try cursor.all()
+        var result = [SignalAccount]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -272,9 +237,14 @@ public class SignalAccountCursor: NSObject {
 @objc
 extension SignalAccount {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> SignalAccountCursor {
-        return SignalAccountCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: SignalAccountSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: SignalAccountSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try SignalAccountRecord.fetchCursor(database)
+            return SignalAccountCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return SignalAccountCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -341,14 +311,21 @@ extension SignalAccount {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return SignalAccountCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return SignalAccountCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: SignalAccountSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try SignalAccountRecord.fetchCursor(statement, arguments: statementArguments)
+            return SignalAccountCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return SignalAccountCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

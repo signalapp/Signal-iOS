@@ -52,8 +52,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension OWSDisappearingMessagesConfiguration {
     // This method defines how to deserialize a model, given a
@@ -115,46 +113,6 @@ extension OWSDisappearingMessagesConfigurationSerializer {
         durationSecondsColumn,
         enabledColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension OWSDisappearingMessagesConfigurationSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> OWSDisappearingMessagesConfiguration {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .disappearingMessagesConfiguration:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let durationSeconds = UInt32(try deserializer.int64(at: durationSecondsColumn.columnIndex))
-            let enabled = try deserializer.bool(at: enabledColumn.columnIndex)
-
-            return OWSDisappearingMessagesConfiguration(uniqueId: uniqueId,
-                                                        durationSeconds: durationSeconds,
-                                                        enabled: enabled)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -225,19 +183,31 @@ extension OWSDisappearingMessagesConfiguration {
 
 @objc
 public class OWSDisappearingMessagesConfigurationCursor: NSObject {
-    private let cursor: SDSCursor<OWSDisappearingMessagesConfiguration>
+    private let cursor: RecordCursor<DisappearingMessagesConfigurationRecord>?
 
-    init(cursor: SDSCursor<OWSDisappearingMessagesConfiguration>) {
+    init(cursor: RecordCursor<DisappearingMessagesConfigurationRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSDisappearingMessagesConfiguration? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSDisappearingMessagesConfiguration.fromRecord(record)
     }
 
     public func all() throws -> [OWSDisappearingMessagesConfiguration] {
-        return try cursor.all()
+        var result = [OWSDisappearingMessagesConfiguration]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -254,9 +224,14 @@ public class OWSDisappearingMessagesConfigurationCursor: NSObject {
 @objc
 extension OWSDisappearingMessagesConfiguration {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSDisappearingMessagesConfigurationCursor {
-        return OWSDisappearingMessagesConfigurationCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSDisappearingMessagesConfigurationSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSDisappearingMessagesConfigurationSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try DisappearingMessagesConfigurationRecord.fetchCursor(database)
+            return OWSDisappearingMessagesConfigurationCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSDisappearingMessagesConfigurationCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -323,14 +298,21 @@ extension OWSDisappearingMessagesConfiguration {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSDisappearingMessagesConfigurationCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSDisappearingMessagesConfigurationCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSDisappearingMessagesConfigurationSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try DisappearingMessagesConfigurationRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSDisappearingMessagesConfigurationCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSDisappearingMessagesConfigurationCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

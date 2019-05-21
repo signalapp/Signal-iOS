@@ -60,8 +60,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension OWSBackupFragment {
     // This method defines how to deserialize a model, given a
@@ -139,54 +137,6 @@ extension OWSBackupFragmentSerializer {
         relativeFilePathColumn,
         uncompressedDataLengthColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension OWSBackupFragmentSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> OWSBackupFragment {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .backupFragment:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let attachmentId = try deserializer.optionalString(at: attachmentIdColumn.columnIndex)
-            let downloadFilePath = try deserializer.optionalString(at: downloadFilePathColumn.columnIndex)
-            let encryptionKey = try deserializer.blob(at: encryptionKeyColumn.columnIndex)
-            let recordName = try deserializer.string(at: recordNameColumn.columnIndex)
-            let relativeFilePath = try deserializer.optionalString(at: relativeFilePathColumn.columnIndex)
-            let uncompressedDataLength = try deserializer.optionalUInt64AsNSNumber(at: uncompressedDataLengthColumn.columnIndex)
-
-            return OWSBackupFragment(uniqueId: uniqueId,
-                                     attachmentId: attachmentId,
-                                     downloadFilePath: downloadFilePath,
-                                     encryptionKey: encryptionKey,
-                                     recordName: recordName,
-                                     relativeFilePath: relativeFilePath,
-                                     uncompressedDataLength: uncompressedDataLength)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -257,19 +207,31 @@ extension OWSBackupFragment {
 
 @objc
 public class OWSBackupFragmentCursor: NSObject {
-    private let cursor: SDSCursor<OWSBackupFragment>
+    private let cursor: RecordCursor<BackupFragmentRecord>?
 
-    init(cursor: SDSCursor<OWSBackupFragment>) {
+    init(cursor: RecordCursor<BackupFragmentRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSBackupFragment? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSBackupFragment.fromRecord(record)
     }
 
     public func all() throws -> [OWSBackupFragment] {
-        return try cursor.all()
+        var result = [OWSBackupFragment]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -286,9 +248,14 @@ public class OWSBackupFragmentCursor: NSObject {
 @objc
 extension OWSBackupFragment {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSBackupFragmentCursor {
-        return OWSBackupFragmentCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSBackupFragmentSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSBackupFragmentSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try BackupFragmentRecord.fetchCursor(database)
+            return OWSBackupFragmentCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSBackupFragmentCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -355,14 +322,21 @@ extension OWSBackupFragment {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSBackupFragmentCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSBackupFragmentCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSBackupFragmentSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try BackupFragmentRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSBackupFragmentCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSBackupFragmentCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

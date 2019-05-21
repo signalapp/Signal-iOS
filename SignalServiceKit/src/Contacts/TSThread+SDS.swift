@@ -72,8 +72,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension TSThread {
     // This method defines how to deserialize a model, given a
@@ -227,113 +225,6 @@ extension TSThreadSerializer {
         groupModelColumn,
         hasDismissedOffersColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension TSThreadSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> TSThread {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .contactThread:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let archivalDate = try deserializer.optionalDate(at: archivalDateColumn.columnIndex)
-            let archivedAsOfMessageSortId = try deserializer.optionalBoolAsNSNumber(at: archivedAsOfMessageSortIdColumn.columnIndex)
-            let conversationColorName = ConversationColorName(rawValue: try deserializer.string(at: conversationColorNameColumn.columnIndex))
-            let creationDate = try deserializer.date(at: creationDateColumn.columnIndex)
-            let isArchivedByLegacyTimestampForSorting = try deserializer.bool(at: isArchivedByLegacyTimestampForSortingColumn.columnIndex)
-            let lastMessageDate = try deserializer.optionalDate(at: lastMessageDateColumn.columnIndex)
-            let messageDraft = try deserializer.optionalString(at: messageDraftColumn.columnIndex)
-            let mutedUntilDate = try deserializer.optionalDate(at: mutedUntilDateColumn.columnIndex)
-            let shouldThreadBeVisible = try deserializer.bool(at: shouldThreadBeVisibleColumn.columnIndex)
-            let hasDismissedOffers = try deserializer.bool(at: hasDismissedOffersColumn.columnIndex)
-
-            return TSContactThread(uniqueId: uniqueId,
-                                   archivalDate: archivalDate,
-                                   archivedAsOfMessageSortId: archivedAsOfMessageSortId,
-                                   conversationColorName: conversationColorName,
-                                   creationDate: creationDate,
-                                   isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
-                                   lastMessageDate: lastMessageDate,
-                                   messageDraft: messageDraft,
-                                   mutedUntilDate: mutedUntilDate,
-                                   shouldThreadBeVisible: shouldThreadBeVisible,
-                                   hasDismissedOffers: hasDismissedOffers)
-
-        case .groupThread:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let archivalDate = try deserializer.optionalDate(at: archivalDateColumn.columnIndex)
-            let archivedAsOfMessageSortId = try deserializer.optionalBoolAsNSNumber(at: archivedAsOfMessageSortIdColumn.columnIndex)
-            let conversationColorName = ConversationColorName(rawValue: try deserializer.string(at: conversationColorNameColumn.columnIndex))
-            let creationDate = try deserializer.date(at: creationDateColumn.columnIndex)
-            let isArchivedByLegacyTimestampForSorting = try deserializer.bool(at: isArchivedByLegacyTimestampForSortingColumn.columnIndex)
-            let lastMessageDate = try deserializer.optionalDate(at: lastMessageDateColumn.columnIndex)
-            let messageDraft = try deserializer.optionalString(at: messageDraftColumn.columnIndex)
-            let mutedUntilDate = try deserializer.optionalDate(at: mutedUntilDateColumn.columnIndex)
-            let shouldThreadBeVisible = try deserializer.bool(at: shouldThreadBeVisibleColumn.columnIndex)
-            let groupModelSerialized: Data = try deserializer.blob(at: groupModelColumn.columnIndex)
-            let groupModel: TSGroupModel = try SDSDeserializer.unarchive(groupModelSerialized)
-
-            return TSGroupThread(uniqueId: uniqueId,
-                                 archivalDate: archivalDate,
-                                 archivedAsOfMessageSortId: archivedAsOfMessageSortId,
-                                 conversationColorName: conversationColorName,
-                                 creationDate: creationDate,
-                                 isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
-                                 lastMessageDate: lastMessageDate,
-                                 messageDraft: messageDraft,
-                                 mutedUntilDate: mutedUntilDate,
-                                 shouldThreadBeVisible: shouldThreadBeVisible,
-                                 groupModel: groupModel)
-
-        case .thread:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let archivalDate = try deserializer.optionalDate(at: archivalDateColumn.columnIndex)
-            let archivedAsOfMessageSortId = try deserializer.optionalBoolAsNSNumber(at: archivedAsOfMessageSortIdColumn.columnIndex)
-            let conversationColorName = ConversationColorName(rawValue: try deserializer.string(at: conversationColorNameColumn.columnIndex))
-            let creationDate = try deserializer.date(at: creationDateColumn.columnIndex)
-            let isArchivedByLegacyTimestampForSorting = try deserializer.bool(at: isArchivedByLegacyTimestampForSortingColumn.columnIndex)
-            let lastMessageDate = try deserializer.optionalDate(at: lastMessageDateColumn.columnIndex)
-            let messageDraft = try deserializer.optionalString(at: messageDraftColumn.columnIndex)
-            let mutedUntilDate = try deserializer.optionalDate(at: mutedUntilDateColumn.columnIndex)
-            let shouldThreadBeVisible = try deserializer.bool(at: shouldThreadBeVisibleColumn.columnIndex)
-
-            return TSThread(uniqueId: uniqueId,
-                            archivalDate: archivalDate,
-                            archivedAsOfMessageSortId: archivedAsOfMessageSortId,
-                            conversationColorName: conversationColorName,
-                            creationDate: creationDate,
-                            isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting,
-                            lastMessageDate: lastMessageDate,
-                            messageDraft: messageDraft,
-                            mutedUntilDate: mutedUntilDate,
-                            shouldThreadBeVisible: shouldThreadBeVisible)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -404,19 +295,31 @@ extension TSThread {
 
 @objc
 public class TSThreadCursor: NSObject {
-    private let cursor: SDSCursor<TSThread>
+    private let cursor: RecordCursor<ThreadRecord>?
 
-    init(cursor: SDSCursor<TSThread>) {
+    init(cursor: RecordCursor<ThreadRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> TSThread? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try TSThread.fromRecord(record)
     }
 
     public func all() throws -> [TSThread] {
-        return try cursor.all()
+        var result = [TSThread]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -433,9 +336,14 @@ public class TSThreadCursor: NSObject {
 @objc
 extension TSThread {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSThreadCursor {
-        return TSThreadCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: TSThreadSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: TSThreadSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try ThreadRecord.fetchCursor(database)
+            return TSThreadCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return TSThreadCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -502,14 +410,21 @@ extension TSThread {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return TSThreadCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return TSThreadCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: TSThreadSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try ThreadRecord.fetchCursor(statement, arguments: statementArguments)
+            return TSThreadCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return TSThreadCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

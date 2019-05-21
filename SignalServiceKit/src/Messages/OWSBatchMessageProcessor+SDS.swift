@@ -56,8 +56,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension OWSMessageContentJob {
     // This method defines how to deserialize a model, given a
@@ -127,50 +125,6 @@ extension OWSMessageContentJobSerializer {
         plaintextDataColumn,
         wasReceivedByUDColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension OWSMessageContentJobSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> OWSMessageContentJob {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .messageContentJob:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let createdAt = try deserializer.date(at: createdAtColumn.columnIndex)
-            let envelopeData = try deserializer.blob(at: envelopeDataColumn.columnIndex)
-            let plaintextData = try deserializer.optionalBlob(at: plaintextDataColumn.columnIndex)
-            let wasReceivedByUD = try deserializer.bool(at: wasReceivedByUDColumn.columnIndex)
-
-            return OWSMessageContentJob(uniqueId: uniqueId,
-                                        createdAt: createdAt,
-                                        envelopeData: envelopeData,
-                                        plaintextData: plaintextData,
-                                        wasReceivedByUD: wasReceivedByUD)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -241,19 +195,31 @@ extension OWSMessageContentJob {
 
 @objc
 public class OWSMessageContentJobCursor: NSObject {
-    private let cursor: SDSCursor<OWSMessageContentJob>
+    private let cursor: RecordCursor<MessageContentJobRecord>?
 
-    init(cursor: SDSCursor<OWSMessageContentJob>) {
+    init(cursor: RecordCursor<MessageContentJobRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSMessageContentJob? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSMessageContentJob.fromRecord(record)
     }
 
     public func all() throws -> [OWSMessageContentJob] {
-        return try cursor.all()
+        var result = [OWSMessageContentJob]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -270,9 +236,14 @@ public class OWSMessageContentJobCursor: NSObject {
 @objc
 extension OWSMessageContentJob {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSMessageContentJobCursor {
-        return OWSMessageContentJobCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSMessageContentJobSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSMessageContentJobSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try MessageContentJobRecord.fetchCursor(database)
+            return OWSMessageContentJobCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSMessageContentJobCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -339,14 +310,21 @@ extension OWSMessageContentJob {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSMessageContentJobCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSMessageContentJobCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSMessageContentJobSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try MessageContentJobRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSMessageContentJobCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSMessageContentJobCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

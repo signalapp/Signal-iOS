@@ -54,8 +54,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension OWSLinkedDeviceReadReceipt {
     // This method defines how to deserialize a model, given a
@@ -121,48 +119,6 @@ extension OWSLinkedDeviceReadReceiptSerializer {
         readTimestampColumn,
         senderIdColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension OWSLinkedDeviceReadReceiptSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> OWSLinkedDeviceReadReceipt {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .linkedDeviceReadReceipt:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let messageIdTimestamp = try deserializer.uint64(at: messageIdTimestampColumn.columnIndex)
-            let readTimestamp = try deserializer.uint64(at: readTimestampColumn.columnIndex)
-            let senderId = try deserializer.string(at: senderIdColumn.columnIndex)
-
-            return OWSLinkedDeviceReadReceipt(uniqueId: uniqueId,
-                                              messageIdTimestamp: messageIdTimestamp,
-                                              readTimestamp: readTimestamp,
-                                              senderId: senderId)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -233,19 +189,31 @@ extension OWSLinkedDeviceReadReceipt {
 
 @objc
 public class OWSLinkedDeviceReadReceiptCursor: NSObject {
-    private let cursor: SDSCursor<OWSLinkedDeviceReadReceipt>
+    private let cursor: RecordCursor<LinkedDeviceReadReceiptRecord>?
 
-    init(cursor: SDSCursor<OWSLinkedDeviceReadReceipt>) {
+    init(cursor: RecordCursor<LinkedDeviceReadReceiptRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSLinkedDeviceReadReceipt? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSLinkedDeviceReadReceipt.fromRecord(record)
     }
 
     public func all() throws -> [OWSLinkedDeviceReadReceipt] {
-        return try cursor.all()
+        var result = [OWSLinkedDeviceReadReceipt]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -262,9 +230,14 @@ public class OWSLinkedDeviceReadReceiptCursor: NSObject {
 @objc
 extension OWSLinkedDeviceReadReceipt {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSLinkedDeviceReadReceiptCursor {
-        return OWSLinkedDeviceReadReceiptCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSLinkedDeviceReadReceiptSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSLinkedDeviceReadReceiptSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try LinkedDeviceReadReceiptRecord.fetchCursor(database)
+            return OWSLinkedDeviceReadReceiptCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSLinkedDeviceReadReceiptCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -331,14 +304,21 @@ extension OWSLinkedDeviceReadReceipt {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSLinkedDeviceReadReceiptCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSLinkedDeviceReadReceiptCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSLinkedDeviceReadReceiptSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try LinkedDeviceReadReceiptRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSLinkedDeviceReadReceiptCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSLinkedDeviceReadReceiptCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,

@@ -56,8 +56,6 @@ public extension String.StringInterpolation {
 
 // MARK: - Deserialization
 
-// TODO: Remove the other Deserialization extension.
-// TODO: SDSDeserializer.
 // TODO: Rework metadata to not include, for example, columns, column indices.
 extension OWSDevice {
     // This method defines how to deserialize a model, given a
@@ -127,50 +125,6 @@ extension OWSDeviceSerializer {
         lastSeenAtColumn,
         nameColumn
         ])
-
-}
-
-// MARK: - Deserialization
-
-extension OWSDeviceSerializer {
-    // This method defines how to deserialize a model, given a
-    // database row.  The recordType column is used to determine
-    // the corresponding model class.
-    class func sdsDeserialize(statement: SelectStatement) throws -> OWSDevice {
-
-        if OWSIsDebugBuild() {
-            guard statement.columnNames == table.selectColumnNames else {
-                owsFailDebug("Unexpected columns: \(statement.columnNames) != \(table.selectColumnNames)")
-                throw SDSError.invalidResult
-            }
-        }
-
-        // SDSDeserializer is used to convert column values into Swift values.
-        let deserializer = SDSDeserializer(sqliteStatement: statement.sqliteStatement)
-        let recordTypeValue = try deserializer.int(at: 0)
-        guard let recordType = SDSRecordType(rawValue: UInt(recordTypeValue)) else {
-            owsFailDebug("Invalid recordType: \(recordTypeValue)")
-            throw SDSError.invalidResult
-        }
-        switch recordType {
-        case .device:
-
-            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let createdAt = try deserializer.date(at: createdAtColumn.columnIndex)
-            let deviceId = Int(try deserializer.int64(at: deviceIdColumn.columnIndex))
-            let lastSeenAt = try deserializer.date(at: lastSeenAtColumn.columnIndex)
-            let name = try deserializer.optionalString(at: nameColumn.columnIndex)
-
-            return OWSDevice(uniqueId: uniqueId,
-                             createdAt: createdAt,
-                             deviceId: deviceId,
-                             lastSeenAt: lastSeenAt,
-                             name: name)
-
-        default:
-            owsFail("Invalid record type \(recordType)")
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -241,19 +195,31 @@ extension OWSDevice {
 
 @objc
 public class OWSDeviceCursor: NSObject {
-    private let cursor: SDSCursor<OWSDevice>
+    private let cursor: RecordCursor<DeviceRecord>?
 
-    init(cursor: SDSCursor<OWSDevice>) {
+    init(cursor: RecordCursor<DeviceRecord>?) {
         self.cursor = cursor
     }
 
-    // TODO: Revisit error handling in this class.
     public func next() throws -> OWSDevice? {
-        return try cursor.next()
+        guard let cursor = cursor else {
+            return nil
+        }
+        guard let record = try cursor.next() else {
+            return nil
+        }
+        return try OWSDevice.fromRecord(record)
     }
 
     public func all() throws -> [OWSDevice] {
-        return try cursor.all()
+        var result = [OWSDevice]()
+        while true {
+            guard let model = try next() else {
+                break
+            }
+            result.append(model)
+        }
+        return result
     }
 }
 
@@ -270,9 +236,14 @@ public class OWSDeviceCursor: NSObject {
 @objc
 extension OWSDevice {
     public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSDeviceCursor {
-        return OWSDeviceCursor(cursor: SDSSerialization.fetchCursor(tableMetadata: OWSDeviceSerializer.table,
-                                                                   transaction: transaction,
-                                                                   deserialize: OWSDeviceSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let cursor = try DeviceRecord.fetchCursor(database)
+            return OWSDeviceCursor(cursor: cursor)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return OWSDeviceCursor(cursor: nil)
+        }
     }
 
     // Fetches a single model by "unique id".
@@ -339,14 +310,21 @@ extension OWSDevice {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
-                owsFail("Could not convert arguments.")
+                owsFailDebug("Could not convert arguments.")
+                return OWSDeviceCursor(cursor: nil)
             }
             statementArguments = statementArgs
         }
-        return OWSDeviceCursor(cursor: SDSSerialization.fetchCursor(sql: sql,
-                                                             arguments: statementArguments,
-                                                             transaction: transaction,
-                                                                   deserialize: OWSDeviceSerializer.sdsDeserialize))
+        let database = transaction.database
+        do {
+            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
+            let cursor = try DeviceRecord.fetchCursor(statement, arguments: statementArguments)
+            return OWSDeviceCursor(cursor: cursor)
+        } catch {
+            Logger.error("sql: \(sql)")
+            owsFailDebug("Read failed: \(error)")
+            return OWSDeviceCursor(cursor: nil)
+        }
     }
 
     public class func grdbFetchOne(sql: String,
