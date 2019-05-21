@@ -102,7 +102,7 @@ import PromiseKit
     // MARK: Last Hash
     private static func setLastHash(for target: Target, hash: String, expiresAt: UInt64) {
         storage.dbReadWriteConnection.readWrite { transaction in
-            storage.setLastMessageHashForServiceNode(target.address, hash: hash, expiresAt: expiresAt, transaction: transaction)
+            storage.setLastMessageHash(forServiceNode: target.address, hash: hash, expiresAt: expiresAt, transaction: transaction)
         }
     }
     
