@@ -305,7 +305,7 @@ SPEC CHECKSUMS:
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: c2d8132cdedb95d35eb2f8ae7eac0957695d0a8b
   SignalMetadataKit: 6fa5e9a53c7f104568662521a2f3874672ff7a02
-  SignalServiceKit: 54fde76bc75b63bd5e9088acdbd3be0ff7e154d0
+  SignalServiceKit: 7f97a29c42328c02ae95f94cce08aa8bc92ab258
   SQLCipher: efbdb52cdbe340bcd892b1b14297df4e07241b7f
   SSZipArchive: 8e859da2520142e09166bc9161967db296e9d02f
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
