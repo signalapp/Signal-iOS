@@ -69,6 +69,9 @@ target 'Signal' do
   project 'Signal'
   shared_pods
   pod 'SSZipArchive', :inhibit_warnings => true
+  
+  # Loki
+  pod 'GCDWebServer', '~> 3.0'
 
   target 'SignalTests' do
     inherit! :search_paths
