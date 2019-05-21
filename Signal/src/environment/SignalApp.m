@@ -153,7 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-- (void)didChangeCallLoggingPreference:(NSNotification *)notitication
+- (void)didChangeCallLoggingPreference:(NSNotification *)notification
 {
     [AppEnvironment.shared.callService createCallUIAdapter];
 }
