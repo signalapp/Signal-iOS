@@ -11,7 +11,7 @@ import PromiseKit
     public static let defaultMessageTTL: UInt64 = 4 * 24 * 60 * 60
     
     // MARK: Types
-    private struct Target : Hashable {
+    fileprivate struct Target : Hashable {
         let address: String
         let port: UInt16
         
@@ -69,10 +69,16 @@ import PromiseKit
     // MARK: Public API
     public static func getMessages() -> Promise<[MessagesPromise]> {
         let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-        let lastHash = "" // TODO: Implement
-        let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : "" ]
         return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
-            return invoke(.getMessages, on: targetSnode, with: parameters).map { parseProtoEnvelopes(from: $0) }
+            let lastHash = getLastHash(for: targetSnode) ?? ""
+            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHash ]
+            return invoke(.getMessages, on: targetSnode, with: parameters).map { response in
+                if let json = response as? JSON, let messages = json["messages"] as? [JSON], let lastMessage = messages.last,
+                    let hash = lastMessage["hash"] as? String, let expiresAt = lastMessage["expiration"] as? Int {
+                    updateLastHash(for: targetSnode, hash: hash, expiresAt: UInt64(expiresAt))
+                }
+                return parseProtoEnvelopes(from: response)
+            }
         }
     }
     
@@ -118,5 +124,28 @@ private extension Promise {
             default: throw error
             }
         }
+    }
+}
+
+// MARK: Last Hash
+
+fileprivate extension LokiAPI {
+    
+    private static var primaryStorage: OWSPrimaryStorage {
+        return OWSPrimaryStorage.shared()
+    }
+    
+    fileprivate static func updateLastHash(for node: Target, hash: String, expiresAt: UInt64) {
+        primaryStorage.dbReadWriteConnection.readWrite { transaction in
+            self.primaryStorage.setLastMessageHash(hash, expiresAt: expiresAt, serviceNode: node.address, transaction: transaction)
+        }
+    }
+    
+    fileprivate static func getLastHash(for node: Target) -> String? {
+        var lastHash: String? = nil
+        primaryStorage.dbReadWriteConnection.readWrite { transaction in
+            lastHash = self.primaryStorage.getLastMessageHash(forServiceNode: node.address, transaction: transaction)
+        }
+        return lastHash
     }
 }
