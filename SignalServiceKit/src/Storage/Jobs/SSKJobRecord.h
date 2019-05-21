@@ -15,7 +15,7 @@ typedef NS_ERROR_ENUM(SSKJobRecordErrorDomain, JobRecordError){
     JobRecordError_IllegalStateTransition,
 };
 
-typedef NS_ENUM(NSUInteger, SSKJobRecordStatus) {
+typedef NS_CLOSED_ENUM(NSUInteger, SSKJobRecordStatus){
     SSKJobRecordStatus_Unknown,
     SSKJobRecordStatus_Ready,
     SSKJobRecordStatus_Running,
