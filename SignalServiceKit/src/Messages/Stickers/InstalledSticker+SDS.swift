@@ -85,9 +85,9 @@ extension InstalledSticker {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension InstalledSticker: SDSSerializable {
+extension InstalledSticker: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -98,14 +98,8 @@ extension InstalledSticker: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> InstalledStickerRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        default:
-            return try InstalledStickerSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -131,24 +125,6 @@ extension InstalledStickerSerializer {
         emojiStringColumn,
         infoColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension InstalledSticker {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -391,7 +367,7 @@ class InstalledStickerSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> InstalledStickerRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .installedSticker
@@ -405,28 +381,5 @@ class InstalledStickerSerializer: SDSSerializer {
         let info: Data = requiredArchive(model.info)
 
         return InstalledStickerRecord(id: id, recordType: recordType, uniqueId: uniqueId, emojiString: emojiString, info: info)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return InstalledStickerSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            InstalledStickerSerializer.idColumn,
-            InstalledStickerSerializer.emojiStringColumn,
-            InstalledStickerSerializer.infoColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return InstalledStickerSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

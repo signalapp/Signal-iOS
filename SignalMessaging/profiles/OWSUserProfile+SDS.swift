@@ -97,9 +97,9 @@ extension OWSUserProfile {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension OWSUserProfile: SDSSerializable {
+extension OWSUserProfile: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -110,14 +110,8 @@ extension OWSUserProfile: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> UserProfileRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        default:
-            return try OWSUserProfileSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -149,24 +143,6 @@ extension OWSUserProfileSerializer {
         profileNameColumn,
         recipientIdColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension OWSUserProfile {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -409,7 +385,7 @@ class OWSUserProfileSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> UserProfileRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .userProfile
@@ -426,31 +402,5 @@ class OWSUserProfileSerializer: SDSSerializer {
         let recipientId: String = model.recipientId
 
         return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientId: recipientId)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return OWSUserProfileSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            OWSUserProfileSerializer.idColumn,
-            OWSUserProfileSerializer.avatarFileNameColumn,
-            OWSUserProfileSerializer.avatarUrlPathColumn,
-            OWSUserProfileSerializer.profileKeyColumn,
-            OWSUserProfileSerializer.profileNameColumn,
-            OWSUserProfileSerializer.recipientIdColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return OWSUserProfileSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

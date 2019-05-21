@@ -134,9 +134,9 @@ extension OWSDatabaseMigration {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension OWSDatabaseMigration: SDSSerializable {
+extension OWSDatabaseMigration: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -177,44 +177,8 @@ extension OWSDatabaseMigration: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> DatabaseMigrationRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        case let model as OWS109OutgoingMessageState:
-            assert(type(of: model) == OWS109OutgoingMessageState.self)
-            return try OWS109OutgoingMessageStateSerializer(model: model).toRecord()
-        case let model as OWSResaveCollectionDBMigration:
-            assert(type(of: model) == OWSResaveCollectionDBMigration.self)
-            return try OWSResaveCollectionDBMigrationSerializer(model: model).toRecord()
-        case let model as OWS108CallLoggingPreference:
-            assert(type(of: model) == OWS108CallLoggingPreference.self)
-            return try OWS108CallLoggingPreferenceSerializer(model: model).toRecord()
-        case let model as OWS107LegacySounds:
-            assert(type(of: model) == OWS107LegacySounds.self)
-            return try OWS107LegacySoundsSerializer(model: model).toRecord()
-        case let model as OWS105AttachmentFilePaths:
-            assert(type(of: model) == OWS105AttachmentFilePaths.self)
-            return try OWS105AttachmentFilePathsSerializer(model: model).toRecord()
-        case let model as OWS104CreateRecipientIdentities:
-            assert(type(of: model) == OWS104CreateRecipientIdentities.self)
-            return try OWS104CreateRecipientIdentitiesSerializer(model: model).toRecord()
-        case let model as OWS103EnableVideoCalling:
-            assert(type(of: model) == OWS103EnableVideoCalling.self)
-            return try OWS103EnableVideoCallingSerializer(model: model).toRecord()
-        case let model as OWS102MoveLoggingPreferenceToUserDefaults:
-            assert(type(of: model) == OWS102MoveLoggingPreferenceToUserDefaults.self)
-            return try OWS102MoveLoggingPreferenceToUserDefaultsSerializer(model: model).toRecord()
-        case let model as OWS101ExistingUsersBlockOnIdentityChange:
-            assert(type(of: model) == OWS101ExistingUsersBlockOnIdentityChange.self)
-            return try OWS101ExistingUsersBlockOnIdentityChangeSerializer(model: model).toRecord()
-        case let model as OWS100RemoveTSRecipientsMigration:
-            assert(type(of: model) == OWS100RemoveTSRecipientsMigration.self)
-            return try OWS100RemoveTSRecipientsMigrationSerializer(model: model).toRecord()
-        default:
-            return try OWSDatabaseMigrationSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -235,24 +199,6 @@ extension OWSDatabaseMigrationSerializer {
         idColumn,
         uniqueIdColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension OWSDatabaseMigration {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -495,7 +441,7 @@ class OWSDatabaseMigrationSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> DatabaseMigrationRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .databaseMigration
@@ -505,24 +451,5 @@ class OWSDatabaseMigrationSerializer: SDSSerializer {
         }
 
         return DatabaseMigrationRecord(id: id, recordType: recordType, uniqueId: uniqueId)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return OWSDatabaseMigrationSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return []
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return OWSDatabaseMigrationSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

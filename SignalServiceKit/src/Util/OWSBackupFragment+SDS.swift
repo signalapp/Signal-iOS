@@ -100,9 +100,9 @@ extension OWSBackupFragment {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension OWSBackupFragment: SDSSerializable {
+extension OWSBackupFragment: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -113,14 +113,8 @@ extension OWSBackupFragment: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> BackupFragmentRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        default:
-            return try OWSBackupFragmentSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -154,24 +148,6 @@ extension OWSBackupFragmentSerializer {
         relativeFilePathColumn,
         uncompressedDataLengthColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension OWSBackupFragment {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -414,7 +390,7 @@ class OWSBackupFragmentSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> BackupFragmentRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .backupFragment
@@ -432,32 +408,5 @@ class OWSBackupFragmentSerializer: SDSSerializer {
         let uncompressedDataLength: UInt64? = archiveOptionalNSNumber(model.uncompressedDataLength, conversion: { $0.uint64Value })
 
         return BackupFragmentRecord(id: id, recordType: recordType, uniqueId: uniqueId, attachmentId: attachmentId, downloadFilePath: downloadFilePath, encryptionKey: encryptionKey, recordName: recordName, relativeFilePath: relativeFilePath, uncompressedDataLength: uncompressedDataLength)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return OWSBackupFragmentSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            OWSBackupFragmentSerializer.idColumn,
-            OWSBackupFragmentSerializer.attachmentIdColumn,
-            OWSBackupFragmentSerializer.downloadFilePathColumn,
-            OWSBackupFragmentSerializer.encryptionKeyColumn,
-            OWSBackupFragmentSerializer.recordNameColumn,
-            OWSBackupFragmentSerializer.relativeFilePathColumn,
-            OWSBackupFragmentSerializer.uncompressedDataLengthColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return OWSBackupFragmentSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

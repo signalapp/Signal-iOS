@@ -85,9 +85,9 @@ extension TSRecipientReadReceipt {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension TSRecipientReadReceipt: SDSSerializable {
+extension TSRecipientReadReceipt: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -98,14 +98,8 @@ extension TSRecipientReadReceipt: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> RecipientReadReceiptRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        default:
-            return try TSRecipientReadReceiptSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -131,24 +125,6 @@ extension TSRecipientReadReceiptSerializer {
         recipientMapColumn,
         sentTimestampColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension TSRecipientReadReceipt {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -391,7 +367,7 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> RecipientReadReceiptRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .recipientReadReceipt
@@ -405,28 +381,5 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
         let sentTimestamp: UInt64 = model.sentTimestamp
 
         return RecipientReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, recipientMap: recipientMap, sentTimestamp: sentTimestamp)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSRecipientReadReceiptSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            TSRecipientReadReceiptSerializer.idColumn,
-            TSRecipientReadReceiptSerializer.recipientMapColumn,
-            TSRecipientReadReceiptSerializer.sentTimestampColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return TSRecipientReadReceiptSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

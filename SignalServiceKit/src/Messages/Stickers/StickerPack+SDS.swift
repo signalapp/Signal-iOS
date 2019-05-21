@@ -107,9 +107,9 @@ extension StickerPack {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension StickerPack: SDSSerializable {
+extension StickerPack: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -120,14 +120,8 @@ extension StickerPack: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> StickerPackRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        default:
-            return try StickerPackSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -163,24 +157,6 @@ extension StickerPackSerializer {
         itemsColumn,
         titleColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension StickerPack {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -423,7 +399,7 @@ class StickerPackSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> StickerPackRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .stickerPack
@@ -442,33 +418,5 @@ class StickerPackSerializer: SDSSerializer {
         let title: String? = model.title
 
         return StickerPackRecord(id: id, recordType: recordType, uniqueId: uniqueId, author: author, cover: cover, dateCreated: dateCreated, info: info, isInstalled: isInstalled, items: items, title: title)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return StickerPackSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            StickerPackSerializer.idColumn,
-            StickerPackSerializer.authorColumn,
-            StickerPackSerializer.coverColumn,
-            StickerPackSerializer.dateCreatedColumn,
-            StickerPackSerializer.infoColumn,
-            StickerPackSerializer.isInstalledColumn,
-            StickerPackSerializer.itemsColumn,
-            StickerPackSerializer.titleColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return StickerPackSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

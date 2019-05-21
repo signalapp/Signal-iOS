@@ -22,7 +22,7 @@ class TSGroupThreadSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> ThreadRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .groupThread
@@ -47,36 +47,5 @@ class TSGroupThreadSerializer: SDSSerializer {
         let hasDismissedOffers: Bool? = nil
 
         return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSThreadSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            TSThreadSerializer.idColumn,
-            TSThreadSerializer.archivalDateColumn,
-            TSThreadSerializer.archivedAsOfMessageSortIdColumn,
-            TSThreadSerializer.conversationColorNameColumn,
-            TSThreadSerializer.creationDateColumn,
-            TSThreadSerializer.isArchivedByLegacyTimestampForSortingColumn,
-            TSThreadSerializer.lastMessageDateColumn,
-            TSThreadSerializer.messageDraftColumn,
-            TSThreadSerializer.mutedUntilDateColumn,
-            TSThreadSerializer.shouldThreadBeVisibleColumn,
-            TSThreadSerializer.groupModelColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return TSThreadSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

@@ -92,9 +92,9 @@ extension OWSDevice {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension OWSDevice: SDSSerializable {
+extension OWSDevice: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -105,14 +105,8 @@ extension OWSDevice: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> DeviceRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        default:
-            return try OWSDeviceSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -142,24 +136,6 @@ extension OWSDeviceSerializer {
         lastSeenAtColumn,
         nameColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension OWSDevice {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -402,7 +378,7 @@ class OWSDeviceSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> DeviceRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .device
@@ -418,30 +394,5 @@ class OWSDeviceSerializer: SDSSerializer {
         let name: String? = model.name
 
         return DeviceRecord(id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, deviceId: deviceId, lastSeenAt: lastSeenAt, name: name)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return OWSDeviceSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            OWSDeviceSerializer.idColumn,
-            OWSDeviceSerializer.createdAtColumn,
-            OWSDeviceSerializer.deviceIdColumn,
-            OWSDeviceSerializer.lastSeenAtColumn,
-            OWSDeviceSerializer.nameColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return OWSDeviceSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

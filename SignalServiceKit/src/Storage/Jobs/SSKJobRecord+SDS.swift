@@ -159,9 +159,9 @@ extension SSKJobRecord {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension SSKJobRecord: SDSSerializable {
+extension SSKJobRecord: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -181,23 +181,8 @@ extension SSKJobRecord: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> JobRecordRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        case let model as SSKMessageSenderJobRecord:
-            assert(type(of: model) == SSKMessageSenderJobRecord.self)
-            return try SSKMessageSenderJobRecordSerializer(model: model).toRecord()
-        case let model as SSKMessageDecryptJobRecord:
-            assert(type(of: model) == SSKMessageDecryptJobRecord.self)
-            return try SSKMessageDecryptJobRecordSerializer(model: model).toRecord()
-        case let model as OWSSessionResetJobRecord:
-            assert(type(of: model) == OWSSessionResetJobRecord.self)
-            return try OWSSessionResetJobRecordSerializer(model: model).toRecord()
-        default:
-            return try SSKJobRecordSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -238,24 +223,6 @@ extension SSKJobRecordSerializer {
         removeMessageAfterSendingColumn,
         threadIdColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension SSKJobRecord {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -498,7 +465,7 @@ class SSKJobRecordSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> JobRecordRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .jobRecord
@@ -521,29 +488,5 @@ class SSKJobRecordSerializer: SDSSerializer {
         let threadId: String? = nil
 
         return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return SSKJobRecordSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            SSKJobRecordSerializer.idColumn,
-            SSKJobRecordSerializer.failureCountColumn,
-            SSKJobRecordSerializer.labelColumn,
-            SSKJobRecordSerializer.statusColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return SSKJobRecordSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

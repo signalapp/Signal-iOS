@@ -84,9 +84,9 @@ extension OWSDisappearingMessagesConfiguration {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension OWSDisappearingMessagesConfiguration: SDSSerializable {
+extension OWSDisappearingMessagesConfiguration: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -97,14 +97,8 @@ extension OWSDisappearingMessagesConfiguration: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> DisappearingMessagesConfigurationRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        default:
-            return try OWSDisappearingMessagesConfigurationSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -130,24 +124,6 @@ extension OWSDisappearingMessagesConfigurationSerializer {
         durationSecondsColumn,
         enabledColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension OWSDisappearingMessagesConfiguration {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -390,7 +366,7 @@ class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> DisappearingMessagesConfigurationRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .disappearingMessagesConfiguration
@@ -404,28 +380,5 @@ class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
         let enabled: Bool = model.isEnabled
 
         return DisappearingMessagesConfigurationRecord(id: id, recordType: recordType, uniqueId: uniqueId, durationSeconds: durationSeconds, enabled: enabled)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return OWSDisappearingMessagesConfigurationSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            OWSDisappearingMessagesConfigurationSerializer.idColumn,
-            OWSDisappearingMessagesConfigurationSerializer.durationSecondsColumn,
-            OWSDisappearingMessagesConfigurationSerializer.enabledColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return OWSDisappearingMessagesConfigurationSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

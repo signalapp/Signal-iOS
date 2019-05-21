@@ -93,9 +93,9 @@ extension SignalAccount {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension SignalAccount: SDSSerializable {
+extension SignalAccount: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -106,14 +106,8 @@ extension SignalAccount: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> SignalAccountRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        default:
-            return try SignalAccountSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -143,24 +137,6 @@ extension SignalAccountSerializer {
         multipleAccountLabelTextColumn,
         recipientIdColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension SignalAccount {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -403,7 +379,7 @@ class SignalAccountSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> SignalAccountRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .signalAccount
@@ -419,30 +395,5 @@ class SignalAccountSerializer: SDSSerializer {
         let recipientId: String = model.recipientId
 
         return SignalAccountRecord(id: id, recordType: recordType, uniqueId: uniqueId, contact: contact, hasMultipleAccountContact: hasMultipleAccountContact, multipleAccountLabelText: multipleAccountLabelText, recipientId: recipientId)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return SignalAccountSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            SignalAccountSerializer.idColumn,
-            SignalAccountSerializer.contactColumn,
-            SignalAccountSerializer.hasMultipleAccountContactColumn,
-            SignalAccountSerializer.multipleAccountLabelTextColumn,
-            SignalAccountSerializer.recipientIdColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return SignalAccountSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

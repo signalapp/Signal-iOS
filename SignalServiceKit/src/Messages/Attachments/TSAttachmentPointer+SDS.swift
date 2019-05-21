@@ -22,7 +22,7 @@ class TSAttachmentPointerSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> AttachmentRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .attachmentPointer
@@ -61,42 +61,5 @@ class TSAttachmentPointerSerializer: SDSSerializer {
         let state: TSAttachmentPointerState? = model.state
 
         return AttachmentRecord(id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentSchemaVersion: attachmentSchemaVersion, attachmentType: attachmentType, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, isDownloaded: isDownloaded, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, mostRecentFailureLocalizedText: mostRecentFailureLocalizedText, pointerType: pointerType, shouldAlwaysPad: shouldAlwaysPad, state: state)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSAttachmentSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            TSAttachmentSerializer.idColumn,
-            TSAttachmentSerializer.albumMessageIdColumn,
-            TSAttachmentSerializer.attachmentSchemaVersionColumn,
-            TSAttachmentSerializer.attachmentTypeColumn,
-            TSAttachmentSerializer.byteCountColumn,
-            TSAttachmentSerializer.captionColumn,
-            TSAttachmentSerializer.contentTypeColumn,
-            TSAttachmentSerializer.encryptionKeyColumn,
-            TSAttachmentSerializer.isDownloadedColumn,
-            TSAttachmentSerializer.serverIdColumn,
-            TSAttachmentSerializer.sourceFilenameColumn,
-            TSAttachmentSerializer.digestColumn,
-            TSAttachmentSerializer.lazyRestoreFragmentIdColumn,
-            TSAttachmentSerializer.mediaSizeColumn,
-            TSAttachmentSerializer.mostRecentFailureLocalizedTextColumn,
-            TSAttachmentSerializer.pointerTypeColumn,
-            TSAttachmentSerializer.stateColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return TSAttachmentSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

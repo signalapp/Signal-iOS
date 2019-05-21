@@ -92,9 +92,9 @@ extension OWSMessageContentJob {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension OWSMessageContentJob: SDSSerializable {
+extension OWSMessageContentJob: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -105,14 +105,8 @@ extension OWSMessageContentJob: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> MessageContentJobRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        default:
-            return try OWSMessageContentJobSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -142,24 +136,6 @@ extension OWSMessageContentJobSerializer {
         plaintextDataColumn,
         wasReceivedByUDColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension OWSMessageContentJob {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -402,7 +378,7 @@ class OWSMessageContentJobSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> MessageContentJobRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .messageContentJob
@@ -418,30 +394,5 @@ class OWSMessageContentJobSerializer: SDSSerializer {
         let wasReceivedByUD: Bool = model.wasReceivedByUD
 
         return MessageContentJobRecord(id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return OWSMessageContentJobSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            OWSMessageContentJobSerializer.idColumn,
-            OWSMessageContentJobSerializer.createdAtColumn,
-            OWSMessageContentJobSerializer.envelopeDataColumn,
-            OWSMessageContentJobSerializer.plaintextDataColumn,
-            OWSMessageContentJobSerializer.wasReceivedByUDColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return OWSMessageContentJobSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

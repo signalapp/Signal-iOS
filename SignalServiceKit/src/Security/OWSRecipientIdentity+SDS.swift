@@ -96,9 +96,9 @@ extension OWSRecipientIdentity {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension OWSRecipientIdentity: SDSSerializable {
+extension OWSRecipientIdentity: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -109,14 +109,8 @@ extension OWSRecipientIdentity: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> RecipientIdentityRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        default:
-            return try OWSRecipientIdentitySerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -148,24 +142,6 @@ extension OWSRecipientIdentitySerializer {
         recipientIdColumn,
         verificationStateColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension OWSRecipientIdentity {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -408,7 +384,7 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> RecipientIdentityRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .recipientIdentity
@@ -425,31 +401,5 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
         let verificationState: OWSVerificationState = model.verificationState
 
         return RecipientIdentityRecord(id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, identityKey: identityKey, isFirstKnownKey: isFirstKnownKey, recipientId: recipientId, verificationState: verificationState)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return OWSRecipientIdentitySerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            OWSRecipientIdentitySerializer.idColumn,
-            OWSRecipientIdentitySerializer.createdAtColumn,
-            OWSRecipientIdentitySerializer.identityKeyColumn,
-            OWSRecipientIdentitySerializer.isFirstKnownKeyColumn,
-            OWSRecipientIdentitySerializer.recipientIdColumn,
-            OWSRecipientIdentitySerializer.verificationStateColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return OWSRecipientIdentitySerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

@@ -22,7 +22,7 @@ class OWS103EnableVideoCallingSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> DatabaseMigrationRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = ._103EnableVideoCalling
@@ -32,24 +32,5 @@ class OWS103EnableVideoCallingSerializer: SDSSerializer {
         }
 
         return DatabaseMigrationRecord(id: id, recordType: recordType, uniqueId: uniqueId)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return OWSDatabaseMigrationSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return []
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return OWSDatabaseMigrationSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

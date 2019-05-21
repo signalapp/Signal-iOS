@@ -22,7 +22,7 @@ class OWSContactOffersInteractionSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> InteractionRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .contactOffersInteraction
@@ -88,34 +88,5 @@ class OWSContactOffersInteractionSerializer: SDSSerializer {
         let wasReceivedByUD: Bool? = nil
 
         return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentFilenameMap: attachmentFilenameMap, attachmentIds: attachmentIds, authorId: authorId, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, ephemeralMessage: ephemeralMessage, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, quotedMessage: quotedMessage, read: read, recipientId: recipientId, recipientStateMap: recipientStateMap, schemaVersion: schemaVersion, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, unregisteredRecipientId: unregisteredRecipientId, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSInteractionSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            TSInteractionSerializer.idColumn,
-            TSInteractionSerializer.receivedAtTimestampColumn,
-            TSInteractionSerializer.timestampColumn,
-            TSInteractionSerializer.uniqueThreadIdColumn,
-            TSInteractionSerializer.beforeInteractionIdColumn,
-            TSInteractionSerializer.hasAddToContactsOfferColumn,
-            TSInteractionSerializer.hasAddToProfileWhitelistOfferColumn,
-            TSInteractionSerializer.hasBlockOfferColumn,
-            TSInteractionSerializer.recipientIdColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return TSInteractionSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

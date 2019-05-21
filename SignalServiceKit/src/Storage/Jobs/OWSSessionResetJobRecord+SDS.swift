@@ -22,7 +22,7 @@ class OWSSessionResetJobRecordSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> JobRecordRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .sessionResetJobRecord
@@ -45,30 +45,5 @@ class OWSSessionResetJobRecordSerializer: SDSSerializer {
         let threadId: String? = nil
 
         return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return SSKJobRecordSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            SSKJobRecordSerializer.idColumn,
-            SSKJobRecordSerializer.failureCountColumn,
-            SSKJobRecordSerializer.labelColumn,
-            SSKJobRecordSerializer.statusColumn,
-            SSKJobRecordSerializer.contactThreadIdColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return SSKJobRecordSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

@@ -975,9 +975,9 @@ extension TSInteraction {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension TSInteraction: SDSSerializable {
+extension TSInteraction: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -1036,62 +1036,8 @@ extension TSInteraction: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> InteractionRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        case let model as TSUnreadIndicatorInteraction:
-            assert(type(of: model) == TSUnreadIndicatorInteraction.self)
-            return try TSUnreadIndicatorInteractionSerializer(model: model).toRecord()
-        case let model as TSOutgoingMessage:
-            assert(type(of: model) == TSOutgoingMessage.self)
-            return try TSOutgoingMessageSerializer(model: model).toRecord()
-        case let model as OWSVerificationStateChangeMessage:
-            assert(type(of: model) == OWSVerificationStateChangeMessage.self)
-            return try OWSVerificationStateChangeMessageSerializer(model: model).toRecord()
-        case let model as OWSDisappearingConfigurationUpdateInfoMessage:
-            assert(type(of: model) == OWSDisappearingConfigurationUpdateInfoMessage.self)
-            return try OWSDisappearingConfigurationUpdateInfoMessageSerializer(model: model).toRecord()
-        case let model as OWSAddToProfileWhitelistOfferMessage:
-            assert(type(of: model) == OWSAddToProfileWhitelistOfferMessage.self)
-            return try OWSAddToProfileWhitelistOfferMessageSerializer(model: model).toRecord()
-        case let model as OWSAddToContactsOfferMessage:
-            assert(type(of: model) == OWSAddToContactsOfferMessage.self)
-            return try OWSAddToContactsOfferMessageSerializer(model: model).toRecord()
-        case let model as TSInfoMessage:
-            assert(type(of: model) == TSInfoMessage.self)
-            return try TSInfoMessageSerializer(model: model).toRecord()
-        case let model as TSIncomingMessage:
-            assert(type(of: model) == TSIncomingMessage.self)
-            return try TSIncomingMessageSerializer(model: model).toRecord()
-        case let model as TSInvalidIdentityKeySendingErrorMessage:
-            assert(type(of: model) == TSInvalidIdentityKeySendingErrorMessage.self)
-            return try TSInvalidIdentityKeySendingErrorMessageSerializer(model: model).toRecord()
-        case let model as TSInvalidIdentityKeyReceivingErrorMessage:
-            assert(type(of: model) == TSInvalidIdentityKeyReceivingErrorMessage.self)
-            return try TSInvalidIdentityKeyReceivingErrorMessageSerializer(model: model).toRecord()
-        case let model as TSInvalidIdentityKeyErrorMessage:
-            assert(type(of: model) == TSInvalidIdentityKeyErrorMessage.self)
-            return try TSInvalidIdentityKeyErrorMessageSerializer(model: model).toRecord()
-        case let model as OWSUnknownContactBlockOfferMessage:
-            assert(type(of: model) == OWSUnknownContactBlockOfferMessage.self)
-            return try OWSUnknownContactBlockOfferMessageSerializer(model: model).toRecord()
-        case let model as TSErrorMessage:
-            assert(type(of: model) == TSErrorMessage.self)
-            return try TSErrorMessageSerializer(model: model).toRecord()
-        case let model as TSMessage:
-            assert(type(of: model) == TSMessage.self)
-            return try TSMessageSerializer(model: model).toRecord()
-        case let model as TSCall:
-            assert(type(of: model) == TSCall.self)
-            return try TSCallSerializer(model: model).toRecord()
-        case let model as OWSContactOffersInteraction:
-            assert(type(of: model) == OWSContactOffersInteraction.self)
-            return try OWSContactOffersInteractionSerializer(model: model).toRecord()
-        default:
-            return try TSInteractionSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -1218,24 +1164,6 @@ extension TSInteractionSerializer {
         verificationStateColumn,
         wasReceivedByUDColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension TSInteraction {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -1478,7 +1406,7 @@ class TSInteractionSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> InteractionRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .interaction
@@ -1544,29 +1472,5 @@ class TSInteractionSerializer: SDSSerializer {
         let wasReceivedByUD: Bool? = nil
 
         return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentFilenameMap: attachmentFilenameMap, attachmentIds: attachmentIds, authorId: authorId, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, ephemeralMessage: ephemeralMessage, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, quotedMessage: quotedMessage, read: read, recipientId: recipientId, recipientStateMap: recipientStateMap, schemaVersion: schemaVersion, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, unregisteredRecipientId: unregisteredRecipientId, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSInteractionSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            TSInteractionSerializer.idColumn,
-            TSInteractionSerializer.receivedAtTimestampColumn,
-            TSInteractionSerializer.timestampColumn,
-            TSInteractionSerializer.uniqueThreadIdColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return TSInteractionSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

@@ -236,9 +236,9 @@ extension TSAttachment {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension TSAttachment: SDSSerializable {
+extension TSAttachment: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -255,20 +255,8 @@ extension TSAttachment: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> AttachmentRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        case let model as TSAttachmentStream:
-            assert(type(of: model) == TSAttachmentStream.self)
-            return try TSAttachmentStreamSerializer(model: model).toRecord()
-        case let model as TSAttachmentPointer:
-            assert(type(of: model) == TSAttachmentPointer.self)
-            return try TSAttachmentPointerSerializer(model: model).toRecord()
-        default:
-            return try TSAttachmentSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -341,24 +329,6 @@ extension TSAttachmentSerializer {
         shouldAlwaysPadColumn,
         stateColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension TSAttachment {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -601,7 +571,7 @@ class TSAttachmentSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> AttachmentRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .attachment
@@ -640,36 +610,5 @@ class TSAttachmentSerializer: SDSSerializer {
         let state: TSAttachmentPointerState? = nil
 
         return AttachmentRecord(id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentSchemaVersion: attachmentSchemaVersion, attachmentType: attachmentType, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, isDownloaded: isDownloaded, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, mostRecentFailureLocalizedText: mostRecentFailureLocalizedText, pointerType: pointerType, shouldAlwaysPad: shouldAlwaysPad, state: state)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSAttachmentSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            TSAttachmentSerializer.idColumn,
-            TSAttachmentSerializer.albumMessageIdColumn,
-            TSAttachmentSerializer.attachmentSchemaVersionColumn,
-            TSAttachmentSerializer.attachmentTypeColumn,
-            TSAttachmentSerializer.byteCountColumn,
-            TSAttachmentSerializer.captionColumn,
-            TSAttachmentSerializer.contentTypeColumn,
-            TSAttachmentSerializer.encryptionKeyColumn,
-            TSAttachmentSerializer.isDownloadedColumn,
-            TSAttachmentSerializer.serverIdColumn,
-            TSAttachmentSerializer.sourceFilenameColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return TSAttachmentSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

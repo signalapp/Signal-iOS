@@ -85,9 +85,9 @@ extension KnownStickerPack {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension KnownStickerPack: SDSSerializable {
+extension KnownStickerPack: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -98,14 +98,8 @@ extension KnownStickerPack: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> KnownStickerPackRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        default:
-            return try KnownStickerPackSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -131,24 +125,6 @@ extension KnownStickerPackSerializer {
         infoColumn,
         referenceCountColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension KnownStickerPack {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -391,7 +367,7 @@ class KnownStickerPackSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> KnownStickerPackRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .knownStickerPack
@@ -405,28 +381,5 @@ class KnownStickerPackSerializer: SDSSerializer {
         let referenceCount: Int = model.referenceCount
 
         return KnownStickerPackRecord(id: id, recordType: recordType, uniqueId: uniqueId, info: info, referenceCount: referenceCount)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return KnownStickerPackSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            KnownStickerPackSerializer.idColumn,
-            KnownStickerPackSerializer.infoColumn,
-            KnownStickerPackSerializer.referenceCountColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return KnownStickerPackSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }
