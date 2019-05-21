@@ -31,17 +31,17 @@ extern ConversationColorName const kConversationColorName_Default;
 
 // Loki: Friend request status
 typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
-    /// New conversation, no messages sent or received
+    /// New conversation, no messages sent or received.
     TSThreadFriendRequestStatusNone,
-    /// This state is used to lock the input early while sending
+    /// This state is used to lock the input early while sending.
     TSThreadFriendRequestStatusRequestSending,
-    /// Friend request sent, awaiting response
+    /// Friend request sent, awaiting response.
     TSThreadFriendRequestStatusRequestSent,
-    /// Friend request received, awaiting user input
+    /// Friend request received, awaiting user input.
     TSThreadFriendRequestStatusRequestReceived,
-    /// We are friends with the user of this thread
+    /// We are friends with the other user in this thread.
     TSThreadFriendRequestStatusFriends,
-    /// Friend request sent but it timed out (user didn't accept within x time)
+    /// Friend request sent but it timed out (i.e. the other user didn't accept within the allocated time).
     TSThreadFriendRequestStatusRequestExpired
 };
 

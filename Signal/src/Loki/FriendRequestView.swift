@@ -1,8 +1,12 @@
 
 @objc final class FriendRequestView : UIView {
-    @objc var message: TSMessage! { didSet { handleMessageChanged() } }
+    private let message: TSMessage
     @objc weak var delegate: FriendRequestViewDelegate?
-    private let kind: Kind
+
+    private var kind: Kind {
+        let isIncoming = message.interactionType() == .incomingMessage
+        return isIncoming ? .incoming : .outgoing
+    }
 
     // MARK: Types
     enum Kind : String { case incoming, outgoing }
@@ -29,26 +33,17 @@
     private lazy var buttonHeight = buttonFont.pointSize * 48 / 17
     
     // MARK: Initialization
-    init(kind: Kind) {
-        self.kind = kind
+    @objc init(message: TSMessage) {
+        self.message = message
         super.init(frame: CGRect.zero)
         initialize()
     }
     
-    @objc convenience init?(rawKind: String) {
-        guard let kind = Kind(rawValue: rawKind) else { return nil }
-        self.init(kind: kind)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("Using FriendRequestView.init(coder:) isn't allowed. Use FriendRequestView.init(kind:) instead.")
-    }
-    
-    override init(frame: CGRect) {
-        fatalError("Using FriendRequestView.init(frame:) isn't allowed. Use FriendRequestView.init(kind:) instead.")
-    }
+    required init?(coder: NSCoder) { fatalError("Using FriendRequestView.init(coder:) isn't allowed. Use FriendRequestView.init(message:) instead.") }
+    override init(frame: CGRect) { fatalError("Using FriendRequestView.init(frame:) isn't allowed. Use FriendRequestView.init(message:) instead.") }
     
     private func initialize() {
+        // Set up UI
         let mainStackView = UIStackView()
         mainStackView.axis = .vertical
         mainStackView.distribution = .fill
@@ -66,6 +61,8 @@
         }
         addSubview(mainStackView)
         mainStackView.autoPin(toEdgesOf: self)
+        updateUI()
+        // Observe friend request status changes
         NotificationCenter.default.addObserver(self, selector: #selector(handleFriendRequestStatusChangedNotification), name: .messageFriendRequestStatusChanged, object: nil)
     }
     
@@ -75,17 +72,17 @@
     
     // MARK: Updating
     @objc private func handleFriendRequestStatusChangedNotification(_ notification: Notification) {
-        guard let messageID = notification.object as? String, messageID == message?.uniqueId else { return }
+        let messageID = notification.object as! String
+        guard messageID == message.uniqueId else { return }
         message.reload()
-        handleMessageChanged()
+        updateUI()
     }
     
-    @objc private func handleMessageChanged() {
-        precondition(message != nil)
+    private func updateUI() {
         switch kind {
         case .incoming:
             guard let message = message as? TSIncomingMessage else { preconditionFailure() }
-            buttonStackView.isHidden = !(message.friendRequestStatus == .pending)
+            buttonStackView.isHidden = message.friendRequestStatus != .pending
             let format: String = {
                 switch (message.friendRequestStatus) {
                 case .accepted: return NSLocalizedString("You've accepted %@'s friend request", comment: "")
@@ -125,25 +122,11 @@
     @objc static func calculateHeight(message: TSMessage, conversationStyle: ConversationStyle) -> CGFloat {
         let width = conversationStyle.contentWidth
         let topSpacing: CGFloat = 12
-        let kind: Kind = {
-            switch (message) {
-            case is TSIncomingMessage: return .incoming
-            case is TSOutgoingMessage: return .outgoing
-            default: preconditionFailure()
-            }
-        }()
-        let dummyFriendRequestView = FriendRequestView(kind: kind)
-        dummyFriendRequestView.message = message
-        let messageHeight = dummyFriendRequestView.label.sizeThatFits(CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)).height
-        let totalHeight: CGFloat = {
-            switch kind {
-            case .incoming:
-                let buttonHeight = dummyFriendRequestView.buttonStackView.isHidden ? 0 : dummyFriendRequestView.buttonHeight
-                return topSpacing + messageHeight + buttonHeight
-            case .outgoing:
-                return topSpacing + messageHeight
-            }
-        }()
+        let dummyFriendRequestView = FriendRequestView(message: message)
+        let labelHeight = dummyFriendRequestView.label.sizeThatFits(CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)).height
+        let hasButtonStackView = dummyFriendRequestView.buttonStackView.superview != nil && !dummyFriendRequestView.buttonStackView.isHidden
+        let buttonHeight = hasButtonStackView ? dummyFriendRequestView.buttonHeight : 0
+        let totalHeight = topSpacing + labelHeight + buttonHeight
         return totalHeight.rounded(.up)
     }
 }

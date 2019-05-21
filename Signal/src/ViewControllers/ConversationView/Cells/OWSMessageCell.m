@@ -207,9 +207,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     if (self.message.isFriendRequest) {
-        NSString *rawKind = self.message.interactionType == OWSInteractionType_IncomingMessage ? @"incoming" : @"outgoing";
-        self.friendRequestView = [[FriendRequestView alloc] initWithRawKind:rawKind];
-        self.friendRequestView.message = self.message;
+        self.friendRequestView = [[FriendRequestView alloc] initWithMessage:self.message];
         self.friendRequestView.delegate = self.friendRequestViewDelegate;
         [self.contentView addSubview:self.friendRequestView];
         [self.messageBubbleViewBottomConstraint setActive:NO];

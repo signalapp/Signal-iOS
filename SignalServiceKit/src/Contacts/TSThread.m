@@ -726,16 +726,14 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     NSMutableArray<NSString *> *idsToRemove = [NSMutableArray new];
     __block TSMessage *_Nullable messageToKeep = nil; // We want to keep this interaction and not remove it
 
-    [self enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction * _Nonnull interaction, YapDatabaseReadTransaction * _Nonnull transaction) {
-        if (interaction.interactionType != interactionType) {
-            return;
-        }
+    [self enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
+        if (interaction.interactionType != interactionType) { return; }
         
         BOOL removeMessage = false;
         TSMessage *message = (TSMessage *)interaction;
         
         // We want to keep the most recent message
-        if (!messageToKeep || messageToKeep.timestamp < message.timestamp) {
+        if (messageToKeep == nil || messageToKeep.timestamp < message.timestamp) {
             messageToKeep = message;
         }
         
@@ -755,11 +753,9 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     
     for (NSString *interactionId in idsToRemove) {
         // Don't delete the recent message
-        if (messageToKeep && interactionId == messageToKeep.uniqueId) {
-            continue;
-        }
+        if (messageToKeep != nil && interactionId == messageToKeep.uniqueId) { continue; }
         
-        // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work.
+        // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work
         TSInteraction *_Nullable interaction = [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
         if (!interaction) {
             OWSFailDebug(@"couldn't load thread's interaction for deletion.");

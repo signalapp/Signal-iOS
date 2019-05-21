@@ -4314,18 +4314,18 @@ typedef enum : NSUInteger {
 
 - (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
 {
-    // Update the thread's friend request state
+    // Update the thread's friend request status
     [self.thread saveFriendRequestStatus:TSThreadFriendRequestStatusFriends withTransaction:nil];
-    // Send friend request accepted message
+    // Send a friend request accepted message
     [ThreadUtil enqueueAcceptFriendRequestMessageInThread:self.thread];
 }
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
 {
-    // Reset friend request status
+    // Reset the thread's friend request status
     [self.thread saveFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:nil];
     // Delete prekeys
-    NSString *contactID = self.thread.recipientIdentifiers.firstObject;
+    NSString *contactID = friendRequest.authorId;
     OWSPrimaryStorage *primaryStorage = SSKEnvironment.shared.primaryStorage;
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [primaryStorage removePreKeyBundleForContact:contactID transaction:transaction];
