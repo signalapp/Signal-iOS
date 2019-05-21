@@ -357,7 +357,8 @@ public class SystemContactsFetcher: NSObject {
             }
 
             Logger.info("fetched \(contacts.count) contacts.")
-            let contactsHash  = HashableArray(contacts).hashValue
+
+            let contactsHash = contacts.hashValue
 
             DispatchQueue.main.async {
                 var shouldNotifyDelegate = false
@@ -412,27 +413,5 @@ public class SystemContactsFetcher: NSObject {
         }
 
         return contactStoreAdapter.fetchCNContact(contactId: contactId)
-    }
-}
-
-struct HashableArray<Element: Hashable>: Hashable {
-    var elements: [Element]
-    init(_ elements: [Element]) {
-        self.elements = elements
-    }
-
-    var hashValue: Int {
-        // random generated 32bit number
-        let base = 224712574
-        var position = 0
-        return elements.reduce(base) { (result, element) -> Int in
-            // Make sure change in sort order invalidates hash
-            position += 1
-            return result ^ element.hashValue + position
-        }
-    }
-
-    static func == (lhs: HashableArray, rhs: HashableArray) -> Bool {
-        return lhs.hashValue == rhs.hashValue
     }
 }

@@ -603,7 +603,7 @@ private struct CameraCaptureAttachment: Hashable, Equatable {
     }
 
     func hash(into hasher: inout Hasher) {
-        signalAttachment.hash(into: &hasher)
+        hasher.combine(signalAttachment)
     }
 
     static func ==(lhs: CameraCaptureAttachment, rhs: CameraCaptureAttachment) -> Bool {
@@ -616,7 +616,7 @@ private struct MediaLibraryAttachment: Hashable, Equatable {
     let attachmentApprovalItemPromise: Promise<AttachmentApprovalItem>
 
     func hash(into hasher: inout Hasher) {
-        asset.hash(into: &hasher)
+        hasher.combine(asset)
     }
 
     static func ==(lhs: MediaLibraryAttachment, rhs: MediaLibraryAttachment) -> Bool {
