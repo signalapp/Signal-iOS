@@ -1,6 +1,6 @@
 // Loki: Refer to Docs/SessionReset.md for explanations
 
-#import "SessionCipher.h"
+#import <AxolotlKit/SessionCipher.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
