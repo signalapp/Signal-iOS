@@ -172,6 +172,8 @@ NS_ASSUME_NONNULL_BEGIN
     [AppEnvironment.shared.notificationPresenter clearAllNotifications];
     [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appSharedDataDirectoryPath]];
     [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appDocumentDirectoryPath]];
+    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem cachesDirectoryPath]];
+    [OWSFileSystem deleteContentsOfDirectory:OWSTemporaryDirectory()];
 
     [DebugLogger.sharedLogger wipeLogs];
     exit(0);
