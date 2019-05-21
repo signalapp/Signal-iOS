@@ -171,9 +171,9 @@ extension TSThread {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension TSThread: SDSSerializable {
+extension TSThread: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -190,20 +190,8 @@ extension TSThread: SDSSerializable {
         }
     }
 
-    public func asRecord() throws -> ThreadRecord {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {
-        case let model as TSGroupThread:
-            assert(type(of: model) == TSGroupThread.self)
-            return try TSGroupThreadSerializer(model: model).toRecord()
-        case let model as TSContactThread:
-            assert(type(of: model) == TSContactThread.self)
-            return try TSContactThreadSerializer(model: model).toRecord()
-        default:
-            return try TSThreadSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -248,24 +236,6 @@ extension TSThreadSerializer {
         groupModelColumn,
         hasDismissedOffersColumn
         ])
-}
-
-// MARK: - Save/Remove/Update
-
-fileprivate extension TSThread {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
 }
 
 // MARK: - Save/Remove/Update
@@ -508,7 +478,7 @@ class TSThreadSerializer: SDSSerializer {
 
     // MARK: - Record
 
-    func toRecord() throws -> ThreadRecord {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .thread
@@ -533,35 +503,5 @@ class TSThreadSerializer: SDSSerializer {
         let hasDismissedOffers: Bool? = nil
 
         return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
-    }
-
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSThreadSerializer.table
-    }
-
-    public func updateColumnNames() -> [String] {
-        return [
-            TSThreadSerializer.idColumn,
-            TSThreadSerializer.archivalDateColumn,
-            TSThreadSerializer.archivedAsOfMessageSortIdColumn,
-            TSThreadSerializer.conversationColorNameColumn,
-            TSThreadSerializer.creationDateColumn,
-            TSThreadSerializer.isArchivedByLegacyTimestampForSortingColumn,
-            TSThreadSerializer.lastMessageDateColumn,
-            TSThreadSerializer.messageDraftColumn,
-            TSThreadSerializer.mutedUntilDateColumn,
-            TSThreadSerializer.shouldThreadBeVisibleColumn
-            ].map { $0.columnName }
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return TSThreadSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
     }
 }

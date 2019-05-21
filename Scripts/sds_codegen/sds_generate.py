@@ -944,9 +944,9 @@ extension %s {
 
     if not has_sds_superclass:
         swift_body += '''
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension %s: SDSSerializable {
+extension %s: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -968,25 +968,8 @@ extension %s: SDSSerializable {
         }
     }
     
-    public func asRecord() throws -> %s {
-        // Any subclass can be cast to it's superclass,
-        // so the order of this switch statement matters.
-        // We need to do a "depth first" search by type.
-        switch self {''' % ( str(clazz.name), record_name, )
-
-        for subclass in reversed(all_descendents_of_class(clazz)):
-            if should_ignore_class(subclass):
-                continue
-            
-            swift_body += '''
-        case let model as %s:
-            assert(type(of: model) == %s.self)
-            return try %sSerializer(model: model).toRecord()''' % ( str(subclass.name), str(subclass.name), str(subclass.name), )
-
-        swift_body += '''
-        default:
-            return try %sSerializer(model: self).toRecord()
-        }
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 ''' % ( str(clazz.name), )
@@ -1061,24 +1044,6 @@ extension %sSerializer {
         swift_body += '''
 // MARK: - Save/Remove/Update
 
-fileprivate extension %s {
-    func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsSave(saveMode: saveMode, transaction: grdbTransaction)
-            } catch {
-                owsFail("Write failed: \(error)")
-            }
-        }
-    }
-}
-
-// MARK: - Save/Remove/Update
-
 @objc
 extension %s {
     public func anyInsert(transaction: SDSAnyWriteTransaction) {
@@ -1150,7 +1115,7 @@ extension %s {
     }
 }
 
-''' % ( ( str(clazz.name), ) * 3 )
+''' % ( ( str(clazz.name), ) * 2 )
 
 
         # ---- Cursor ----
@@ -1329,7 +1294,7 @@ extension %s {
 ''' % ( str(clazz.name), record_name, str(clazz.name), )
     
     
-    # ---- SDSSerializable ----
+    # ---- SDSModel ----
 
     table_superclass = clazz.table_superclass()
     table_class_name = str(table_superclass.name)
@@ -1362,7 +1327,7 @@ class %sSerializer: SDSSerializer {
     swift_body += '''
     // MARK: - Record
 
-    func toRecord() throws -> %s {
+    func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .%s
@@ -1370,7 +1335,7 @@ class %sSerializer: SDSSerializer {
             owsFailDebug("Missing uniqueId.")
             throw SDSError.missingRequiredField
         }
-''' % ( root_record_name, serialize_record_type, )
+''' % ( serialize_record_type, )
     
     initializer_args = ['id', 'recordType', 'uniqueId', ]
     
@@ -1436,51 +1401,6 @@ class %sSerializer: SDSSerializer {
         return %s(%s)
     }
 ''' % ( root_record_name, ', '.join(initializer_args), )
-
-    swift_body += '''
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return %sSerializer.table
-    }
-''' % ( table_class_name, )
-
-    swift_body += '''
-    public%s func updateColumnNames() -> [String] {
-''' % ( override_keyword, )
-
-    # If a property has a custom column source, we don't redundantly create a column for that column 
-    serialize_properties = [property for property in properties_and_inherited_properties(clazz) if not property.has_custom_column_source()]
-    if len(serialize_properties) > 1:
-        swift_body += '''        return [
-            %sSerializer.idColumn,
-''' % ( str(table_class_name), )
-        for property in serialize_properties:
-            if property.name == 'uniqueId':
-                continue
-            column_name = to_swift_identifier_name(property.name)
-            # print 'property:', property.name, property.swift_type_safe()
-            swift_body += '''            %sSerializer.%sColumn,
-''' % ( str(table_class_name), str(column_name), )
-
-        swift_body += '''            ].map { $0.columnName }'''
-    else:
-        swift_body += '''        return []'''
-
-    swift_body += '''
-    }
-'''
-
-    swift_body += '''
-    public func uniqueIdColumnName() -> String {
-        return %sSerializer.uniqueIdColumn.columnName
-    }
-    
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
-    }
-''' % ( table_class_name, )
 
     swift_body += '''}
 ''' 

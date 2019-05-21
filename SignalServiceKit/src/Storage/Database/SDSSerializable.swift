@@ -6,22 +6,10 @@ import Foundation
 import GRDBCipher
 import SignalCoreKit
 
-public protocol SDSSerializable {
-    var serializer: SDSSerializer { get }
-
-    func anyInsert(transaction: SDSAnyWriteTransaction)
-}
-
 // MARK: - SDSSerializer
 
 public protocol SDSSerializer {
-    func serializableColumnTableMetadata() -> SDSTableMetadata
-
-    func updateColumnNames() -> [String]
-
-    func uniqueIdColumnName() -> String
-
-    func uniqueIdColumnValue() -> DatabaseValueConvertible
+    func asRecord() throws -> SDSRecord
 }
 
 // MARK: - SDSSerializer Helpers
