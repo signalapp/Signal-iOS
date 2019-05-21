@@ -6,8 +6,6 @@ import Foundation
 import PromiseKit
 import HKDFKit
 
-// TODO: Determine how views can be notified of sticker downloads.
-//
 // Stickers
 //
 // * Stickers are either "installed" or not.
@@ -81,7 +79,7 @@ public class StickerManager: NSObject {
 
     private static let store = SDSKeyValueStore(collection: "recentStickers")
     private static let emojiMapStore = SDSKeyValueStore(collection: "emojiMap")
-    
+
     private static let serialQueue = DispatchQueue(label: "org.signal.stickers")
 
     @objc
@@ -133,7 +131,6 @@ public class StickerManager: NSObject {
 
     // MARK: - Paths
 
-    // TODO: Clean up sticker data if user deletes all user data.
     @objc
     public class func cacheDirUrl() -> URL {
         var url = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath())

@@ -255,6 +255,19 @@ NS_ASSUME_NONNULL_BEGIN
     return [self deleteFile:filePath];
 }
 
++ (void)deleteContentsOfDirectory:(NSString *)dirPath
+{
+    NSError *error;
+    NSArray<NSString *> *_Nullable filePaths = [self allFilesInDirectoryRecursive:dirPath error:&error];
+    if (error != nil || filePaths == nil) {
+        OWSFailDebug(@"Could not retrieve files in directory.");
+        return;
+    }
+    for (NSString *filePath in filePaths) {
+        [self deleteFileIfExists:filePath];
+    }
+}
+
 + (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error
 {
     OWSAssertDebug(dirPath.length > 0);
