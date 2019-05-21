@@ -5,8 +5,6 @@
 #import "OWSDevice.h"
 #import "OWSIdentityManager.h"
 #import "NSDate+OWS.h"
-#import "PreKeyRecord.h"
-#import "PreKeyBundle.h"
 #import "TSAccountManager.h"
 #import "TSPreKeyManager.h"
 #import "YapDatabaseConnection+OWS.h"

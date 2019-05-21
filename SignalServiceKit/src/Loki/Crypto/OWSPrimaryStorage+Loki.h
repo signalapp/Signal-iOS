@@ -1,8 +1,7 @@
 #import "OWSPrimaryStorage.h"
+#import <AxolotlKit/PreKeyRecord.h>
+#import <AxolotlKit/PreKeyBundle.h>
 #import <YapDatabase/YapDatabase.h>
-
-@class PreKeyRecord;
-@class PreKeyBundle;
 
 NS_ASSUME_NONNULL_BEGIN
 
