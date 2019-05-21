@@ -41,6 +41,8 @@ void ClearOldTemporaryDirectories(void);
 
 + (BOOL)deleteFileIfExists:(NSString *)filePath;
 
++ (void)deleteContentsOfDirectory:(NSString *)dirPath;
+
 + (NSArray<NSString *> *_Nullable)allFilesInDirectoryRecursive:(NSString *)dirPath error:(NSError **)error;
 
 + (NSString *)temporaryFilePath;
