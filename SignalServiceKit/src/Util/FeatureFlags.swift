@@ -32,11 +32,11 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var useGRDB: Bool {
-//        if OWSIsDebugBuild() {
-//            return true
-//        } else {
+        if OWSIsDebugBuild() {
+            return true
+        } else {
             return false
-//        }
+        }
     }
 
     @objc
