@@ -63,10 +63,10 @@ public class FeatureFlags: NSObject {
     public static let stickerSearch = false
 
     @objc
-    public static let stickerPackSharing = true
+    public static let stickerPackOrdering = false
 
     @objc
-    public static let stickerPackOrdering = false
+    public static let testBuiltInStickerPacks = false
 
     // Don't enable this flag until the Desktop changes have been in production for a while.
     @objc
