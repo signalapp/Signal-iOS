@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		24A830A22293CD0100F4CAC0 /* LokiP2PServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */; };
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
@@ -654,6 +655,7 @@
 		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
+		24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiP2PServer.swift; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareButtonsView.m; sourceTree = "<group>"; };
 		3403B95C20EA9527001A1F44 /* OWSContactShareButtonsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareButtonsView.h; sourceTree = "<group>"; };
@@ -2606,6 +2608,7 @@
 				B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */,
 				B821F2F92272CEEE002C88C0 /* OnboardingKeyPairViewController.swift */,
 				B8439519228510FB000563FE /* Poller.swift */,
+				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
 			);
 			path = Loki;
 			sourceTree = "<group>";
@@ -3641,6 +3644,7 @@
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
+				24A830A22293CD0100F4CAC0 /* LokiP2PServer.swift in Sources */,
 				349ED990221B0194008045B0 /* Onboarding2FAViewController.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
