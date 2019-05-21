@@ -48,7 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
         // initializers injected.
         [[OWSBackgroundTaskManager sharedManager] observeNotifications];
 
-        OWSPrimaryStorage *primaryStorage = [[OWSPrimaryStorage alloc] initStorage];
+        SDSDatabaseStorage *databaseStorage = [SDSDatabaseStorage new];
+        OWSPrimaryStorage *primaryStorage = databaseStorage.yapPrimaryStorage;
         [OWSPrimaryStorage protectFiles];
 
         // AFNetworking (via CFNetworking) spools it's attachments to NSTemporaryDirectory().
@@ -57,8 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
         BOOL success = [OWSFileSystem protectFileOrFolderAtPath:NSTemporaryDirectory()
                                              fileProtectionType:NSFileProtectionCompleteUntilFirstUserAuthentication];
         OWSAssert(success);
-
-        SDSDatabaseStorage *databaseStorage = [[SDSDatabaseStorage alloc] init];
 
         OWSPreferences *preferences = [OWSPreferences new];
 
