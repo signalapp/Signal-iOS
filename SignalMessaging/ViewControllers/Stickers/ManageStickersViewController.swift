@@ -217,7 +217,7 @@ public class ManageStickersViewController: OWSTableViewController {
     }
 
     private func buildTableCell(installedStickerPack stickerPack: StickerPack) -> UITableViewCell {
-        var actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
+        let actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
         return buildTableCell(stickerPack: stickerPack,
                               stickerInfo: stickerPack.coverInfo,
                               title: stickerPack.title,
