@@ -77,11 +77,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  Get the last message hash for the given service node.
- This function will check the stored last hash and remove it if the `expireAt` has already passed.
+ This function will check the stored last hash and remove it if the `expiresAt` has already passed.
 
- @param serviceNode The service node id
- @param transaction A read write transaction
- @return The last hash or nil if it doesn't exist
+ @param serviceNode The service node ID.
+ @param transaction A read write transaction.
+ @return The last hash or `nil` if it doesn't exist.
  */
 - (NSString *_Nullable)getLastMessageHashForServiceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
@@ -89,12 +89,12 @@ NS_ASSUME_NONNULL_BEGIN
  Set the last message hash for the given service node.
  This will override any previous hashes stored for the given service node.
 
- @param hash The last message hash
- @param expiresAt The time the message expires on the server
- @param serviceNode The service node
- @param transaction A read write transaction
+ @param serviceNode The service node ID.
+ @param hash The last message hash.
+ @param expiresAt The time the message expires on the server.
+ @param transaction A read write transaction.
  */
-- (void)setLastMessageHash:(NSString *)hash expiresAt:(u_int64_t)expiresAt serviceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)setLastMessageHashForServiceNode:(NSString *)serviceNode hash:(NSString *)hash expiresAt:(u_int64_t)expiresAt transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

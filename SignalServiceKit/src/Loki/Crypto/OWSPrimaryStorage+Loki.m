@@ -143,7 +143,7 @@
     return hash;
 }
 
-- (void)setLastMessageHash:(NSString *)hash expiresAt:(u_int64_t)expiresAt serviceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction {
+- (void)setLastMessageHashForServiceNode:(NSString *)serviceNode hash:(NSString *)hash expiresAt:(u_int64_t)expiresAt transaction:(YapDatabaseReadWriteTransaction *)transaction {
     NSDictionary *dict = @{
                            @"hash": hash,
                            @"expiresAt": @(expiresAt)

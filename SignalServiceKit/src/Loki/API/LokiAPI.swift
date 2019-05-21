@@ -1,6 +1,7 @@
 import PromiseKit
 
 @objc public final class LokiAPI : NSObject {
+    private static let storage = OWSPrimaryStorage.shared()
     
     // MARK: Caching
     private static var swarmCache: [String:Set<Target>] = [:]
@@ -34,7 +35,7 @@ import PromiseKit
         }
     }
     
-    public typealias MessagesPromise = Promise<[SSKProtoEnvelope]>
+    public typealias MessagesPromise = Promise<[SSKProtoEnvelope]> // To keep the return type of getMessages() readable
     
     // MARK: Lifecycle
     override private init() { }
@@ -47,18 +48,15 @@ import PromiseKit
     }
     
     private static func getRandomSnode() -> Promise<Target> {
-        return Promise<Target> { seal in
-            seal.fulfill(Target(address: "http://13.238.53.205", port: 8080)) // TODO: Temporary
-        }
+        return Promise<Target> { _ in notImplemented() } // TODO: Implement
     }
     
     private static func getSwarm(for hexEncodedPublicKey: String) -> Promise<Set<Target>> {
         if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= targetSnodeCount {
             return Promise<Set<Target>> { $0.fulfill(cachedSwarm) }
         } else {
-            return getRandomSnode().then { invoke(.getSwarm, on: $0, with: [ "pubKey" : hexEncodedPublicKey ]) }.map { rawResponse in
-                return [] // TODO: Parse targets from raw response
-            }.get { swarmCache[hexEncodedPublicKey] = $0 }
+            return getRandomSnode().then { invoke(.getSwarm, on: $0, with: [ "pubKey" : hexEncodedPublicKey ]) }
+                .map { parseTargets(from: $0) }.get { swarmCache[hexEncodedPublicKey] = $0 }
         }
     }
     
@@ -72,12 +70,12 @@ import PromiseKit
         return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
             let lastHash = getLastHash(for: targetSnode) ?? ""
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHash ]
-            return invoke(.getMessages, on: targetSnode, with: parameters).map { response in
-                if let json = response as? JSON, let messages = json["messages"] as? [JSON], let lastMessage = messages.last,
+            return invoke(.getMessages, on: targetSnode, with: parameters).map { rawResponse in
+                if let json = rawResponse as? JSON, let messages = json["messages"] as? [JSON], let lastMessage = messages.last,
                     let hash = lastMessage["hash"] as? String, let expiresAt = lastMessage["expiration"] as? Int {
-                    updateLastHash(for: targetSnode, hash: hash, expiresAt: UInt64(expiresAt))
+                    setLastHash(for: targetSnode, hash: hash, expiresAt: UInt64(expiresAt))
                 }
-                return parseProtoEnvelopes(from: response)
+                return parseProtoEnvelopes(from: rawResponse)
             }
         }
     }
@@ -98,7 +96,26 @@ import PromiseKit
         return anyPromise
     }
     
-    // MARK: Convenience
+    // MARK: Last Hash
+    private static func setLastHash(for target: Target, hash: String, expiresAt: UInt64) {
+        storage.dbReadWriteConnection.readWrite { transaction in
+            storage.setLastMessageHashForServiceNode(target.address, hash: hash, expiresAt: expiresAt, transaction: transaction)
+        }
+    }
+    
+    private static func getLastHash(for target: Target) -> String? {
+        var lastHash: String?
+        storage.dbReadWriteConnection.readWrite { transaction in
+            lastHash = storage.getLastMessageHash(forServiceNode: target.address, transaction: transaction)
+        }
+        return lastHash
+    }
+    
+    // MARK: Parsing
+    private static func parseTargets(from rawResponse: Any) -> Set<Target> {
+        notImplemented()
+    }
+    
     private static func parseProtoEnvelopes(from rawResponse: Any) -> [SSKProtoEnvelope] {
         guard let json = rawResponse as? JSON, let messages = json["messages"] as? [JSON] else { return [] }
         return messages.compactMap { message in
@@ -124,28 +141,5 @@ private extension Promise {
             default: throw error
             }
         }
-    }
-}
-
-// MARK: Last Hash
-
-fileprivate extension LokiAPI {
-    
-    private static var primaryStorage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
-    }
-    
-    fileprivate static func updateLastHash(for node: Target, hash: String, expiresAt: UInt64) {
-        primaryStorage.dbReadWriteConnection.readWrite { transaction in
-            self.primaryStorage.setLastMessageHash(hash, expiresAt: expiresAt, serviceNode: node.address, transaction: transaction)
-        }
-    }
-    
-    fileprivate static func getLastHash(for node: Target) -> String? {
-        var lastHash: String? = nil
-        primaryStorage.dbReadWriteConnection.readWrite { transaction in
-            lastHash = self.primaryStorage.getLastMessageHash(forServiceNode: node.address, transaction: transaction)
-        }
-        return lastHash
     }
 }
