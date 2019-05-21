@@ -12,11 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init;
 
-@property (nonatomic) OWSContactsManager *contactsManager;
-@property (nonatomic) OWSPreferences *preferences;
-@property (nonatomic) OWSSounds *sounds;
-@property (nonatomic) OWSWindowManager *windowManager;
-
 @end
 
 NS_ASSUME_NONNULL_END
