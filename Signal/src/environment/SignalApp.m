@@ -174,6 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appDocumentDirectoryPath]];
     [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem cachesDirectoryPath]];
     [OWSFileSystem deleteContentsOfDirectory:OWSTemporaryDirectory()];
+    [OWSFileSystem deleteContentsOfDirectory:NSTemporaryDirectory()];
 
     [DebugLogger.sharedLogger wipeLogs];
     exit(0);
