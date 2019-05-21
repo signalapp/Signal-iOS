@@ -98,7 +98,9 @@ public class SDSDatabaseStorage: NSObject {
     public func uiReadThrows(block: @escaping (SDSAnyReadTransaction) throws -> Void) throws {
         if useGRDB {
             try grdbStorage.uiReadThrows { transaction in
-                try block(transaction.asAnyRead)
+                try autoreleasepool {
+                    try block(transaction.asAnyRead)
+                }
             }
         } else {
             try yapStorage.uiReadThrows { transaction in
@@ -112,7 +114,9 @@ public class SDSDatabaseStorage: NSObject {
         if useGRDB {
             do {
                 try grdbStorage.uiRead { transaction in
-                    block(transaction.asAnyRead)
+                    autoreleasepool {
+                        block(transaction.asAnyRead)
+                    }
                 }
             } catch {
                 owsFail("error: \(error)")
@@ -129,7 +133,9 @@ public class SDSDatabaseStorage: NSObject {
         if useGRDB {
             do {
                 try grdbStorage.read { transaction in
-                    block(transaction.asAnyRead)
+                    autoreleasepool {
+                        block(transaction.asAnyRead)
+                    }
                 }
             } catch {
                 owsFail("error: \(error)")
@@ -146,7 +152,9 @@ public class SDSDatabaseStorage: NSObject {
         if useGRDB {
             do {
                 try grdbStorage.write { transaction in
-                    block(transaction.asAnyWrite)
+                    autoreleasepool {
+                        block(transaction.asAnyWrite)
+                    }
                 }
             } catch {
                 owsFail("error: \(error)")
