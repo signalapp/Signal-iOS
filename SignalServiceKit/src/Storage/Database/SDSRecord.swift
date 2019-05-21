@@ -5,20 +5,10 @@
 import Foundation
 import GRDBCipher
 
-public protocol SDSRecord: Codable, FetchableRecord, MutablePersistableRecord {
+public protocol SDSRecord: Codable, FetchableRecord, PersistableRecord {
     var id: Int64? { get set }
     var uniqueId: String { get }
     var tableMetadata: SDSTableMetadata { get }
-}
-
-public extension SDSRecord {
-    mutating func didInsert(with rowID: Int64, for column: String?) {
-        guard id == nil else {
-            owsFailDebug("Inserting record which already has id.")
-            return
-        }
-        id = rowID
-    }
 }
 
 // MARK: - Save (Upsert)
