@@ -46,25 +46,25 @@ public protocol Factory {
 
 public extension Factory {
 
-    static public var dbConnection: YapDatabaseConnection {
+    static var dbConnection: YapDatabaseConnection {
         return OWSPrimaryStorage.shared().dbReadWriteConnection
     }
 
-    public var dbConnection: YapDatabaseConnection {
+    var dbConnection: YapDatabaseConnection {
         return OWSPrimaryStorage.shared().dbReadWriteConnection
     }
 
-    static public func readWrite(block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
+    static func readWrite(block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
         dbConnection.readWrite(block)
     }
 
-    public func readWrite(block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
+    func readWrite(block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
         dbConnection.readWrite(block)
     }
 
     // MARK: Factory Methods
 
-    public func create() -> ObjectType {
+    func create() -> ObjectType {
         var item: ObjectType!
         self.readWrite { transaction in
             item = self.create(transaction: transaction)
@@ -72,7 +72,7 @@ public extension Factory {
         return item
     }
 
-    public func create(count: UInt) -> [ObjectType] {
+    func create(count: UInt) -> [ObjectType] {
         var items: [ObjectType] = []
         self.readWrite { transaction in
             items = self.create(count: count, transaction: transaction)
@@ -80,7 +80,7 @@ public extension Factory {
         return items
     }
 
-    public func create(count: UInt, transaction: YapDatabaseReadWriteTransaction) -> [ObjectType] {
+    func create(count: UInt, transaction: YapDatabaseReadWriteTransaction) -> [ObjectType] {
         return (0..<count).map { _ in return create(transaction: transaction) }
     }
 }
