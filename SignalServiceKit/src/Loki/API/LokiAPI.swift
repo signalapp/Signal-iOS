@@ -2,6 +2,10 @@ import PromiseKit
 
 @objc public final class LokiAPI : NSObject {
     
+    // MARK: Caching
+    private static var swarmCache: [String:Set<Target>] = [:]
+    
+    // MARK: Settings
     private static let version = "v1"
     private static let targetSnodeCount = 2
     public static let defaultMessageTTL: UInt64 = 4 * 24 * 60 * 60
@@ -30,6 +34,8 @@ import PromiseKit
         }
     }
     
+    public typealias MessagesPromise = Promise<[SSKProtoEnvelope]>
+    
     // MARK: Lifecycle
     override private init() { }
     
@@ -47,7 +53,13 @@ import PromiseKit
     }
     
     private static func getSwarm(for hexEncodedPublicKey: String) -> Promise<Set<Target>> {
-        return getRandomSnode().then { invoke(.getSwarm, on: $0, with: [ "pubKey" : hexEncodedPublicKey ]) }.map { rawResponse in return [] } // TODO: Parse targets from raw response
+        if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= targetSnodeCount {
+            return Promise<Set<Target>> { $0.fulfill(cachedSwarm) }
+        } else {
+            return getRandomSnode().then { invoke(.getSwarm, on: $0, with: [ "pubKey" : hexEncodedPublicKey ]) }.map { rawResponse in
+                return [] // TODO: Parse targets from raw response
+            }.get { swarmCache[hexEncodedPublicKey] = $0 }
+        }
     }
     
     private static func getTargetSnodes(for hexEncodedPublicKey: String) -> Promise<Set<Target>> {
@@ -55,8 +67,6 @@ import PromiseKit
     }
     
     // MARK: Public API
-    public typealias MessagesPromise = Promise<[SSKProtoEnvelope]>
-    
     public static func getMessages() -> Promise<[MessagesPromise]> {
         let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         let lastHash = "" // TODO: Implement
@@ -99,12 +109,10 @@ import PromiseKit
     }
 }
 
-// MARK: - Convenience
-
 private extension Promise {
 
     func recoverNetworkErrorIfNeeded(on queue: DispatchQueue) -> Promise<T> {
-        return self.recover(on: queue) { error -> Promise<T> in
+        return recover(on: queue) { error -> Promise<T> in
             switch error {
             case NetworkManagerError.taskError(_, let underlyingError): throw underlyingError
             default: throw error
