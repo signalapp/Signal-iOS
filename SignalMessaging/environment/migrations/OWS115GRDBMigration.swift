@@ -163,16 +163,8 @@ extension OWS115GRDBMigration {
         }
     }
 
-<<<<<<< HEAD
-    private func migrateUnorderedRecords<T>(label: String, finder: LegacyUnorderedFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws where T: TSYapDatabaseObject & SDSSerializable {
+    private func migrateUnorderedRecords<T>(label: String, finder: LegacyUnorderedFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws where T: SDSModel {
         try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
-||||||| parent of 34b0b02fe... Streamline SDS extensions (code generated changes).
-    private func migrateUnorderedRecords<T>(label: String, finder: LegacyUnorderedFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws where T: TSYapDatabaseObject & SDSSerializable {
-        try Bench(title: "Migrate \(T.self)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
-=======
-    private func migrateUnorderedRecords<T>(label: String, finder: LegacyUnorderedFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws where T: TSYapDatabaseObject & SDSModel {
-        try Bench(title: "Migrate \(T.self)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
->>>>>>> 34b0b02fe... Streamline SDS extensions (code generated changes).
             var recordCount = 0
             try finder.enumerateLegacyObjects { legacyRecord in
                 recordCount += 1
@@ -196,17 +188,17 @@ extension OWS115GRDBMigration {
     }
 
     private func migrateMappedCollectionObjects<SourceType, DestinationType>(label: String,
-                                                                     finder: LegacyObjectFinder<SourceType>,
-                                                                     memorySamplerRatio: Float,
-                                                                     transaction: GRDBWriteTransaction,
-                                                                     buildRecord: @escaping (SourceType) -> DestinationType
-        ) throws where DestinationType: SDSSerializable {
+                                                                             finder: LegacyObjectFinder<SourceType>,
+                                                                             memorySamplerRatio: Float,
+                                                                             transaction: GRDBWriteTransaction,
+                                                                             migrateObject: @escaping (SourceType) -> DestinationType) throws where DestinationType: SDSModel {
 
         try Bench(title: "Migrate \(SourceType.self)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyObjects { legacyObject in
                 recordCount += 1
-                legacyObject.anyInsert(transaction: transaction.asAnyWrite)
+                let newObject = migrateObject(legacyObject)
+                newObject.anyInsert(transaction: transaction.asAnyWrite)
                 memorySampler.sample()
             }
             Logger.info("Migrate \(SourceType.self) completed with recordCount: \(recordCount)")
