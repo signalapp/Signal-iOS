@@ -175,12 +175,13 @@ public class MessageFetcherJob: NSObject {
     }
 
     private func fetchUndeliveredMessages() -> Promise<(envelopes: [SSKProtoEnvelope], more: Bool)> {
-        return Promise { resolver in
-            LokiAPI.getMessages().done { envelopes in
-                resolver.fulfill((envelopes: envelopes, more: false))
-            }.catch { error in
-                resolver.reject(error)
-            }
+        notImplemented()
+//        return Promise { resolver in
+//            LokiAPI.getMessages().done { envelopes in
+//                resolver.fulfill((envelopes: envelopes, more: false))
+//            }.catch { error in
+//                resolver.reject(error)
+//            }
             // Loki: Original code
             // ========
 //            let request = OWSRequestFactory.getMessagesRequest()
@@ -203,7 +204,7 @@ public class MessageFetcherJob: NSObject {
 //                    resolver.reject(error)
 //            })
             // ========
-        }
+//        }
     }
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
