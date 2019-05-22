@@ -81,14 +81,17 @@ public class StickerKeyboard: UIStackView {
         autoresizingMask = .flexibleHeight
         alignment = .fill
 
-        addBackgroundView(withBackgroundColor: Theme.offBackgroundColor)
+        let backgroundColor = (Theme.isDarkThemeEnabled
+            ? Theme.offBackgroundColor
+            : UIColor.ows_gray02)
+        addBackgroundView(withBackgroundColor: backgroundColor)
 
         addArrangedSubview(headerView)
         headerView.setContentHuggingVerticalHigh()
         headerView.setCompressionResistanceVerticalHigh()
 
         stickerCollectionView.stickerDelegate = self
-        stickerCollectionView.backgroundColor = Theme.offBackgroundColor
+        stickerCollectionView.backgroundColor = backgroundColor
         addArrangedSubview(stickerCollectionView)
         stickerCollectionView.setContentHuggingVerticalLow()
         stickerCollectionView.setCompressionResistanceVerticalLow()
