@@ -1,6 +1,6 @@
 #import "OWSPrimaryStorage.h"
-#import "PreKeyRecord.h"
-#import "PreKeyBundle.h"
+#import <AxolotlKit/PreKeyRecord.h>
+#import <AxolotlKit/PreKeyBundle.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -71,6 +71,32 @@ NS_ASSUME_NONNULL_BEGIN
  @param transaction A `YapDatabaseReadWriteTransaction`.
  */
 - (void)removePreKeyBundleForContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+# pragma mark - Last Hash Handling
+
+/**
+ Get the last message hash for the given service node.
+ This function will check the stored last hash and remove it if the `expiresAt` has already passed.
+
+ @param serviceNode The service node ID.
+ @param transaction A read write transaction.
+ @return The last hash or `nil` if it doesn't exist.
+ */
+- (NSString *_Nullable)getLastMessageHashForServiceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
+/**
+ Set the last message hash for the given service node.
+ This will override any previous hashes stored for the given service node.
+
+ @param serviceNode The service node ID.
+ @param hash The last message hash.
+ @param expiresAt The time the message expires on the server.
+ @param transaction A read write transaction.
+ */
+- (void)setLastMessageHashForServiceNode:(NSString *)serviceNode hash:(NSString *)hash expiresAt:(u_int64_t)expiresAt transaction:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(setLastMessageHash(forServiceNode:hash:expiresAt:transaction:));
+
+- (NSSet<NSString *> *_Nullable)getReceivedMessageHashesWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (void)setReceivedMessageHashes:(NSSet<NSString *> *)receivedMessageHashes withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

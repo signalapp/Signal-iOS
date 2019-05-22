@@ -47,8 +47,30 @@ public class MessageFetcherJob: NSObject {
 //        }
         // ========
 
-        Logger.info("fetching messages via REST.")
-
+        Logger.info("Fetching messages via REST.")
+        let promise = fetchUndeliveredMessages().then { promises -> Promise<Void> in
+            let promises = promises.map { promise -> Promise<Void> in
+                return promise.then { envelopes -> Promise<Void> in
+                    for envelope in envelopes {
+                        Logger.info("Envelope received.")
+                        do {
+                            let envelopeData = try envelope.serializedData()
+                            self.messageReceiver.handleReceivedEnvelopeData(envelopeData)
+                        } catch {
+                            owsFailDebug("Failed to serialize envelope.")
+                        }
+                        self.acknowledgeDelivery(envelope: envelope)
+                    }
+                    return Promise.value(())
+                }
+            }
+            return when(resolved: promises).asVoid()
+        }
+        promise.retainUntilComplete()
+        return promise
+        
+        /* Loki: Original code
+         * ========
         let promise = self.fetchUndeliveredMessages().then { (envelopes: [SSKProtoEnvelope], more: Bool) -> Promise<Void> in
             for envelope in envelopes {
                 Logger.info("received envelope.")
@@ -73,6 +95,8 @@ public class MessageFetcherJob: NSObject {
         promise.retainUntilComplete()
 
         return promise
+         * ========
+         */
     }
 
     @objc
@@ -174,36 +198,30 @@ public class MessageFetcherJob: NSObject {
         }
     }
 
-    private func fetchUndeliveredMessages() -> Promise<(envelopes: [SSKProtoEnvelope], more: Bool)> {
-        return Promise { resolver in
-            LokiAPI.getMessages().done { envelopes in
-                resolver.fulfill((envelopes: envelopes, more: false))
-            }.catch { error in
-                resolver.reject(error)
-            }
-            // Loki: Original code
-            // ========
-//            let request = OWSRequestFactory.getMessagesRequest()
-//            self.networkManager.makeRequest(
-//                request,
-//                success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
-//                    guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
-//                        Logger.error("response object had unexpected content")
-//                        return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-//                    }
+    private func fetchUndeliveredMessages() -> Promise<Set<Promise<[SSKProtoEnvelope]>>> {
+        return LokiAPI.getMessages()
+        // Loki: Original code
+        // ========
+//        let request = OWSRequestFactory.getMessagesRequest()
+//        self.networkManager.makeRequest(
+//            request,
+//            success: { (_: URLSessionDataTask?, responseObject: Any?) -> Void in
+//                guard let (envelopes, more) = self.parseMessagesResponse(responseObject: responseObject) else {
+//                    Logger.error("response object had unexpected content")
+//                    return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
+//                }
 //
-//                    resolver.fulfill((envelopes: envelopes, more: more))
-//                },
-//                failure: { (_: URLSessionDataTask?, error: Error?) in
-//                    guard let error = error else {
-//                        Logger.error("error was surpringly nil. sheesh rough day.")
-//                        return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
-//                    }
+//                resolver.fulfill((envelopes: envelopes, more: more))
+//            },
+//            failure: { (_: URLSessionDataTask?, error: Error?) in
+//                guard let error = error else {
+//                    Logger.error("error was surpringly nil. sheesh rough day.")
+//                    return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
+//                }
 //
-//                    resolver.reject(error)
-//            })
-            // ========
-        }
+//                resolver.reject(error)
+//        })
+        // ========
     }
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {
