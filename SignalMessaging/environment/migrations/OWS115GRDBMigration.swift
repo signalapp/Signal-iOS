@@ -197,18 +197,6 @@ extension OWS115GRDBMigration {
         }
     }
 
-    private func migrateKeyValueStore<T>(label: String, finder: LegacyKeyValueFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws {
-        try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
-            var recordCount = 0
-            try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
-                recordCount += 1
-                finder.store.setObject(legacyObject, key: legacyKey, transaction: transaction.asAnyWrite)
-                memorySampler.sample()
-            }
-            Logger.info("completed with recordCount: \(recordCount)")
-        }
-    }
-
     private func migrateMappedCollectionObjects<SourceType, DestinationType>(label: String,
                                                                              finder: LegacyObjectFinder<SourceType>,
                                                                              memorySamplerRatio: Float,
