@@ -26,9 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSNetworkManager;
 @class TSSocketManager;
 @class YapDatabaseConnection;
-
-// Loki
-@class LKFriendRequestExpirationJob;
+@class LKFriendRequestExpirationJob; // Loki
 
 @protocol ContactsManagerProtocol;
 @protocol NotificationsProtocol;
@@ -113,10 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, readonly) YapDatabaseConnection *sessionStoreDBConnection;
 @property (atomic, readonly) YapDatabaseConnection *migrationDBConnection;
 @property (atomic, readonly) YapDatabaseConnection *analyticsDBConnection;
-
-// Loki
-@property (nonatomic, readonly) LKFriendRequestExpirationJob *lokiFriendRequestExpireJob;
-- (void)setLokiFriendRequestExpireJob:(LKFriendRequestExpirationJob *)lokiFriendRequestExpireJob;
+@property (nonatomic) LKFriendRequestExpirationJob *lokiFriendRequestExpirationJob; // Loki
 
 - (BOOL)isComplete;
 

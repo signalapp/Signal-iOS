@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
     _incomingMessageFinder = [[OWSIncomingMessageFinder alloc] initWithPrimaryStorage:primaryStorage];
     
     // Loki: Add observation for new session
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(onNewSessionAdopted:) name:kNSNotificationName_SessionAdopted object:nil];
+    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleNewSessionAdopted:) name:kNSNotificationName_SessionAdopted object:nil];
 
     OWSSingletonAssert();
 
@@ -1013,15 +1013,15 @@ NS_ASSUME_NONNULL_BEGIN
      * ================
      */
 
-    /// Loki: Archive all our sessions
-    /// Ref: SignalServiceKit/Loki/Docs/SessionReset.md
+    // Loki: Archive all our session
+    // Ref: SignalServiceKit/Loki/Docs/SessionReset.md
     [self.primaryStorage archiveAllSessionsForContact:envelope.source protocolContext:transaction];
     
-    /// Loki: Set our session reset state
+    // Loki: Set our session reset state
     thread.sessionResetState = TSContactThreadSessionResetStateRequestReceived;
     [thread saveWithTransaction:transaction];
     
-    /// Loki: Send an empty message to trigger the session reset code for both parties
+    // Loki: Send an empty message to trigger the session reset code for both parties
     LKEphemeralMessage *emptyMessage = [LKEphemeralMessage createEmptyOutgoingMessageInThread:thread];
     [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
 
@@ -1699,7 +1699,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 # pragma mark - Loki Session
 
-- (void)onNewSessionAdopted:(NSNotification *)notification {
+- (void)handleNewSessionAdopted:(NSNotification *)notification {
     NSString *pubKey = notification.userInfo[kNSNotificationKey_ContactPubKey];
     if (pubKey.length == 0) { return; }
     

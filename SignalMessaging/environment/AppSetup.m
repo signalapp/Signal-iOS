@@ -127,8 +127,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                               attachmentDownloads:attachmentDownloads]];
         
         // Loki
-        LKFriendRequestExpirationJob *lokiFriendRequestExpireJob = [[LKFriendRequestExpirationJob alloc] initWithPrimaryStorage:primaryStorage];
-        SSKEnvironment.shared.lokiFriendRequestExpireJob = lokiFriendRequestExpireJob;
+        LKFriendRequestExpirationJob *lokiFriendRequestExpirationJob = [[LKFriendRequestExpirationJob alloc] initWithPrimaryStorage:primaryStorage];
+        SSKEnvironment.shared.lokiFriendRequestExpirationJob = lokiFriendRequestExpirationJob;
 
         appSpecificSingletonBlock();
 
