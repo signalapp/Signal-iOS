@@ -37,10 +37,10 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
 
 - (SessionRecord *)loadSession:(NSString *)contactIdentifier
                       deviceId:(int)deviceId
-               protocolContext:(nullable id)protocolContext
+               protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
-    SDSAnyWriteTransaction *transaction = protocolContext;
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
+    SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
 
     return [self loadSession:contactIdentifier deviceId:deviceId transaction:transaction];
 }
@@ -69,10 +69,11 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
-- (NSArray *)subDevicesSessions:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
+- (NSArray *)subDevicesSessions:(NSString *)contactIdentifier
+                protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
-    SDSAnyWriteTransaction *transaction = protocolContext;
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
+    SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
 
     return [self subDevicesSessions:contactIdentifier transaction:transaction];
 }
@@ -93,10 +94,10 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
 - (void)storeSession:(NSString *)contactIdentifier
             deviceId:(int)deviceId
              session:(SessionRecord *)session
-     protocolContext:protocolContext
+     protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
-    SDSAnyWriteTransaction *transaction = protocolContext;
+    SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
 
     [self storeSession:contactIdentifier deviceId:deviceId session:session transaction:transaction];
 }
@@ -130,10 +131,10 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
 
 - (BOOL)containsSession:(NSString *)contactIdentifier
                deviceId:(int)deviceId
-        protocolContext:(nullable id)protocolContext
+        protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
-    SDSAnyWriteTransaction *transaction = protocolContext;
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
+    SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
 
     return [self containsSession:contactIdentifier deviceId:deviceId transaction:transaction];
 }
@@ -150,11 +151,11 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
 
 - (void)deleteSessionForContact:(NSString *)contactIdentifier
                        deviceId:(int)deviceId
-                protocolContext:(nullable id)protocolContext
+                protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
 
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
-    SDSAnyWriteTransaction *transaction = protocolContext;
+    SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
 
     [self deleteSessionForContact:contactIdentifier deviceId:deviceId transaction:transaction];
 }
@@ -178,10 +179,11 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     [self.keyValueStore setObject:[dictionary copy] key:contactIdentifier transaction:transaction];
 }
 
-- (void)deleteAllSessionsForContact:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
+- (void)deleteAllSessionsForContact:(NSString *)contactIdentifier
+                    protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
-    SDSAnyWriteTransaction *transaction = protocolContext;
+    SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
 
     [self deleteAllSessionsForContact:contactIdentifier transaction:transaction];
 }
@@ -195,10 +197,11 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     [self.keyValueStore removeValueForKey:contactIdentifier transaction:transaction];
 }
 
-- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
+- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier
+                     protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
-    SDSAnyWriteTransaction *transaction = protocolContext;
+    SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
 
     [self archiveAllSessionsForContact:contactIdentifier transaction:transaction];
 }

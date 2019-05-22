@@ -51,35 +51,35 @@ extern NSString *const OWSPrimaryStorageSessionStoreCollection;
 
 - (SessionRecord *)loadSession:(NSString *)contactIdentifier
                       deviceId:(int)deviceId
-               protocolContext:(nullable id)protocolContext
+               protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 - (NSArray *)subDevicesSessions:(NSString *)contactIdentifier
-                protocolContext:(nullable id)protocolContext
+                protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 - (void)storeSession:(NSString *)contactIdentifier
             deviceId:(int)deviceId
              session:(SessionRecord *)session
-     protocolContext:(nullable id)protocolContext
+     protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 - (BOOL)containsSession:(NSString *)contactIdentifier
                deviceId:(int)deviceId
-        protocolContext:(nullable id)protocolContext
+        protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 - (void)deleteSessionForContact:(NSString *)contactIdentifier
                        deviceId:(int)deviceId
-                protocolContext:(nullable id)protocolContext
+                protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 - (void)deleteAllSessionsForContact:(NSString *)contactIdentifier
-                    protocolContext:(nullable id)protocolContext
+                    protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 - (void)archiveAllSessionsForContact:(NSString *)contactIdentifier
-                     protocolContext:(nullable id)protocolContext
+                     protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 @end

@@ -93,28 +93,28 @@ extern const NSUInteger kStoredIdentityKeyLength;
 
 #pragma mark - Deprecated IdentityStore methods
 
-- (nullable ECKeyPair *)identityKeyPair:(nullable id)protocolContext
+- (nullable ECKeyPair *)identityKeyPair:(nullable id<SPKProtocolWriteContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
-- (int)localRegistrationId:(nullable id)protocolContext
+- (int)localRegistrationId:(nullable id<SPKProtocolWriteContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey
                recipientId:(NSString *)recipientId
-           protocolContext:(nullable id)protocolContext
+           protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 - (BOOL)isTrustedIdentityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
                    direction:(TSMessageDirection)direction
-             protocolContext:(nullable id)protocolContext
+             protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
-                               protocolContext:(nullable id)protocolContext
+                               protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
     DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 @end
