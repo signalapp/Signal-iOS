@@ -47,7 +47,9 @@ import PromiseKit
     }
     
     private static func getRandomSnode() -> Promise<Target> {
-        return Promise<Target> { _ in notImplemented() } // TODO: Implement
+        return Promise<Target> { seal in
+            seal.fulfill(Target(address: "http://13.238.53.205", port: 8080)) // TODO: For debugging purposes
+        }
     }
     
     private static func getSwarm(for hexEncodedPublicKey: String) -> Promise<[Target]> {
@@ -106,11 +108,16 @@ import PromiseKit
     // The parsing utilities below use a best attempt approach to parsing; they warn for parsing failures but don't throw exceptions.
     
     private static func parseTargets(from rawResponse: Any) -> [Target] {
-        guard let json = rawResponse as? JSON, let addresses = json["snodes"] as? [String] else {
-            Logger.warn("[Loki] Failed to parse targets from: \(rawResponse).")
-            return []
-        }
-        return addresses.map { Target(address: $0, port: defaultSnodePort) }
+        // TODO: For debugging purposes
+        // ========
+        let target = Target(address: "http://13.238.53.205", port: 8080)
+        return Array(repeating: target, count: 3)
+        // ========
+//        guard let json = rawResponse as? JSON, let addresses = json["snodes"] as? [String] else {
+//            Logger.warn("[Loki] Failed to parse targets from: \(rawResponse).")
+//            return []
+//        }
+//        return addresses.map { Target(address: $0, port: defaultSnodePort) }
     }
     
     private static func updateLastMessageHashValueIfPossible(for target: Target, from rawMessages: [JSON]) {
