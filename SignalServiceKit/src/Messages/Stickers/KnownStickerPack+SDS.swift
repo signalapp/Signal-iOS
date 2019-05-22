@@ -135,7 +135,10 @@ extension KnownStickerPack {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
-    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+    // This method is private; we should never use it directly.
+    // Instead, use anyUpdate(transaction:block:), so that we
+    // use the "update with" pattern.
+    private func anyUpdate(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
