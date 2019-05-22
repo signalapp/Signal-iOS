@@ -1501,7 +1501,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         messageDict = [self throws_encryptedMessageForMessageSend:messageSend
                                                                          deviceId:deviceId
                                                                         plainText:plainText
-                                                                      transaction:transaction];
+                                                                      transaction:transaction.asAnyWrite];
                     } @catch (NSException *exception) {
                         encryptionException = exception;
                     }
@@ -1598,7 +1598,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                       deviceId:[deviceId intValue]];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             @try {
-                [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
+                [builder throws_processPrekeyBundle:bundle protocolContext:transaction.asAnyWrite];
             } @catch (NSException *caughtException) {
                 exception = caughtException;
             }
@@ -1670,7 +1670,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (nullable NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend
                                                         deviceId:(NSNumber *)deviceId
                                                        plainText:(NSData *)plainText
-                                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                                     transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
@@ -1682,9 +1682,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *recipientId = recipient.recipientId;
     OWSAssertDebug(recipientId.length > 0);
 
-    if (![self.sessionStore containsSession:recipientId
-                                   deviceId:[deviceId intValue]
-                                transaction:transaction.asAnyWrite]) {
+    if (![self.sessionStore containsSession:recipientId deviceId:[deviceId intValue] transaction:transaction]) {
         NSString *missingSessionException = @"missingSessionException";
         OWSRaiseException(missingSessionException,
             @"Unexpectedly missing session for recipient: %@, device: %@",
