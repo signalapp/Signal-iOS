@@ -1154,6 +1154,12 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return [result copy];
 }
 
+- (uint)ttl {
+    // Time to live for all messages should be 1 day
+    // TODO: Change this to return a value that the user chose
+    return 1 * kDayInterval;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

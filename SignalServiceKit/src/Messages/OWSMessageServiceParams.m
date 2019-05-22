@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
     _content = [content base64EncodedString];
     _silent = isSilent;
     _online = isOnline;
+    _ttl = 0;
 
     return self;
 }

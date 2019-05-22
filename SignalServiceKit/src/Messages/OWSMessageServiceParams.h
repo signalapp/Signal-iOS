@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *content;
 @property (nonatomic, readonly) BOOL silent;
 @property (nonatomic, readonly) BOOL online;
+@property (nonatomic) uint ttl;
 
 - (instancetype)initWithType:(TSWhisperMessageType)type
                  recipientId:(NSString *)destination

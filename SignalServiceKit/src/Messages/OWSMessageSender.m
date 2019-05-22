@@ -1885,6 +1885,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                              isSilent:isSilent
                                              isOnline:isOnline
                                        registrationId:[cipher throws_remoteRegistrationId:transaction]];
+    
+    // Loki: Add the ttl to the message params
+    messageParams.ttl = message.ttl;
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];

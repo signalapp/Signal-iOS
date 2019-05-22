@@ -1,11 +1,17 @@
 #import "LKFriendRequestMessage.h"
 #import "OWSPrimaryStorage+Loki.h"
+#import "NSDate+OWS.h"
 #import "SignalRecipient.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @implementation LKFriendRequestMessage
 
--(BOOL)isFriendRequest { return YES; }
+- (BOOL)isFriendRequest { return YES; }
+
+- (uint)ttl {
+    // Friend requests should stay for the longest on the storage server
+    return 4 * kDayInterval;
+}
 
 - (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = [super contentBuilder:recipient];
