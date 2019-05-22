@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)removePreKeyBundleForContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-# pragma mark - Last Hash
+# pragma mark - Last Hash Handling
 
 /**
  Get the last message hash for the given service node.
@@ -94,6 +94,9 @@ NS_ASSUME_NONNULL_BEGIN
  @param transaction A read write transaction.
  */
 - (void)setLastMessageHashForServiceNode:(NSString *)serviceNode hash:(NSString *)hash expiresAt:(u_int64_t)expiresAt transaction:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(setLastMessageHash(forServiceNode:hash:expiresAt:transaction:));
+
+- (NSSet<NSString *> *)getReceivedMessageHashesWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (void)setReceivedMessageHashes:(NSSet<NSString *> *)receivedMessageHashes withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

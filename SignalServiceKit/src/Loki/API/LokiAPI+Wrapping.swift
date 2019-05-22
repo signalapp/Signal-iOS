@@ -35,22 +35,6 @@ extension LokiAPI {
         }
     }
     
-    /// Unwrap data sent by the storage server.
-    ///
-    /// - Parameter data: The data from the storage server (not base 64 encoded).
-    /// - Returns: An `SSKProtoEnvelope` object.
-    /// - Throws: A `WrappingError` if something went wrong.
-    static func unwrap(data: Data) throws -> SSKProtoEnvelope {
-        do {
-            let webSocketMessage = try WebSocketProtoWebSocketMessage.parseData(data)
-            let envelope = webSocketMessage.request!.body!
-            return try SSKProtoEnvelope.parseData(envelope)
-        } catch let error {
-            owsFailDebug("[Loki] Failed to unwrap data: \(error).")
-            throw WrappingError.failedToUnwrapData
-        }
-    }
-    
     /// Wrap an `SSKProtoEnvelope` in a `WebSocketProtoWebSocketMessage`.
     private static func createWebSocketMessage(around envelope: SSKProtoEnvelope) throws -> WebSocketProtoWebSocketMessage {
         do {
@@ -89,6 +73,22 @@ extension LokiAPI {
         } catch let error {
             owsFailDebug("[Loki] Failed to wrap message in envelope: \(error).")
             throw WrappingError.failedToWrapMessageInEnvelope
+        }
+    }
+    
+    /// Unwrap data sent by the storage server.
+    ///
+    /// - Parameter data: The data from the storage server (not base 64 encoded).
+    /// - Returns: An `SSKProtoEnvelope` object.
+    /// - Throws: A `WrappingError` if something went wrong.
+    static func unwrap(data: Data) throws -> SSKProtoEnvelope {
+        do {
+            let webSocketMessage = try WebSocketProtoWebSocketMessage.parseData(data)
+            let envelope = webSocketMessage.request!.body!
+            return try SSKProtoEnvelope.parseData(envelope)
+        } catch let error {
+            owsFailDebug("[Loki] Failed to unwrap data: \(error).")
+            throw WrappingError.failedToUnwrapData
         }
     }
 }

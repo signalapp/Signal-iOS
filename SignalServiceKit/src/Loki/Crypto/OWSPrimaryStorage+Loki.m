@@ -10,11 +10,14 @@
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
+#import "NSObject+Casting.h"
 
 #define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
-#define LokiPreKeyContactCollection @"LokiPreKeyContactCollection"
-#define LokiPreKeyBundleCollection @"LokiPreKeyBundleCollection"
-#define LokiLastHashCollection @"LokiLastHashCollection"
+#define LKPreKeyContactCollection @"LKPreKeyContactCollection"
+#define LKPreKeyBundleCollection @"LKPreKeyBundleCollection"
+#define LKLastMessageHashCollection @"LKLastMessageHashCollection"
+#define LKReceivedMessageHashesKey @"LKReceivedMessageHashesKey"
+#define LKReceivedMessageHashesCollection @"LKReceivedMessageHashesCollection"
 
 @implementation OWSPrimaryStorage (Loki)
 
@@ -31,13 +34,13 @@
 # pragma mark - Prekey for Contact
 
 - (BOOL)hasPreKeyForContact:(NSString *)pubKey {
-    int preKeyId = [self.dbReadWriteConnection intForKey:pubKey inCollection:LokiPreKeyContactCollection];
+    int preKeyId = [self.dbReadWriteConnection intForKey:pubKey inCollection:LKPreKeyContactCollection];
     return preKeyId > 0;
 }
 
 - (PreKeyRecord *_Nullable)getPreKeyForContact:(NSString *)pubKey transaction:(YapDatabaseReadTransaction *)transaction {
     OWSAssertDebug(pubKey.length > 0);
-    int preKeyId = [transaction intForKey:pubKey inCollection:LokiPreKeyContactCollection];
+    int preKeyId = [transaction intForKey:pubKey inCollection:LKPreKeyContactCollection];
     
     // If we don't have an id then return nil
     if (preKeyId <= 0) { return nil; }
@@ -48,7 +51,7 @@
 
 - (PreKeyRecord *)getOrCreatePreKeyForContact:(NSString *)pubKey {
     OWSAssertDebug(pubKey.length > 0);
-    int preKeyId = [self.dbReadWriteConnection intForKey:pubKey inCollection:LokiPreKeyContactCollection];
+    int preKeyId = [self.dbReadWriteConnection intForKey:pubKey inCollection:LKPreKeyContactCollection];
     
     // If we don't have an id then generate and store a new one
     if (preKeyId <= 0) {
@@ -73,7 +76,7 @@
     
     OWSAssertDebug(records.count > 0);
     PreKeyRecord *record = records.firstObject;
-    [self.dbReadWriteConnection setInt:record.Id forKey:pubKey inCollection:LokiPreKeyContactCollection];
+    [self.dbReadWriteConnection setInt:record.Id forKey:pubKey inCollection:LKPreKeyContactCollection];
     
     return record;
 }
@@ -107,23 +110,23 @@
 }
 
 - (PreKeyBundle *_Nullable)getPreKeyBundleForContact:(NSString *)pubKey {
-    return [self.dbReadConnection preKeyBundleForKey:pubKey inCollection:LokiPreKeyBundleCollection];
+    return [self.dbReadConnection preKeyBundleForKey:pubKey inCollection:LKPreKeyBundleCollection];
 }
 
 - (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
     [transaction setObject:bundle
                     forKey:pubKey
-              inCollection:LokiPreKeyBundleCollection];
+              inCollection:LKPreKeyBundleCollection];
 }
 
 - (void)removePreKeyBundleForContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [transaction removeObjectForKey:pubKey inCollection:LokiPreKeyBundleCollection];
+    [transaction removeObjectForKey:pubKey inCollection:LKPreKeyBundleCollection];
 }
 
 # pragma mark - Last Hash
 
 - (NSString *_Nullable)getLastMessageHashForServiceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    NSDictionary *_Nullable dict = [transaction objectForKey:serviceNode inCollection:LokiLastHashCollection];
+    NSDictionary *_Nullable dict = [transaction objectForKey:serviceNode inCollection:LKLastMessageHashCollection];
     if (!dict) { return nil; }
     
     NSString *_Nullable hash = dict[@"hash"];
@@ -142,15 +145,20 @@
 }
 
 - (void)setLastMessageHashForServiceNode:(NSString *)serviceNode hash:(NSString *)hash expiresAt:(u_int64_t)expiresAt transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    NSDictionary *dict = @{
-                           @"hash": hash,
-                           @"expiresAt": @(expiresAt)
-                           };
-    [transaction setObject:dict forKey:serviceNode inCollection:LokiLastHashCollection];
+    NSDictionary *dict = @{ @"hash" : hash, @"expiresAt": @(expiresAt) };
+    [transaction setObject:dict forKey:serviceNode inCollection:LKLastMessageHashCollection];
 }
 
 - (void)removeLastMessageHashForServiceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [transaction removeObjectForKey:serviceNode inCollection:LokiLastHashCollection];
+    [transaction removeObjectForKey:serviceNode inCollection:LKLastMessageHashCollection];
+}
+
+- (NSSet<NSString *> *)getReceivedMessageHashesWithTransaction:(YapDatabaseReadTransaction *)transaction {
+    return (NSSet *)[[transaction objectForKey:LKReceivedMessageHashesKey inCollection:LKReceivedMessageHashesCollection] as:NSSet.class];
+}
+
+- (void)setReceivedMessageHashes:(NSSet<NSString *> *)receivedMessageHashes withTransaction:(YapDatabaseReadWriteTransaction *)transaction {
+    [transaction setObject:receivedMessageHashes forKey:LKReceivedMessageHashesKey inCollection:LKReceivedMessageHashesCollection];
 }
 
 @end
