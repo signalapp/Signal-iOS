@@ -1,6 +1,5 @@
 
-public class LokiMessageWrapper {
-    private init() {}
+public enum LokiMessageWrapper {
     
     public enum WrappingError : LocalizedError {
         case failedToWrapData
@@ -82,7 +81,7 @@ public class LokiMessageWrapper {
     /// - Parameter data: The data from the storage server (not base 64 encoded).
     /// - Returns: An `SSKProtoEnvelope` object.
     /// - Throws: A `WrappingError` if something went wrong.
-    static func unwrap(data: Data) throws -> SSKProtoEnvelope {
+    public static func unwrap(data: Data) throws -> SSKProtoEnvelope {
         do {
             let webSocketMessage = try WebSocketProtoWebSocketMessage.parseData(data)
             let envelope = webSocketMessage.request!.body!

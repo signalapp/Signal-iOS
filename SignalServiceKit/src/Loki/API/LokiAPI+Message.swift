@@ -35,12 +35,8 @@ public extension LokiAPI {
                         let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage, timestamp: timestamp)
                         let data = wrappedMessage.base64EncodedString()
                         let destination = signalMessage["destination"] as! String
-                        
                         var ttl = LokiAPI.defaultMessageTTL
-                        if let messageTTL = signalMessage["ttl"] as? UInt, messageTTL > 0 {
-                            ttl = UInt64(messageTTL)
-                        }
-                        
+                        if let messageTTL = signalMessage["ttl"] as? UInt, messageTTL > 0 { ttl = UInt64(messageTTL) }
                         if isPoWRequired {
                             // The storage server takes a time interval in milliseconds
                             let now = NSDate.ows_millisecondTimeStamp()

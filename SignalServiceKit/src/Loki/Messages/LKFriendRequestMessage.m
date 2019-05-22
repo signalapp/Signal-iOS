@@ -8,10 +8,7 @@
 
 - (BOOL)isFriendRequest { return YES; }
 
-- (uint)ttl {
-    // Friend requests should stay for the longest on the storage server
-    return 4 * kDayInterval;
-}
+- (uint)ttl { return 4 * kDayInterval; } // Friend requests should stay for the longest on the storage server
 
 - (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = [super contentBuilder:recipient];

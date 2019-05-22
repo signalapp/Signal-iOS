@@ -63,12 +63,7 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
-
-@end
-
-@interface AppDelegate ()
-
-@property (nonatomic) LokiP2PServer *lokiP2PServer;
+@property (nonatomic) LKP2PServer *lokiP2PServer; // Loki
 
 @end
 
@@ -194,9 +189,7 @@ static NSTimeInterval launchStartedAt;
 
     [DDLog flushLog];
     
-    if (_lokiP2PServer) {
-        [_lokiP2PServer stop];
-    }
+    if (self.lokiP2PServer) { [self.lokiP2PServer stop]; }
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -319,20 +312,21 @@ static NSTimeInterval launchStartedAt;
     [OWSAnalytics appLaunchDidBegin];
     
     // Loki
-    _lokiP2PServer = [LokiP2PServer new];
+    self.lokiP2PServer = [LKP2PServer new];
     
     // We try to bind to 8081, if we can't then we just fallback to any random port
-    NSArray *ports = @[@8081, @0];
+    NSArray *ports = @[ @8081, @0 ];
     for (NSNumber *port in ports) {
-        if (_lokiP2PServer.isRunning) { break; }
-        if ([_lokiP2PServer startOnPort:port.unsignedIntegerValue]) {
-            OWSLogInfo(@"[Loki P2P Server]: Started server at %@", _lokiP2PServer.serverURL);
+        if (self.lokiP2PServer.isRunning) { break; }
+        BOOL isStarted = [self.lokiP2PServer startOnPort:port.unsignedIntegerValue];
+        if (isStarted) {
+            OWSLogInfo(@"[Loki] Started server at %@.", self.lokiP2PServer.serverURL);
             break;
         }
     }
     
-    if (!_lokiP2PServer.isRunning) {
-        OWSLogWarn(@"[Loki P2P Server]: Failed to start loki P2P server");
+    if (!self.lokiP2PServer.isRunning) {
+        OWSLogWarn(@"[Loki] Failed to start P2P server.");
     }
   
     return YES;

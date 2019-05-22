@@ -1,14 +1,13 @@
 import GCDWebServer
 
-// Convenience functions
-
-fileprivate extension GCDWebServerResponse {
+private extension GCDWebServerResponse {
+    
     convenience init<E: RawRepresentable>(statusCode: E) where E.RawValue == Int {
         self.init(statusCode: statusCode.rawValue)
     }
 }
 
-fileprivate extension GCDWebServerDataRequest {
+private extension GCDWebServerDataRequest {
     var truncatedContentType: String? {
         guard let contentType = contentType else { return nil }
         guard let substring = contentType.split(separator: ";").first else { return contentType }
@@ -17,24 +16,25 @@ fileprivate extension GCDWebServerDataRequest {
     
     // GCDWebServerDataRequest already provides this implementation
     // However it will abort when running in DEBUG, we don't want that so we just override it with a version which doesn't abort
-    var jsonObject: [String: Any]? {
-        let acceptedMimeTypes = ["application/json", "text/json", "text/javascript"]
+    var jsonObject: JSON? {
+        let acceptedMimeTypes = [ "application/json", "text/json", "text/javascript" ]
         guard let mimeType = truncatedContentType, acceptedMimeTypes.contains(mimeType) else { return nil }
         
         do {
             let object = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-            return object as? [String: Any]
+            return object as? JSON
         } catch let error {
-            Logger.debug("[Loki P2P Server] Failed to serialize json: \(error)")
+            Logger.debug("[Loki] Failed to serialize JSON: \(error).")
         }
         
         return nil
     }
 }
 
-@objc class LokiP2PServer : NSObject {
+@objc(LKP2PServer)
+final class LokiP2PServer : NSObject {
     
-    fileprivate enum StatusCode: Int {
+    private enum StatusCode : Int {
         case ok = 200
         case badRequest = 400
         case notFound = 404
@@ -50,7 +50,7 @@ fileprivate extension GCDWebServerDataRequest {
             return GCDWebServerResponse(statusCode: StatusCode.methodNotAllowed)
         }
         
-        let invalidMethods = ["GET", "PUT", "DELETE"]
+        let invalidMethods = [ "GET", "PUT", "DELETE" ]
         for method in invalidMethods {
             webServer.addDefaultHandler(forMethod: method, request: GCDWebServerRequest.self, processBlock: invalidMethodProcessBlock)
         }
@@ -87,13 +87,8 @@ fileprivate extension GCDWebServerDataRequest {
         return webServer
     }()
     
-    @objc public var serverURL: URL? {
-        return webServer.serverURL
-    }
-    
-    @objc public var isRunning: Bool {
-        return webServer.isRunning
-    }
+    @objc public var serverURL: URL? { return webServer.serverURL }
+    @objc public var isRunning: Bool { return webServer.isRunning }
     
     @objc @discardableResult func start(onPort port: UInt) -> Bool  {
         guard !webServer.isRunning else { return false }
@@ -101,7 +96,5 @@ fileprivate extension GCDWebServerDataRequest {
         return webServer.isRunning
     }
     
-    @objc func stop() {
-        webServer.stop()
-    }
+    @objc func stop() { webServer.stop() }
 }
