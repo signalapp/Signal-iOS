@@ -11,6 +11,7 @@ import SignalCoreKit
 
 @objc
 public enum SDSRecordType: UInt {
+    case experienceUpgrade = 54
     case installedSticker = 24
     case knownStickerPack = 29
     case _100RemoveTSRecipientsMigration = 40
