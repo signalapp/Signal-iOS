@@ -91,7 +91,11 @@ import PromiseKit
     
     // MARK: Public API (Obj-C)
     @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64, requiringPoW isPoWRequired: Bool) -> AnyPromise {
-        let promise = Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired).then(sendMessage)
+        let promise = Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired).then(sendMessage).mapValues { promise -> AnyPromise in
+            let anyPromise = AnyPromise(promise)
+            anyPromise.retainUntilComplete()
+            return anyPromise
+        }.map { Set($0) }
         let anyPromise = AnyPromise(promise)
         anyPromise.retainUntilComplete()
         return anyPromise
