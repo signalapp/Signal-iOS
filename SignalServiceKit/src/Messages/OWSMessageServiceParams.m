@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
                     isSilent:(BOOL)isSilent
                     isOnline:(BOOL)isOnline
               registrationId:(int)registrationId
+                         ttl:(uint)ttl
 {
     self = [super init];
 
@@ -36,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
     _content = [content base64EncodedString];
     _silent = isSilent;
     _online = isOnline;
+    _ttl = ttl;
 
     return self;
 }

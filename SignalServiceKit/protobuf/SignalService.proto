@@ -38,6 +38,10 @@ message Envelope {
   optional string serverGuid      = 9;
   // We may eventually want to make this required.
   optional uint64 serverTimestamp = 10;
+
+  // Loki: This field is only here as a helper
+  // It shouldn't be set when sending a message
+  optional bool isPtpMessage = 999;
 }
 
 message TypingMessage {

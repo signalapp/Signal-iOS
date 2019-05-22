@@ -80,6 +80,9 @@ public enum SSKProtoError: Error {
         if hasServerTimestamp {
             builder.setServerTimestamp(serverTimestamp)
         }
+        if hasIsPtpMessage {
+            builder.setIsPtpMessage(isPtpMessage)
+        }
         return builder
     }
 
@@ -130,6 +133,10 @@ public enum SSKProtoError: Error {
 
         @objc public func setServerTimestamp(_ valueParam: UInt64) {
             proto.serverTimestamp = valueParam
+        }
+
+        @objc public func setIsPtpMessage(_ valueParam: Bool) {
+            proto.isPtpMessage = valueParam
         }
 
         @objc public func build() throws -> SSKProtoEnvelope {
@@ -209,6 +216,13 @@ public enum SSKProtoError: Error {
     }
     @objc public var hasServerTimestamp: Bool {
         return proto.hasServerTimestamp
+    }
+
+    @objc public var isPtpMessage: Bool {
+        return proto.isPtpMessage
+    }
+    @objc public var hasIsPtpMessage: Bool {
+        return proto.hasIsPtpMessage
     }
 
     private init(proto: SignalServiceProtos_Envelope,

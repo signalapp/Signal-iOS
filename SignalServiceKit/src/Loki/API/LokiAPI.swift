@@ -148,7 +148,7 @@ import PromiseKit
                 Logger.warn("[Loki] Failed to decode data for message: \(rawMessage).")
                 return nil
             }
-            guard let envelope = try? unwrap(data: data) else {
+            guard let envelope = try? LokiMessageWrapper.unwrap(data: data) else {
                 Logger.warn("[Loki] Failed to unwrap data for message: \(rawMessage).")
                 return nil
             }

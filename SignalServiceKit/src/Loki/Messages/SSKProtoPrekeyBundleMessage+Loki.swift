@@ -1,7 +1,7 @@
 
 @objc public extension SSKProtoPrekeyBundleMessage {
     
-    @objc public class func builder(fromPreKeyBundle preKeyBundle: PreKeyBundle) -> SSKProtoPrekeyBundleMessageBuilder {
+    @objc public static func builder(fromPreKeyBundle preKeyBundle: PreKeyBundle) -> SSKProtoPrekeyBundleMessageBuilder {
         let builder = self.builder()
         
         builder.setIdentityKey(preKeyBundle.identityKey)

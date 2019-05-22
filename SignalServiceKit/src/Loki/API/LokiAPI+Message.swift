@@ -7,7 +7,7 @@ public extension LokiAPI {
         let destination: String
         /// The content of the message.
         let data: LosslessStringConvertible
-        /// The time to live for the message.
+        /// The time to live for the message in seconds.
         let ttl: UInt64
         /// When the proof of work was calculated, if applicable.
         ///
@@ -32,10 +32,11 @@ public extension LokiAPI {
             return Promise<Message> { seal in
                 DispatchQueue.global(qos: .default).async {
                     do {
-                        let wrappedMessage = try wrap(message: signalMessage, timestamp: timestamp)
+                        let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage, timestamp: timestamp)
                         let data = wrappedMessage.base64EncodedString()
                         let destination = signalMessage["destination"] as! String
-                        let ttl = LokiAPI.defaultMessageTTL
+                        var ttl = LokiAPI.defaultMessageTTL
+                        if let messageTTL = signalMessage["ttl"] as? UInt, messageTTL > 0 { ttl = UInt64(messageTTL) }
                         if isPoWRequired {
                             // The storage server takes a time interval in milliseconds
                             let now = NSDate.ows_millisecondTimeStamp()
