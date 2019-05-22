@@ -1,6 +1,13 @@
 import GCDWebServer
 
 // Convenience functions
+
+fileprivate extension GCDWebServerResponse {
+    convenience init<E: RawRepresentable>(statusCode: E) where E.RawValue == Int {
+        self.init(statusCode: statusCode.rawValue)
+    }
+}
+
 fileprivate extension GCDWebServerDataRequest {
     var truncatedContentType: String? {
         guard let contentType = contentType else { return nil }
@@ -27,7 +34,7 @@ fileprivate extension GCDWebServerDataRequest {
 
 @objc class LokiP2PServer : NSObject {
     
-    private enum StatusCode: Int {
+    fileprivate enum StatusCode: Int {
         case ok = 200
         case badRequest = 400
         case notFound = 404
@@ -40,7 +47,7 @@ fileprivate extension GCDWebServerDataRequest {
         
          // Don't allow specific methods
         let invalidMethodProcessBlock: (GCDWebServerRequest) -> GCDWebServerResponse? = { _ in
-            return GCDWebServerResponse(statusCode: StatusCode.methodNotAllowed.rawValue)
+            return GCDWebServerResponse(statusCode: StatusCode.methodNotAllowed)
         }
         
         let invalidMethods = ["GET", "PUT", "DELETE"]
@@ -50,27 +57,31 @@ fileprivate extension GCDWebServerDataRequest {
         
         // By default send 404 for any path
         webServer.addDefaultHandler(forMethod: "POST", request: GCDWebServerRequest.self, processBlock: { _ in
-            return GCDWebServerResponse(statusCode: StatusCode.notFound.rawValue)
+            return GCDWebServerResponse(statusCode: StatusCode.notFound)
         })
         
         // Handle our specific storage path
-        webServer.addHandler(forMethod: "POST", path: "/v1/storage_rpc", request: GCDWebServerDataRequest.self, asyncProcessBlock: { (request, completionBlock) in
+        webServer.addHandler(forMethod: "POST", path: "/v1/storage_rpc", request: GCDWebServerDataRequest.self, processBlock: { request in
             // Make sure we were sent a good request
             guard let dataRequest = request as? GCDWebServerDataRequest, let json = dataRequest.jsonObject else {
-                completionBlock(GCDWebServerResponse(statusCode: StatusCode.badRequest.rawValue))
-                return
+                return GCDWebServerResponse(statusCode: StatusCode.badRequest)
             }
             
             // Only allow the store method
             guard let method = json["method"] as? String, method == "store" else {
-                completionBlock(GCDWebServerResponse(statusCode: StatusCode.notFound.rawValue))
-                return
+                return GCDWebServerResponse(statusCode: StatusCode.notFound)
             }
             
-            // TODO: Decrypt message here
+            // Make sure we have the data
+            guard let params = json["params"] as? [String: String], let data = params["data"] else {
+                return GCDWebServerResponse(statusCode: StatusCode.badRequest)
+            }
             
-            let response = GCDWebServerResponse(statusCode: StatusCode.ok.rawValue)
-            completionBlock(response)
+            // Pass it off to the message handler
+            LokiP2PMessageHandler.shared.handleReceivedMessage(base64EncodedData: data)
+            
+            // Send a response back
+            return GCDWebServerResponse(statusCode: StatusCode.ok.rawValue)
         })
         
         return webServer

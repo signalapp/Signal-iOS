@@ -32,7 +32,7 @@ public extension LokiAPI {
             return Promise<Message> { seal in
                 DispatchQueue.global(qos: .default).async {
                     do {
-                        let wrappedMessage = try wrap(message: signalMessage, timestamp: timestamp)
+                        let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage, timestamp: timestamp)
                         let data = wrappedMessage.base64EncodedString()
                         let destination = signalMessage["destination"] as! String
                         let ttl = LokiAPI.defaultMessageTTL

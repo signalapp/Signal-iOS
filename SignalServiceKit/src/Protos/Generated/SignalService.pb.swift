@@ -119,6 +119,17 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `serverTimestamp`. Subsequent reads from it will return its default value.
   mutating func clearServerTimestamp() {self._serverTimestamp = nil}
 
+  /// Loki: This field is only here as a helper
+  /// It shouldn't be set when sending a message
+  var isPtpMessage: Bool {
+    get {return _isPtpMessage ?? false}
+    set {_isPtpMessage = newValue}
+  }
+  /// Returns true if `isPtpMessage` has been explicitly set.
+  var hasIsPtpMessage: Bool {return self._isPtpMessage != nil}
+  /// Clears the value of `isPtpMessage`. Subsequent reads from it will return its default value.
+  mutating func clearIsPtpMessage() {self._isPtpMessage = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum TypeEnum: SwiftProtobuf.Enum {
@@ -175,6 +186,7 @@ struct SignalServiceProtos_Envelope {
   fileprivate var _content: Data? = nil
   fileprivate var _serverGuid: String? = nil
   fileprivate var _serverTimestamp: UInt64? = nil
+  fileprivate var _isPtpMessage: Bool? = nil
 }
 
 #if swift(>=4.2)
@@ -437,6 +449,7 @@ struct SignalServiceProtos_LokiAddressMessage {
   // methods supported on all messages.
 
   /// The naming is a bit different from desktop because of swift auto generation
+  /// It doesn't like p2p much :(
   var ptpAddress: String {
     get {return _ptpAddress ?? String()}
     set {_ptpAddress = newValue}
@@ -2473,6 +2486,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     8: .same(proto: "content"),
     9: .same(proto: "serverGuid"),
     10: .same(proto: "serverTimestamp"),
+    999: .same(proto: "isPtpMessage"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2487,6 +2501,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 8: try decoder.decodeSingularBytesField(value: &self._content)
       case 9: try decoder.decodeSingularStringField(value: &self._serverGuid)
       case 10: try decoder.decodeSingularUInt64Field(value: &self._serverTimestamp)
+      case 999: try decoder.decodeSingularBoolField(value: &self._isPtpMessage)
       default: break
       }
     }
@@ -2520,6 +2535,9 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if let v = self._serverTimestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 10)
     }
+    if let v = self._isPtpMessage {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 999)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -2533,6 +2551,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._content != rhs._content {return false}
     if lhs._serverGuid != rhs._serverGuid {return false}
     if lhs._serverTimestamp != rhs._serverTimestamp {return false}
+    if lhs._isPtpMessage != rhs._isPtpMessage {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

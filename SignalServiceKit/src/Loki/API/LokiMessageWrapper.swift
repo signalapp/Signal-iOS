@@ -1,7 +1,8 @@
 
-extension LokiAPI {
+public class LokiMessageWrapper {
+    private init() {}
     
-    enum WrappingError : LocalizedError {
+    public enum WrappingError : LocalizedError {
         case failedToWrapData
         case failedToWrapMessageInEnvelope
         case failedToWrapEnvelopeInWebSocketMessage
@@ -25,7 +26,7 @@ extension LokiAPI {
     ///   - timestamp: The original message timestamp (`TSOutgoingMessage.timestamp`).
     /// - Returns: The wrapped message data.
     /// - Throws: A `WrappingError` if something went wrong.
-    static func wrap(message: SignalMessage, timestamp: UInt64) throws -> Data {
+    public static func wrap(message: SignalMessage, timestamp: UInt64) throws -> Data {
         do {
             let envelope = try createEnvelope(around: message, timestamp: timestamp)
             let webSocketMessage = try createWebSocketMessage(around: envelope)
@@ -40,7 +41,7 @@ extension LokiAPI {
     /// - Parameter data: The data from the storage server (not base 64 encoded).
     /// - Returns: An `SSKProtoEnvelope` object.
     /// - Throws: A `WrappingError` if something went wrong.
-    static func unwrap(data: Data) throws -> SSKProtoEnvelope {
+    public static func unwrap(data: Data) throws -> SSKProtoEnvelope {
         do {
             let webSocketMessage = try WebSocketProtoWebSocketMessage.parseData(data)
             let envelope = webSocketMessage.request!.body!
