@@ -123,12 +123,16 @@ public class StickerKeyboard: UIStackView {
             }
         }
 
-        let packItems = stickerPacks.map { (stickerPack) in
-            StickerHorizontalListView.Item(stickerInfo: stickerPack.coverInfo) { [weak self] in
+        var items = [StickerHorizontalListViewItem]()
+        items.append(StickerHorizontalListViewItemRecents { [weak self] in
+            self?.recentsButtonWasTapped()
+        })
+        items += stickerPacks.map { (stickerPack) in
+            StickerHorizontalListViewItemSticker(stickerInfo: stickerPack.coverInfo) { [weak self] in
                 self?.stickerPack = stickerPack
             }
         }
-        packsCollectionView.items = packItems
+        packsCollectionView.items = items
 
         guard stickerPacks.count > 0 else {
             stickerPack = nil
@@ -154,11 +158,6 @@ public class StickerKeyboard: UIStackView {
             }
             headerView.addArrangedSubview(searchButton)
         }
-
-        let recentsButton = buildHeaderButton("recent-outline-24") { [weak self] in
-            self?.recentsButtonWasTapped()
-        }
-        headerView.addArrangedSubview(recentsButton)
 
         packsCollectionView.backgroundColor = keyboardBackgroundColor
         headerView.addArrangedSubview(packsCollectionView)

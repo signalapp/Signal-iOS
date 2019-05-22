@@ -5,14 +5,44 @@
 import Foundation
 
 @objc
-public class StickerHorizontalListViewItem: NSObject {
-    let stickerInfo: StickerInfo
-    let selectedBlock: () -> Void
+public protocol StickerHorizontalListViewItem {
+    var view: UIView { get }
+    var selectedBlock: () -> Void { get }
+}
+
+// MARK: -
+
+@objc
+public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalListViewItem {
+    private let stickerInfo: StickerInfo
+    public let selectedBlock: () -> Void
 
     @objc
     public init(stickerInfo: StickerInfo, selectedBlock: @escaping () -> Void) {
         self.stickerInfo = stickerInfo
         self.selectedBlock = selectedBlock
+    }
+
+    public var view: UIView {
+        return StickerView(stickerInfo: stickerInfo)
+    }
+}
+
+// MARK: -
+
+@objc
+public class StickerHorizontalListViewItemRecents: NSObject, StickerHorizontalListViewItem {
+    public let selectedBlock: () -> Void
+
+    @objc
+    public init(selectedBlock: @escaping () -> Void) {
+        self.selectedBlock = selectedBlock
+    }
+
+    public var view: UIView {
+        let imageView = UIImageView()
+        imageView.setTemplateImageName("recent-outline-24", tintColor: Theme.secondaryColor)
+        return imageView
     }
 }
 
@@ -122,9 +152,9 @@ extension StickerHorizontalListView: UICollectionViewDataSource {
             return cell
         }
 
-        let stickerView = StickerView(stickerInfo: item.stickerInfo)
-        cell.contentView.addSubview(stickerView)
-        stickerView.autoPinEdgesToSuperviewEdges()
+        let itemView = item.view
+        cell.contentView.addSubview(itemView)
+        itemView.autoPinEdgesToSuperviewEdges()
 
         return cell
     }
