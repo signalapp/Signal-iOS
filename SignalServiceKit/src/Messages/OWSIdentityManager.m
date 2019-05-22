@@ -143,7 +143,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     return result;
 }
 
-- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId protocolContext:(nullable id)protocolContext
+- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
+                               protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
 {
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
 
@@ -171,7 +172,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 // This method should only be called from SignalProtocolKit, which doesn't know about YapDatabaseTransactions.
 // Whenever possible, prefer to call the strongly typed variant: `identityKeyPairWithTransaction:`.
-- (nullable ECKeyPair *)identityKeyPair:(nullable id)protocolContext
+- (nullable ECKeyPair *)identityKeyPair:(nullable id<SPKProtocolReadContext>)protocolContext
 {
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
 
@@ -193,7 +194,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
 }
 
-- (int)localRegistrationId:(nullable id)protocolContext
+- (int)localRegistrationId:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
     SDSAnyWriteTransaction *transaction = protocolContext;
@@ -221,7 +222,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey
                recipientId:(NSString *)recipientId
-           protocolContext:(nullable id)protocolContext
+           protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
     SDSAnyWriteTransaction *transaction = protocolContext;
@@ -314,7 +315,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                  identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
-             protocolContext:(nullable id)protocolContext
+             protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
 {
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
     OWSAssertDebug(recipientId.length > 0);
@@ -450,14 +451,14 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (BOOL)isTrustedIdentityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
                    direction:(TSMessageDirection)direction
-             protocolContext:(nullable id)protocolContext
+             protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
 {
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
     OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug(direction != TSMessageDirectionUnknown);
-    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
+    OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
 
-    SDSAnyWriteTransaction *transaction = protocolContext;
+    SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
 
     return [self isTrustedIdentityKey:identityKey recipientId:recipientId direction:direction transaction:transaction];
 }

@@ -290,7 +290,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: aa4b0a7bfac4053769ce3dfc8187c696ec045c6a
+    :commit: 9bdcbaade2d98af9196a8526cb9042fead1d3ced
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
     :commit: 9e5663baf4c2c7cb68ac4c0beb0423383c19a7fe
@@ -311,7 +311,7 @@ CHECKOUT OPTIONS:
     :commit: 947cf18a1dafab10fab1a91803d89c3937f34f2c
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: 56f28fc3a6e35d548d034ef7d0009f233ca0aa62
+    :commit: b2de463ac55fb2aee385ccece8becb1eb6df25b0
     :git: https://github.com/signalapp/SignalMetadataKit
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
