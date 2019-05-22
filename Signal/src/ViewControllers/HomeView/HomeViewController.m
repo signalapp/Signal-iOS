@@ -945,12 +945,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     __block NSArray<ExperienceUpgrade *> *unseenUpgrades;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        if (transaction.transitional_yapReadTransaction) {
-            unseenUpgrades = [ExperienceUpgradeFinder.sharedManager
-                allUnseenWithTransaction:transaction.transitional_yapReadTransaction];
-        } else {
-            unseenUpgrades = @[];
-        }
+        unseenUpgrades = [ExperienceUpgradeFinder.sharedManager allUnseenWithTransaction:transaction];
     }];
     return unseenUpgrades;
 }
