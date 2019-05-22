@@ -19,23 +19,7 @@ class DefaultStickerPack {
     }
 
     private class func parseAll() -> [StickerPackInfo: DefaultStickerPack] {
-        guard FeatureFlags.testBuiltInStickerPacks else {
-            return [:]
-        }
-
-        // TODO: Replace with production values.
-        let packs = [
-        DefaultStickerPack(packIdHex: "0123456789abcdef0123456789abcdef",
-        packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
-        shouldAutoInstall: true),
-        DefaultStickerPack(packIdHex: "aaaaaaaabbbbbbbbcccccccc00000000",
-                           packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
-                           shouldAutoInstall: false),
-        DefaultStickerPack(packIdHex: "aaaaaaaabbbbbbbbcccccccc11111111",
-                           packKeyHex: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
-                           shouldAutoInstall: true)
-        ].compactMap { $0 }
-
+        let packs = [DefaultStickerPack]()
         var result = [StickerPackInfo: DefaultStickerPack]()
         for pack in packs {
             result[pack.info] = pack
