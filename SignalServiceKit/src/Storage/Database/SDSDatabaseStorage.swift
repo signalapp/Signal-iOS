@@ -21,6 +21,11 @@ public class SDSDatabaseStorage: NSObject {
 
     // MARK: - Initialization / Setup
 
+    @objc
+    public var yapPrimaryStorage: OWSPrimaryStorage {
+        return yapStorage.storage
+    }
+
     lazy var yapStorage = type(of: self).createYapStorage()
 
     private var _grdbStorage: GRDBDatabaseStorageAdapter?
@@ -87,7 +92,8 @@ public class SDSDatabaseStorage: NSObject {
     }
 
     class func createYapStorage() -> YAPDBStorageAdapter {
-        return YAPDBStorageAdapter()
+        let yapPrimaryStorage = OWSPrimaryStorage.init(storage: ())
+        return YAPDBStorageAdapter(storage: yapPrimaryStorage)
     }
 
     // MARK: -
@@ -337,9 +343,7 @@ protocol SDSDatabaseStorageAdapter {
 }
 
 struct YAPDBStorageAdapter {
-    var storage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
-    }
+    let storage: OWSPrimaryStorage
 }
 
 extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {

@@ -52,8 +52,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
-    OWSPrimaryStorage *primaryStorage = [MockSSKEnvironment createPrimaryStorageForTests];
-    SDSDatabaseStorage *databaseStorage = [[SDSDatabaseStorage alloc] init];
+    SDSDatabaseStorage *databaseStorage = [SDSDatabaseStorage new];
+    OWSPrimaryStorage *primaryStorage = databaseStorage.yapPrimaryStorage;
+    [OWSPrimaryStorage protectFiles];
+
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
     TSNetworkManager *networkManager = [OWSFakeNetworkManager new];
@@ -124,13 +126,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.callMessageHandler = [OWSFakeCallMessageHandler new];
     self.notificationsManager = [NoopNotificationsManager new];
     return self;
-}
-
-+ (OWSPrimaryStorage *)createPrimaryStorageForTests
-{
-    OWSPrimaryStorage *primaryStorage = [[OWSPrimaryStorage alloc] initStorage];
-    [OWSPrimaryStorage protectFiles];
-    return primaryStorage;
 }
 
 - (void)configure
