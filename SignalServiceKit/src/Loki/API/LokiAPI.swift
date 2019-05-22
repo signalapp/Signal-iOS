@@ -118,7 +118,7 @@ import PromiseKit
     }
     
     private static func removeDuplicates(from rawMessages: [JSON]) -> [JSON] {
-        var receivedMessageHashValues = getReceivedMessageHashValues()
+        var receivedMessageHashValues = getReceivedMessageHashValues() ?? []
         return rawMessages.filter { rawMessage in
             guard let hashValue = rawMessage["hash"] as? String else {
                 Logger.warn("[Loki] Missing hash value for message: \(rawMessage).")
@@ -161,8 +161,8 @@ import PromiseKit
         }
     }
     
-    private static func getReceivedMessageHashValues() -> Set<String> {
-        var result: Set<String> = []
+    private static func getReceivedMessageHashValues() -> Set<String>? {
+        var result: Set<String>? = nil
         storage.dbReadConnection.read { transaction in
             result = storage.getReceivedMessageHashes(with: transaction)
         }
