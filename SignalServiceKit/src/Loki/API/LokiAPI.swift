@@ -13,9 +13,9 @@ import PromiseKit
         let port: UInt16
         
         enum Method : String {
-            /// Only applicable to snode targets.
+            /// Only supported by snode targets.
             case getSwarm = "get_snodes_for_pubkey"
-            /// Only applicable to snode targets.
+            /// Only supported by snode targets.
             case getMessages = "retrieve"
             case sendMessage = "store"
         }
@@ -38,10 +38,10 @@ import PromiseKit
     override private init() { }
     
     // MARK: Internal API
-    internal static func invoke(_ method: Target.Method, on target: Target, with parameters: [String:Any] = [:]) -> Promise<RawResponse> {
+    internal static func invoke(_ method: Target.Method, on target: Target, associatedWith hexEncodedPublicKey: String, parameters: [String:Any] = [:]) -> Promise<RawResponse> {
         let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
-        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
+        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
     }
     
     // MARK: Public API
@@ -50,7 +50,7 @@ import PromiseKit
         return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
             let lastHash = getLastMessageHashValue(for: targetSnode) ?? ""
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHash ]
-            return invoke(.getMessages, on: targetSnode, with: parameters).map { rawResponse in
+            return invoke(.getMessages, on: targetSnode, associatedWith: hexEncodedPublicKey, parameters: parameters).map { rawResponse in
                 guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
                 updateLastMessageHashValueIfPossible(for: targetSnode, from: rawMessages)
                 let newRawMessages = removeDuplicates(from: rawMessages)
@@ -70,7 +70,7 @@ import PromiseKit
             // TODO: Send using P2P protocol
         } else {
             let parameters = lokiMessage.toJSON()
-            return getTargetSnodes(for: lokiMessage.destination).mapValues { invoke(.sendMessage, on: $0, with: parameters).recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }.map { Set($0) }
+            return getTargetSnodes(for: lokiMessage.destination).mapValues { invoke(.sendMessage, on: $0, associatedWith: lokiMessage.destination, parameters: parameters) }.map { Set($0) }
         }
     }
     
@@ -80,7 +80,7 @@ import PromiseKit
             // TODO: Send using P2P protocol
         } else {
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ] // TODO: Figure out correct parameters
-            return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, with: parameters).recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }.map { Set($0) }
+            return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { Set($0) }
         }
     }
     
@@ -167,18 +167,5 @@ private extension AnyPromise {
         let result = AnyPromise(promise)
         result.retainUntilComplete()
         return result
-    }
-}
-
-// MARK: Error Handling
-private extension Promise {
-
-    func recoverNetworkErrorIfNeeded(on queue: DispatchQueue) -> Promise<T> {
-        return recover(on: queue) { error -> Promise<T> in
-            switch error {
-            case NetworkManagerError.taskError(_, let underlyingError): throw underlyingError
-            default: throw error
-            }
-        }
     }
 }
