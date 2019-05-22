@@ -89,6 +89,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, readonly) StickerHorizontalListView *suggestedStickerView;
 @property (nonatomic) NSArray<StickerInfo *> *suggestedStickerInfos;
 @property (nonatomic, readonly) UIStackView *outerStack;
+@property (nonatomic, readonly) UIStackView *mediaStack;
 
 @property (nonatomic) CGFloat textViewHeight;
 @property (nonatomic, readonly) NSLayoutConstraint *textViewHeightConstraint;
@@ -277,9 +278,16 @@ const CGFloat kMaxTextViewHeight = 98;
     [vStackWrapper setContentHuggingHorizontalLow];
     [vStackWrapper setCompressionResistanceHorizontalLow];
 
+    // Media Stack
+    _mediaStack = [[UIStackView alloc] initWithArrangedSubviews:@[ self.cameraButton, self.voiceMemoButton ]];
+    self.mediaStack.axis = UILayoutConstraintAxisHorizontal;
+    self.mediaStack.alignment = UIStackViewAlignmentCenter;
+    [self.mediaStack setContentHuggingHorizontalHigh];
+    [self.mediaStack setCompressionResistanceHorizontalHigh];
+
     // H Stack
     UIStackView *hStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.cameraButton, vStackWrapper, self.attachmentButton, self.sendButton ]];
+        initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, self.mediaStack, self.sendButton ]];
     hStack.axis = UILayoutConstraintAxisHorizontal;
     hStack.layoutMarginsRelativeArrangement = YES;
     hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
@@ -323,12 +331,9 @@ const CGFloat kMaxTextViewHeight = 98;
     self.preservesSuperviewLayoutMargins = NO;
 
     // Input buttons
-    [self addSubview:self.voiceMemoButton];
-    [self.voiceMemoButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
-    [self.voiceMemoButton autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackWrapper withOffset:-4];
     [self addSubview:self.stickerButton];
-    [self.stickerButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
-    [self.voiceMemoButton autoPinLeadingToTrailingEdgeOfView:self.stickerButton offset:0];
+    [self.stickerButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
+    [self.stickerButton autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackWrapper withOffset:-4];
 
     // Border
     //
@@ -570,39 +575,27 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)ensureButtonVisibilityWithIsAnimated:(BOOL)isAnimated doLayout:(BOOL)doLayout
 {
+    void (^ensureViewHiddenState)(UIView *, BOOL) = ^(UIView *subview, BOOL hidden) {
+        if (subview.isHidden != hidden) {
+            subview.hidden = hidden;
+        }
+    };
+
     void (^updateBlock)(void) = ^{
+        ensureViewHiddenState(self.attachmentButton, NO);
+
         BOOL hasTextInput = self.inputTextView.trimmedText.length > 0;
         if (hasTextInput) {
-            if (!self.attachmentButton.isHidden) {
-                self.attachmentButton.hidden = YES;
-            }
-            if (!self.voiceMemoButton.isHidden) {
-                self.voiceMemoButton.hidden = YES;
-            }
-            if (self.sendButton.isHidden) {
-                self.sendButton.hidden = NO;
-            }
+            ensureViewHiddenState(self.mediaStack, YES);
+            ensureViewHiddenState(self.sendButton, NO);
         } else {
-            if (self.attachmentButton.isHidden) {
-                self.attachmentButton.hidden = NO;
-            }
-            if (self.voiceMemoButton.isHidden) {
-                self.voiceMemoButton.hidden = NO;
-            }
-            if (!self.sendButton.isHidden) {
-                self.sendButton.hidden = YES;
-            }
+            ensureViewHiddenState(self.mediaStack, NO);
+            ensureViewHiddenState(self.sendButton, YES);
         }
 
         BOOL hideStickerButton = hasTextInput || self.quotedReply != nil || !StickerManager.shared.isStickerSendEnabled;
-        if (hideStickerButton) {
-            if (!self.stickerButton.isHidden) {
-                self.stickerButton.hidden = YES;
-            }
-        } else {
-            if (self.stickerButton.isHidden) {
-                self.stickerButton.hidden = NO;
-            }
+        ensureViewHiddenState(self.stickerButton, hideStickerButton);
+        if (!hideStickerButton) {
             self.stickerButton.imageView.tintColor
                 = (self.isStickerKeyboardActive ? Theme.primaryColor : Theme.navbarIconColor);
         }
