@@ -81,22 +81,25 @@ public class StickerKeyboard: UIStackView {
         autoresizingMask = .flexibleHeight
         alignment = .fill
 
-        let backgroundColor = (Theme.isDarkThemeEnabled
-            ? Theme.offBackgroundColor
-            : UIColor.ows_gray02)
-        addBackgroundView(withBackgroundColor: backgroundColor)
+        addBackgroundView(withBackgroundColor: keyboardBackgroundColor)
 
         addArrangedSubview(headerView)
         headerView.setContentHuggingVerticalHigh()
         headerView.setCompressionResistanceVerticalHigh()
 
         stickerCollectionView.stickerDelegate = self
-        stickerCollectionView.backgroundColor = backgroundColor
+        stickerCollectionView.backgroundColor = keyboardBackgroundColor
         addArrangedSubview(stickerCollectionView)
         stickerCollectionView.setContentHuggingVerticalLow()
         stickerCollectionView.setCompressionResistanceVerticalLow()
 
         populateHeaderView()
+    }
+
+    private var keyboardBackgroundColor: UIColor {
+        return (Theme.isDarkThemeEnabled
+            ? Theme.offBackgroundColor
+            : UIColor.ows_gray02)
     }
 
     @objc
@@ -138,12 +141,10 @@ public class StickerKeyboard: UIStackView {
     private let packsCollectionView = StickerHorizontalListView(cellSize: StickerKeyboard.packCoverSize, spacing: StickerKeyboard.packCoverSpacing)
 
     private func populateHeaderView() {
-        backgroundColor = Theme.offBackgroundColor
-
         headerView.spacing = StickerKeyboard.packCoverSpacing
         headerView.axis = .horizontal
         headerView.alignment = .center
-        headerView.backgroundColor = Theme.offBackgroundColor
+        headerView.backgroundColor = keyboardBackgroundColor
         headerView.layoutMargins = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
         headerView.isLayoutMarginsRelativeArrangement = true
 
@@ -159,7 +160,7 @@ public class StickerKeyboard: UIStackView {
         }
         headerView.addArrangedSubview(recentsButton)
 
-        packsCollectionView.backgroundColor = Theme.offBackgroundColor
+        packsCollectionView.backgroundColor = keyboardBackgroundColor
         headerView.addArrangedSubview(packsCollectionView)
 
         let manageButton = buildHeaderButton("plus-24") { [weak self] in
