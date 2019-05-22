@@ -100,12 +100,12 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?) {
         AssertIsOnMainThread()
-        notify(category: category, title: title, body: body, userInfo: userInfo, sound: sound, replacingIdentifier: nil)
+        notify(category: category, title: title, body: body, threadIdentifier: threadIdentifier, userInfo: userInfo, sound: sound, replacingIdentifier: nil)
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
         AssertIsOnMainThread()
 
         let content = UNMutableNotificationContent()
@@ -142,6 +142,10 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         } else {
             // Play sound and vibrate, but without a `body` no banner will show.
             Logger.debug("supressing notification body")
+        }
+
+        if let threadIdentifier = threadIdentifier {
+            content.threadIdentifier = threadIdentifier
         }
 
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
