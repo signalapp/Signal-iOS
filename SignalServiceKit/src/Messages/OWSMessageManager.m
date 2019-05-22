@@ -1248,8 +1248,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           groupId:dataMessage.group.id];
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
-                newGroupThread.groupModel = newGroupModel;
-                [newGroupThread anyInsertWithTransaction:transaction];
+                [newGroupThread anyUpdateWithTransaction:transaction
+                                                   block:^(TSThread *thread) {
+                                                       TSGroupThread *groupThread = (TSGroupThread *)thread;
+                                                       groupThread.groupModel = newGroupModel;
+                                                   }];
 
                 if (transaction.transitional_yapWriteTransaction) {
                     [[OWSDisappearingMessagesJob sharedJob]
