@@ -47,7 +47,9 @@ import PromiseKit
     }
     
     private static func getRandomSnode() -> Promise<Target> {
-        return Promise<Target> { _ in notImplemented() } // TODO: Implement
+        return Promise<Target> { seal in
+            seal.fulfill(Target(address: "http://13.238.53.205", port: 8080)) // TODO: For debugging purposes
+        }
     }
     
     private static func getSwarm(for hexEncodedPublicKey: String) -> Promise<[Target]> {
@@ -91,7 +93,11 @@ import PromiseKit
     
     // MARK: Public API (Obj-C)
     @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64, requiringPoW isPoWRequired: Bool) -> AnyPromise {
-        let promise = Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired).then(sendMessage)
+        let promise = Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired).then(sendMessage).mapValues { promise -> AnyPromise in
+            let anyPromise = AnyPromise(promise)
+            anyPromise.retainUntilComplete()
+            return anyPromise
+        }.map { Set($0) }
         let anyPromise = AnyPromise(promise)
         anyPromise.retainUntilComplete()
         return anyPromise
@@ -102,11 +108,16 @@ import PromiseKit
     // The parsing utilities below use a best attempt approach to parsing; they warn for parsing failures but don't throw exceptions.
     
     private static func parseTargets(from rawResponse: Any) -> [Target] {
-        guard let json = rawResponse as? JSON, let addresses = json["snodes"] as? [String] else {
-            Logger.warn("[Loki] Failed to parse targets from: \(rawResponse).")
-            return []
-        }
-        return addresses.map { Target(address: $0, port: defaultSnodePort) }
+        // TODO: For debugging purposes
+        // ========
+        let target = Target(address: "http://13.238.53.205", port: 8080)
+        return Array(repeating: target, count: 3)
+        // ========
+//        guard let json = rawResponse as? JSON, let addresses = json["snodes"] as? [String] else {
+//            Logger.warn("[Loki] Failed to parse targets from: \(rawResponse).")
+//            return []
+//        }
+//        return addresses.map { Target(address: $0, port: defaultSnodePort) }
     }
     
     private static func updateLastMessageHashValueIfPossible(for target: Target, from rawMessages: [JSON]) {
@@ -118,7 +129,7 @@ import PromiseKit
     }
     
     private static func removeDuplicates(from rawMessages: [JSON]) -> [JSON] {
-        var receivedMessageHashValues = getReceivedMessageHashValues()
+        var receivedMessageHashValues = getReceivedMessageHashValues() ?? []
         return rawMessages.filter { rawMessage in
             guard let hashValue = rawMessage["hash"] as? String else {
                 Logger.warn("[Loki] Missing hash value for message: \(rawMessage).")
@@ -161,8 +172,8 @@ import PromiseKit
         }
     }
     
-    private static func getReceivedMessageHashValues() -> Set<String> {
-        var result: Set<String> = []
+    private static func getReceivedMessageHashValues() -> Set<String>? {
+        var result: Set<String>? = nil
         storage.dbReadConnection.read { transaction in
             result = storage.getReceivedMessageHashes(with: transaction)
         }

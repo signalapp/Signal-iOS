@@ -1103,11 +1103,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.failure(error);
     }
 
-    // Update the state to show that proof of work is being calculated
+    // Update the state to show that the proof of work is being calculated
     [self setIsCalculatingProofOfWorkForMessage:messageSend];
     // Convert the message to a Loki message and send it using the Loki messaging API
     NSDictionary *signalMessage = deviceMessages.firstObject;
-    // Update the thread's friend request status if needed
+    // Update the message and thread if needed
     NSInteger *messageType = ((NSNumber *)signalMessage[@"type"]).integerValue;
     if (messageType == TSFriendRequestMessageType) {
         [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSending withTransaction:nil];
@@ -1116,51 +1116,53 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     BOOL isPoWRequired = YES; // TODO: Base on message type
     [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId timestamp:message.timestamp requiringPoW:isPoWRequired]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
-            // Loki
-            // ========
-            if (messageType == TSFriendRequestMessageType) {
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:transaction];
-                    [message.thread removeOutgoingFriendRequestMessagesWithTransaction:transaction];
-                    // Set the expiration date
-                    NSTimeInterval expirationInterval = 72 * kHourInterval;
-                    NSDate *expireDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
-                    [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expireDate] withTransaction:transaction];
-                }];
+            NSSet<AnyPromise *> *promises = (NSSet<AnyPromise *> *)result;
+            __block BOOL isSuccess = NO;
+            NSUInteger promiseCount = promises.count;
+            __block NSUInteger errorCount = 0;
+            for (AnyPromise *promise in promises) {
+                [promise
+                .thenOn(OWSDispatch.sendingQueue, ^(id result) {
+                    if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
+                    isSuccess = YES;
+                    // Update the message and thread if needed
+                    if (messageType == TSFriendRequestMessageType) {
+                        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                            [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:transaction];
+                            [message.thread removeOutgoingFriendRequestMessagesWithTransaction:transaction];
+                            NSTimeInterval expirationInterval = 72 * kHourInterval;
+                            NSDate *expirationDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
+                            [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expirationDate] withTransaction:transaction];
+                        }];
+                    }
+                    // Invoke the completion handler
+                    [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
+                })
+                .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
+                    errorCount += 1;
+                    if (errorCount != promiseCount) { return; } // Only error out if all promises failed
+                    // Update the thread if needed
+                    if (messageType == TSFriendRequestMessageType) {
+                        [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:nil];
+                    }
+                    // Handle the error
+                    NSUInteger statusCode = 0;
+                    NSData *_Nullable responseData = nil;
+                    if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
+                        statusCode = error.code;
+                        NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
+                        if (underlyingError) {
+                            responseData = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+                        } else {
+                            OWSFailDebug(@"Missing underlying error: %@.", error);
+                        }
+                    } else {
+                        OWSFailDebug(@"Unexpected error: %@.", error);
+                    }
+                    [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
+                }) retainUntilComplete];
             }
-            // ========
-            // Invoke the completion handler
-            [self messageSendDidSucceed:messageSend
-                         deviceMessages:deviceMessages
-                            wasSentByUD:false
-                     wasSentByWebsocket:false];
-        })
-        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
-            // Loki
-            // ========
-            if (messageType == TSFriendRequestMessageType) {
-                [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:nil];
-            }
-            // ========
-            // Handle the error
-            NSUInteger statusCode = 0;
-            NSData *_Nullable responseData = nil;
-            if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
-                statusCode = error.code;
-                NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
-                if (underlyingError) {
-                    responseData = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-                } else {
-                    OWSFailDebug(@"Missing underlying error: %@", error);
-                }
-            } else {
-                OWSFailDebug(@"Unexpected error: %@", error);
-            }
-            [self messageSendDidFail:messageSend
-                      deviceMessages:deviceMessages
-                          statusCode:statusCode
-                               error:error
-                        responseData:responseData];
+        
         }) retainUntilComplete];
     
     // Loki: Original code
