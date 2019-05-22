@@ -1113,8 +1113,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSending withTransaction:nil];
         [message saveFriendRequestStatus:TSMessageFriendRequestStatusPending withTransaction:nil];
     }
-    BOOL isPoWRequired = YES; // TODO: Base on message type
-    [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId timestamp:message.timestamp requiringPoW:isPoWRequired]
+    [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId with:message.timestamp]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             NSSet<AnyPromise *> *promises = (NSSet<AnyPromise *> *)result;
             __block BOOL isSuccess = NO;

@@ -5,20 +5,17 @@ import PromiseKit
     
     // MARK: Settings
     private static let version = "v1"
-    private static let defaultSnodePort: UInt16 = 8080
-    private static let targetSnodeCount = 2
-    public static let defaultMessageTTL: UInt64 = 4 * 24 * 60 * 60
-    
-    // MARK: Caching
-    private static var swarmCache: [String:[Target]] = [:]
+    public static let defaultMessageTTL: UInt64 = 1 * 24 * 60 * 60
     
     // MARK: Types
-    private struct Target : Hashable {
+    internal struct Target : Hashable {
         let address: String
         let port: UInt16
         
         enum Method : String {
+            /// Only applicable to snode targets.
             case getSwarm = "get_snodes_for_pubkey"
+            /// Only applicable to snode targets.
             case getMessages = "retrieve"
             case sendMessage = "store"
         }
@@ -27,6 +24,7 @@ import PromiseKit
     public typealias RawResponse = Any
     
     public enum Error : LocalizedError {
+        /// Only applicable to snode targets as proof of work isn't required for P2P messaging.
         case proofOfWorkCalculationFailed
         
         public var errorDescription: String? {
@@ -40,30 +38,10 @@ import PromiseKit
     override private init() { }
     
     // MARK: Internal API
-    private static func invoke(_ method: Target.Method, on target: Target, with parameters: [String:Any] = [:]) -> Promise<RawResponse> {
+    internal static func invoke(_ method: Target.Method, on target: Target, with parameters: [String:Any] = [:]) -> Promise<RawResponse> {
         let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
-    }
-    
-    private static func getRandomSnode() -> Promise<Target> {
-        return Promise<Target> { seal in
-            seal.fulfill(Target(address: "http://13.238.53.205", port: 8080)) // TODO: For debugging purposes
-        }
-    }
-    
-    private static func getSwarm(for hexEncodedPublicKey: String) -> Promise<[Target]> {
-        if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= targetSnodeCount {
-            return Promise<[Target]> { $0.fulfill(cachedSwarm) }
-        } else {
-            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ]
-            return getRandomSnode().then { invoke(.getSwarm, on: $0, with: parameters) }.map { parseTargets(from: $0) }.get { swarmCache[hexEncodedPublicKey] = $0 }
-        }
-    }
-    
-    private static func getTargetSnodes(for hexEncodedPublicKey: String) -> Promise<[Target]> {
-        // shuffled() uses the system's default random generator, which is cryptographically secure
-        return getSwarm(for: hexEncodedPublicKey).map { Array($0.shuffled().prefix(targetSnodeCount)) }
     }
     
     // MARK: Public API
@@ -81,44 +59,40 @@ import PromiseKit
         }.map { Set($0) }
     }
     
+    public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64) -> Promise<Set<Promise<RawResponse>>> {
+        let isP2PMessagingPossible = false
+        return Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: !isP2PMessagingPossible).then(sendMessage)
+    }
+    
     public static func sendMessage(_ lokiMessage: Message) -> Promise<Set<Promise<RawResponse>>> {
-        let parameters = lokiMessage.toJSON()
-        return getTargetSnodes(for: lokiMessage.destination).mapValues { invoke(.sendMessage, on: $0, with: parameters).recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }.map { Set($0) }
+        let isP2PMessagingPossible = false
+        if isP2PMessagingPossible {
+            // TODO: Send using P2P protocol
+        } else {
+            let parameters = lokiMessage.toJSON()
+            return getTargetSnodes(for: lokiMessage.destination).mapValues { invoke(.sendMessage, on: $0, with: parameters).recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }.map { Set($0) }
+        }
     }
     
     public static func ping(_ hexEncodedPublicKey: String) -> Promise<Set<Promise<RawResponse>>> {
-        let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ] // TODO: Figure out correct parameters
-        return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, with: parameters).recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }.map { Set($0) }
+        let isP2PMessagingPossible = false
+        if isP2PMessagingPossible {
+            // TODO: Send using P2P protocol
+        } else {
+            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ] // TODO: Figure out correct parameters
+            return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, with: parameters).recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }.map { Set($0) }
+        }
     }
     
     // MARK: Public API (Obj-C)
-    @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64, requiringPoW isPoWRequired: Bool) -> AnyPromise {
-        let promise = Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: isPoWRequired).then(sendMessage).mapValues { promise -> AnyPromise in
-            let anyPromise = AnyPromise(promise)
-            anyPromise.retainUntilComplete()
-            return anyPromise
-        }.map { Set($0) }
-        let anyPromise = AnyPromise(promise)
-        anyPromise.retainUntilComplete()
-        return anyPromise
+    @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64) -> AnyPromise {
+        let promise = sendSignalMessage(signalMessage, to: destination, timestamp: timestamp).mapValues { AnyPromise.from($0) }.map { Set($0) }
+        return AnyPromise.from(promise)
     }
     
     // MARK: Parsing
     
     // The parsing utilities below use a best attempt approach to parsing; they warn for parsing failures but don't throw exceptions.
-    
-    private static func parseTargets(from rawResponse: Any) -> [Target] {
-        // TODO: For debugging purposes
-        // ========
-        let target = Target(address: "http://13.238.53.205", port: 8080)
-        return Array(repeating: target, count: 3)
-        // ========
-//        guard let json = rawResponse as? JSON, let addresses = json["snodes"] as? [String] else {
-//            Logger.warn("[Loki] Failed to parse targets from: \(rawResponse).")
-//            return []
-//        }
-//        return addresses.map { Target(address: $0, port: defaultSnodePort) }
-    }
     
     private static func updateLastMessageHashValueIfPossible(for target: Target, from rawMessages: [JSON]) {
         guard let lastMessage = rawMessages.last, let hashValue = lastMessage["hash"] as? String, let expiresAt = lastMessage["expiration"] as? Int else {
@@ -184,6 +158,15 @@ import PromiseKit
         storage.dbReadWriteConnection.readWrite { transaction in
             storage.setReceivedMessageHashes(receivedMessageHashValues, with: transaction)
         }
+    }
+}
+
+private extension AnyPromise {
+    
+    static func from<T : Any>(_ promise: Promise<T>) -> AnyPromise {
+        let result = AnyPromise(promise)
+        result.retainUntilComplete()
+        return result
     }
 }
 
