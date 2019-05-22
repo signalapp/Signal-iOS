@@ -46,7 +46,6 @@ public struct InteractionRecord: SDSRecord {
     public let createdInExistingGroup: Bool?
     public let customMessage: String?
     public let envelopeData: Data?
-    public let ephemeralMessage: Data?
     public let errorMessageSchemaVersion: UInt?
     public let errorType: TSErrorMessageType?
     public let expireStartedAt: UInt64?
@@ -105,7 +104,6 @@ public struct InteractionRecord: SDSRecord {
         case createdInExistingGroup
         case customMessage
         case envelopeData
-        case ephemeralMessage
         case errorMessageSchemaVersion
         case errorType
         case expireStartedAt
@@ -185,8 +183,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -214,7 +210,6 @@ extension TSInteraction {
                                                 attachmentIds: attachmentIds,
                                                 body: body,
                                                 contactShare: contactShare,
-                                                ephemeralMessage: ephemeralMessage,
                                                 expireStartedAt: expireStartedAt,
                                                 expiresAt: expiresAt,
                                                 expiresInSeconds: expiresInSeconds,
@@ -241,8 +236,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -270,7 +263,6 @@ extension TSInteraction {
                                                         attachmentIds: attachmentIds,
                                                         body: body,
                                                         contactShare: contactShare,
-                                                        ephemeralMessage: ephemeralMessage,
                                                         expireStartedAt: expireStartedAt,
                                                         expiresAt: expiresAt,
                                                         expiresInSeconds: expiresInSeconds,
@@ -321,8 +313,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -353,7 +343,6 @@ extension TSInteraction {
                                                                  attachmentIds: attachmentIds,
                                                                  body: body,
                                                                  contactShare: contactShare,
-                                                                 ephemeralMessage: ephemeralMessage,
                                                                  expireStartedAt: expireStartedAt,
                                                                  expiresAt: expiresAt,
                                                                  expiresInSeconds: expiresInSeconds,
@@ -383,8 +372,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -411,7 +398,6 @@ extension TSInteraction {
                                                       attachmentIds: attachmentIds,
                                                       body: body,
                                                       contactShare: contactShare,
-                                                      ephemeralMessage: ephemeralMessage,
                                                       expireStartedAt: expireStartedAt,
                                                       expiresAt: expiresAt,
                                                       expiresInSeconds: expiresInSeconds,
@@ -437,8 +423,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -467,7 +451,6 @@ extension TSInteraction {
                                                     attachmentIds: attachmentIds,
                                                     body: body,
                                                     contactShare: contactShare,
-                                                    ephemeralMessage: ephemeralMessage,
                                                     expireStartedAt: expireStartedAt,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
@@ -495,8 +478,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -528,7 +509,6 @@ extension TSInteraction {
                                                      attachmentIds: attachmentIds,
                                                      body: body,
                                                      contactShare: contactShare,
-                                                     ephemeralMessage: ephemeralMessage,
                                                      expireStartedAt: expireStartedAt,
                                                      expiresAt: expiresAt,
                                                      expiresInSeconds: expiresInSeconds,
@@ -579,8 +559,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -606,7 +584,6 @@ extension TSInteraction {
                                   attachmentIds: attachmentIds,
                                   body: body,
                                   contactShare: contactShare,
-                                  ephemeralMessage: ephemeralMessage,
                                   expireStartedAt: expireStartedAt,
                                   expiresAt: expiresAt,
                                   expiresInSeconds: expiresInSeconds,
@@ -631,8 +608,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -657,7 +632,6 @@ extension TSInteraction {
                                      attachmentIds: attachmentIds,
                                      body: body,
                                      contactShare: contactShare,
-                                     ephemeralMessage: ephemeralMessage,
                                      expireStartedAt: expireStartedAt,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
@@ -683,8 +657,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -711,7 +683,6 @@ extension TSInteraction {
                                  attachmentIds: attachmentIds,
                                  body: body,
                                  contactShare: contactShare,
-                                 ephemeralMessage: ephemeralMessage,
                                  expireStartedAt: expireStartedAt,
                                  expiresAt: expiresAt,
                                  expiresInSeconds: expiresInSeconds,
@@ -751,8 +722,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -778,7 +747,6 @@ extension TSInteraction {
                                                     attachmentIds: attachmentIds,
                                                     body: body,
                                                     contactShare: contactShare,
-                                                    ephemeralMessage: ephemeralMessage,
                                                     expireStartedAt: expireStartedAt,
                                                     expiresAt: expiresAt,
                                                     expiresInSeconds: expiresInSeconds,
@@ -803,8 +771,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -832,7 +798,6 @@ extension TSInteraction {
                                                              attachmentIds: attachmentIds,
                                                              body: body,
                                                              contactShare: contactShare,
-                                                             ephemeralMessage: ephemeralMessage,
                                                              expireStartedAt: expireStartedAt,
                                                              expiresAt: expiresAt,
                                                              expiresInSeconds: expiresInSeconds,
@@ -859,8 +824,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -889,7 +852,6 @@ extension TSInteraction {
                                                            attachmentIds: attachmentIds,
                                                            body: body,
                                                            contactShare: contactShare,
-                                                           ephemeralMessage: ephemeralMessage,
                                                            expireStartedAt: expireStartedAt,
                                                            expiresAt: expiresAt,
                                                            expiresInSeconds: expiresInSeconds,
@@ -916,8 +878,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -937,7 +897,6 @@ extension TSInteraction {
                              attachmentIds: attachmentIds,
                              body: body,
                              contactShare: contactShare,
-                             ephemeralMessage: ephemeralMessage,
                              expireStartedAt: expireStartedAt,
                              expiresAt: expiresAt,
                              expiresInSeconds: expiresInSeconds,
@@ -958,8 +917,6 @@ extension TSInteraction {
             let body: String? = record.body
             let contactShareSerialized: Data? = record.contactShare
             let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
-            let ephemeralMessageSerialized: Data? = record.ephemeralMessage
-            let ephemeralMessage: EphemeralMessage? = try SDSDeserialization.optionalUnarchive(ephemeralMessageSerialized, name: "ephemeralMessage")
             let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
             let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
             let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
@@ -996,7 +953,6 @@ extension TSInteraction {
                                      attachmentIds: attachmentIds,
                                      body: body,
                                      contactShare: contactShare,
-                                     ephemeralMessage: ephemeralMessage,
                                      expireStartedAt: expireStartedAt,
                                      expiresAt: expiresAt,
                                      expiresInSeconds: expiresInSeconds,
@@ -1135,42 +1091,41 @@ extension TSInteractionSerializer {
     static let createdInExistingGroupColumn = SDSColumnMetadata(columnName: "createdInExistingGroup", columnType: .int, isOptional: true, columnIndex: 18)
     static let customMessageColumn = SDSColumnMetadata(columnName: "customMessage", columnType: .unicodeString, isOptional: true, columnIndex: 19)
     static let envelopeDataColumn = SDSColumnMetadata(columnName: "envelopeData", columnType: .blob, isOptional: true, columnIndex: 20)
-    static let ephemeralMessageColumn = SDSColumnMetadata(columnName: "ephemeralMessage", columnType: .blob, isOptional: true, columnIndex: 21)
-    static let errorMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "errorMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 22)
-    static let errorTypeColumn = SDSColumnMetadata(columnName: "errorType", columnType: .int, isOptional: true, columnIndex: 23)
-    static let expireStartedAtColumn = SDSColumnMetadata(columnName: "expireStartedAt", columnType: .int64, isOptional: true, columnIndex: 24)
-    static let expiresAtColumn = SDSColumnMetadata(columnName: "expiresAt", columnType: .int64, isOptional: true, columnIndex: 25)
-    static let expiresInSecondsColumn = SDSColumnMetadata(columnName: "expiresInSeconds", columnType: .int64, isOptional: true, columnIndex: 26)
-    static let groupMetaMessageColumn = SDSColumnMetadata(columnName: "groupMetaMessage", columnType: .int, isOptional: true, columnIndex: 27)
-    static let hasAddToContactsOfferColumn = SDSColumnMetadata(columnName: "hasAddToContactsOffer", columnType: .int, isOptional: true, columnIndex: 28)
-    static let hasAddToProfileWhitelistOfferColumn = SDSColumnMetadata(columnName: "hasAddToProfileWhitelistOffer", columnType: .int, isOptional: true, columnIndex: 29)
-    static let hasBlockOfferColumn = SDSColumnMetadata(columnName: "hasBlockOffer", columnType: .int, isOptional: true, columnIndex: 30)
-    static let hasLegacyMessageStateColumn = SDSColumnMetadata(columnName: "hasLegacyMessageState", columnType: .int, isOptional: true, columnIndex: 31)
-    static let hasSyncedTranscriptColumn = SDSColumnMetadata(columnName: "hasSyncedTranscript", columnType: .int, isOptional: true, columnIndex: 32)
-    static let infoMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "infoMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 33)
-    static let isFromLinkedDeviceColumn = SDSColumnMetadata(columnName: "isFromLinkedDevice", columnType: .int, isOptional: true, columnIndex: 34)
-    static let isLocalChangeColumn = SDSColumnMetadata(columnName: "isLocalChange", columnType: .int, isOptional: true, columnIndex: 35)
-    static let isVoiceMessageColumn = SDSColumnMetadata(columnName: "isVoiceMessage", columnType: .int, isOptional: true, columnIndex: 36)
-    static let legacyMessageStateColumn = SDSColumnMetadata(columnName: "legacyMessageState", columnType: .int, isOptional: true, columnIndex: 37)
-    static let legacyWasDeliveredColumn = SDSColumnMetadata(columnName: "legacyWasDelivered", columnType: .int, isOptional: true, columnIndex: 38)
-    static let linkPreviewColumn = SDSColumnMetadata(columnName: "linkPreview", columnType: .blob, isOptional: true, columnIndex: 39)
-    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 40)
-    static let messageStickerColumn = SDSColumnMetadata(columnName: "messageSticker", columnType: .blob, isOptional: true, columnIndex: 41)
-    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 42)
-    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 43)
-    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 44)
-    static let protocolVersionColumn = SDSColumnMetadata(columnName: "protocolVersion", columnType: .int64, isOptional: true, columnIndex: 45)
-    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 46)
-    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 47)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 48)
-    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 49)
-    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 50)
-    static let senderIdColumn = SDSColumnMetadata(columnName: "senderId", columnType: .unicodeString, isOptional: true, columnIndex: 51)
-    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 52)
-    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 53)
-    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 54)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 55)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 56)
+    static let errorMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "errorMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 21)
+    static let errorTypeColumn = SDSColumnMetadata(columnName: "errorType", columnType: .int, isOptional: true, columnIndex: 22)
+    static let expireStartedAtColumn = SDSColumnMetadata(columnName: "expireStartedAt", columnType: .int64, isOptional: true, columnIndex: 23)
+    static let expiresAtColumn = SDSColumnMetadata(columnName: "expiresAt", columnType: .int64, isOptional: true, columnIndex: 24)
+    static let expiresInSecondsColumn = SDSColumnMetadata(columnName: "expiresInSeconds", columnType: .int64, isOptional: true, columnIndex: 25)
+    static let groupMetaMessageColumn = SDSColumnMetadata(columnName: "groupMetaMessage", columnType: .int, isOptional: true, columnIndex: 26)
+    static let hasAddToContactsOfferColumn = SDSColumnMetadata(columnName: "hasAddToContactsOffer", columnType: .int, isOptional: true, columnIndex: 27)
+    static let hasAddToProfileWhitelistOfferColumn = SDSColumnMetadata(columnName: "hasAddToProfileWhitelistOffer", columnType: .int, isOptional: true, columnIndex: 28)
+    static let hasBlockOfferColumn = SDSColumnMetadata(columnName: "hasBlockOffer", columnType: .int, isOptional: true, columnIndex: 29)
+    static let hasLegacyMessageStateColumn = SDSColumnMetadata(columnName: "hasLegacyMessageState", columnType: .int, isOptional: true, columnIndex: 30)
+    static let hasSyncedTranscriptColumn = SDSColumnMetadata(columnName: "hasSyncedTranscript", columnType: .int, isOptional: true, columnIndex: 31)
+    static let infoMessageSchemaVersionColumn = SDSColumnMetadata(columnName: "infoMessageSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 32)
+    static let isFromLinkedDeviceColumn = SDSColumnMetadata(columnName: "isFromLinkedDevice", columnType: .int, isOptional: true, columnIndex: 33)
+    static let isLocalChangeColumn = SDSColumnMetadata(columnName: "isLocalChange", columnType: .int, isOptional: true, columnIndex: 34)
+    static let isVoiceMessageColumn = SDSColumnMetadata(columnName: "isVoiceMessage", columnType: .int, isOptional: true, columnIndex: 35)
+    static let legacyMessageStateColumn = SDSColumnMetadata(columnName: "legacyMessageState", columnType: .int, isOptional: true, columnIndex: 36)
+    static let legacyWasDeliveredColumn = SDSColumnMetadata(columnName: "legacyWasDelivered", columnType: .int, isOptional: true, columnIndex: 37)
+    static let linkPreviewColumn = SDSColumnMetadata(columnName: "linkPreview", columnType: .blob, isOptional: true, columnIndex: 38)
+    static let messageIdColumn = SDSColumnMetadata(columnName: "messageId", columnType: .unicodeString, isOptional: true, columnIndex: 39)
+    static let messageStickerColumn = SDSColumnMetadata(columnName: "messageSticker", columnType: .blob, isOptional: true, columnIndex: 40)
+    static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 41)
+    static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 42)
+    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 43)
+    static let protocolVersionColumn = SDSColumnMetadata(columnName: "protocolVersion", columnType: .int64, isOptional: true, columnIndex: 44)
+    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 45)
+    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 46)
+    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 47)
+    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 48)
+    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 49)
+    static let senderIdColumn = SDSColumnMetadata(columnName: "senderId", columnType: .unicodeString, isOptional: true, columnIndex: 50)
+    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 51)
+    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 52)
+    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 53)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 54)
+    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 55)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -1196,7 +1151,6 @@ extension TSInteractionSerializer {
         createdInExistingGroupColumn,
         customMessageColumn,
         envelopeDataColumn,
-        ephemeralMessageColumn,
         errorMessageSchemaVersionColumn,
         errorTypeColumn,
         expireStartedAtColumn,
@@ -1508,7 +1462,6 @@ class TSInteractionSerializer: SDSSerializer {
         let createdInExistingGroup: Bool? = nil
         let customMessage: String? = nil
         let envelopeData: Data? = nil
-        let ephemeralMessage: Data? = nil
         let errorMessageSchemaVersion: UInt? = nil
         let errorType: TSErrorMessageType? = nil
         let expireStartedAt: UInt64? = nil
@@ -1545,6 +1498,6 @@ class TSInteractionSerializer: SDSSerializer {
         let verificationState: OWSVerificationState? = nil
         let wasReceivedByUD: Bool? = nil
 
-        return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentFilenameMap: attachmentFilenameMap, attachmentIds: attachmentIds, authorId: authorId, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, ephemeralMessage: ephemeralMessage, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientId: recipientId, recipientStateMap: recipientStateMap, schemaVersion: schemaVersion, senderId: senderId, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, unregisteredRecipientId: unregisteredRecipientId, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
+        return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentFilenameMap: attachmentFilenameMap, attachmentIds: attachmentIds, authorId: authorId, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientId: recipientId, recipientStateMap: recipientStateMap, schemaVersion: schemaVersion, senderId: senderId, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, unregisteredRecipientId: unregisteredRecipientId, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
     }
 }

@@ -1373,15 +1373,6 @@ NS_ASSUME_NONNULL_BEGIN
                     OWSFailDebug(@"stickerError: %@", stickerError);
                 }
 
-                NSError *ephemeralMessageError;
-                EphemeralMessage *_Nullable ephemeralMessage =
-                    [EphemeralMessage buildValidatedMessageEphemeralMessageWithDataMessage:dataMessage
-                                                                               transaction:transaction
-                                                                                     error:&ephemeralMessageError];
-                if (ephemeralMessageError && ![EphemeralMessage isNoEphemeralMessageError:ephemeralMessageError]) {
-                    OWSFailDebug(@"ephemeralMessageError: %@", ephemeralMessageError);
-                }
-
                 OWSLogDebug(@"incoming message from: %@ for group: %@ with timestamp: %lu",
                     envelopeAddress(envelope),
                     groupId,
@@ -1400,7 +1391,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    contactShare:contact
                                                                     linkPreview:linkPreview
                                                                  messageSticker:messageSticker
-                                                               ephemeralMessage:ephemeralMessage
                                                                 serverTimestamp:serverTimestamp
                                                                 wasReceivedByUD:wasReceivedByUD];
 
@@ -1412,7 +1402,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [incomingMessage.attachmentIds addObject:pointer.uniqueId];
                 }
 
-                if (![OWSMessageManager messageHasRenderableContent:incomingMessage]) {
+                if (body.length == 0 && attachmentPointers.count < 1 && !contact && !messageSticker) {
                     OWSLogWarn(@"ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
                         envelopeAddress(envelope),
                         groupId,
@@ -1483,15 +1473,6 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"stickerError: %@", stickerError);
         }
 
-        NSError *ephemeralMessageError;
-        EphemeralMessage *_Nullable ephemeralMessage =
-            [EphemeralMessage buildValidatedMessageEphemeralMessageWithDataMessage:dataMessage
-                                                                       transaction:transaction
-                                                                             error:&ephemeralMessageError];
-        if (ephemeralMessageError && ![EphemeralMessage isNoEphemeralMessageError:ephemeralMessageError]) {
-            OWSFailDebug(@"ephemeralMessageError: %@", ephemeralMessageError);
-        }
-
         // Legit usage of senderTimestamp when creating incoming message from received envelope
         TSIncomingMessage *incomingMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
@@ -1505,7 +1486,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                            contactShare:contact
                                                             linkPreview:linkPreview
                                                          messageSticker:messageSticker
-                                                       ephemeralMessage:ephemeralMessage
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
@@ -1516,7 +1496,7 @@ NS_ASSUME_NONNULL_BEGIN
             [incomingMessage.attachmentIds addObject:pointer.uniqueId];
         }
 
-        if (![OWSMessageManager messageHasRenderableContent:incomingMessage]) {
+        if (body.length == 0 && attachmentPointers.count < 1 && !contact && !messageSticker) {
             OWSLogWarn(@"ignoring empty incoming message from: %@ with timestamp: %lu",
                 envelopeAddress(envelope),
                 (unsigned long)timestamp);
@@ -1529,14 +1509,6 @@ NS_ASSUME_NONNULL_BEGIN
                           transaction:transaction];
         return incomingMessage;
     }
-}
-
-+ (BOOL)messageHasRenderableContent:(TSMessage *)message
-{
-    OWSAssertDebug(message);
-
-    return (message.body.length > 0 || message.attachmentIds.count > 0 || message.contactShare != nil
-        || message.ephemeralMessage != nil);
 }
 
 - (void)insertUnknownProtocolVersionErrorInThread:(TSThread *)thread

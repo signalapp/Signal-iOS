@@ -21,8 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
-                                  messageSticker:(nullable MessageSticker *)messageSticker
-                                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage NS_UNAVAILABLE;
+                                  messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
 
 + (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
                                                           messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps;

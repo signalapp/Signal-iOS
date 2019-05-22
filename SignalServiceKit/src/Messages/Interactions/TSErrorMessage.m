@@ -62,8 +62,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                              quotedMessage:nil
                               contactShare:nil
                                linkPreview:nil
-                            messageSticker:nil
-                          ephemeralMessage:nil];
+                            messageSticker:nil];
 
     if (!self) {
         return self;
@@ -113,7 +112,6 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                     contactShare:(nullable OWSContact *)contactShare
-                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
@@ -134,7 +132,6 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                      attachmentIds:attachmentIds
                               body:body
                       contactShare:contactShare
-                  ephemeralMessage:ephemeralMessage
                    expireStartedAt:expireStartedAt
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds

@@ -83,15 +83,6 @@ NS_ASSUME_NONNULL_BEGIN
         if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
             OWSFailDebug(@"stickerError: %@", stickerError);
         }
-
-        NSError *ephemeralMessageError;
-        _ephemeralMessage =
-            [EphemeralMessage buildValidatedMessageEphemeralMessageWithDataMessage:_dataMessage
-                                                                       transaction:transaction.asAnyWrite
-                                                                             error:&ephemeralMessageError];
-        if (ephemeralMessageError && ![EphemeralMessage isNoEphemeralMessageError:ephemeralMessageError]) {
-            OWSFailDebug(@"ephemeralMessageError: %@", ephemeralMessageError);
-        }
     }
 
     if (sentProto.unidentifiedStatus.count > 0) {

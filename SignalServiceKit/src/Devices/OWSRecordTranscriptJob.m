@@ -6,7 +6,6 @@
 #import "OWSAttachmentDownloads.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
-#import "OWSMessageManager.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "SSKEnvironment.h"
@@ -129,8 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:transcript.quotedMessage
                                                        contactShare:transcript.contact
                                                         linkPreview:transcript.linkPreview
-                                                     messageSticker:transcript.messageSticker
-                                                   ephemeralMessage:transcript.ephemeralMessage];
+                                                     messageSticker:transcript.messageSticker];
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
@@ -183,7 +181,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (![OWSMessageManager messageHasRenderableContent:outgoingMessage]) {
+    if (outgoingMessage.body.length < 1 && outgoingMessage.attachmentIds.count < 1 && !outgoingMessage.contactShare
+        && !outgoingMessage.messageSticker) {
         OWSFailDebug(@"Ignoring message transcript for empty message.");
         return;
     }

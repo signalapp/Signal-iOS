@@ -54,7 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
-                                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
                                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                                  wasReceivedByUD:(BOOL)wasReceivedByUD
 {
@@ -67,8 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
                              quotedMessage:quotedMessage
                               contactShare:contactShare
                                linkPreview:linkPreview
-                            messageSticker:messageSticker
-                          ephemeralMessage:ephemeralMessage];
+                            messageSticker:messageSticker];
 
     if (!self) {
         return self;
@@ -97,7 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                     contactShare:(nullable OWSContact *)contactShare
-                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
@@ -119,7 +116,6 @@ NS_ASSUME_NONNULL_BEGIN
                      attachmentIds:attachmentIds
                               body:body
                       contactShare:contactShare
-                  ephemeralMessage:ephemeralMessage
                    expireStartedAt:expireStartedAt
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds

@@ -37,8 +37,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             contactShare:(nullable OWSContact *)contact
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
-                          messageSticker:(nullable MessageSticker *)messageSticker
-                        ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage NS_UNAVAILABLE;
+                          messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
@@ -68,7 +67,6 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
                             body:(nullable NSString *)body
                     contactShare:(nullable OWSContact *)contactShare
-                ephemeralMessage:(nullable EphemeralMessage *)ephemeralMessage
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
@@ -80,7 +78,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:ephemeralMessage:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:));
 
 // clang-format on
 

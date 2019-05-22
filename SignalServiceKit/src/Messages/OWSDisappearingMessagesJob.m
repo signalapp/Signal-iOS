@@ -17,7 +17,6 @@
 #import "TSMessage.h"
 #import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -190,7 +189,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
     // Don't clobber if multiple actions simultaneously triggered expiration.
     if (message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt) {
-        [message updateWithExpireStartedAt:expirationStartedAt transaction:transaction.asAnyWrite];
+        [message updateWithExpireStartedAt:expirationStartedAt transaction:transaction];
     }
 
     [transaction addCompletionQueue:nil
