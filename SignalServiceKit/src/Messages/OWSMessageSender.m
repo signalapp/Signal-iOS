@@ -1117,9 +1117,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId timestamp:message.timestamp requiringPoW:isPoWRequired]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             NSSet<AnyPromise *> *promises = (NSSet<AnyPromise *> *)result;
-            BOOL isSuccess = NO;
+            __block BOOL isSuccess = NO;
             NSUInteger promiseCount = promises.count;
-            NSUInteger errorCount = 0;
+            __block NSUInteger errorCount = 0;
             for (AnyPromise *promise in promises) {
                 [promise
                 .thenOn(OWSDispatch.sendingQueue, ^(id result) {
