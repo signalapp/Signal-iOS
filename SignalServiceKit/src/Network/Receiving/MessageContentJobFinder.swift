@@ -59,7 +59,7 @@ class GRDBMessageContentJobFinder: MessageContentJobFinder {
 
     func addJob(envelopeData: Data, plaintextData: Data?, wasReceivedByUD: Bool, transaction: GRDBWriteTransaction) {
         let job = OWSMessageContentJob(envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD)
-        SDSSerialization.save(entity: job, transaction: transaction)
+        job.anyInsert(transaction: transaction.asAnyWrite)
     }
 
     func nextJobs(batchSize: UInt, transaction: GRDBReadTransaction) -> [OWSMessageContentJob] {

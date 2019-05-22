@@ -25,7 +25,7 @@ REPO_ROOT=`git rev-parse --show-toplevel`
 # and generates fake Obj-c headers (.h) that @interface and @protocol
 # stubs for each swift class.  This is analogous to a very simplified 
 # version of the "-Swift.h" files used by Swift for bridging.
-$REPO_ROOT/Scripts/sds_codegen/sds_parse_swift_bridging.py --src-path  . --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
+# $REPO_ROOT/Scripts/sds_codegen/sds_parse_swift_bridging.py --src-path  . --swift-bridging-path $REPO_ROOT/Scripts/sds_codegen/sds-includes
 
 
 # We parse Obj-C source files (.m only, not .mm yet) to extract simple class descriptions (class name, base class, property names and types, etc.)

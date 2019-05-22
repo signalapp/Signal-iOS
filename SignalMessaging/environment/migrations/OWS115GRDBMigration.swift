@@ -197,9 +197,8 @@ extension OWS115GRDBMigration {
         try Bench(title: "Migrate \(SourceType.self)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyObjects { legacyObject in
-                let record = buildRecord(legacyObject)
                 recordCount += 1
-                try SDSSerialization.insert(entity: record, database: transaction.database)
+                legacyObject.anyInsert(transaction: transaction.asAnyWrite)
                 memorySampler.sample()
             }
             Logger.info("Migrate \(SourceType.self) completed with recordCount: \(recordCount)")

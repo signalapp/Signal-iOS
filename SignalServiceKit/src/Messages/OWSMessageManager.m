@@ -811,7 +811,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [message anySaveWithTransaction:transaction];
+    [message anyInsertWithTransaction:transaction];
 
     OWSLogDebug(@"incoming attachment message: %@", message.debugDescription);
 
@@ -991,7 +991,7 @@ NS_ASSUME_NONNULL_BEGIN
     // MJK TODO - safe to remove senderTimestamp
     [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                      inThread:thread
-                                  messageType:TSInfoMessageTypeSessionDidEnd] anySaveWithTransaction:transaction];
+                                  messageType:TSInfoMessageTypeSessionDidEnd] anyInsertWithTransaction:transaction];
 
     [self.sessionStore deleteAllSessionsForContact:envelope.source transaction:transaction];
 }
@@ -1035,7 +1035,7 @@ NS_ASSUME_NONNULL_BEGIN
              durationSeconds:OWSDisappearingMessagesConfigurationDefaultExpirationDuration];
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
-    [disappearingMessagesConfiguration anySaveWithTransaction:transaction];
+    [disappearingMessagesConfiguration anyInsertWithTransaction:transaction];
     NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source
                                                              transaction:transaction.transitional_yapWriteTransaction];
 
@@ -1046,7 +1046,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    configuration:disappearingMessagesConfiguration
                                                              createdByRemoteName:name
                                                           createdInExistingGroup:NO];
-    [message anySaveWithTransaction:transaction];
+    [message anyInsertWithTransaction:transaction];
 }
 
 - (void)handleProfileKeyMessageWithEnvelope:(SSKProtoEnvelope *)envelope
@@ -1249,7 +1249,7 @@ NS_ASSUME_NONNULL_BEGIN
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
                 newGroupThread.groupModel = newGroupModel;
-                [newGroupThread anySaveWithTransaction:transaction];
+                [newGroupThread anyInsertWithTransaction:transaction];
 
                 if (transaction.transitional_yapWriteTransaction) {
                     [[OWSDisappearingMessagesJob sharedJob]
@@ -1265,7 +1265,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              inThread:newGroupThread
                                                                           messageType:TSInfoMessageTypeGroupUpdate
                                                                         customMessage:updateGroupInfo];
-                [infoMessage anySaveWithTransaction:transaction];
+                [infoMessage anyInsertWithTransaction:transaction];
 
                 return nil;
             }
@@ -1275,8 +1275,12 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
                 [newMemberIds removeObject:envelope.source];
-                oldGroupThread.groupModel.groupMemberIds = [newMemberIds.allObjects mutableCopy];
-                [oldGroupThread anySaveWithTransaction:transaction];
+                [oldGroupThread anyUpdateWithTransaction:transaction
+                                                   block:^(TSThread *thread) {
+                                                       TSGroupThread *groupThread = (TSGroupThread *)thread;
+                                                       groupThread.groupModel.groupMemberIds =
+                                                           [newMemberIds.allObjects mutableCopy];
+                                                   }];
 
                 NSString *nameString =
                     [self.contactsManager displayNameForPhoneIdentifier:envelope.source
@@ -1287,7 +1291,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                  inThread:oldGroupThread
                                               messageType:TSInfoMessageTypeGroupUpdate
-                                            customMessage:updateGroupInfo] anySaveWithTransaction:transaction];
+                                            customMessage:updateGroupInfo] anyInsertWithTransaction:transaction];
                 return nil;
             }
             case SSKProtoGroupContextTypeDeliver: {
@@ -1362,7 +1366,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments
                                                          albumMessage:incomingMessage];
                 for (TSAttachmentPointer *pointer in attachmentPointers) {
-                    [pointer anySaveWithTransaction:transaction];
+                    [pointer anyInsertWithTransaction:transaction];
                     [incomingMessage.attachmentIds addObject:pointer.uniqueId];
                 }
 
@@ -1456,7 +1460,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSArray<TSAttachmentPointer *> *attachmentPointers =
             [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:incomingMessage];
         for (TSAttachmentPointer *pointer in attachmentPointers) {
-            [pointer anySaveWithTransaction:transaction];
+            [pointer anyInsertWithTransaction:transaction];
             [incomingMessage.attachmentIds addObject:pointer.uniqueId];
         }
 
@@ -1505,7 +1509,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [incomingMessage anySaveWithTransaction:transaction];
+    [incomingMessage anyInsertWithTransaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if ([envelope.source isEqualToString:self.tsAccountManager.localNumber]) {
@@ -1543,8 +1547,12 @@ NS_ASSUME_NONNULL_BEGIN
                     if (attachmentStream && incomingMessage.quotedMessage.thumbnailAttachmentPointerId.length > 0 &&
                         [attachmentStream.uniqueId
                             isEqualToString:incomingMessage.quotedMessage.thumbnailAttachmentPointerId]) {
-                        [incomingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
-                        [incomingMessage anySaveWithTransaction:transaction];
+                        [incomingMessage
+                            anyUpdateWithTransaction:transaction
+                                               block:^(TSInteraction *interaction) {
+                                                   TSMessage *message = (TSMessage *)interaction;
+                                                   [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+                                               }];
                     } else {
                         // We touch the message to trigger redraw of any views displaying it,
                         // since the attachment might be a contact avatar, etc.
