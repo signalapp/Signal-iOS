@@ -1529,7 +1529,7 @@ NS_ASSUME_NONNULL_BEGIN
     
     // Remove any old incoming messages
     if (incomingMessage.isFriendRequest) {
-        [thread removeIncomingFriendRequestMessagesWithTransaction:transaction];
+        [thread removeOldIncomingFriendRequestMessagesWithTransaction:transaction];
     }
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.

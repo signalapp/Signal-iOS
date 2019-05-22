@@ -708,17 +708,17 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 #pragma mark - Loki Friend Request Handling
 
-- (void)removeOutgoingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeOldOutgoingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self removeFriendRequestMessages:OWSInteractionType_OutgoingMessage withTransaction:transaction];
+    [self removeOldFriendRequestMessages:OWSInteractionType_OutgoingMessage withTransaction:transaction];
 }
 
-- (void)removeIncomingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeOldIncomingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self removeFriendRequestMessages:OWSInteractionType_IncomingMessage withTransaction:transaction];
+    [self removeOldFriendRequestMessages:OWSInteractionType_IncomingMessage withTransaction:transaction];
 }
 
-- (void)removeFriendRequestMessages:(OWSInteractionType)interactionType withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeOldFriendRequestMessages:(OWSInteractionType)interactionType withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // If we're friends with the person then we don't need to remove any friend request messages
     if (self.friendRequestStatus == TSThreadFriendRequestStatusFriends) { return; }
