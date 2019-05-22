@@ -87,8 +87,12 @@ public class MediaGalleryItem: Equatable, Hashable {
 
     // MARK: Hashable
 
-    public var hashValue: Int {
-        return attachmentStream.uniqueId?.hashValue ?? attachmentStream.hashValue
+    public func hash(into hasher: inout Hasher) {
+        if let uniqueId = attachmentStream.uniqueId {
+            hasher.combine(uniqueId)
+        } else {
+            hasher.combine(attachmentStream)
+        }
     }
 
     // MARK: Sorting
@@ -185,8 +189,9 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
 
     // MARK: Hashable
 
-    public var hashValue: Int {
-        return month.hashValue ^ year.hashValue
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(month)
+        hasher.combine(year)
     }
 
     // MARK: Comparable

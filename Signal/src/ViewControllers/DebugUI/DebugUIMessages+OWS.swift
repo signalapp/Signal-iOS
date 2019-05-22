@@ -12,7 +12,7 @@ public extension DebugUIMessages {
 
         let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId!)
 
-        let messageCount = try! interactionFinder.count(transaction: transaction)
+        let messageCount = interactionFinder.count(transaction: transaction)
 
         var messageIndices: [UInt] = Array((0..<messageCount))
         var interactions: [TSInteraction] = []

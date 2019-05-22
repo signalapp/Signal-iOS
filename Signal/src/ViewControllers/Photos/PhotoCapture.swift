@@ -461,7 +461,7 @@ extension PhotoCapture: CaptureOutputDelegate {
         // AVCaptureMovieFileOutput records to .mov, but for compatibility we need to send mp4's.
         // Because we take care to record with h264 compression (not hevc), this conversion
         // doesn't require re-encoding the media streams and happens quickly.
-        let (attachmentPromise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
+        let (attachmentPromise, _) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
         attachmentPromise.map { [weak self] attachment in
             guard let self = self else { return }
             self.delegate?.photoCapture(self, didFinishProcessingAttachment: attachment)

@@ -462,6 +462,8 @@ class CDSFeedbackOperation: OWSOperation {
                     self.makeRequest(result: .unexpectedError(reason: "CDS assertionError: \(reason ?? "unknown")"))
                 case .attestationFailed:
                     self.makeRequest(result: .attestationError(reason: "CDS attestationFailed: \(reason ?? "unknown")"))
+                @unknown default:
+                    self.makeRequest(result: .unexpectedError(reason: "CDS assertionError: unknown cdsError.code"))
                 }
             case ContactDiscoveryError.assertionError(let assertionDescription):
                 self.makeRequest(result: .unexpectedError(reason: "assertionError: \(assertionDescription)"))

@@ -691,15 +691,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
             return isUrlItem(itemProvider: itemProvider)
         }) {
-            if let itemProvider = preferredAttachment as? NSItemProvider {
-                return [itemProvider]
-            } else {
-                owsFailDebug("Unexpected attachment type: \(String(describing: preferredAttachment))")
-            }
+            return [preferredAttachment]
         }
 
         // else return whatever is available
-        if let itemProvider = inputItem.attachments?.first as? NSItemProvider {
+        if let itemProvider = inputItem.attachments?.first {
             return [itemProvider]
         } else {
             owsFailDebug("Missing attachment.")

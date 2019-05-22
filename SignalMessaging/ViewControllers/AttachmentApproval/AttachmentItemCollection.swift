@@ -61,7 +61,7 @@ public class AttachmentApprovalItem: Hashable {
     // MARK: Hashable
 
     public func hash(into hasher: inout Hasher) {
-        return attachment.hash(into: &hasher)
+        return hasher.combine(attachment)
     }
 
     // MARK: Equatable

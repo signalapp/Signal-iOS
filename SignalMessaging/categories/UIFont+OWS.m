@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
             UIFontTextStyleCaption1 : @(18.0),
             UIFontTextStyleCaption2 : @(17.0),
         } mutableCopy];
-        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
+        if (@available(iOS 11.0, *)) {
             map[UIFontTextStyleLargeTitle] = @(40.0);
         }
         maxPointSizeMap = map;
@@ -144,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)ows_dynamicTypeLargeTitle1ClampedFont
 {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
+    if (@available(iOS 11.0, *)) {
         return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleLargeTitle];
     } else {
         return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleTitle1];

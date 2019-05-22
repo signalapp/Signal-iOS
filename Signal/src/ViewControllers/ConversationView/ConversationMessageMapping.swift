@@ -200,7 +200,7 @@ public class ConversationMessageMapping: NSObject {
             throw assertionError("could not find interaction")
         }
 
-        let threadInteractionCount = try interactionFinder.count(transaction: transaction)
+        let threadInteractionCount = interactionFinder.count(transaction: transaction)
         guard index < threadInteractionCount else {
             throw assertionError("invalid index")
         }
