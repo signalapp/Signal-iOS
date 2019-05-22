@@ -66,6 +66,12 @@ static NSTimeInterval launchStartedAt;
 
 @end
 
+@interface AppDelegate ()
+
+@property (nonatomic) LokiP2PServer *lokiP2PServer;
+
+@end
+
 #pragma mark -
 
 @implementation AppDelegate
@@ -187,6 +193,10 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"applicationWillTerminate.");
 
     [DDLog flushLog];
+    
+    if (_lokiP2PServer) {
+        [_lokiP2PServer stop];
+    }
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -307,7 +317,15 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
 
     [OWSAnalytics appLaunchDidBegin];
-
+    
+    // Loki
+    _lokiP2PServer = [LokiP2PServer new];
+    if ([_lokiP2PServer startOnPort:8080]) {
+         OWSLogInfo(@"[Loki P2P Server]: Started server at %@", _lokiP2PServer.serverURL);
+    } else {
+        OWSFailDebug(@"Failed to start loki P2P server");
+    }
+   
     return YES;
 }
 
