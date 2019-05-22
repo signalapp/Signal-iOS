@@ -7,7 +7,8 @@ import Foundation
 @objc
 public protocol StickerHorizontalListViewItem {
     var view: UIView { get }
-    var selectedBlock: () -> Void { get }
+    var didSelectBlock: () -> Void { get }
+    var isSelected: Bool { get }
 }
 
 // MARK: -
@@ -15,16 +16,32 @@ public protocol StickerHorizontalListViewItem {
 @objc
 public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalListViewItem {
     private let stickerInfo: StickerInfo
-    public let selectedBlock: () -> Void
+    public let didSelectBlock: () -> Void
+    public let isSelectedBlock: () -> Bool
+
+    // This initializer can be used for cells which are never selected.
+    @objc
+    public init(stickerInfo: StickerInfo, didSelectBlock: @escaping () -> Void) {
+        self.stickerInfo = stickerInfo
+        self.didSelectBlock = didSelectBlock
+        self.isSelectedBlock = {
+            false
+        }
+    }
 
     @objc
-    public init(stickerInfo: StickerInfo, selectedBlock: @escaping () -> Void) {
+    public init(stickerInfo: StickerInfo, didSelectBlock: @escaping () -> Void, isSelectedBlock: @escaping () -> Bool) {
         self.stickerInfo = stickerInfo
-        self.selectedBlock = selectedBlock
+        self.didSelectBlock = didSelectBlock
+        self.isSelectedBlock = isSelectedBlock
     }
 
     public var view: UIView {
         return StickerView(stickerInfo: stickerInfo)
+    }
+
+    public var isSelected: Bool {
+        return isSelectedBlock()
     }
 }
 
@@ -32,17 +49,23 @@ public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalLi
 
 @objc
 public class StickerHorizontalListViewItemRecents: NSObject, StickerHorizontalListViewItem {
-    public let selectedBlock: () -> Void
+    public let didSelectBlock: () -> Void
+    public let isSelectedBlock: () -> Bool
 
     @objc
-    public init(selectedBlock: @escaping () -> Void) {
-        self.selectedBlock = selectedBlock
+    public init(didSelectBlock: @escaping () -> Void, isSelectedBlock: @escaping () -> Bool) {
+        self.didSelectBlock = didSelectBlock
+        self.isSelectedBlock = isSelectedBlock
     }
 
     public var view: UIView {
         let imageView = UIImageView()
         imageView.setTemplateImageName("recent-outline-24", tintColor: Theme.secondaryColor)
         return imageView
+    }
+
+    public var isSelected: Bool {
+        return isSelectedBlock()
     }
 }
 
@@ -52,6 +75,7 @@ public class StickerHorizontalListViewItemRecents: NSObject, StickerHorizontalLi
 public class StickerHorizontalListView: UICollectionView {
 
     private let cellSize: CGFloat
+    private let cellInset: CGFloat
 
     public typealias Item = StickerHorizontalListViewItem
 
@@ -77,8 +101,9 @@ public class StickerHorizontalListView: UICollectionView {
     private var heightConstraint: NSLayoutConstraint?
 
     @objc
-    public required init(cellSize: CGFloat, spacing: CGFloat = 0) {
+    public required init(cellSize: CGFloat, cellInset: CGFloat, spacing: CGFloat = 0) {
         self.cellSize = cellSize
+        self.cellInset = cellInset
         let layout = LinearHorizontalLayout(itemSize: CGSize(width: cellSize, height: cellSize), spacing: spacing)
 
         super.init(frame: .zero, collectionViewLayout: layout)
@@ -122,7 +147,10 @@ extension StickerHorizontalListView: UICollectionViewDelegate {
             return
         }
 
-        item.selectedBlock()
+        item.didSelectBlock()
+
+        // Selection has changed; update cells to reflect that.
+        self.reloadData()
     }
 }
 
@@ -152,10 +180,22 @@ extension StickerHorizontalListView: UICollectionViewDataSource {
             return cell
         }
 
+        if item.isSelected {
+            let selectionView = UIView()
+            selectionView.backgroundColor = (Theme.isDarkThemeEnabled
+                ? UIColor(rgbHex: 0x1e1d1c)
+                : UIColor(rgbHex: 0xe1e2e3))
+            selectionView.layer.cornerRadius = 8
+            cell.contentView.addSubview(selectionView)
+            selectionView.autoPinEdgesToSuperviewEdges()
+        }
+
         let itemView = item.view
         cell.contentView.addSubview(itemView)
-        itemView.autoPinEdgesToSuperviewEdges()
-
+        itemView.autoPinEdge(toSuperviewEdge: .top, withInset: cellInset)
+        itemView.autoPinEdge(toSuperviewEdge: .bottom, withInset: cellInset)
+        itemView.autoPinEdge(toSuperviewEdge: .leading, withInset: cellInset)
+        itemView.autoPinEdge(toSuperviewEdge: .trailing, withInset: cellInset)
         return cell
     }
 }

@@ -303,8 +303,9 @@ const CGFloat kMaxTextViewHeight = 98;
     // Suggested Stickers
     const CGFloat suggestedStickerSize = 48;
     const CGFloat suggestedStickerSpacing = 12;
-    _suggestedStickerView =
-        [[StickerHorizontalListView alloc] initWithCellSize:suggestedStickerSize spacing:suggestedStickerSpacing];
+    _suggestedStickerView = [[StickerHorizontalListView alloc] initWithCellSize:suggestedStickerSize
+                                                                      cellInset:0
+                                                                        spacing:suggestedStickerSpacing];
     self.suggestedStickerView.backgroundColor = UIColor.clearColor;
     self.suggestedStickerView.contentInset = UIEdgeInsetsMake(
         suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing);
@@ -1370,9 +1371,9 @@ const CGFloat kMaxTextViewHeight = 98;
     for (StickerInfo *stickerInfo in self.suggestedStickerInfos) {
         [items addObject:[[StickerHorizontalListViewItemSticker alloc]
                              initWithStickerInfo:stickerInfo
-                                   selectedBlock:^{
-                                       [weakSelf didSelectSuggestedSticker:stickerInfo];
-                                   }]];
+                                  didSelectBlock:^{
+                                      [weakSelf didSelectSuggestedSticker:stickerInfo];
+                                  }]];
     }
     self.suggestedStickerView.items = items;
     self.suggestedStickerView.hidden = NO;
