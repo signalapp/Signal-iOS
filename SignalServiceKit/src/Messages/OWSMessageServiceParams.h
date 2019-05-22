@@ -23,7 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *content;
 @property (nonatomic, readonly) BOOL silent;
 @property (nonatomic, readonly) BOOL online;
-@property (nonatomic) uint ttl;
+
+// Loki: Message ttl
+@property (nonatomic, readonly) uint ttl;
 
 - (instancetype)initWithType:(TSWhisperMessageType)type
                  recipientId:(NSString *)destination
@@ -31,7 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
                      content:(NSData *)content
                     isSilent:(BOOL)isSilent
                     isOnline:(BOOL)isOnline
-              registrationId:(int)registrationId;
+              registrationId:(int)registrationId
+                         ttl:(uint)ttl;
 
 @end
 

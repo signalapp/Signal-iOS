@@ -1773,6 +1773,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     
     SignalRecipient *recipient = messageSend.recipient;
     NSString *recipientId = recipient.recipientId;
+    TSOutgoingMessage *message = messageSend.message;
     
     FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId identityKeyStore:self.identityManager];
     
@@ -1790,7 +1791,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                           content:serializedMessage
                                          isSilent:false
                                          isOnline:false
-                                   registrationId:0];
+                                   registrationId:0
+                                              ttl:message.ttl];
     
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
@@ -1884,14 +1886,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                               content:serializedMessage
                                              isSilent:isSilent
                                              isOnline:isOnline
-                                       registrationId:[cipher throws_remoteRegistrationId:transaction]];
-    
-    // Loki: Add the ttl to the message params
-    messageParams.ttl = message.ttl;
+                                       registrationId:[cipher throws_remoteRegistrationId:transaction]
+                                                  ttl:message.ttl];
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
-
+    
     if (error) {
         OWSProdError([OWSAnalyticsEvents messageSendErrorCouldNotSerializeMessageJson]);
         return nil;
