@@ -98,7 +98,7 @@ fileprivate extension GCDWebServerDataRequest {
     @objc @discardableResult func start(onPort port: UInt) -> Bool  {
         guard !webServer.isRunning else { return false }
         webServer.start(withPort: port, bonjourName: nil)
-        return true
+        return webServer.isRunning
     }
     
     @objc func stop() {

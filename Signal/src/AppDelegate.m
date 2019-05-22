@@ -320,12 +320,21 @@ static NSTimeInterval launchStartedAt;
     
     // Loki
     _lokiP2PServer = [LokiP2PServer new];
-    if ([_lokiP2PServer startOnPort:8080]) {
-         OWSLogInfo(@"[Loki P2P Server]: Started server at %@", _lokiP2PServer.serverURL);
-    } else {
-        OWSFailDebug(@"Failed to start loki P2P server");
+    
+    // We try to bind to 8081, if we can't then we just fallback to any random port
+    NSArray *ports = @[@8081, @0];
+    for (NSNumber *port in ports) {
+        if (_lokiP2PServer.isRunning) { break; }
+        if ([_lokiP2PServer startOnPort:port.unsignedIntegerValue]) {
+            OWSLogInfo(@"[Loki P2P Server]: Started server at %@", _lokiP2PServer.serverURL);
+            break;
+        }
     }
-   
+    
+    if (!_lokiP2PServer.isRunning) {
+        OWSLogWarn(@"[Loki P2P Server]: Failed to start loki P2P server");
+    }
+  
     return YES;
 }
 
