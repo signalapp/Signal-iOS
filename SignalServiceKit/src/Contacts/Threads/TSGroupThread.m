@@ -139,7 +139,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     TSGroupThread *thread = (TSGroupThread *)[self anyFetchWithUniqueId:uniqueId transaction:transaction];
     if (!thread) {
         thread = [[self alloc] initWithGroupId:groupId];
-        [thread anySaveWithTransaction:transaction];
+        [thread anyInsertWithTransaction:transaction];
     }
     return thread;
 }

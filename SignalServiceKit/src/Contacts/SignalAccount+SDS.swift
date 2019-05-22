@@ -11,10 +11,14 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct SignalAccountRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct SignalAccountRecord: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return SignalAccountSerializer.table
+    }
+
     public static let databaseTableName: String = SignalAccountSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -40,7 +44,6 @@ public struct SignalAccountRecord: Codable, FetchableRecord, PersistableRecord, 
     public static func columnName(_ column: SignalAccountRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -62,6 +65,10 @@ extension SignalAccount {
     // database row.  The recordType column is used to determine
     // the corresponding model class.
     class func fromRecord(_ record: SignalAccountRecord) throws -> SignalAccount {
+
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
 
         switch record.recordType {
         case .signalAccount:
@@ -86,9 +93,9 @@ extension SignalAccount {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension SignalAccount: SDSSerializable {
+extension SignalAccount: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -97,6 +104,10 @@ extension SignalAccount: SDSSerializable {
         default:
             return SignalAccountSerializer(model: self)
         }
+    }
+
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -132,13 +143,16 @@ extension SignalAccountSerializer {
 
 @objc
 extension SignalAccount {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
-        }
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -165,21 +179,22 @@ extension SignalAccount {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (SignalAccount) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (SignalAccount) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -187,7 +202,12 @@ extension SignalAccount {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
@@ -357,68 +377,23 @@ class SignalAccountSerializer: SDSSerializer {
         self.model = model
     }
 
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return SignalAccountSerializer.table
-    }
+    // MARK: - Record
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            SignalAccountSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
+    func asRecord() throws -> SDSRecord {
+        let id: Int64? = nil
 
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.signalAccount.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
+        let recordType: SDSRecordType = .signalAccount
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
         }
-        return result
-    }
 
-    public func updateColumnNames() -> [String] {
-        return [
-            SignalAccountSerializer.contactColumn,
-            SignalAccountSerializer.hasMultipleAccountContactColumn,
-            SignalAccountSerializer.multipleAccountLabelTextColumn,
-            SignalAccountSerializer.recipientIdColumn
-            ].map { $0.columnName }
-    }
+        // Base class properties
+        let contact: Data? = optionalArchive(model.contact)
+        let hasMultipleAccountContact: Bool = model.hasMultipleAccountContact
+        let multipleAccountLabelText: String = model.multipleAccountLabelText
+        let recipientId: String = model.recipientId
 
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSDeserializer.archive(self.model.contact) ?? DatabaseValue.null,
-            self.model.hasMultipleAccountContact,
-            self.model.multipleAccountLabelText,
-            self.model.recipientId
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return SignalAccountSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
+        return SignalAccountRecord(id: id, recordType: recordType, uniqueId: uniqueId, contact: contact, hasMultipleAccountContact: hasMultipleAccountContact, multipleAccountLabelText: multipleAccountLabelText, recipientId: recipientId)
     }
 }

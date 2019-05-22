@@ -163,12 +163,12 @@ extension OWS115GRDBMigration {
         }
     }
 
-    private func migrateUnorderedRecords<T>(label: String, finder: LegacyUnorderedFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws where T: TSYapDatabaseObject & SDSSerializable {
+    private func migrateUnorderedRecords<T>(label: String, finder: LegacyUnorderedFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws where T: SDSModel {
         try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyObjects { legacyRecord in
                 recordCount += 1
-                try SDSSerialization.insert(entity: legacyRecord, database: transaction.database)
+                legacyRecord.anyInsert(transaction: transaction.asAnyWrite)
                 memorySampler.sample()
             }
             Logger.info("completed with recordCount: \(recordCount)")
@@ -188,18 +188,17 @@ extension OWS115GRDBMigration {
     }
 
     private func migrateMappedCollectionObjects<SourceType, DestinationType>(label: String,
-                                                                     finder: LegacyObjectFinder<SourceType>,
-                                                                     memorySamplerRatio: Float,
-                                                                     transaction: GRDBWriteTransaction,
-                                                                     buildRecord: @escaping (SourceType) -> DestinationType
-        ) throws where DestinationType: SDSSerializable {
+                                                                             finder: LegacyObjectFinder<SourceType>,
+                                                                             memorySamplerRatio: Float,
+                                                                             transaction: GRDBWriteTransaction,
+                                                                             migrateObject: @escaping (SourceType) -> DestinationType) throws where DestinationType: SDSModel {
 
         try Bench(title: "Migrate \(SourceType.self)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyObjects { legacyObject in
-                let record = buildRecord(legacyObject)
                 recordCount += 1
-                try SDSSerialization.insert(entity: record, database: transaction.database)
+                let newObject = migrateObject(legacyObject)
+                newObject.anyInsert(transaction: transaction.asAnyWrite)
                 memorySampler.sample()
             }
             Logger.info("Migrate \(SourceType.self) completed with recordCount: \(recordCount)")
@@ -211,7 +210,7 @@ extension OWS115GRDBMigration {
             var recordCount = 0
             try jobRecordFinder.enumerateJobRecords { legacyRecord in
                 recordCount += 1
-                try SDSSerialization.insert(entity: legacyRecord, database: transaction.database)
+                legacyRecord.anyInsert(transaction: transaction.asAnyWrite)
                 memorySampler.sample()
             }
             Logger.info("completed with recordCount: \(recordCount)")
@@ -222,7 +221,7 @@ extension OWS115GRDBMigration {
         try Bench(title: "Migrate Interactions", memorySamplerRatio: 0.001) { memorySampler in
             var recordCount = 0
             try interactionFinder.enumerateInteractions { legacyInteraction in
-                try SDSSerialization.insert(entity: legacyInteraction, database: transaction.database)
+                legacyInteraction.anyInsert(transaction: transaction.asAnyWrite)
                 recordCount += 1
                 if (recordCount % 500 == 0) {
                     Logger.debug("saved \(recordCount) interactions")

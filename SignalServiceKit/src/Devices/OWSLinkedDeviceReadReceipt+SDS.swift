@@ -11,10 +11,14 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct LinkedDeviceReadReceiptRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct LinkedDeviceReadReceiptRecord: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return OWSLinkedDeviceReadReceiptSerializer.table
+    }
+
     public static let databaseTableName: String = OWSLinkedDeviceReadReceiptSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -38,7 +42,6 @@ public struct LinkedDeviceReadReceiptRecord: Codable, FetchableRecord, Persistab
     public static func columnName(_ column: LinkedDeviceReadReceiptRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -61,6 +64,10 @@ extension OWSLinkedDeviceReadReceipt {
     // the corresponding model class.
     class func fromRecord(_ record: LinkedDeviceReadReceiptRecord) throws -> OWSLinkedDeviceReadReceipt {
 
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
+
         switch record.recordType {
         case .linkedDeviceReadReceipt:
 
@@ -81,9 +88,9 @@ extension OWSLinkedDeviceReadReceipt {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension OWSLinkedDeviceReadReceipt: SDSSerializable {
+extension OWSLinkedDeviceReadReceipt: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -92,6 +99,10 @@ extension OWSLinkedDeviceReadReceipt: SDSSerializable {
         default:
             return OWSLinkedDeviceReadReceiptSerializer(model: self)
         }
+    }
+
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -125,13 +136,16 @@ extension OWSLinkedDeviceReadReceiptSerializer {
 
 @objc
 extension OWSLinkedDeviceReadReceipt {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
-        }
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -158,21 +172,22 @@ extension OWSLinkedDeviceReadReceipt {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (OWSLinkedDeviceReadReceipt) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSLinkedDeviceReadReceipt) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -180,7 +195,12 @@ extension OWSLinkedDeviceReadReceipt {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
@@ -350,66 +370,22 @@ class OWSLinkedDeviceReadReceiptSerializer: SDSSerializer {
         self.model = model
     }
 
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return OWSLinkedDeviceReadReceiptSerializer.table
-    }
+    // MARK: - Record
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            OWSLinkedDeviceReadReceiptSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
+    func asRecord() throws -> SDSRecord {
+        let id: Int64? = nil
 
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.linkedDeviceReadReceipt.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
+        let recordType: SDSRecordType = .linkedDeviceReadReceipt
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
         }
-        return result
-    }
 
-    public func updateColumnNames() -> [String] {
-        return [
-            OWSLinkedDeviceReadReceiptSerializer.messageIdTimestampColumn,
-            OWSLinkedDeviceReadReceiptSerializer.readTimestampColumn,
-            OWSLinkedDeviceReadReceiptSerializer.senderIdColumn
-            ].map { $0.columnName }
-    }
+        // Base class properties
+        let messageIdTimestamp: UInt64 = model.messageIdTimestamp
+        let readTimestamp: UInt64 = model.readTimestamp
+        let senderId: String = model.senderId
 
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.messageIdTimestamp,
-            self.model.readTimestamp,
-            self.model.senderId
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return OWSLinkedDeviceReadReceiptSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
+        return LinkedDeviceReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp, senderId: senderId)
     }
 }

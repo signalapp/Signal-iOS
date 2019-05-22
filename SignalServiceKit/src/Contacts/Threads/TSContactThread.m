@@ -95,7 +95,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
     if (!thread) {
         thread = [[TSContactThread alloc] initWithContactId:contactId];
-        [thread anySaveWithTransaction:transaction];
+        [thread anyInsertWithTransaction:transaction];
     }
 
     return thread;

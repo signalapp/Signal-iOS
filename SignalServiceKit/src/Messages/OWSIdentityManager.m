@@ -246,7 +246,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                            isFirstKnownKey:YES
                                                  createdAt:[NSDate new]
                                          verificationState:OWSVerificationStateDefault]
-            anySaveWithTransaction:transaction];
+            anyInsertWithTransaction:transaction];
 
         // Cancel any pending verification state sync messages for this recipient.
         [self clearSyncMessageForRecipientId:recipientId transaction:transaction];
@@ -278,7 +278,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                identityKey:identityKey
                                            isFirstKnownKey:NO
                                                  createdAt:[NSDate new]
-                                         verificationState:verificationState] anySaveWithTransaction:transaction];
+                                         verificationState:verificationState] anyInsertWithTransaction:transaction];
 
         [self.sessionStore archiveAllSessionsForContact:recipientId transaction:transaction];
 
@@ -561,7 +561,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     // MJK TODO - why not save immediately, why build up this array?
     for (TSMessage *message in messages) {
-        [message anySaveWithTransaction:transaction];
+        [message anyInsertWithTransaction:transaction];
     }
 
     [SSKEnvironment.shared.notificationsManager notifyUserForErrorMessage:errorMessage
@@ -892,7 +892,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     // MJK TODO - why not save in-line, vs storing in an array and saving the array?
     for (TSMessage *message in messages) {
-        [message anySaveWithTransaction:transaction];
+        [message anyInsertWithTransaction:transaction];
     }
 }
 

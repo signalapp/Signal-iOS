@@ -99,7 +99,7 @@ public class EphemeralMessage: MTLModel {
         guard let attachmentPointer = TSAttachmentPointer(fromProto: dataProto, albumMessage: nil) else {
             throw EphemeralMessageError.invalidInput
         }
-        attachmentPointer.anySave(transaction: transaction)
+        attachmentPointer.anyInsert(transaction: transaction)
         guard let attachmentId = attachmentPointer.uniqueId else {
             throw EphemeralMessageError.assertionFailure
         }
@@ -158,7 +158,7 @@ public class EphemeralMessage: MTLModel {
             owsFailDebug("Could not write data source for path: \(filePath)")
             throw EphemeralMessageError.assertionFailure
         }
-        attachment.anySave(transaction: transaction)
+        attachment.anyInsert(transaction: transaction)
 
         guard let attachmentId = attachment.uniqueId else {
             throw EphemeralMessageError.assertionFailure

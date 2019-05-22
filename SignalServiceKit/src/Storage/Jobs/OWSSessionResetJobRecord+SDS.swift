@@ -20,68 +20,30 @@ class OWSSessionResetJobRecordSerializer: SDSSerializer {
         self.model = model
     }
 
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return SSKJobRecordSerializer.table
-    }
+    // MARK: - Record
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            SSKJobRecordSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
+    func asRecord() throws -> SDSRecord {
+        let id: Int64? = nil
 
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.sessionResetJobRecord.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
+        let recordType: SDSRecordType = .sessionResetJobRecord
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
         }
-        return result
-    }
 
-    public func updateColumnNames() -> [String] {
-        return [
-            SSKJobRecordSerializer.failureCountColumn,
-            SSKJobRecordSerializer.labelColumn,
-            SSKJobRecordSerializer.statusColumn,
-            SSKJobRecordSerializer.contactThreadIdColumn
-            ].map { $0.columnName }
-    }
+        // Base class properties
+        let failureCount: UInt = model.failureCount
+        let label: String = model.label
+        let status: SSKJobRecordStatus = model.status
 
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.failureCount,
-            self.model.label,
-            self.model.status.rawValue,
-            self.model.contactThreadId
+        // Subclass properties
+        let contactThreadId: String? = model.contactThreadId
+        let envelopeData: Data? = nil
+        let invisibleMessage: Data? = nil
+        let messageId: String? = nil
+        let removeMessageAfterSending: Bool? = nil
+        let threadId: String? = nil
 
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return SSKJobRecordSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
+        return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
     }
 }

@@ -11,10 +11,14 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct JobRecordRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct JobRecordRecord: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return SSKJobRecordSerializer.table
+    }
+
     public static let databaseTableName: String = SSKJobRecordSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -52,7 +56,6 @@ public struct JobRecordRecord: Codable, FetchableRecord, PersistableRecord, Tabl
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -75,13 +78,17 @@ extension SSKJobRecord {
     // the corresponding model class.
     class func fromRecord(_ record: JobRecordRecord) throws -> SSKJobRecord {
 
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
+
         switch record.recordType {
         case .sessionResetJobRecord:
 
             let uniqueId: String = record.uniqueId
             let failureCount: UInt = record.failureCount
             let label: String = record.label
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let status: SSKJobRecordStatus = record.status
             let contactThreadId: String = try SDSDeserialization.required(record.contactThreadId, name: "contactThreadId")
 
@@ -97,7 +104,7 @@ extension SSKJobRecord {
             let uniqueId: String = record.uniqueId
             let failureCount: UInt = record.failureCount
             let label: String = record.label
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let status: SSKJobRecordStatus = record.status
 
             return SSKJobRecord(uniqueId: uniqueId,
@@ -111,7 +118,7 @@ extension SSKJobRecord {
             let uniqueId: String = record.uniqueId
             let failureCount: UInt = record.failureCount
             let label: String = record.label
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let status: SSKJobRecordStatus = record.status
             let envelopeData: Data? = SDSDeserialization.optionalData(record.envelopeData, name: "envelopeData")
 
@@ -127,7 +134,7 @@ extension SSKJobRecord {
             let uniqueId: String = record.uniqueId
             let failureCount: UInt = record.failureCount
             let label: String = record.label
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let status: SSKJobRecordStatus = record.status
             let invisibleMessageSerialized: Data? = record.invisibleMessage
             let invisibleMessage: TSOutgoingMessage? = try SDSDeserialization.optionalUnarchive(invisibleMessageSerialized, name: "invisibleMessage")
@@ -152,9 +159,9 @@ extension SSKJobRecord {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension SSKJobRecord: SDSSerializable {
+extension SSKJobRecord: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -172,6 +179,10 @@ extension SSKJobRecord: SDSSerializable {
         default:
             return SSKJobRecordSerializer(model: self)
         }
+    }
+
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -218,13 +229,16 @@ extension SSKJobRecordSerializer {
 
 @objc
 extension SSKJobRecord {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
-        }
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -251,21 +265,22 @@ extension SSKJobRecord {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (SSKJobRecord) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (SSKJobRecord) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -273,7 +288,12 @@ extension SSKJobRecord {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
@@ -443,66 +463,30 @@ class SSKJobRecordSerializer: SDSSerializer {
         self.model = model
     }
 
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return SSKJobRecordSerializer.table
-    }
+    // MARK: - Record
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            SSKJobRecordSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
+    func asRecord() throws -> SDSRecord {
+        let id: Int64? = nil
 
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.jobRecord.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
+        let recordType: SDSRecordType = .jobRecord
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
         }
-        return result
-    }
 
-    public func updateColumnNames() -> [String] {
-        return [
-            SSKJobRecordSerializer.failureCountColumn,
-            SSKJobRecordSerializer.labelColumn,
-            SSKJobRecordSerializer.statusColumn
-            ].map { $0.columnName }
-    }
+        // Base class properties
+        let failureCount: UInt = model.failureCount
+        let label: String = model.label
+        let status: SSKJobRecordStatus = model.status
 
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.failureCount,
-            self.model.label,
-            self.model.status.rawValue
+        // Subclass properties
+        let contactThreadId: String? = nil
+        let envelopeData: Data? = nil
+        let invisibleMessage: Data? = nil
+        let messageId: String? = nil
+        let removeMessageAfterSending: Bool? = nil
+        let threadId: String? = nil
 
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return SSKJobRecordSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
+        return JobRecordRecord(id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId)
     }
 }

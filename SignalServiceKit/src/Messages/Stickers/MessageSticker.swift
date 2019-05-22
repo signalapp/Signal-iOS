@@ -145,7 +145,7 @@ public class MessageSticker: MTLModel {
         guard let attachmentPointer = TSAttachmentPointer(fromProto: dataProto, albumMessage: nil) else {
             throw StickerError.invalidInput
         }
-        attachmentPointer.anySave(transaction: transaction)
+        attachmentPointer.anyInsert(transaction: transaction)
         return attachmentPointer
     }
 
@@ -170,7 +170,7 @@ public class MessageSticker: MTLModel {
             owsFailDebug("Could not write data source for path: \(filePath)")
             return nil
         }
-        attachment.anySave(transaction: transaction)
+        attachment.anyInsert(transaction: transaction)
         return attachment
     }
 
@@ -214,7 +214,7 @@ public class MessageSticker: MTLModel {
             owsFailDebug("Could not write data source for path: \(filePath)")
             throw StickerError.assertionFailure
         }
-        attachment.anySave(transaction: transaction)
+        attachment.anyInsert(transaction: transaction)
 
         guard let attachmentId = attachment.uniqueId else {
             throw StickerError.assertionFailure

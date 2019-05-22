@@ -3731,7 +3731,7 @@ typedef enum : NSUInteger {
         __block NSString *currentDraft = [self.inputToolbar messageText];
 
         [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [thread setDraft:currentDraft transaction:transaction];
+            [thread updateWithDraft:currentDraft transaction:transaction.asAnyWrite];
         }];
     }
 }
@@ -4480,7 +4480,7 @@ typedef enum : NSUInteger {
     });
 
     [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self.thread setDraft:@"" transaction:transaction];
+        [self.thread updateWithDraft:@"" transaction:transaction.asAnyWrite];
     }];
 
     if (didAddToProfileWhitelist) {

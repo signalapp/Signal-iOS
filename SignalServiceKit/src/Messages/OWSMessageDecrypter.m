@@ -637,7 +637,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
         OWSAssertDebug(errorMessage);
         if (errorMessage != nil) {
-            [errorMessage anySaveWithTransaction:transaction];
+            [errorMessage anyInsertWithTransaction:transaction];
             [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
         }
     }];

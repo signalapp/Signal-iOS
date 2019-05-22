@@ -6,22 +6,39 @@ import Foundation
 import GRDBCipher
 import SignalCoreKit
 
-public protocol SDSSerializable {
-    var serializer: SDSSerializer { get }
-}
+// MARK: - SDSSerializer
 
 public protocol SDSSerializer {
-    func serializableColumnTableMetadata() -> SDSTableMetadata
+    func asRecord() throws -> SDSRecord
+}
 
-    func insertColumnNames() -> [String]
+// MARK: - SDSSerializer Helpers
 
-    func insertColumnValues() -> [DatabaseValueConvertible]
+public extension SDSSerializer {
 
-    func updateColumnNames() -> [String]
+    // MARK: - Numeric Primitive
 
-    func updateColumnValues() -> [DatabaseValueConvertible]
+    func archiveOptionalNSNumber<T>(_ value: NSNumber?, conversion: (NSNumber) -> T) -> T? {
+        guard let value = value else {
+            return nil
+        }
+        return conversion(value)
+    }
 
-    func uniqueIdColumnName() -> String
+    func archiveNSNumber<T>(_ value: NSNumber, conversion: (NSNumber) -> T) -> T {
+        return conversion(value)
+    }
 
-    func uniqueIdColumnValue() -> DatabaseValueConvertible
+    // MARK: - Blob
+
+    func optionalArchive(_ value: Any?) -> Data? {
+        guard let value = value else {
+            return nil
+        }
+        return requiredArchive(value)
+    }
+
+    func requiredArchive(_ value: Any) -> Data {
+        return NSKeyedArchiver.archivedData(withRootObject: value)
+    }
 }

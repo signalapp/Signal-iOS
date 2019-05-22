@@ -20,92 +20,46 @@ class TSAttachmentPointerSerializer: SDSSerializer {
         self.model = model
     }
 
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSAttachmentSerializer.table
-    }
+    // MARK: - Record
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            TSAttachmentSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
+    func asRecord() throws -> SDSRecord {
+        let id: Int64? = nil
 
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.attachmentPointer.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
+        let recordType: SDSRecordType = .attachmentPointer
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
         }
-        return result
-    }
 
-    public func updateColumnNames() -> [String] {
-        return [
-            TSAttachmentSerializer.albumMessageIdColumn,
-            TSAttachmentSerializer.attachmentSchemaVersionColumn,
-            TSAttachmentSerializer.attachmentTypeColumn,
-            TSAttachmentSerializer.byteCountColumn,
-            TSAttachmentSerializer.captionColumn,
-            TSAttachmentSerializer.contentTypeColumn,
-            TSAttachmentSerializer.encryptionKeyColumn,
-            TSAttachmentSerializer.isDownloadedColumn,
-            TSAttachmentSerializer.serverIdColumn,
-            TSAttachmentSerializer.sourceFilenameColumn,
-            TSAttachmentSerializer.digestColumn,
-            TSAttachmentSerializer.lazyRestoreFragmentIdColumn,
-            TSAttachmentSerializer.mediaSizeColumn,
-            TSAttachmentSerializer.mostRecentFailureLocalizedTextColumn,
-            TSAttachmentSerializer.pointerTypeColumn,
-            TSAttachmentSerializer.stateColumn
-            ].map { $0.columnName }
-    }
+        // Base class properties
+        let albumMessageId: String? = model.albumMessageId
+        let attachmentSchemaVersion: UInt = model.attachmentSchemaVersion
+        let attachmentType: TSAttachmentType = model.attachmentType
+        let byteCount: UInt32 = model.byteCount
+        let caption: String? = model.caption
+        let contentType: String = model.contentType
+        let encryptionKey: Data? = model.encryptionKey
+        let isDownloaded: Bool = model.isDownloaded
+        let serverId: UInt64 = model.serverId
+        let sourceFilename: String? = model.sourceFilename
 
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.albumMessageId ?? DatabaseValue.null,
-            self.model.attachmentSchemaVersion,
-            self.model.attachmentType.rawValue,
-            self.model.byteCount,
-            self.model.caption ?? DatabaseValue.null,
-            self.model.contentType,
-            self.model.encryptionKey ?? DatabaseValue.null,
-            self.model.isDownloaded,
-            self.model.serverId,
-            self.model.sourceFilename ?? DatabaseValue.null,
-            self.model.digest ?? DatabaseValue.null,
-            self.model.lazyRestoreFragmentId ?? DatabaseValue.null,
-            SDSDeserializer.archive(self.model.mediaSize) ?? DatabaseValue.null,
-            self.model.mostRecentFailureLocalizedText ?? DatabaseValue.null,
-            self.model.pointerType.rawValue,
-            self.model.state.rawValue
+        // Subclass properties
+        let cachedAudioDurationSeconds: Double? = nil
+        let cachedImageHeight: Double? = nil
+        let cachedImageWidth: Double? = nil
+        let creationTimestamp: Date? = nil
+        let digest: Data? = model.digest
+        let isUploaded: Bool? = nil
+        let isValidImageCached: Bool? = nil
+        let isValidVideoCached: Bool? = nil
+        let lazyRestoreFragmentId: String? = model.lazyRestoreFragmentId
+        let localRelativeFilePath: String? = nil
+        let mediaSize: CGSize? = model.mediaSize
+        let mostRecentFailureLocalizedText: String? = model.mostRecentFailureLocalizedText
+        let pointerType: TSAttachmentPointerType? = model.pointerType
+        let shouldAlwaysPad: Bool? = nil
+        let state: TSAttachmentPointerState? = model.state
 
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return TSAttachmentSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
+        return AttachmentRecord(id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentSchemaVersion: attachmentSchemaVersion, attachmentType: attachmentType, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, isDownloaded: isDownloaded, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, mostRecentFailureLocalizedText: mostRecentFailureLocalizedText, pointerType: pointerType, shouldAlwaysPad: shouldAlwaysPad, state: state)
     }
 }

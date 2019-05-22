@@ -11,10 +11,14 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct StickerPackRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct StickerPackRecord: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return StickerPackSerializer.table
+    }
+
     public static let databaseTableName: String = StickerPackSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -46,7 +50,6 @@ public struct StickerPackRecord: Codable, FetchableRecord, PersistableRecord, Ta
     public static func columnName(_ column: StickerPackRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -68,6 +71,10 @@ extension StickerPack {
     // database row.  The recordType column is used to determine
     // the corresponding model class.
     class func fromRecord(_ record: StickerPackRecord) throws -> StickerPack {
+
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
 
         switch record.recordType {
         case .stickerPack:
@@ -100,9 +107,9 @@ extension StickerPack {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension StickerPack: SDSSerializable {
+extension StickerPack: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -111,6 +118,10 @@ extension StickerPack: SDSSerializable {
         default:
             return StickerPackSerializer(model: self)
         }
+    }
+
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -152,13 +163,16 @@ extension StickerPackSerializer {
 
 @objc
 extension StickerPack {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
-        }
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -185,21 +199,22 @@ extension StickerPack {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (StickerPack) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (StickerPack) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -207,7 +222,12 @@ extension StickerPack {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
@@ -377,74 +397,26 @@ class StickerPackSerializer: SDSSerializer {
         self.model = model
     }
 
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return StickerPackSerializer.table
-    }
+    // MARK: - Record
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            StickerPackSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
+    func asRecord() throws -> SDSRecord {
+        let id: Int64? = nil
 
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.stickerPack.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
+        let recordType: SDSRecordType = .stickerPack
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
         }
-        return result
-    }
 
-    public func updateColumnNames() -> [String] {
-        return [
-            StickerPackSerializer.authorColumn,
-            StickerPackSerializer.coverColumn,
-            StickerPackSerializer.dateCreatedColumn,
-            StickerPackSerializer.infoColumn,
-            StickerPackSerializer.isInstalledColumn,
-            StickerPackSerializer.itemsColumn,
-            StickerPackSerializer.titleColumn
-            ].map { $0.columnName }
-    }
+        // Base class properties
+        let author: String? = model.author
+        let cover: Data = requiredArchive(model.cover)
+        let dateCreated: Date = model.dateCreated
+        let info: Data = requiredArchive(model.info)
+        let isInstalled: Bool = model.isInstalled
+        let items: Data = requiredArchive(model.items)
+        let title: String? = model.title
 
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.author ?? DatabaseValue.null,
-            SDSDeserializer.archive(self.model.cover) ?? DatabaseValue.null,
-            self.model.dateCreated,
-            SDSDeserializer.archive(self.model.info) ?? DatabaseValue.null,
-            self.model.isInstalled,
-            SDSDeserializer.archive(self.model.items) ?? DatabaseValue.null,
-            self.model.title ?? DatabaseValue.null
-
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return StickerPackSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
+        return StickerPackRecord(id: id, recordType: recordType, uniqueId: uniqueId, author: author, cover: cover, dateCreated: dateCreated, info: info, isInstalled: isInstalled, items: items, title: title)
     }
 }

@@ -11,10 +11,14 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct AttachmentRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct AttachmentRecord: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return TSAttachmentSerializer.table
+    }
+
     public static let databaseTableName: String = TSAttachmentSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -84,7 +88,6 @@ public struct AttachmentRecord: Codable, FetchableRecord, PersistableRecord, Tab
     public static func columnName(_ column: AttachmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -106,6 +109,10 @@ extension TSAttachment {
     // database row.  The recordType column is used to determine
     // the corresponding model class.
     class func fromRecord(_ record: AttachmentRecord) throws -> TSAttachment {
+
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
 
         switch record.recordType {
         case .attachment:
@@ -229,9 +236,9 @@ extension TSAttachment {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension TSAttachment: SDSSerializable {
+extension TSAttachment: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -246,6 +253,10 @@ extension TSAttachment: SDSSerializable {
         default:
             return TSAttachmentSerializer(model: self)
         }
+    }
+
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -324,13 +335,16 @@ extension TSAttachmentSerializer {
 
 @objc
 extension TSAttachment {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
-        }
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -357,21 +371,22 @@ extension TSAttachment {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (TSAttachment) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSAttachment) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -379,7 +394,12 @@ extension TSAttachment {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
@@ -549,80 +569,46 @@ class TSAttachmentSerializer: SDSSerializer {
         self.model = model
     }
 
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSAttachmentSerializer.table
-    }
+    // MARK: - Record
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            TSAttachmentSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
+    func asRecord() throws -> SDSRecord {
+        let id: Int64? = nil
 
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.attachment.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
+        let recordType: SDSRecordType = .attachment
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
         }
-        return result
-    }
 
-    public func updateColumnNames() -> [String] {
-        return [
-            TSAttachmentSerializer.albumMessageIdColumn,
-            TSAttachmentSerializer.attachmentSchemaVersionColumn,
-            TSAttachmentSerializer.attachmentTypeColumn,
-            TSAttachmentSerializer.byteCountColumn,
-            TSAttachmentSerializer.captionColumn,
-            TSAttachmentSerializer.contentTypeColumn,
-            TSAttachmentSerializer.encryptionKeyColumn,
-            TSAttachmentSerializer.isDownloadedColumn,
-            TSAttachmentSerializer.serverIdColumn,
-            TSAttachmentSerializer.sourceFilenameColumn
-            ].map { $0.columnName }
-    }
+        // Base class properties
+        let albumMessageId: String? = model.albumMessageId
+        let attachmentSchemaVersion: UInt = model.attachmentSchemaVersion
+        let attachmentType: TSAttachmentType = model.attachmentType
+        let byteCount: UInt32 = model.byteCount
+        let caption: String? = model.caption
+        let contentType: String = model.contentType
+        let encryptionKey: Data? = model.encryptionKey
+        let isDownloaded: Bool = model.isDownloaded
+        let serverId: UInt64 = model.serverId
+        let sourceFilename: String? = model.sourceFilename
 
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.albumMessageId ?? DatabaseValue.null,
-            self.model.attachmentSchemaVersion,
-            self.model.attachmentType.rawValue,
-            self.model.byteCount,
-            self.model.caption ?? DatabaseValue.null,
-            self.model.contentType,
-            self.model.encryptionKey ?? DatabaseValue.null,
-            self.model.isDownloaded,
-            self.model.serverId,
-            self.model.sourceFilename ?? DatabaseValue.null
+        // Subclass properties
+        let cachedAudioDurationSeconds: Double? = nil
+        let cachedImageHeight: Double? = nil
+        let cachedImageWidth: Double? = nil
+        let creationTimestamp: Date? = nil
+        let digest: Data? = nil
+        let isUploaded: Bool? = nil
+        let isValidImageCached: Bool? = nil
+        let isValidVideoCached: Bool? = nil
+        let lazyRestoreFragmentId: String? = nil
+        let localRelativeFilePath: String? = nil
+        let mediaSize: CGSize? = nil
+        let mostRecentFailureLocalizedText: String? = nil
+        let pointerType: TSAttachmentPointerType? = nil
+        let shouldAlwaysPad: Bool? = nil
+        let state: TSAttachmentPointerState? = nil
 
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return TSAttachmentSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
+        return AttachmentRecord(id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentSchemaVersion: attachmentSchemaVersion, attachmentType: attachmentType, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, isDownloaded: isDownloaded, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, mostRecentFailureLocalizedText: mostRecentFailureLocalizedText, pointerType: pointerType, shouldAlwaysPad: shouldAlwaysPad, state: state)
     }
 }

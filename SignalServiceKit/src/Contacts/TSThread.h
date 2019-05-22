@@ -182,7 +182,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  *  @param draftString Draft string to be saved.
  *  @param transaction Database transaction.
  */
-- (void)setDraft:(NSString *)draftString transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithDraft:(NSString *)draftString transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (atomic, readonly) BOOL isMuted;
 @property (atomic, readonly, nullable) NSDate *mutedUntilDate;

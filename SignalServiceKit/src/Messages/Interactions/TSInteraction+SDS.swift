@@ -11,10 +11,14 @@ import SignalCoreKit
 
 // MARK: - Record
 
-public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, TableRecord {
+public struct InteractionRecord: SDSRecord {
+    public var tableMetadata: SDSTableMetadata {
+        return TSInteractionSerializer.table
+    }
+
     public static let databaseTableName: String = TSInteractionSerializer.table.tableName
 
-    public let id: UInt64
+    public var id: Int64?
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
@@ -138,7 +142,6 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
-
 }
 
 // MARK: - StringInterpolation
@@ -161,12 +164,16 @@ extension TSInteraction {
     // the corresponding model class.
     class func fromRecord(_ record: InteractionRecord) throws -> TSInteraction {
 
+        guard let recordId = record.id else {
+            throw SDSError.invalidValue
+        }
+
         switch record.recordType {
         case .addToContactsOfferMessage:
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -222,7 +229,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -278,7 +285,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let beforeInteractionId: String = try SDSDeserialization.required(record.beforeInteractionId, name: "beforeInteractionId")
@@ -302,7 +309,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -364,7 +371,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -418,7 +425,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -480,7 +487,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let callSchemaVersion: UInt = try SDSDeserialization.required(record.callSchemaVersion, name: "callSchemaVersion")
@@ -502,7 +509,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -554,7 +561,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -606,7 +613,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -660,7 +667,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
 
@@ -674,7 +681,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -726,7 +733,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -782,7 +789,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -839,7 +846,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -881,7 +888,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
             let attachmentIdsSerialized: Data? = record.attachmentIds
@@ -951,7 +958,7 @@ extension TSInteraction {
 
             let uniqueId: String = record.uniqueId
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
-            let sortId: UInt64 = record.id
+            let sortId: UInt64 = UInt64(recordId)
             let timestamp: UInt64 = record.timestamp
             let uniqueThreadId: String = record.threadUniqueId
 
@@ -968,9 +975,9 @@ extension TSInteraction {
     }
 }
 
-// MARK: - SDSSerializable
+// MARK: - SDSModel
 
-extension TSInteraction: SDSSerializable {
+extension TSInteraction: SDSModel {
     public var serializer: SDSSerializer {
         // Any subclass can be cast to it's superclass,
         // so the order of this switch statement matters.
@@ -1027,6 +1034,10 @@ extension TSInteraction: SDSSerializable {
         default:
             return TSInteractionSerializer(model: self)
         }
+    }
+
+    public func asRecord() throws -> SDSRecord {
+        return try serializer.asRecord()
     }
 }
 
@@ -1159,13 +1170,16 @@ extension TSInteractionSerializer {
 
 @objc
 extension TSInteraction {
-    public func anySave(transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            SDSSerialization.save(entity: self, transaction: grdbTransaction)
-        }
+    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .insert, transaction: transaction)
+    }
+
+    public func anyUpdate(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .update, transaction: transaction)
+    }
+
+    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+        sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.
@@ -1192,21 +1206,22 @@ extension TSInteraction {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdateWith(transaction: SDSAnyWriteTransaction, block: (TSInteraction) -> Void) {
+    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSInteraction) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
         }
+
+        block(self)
 
         guard let dbCopy = type(of: self).anyFetch(uniqueId: uniqueId,
                                                    transaction: transaction) else {
             return
         }
 
-        block(self)
         block(dbCopy)
 
-        dbCopy.anySave(transaction: transaction)
+        dbCopy.anyUpdate(transaction: transaction)
     }
 
     public func anyRemove(transaction: SDSAnyWriteTransaction) {
@@ -1214,7 +1229,12 @@ extension TSInteraction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            SDSSerialization.delete(entity: self, transaction: grdbTransaction)
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
         }
     }
 }
@@ -1384,66 +1404,73 @@ class TSInteractionSerializer: SDSSerializer {
         self.model = model
     }
 
-    public func serializableColumnTableMetadata() -> SDSTableMetadata {
-        return TSInteractionSerializer.table
-    }
+    // MARK: - Record
 
-    public func insertColumnNames() -> [String] {
-        // When we insert a new row, we include the following columns:
-        //
-        // * "record type"
-        // * "unique id"
-        // * ...all columns that we set when updating.
-        return [
-            TSInteractionSerializer.recordTypeColumn.columnName,
-            uniqueIdColumnName()
-            ] + updateColumnNames()
+    func asRecord() throws -> SDSRecord {
+        let id: Int64? = nil
 
-    }
-
-    public func insertColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            SDSRecordType.interaction.rawValue
-            ] + [uniqueIdColumnValue()] + updateColumnValues()
-        if OWSIsDebugBuild() {
-            if result.count != insertColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(insertColumnNames().count)")
-            }
+        let recordType: SDSRecordType = .interaction
+        guard let uniqueId: String = model.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            throw SDSError.missingRequiredField
         }
-        return result
-    }
 
-    public func updateColumnNames() -> [String] {
-        return [
-            TSInteractionSerializer.receivedAtTimestampColumn,
-            TSInteractionSerializer.timestampColumn,
-            TSInteractionSerializer.uniqueThreadIdColumn
-            ].map { $0.columnName }
-    }
+        // Base class properties
+        let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
+        let timestamp: UInt64 = model.timestamp
+        let threadUniqueId: String = model.uniqueThreadId
 
-    public func updateColumnValues() -> [DatabaseValueConvertible] {
-        let result: [DatabaseValueConvertible] = [
-            self.model.receivedAtTimestamp,
-            self.model.timestamp,
-            self.model.uniqueThreadId
+        // Subclass properties
+        let attachmentFilenameMap: Data? = nil
+        let attachmentIds: Data? = nil
+        let authorId: String? = nil
+        let beforeInteractionId: String? = nil
+        let body: String? = nil
+        let callSchemaVersion: UInt? = nil
+        let callType: RPRecentCallType? = nil
+        let configurationDurationSeconds: UInt32? = nil
+        let configurationIsEnabled: Bool? = nil
+        let contactId: String? = nil
+        let contactShare: Data? = nil
+        let createdByRemoteName: String? = nil
+        let createdInExistingGroup: Bool? = nil
+        let customMessage: String? = nil
+        let envelopeData: Data? = nil
+        let ephemeralMessage: Data? = nil
+        let errorMessageSchemaVersion: UInt? = nil
+        let errorType: TSErrorMessageType? = nil
+        let expireStartedAt: UInt64? = nil
+        let expiresAt: UInt64? = nil
+        let expiresInSeconds: UInt32? = nil
+        let groupMetaMessage: TSGroupMetaMessage? = nil
+        let hasAddToContactsOffer: Bool? = nil
+        let hasAddToProfileWhitelistOffer: Bool? = nil
+        let hasBlockOffer: Bool? = nil
+        let hasLegacyMessageState: Bool? = nil
+        let hasSyncedTranscript: Bool? = nil
+        let infoMessageSchemaVersion: UInt? = nil
+        let isFromLinkedDevice: Bool? = nil
+        let isLocalChange: Bool? = nil
+        let isVoiceMessage: Bool? = nil
+        let legacyMessageState: TSOutgoingMessageState? = nil
+        let legacyWasDelivered: Bool? = nil
+        let linkPreview: Data? = nil
+        let messageId: String? = nil
+        let messageSticker: Data? = nil
+        let messageType: TSInfoMessageType? = nil
+        let mostRecentFailureText: String? = nil
+        let preKeyBundle: Data? = nil
+        let quotedMessage: Data? = nil
+        let read: Bool? = nil
+        let recipientId: String? = nil
+        let recipientStateMap: Data? = nil
+        let schemaVersion: UInt? = nil
+        let serverTimestamp: UInt64? = nil
+        let sourceDeviceId: UInt32? = nil
+        let unregisteredRecipientId: String? = nil
+        let verificationState: OWSVerificationState? = nil
+        let wasReceivedByUD: Bool? = nil
 
-        ]
-        if OWSIsDebugBuild() {
-            if result.count != updateColumnNames().count {
-                owsFailDebug("Update mismatch: \(result.count) != \(updateColumnNames().count)")
-            }
-        }
-        return result
-    }
-
-    public func uniqueIdColumnName() -> String {
-        return TSInteractionSerializer.uniqueIdColumn.columnName
-    }
-
-    // TODO: uniqueId is currently an optional on our models.
-    //       We should probably make the return type here String?
-    public func uniqueIdColumnValue() -> DatabaseValueConvertible {
-        // FIXME remove force unwrap
-        return model.uniqueId!
+        return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentFilenameMap: attachmentFilenameMap, attachmentIds: attachmentIds, authorId: authorId, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, ephemeralMessage: ephemeralMessage, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, quotedMessage: quotedMessage, read: read, recipientId: recipientId, recipientStateMap: recipientStateMap, schemaVersion: schemaVersion, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, unregisteredRecipientId: unregisteredRecipientId, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
     }
 }
