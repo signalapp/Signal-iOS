@@ -3,8 +3,8 @@ import PromiseKit
 extension Promise : Hashable {
     
     public func hash(into hasher: inout Hasher) {
-        let reference = ObjectIdentifier(self).hashValue
-        hasher.combine(reference)
+        let reference = ObjectIdentifier(self)
+        hasher.combine(reference.hashValue)
     }
     
     public static func == (lhs: Promise, rhs: Promise) -> Bool {
