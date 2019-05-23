@@ -375,6 +375,13 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         captureFeedbackView.backgroundColor = .black
         view.insertSubview(captureFeedbackView, aboveSubview: previewView)
         captureFeedbackView.autoPinEdgesToSuperviewEdges()
+
+        // Ensure the capture feedback is laid out before we remove it,
+        // depending on where we're coming from a layout pass might not
+        // trigger in 0.05 seconds otherwise.
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             captureFeedbackView.removeFromSuperview()
         }
