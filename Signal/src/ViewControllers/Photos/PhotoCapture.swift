@@ -449,8 +449,11 @@ extension PhotoCapture: CaptureOutputDelegate {
         AssertIsOnMainThread()
 
         if let error = error {
-            delegate?.photoCapture(self, processingDidError: error)
-            return
+            guard didSucceedDespiteError(error) else {
+                delegate?.photoCapture(self, processingDidError: error)
+                return
+            }
+            Logger.info("Ignoring error, since capture succeeded.")
         }
 
         guard let dataSource = DataSourcePath.dataSource(with: outputFileURL, shouldDeleteOnDeallocation: true) else {
@@ -466,6 +469,19 @@ extension PhotoCapture: CaptureOutputDelegate {
             guard let self = self else { return }
             self.delegate?.photoCapture(self, didFinishProcessingAttachment: attachment)
         }.retainUntilComplete()
+    }
+
+    /// The AVCaptureFileOutput can return an error even though recording succeeds.
+    /// I can't find useful documentation on this, but Apple's example AVCam app silently
+    /// discards these errors, so we do the same.
+    /// These spurious errors can be reproduced 1/3 of the time when making a series of short videos.
+    private func didSucceedDespiteError(_ error: Error) -> Bool {
+        let nsError = error as NSError
+        guard let successfullyFinished = nsError.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool else {
+            return false
+        }
+
+        return successfullyFinished
     }
 }
 
