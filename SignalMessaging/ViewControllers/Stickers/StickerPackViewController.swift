@@ -62,7 +62,7 @@ public class StickerPackViewController: OWSViewController {
             view.backgroundColor = .clear
             view.isOpaque = false
 
-            let blurEffect = UIBlurEffect(style: Theme.isDarkThemeEnabled ? .light : .dark)
+            let blurEffect = Theme.barBlurEffect
             let blurEffectView = UIVisualEffectView(effect: blurEffect)
             view.addSubview(blurEffectView)
             blurEffectView.autoPinEdgesToSuperviewEdges()
