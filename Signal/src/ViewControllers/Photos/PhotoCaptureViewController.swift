@@ -435,11 +435,11 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     }
 
     func beginCaptureButtonAnimation(_ duration: TimeInterval) {
-        captureButton.beginRecordingAnimation(duration)
+        captureButton.beginRecordingAnimation(duration: duration)
     }
 
     func endCaptureButtonAnimation(_ duration: TimeInterval) {
-        captureButton.endRecordingAnimation(duration)
+        captureButton.endRecordingAnimation(duration: duration)
     }
 }
 
@@ -504,31 +504,32 @@ class CaptureButton: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func beginRecordingAnimation(_ duration: TimeInterval, delay: TimeInterval = 0) {
-        UIView.beginAnimations("recordingAnimation", context: nil)
-        UIView.setAnimationDelay(delay)
-        UIView.setAnimationBeginsFromCurrentState(true)
-        UIView.setAnimationDuration(duration)
-        UIView.setAnimationCurve(.linear)
-
-        innerButtonSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
-        zoomIndicatorSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
-        superview?.layoutIfNeeded()
-
-        UIView.commitAnimations()
+    func beginRecordingAnimation(duration: TimeInterval, delay: TimeInterval = 0) {
+        UIView.animate(
+            withDuration: duration,
+            delay: delay,
+            options: [.beginFromCurrentState, .curveLinear],
+            animations: {
+                self.innerButtonSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
+                self.zoomIndicatorSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
+                self.superview?.layoutIfNeeded()
+        },
+            completion: nil
+        )
     }
 
-    func endRecordingAnimation(_ duration: TimeInterval) {
-        UIView.beginAnimations("recordingAnimation", context: nil)
-        UIView.setAnimationBeginsFromCurrentState(true)
-        UIView.setAnimationDuration(duration)
-        UIView.setAnimationCurve(.easeIn)
-
-        innerButtonSizeConstraints.forEach { $0.constant = self.defaultDiameter }
-        zoomIndicatorSizeConstraints.forEach { $0.constant = self.defaultDiameter }
-        superview?.layoutIfNeeded()
-
-        UIView.commitAnimations()
+    func endRecordingAnimation(duration: TimeInterval, delay: TimeInterval = 0) {
+        UIView.animate(
+            withDuration: duration,
+            delay: delay,
+            options: [.beginFromCurrentState, .curveEaseIn],
+            animations: {
+                self.innerButtonSizeConstraints.forEach { $0.constant = self.defaultDiameter }
+                self.zoomIndicatorSizeConstraints.forEach { $0.constant = self.defaultDiameter }
+                self.superview?.layoutIfNeeded()
+        },
+            completion: nil
+        )
     }
 
     // MARK: - Gestures
@@ -550,7 +551,7 @@ class CaptureButton: UIView {
         case .possible: break
         case .began:
             initialTouchLocation = gesture.location(in: gesture.view)
-            beginRecordingAnimation(0.4, delay: 0.1)
+            beginRecordingAnimation(duration: 0.4, delay: 0.1)
 
             isLongPressing = false
 
@@ -599,7 +600,7 @@ class CaptureButton: UIView {
 
             delegate?.longPressCaptureButton(self, didUpdateZoomAlpha: alpha)
         case .ended:
-            endRecordingAnimation(0.2)
+            endRecordingAnimation(duration: 0.2)
 
             if isLongPressing {
                 delegate?.didCompleteLongPressCaptureButton(self)
@@ -610,7 +611,7 @@ class CaptureButton: UIView {
             touchTimer?.invalidate()
             touchTimer = nil
         case .cancelled, .failed:
-            endRecordingAnimation(0.2)
+            endRecordingAnimation(duration: 0.2)
 
             if isLongPressing {
                 delegate?.didCancelLongPressCaptureButton(self)

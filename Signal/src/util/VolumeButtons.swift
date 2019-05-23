@@ -120,7 +120,7 @@ class VolumeButtons {
     // It's not possible for up and down to be pressed simulataneously
     // (if you press the second button, the OS will end the press on
     // the first), so it allows for simplified handling here.
-    private func beginButtonPress(with identifier: Identifier) {
+    private func didPressButton(with identifier: Identifier) {
         longPressingButton = nil
         
         longPressTimer?.invalidate()
@@ -139,7 +139,7 @@ class VolumeButtons {
         notifyObserversOfPress(with: identifier)
     }
     
-    private func endButtonPress(with identifier: Identifier) {
+    private func didReleaseButton(with identifier: Identifier) {
         if longPressingButton == identifier {
             notifyObserversOfCompleteLongPress(with: identifier)
         } else {
@@ -198,28 +198,28 @@ class VolumeButtons {
     private func registerForNotifications() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(didDetectVolumeUpButtonDown(_:)),
+            selector: #selector(didPressVolumeUp),
             name: upDownNotificationName,
             object: nil
         )
         
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(didDetectVolumeUpButtonUp(_:)),
+            selector: #selector(didReleaseVolumeUp),
             name: upUpNotificationName,
             object: nil
         )
         
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(didDetectVolumeDownButtonDown(_:)),
+            selector: #selector(didPressVolumeDown),
             name: downDownNotificationName,
             object: nil
         )
         
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(didDetectVolumeDownButtonUp(_:)),
+            selector: #selector(didReleaseVolumeDown),
             name: downUpNotificationName,
             object: nil
         )
@@ -229,19 +229,19 @@ class VolumeButtons {
         NotificationCenter.default.removeObserver(self)
     }
     
-    @objc func didDetectVolumeUpButtonDown(_ notification: Notification) {
-        beginButtonPress(with: .up)
+    @objc func didPressVolumeUp(_ notification: Notification) {
+        didPressButton(with: .up)
     }
     
-    @objc func didDetectVolumeUpButtonUp(_ notification: Notification) {
-        endButtonPress(with: .up)
+    @objc func didReleaseVolumeUp(_ notification: Notification) {
+        didReleaseButton(with: .up)
     }
     
-    @objc func didDetectVolumeDownButtonDown(_ notification: Notification) {
-        beginButtonPress(with: .down)
+    @objc func didPressVolumeDown(_ notification: Notification) {
+        didPressButton(with: .down)
     }
     
-    @objc func didDetectVolumeDownButtonUp(_ notification: Notification) {
-        endButtonPress(with: .down)
+    @objc func didReleaseVolumeDown(_ notification: Notification) {
+        didReleaseButton(with: .down)
     }
 }
