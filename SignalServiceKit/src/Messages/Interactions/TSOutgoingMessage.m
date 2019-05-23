@@ -1155,7 +1155,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 - (uint)ttl {
     // Time to live for all messages (except friend request messages) should be 1 day
     // TODO: Change this to return a value that the user chose
-    return 1 * kDayInterval;
+    return 1 * kDayInMs;
 }
 
 @end
