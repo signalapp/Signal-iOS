@@ -5,36 +5,6 @@
 import Foundation
 import GRDBCipher
 
-private protocol GRDBMigrator {
-    func migrate(grdbTransaction: GRDBWriteTransaction) throws
-}
-
-private class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
-    private let label: String
-    private let finder: LegacyKeyValueFinder<T>
-    private let memorySamplerRatio: Float
-
-    init(label: String, keyStore: SDSKeyValueStore, yapTransaction: YapDatabaseReadTransaction, memorySamplerRatio: Float) {
-        self.label = label
-        self.finder = LegacyKeyValueFinder(store: keyStore, transaction: yapTransaction)
-        self.memorySamplerRatio = memorySamplerRatio
-    }
-
-    func migrate(grdbTransaction: GRDBWriteTransaction) throws {
-        try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
-            var recordCount = 0
-            try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
-                recordCount += 1
-                self.finder.store.setObject(legacyObject, key: legacyKey, transaction: grdbTransaction.asAnyWrite)
-                memorySampler.sample()
-            }
-            Logger.info("completed with recordCount: \(recordCount)")
-        }
-    }
-}
-
-// MARK: -
-
 @objc
 public class OWS115GRDBMigration: OWSDatabaseMigration {
 
@@ -67,6 +37,8 @@ public class OWS115GRDBMigration: OWSDatabaseMigration {
         }
     }
 }
+
+// MARK: -
 
 extension OWS115GRDBMigration {
 
@@ -248,6 +220,8 @@ extension OWS115GRDBMigration {
     }
 }
 
+// MARK: -
+
 private class LegacyObjectFinder<T> {
     let collection: String
 
@@ -283,6 +257,8 @@ private class LegacyObjectFinder<T> {
     }
 }
 
+// MARK: -
+
 private class LegacyKeyValueFinder<T>: LegacyObjectFinder<T> {
     let store: SDSKeyValueStore
 
@@ -292,11 +268,15 @@ private class LegacyKeyValueFinder<T>: LegacyObjectFinder<T> {
     }
 }
 
+// MARK: -
+
 private class LegacyUnorderedFinder<RecordType>: LegacyObjectFinder<RecordType> where RecordType: TSYapDatabaseObject {
     init(transaction: YapDatabaseReadTransaction) {
         super.init(collection: RecordType.collection(), transaction: transaction)
     }
 }
+
+// MARK: -
 
 private class LegacyInteractionFinder {
     let extensionName = TSMessageDatabaseViewExtensionName
@@ -349,6 +329,8 @@ private class LegacyInteractionFinder {
     }
 }
 
+// MARK: -
+
 private class LegacyJobRecordFinder {
 
     let extensionName = YAPDBJobRecordFinder.dbExtensionName
@@ -388,6 +370,38 @@ private class LegacyJobRecordFinder {
 
         if let errorToRaise = errorToRaise {
             throw errorToRaise
+        }
+    }
+}
+
+// MARK: -
+
+private protocol GRDBMigrator {
+    func migrate(grdbTransaction: GRDBWriteTransaction) throws
+}
+
+// MARK: -
+
+private class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
+    private let label: String
+    private let finder: LegacyKeyValueFinder<T>
+    private let memorySamplerRatio: Float
+
+    init(label: String, keyStore: SDSKeyValueStore, yapTransaction: YapDatabaseReadTransaction, memorySamplerRatio: Float) {
+        self.label = label
+        self.finder = LegacyKeyValueFinder(store: keyStore, transaction: yapTransaction)
+        self.memorySamplerRatio = memorySamplerRatio
+    }
+
+    func migrate(grdbTransaction: GRDBWriteTransaction) throws {
+        try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
+            var recordCount = 0
+            try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
+                recordCount += 1
+                self.finder.store.setObject(legacyObject, key: legacyKey, transaction: grdbTransaction.asAnyWrite)
+                memorySampler.sample()
+            }
+            Logger.info("completed with recordCount: \(recordCount)")
         }
     }
 }
