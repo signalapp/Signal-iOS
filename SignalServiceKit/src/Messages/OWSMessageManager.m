@@ -432,6 +432,11 @@ NS_ASSUME_NONNULL_BEGIN
             }
             [self.primaryStorage setPreKeyBundle:bundle forContact:envelope.source transaction:transaction];
         }
+        
+        // Loki: Check if we got p2p address
+        if (contentProto.lokiAddressMessage) {
+            [LokiAPI setContactP2PDetailsForContact:envelope.source address:contentProto.lokiAddressMessage.ptpAddress port:contentProto.lokiAddressMessage.ptpPort];
+        }
 
         if (contentProto.syncMessage) {
             [self throws_handleIncomingEnvelope:envelope

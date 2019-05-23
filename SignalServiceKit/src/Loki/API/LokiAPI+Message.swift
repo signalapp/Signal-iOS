@@ -12,11 +12,42 @@ public extension LokiAPI {
         /// When the proof of work was calculated, if applicable.
         ///
         /// - Note: Expressed as milliseconds since 00:00:00 UTC on 1 January 1970.
-        let timestamp: UInt64?
+        var timestamp: UInt64? = nil
         /// The base 64 encoded proof of work, if applicable.
-        let nonce: String?
+        var nonce: String? = nil
         
-        public init(destination: String, data: LosslessStringConvertible, ttl: UInt64, timestamp: UInt64?, nonce: String?) {
+        /// Construct a `LokiMessage` from a `SignalMessage`.
+        ///
+        /// - Note: `timestamp` is the original message timestamp (i.e. `TSOutgoingMessage.timestamp`).
+        public static func from(signalMessage: SignalMessage, timestamp: UInt64) -> Message? {
+            // To match the desktop application, we have to wrap the data in an envelope and then wrap that in a websocket object
+            do {
+                let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage, timestamp: timestamp)
+                let data = wrappedMessage.base64EncodedString()
+                let destination = signalMessage["destination"] as! String
+                var ttl = LokiAPI.defaultMessageTTL
+                if let messageTTL = signalMessage["ttl"] as? UInt, messageTTL > 0 { ttl = UInt64(messageTTL) }
+                return Message(destination: destination, data: data, ttl: ttl, timestamp: nil, nonce: nil)
+            } catch let error {
+                Logger.debug("[Loki] Failed to convert Signal message to Loki message: \(signalMessage)")
+                return nil
+            }
+        }
+        
+        /// Create a basic loki message.
+        ///
+        /// - Parameters:
+        ///   - destination: The destination
+        ///   - data: The data
+        ///   - ttl: The time to live
+        public init(destination: String, data: LosslessStringConvertible, ttl: UInt64) {
+            self.destination = destination
+            self.data = data
+            self.ttl = ttl
+        }
+        
+        /// Private init for setting proof of work. Use `calculatePoW` to get a message with these fields
+        private init(destination: String, data: LosslessStringConvertible, ttl: UInt64, timestamp: UInt64?, nonce: String?) {
             self.destination = destination
             self.data = data
             self.ttl = ttl
@@ -24,34 +55,19 @@ public extension LokiAPI {
             self.nonce = nonce
         }
         
-        /// Construct a `LokiMessage` from a `SignalMessage`.
+        /// Calculate the proof of work for this message
         ///
-        /// - Note: `timestamp` is the original message timestamp (i.e. `TSOutgoingMessage.timestamp`).
-        public static func from(signalMessage: SignalMessage, timestamp: UInt64, requiringPoW isPoWRequired: Bool) -> Promise<Message> {
+        /// - Returns: This will return a promise with a new message which contains the proof of work
+        public func calculatePoW() -> Promise<Message> {
             // To match the desktop application, we have to wrap the data in an envelope and then wrap that in a websocket object
             return Promise<Message> { seal in
                 DispatchQueue.global(qos: .default).async {
-                    do {
-                        let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage, timestamp: timestamp)
-                        let data = wrappedMessage.base64EncodedString()
-                        let destination = signalMessage["destination"] as! String
-                        var ttl = LokiAPI.defaultMessageTTL
-                        if let messageTTL = signalMessage["ttl"] as? UInt, messageTTL > 0 { ttl = UInt64(messageTTL) }
-                        if isPoWRequired {
-                            // The storage server takes a time interval in milliseconds
-                            let now = NSDate.ows_millisecondTimeStamp()
-                            if let nonce = ProofOfWork.calculate(data: data, pubKey: destination, timestamp: now, ttl: ttl) {
-                                let result = Message(destination: destination, data: data, ttl: ttl, timestamp: now, nonce: nonce)
-                                seal.fulfill(result)
-                            } else {
-                                seal.reject(Error.proofOfWorkCalculationFailed)
-                            }
-                        } else {
-                            let result = Message(destination: destination, data: data, ttl: ttl, timestamp: nil, nonce: nil)
-                            seal.fulfill(result)
-                        }
-                    } catch let error {
-                        seal.reject(error)
+                    let now = NSDate.ows_millisecondTimeStamp()
+                    if let nonce = ProofOfWork.calculate(data: self.data as! String, pubKey: self.destination, timestamp: now, ttl: self.ttl) {
+                        let result = Message(destination: self.destination, data: self.data, ttl: self.ttl, timestamp: now, nonce: nonce)
+                        seal.fulfill(result)
+                    } else {
+                        seal.reject(Error.proofOfWorkCalculationFailed)
                     }
                 }
             }

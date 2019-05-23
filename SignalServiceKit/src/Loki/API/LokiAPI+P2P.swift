@@ -3,6 +3,20 @@ extension LokiAPI {
     private static let messageSender: MessageSender = SSKEnvironment.shared.messageSender
     internal static var ourP2PAddress: Target? = nil
     
+    /// This is where we store the p2p details of our contacts
+    internal static var contactP2PDetails = [String: Target]()
+    
+    /// Set the Contact p2p details
+    ///
+    /// - Parameters:
+    ///   - pubKey: The public key of the contact
+    ///   - address: The contacts p2p address
+    ///   - port: The contacts p2p port
+    @objc public static func setContactP2PDetails(forContact pubKey: String, address: String, port: UInt32) {
+         let target = Target(address: address, port: port)
+        contactP2PDetails[pubKey] = target
+    }
+    
     /// Set our local P2P address
     ///
     /// - Parameter url: The url to our local server

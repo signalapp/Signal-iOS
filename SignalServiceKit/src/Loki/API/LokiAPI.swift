@@ -29,9 +29,13 @@ import PromiseKit
         /// Only applicable to snode targets as proof of work isn't required for P2P messaging.
         case proofOfWorkCalculationFailed
         
+        // Failed to send the message'
+        case internalError
+        
         public var errorDescription: String? {
             switch self {
             case .proofOfWorkCalculationFailed: return NSLocalizedString("Failed to calculate proof of work.", comment: "")
+            case .internalError: return "Failed while trying to send message"
             }
         }
     }
@@ -61,18 +65,39 @@ import PromiseKit
     }
     
     public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64) -> Promise<Set<Promise<RawResponse>>> {
-        let isP2PMessagingPossible = false
-        return Message.from(signalMessage: signalMessage, timestamp: timestamp, requiringPoW: !isP2PMessagingPossible).then(sendMessage)
+        guard let message = Message.from(signalMessage: signalMessage, timestamp: timestamp) else {
+            return Promise(error: Error.internalError)
+        }
+        
+        // Send message through the storage server
+        // We put this here because `recover` expects `Promise<Set<Promise<RawResponse>>>`
+        let sendThroughStorageServer: () -> Promise<Set<Promise<RawResponse>>> = { () in
+            return message.calculatePoW().then { powMessage -> Promise<Set<Promise<RawResponse>>> in
+                let snodes = getTargetSnodes(for: powMessage.destination)
+                return sendMessage(powMessage, targets: snodes)
+            }
+        }
+        
+        // By default our p2p throws and we recover by sending to storage server
+        var p2pPromise: Promise<Set<Promise<RawResponse>>> = Promise(error: Error.internalError)
+        // TODO: probably only send to p2p if user is online or we are pinging them
+        // p2pDetails && (isPing || peerIsOnline)
+        if let p2pDetails = contactP2PDetails[destination] {
+            p2pPromise = sendMessage(message, targets: [p2pDetails])
+        }
+        
+        // If we have the p2p details then send message to that
+        // If that failes then fallback to storage server
+        return p2pPromise.recover { _ in return sendThroughStorageServer() }
     }
     
-    public static func sendMessage(_ lokiMessage: Message) -> Promise<Set<Promise<RawResponse>>> {
-        let isP2PMessagingPossible = false
-        if isP2PMessagingPossible {
-            // TODO: Send using P2P protocol
-        } else {
-            let parameters = lokiMessage.toJSON()
-            return getTargetSnodes(for: lokiMessage.destination).mapValues { invoke(.sendMessage, on: $0, with: parameters).recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }.map { Set($0) }
-        }
+    internal static func sendMessage(_ lokiMessage: Message, targets: [Target]) -> Promise<Set<Promise<RawResponse>>> {
+        return sendMessage(lokiMessage, targets: Promise.wrap(targets))
+    }
+    
+    internal static func sendMessage(_ lokiMessage: Message, targets: Promise<[Target]>) -> Promise<Set<Promise<RawResponse>>> {
+        let parameters = lokiMessage.toJSON()
+        return targets.mapValues { invoke(.sendMessage, on: $0, with: parameters).recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }.map { Set($0) }
     }
     
     public static func ping(_ hexEncodedPublicKey: String) -> Promise<Set<Promise<RawResponse>>> {
