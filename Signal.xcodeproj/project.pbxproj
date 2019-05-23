@@ -350,8 +350,6 @@
 		34E8A8D12085238A00B272B1 /* ProtoParsingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34E8A8D02085238900B272B1 /* ProtoParsingTest.m */; };
 		34EA69402194933900702471 /* MediaDownloadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA693F2194933900702471 /* MediaDownloadView.swift */; };
 		34EA69422194DE8000702471 /* MediaUploadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EA69412194DE7F00702471 /* MediaUploadView.swift */; };
-		34EE2D0B2295B79500B77E13 /* ExperienceUpgrade.m in Sources */ = {isa = PBXBuildFile; fileRef = 34EE2D092295B79400B77E13 /* ExperienceUpgrade.m */; };
-		34EE2D0D2295B90C00B77E13 /* ExperienceUpgrade+SDS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34EE2D0C2295B90C00B77E13 /* ExperienceUpgrade+SDS.swift */; };
 		34F308A21ECB469700BB7697 /* OWSBezierPathView.m in Sources */ = {isa = PBXBuildFile; fileRef = 34F308A11ECB469700BB7697 /* OWSBezierPathView.m */; };
 		34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34FDB29121FF986600A01202 /* UIView+OWS.swift */; };
 		4503F1BE20470A5B00CEE724 /* classic-quiet.aifc in Resources */ = {isa = PBXBuildFile; fileRef = 4503F1BB20470A5B00CEE724 /* classic-quiet.aifc */; };
@@ -1117,9 +1115,6 @@
 		34E8A8D02085238900B272B1 /* ProtoParsingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProtoParsingTest.m; sourceTree = "<group>"; };
 		34EA693F2194933900702471 /* MediaDownloadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaDownloadView.swift; sourceTree = "<group>"; };
 		34EA69412194DE7F00702471 /* MediaUploadView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaUploadView.swift; sourceTree = "<group>"; };
-		34EE2D092295B79400B77E13 /* ExperienceUpgrade.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ExperienceUpgrade.m; path = ExperienceUpgrades/ExperienceUpgrade.m; sourceTree = "<group>"; };
-		34EE2D0A2295B79500B77E13 /* ExperienceUpgrade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExperienceUpgrade.h; path = ExperienceUpgrades/ExperienceUpgrade.h; sourceTree = "<group>"; };
-		34EE2D0C2295B90C00B77E13 /* ExperienceUpgrade+SDS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ExperienceUpgrade+SDS.swift"; path = "ExperienceUpgrades/ExperienceUpgrade+SDS.swift"; sourceTree = "<group>"; };
 		34F308A01ECB469700BB7697 /* OWSBezierPathView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBezierPathView.h; sourceTree = "<group>"; };
 		34F308A11ECB469700BB7697 /* OWSBezierPathView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSBezierPathView.m; sourceTree = "<group>"; };
 		34FDB29121FF986600A01202 /* UIView+OWS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+OWS.swift"; sourceTree = "<group>"; };
@@ -2212,9 +2207,6 @@
 		4505C2BD1E648E6E00CEBF41 /* ExperienceUpgrades */ = {
 			isa = PBXGroup;
 			children = (
-				34EE2D0A2295B79500B77E13 /* ExperienceUpgrade.h */,
-				34EE2D092295B79400B77E13 /* ExperienceUpgrade.m */,
-				34EE2D0C2295B90C00B77E13 /* ExperienceUpgrade+SDS.swift */,
 				3461293D1FD1D72B00532771 /* ExperienceUpgradeFinder.swift */,
 			);
 			name = ExperienceUpgrades;
@@ -3760,7 +3752,6 @@
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
 				3448E16422135FFA004B052E /* OnboardingPhoneNumberViewController.swift in Sources */,
-				34EE2D0B2295B79500B77E13 /* ExperienceUpgrade.m in Sources */,
 				34330AA31E79686200DF2FB9 /* OWSProgressView.m in Sources */,
 				344825C6211390C800DB4BD8 /* OWSOrphanDataCleaner.m in Sources */,
 				45D2AC02204885170033C692 /* OWS2FAReminderViewController.swift in Sources */,
@@ -3822,7 +3813,6 @@
 				34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */,
 				458DE9D61DEE3FD00071BB03 /* PeerConnectionClient.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
-				34EE2D0D2295B90C00B77E13 /* ExperienceUpgrade+SDS.swift in Sources */,
 				3488F9362191CC4000E524CC /* ConversationMediaView.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
 				4C19A0FC227B356F007A0C7F /* DebugUIMessages+OWS.swift in Sources */,
