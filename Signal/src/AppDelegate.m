@@ -1206,6 +1206,8 @@ static NSTimeInterval launchStartedAt;
 {
     OWSAssertIsOnMainThread();
     OWSLogInfo(@"storageIsReady");
+    
+    [LokiAPI loadSwarmCache];
 
     [self checkIfAppIsReady];
 }

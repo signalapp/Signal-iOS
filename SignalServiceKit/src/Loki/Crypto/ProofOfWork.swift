@@ -2,12 +2,12 @@ import CryptoSwift
 
 private extension UInt64 {
     
-    init(_ decimal: Decimal) {
+    fileprivate init(_ decimal: Decimal) {
         self.init(truncating: decimal as NSDecimalNumber)
     }
     
     // Convert a UInt8 array to a UInt64
-    init(_ bytes: [UInt8]) {
+    fileprivate init(_ bytes: [UInt8]) {
         precondition(bytes.count <= MemoryLayout<UInt64>.size)
         var value: UInt64 = 0
         for byte in bytes {
@@ -24,7 +24,7 @@ private extension MutableCollection where Element == UInt8, Index == Int {
     ///
     /// - Parameter amount: The amount to increment by
     /// - Returns: The incremented collection
-    func increment(by amount: Int) -> Self {
+    fileprivate func increment(by amount: Int) -> Self {
         var result = self
         var increment = amount
         for i in (0..<result.count).reversed() {

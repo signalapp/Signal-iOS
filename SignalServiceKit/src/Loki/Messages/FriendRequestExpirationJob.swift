@@ -156,7 +156,7 @@ public final class FriendRequestExpirationJob : NSObject {
 // MARK: Events
 private extension FriendRequestExpirationJob {
     
-    @objc func didBecomeActive() {
+    @objc fileprivate func didBecomeActive() {
         AssertIsOnMainThread()
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             FriendRequestExpirationJob.serialQueue.async {
@@ -165,7 +165,7 @@ private extension FriendRequestExpirationJob {
         }
     }
     
-    @objc func willResignActive() {
+    @objc fileprivate func willResignActive() {
         AssertIsOnMainThread()
         resetNextExpireTimer()
     }
@@ -175,7 +175,7 @@ private extension FriendRequestExpirationJob {
 // MARK: Asserts
 private extension FriendRequestExpirationJob {
     
-    func AssertIsOnFriendRequestExpireQueue() {
+    fileprivate func AssertIsOnFriendRequestExpireQueue() {
         #if DEBUG
             guard #available(iOS 10.0, *) else { return }
             dispatchPrecondition(condition: .onQueue(FriendRequestExpirationJob.serialQueue))

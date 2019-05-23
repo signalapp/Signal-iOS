@@ -10,19 +10,6 @@ import PromiseKit
     internal static let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
     
     // MARK: Types
-    internal struct Target : Hashable {
-        let address: String
-        let port: UInt32
-        
-        enum Method : String {
-            /// Only applicable to snode targets.
-            case getSwarm = "get_snodes_for_pubkey"
-            /// Only applicable to snode targets.
-            case getMessages = "retrieve"
-            case sendMessage = "store"
-        }
-    }
-    
     public typealias RawResponse = Any
     
     public enum Error : LocalizedError {
@@ -44,10 +31,10 @@ import PromiseKit
     override private init() { }
     
     // MARK: Internal API
-    internal static func invoke(_ method: Target.Method, on target: Target, with parameters: [String:Any] = [:]) -> Promise<RawResponse> {
+    internal static func invoke(_ method: Target.Method, on target: Target, associatedWith hexEncodedPublicKey: String, parameters: [String:Any] = [:]) -> Promise<RawResponse> {
         let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
-        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
+        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
     }
     
     // MARK: Public API
@@ -55,7 +42,7 @@ import PromiseKit
         return getTargetSnodes(for: ourHexEncodedPubKey).mapValues { targetSnode in
             let lastHash = getLastMessageHashValue(for: targetSnode) ?? ""
             let parameters: [String:Any] = [ "pubKey" : ourHexEncodedPubKey, "lastHash" : lastHash ]
-            return invoke(.getMessages, on: targetSnode, with: parameters).map { rawResponse in
+            return invoke(.getMessages, on: targetSnode, associatedWith: ourHexEncodedPubKey, parameters: parameters).map { rawResponse in
                 guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
                 updateLastMessageHashValueIfPossible(for: targetSnode, from: rawMessages)
                 let newRawMessages = removeDuplicates(from: rawMessages)
@@ -98,7 +85,7 @@ import PromiseKit
     
     internal static func sendMessage(_ lokiMessage: Message, targets: Promise<[Target]>) -> Promise<Set<Promise<RawResponse>>> {
         let parameters = lokiMessage.toJSON()
-        return targets.mapValues { invoke(.sendMessage, on: $0, with: parameters).recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }.map { Set($0) }
+        return targets.mapValues { invoke(.sendMessage, on: $0, associatedWith: lokiMessage.destination, parameters: parameters) }.map { Set($0) }
     }
     
     public static func ping(_ hexEncodedPublicKey: String) -> Promise<Set<Promise<RawResponse>>> {
@@ -107,7 +94,7 @@ import PromiseKit
             // TODO: Send using P2P protocol
         } else {
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ] // TODO: Figure out correct parameters
-            return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, with: parameters).recoverNetworkErrorIfNeeded(on: DispatchQueue.global()) }.map { Set($0) }
+            return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { Set($0) }
         }
     }
     
@@ -154,58 +141,6 @@ import PromiseKit
                 return nil
             }
             return envelope
-        }
-    }
-    
-    // MARK: Convenience
-    private static func getLastMessageHashValue(for target: Target) -> String? {
-        var result: String? = nil
-        // Uses a read/write connection because getting the last message hash value also removes expired messages as needed
-        storage.dbReadWriteConnection.readWrite { transaction in
-            result = storage.getLastMessageHash(forServiceNode: target.address, transaction: transaction)
-        }
-        return result
-    }
-    
-    private static func setLastMessageHashValue(for target: Target, hashValue: String, expiresAt: UInt64) {
-        storage.dbReadWriteConnection.readWrite { transaction in
-            storage.setLastMessageHash(forServiceNode: target.address, hash: hashValue, expiresAt: expiresAt, transaction: transaction)
-        }
-    }
-    
-    private static func getReceivedMessageHashValues() -> Set<String>? {
-        var result: Set<String>? = nil
-        storage.dbReadConnection.read { transaction in
-            result = storage.getReceivedMessageHashes(with: transaction)
-        }
-        return result
-    }
-    
-    private static func setReceivedMessageHashValues(to receivedMessageHashValues: Set<String>) {
-        storage.dbReadWriteConnection.readWrite { transaction in
-            storage.setReceivedMessageHashes(receivedMessageHashValues, with: transaction)
-        }
-    }
-}
-
-private extension AnyPromise {
-    
-    static func from<T : Any>(_ promise: Promise<T>) -> AnyPromise {
-        let result = AnyPromise(promise)
-        result.retainUntilComplete()
-        return result
-    }
-}
-
-// MARK: Error Handling
-private extension Promise {
-
-    func recoverNetworkErrorIfNeeded(on queue: DispatchQueue) -> Promise<T> {
-        return recover(on: queue) { error -> Promise<T> in
-            switch error {
-            case NetworkManagerError.taskError(_, let underlyingError): throw underlyingError
-            default: throw error
-            }
         }
     }
 }
