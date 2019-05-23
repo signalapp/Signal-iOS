@@ -81,7 +81,13 @@ class PhotoCaptureViewController: OWSViewController {
         super.viewDidAppear(animated)
         if hasCaptureStarted {
             BenchEventComplete(eventId: "Show-Camera")
+            VolumeButtons.shared?.addObserver(observer: photoCapture)
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        VolumeButtons.shared?.removeObserver(photoCapture)
     }
 
     override var prefersStatusBarHidden: Bool {
@@ -332,6 +338,8 @@ class PhotoCaptureViewController: OWSViewController {
         view.addSubview(captureButton)
         captureButton.autoHCenterInSuperview()
         captureButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
+        
+        VolumeButtons.shared?.addObserver(observer: photoCapture)
     }
 
     private func showFailureUI(error: Error) {
@@ -417,6 +425,14 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
 
     var captureOrientation: AVCaptureVideoOrientation {
         return lastKnownCaptureOrientation
+    }
+
+    func beginCaptureButtonAnimation(_ duration: TimeInterval) {
+        captureButton.beginRecordingAnimation(duration)
+    }
+
+    func endCaptureButtonAnimation(_ duration: TimeInterval) {
+        captureButton.endRecordingAnimation(duration)
     }
 }
 

@@ -25,6 +25,9 @@ protocol PhotoCaptureDelegate: AnyObject {
     func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture)
     var zoomScaleReferenceHeight: CGFloat? { get }
     var captureOrientation: AVCaptureVideoOrientation { get }
+
+    func beginCaptureButtonAnimation(_ duration: TimeInterval)
+    func endCaptureButtonAnimation(_ duration: TimeInterval)
 }
 
 class PhotoCapture: NSObject {
@@ -332,15 +335,10 @@ class PhotoCapture: NSObject {
     private func clampZoom(_ factor: CGFloat, device: AVCaptureDevice) -> CGFloat {
         return min(factor.clamp(minimumZoom, maximumZoom), device.activeFormat.videoMaxZoomFactor)
     }
-}
-
-extension PhotoCapture: CaptureButtonDelegate {
 
     // MARK: - Photo
-
-    func didTapCaptureButton(_ captureButton: CaptureButton) {
+    private func handleTap() {
         Logger.verbose("")
-
         guard let delegate = delegate else { return }
         guard delegate.photoCaptureCanCaptureMoreItems(self) else {
             delegate.photoCaptureDidTryToCaptureTooMany(self)
@@ -355,7 +353,7 @@ extension PhotoCapture: CaptureButtonDelegate {
 
     // MARK: - Video
 
-    func didBeginLongPressCaptureButton(_ captureButton: CaptureButton) {
+    private func handleLongPressBegin() {
         AssertIsOnMainThread()
         Logger.verbose("")
 
@@ -375,7 +373,7 @@ extension PhotoCapture: CaptureButtonDelegate {
         }.retainUntilComplete()
     }
 
-    func didCompleteLongPressCaptureButton(_ captureButton: CaptureButton) {
+    private func handleLongPressComplete() {
         Logger.verbose("")
         sessionQueue.async {
             self.captureOutput.completeVideo(delegate: self)
@@ -386,13 +384,57 @@ extension PhotoCapture: CaptureButtonDelegate {
         delegate?.photoCaptureDidCompleteVideo(self)
     }
 
-    func didCancelLongPressCaptureButton(_ captureButton: CaptureButton) {
+    private func handleLongPressCancel() {
         Logger.verbose("")
         AssertIsOnMainThread()
         sessionQueue.async {
             self.stopAudioCapture()
         }
         delegate?.photoCaptureDidCancelVideo(self)
+    }
+}
+
+extension PhotoCapture: VolumeButtonObserver {
+    func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        delegate?.beginCaptureButtonAnimation(0.5)
+    }
+
+    func didReleaseVolumeButton(with identifier: VolumeButtons.Identifier) {
+        delegate?.endCaptureButtonAnimation(0.2)
+    }
+
+    func didTapVolumeButton(with identifier: VolumeButtons.Identifier) {
+        handleTap()
+    }
+
+    func didBeginLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        handleLongPressBegin()
+    }
+    
+    func didCompleteLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        handleLongPressComplete()
+    }
+    
+    func didCancelLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        handleLongPressCancel()
+    }
+}
+
+extension PhotoCapture: CaptureButtonDelegate {
+    func didTapCaptureButton(_ captureButton: CaptureButton) {
+        handleTap()
+    }
+
+    func didBeginLongPressCaptureButton(_ captureButton: CaptureButton) {
+        handleLongPressBegin()
+    }
+
+    func didCompleteLongPressCaptureButton(_ captureButton: CaptureButton) {
+        handleLongPressComplete()
+    }
+
+    func didCancelLongPressCaptureButton(_ captureButton: CaptureButton) {
+        handleLongPressCancel()
     }
 
     var zoomScaleReferenceHeight: CGFloat? {
