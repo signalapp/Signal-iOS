@@ -8,6 +8,8 @@ NS_SWIFT_NAME(EphemeralMessage)
 /// Used to establish sessions.
 + (LKEphemeralMessage *)createEmptyOutgoingMessageInThread:(TSThread *)thread;
 
+- (instancetype)initInThread:(nullable TSThread *)thread;
+
 @end
 
 NS_ASSUME_NONNULL_END

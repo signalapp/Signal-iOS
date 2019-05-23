@@ -1,13 +1,10 @@
-//
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
-// 
 
-#import <SignalServiceKit/SignalServiceKit.h>
+#import "LKEphemeralMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 NS_SWIFT_NAME(LokiAddressMessage)
-@interface LKAddressMessage : TSOutgoingMessage
+@interface LKAddressMessage : LKEphemeralMessage
 
 - (instancetype)initInThread:(nullable TSThread *)thread
                                    address:(NSString *)address

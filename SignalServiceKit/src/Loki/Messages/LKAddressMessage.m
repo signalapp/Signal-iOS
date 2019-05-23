@@ -12,12 +12,11 @@
 
 @implementation LKAddressMessage
 
-- (instancetype)initAddressMessageInThread:(nullable TSThread *)thread
-                                   address:(NSString *)address
-                                      port:(uint)port
+- (instancetype)initInThread:(nullable TSThread *)thread
+                     address:(NSString *)address
+                        port:(uint)port
 {
-    self = [super initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:nil attachmentIds:[NSMutableArray<NSString *> new]
-                                  expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
+    self = [super initInThread:thread];
     if (!self) {
         return self;
     }
@@ -46,13 +45,6 @@
 
     return contentBuilder;
 }
-
-// We don't need to send any data message in this address message
-- (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId {
-    return nil;
-}
-
-- (BOOL)shouldBeSaved { return false; }
 
 - (uint)ttl {
     // Address messages should only last 1 minute

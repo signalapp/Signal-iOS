@@ -82,6 +82,7 @@ import PromiseKit
         var p2pPromise: Promise<Set<Promise<RawResponse>>> = Promise(error: Error.internalError)
         // TODO: probably only send to p2p if user is online or we are pinging them
         // p2pDetails && (isPing || peerIsOnline)
+
         if let p2pDetails = contactP2PDetails[destination] {
             p2pPromise = sendMessage(message, targets: [p2pDetails])
         }
