@@ -63,7 +63,8 @@ public extension LokiAPI {
             return Promise<Message> { seal in
                 DispatchQueue.global(qos: .default).async {
                     let now = NSDate.ows_millisecondTimeStamp()
-                    if let nonce = ProofOfWork.calculate(data: self.data as! String, pubKey: self.destination, timestamp: now, ttl: self.ttl) {
+                    let ttlInSeconds = ttl / 1000
+                    if let nonce = ProofOfWork.calculate(data: self.data as! String, pubKey: self.destination, timestamp: now, ttl: ttlInSeconds) {
                         let result = Message(destination: self.destination, data: self.data, ttl: self.ttl, timestamp: now, nonce: nonce)
                         seal.fulfill(result)
                     } else {
