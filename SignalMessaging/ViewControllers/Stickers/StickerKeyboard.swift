@@ -98,7 +98,7 @@ public class StickerKeyboard: UIStackView {
 
     private var keyboardBackgroundColor: UIColor {
         return (Theme.isDarkThemeEnabled
-            ? Theme.offBackgroundColor
+            ? UIColor.ows_gray90
             : UIColor.ows_gray02)
     }
 

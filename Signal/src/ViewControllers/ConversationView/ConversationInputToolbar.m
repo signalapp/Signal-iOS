@@ -606,7 +606,7 @@ const CGFloat kMaxTextViewHeight = 98;
         ensureViewHiddenState(self.stickerButton, hideStickerButton);
         if (!hideStickerButton) {
             self.stickerButton.imageView.tintColor
-                = (self.isStickerKeyboardActive ? Theme.primaryColor : Theme.navbarIconColor);
+                = (self.isStickerKeyboardActive ? UIColor.ows_signalBlueColor : Theme.navbarIconColor);
         }
 
         [self updateSuggestedStickers];
