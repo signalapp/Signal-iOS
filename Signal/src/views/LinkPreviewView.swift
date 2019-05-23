@@ -843,7 +843,7 @@ public class LinkPreviewView: UIStackView {
         }
         if let sentBodyView = self.sentBodyView {
             let borderView = OWSBubbleShapeView(draw: ())
-            let borderColor = UIColor(rgbHex: Theme.isDarkThemeEnabled ? 0x0F1012 : 0xD5D6D6)
+            let borderColor = UIColor(rgbHex: Theme.isDarkThemeEnabled ? 0x6b6d70 : 0xD5D6D6)
             borderView.strokeColor = borderColor
             borderView.strokeThickness = CGHairlineWidth()
             sentBodyView.addSubview(borderView)
