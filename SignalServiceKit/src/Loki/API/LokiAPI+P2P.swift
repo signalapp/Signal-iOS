@@ -21,8 +21,8 @@ extension LokiAPI {
     ///
     /// - Parameter url: The url to our local server
     @objc public static func setOurP2PAddress(url: URL) {
-        guard let port = url.port else { return }
-        let target = Target(address: url.absoluteString, port: UInt32(port))
+        guard let scheme = url.scheme, let host = url.host, let port = url.port else { return }
+        let target = Target(address: "\(scheme)://\(host)", port: UInt32(port))
         ourP2PAddress = target
     }
 
