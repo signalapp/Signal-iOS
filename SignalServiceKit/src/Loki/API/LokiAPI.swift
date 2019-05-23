@@ -5,7 +5,7 @@ import PromiseKit
     
     // MARK: Settings
     private static let version = "v1"
-    public static let defaultMessageTTL: UInt64 = 1 * 24 * 60 * 60
+    public static let defaultMessageTTL: UInt64 = 1 * 24 * 60 * 60 * 1000
     
     // MARK: Types
     public typealias RawResponse = Any
