@@ -192,10 +192,7 @@ extension StickerHorizontalListView: UICollectionViewDataSource {
 
         let itemView = item.view
         cell.contentView.addSubview(itemView)
-        itemView.autoPinEdge(toSuperviewEdge: .top, withInset: cellInset)
-        itemView.autoPinEdge(toSuperviewEdge: .bottom, withInset: cellInset)
-        itemView.autoPinEdge(toSuperviewEdge: .leading, withInset: cellInset)
-        itemView.autoPinEdge(toSuperviewEdge: .trailing, withInset: cellInset)
+        itemView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: cellInset, leading: cellInset, bottom: cellInset, trailing: cellInset))
         return cell
     }
 }
