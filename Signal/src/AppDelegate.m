@@ -320,6 +320,7 @@ static NSTimeInterval launchStartedAt;
         if (self.lokiP2PServer.isRunning) { break; }
         BOOL isStarted = [self.lokiP2PServer startOnPort:port.unsignedIntegerValue];
         if (isStarted) {
+            [LokiAPI setOurP2PAddressWithUrl:self.lokiP2PServer.serverURL];
             OWSLogInfo(@"[Loki] Started server at %@.", self.lokiP2PServer.serverURL);
             break;
         }
@@ -751,7 +752,8 @@ static NSTimeInterval launchStartedAt;
             // Loki: Start poller
             [Poller.shared startIfNeeded];
            
-            // TODO: Ping friends to let them know we're online
+            // Loki: Tell our friends that we are online
+            [LokiAPI broadcastOnlineStatus];
             
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying to register for remote notifications since user hasn't registered yet.");

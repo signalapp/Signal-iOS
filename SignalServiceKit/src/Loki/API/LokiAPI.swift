@@ -1,16 +1,18 @@
 import PromiseKit
 
 @objc public final class LokiAPI : NSObject {
-    private static let storage = OWSPrimaryStorage.shared()
+    internal static let storage = OWSPrimaryStorage.shared()
     
     // MARK: Settings
     private static let version = "v1"
     public static let defaultMessageTTL: UInt64 = 1 * 24 * 60 * 60
     
+    internal static let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+    
     // MARK: Types
     internal struct Target : Hashable {
         let address: String
-        let port: UInt16
+        let port: UInt32
         
         enum Method : String {
             /// Only applicable to snode targets.
@@ -46,10 +48,9 @@ import PromiseKit
     
     // MARK: Public API
     public static func getMessages() -> Promise<Set<Promise<[SSKProtoEnvelope]>>> {
-        let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-        return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
+        return getTargetSnodes(for: ourHexEncodedPubKey).mapValues { targetSnode in
             let lastHash = getLastMessageHashValue(for: targetSnode) ?? ""
-            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHash ]
+            let parameters: [String:Any] = [ "pubKey" : ourHexEncodedPubKey, "lastHash" : lastHash ]
             return invoke(.getMessages, on: targetSnode, with: parameters).map { rawResponse in
                 guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
                 updateLastMessageHashValueIfPossible(for: targetSnode, from: rawMessages)

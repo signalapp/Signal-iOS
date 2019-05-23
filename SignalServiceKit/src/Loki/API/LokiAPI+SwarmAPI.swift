@@ -4,7 +4,7 @@ extension LokiAPI {
     
     // MARK: Settings
     private static let targetSnodeCount = 2
-    private static let defaultSnodePort: UInt16 = 8080
+    private static let defaultSnodePort: UInt32 = 8080
     
     // MARK: Caching
     private static var swarmCache: [String:[Target]] = [:]
