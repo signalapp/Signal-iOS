@@ -40,7 +40,8 @@ public extension LokiAPI {
                         if isPoWRequired {
                             // The storage server takes a time interval in milliseconds
                             let now = NSDate.ows_millisecondTimeStamp()
-                            if let nonce = ProofOfWork.calculate(data: data, pubKey: destination, timestamp: now, ttl: ttl) {
+                            let ttlInSeconds = ttl / 1000
+                            if let nonce = ProofOfWork.calculate(data: data, pubKey: destination, timestamp: now, ttl: ttlInSeconds) {
                                 let result = Message(destination: destination, data: data, ttl: ttl, timestamp: now, nonce: nonce)
                                 seal.fulfill(result)
                             } else {
