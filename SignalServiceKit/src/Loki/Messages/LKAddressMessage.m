@@ -48,7 +48,7 @@
 
 - (uint)ttl {
     // Address messages should only last 1 minute
-    return 1 * kMinuteInterval;
+    return 1 * kMinuteInMs;
 }
 
 @end

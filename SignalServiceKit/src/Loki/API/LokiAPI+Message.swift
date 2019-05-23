@@ -7,7 +7,7 @@ public extension LokiAPI {
         let destination: String
         /// The content of the message.
         let data: LosslessStringConvertible
-        /// The time to live for the message in seconds.
+        /// The time to live for the message in milliseconds.
         let ttl: UInt64
         /// When the proof of work was calculated, if applicable.
         ///
