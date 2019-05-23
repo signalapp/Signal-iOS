@@ -81,19 +81,25 @@ public class StickerKeyboard: UIStackView {
         autoresizingMask = .flexibleHeight
         alignment = .fill
 
-        addBackgroundView(withBackgroundColor: Theme.offBackgroundColor)
+        addBackgroundView(withBackgroundColor: keyboardBackgroundColor)
 
         addArrangedSubview(headerView)
         headerView.setContentHuggingVerticalHigh()
         headerView.setCompressionResistanceVerticalHigh()
 
         stickerCollectionView.stickerDelegate = self
-        stickerCollectionView.backgroundColor = Theme.offBackgroundColor
+        stickerCollectionView.backgroundColor = keyboardBackgroundColor
         addArrangedSubview(stickerCollectionView)
         stickerCollectionView.setContentHuggingVerticalLow()
         stickerCollectionView.setCompressionResistanceVerticalLow()
 
         populateHeaderView()
+    }
+
+    private var keyboardBackgroundColor: UIColor {
+        return (Theme.isDarkThemeEnabled
+            ? Theme.offBackgroundColor
+            : UIColor.ows_gray02)
     }
 
     @objc
@@ -117,12 +123,21 @@ public class StickerKeyboard: UIStackView {
             }
         }
 
-        let packItems = stickerPacks.map { (stickerPack) in
-            StickerHorizontalListView.Item(stickerInfo: stickerPack.coverInfo) { [weak self] in
-                self?.stickerPack = stickerPack
-            }
+        var items = [StickerHorizontalListViewItem]()
+        items.append(StickerHorizontalListViewItemRecents(didSelectBlock: { [weak self] in
+            self?.recentsButtonWasTapped()
+            }, isSelectedBlock: { [weak self] in
+                self?.stickerPack == nil
+        }))
+        items += stickerPacks.map { (stickerPack) in
+            StickerHorizontalListViewItemSticker(stickerInfo: stickerPack.coverInfo,
+                                                 didSelectBlock: { [weak self] in
+                                                    self?.stickerPack = stickerPack
+                }, isSelectedBlock: { [weak self] in
+                    self?.stickerPack?.info == stickerPack.info
+            })
         }
-        packsCollectionView.items = packItems
+        packsCollectionView.items = items
 
         guard stickerPacks.count > 0 else {
             stickerPack = nil
@@ -130,18 +145,19 @@ public class StickerKeyboard: UIStackView {
         }
     }
 
-    private static let packCoverSize: CGFloat = 24
-    private static let packCoverSpacing: CGFloat = 12
-    private let packsCollectionView = StickerHorizontalListView(cellSize: StickerKeyboard.packCoverSize, spacing: StickerKeyboard.packCoverSpacing)
+    private static let packCoverSize: CGFloat = 32
+    private static let packCoverInset: CGFloat = 4
+    private static let packCoverSpacing: CGFloat = 4
+    private let packsCollectionView = StickerHorizontalListView(cellSize: StickerKeyboard.packCoverSize,
+                                                                cellInset: StickerKeyboard.packCoverInset,
+                                                                spacing: StickerKeyboard.packCoverSpacing)
 
     private func populateHeaderView() {
-        backgroundColor = Theme.offBackgroundColor
-
         headerView.spacing = StickerKeyboard.packCoverSpacing
         headerView.axis = .horizontal
         headerView.alignment = .center
-        headerView.backgroundColor = Theme.offBackgroundColor
-        headerView.layoutMargins = UIEdgeInsets(top: 12, leading: 12, bottom: 12, trailing: 12)
+        headerView.backgroundColor = keyboardBackgroundColor
+        headerView.layoutMargins = UIEdgeInsets(top: 6, leading: 6, bottom: 6, trailing: 6)
         headerView.isLayoutMarginsRelativeArrangement = true
 
         if FeatureFlags.stickerSearch {
@@ -151,12 +167,7 @@ public class StickerKeyboard: UIStackView {
             headerView.addArrangedSubview(searchButton)
         }
 
-        let recentsButton = buildHeaderButton("recent-outline-24") { [weak self] in
-            self?.recentsButtonWasTapped()
-        }
-        headerView.addArrangedSubview(recentsButton)
-
-        packsCollectionView.backgroundColor = Theme.offBackgroundColor
+        packsCollectionView.backgroundColor = keyboardBackgroundColor
         headerView.addArrangedSubview(packsCollectionView)
 
         let manageButton = buildHeaderButton("plus-24") { [weak self] in

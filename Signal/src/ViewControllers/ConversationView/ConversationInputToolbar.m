@@ -303,8 +303,9 @@ const CGFloat kMaxTextViewHeight = 98;
     // Suggested Stickers
     const CGFloat suggestedStickerSize = 48;
     const CGFloat suggestedStickerSpacing = 12;
-    _suggestedStickerView =
-        [[StickerHorizontalListView alloc] initWithCellSize:suggestedStickerSize spacing:suggestedStickerSpacing];
+    _suggestedStickerView = [[StickerHorizontalListView alloc] initWithCellSize:suggestedStickerSize
+                                                                      cellInset:0
+                                                                        spacing:suggestedStickerSpacing];
     self.suggestedStickerView.backgroundColor = UIColor.clearColor;
     self.suggestedStickerView.contentInset = UIEdgeInsetsMake(
         suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing);
@@ -1366,13 +1367,13 @@ const CGFloat kMaxTextViewHeight = 98;
     }
     __weak __typeof(self) weakSelf = self;
     BOOL shouldReset = self.suggestedStickerView.isHidden;
-    NSMutableArray<StickerHorizontalListViewItem *> *items = [NSMutableArray new];
+    NSMutableArray<id<StickerHorizontalListViewItem>> *items = [NSMutableArray new];
     for (StickerInfo *stickerInfo in self.suggestedStickerInfos) {
-        [items addObject:[[StickerHorizontalListViewItem alloc] initWithStickerInfo:stickerInfo
-                                                                      selectedBlock:^{
-                                                                          [weakSelf
-                                                                              didSelectSuggestedSticker:stickerInfo];
-                                                                      }]];
+        [items addObject:[[StickerHorizontalListViewItemSticker alloc]
+                             initWithStickerInfo:stickerInfo
+                                  didSelectBlock:^{
+                                      [weakSelf didSelectSuggestedSticker:stickerInfo];
+                                  }]];
     }
     self.suggestedStickerView.items = items;
     self.suggestedStickerView.hidden = NO;
