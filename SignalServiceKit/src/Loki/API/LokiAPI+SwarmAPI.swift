@@ -1,6 +1,6 @@
 import PromiseKit
 
-extension LokiAPI {
+public extension LokiAPI {
     
     // MARK: Settings
     private static let minimumSnodeCount = 2
@@ -8,7 +8,26 @@ extension LokiAPI {
     private static let defaultSnodePort: UInt16 = 8080
     
     // MARK: Caching
-    fileprivate static var swarmCache: [String:[Target]] = [:] // TODO: Persist on disk
+    private static let swarmCacheKey = "swarmCacheKey"
+    private static let swarmCacheCollection = "swarmCacheCollection"
+    
+    fileprivate static var swarmCache: [String:[Target]] = [:]
+    
+    @objc public static func loadSwarmCache() {
+        var result: [String:[Target]]? = nil
+        storage.dbReadConnection.read { transaction in
+            let intermediate = transaction.object(forKey: swarmCacheKey, inCollection: swarmCacheCollection) as! [String:[TargetWrapper]]
+            result = intermediate.mapValues { $0.map { Target(from: $0) } }
+        }
+        swarmCache = result ?? [:]
+    }
+    
+    private static func saveSwarmCache() {
+        let intermediate = swarmCache.mapValues { $0.map { TargetWrapper(from: $0) } }
+        storage.dbReadWriteConnection.readWrite { transaction in
+            transaction.setObject(intermediate, forKey: swarmCacheKey, inCollection: swarmCacheCollection)
+        }
+    }
     
     // MARK: Internal API
     private static func getRandomSnode() -> Promise<Target> {
@@ -22,7 +41,10 @@ extension LokiAPI {
             return Promise<[Target]> { $0.fulfill(cachedSwarm) }
         } else {
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ]
-            return getRandomSnode().then { invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { parseTargets(from: $0) }.get { swarmCache[hexEncodedPublicKey] = $0 }
+            return getRandomSnode().then { invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { parseTargets(from: $0) }.get { swarm in
+                swarmCache[hexEncodedPublicKey] = swarm
+                saveSwarmCache()
+            }
         }
     }
     
@@ -46,9 +68,10 @@ extension LokiAPI {
     }
 }
 
+// MARK: Error Handling
 internal extension Promise {
     
-    func handlingSwarmSpecificErrorsIfNeeded(for target: LokiAPI.Target, associatedWith hexEncodedPublicKey: String) -> Promise<T> {
+    internal func handlingSwarmSpecificErrorsIfNeeded(for target: LokiAPI.Target, associatedWith hexEncodedPublicKey: String) -> Promise<T> {
         return recover { error -> Promise<T> in
             if let error = error as? NetworkManagerError {
                 switch error.statusCode {

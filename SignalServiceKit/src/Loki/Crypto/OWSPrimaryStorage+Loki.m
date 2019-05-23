@@ -153,12 +153,4 @@
     [transaction removeObjectForKey:serviceNode inCollection:LKLastMessageHashCollection];
 }
 
-- (NSSet<NSString *> *_Nullable)getReceivedMessageHashesWithTransaction:(YapDatabaseReadTransaction *)transaction {
-    return (NSSet *)[[transaction objectForKey:LKReceivedMessageHashesKey inCollection:LKReceivedMessageHashesCollection] as:NSSet.class];
-}
-
-- (void)setReceivedMessageHashes:(NSSet<NSString *> *)receivedMessageHashes withTransaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [transaction setObject:receivedMessageHashes forKey:LKReceivedMessageHashesKey inCollection:LKReceivedMessageHashesCollection];
-}
-
 @end

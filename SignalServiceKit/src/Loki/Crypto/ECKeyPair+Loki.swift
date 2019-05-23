@@ -1,11 +1,11 @@
 
 public extension ECKeyPair {
     
-    @objc var hexEncodedPrivateKey: String {
+    @objc public var hexEncodedPrivateKey: String {
         return privateKey.map { String(format: "%02hhx", $0) }.joined()
     }
     
-    @objc var hexEncodedPublicKey: String {
+    @objc public var hexEncodedPublicKey: String {
         // Prefixing with "05" is necessary for what seems to be a sort of Signal public key versioning system
         // Ref: [NSData prependKeyType] in AxolotKit
         return "05" + publicKey.map { String(format: "%02hhx", $0) }.joined()

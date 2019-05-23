@@ -4,7 +4,7 @@ import Curve25519Kit
 private extension String {
 
     // Convert hex string to Data
-    var hexData: Data {
+    fileprivate var hexData: Data {
         var hex = self
         var data = Data()
         while(hex.count > 0) {

@@ -1,26 +1,15 @@
 import PromiseKit
 
 @objc public final class LokiAPI : NSObject {
-    private static let storage = OWSPrimaryStorage.shared()
+    internal static let storage = OWSPrimaryStorage.shared()
     
     // MARK: Settings
     private static let version = "v1"
     public static let defaultMessageTTL: UInt64 = 1 * 24 * 60 * 60
+    private static let receivedMessageHashValuesKey = "receivedMessageHashValuesKey"
+    private static let receivedMessageHashValuesCollection = "receivedMessageHashValuesCollection"
     
     // MARK: Types
-    internal struct Target : Hashable {
-        let address: String
-        let port: UInt16
-        
-        enum Method : String {
-            /// Only supported by snode targets.
-            case getSwarm = "get_snodes_for_pubkey"
-            /// Only supported by snode targets.
-            case getMessages = "retrieve"
-            case sendMessage = "store"
-        }
-    }
-    
     public typealias RawResponse = Any
     
     public enum Error : LocalizedError {
@@ -149,21 +138,21 @@ import PromiseKit
     private static func getReceivedMessageHashValues() -> Set<String>? {
         var result: Set<String>? = nil
         storage.dbReadConnection.read { transaction in
-            result = storage.getReceivedMessageHashes(with: transaction)
+            result = transaction.object(forKey: receivedMessageHashValuesKey, inCollection: receivedMessageHashValuesCollection) as! Set<String>?
         }
         return result
     }
     
     private static func setReceivedMessageHashValues(to receivedMessageHashValues: Set<String>) {
         storage.dbReadWriteConnection.readWrite { transaction in
-            storage.setReceivedMessageHashes(receivedMessageHashValues, with: transaction)
+            transaction.setObject(receivedMessageHashValues, forKey: receivedMessageHashValuesKey, inCollection: receivedMessageHashValuesCollection)
         }
     }
 }
 
 private extension AnyPromise {
     
-    static func from<T : Any>(_ promise: Promise<T>) -> AnyPromise {
+    fileprivate static func from<T : Any>(_ promise: Promise<T>) -> AnyPromise {
         let result = AnyPromise(promise)
         result.retainUntilComplete()
         return result
