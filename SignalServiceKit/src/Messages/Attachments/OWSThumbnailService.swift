@@ -138,7 +138,7 @@ private struct OWSThumbnailRequest {
         guard canThumbnailAttachment(attachment: attachment) else {
             throw OWSThumbnailError.failure(description: "Cannot thumbnail attachment.")
         }
-        let thumbnailPath = attachment.path(forThumbnailDimensionPoints: thumbnailRequest.thumbnailDimensionPoints)
+        var thumbnailPath = attachment.path(forThumbnailDimensionPoints: thumbnailRequest.thumbnailDimensionPoints)
         if FileManager.default.fileExists(atPath: thumbnailPath) {
             guard let image = UIImage(contentsOfFile: thumbnailPath) else {
                 throw OWSThumbnailError.failure(description: "Could not load thumbnail.")
@@ -172,6 +172,11 @@ private struct OWSThumbnailRequest {
                 throw OWSThumbnailError.failure(description: "Could not convert thumbnail to PNG.")
             }
             thumbnailData = pngThumbnailData
+
+            // The thumbnail path will end up like this "<something>.jpg.png".
+            // This isn't ideal, but it will work.  Since this path will never
+            // be user-facing, it's better to do the simplest correct thing.
+            thumbnailPath += ".png"
         } else {
             guard let jpegThumbnailData = thumbnailImage.jpegData(compressionQuality: 0.85) else {
                 throw OWSThumbnailError.failure(description: "Could not convert thumbnail to JPEG.")

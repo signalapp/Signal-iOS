@@ -959,7 +959,7 @@ public class OWSLinkPreviewManager: NSObject {
                 return OWSLinkPreviewDraft(urlString: url.absoluteString,
                                            title: stickerPack.title,
                                            imageData: pngImageData,
-                imageMimeType: OWSMimeTypeImagePng)
+                                           imageMimeType: OWSMimeTypeImagePng)
             }
         }
     }
