@@ -38,6 +38,8 @@ public class OWS115GRDBMigration: OWSDatabaseMigration {
     }
 }
 
+// MARK: -
+
 extension OWS115GRDBMigration {
 
     // MARK: - Dependencies
@@ -96,33 +98,14 @@ extension OWS115GRDBMigration {
             var threadFinder: LegacyUnorderedFinder<TSThread>!
 
             // KeyValue Finders
-            var sessionStoreFinder: LegacyKeyValueFinder<[Int: SessionRecord]>!
-            var preKeyStoreFinder: LegacyKeyValueFinder<PreKeyRecord>!
-            var preKeyMetadataFinder: LegacyKeyValueFinder<Any>!
-            var signedPreKeyStoreFinder: LegacyKeyValueFinder<SignedPreKeyRecord>!
-            var signedPreKeyMetadataFinder: LegacyKeyValueFinder<Any>!
-
-            var ownIdentityFinder: LegacyKeyValueFinder<ECKeyPair>!
-            var queuedVerificationStateSyncMessagesFinder: LegacyKeyValueFinder<String>!
-            var tsAccountManagerFinder: LegacyKeyValueFinder<Any>!
+            var migrators = [GRDBMigrator]()
 
             dbReadConnection.read { yapTransaction in
                 jobRecordFinder = LegacyJobRecordFinder(transaction: yapTransaction)
                 interactionFinder = LegacyInteractionFinder(transaction: yapTransaction)
                 decryptJobFinder = LegacyUnorderedFinder(transaction: yapTransaction)
 
-                // protocol store finders
-                preKeyStoreFinder = LegacyKeyValueFinder(store: self.preKeyStore.keyStore, transaction: yapTransaction)
-                preKeyMetadataFinder = LegacyKeyValueFinder(store: self.preKeyStore.metadataStore, transaction: yapTransaction)
-
-                signedPreKeyStoreFinder = LegacyKeyValueFinder(store: self.signedPreKeyStore.keyStore, transaction: yapTransaction)
-                signedPreKeyMetadataFinder = LegacyKeyValueFinder(store: self.signedPreKeyStore.metadataStore, transaction: yapTransaction)
-
-                ownIdentityFinder = LegacyKeyValueFinder(store: self.identityManager.ownIdentityKeyValueStore, transaction: yapTransaction)
-
-                sessionStoreFinder = LegacyKeyValueFinder(store: self.sessionStore.keyValueStore, transaction: yapTransaction)
-                queuedVerificationStateSyncMessagesFinder = LegacyKeyValueFinder(store: self.identityManager.queuedVerificationStateSyncMessagesKeyValueStore, transaction: yapTransaction)
-                tsAccountManagerFinder = LegacyKeyValueFinder(store: self.tsAccountManager.keyValueStore, transaction: yapTransaction)
+                migrators += self.allKeyValueMigrators(yapTransaction: yapTransaction)
 
                 // unordered finders
                 attachmentFinder = LegacyUnorderedFinder(transaction: yapTransaction)
@@ -140,17 +123,10 @@ extension OWS115GRDBMigration {
                 return SSKMessageDecryptJobRecord(envelopeData: legacyJob.envelopeData, label: SSKMessageDecryptJobQueue.jobRecordLabel)
             }
 
-            // migrate keyvalue stores
-            try! self.migrateKeyValueStore(label: "sessionStore", finder: sessionStoreFinder, memorySamplerRatio: 1.0, transaction: grdbTransaction)
-
-            try! self.migrateKeyValueStore(label: "ownIdentity", finder: ownIdentityFinder, memorySamplerRatio: 1.0, transaction: grdbTransaction)
-            try! self.migrateKeyValueStore(label: "queuedVerificationStateSyncMessages", finder: queuedVerificationStateSyncMessagesFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
-            try! self.migrateKeyValueStore(label: "tsAccountManager", finder: tsAccountManagerFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
-
-            try! self.migrateKeyValueStore(label: "preKey Store", finder: preKeyStoreFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
-            try! self.migrateKeyValueStore(label: "preKey Metadata", finder: preKeyMetadataFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
-            try! self.migrateKeyValueStore(label: "signedPreKey Store", finder: signedPreKeyStoreFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
-            try! self.migrateKeyValueStore(label: "signedPreKey Metadata", finder: signedPreKeyMetadataFinder, memorySamplerRatio: 0.3, transaction: grdbTransaction)
+            // Migrate migrators
+            for migrator in migrators {
+                try! migrator.migrate(grdbTransaction: grdbTransaction)
+            }
 
             // unordered migrations
             try! self.migrateUnorderedRecords(label: "threads", finder: threadFinder, memorySamplerRatio: 0.2, transaction: grdbTransaction)
@@ -163,24 +139,35 @@ extension OWS115GRDBMigration {
         }
     }
 
+    private func allKeyValueMigrators(yapTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
+        return [
+            GRDBKeyValueStoreMigrator<PreKeyRecord>(label: "preKey Store", keyStore: preKeyStore.keyStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.3),
+            GRDBKeyValueStoreMigrator<Any>(label: "preKey Metadata", keyStore: preKeyStore.metadataStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.3),
+
+            GRDBKeyValueStoreMigrator<SignedPreKeyRecord>(label: "signedPreKey Store", keyStore: signedPreKeyStore.keyStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.3),
+            GRDBKeyValueStoreMigrator<Any>(label: "signedPreKey Metadata", keyStore: signedPreKeyStore.metadataStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.3),
+
+            GRDBKeyValueStoreMigrator<ECKeyPair>(label: "ownIdentity", keyStore: identityManager.ownIdentityKeyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
+
+            GRDBKeyValueStoreMigrator<[Int: SessionRecord]>(label: "sessionStore", keyStore: sessionStore.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
+
+            GRDBKeyValueStoreMigrator<String>(label: "queuedVerificationStateSyncMessages", keyStore: identityManager.queuedVerificationStateSyncMessagesKeyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.3),
+
+            GRDBKeyValueStoreMigrator<Any>(label: "tsAccountManager", keyStore: tsAccountManager.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.3),
+
+            GRDBKeyValueStoreMigrator<Any>(label: "AppPreferences", keyStore: AppPreferences.store, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
+            GRDBKeyValueStoreMigrator<Any>(label: "SSKPreferences", keyStore: SSKPreferences.store, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
+            GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.store", keyStore: StickerManager.store, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
+            GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.emojiMapStore", keyStore: StickerManager.emojiMapStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0)
+            ]
+    }
+
     private func migrateUnorderedRecords<T>(label: String, finder: LegacyUnorderedFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws where T: SDSModel {
         try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyObjects { legacyRecord in
                 recordCount += 1
                 legacyRecord.anyInsert(transaction: transaction.asAnyWrite)
-                memorySampler.sample()
-            }
-            Logger.info("completed with recordCount: \(recordCount)")
-        }
-    }
-
-    private func migrateKeyValueStore<T>(label: String, finder: LegacyKeyValueFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws {
-        try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
-            var recordCount = 0
-            try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
-                recordCount += 1
-                finder.store.setObject(legacyObject, key: legacyKey, transaction: transaction.asAnyWrite)
                 memorySampler.sample()
             }
             Logger.info("completed with recordCount: \(recordCount)")
@@ -233,6 +220,8 @@ extension OWS115GRDBMigration {
     }
 }
 
+// MARK: -
+
 private class LegacyObjectFinder<T> {
     let collection: String
 
@@ -268,6 +257,8 @@ private class LegacyObjectFinder<T> {
     }
 }
 
+// MARK: -
+
 private class LegacyKeyValueFinder<T>: LegacyObjectFinder<T> {
     let store: SDSKeyValueStore
 
@@ -277,11 +268,15 @@ private class LegacyKeyValueFinder<T>: LegacyObjectFinder<T> {
     }
 }
 
+// MARK: -
+
 private class LegacyUnorderedFinder<RecordType>: LegacyObjectFinder<RecordType> where RecordType: TSYapDatabaseObject {
     init(transaction: YapDatabaseReadTransaction) {
         super.init(collection: RecordType.collection(), transaction: transaction)
     }
 }
+
+// MARK: -
 
 private class LegacyInteractionFinder {
     let extensionName = TSMessageDatabaseViewExtensionName
@@ -334,6 +329,8 @@ private class LegacyInteractionFinder {
     }
 }
 
+// MARK: -
+
 private class LegacyJobRecordFinder {
 
     let extensionName = YAPDBJobRecordFinder.dbExtensionName
@@ -373,6 +370,38 @@ private class LegacyJobRecordFinder {
 
         if let errorToRaise = errorToRaise {
             throw errorToRaise
+        }
+    }
+}
+
+// MARK: -
+
+private protocol GRDBMigrator {
+    func migrate(grdbTransaction: GRDBWriteTransaction) throws
+}
+
+// MARK: -
+
+private class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
+    private let label: String
+    private let finder: LegacyKeyValueFinder<T>
+    private let memorySamplerRatio: Float
+
+    init(label: String, keyStore: SDSKeyValueStore, yapTransaction: YapDatabaseReadTransaction, memorySamplerRatio: Float) {
+        self.label = label
+        self.finder = LegacyKeyValueFinder(store: keyStore, transaction: yapTransaction)
+        self.memorySamplerRatio = memorySamplerRatio
+    }
+
+    func migrate(grdbTransaction: GRDBWriteTransaction) throws {
+        try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
+            var recordCount = 0
+            try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
+                recordCount += 1
+                self.finder.store.setObject(legacyObject, key: legacyKey, transaction: grdbTransaction.asAnyWrite)
+                memorySampler.sample()
+            }
+            Logger.info("completed with recordCount: \(recordCount)")
         }
     }
 }

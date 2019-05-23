@@ -77,8 +77,8 @@ public class StickerManager: NSObject {
         return operationQueue
     }()
 
-    private static let store = SDSKeyValueStore(collection: "recentStickers")
-    private static let emojiMapStore = SDSKeyValueStore(collection: "emojiMap")
+    public static let store = SDSKeyValueStore(collection: "recentStickers")
+    public static let emojiMapStore = SDSKeyValueStore(collection: "emojiMap")
 
     private static let serialQueue = DispatchQueue(label: "org.signal.stickers")
 

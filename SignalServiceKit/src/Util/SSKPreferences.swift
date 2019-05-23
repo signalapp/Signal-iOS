@@ -9,7 +9,7 @@ public class SSKPreferences: NSObject {
     // Never instantiate this class.
     private override init() {}
 
-    private static let store = SDSKeyValueStore(collection: "SSKPreferences")
+    public static let store = SDSKeyValueStore(collection: "SSKPreferences")
 
     // MARK: -
 
