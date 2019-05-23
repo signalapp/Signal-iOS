@@ -65,18 +65,15 @@ import PromiseKit
             }
         }
         
-        // By default our p2p throws and we recover by sending to storage server
-        var p2pPromise: Promise<Set<Promise<RawResponse>>> = Promise(error: Error.internalError)
-        // TODO: probably only send to p2p if user is online or we are pinging them
-        // p2pDetails && (isPing || peerIsOnline)
-
-        if let p2pDetails = contactP2PDetails[destination] {
-            p2pPromise = sendMessage(message, targets: [p2pDetails])
-        }
-        
         // If we have the p2p details then send message to that
         // If that failes then fallback to storage server
-        return p2pPromise.recover { _ in return sendThroughStorageServer() }
+        // TODO: probably only send to p2p if user is online or we are pinging them
+        // p2pDetails && (isPing || peerIsOnline)
+        if let p2pDetails = contactP2PDetails[destination] {
+            return sendMessage(message, targets: [p2pDetails]).recover { _ in return sendThroughStorageServer() }
+        }
+        
+        return sendThroughStorageServer()
     }
     
     internal static func sendMessage(_ lokiMessage: Message, targets: [Target]) -> Promise<Set<Promise<RawResponse>>> {
