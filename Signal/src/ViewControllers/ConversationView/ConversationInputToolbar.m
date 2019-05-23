@@ -89,7 +89,6 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, readonly) StickerHorizontalListView *suggestedStickerView;
 @property (nonatomic) NSArray<StickerInfo *> *suggestedStickerInfos;
 @property (nonatomic, readonly) UIStackView *outerStack;
-@property (nonatomic, readonly) UIStackView *mediaStack;
 
 @property (nonatomic) CGFloat textViewHeight;
 @property (nonatomic, readonly) NSLayoutConstraint *textViewHeightConstraint;
@@ -279,15 +278,22 @@ const CGFloat kMaxTextViewHeight = 98;
     [vStackWrapper setCompressionResistanceHorizontalLow];
 
     // Media Stack
-    _mediaStack = [[UIStackView alloc] initWithArrangedSubviews:@[ self.cameraButton, self.voiceMemoButton ]];
-    self.mediaStack.axis = UILayoutConstraintAxisHorizontal;
-    self.mediaStack.alignment = UIStackViewAlignmentCenter;
-    [self.mediaStack setContentHuggingHorizontalHigh];
-    [self.mediaStack setCompressionResistanceHorizontalHigh];
+    UIStackView *mediaStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.sendButton,
+        self.cameraButton,
+        self.voiceMemoButton,
+    ]];
+    mediaStack.axis = UILayoutConstraintAxisHorizontal;
+    mediaStack.alignment = UIStackViewAlignmentCenter;
+    [mediaStack setContentHuggingHorizontalHigh];
+    [mediaStack setCompressionResistanceHorizontalHigh];
 
     // H Stack
-    UIStackView *hStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, self.mediaStack, self.sendButton ]];
+    UIStackView *hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.attachmentButton,
+        vStackWrapper,
+        mediaStack,
+    ]];
     hStack.axis = UILayoutConstraintAxisHorizontal;
     hStack.layoutMarginsRelativeArrangement = YES;
     hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
@@ -586,10 +592,12 @@ const CGFloat kMaxTextViewHeight = 98;
 
         BOOL hasTextInput = self.inputTextView.trimmedText.length > 0;
         if (hasTextInput) {
-            ensureViewHiddenState(self.mediaStack, YES);
+            ensureViewHiddenState(self.cameraButton, YES);
+            ensureViewHiddenState(self.voiceMemoButton, YES);
             ensureViewHiddenState(self.sendButton, NO);
         } else {
-            ensureViewHiddenState(self.mediaStack, NO);
+            ensureViewHiddenState(self.cameraButton, NO);
+            ensureViewHiddenState(self.voiceMemoButton, NO);
             ensureViewHiddenState(self.sendButton, YES);
         }
 
