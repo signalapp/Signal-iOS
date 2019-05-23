@@ -1,6 +1,6 @@
 import PromiseKit
 
-public extension Promise : Hashable {
+extension Promise : Hashable {
     
     public func hash(into hasher: inout Hasher) {
         let reference = ObjectIdentifier(self).hashValue

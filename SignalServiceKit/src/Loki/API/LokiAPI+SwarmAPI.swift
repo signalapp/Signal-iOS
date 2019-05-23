@@ -3,8 +3,8 @@ import PromiseKit
 public extension LokiAPI {
     
     // MARK: Settings
-    private static let minimumSnodeCount = 2
-    private static let targetSnodeCount = 3
+    private static let minimumSnodeCount = 2 // TODO: For debugging purposes
+    private static let targetSnodeCount = 3 // TODO: For debugging purposes
     private static let defaultSnodePort: UInt16 = 8080
     
     // MARK: Caching
