@@ -8,6 +8,7 @@ private extension GCDWebServerResponse {
 }
 
 private extension GCDWebServerDataRequest {
+    
     var truncatedContentType: String? {
         guard let contentType = contentType else { return nil }
         guard let substring = contentType.split(separator: ";").first else { return contentType }
@@ -89,8 +90,9 @@ final class LokiP2PServer : NSObject {
     
     @objc public var serverURL: URL? { return webServer.serverURL }
     @objc public var isRunning: Bool { return webServer.isRunning }
-    
-    @objc @discardableResult func start(onPort port: UInt) -> Bool  {
+
+    @discardableResult
+    @objc func start(onPort port: UInt) -> Bool  {
         guard !webServer.isRunning else { return false }
         webServer.start(withPort: port, bonjourName: nil)
         return webServer.isRunning

@@ -16,8 +16,8 @@ public extension LokiAPI {
     @objc public static func loadSwarmCache() {
         var result: [String:[Target]]? = nil
         storage.dbReadConnection.read { transaction in
-            let intermediate = transaction.object(forKey: swarmCacheKey, inCollection: swarmCacheCollection) as! [String:[TargetWrapper]]
-            result = intermediate.mapValues { $0.map { Target(from: $0) } }
+            let intermediate = transaction.object(forKey: swarmCacheKey, inCollection: swarmCacheCollection) as! [String:[TargetWrapper]]?
+            result = intermediate?.mapValues { $0.map { Target(from: $0) } }
         }
         swarmCache = result ?? [:]
     }
