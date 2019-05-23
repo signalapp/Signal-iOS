@@ -3,7 +3,8 @@ import PromiseKit
 extension LokiAPI {
     
     // MARK: Settings
-    private static let targetSnodeCount = 2
+    private static let minimumSnodeCount = 2
+    private static let targetSnodeCount = 3
     private static let defaultSnodePort: UInt16 = 8080
     
     // MARK: Caching
@@ -17,7 +18,7 @@ extension LokiAPI {
     }
     
     private static func getSwarm(for hexEncodedPublicKey: String) -> Promise<[Target]> {
-        if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= targetSnodeCount {
+        if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= minimumSnodeCount {
             return Promise<[Target]> { $0.fulfill(cachedSwarm) }
         } else {
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ]
