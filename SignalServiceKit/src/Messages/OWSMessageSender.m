@@ -1104,7 +1104,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     // Update the state to show that the proof of work is being calculated
-    [self setIsCalculatingProofOfWorkForMessage:messageSend];
+    [self saveIsCalculatingProofOfWork:YES forMessage:messageSend];
     // Convert the message to a Loki message and send it using the Loki messaging API
     NSDictionary *signalMessage = deviceMessages.firstObject;
     // Update the message and thread if needed
@@ -1144,6 +1144,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     if (messageType == TSFriendRequestMessageType) {
                         [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:nil];
                     }
+                    // Update the PoW calculation status
+                    [self saveIsCalculatingProofOfWork:NO forMessage:messageSend];
                     // Handle the error
                     NSUInteger statusCode = 0;
                     NSData *_Nullable responseData = nil;
@@ -1161,7 +1163,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
                 }) retainUntilComplete];
             }
-        
         }) retainUntilComplete];
     
     // Loki: Original code
@@ -1227,12 +1228,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
      */
 }
 
-- (void)setIsCalculatingProofOfWorkForMessage:(OWSMessageSend *)messageSend
+- (void)saveIsCalculatingProofOfWork:(BOOL)isCalculatingPoW forMessage:(OWSMessageSend *)messageSend
 {
     OWSAssertDebug(messageSend);
     dispatch_async(OWSDispatch.sendingQueue, ^{
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [messageSend.message updateIsCalculatingProofOfWorkWithTransaction:transaction];
+            [messageSend.message saveIsCalculatingProofOfWork:isCalculatingPoW withTransaction:transaction];
         }];
     });
 }

@@ -610,7 +610,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                      }
                                  }
                                  [message setMostRecentFailureText:error.localizedDescription];
-                                 [message setIsCalculatingPoW:false];
+                                 [message setIsCalculatingPoW:NO];
                              }];
 }
 
@@ -627,7 +627,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                          recipientState.state = OWSOutgoingMessageRecipientStateFailed;
                                      }
                                  }
-                                 [message setIsCalculatingPoW:false];
+                                 [message setIsCalculatingPoW:NO];
                              }];
 }
 
@@ -674,14 +674,12 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }];
 }
 
-- (void)updateIsCalculatingProofOfWorkWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)saveIsCalculatingProofOfWork:(BOOL)isCalculatingPoW withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
-                                 [message setIsCalculatingPoW:true];
-                             }];
+    [self applyChangeToSelfAndLatestCopy:transaction changeBlock:^(TSOutgoingMessage *message) {
+        [message setIsCalculatingPoW:isCalculatingPoW];
+    }];
 }
 
 - (void)updateWithSentRecipient:(NSString *)recipientId
@@ -700,7 +698,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.wasSentByUD = wasSentByUD;
-                                 [message setIsCalculatingPoW:false];
+                                 [message setIsCalculatingPoW:NO];
                              }];
 }
 
@@ -718,7 +716,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                      return;
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSkipped;
-                                 [message setIsCalculatingPoW:false];
+                                 [message setIsCalculatingPoW:NO];
                              }];
 }
 
@@ -747,7 +745,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.deliveryTimestamp = deliveryTimestamp;
-                                 [message setIsCalculatingPoW:false];
+                                 [message setIsCalculatingPoW:NO];
                              }];
 }
 
@@ -771,7 +769,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                  }
                                  recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                  recipientState.readTimestamp = @(readTimestamp);
-                                 [message setIsCalculatingPoW:false];
+                                 [message setIsCalculatingPoW:NO];
                              }];
 }
 
@@ -841,7 +839,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                    }
                                }
                                
-                               [message setIsCalculatingPoW:false];
+                               [message setIsCalculatingPoW:NO];
 
                                if (!isSentUpdate) {
                                    [message setIsFromLinkedDevice:YES];

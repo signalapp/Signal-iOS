@@ -196,7 +196,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 #pragma mark - Update With... Methods
 
 // When sending a message, when proof of work calculation is started, we should mark it as such
-- (void)updateIsCalculatingProofOfWorkWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)saveIsCalculatingProofOfWork:(BOOL)isCalculatingPoW withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method is used to record a successful send to one recipient.
 - (void)updateWithSentRecipient:(NSString *)recipientId
