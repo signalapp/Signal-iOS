@@ -166,8 +166,17 @@ private struct OWSThumbnailRequest {
         } else {
             throw OWSThumbnailError.assertionFailure(description: "Invalid attachment type.")
         }
-        guard let thumbnailData = thumbnailImage.jpegData(compressionQuality: 0.85) else {
-            throw OWSThumbnailError.failure(description: "Could not convert thumbnail to JPEG.")
+        let thumbnailData: Data
+        if attachment.contentType == OWSMimeTypeImageWebp {
+            guard let pngThumbnailData = thumbnailImage.pngData() else {
+                throw OWSThumbnailError.failure(description: "Could not convert thumbnail to PNG.")
+            }
+            thumbnailData = pngThumbnailData
+        } else {
+            guard let jpegThumbnailData = thumbnailImage.jpegData(compressionQuality: 0.85) else {
+                throw OWSThumbnailError.failure(description: "Could not convert thumbnail to JPEG.")
+            }
+            thumbnailData = jpegThumbnailData
         }
         do {
             try thumbnailData.write(to: URL(fileURLWithPath: thumbnailPath), options: .atomic)
