@@ -63,7 +63,7 @@ public enum ProofOfWork {
     ///   - data: The message data
     ///   - pubKey: The message recipient
     ///   - timestamp: The timestamp
-    ///   - ttl: The message time to live, in **seconds**
+    ///   - ttl: The message time to live
     /// - Returns: A nonce string or `nil` if it failed
     public static func calculate(data: String, pubKey: String, timestamp: UInt64, ttl: UInt64) -> String? {
         let payload = createPayload(pubKey: pubKey, data: data, timestamp: timestamp, ttl: ttl)
@@ -103,7 +103,8 @@ public enum ProofOfWork {
 
         // Do all the calculations
         let totalLength = UInt64(payloadLength + nonceLength)
-        let ttlMult = ttl * totalLength
+        let ttlInSeconds = ttl / 1000
+        let ttlMult = ttlInSeconds * totalLength
         
         // UInt64 values
         let innerFrac = ttlMult / two16
