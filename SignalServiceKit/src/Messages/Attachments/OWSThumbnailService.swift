@@ -189,4 +189,10 @@ private struct OWSThumbnailRequest {
         OWSFileSystem.protectFileOrFolder(atPath: thumbnailPath)
         return OWSLoadedThumbnail(image: thumbnailImage, data: thumbnailData)
     }
+
+    @objc
+    public class func thumbnailFileExtension(forContentType contentType: String) -> String {
+        let isWebp = contentType == OWSMimeTypeImageWebp
+        return isWebp ? "png" : "jpg"
+    }
 }
