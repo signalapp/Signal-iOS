@@ -3617,15 +3617,12 @@ typedef enum : NSUInteger {
 - (void)markVisibleMessagesAsRead
 {
     if (self.presentedViewController) {
-        OWSLogInfo(@"Not marking messages as read; another view is presented.");
         return;
     }
     if (OWSWindowManager.sharedManager.shouldShowCallView) {
-        OWSLogInfo(@"Not marking messages as read; call view is presented.");
         return;
     }
     if (self.navigationController.topViewController != self) {
-        OWSLogInfo(@"Not marking messages as read; another view is pushed.");
         return;
     }
 
