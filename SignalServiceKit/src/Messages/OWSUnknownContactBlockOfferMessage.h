@@ -31,6 +31,9 @@ __attribute__((deprecated)) @interface OWSUnknownContactBlockOfferMessage : TSEr
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
+perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
+  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
+       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
@@ -38,7 +41,7 @@ __attribute__((deprecated)) @interface OWSUnknownContactBlockOfferMessage : TSEr
                             read:(BOOL)read
                      recipientId:(nullable NSString *)recipientId
                        contactId:(NSString *)contactId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:contactId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:contactId:));
 
 // clang-format on
 

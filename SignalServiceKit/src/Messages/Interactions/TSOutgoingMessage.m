@@ -116,6 +116,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
+perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
+  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
+       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
@@ -143,6 +146,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                   expiresInSeconds:expiresInSeconds
                        linkPreview:linkPreview
                     messageSticker:messageSticker
+perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
+    perMessageExpirationHasExpired:perMessageExpirationHasExpired
+         perMessageExpireStartedAt:perMessageExpireStartedAt
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
 
@@ -979,6 +985,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessage builder];
     [builder setTimestamp:self.timestamp];
+
+    if (self.perMessageExpirationDurationSeconds > 0) {
+        [builder setMessageTimer:self.perMessageExpirationDurationSeconds];
+    }
 
     if ([self.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
         [builder setBody:self.body];

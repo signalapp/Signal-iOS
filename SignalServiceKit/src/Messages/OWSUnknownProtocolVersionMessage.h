@@ -37,6 +37,9 @@ NS_ASSUME_NONNULL_BEGIN
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
+perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
+  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
+       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
                    customMessage:(nullable NSString *)customMessage
@@ -46,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                  protocolVersion:(NSUInteger)protocolVersion
                         senderId:(NSString *)senderId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:protocolVersion:senderId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:protocolVersion:senderId:));
 
 // clang-format on
 

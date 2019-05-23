@@ -208,8 +208,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                                    transaction:writeTransaction
                                                                                    .transitional_yapWriteTransaction];
                                       if (linkPreview) {
-                                          [message updateWithLinkPreview:linkPreview transaction:writeTransaction
-                                           .transitional_yapWriteTransaction];
+                                          [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
                                       }
                                   }
 
@@ -308,7 +307,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                 return;
             }
 
-            [message saveWithMessageSticker:messageSticker transaction:transaction];
+            [message anyInsertWithTransaction:transaction.asAnyWrite];
+            [message updateWithMessageSticker:messageSticker transaction:transaction.asAnyWrite];
 
             [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
         }];

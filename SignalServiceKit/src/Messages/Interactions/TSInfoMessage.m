@@ -118,6 +118,9 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
+perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
+  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
+       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
                    customMessage:(nullable NSString *)customMessage
@@ -139,6 +142,9 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
                   expiresInSeconds:expiresInSeconds
                        linkPreview:linkPreview
                     messageSticker:messageSticker
+perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
+    perMessageExpirationHasExpired:perMessageExpirationHasExpired
+         perMessageExpireStartedAt:perMessageExpireStartedAt
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
 

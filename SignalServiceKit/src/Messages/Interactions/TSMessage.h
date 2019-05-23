@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
-@class YapDatabaseReadWriteTransaction;
 
 @interface TSMessage : TSInteraction <OWSPreviewText>
 
@@ -33,6 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
+
+// Per-message expire timer.
+@property (nonatomic, readonly) uint32_t perMessageExpirationDurationSeconds;
+@property (nonatomic, readonly) uint64_t perMessageExpireStartedAt;
+@property (nonatomic, readonly) uint64_t perMessageExpiresAt;
+@property (nonatomic, readonly) BOOL perMessageExpirationHasExpired;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -66,9 +71,12 @@ NS_ASSUME_NONNULL_BEGIN
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
+perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
+  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
+       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:));
 
 // clang-format on
 
@@ -96,14 +104,28 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
+- (BOOL)hasRenderableContent;
+
 #pragma mark - Update With... Methods
 
-- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)saveWithMessageSticker:(MessageSticker *)messageSticker
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction;
+
+#pragma mark - Per-message expiration
+
+// This method can be used to add a per-message expiration to
+// an incoming or outgoing message.
+- (void)updateWithPerMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
+                                          transaction:(SDSAnyWriteTransaction *)transaction;
+
+// This method can be used to start expiration of per-message expiration.
+- (void)updateWithPerMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
+                                transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)setPerMessageExpiredAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

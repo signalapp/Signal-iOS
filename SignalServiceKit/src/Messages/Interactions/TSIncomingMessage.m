@@ -100,6 +100,9 @@ NS_ASSUME_NONNULL_BEGIN
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
+perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
+  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
+       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
                         authorId:(NSString *)authorId
@@ -121,6 +124,9 @@ NS_ASSUME_NONNULL_BEGIN
                   expiresInSeconds:expiresInSeconds
                        linkPreview:linkPreview
                     messageSticker:messageSticker
+perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
+    perMessageExpirationHasExpired:perMessageExpirationHasExpired
+         perMessageExpireStartedAt:perMessageExpireStartedAt
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
 
