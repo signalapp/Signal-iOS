@@ -18,7 +18,6 @@
 #import "DebugUIMessages.h"
 #import "DebugUIPage.h"
 #import "DebugUITableViewController.h"
-#import "ExperienceUpgrade.h"
 #import "FingerprintViewController.h"
 #import "HomeViewCell.h"
 #import "HomeViewController.h"
