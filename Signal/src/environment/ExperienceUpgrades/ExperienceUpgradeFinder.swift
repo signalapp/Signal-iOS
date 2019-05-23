@@ -40,27 +40,22 @@ enum ExperienceUpgradeId: String {
     // MARK: - Instance Methods
 
     @objc
-    public func allUnseen(transaction: YapDatabaseReadTransaction) -> [ExperienceUpgrade] {
-        return allExperienceUpgrades.filter { ExperienceUpgrade.fetch(uniqueId: $0.uniqueId!, transaction: transaction) == nil }
+    public func allUnseen(transaction: SDSAnyReadTransaction) -> [ExperienceUpgrade] {
+        let seen = ExperienceUpgrade.anyFetchAll(transaction: transaction)
+        let seenIds = seen.map { $0.uniqueId! }
+        return allExperienceUpgrades.filter { !seenIds.contains($0.uniqueId!) }
     }
 
     @objc
     public func markAsSeen(experienceUpgrade: ExperienceUpgrade, transaction: SDSAnyWriteTransaction) {
         Logger.info("marking experience upgrade as seen")
-        guard let yapTransaction = transaction.transitional_yapWriteTransaction else {
-            return
-        }
-        // TODO: Use anySave().
-        experienceUpgrade.save(with: yapTransaction)
+        experienceUpgrade.anyInsert(transaction: transaction)
     }
 
     @objc
     public func markAllAsSeen(transaction: SDSAnyWriteTransaction) {
         Logger.info("marking experience upgrades as seen")
-        guard let yapTransaction = transaction.transitional_yapWriteTransaction else {
-            return
-        }
-        // TODO: Use anySave().
-        allExperienceUpgrades.forEach { $0.save(with: yapTransaction) }
+        let unseen = allUnseen(transaction: transaction)
+        unseen.forEach { $0.anyInsert(transaction: transaction) }
     }
 }
