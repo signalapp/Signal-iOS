@@ -225,7 +225,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             return;
         }
 
-        [self sendConfigurationSyncMessage_AppReady];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self sendConfigurationSyncMessage_AppReady];
+        });
     }];
 }
 
