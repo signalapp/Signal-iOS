@@ -345,7 +345,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (NSString *)pathForThumbnailDimensionPoints:(NSUInteger)thumbnailDimensionPoints
 {
-    NSString *filename = [NSString stringWithFormat:@"thumbnail-%lu.jpg", (unsigned long)thumbnailDimensionPoints];
+    NSString *fileExtension = [OWSThumbnailService thumbnailFileExtensionForContentType:self.contentType];
+    NSString *filename =
+        [NSString stringWithFormat:@"thumbnail-%lu.%@", (unsigned long)thumbnailDimensionPoints, fileExtension];
     return [self.thumbnailsDirPath stringByAppendingPathComponent:filename];
 }
 
