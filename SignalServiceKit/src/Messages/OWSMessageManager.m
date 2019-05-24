@@ -54,6 +54,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const SSKProtoDataMessageProtocolVersion kCurrentProtocolVersion = SSKProtoDataMessageProtocolVersionInitial;
+
 @interface OWSMessageManager ()
 
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
@@ -1231,6 +1233,13 @@ NS_ASSUME_NONNULL_BEGIN
             [newMemberIds addObjectsFromArray:oldGroupThread.groupModel.groupMemberIds];
         }
 
+        if (dataMessage.requiredProtocolVersion > kCurrentProtocolVersion) {
+            [self insertUnknownProtocolVersionErrorInThread:oldGroupThread
+                                            protocolVersion:dataMessage.requiredProtocolVersion
+                                                transaction:transaction.asAnyWrite];
+            return nil;
+        }
+
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
                 // Ensures that the thread exists but doesn't update it.
@@ -1370,6 +1379,13 @@ NS_ASSUME_NONNULL_BEGIN
         TSContactThread *thread =
             [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
+        if (dataMessage.requiredProtocolVersion > kCurrentProtocolVersion) {
+            [self insertUnknownProtocolVersionErrorInThread:thread
+                                            protocolVersion:dataMessage.requiredProtocolVersion
+                                                transaction:transaction.asAnyWrite];
+            return nil;
+        }
+
         [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                   thread:thread
                                                               createdByRemoteRecipientId:envelope.source
@@ -1435,6 +1451,21 @@ NS_ASSUME_NONNULL_BEGIN
                           transaction:transaction];
         return incomingMessage;
     }
+}
+
+- (void)insertUnknownProtocolVersionErrorInThread:(TSThread *)thread
+                                  protocolVersion:(SSKProtoDataMessageProtocolVersion)protocolVersion
+                                      transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(thread);
+    OWSAssertDebug(transaction);
+
+    OWSFailDebug(@"Unknown protocol version: %lu", (unsigned long)protocolVersion);
+
+    // MJK TODO - safe to remove senderTimestamp
+    [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                     inThread:thread
+                                  messageType:TSInfoMessageTypeSessionDidEnd] anySaveWithTransaction:transaction];
 }
 
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage
