@@ -371,7 +371,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self addSubview:self.stickerKeyboardResponder];
     [self.stickerKeyboardResponder autoSetDimensionsToSize:CGSizeMake(1, 1)];
 
-    [self ensureButtonVisibilityWithIsAnimated:NO doLayout:YES];
+    [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 }
 
 - (void)updateFontSizes
@@ -627,7 +627,7 @@ const CGFloat kMaxTextViewHeight = 98;
             [self removeStickerTooltip];
         }
 
-        if (doLayout && didChangeLayout) {
+        if (doLayout) {
             [self setNeedsLayout];
             [self layoutIfNeeded];
         }
