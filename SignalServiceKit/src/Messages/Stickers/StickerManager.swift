@@ -268,7 +268,7 @@ public class StickerManager: NSObject {
 
         installStickerPackContents(stickerPack: stickerPack, transaction: transaction).retainUntilComplete()
 
-        enqueueStickerSyncMessage(operationType: .remove,
+        enqueueStickerSyncMessage(operationType: .install,
                                   packs: [stickerPack.info],
                                   transaction: transaction)
 
@@ -327,9 +327,11 @@ public class StickerManager: NSObject {
 
             self.shared.stickerPackWasInstalled(transaction: transaction)
 
-            enqueueStickerSyncMessage(operationType: .install,
-                                      packs: [stickerPack.info],
-                                      transaction: transaction)
+            if stickerPack.isInstalled {
+                enqueueStickerSyncMessage(operationType: .install,
+                                          packs: [stickerPack.info],
+                                          transaction: transaction)
+            }
 
             // If the pack is already installed, make sure all stickers are installed.
             if stickerPack.isInstalled {
@@ -1097,6 +1099,9 @@ public class StickerManager: NSObject {
                                             installMode: .install)
         case .remove:
             uninstallStickerPack(stickerPackInfo: stickerPackInfo, transaction: transaction)
+        @unknown default:
+            owsFailDebug("Unknown type.")
+            return
         }
     }
 

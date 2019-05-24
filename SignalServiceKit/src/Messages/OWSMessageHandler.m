@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageHandler.h"
@@ -165,6 +165,22 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         NSString *verifiedString =
             [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destination];
         [description appendString:verifiedString];
+    } else if (syncMessage.stickerPackOperation) {
+        NSMutableArray<NSString *> *operationTypes = [NSMutableArray new];
+        for (SSKProtoSyncMessageStickerPackOperation *packOperationProto in syncMessage.stickerPackOperation) {
+            switch (packOperationProto.type) {
+                case SSKProtoSyncMessageStickerPackOperationTypeInstall:
+                    [operationTypes addObject:@"install"];
+                    break;
+                case SSKProtoSyncMessageStickerPackOperationTypeRemove:
+                    [operationTypes addObject:@"remove"];
+                    break;
+                default:
+                    [operationTypes addObject:@"unknown"];
+                    break;
+            }
+        }
+        [description appendFormat:@"StickerPackOperation: %@", [operationTypes componentsJoinedByString:@", "]];
     } else {
         OWSFailDebug(@"Unknown sync message type");
         [description appendString:@"Unknown"];

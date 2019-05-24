@@ -45,6 +45,10 @@ public class StickerPackViewController: OWSViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: UIApplication.didChangeStatusBarFrameNotification, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(stickersOrPacksDidChange),
+                                               name: StickerManager.StickersOrPacksDidChange,
+                                               object: nil)
     }
 
     deinit {
@@ -338,6 +342,14 @@ public class StickerPackViewController: OWSViewController {
     @objc
     public func didChangeStatusBarFrame() {
         Logger.debug("")
+
+        updateContent()
+    }
+
+    @objc func stickersOrPacksDidChange() {
+        AssertIsOnMainThread()
+
+        Logger.verbose("")
 
         updateContent()
     }
