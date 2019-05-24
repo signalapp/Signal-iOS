@@ -17,14 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSQuotedMessage;
 @class YapDatabaseReadWriteTransaction;
 
-typedef NS_ENUM(NSInteger, TSMessageFriendRequestStatus) {
-    TSMessageFriendRequestStatusNone,
-    TSMessageFriendRequestStatusSendingOrFailed,
+typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
+    LKMessageFriendRequestStatusNone,
+    LKMessageFriendRequestStatusSendingOrFailed,
     /// Either sent or received.
-    TSMessageFriendRequestStatusPending,
-    TSMessageFriendRequestStatusAccepted,
-    TSMessageFriendRequestStatusDeclined,
-    TSMessageFriendRequestStatusExpired
+    LKMessageFriendRequestStatusPending,
+    LKMessageFriendRequestStatusAccepted,
+    LKMessageFriendRequestStatusDeclined,
+    LKMessageFriendRequestStatusExpired
 };
 
 @interface TSMessage : TSInteraction <OWSPreviewText>
@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, TSMessageFriendRequestStatus) {
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 // Loki friend request handling
 // ========
-@property (nonatomic) TSMessageFriendRequestStatus friendRequestStatus;
+@property (nonatomic) LKMessageFriendRequestStatus friendRequestStatus;
 @property (nonatomic, readonly) NSString *friendRequestStatusDescription;
 @property (nonatomic) uint64_t friendRequestExpiresAt;
 @property (nonatomic, readonly) BOOL isFriendRequest;
@@ -88,7 +88,7 @@ typedef NS_ENUM(NSInteger, TSMessageFriendRequestStatus) {
 
 #pragma mark - Loki Friend Request Handling
 
-- (void)saveFriendRequestStatus:(TSMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+- (void)saveFriendRequestStatus:(LKMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 - (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 @end

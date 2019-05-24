@@ -82,7 +82,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _quotedMessage = quotedMessage;
     _contactShare = contactShare;
     _linkPreview = linkPreview;
-    _friendRequestStatus = TSMessageFriendRequestStatusNone;
+    _friendRequestStatus = LKMessageFriendRequestStatusNone;
     _friendRequestExpiresAt = 0;
 
     return self;
@@ -442,7 +442,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Loki Friend Request Handling
 
-- (void)saveFriendRequestStatus:(TSMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+- (void)saveFriendRequestStatus:(LKMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
     self.friendRequestStatus = friendRequestStatus;
     OWSLogInfo(@"[Loki] Setting message friend request status to %@.", self.friendRequestStatusDescription);
@@ -461,12 +461,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (NSString *)friendRequestStatusDescription
 {
     switch (self.friendRequestStatus) {
-        case TSMessageFriendRequestStatusNone: return @"none";
-        case TSMessageFriendRequestStatusSendingOrFailed: return @"sending or failed";
-        case TSMessageFriendRequestStatusPending: return @"pending";
-        case TSMessageFriendRequestStatusAccepted: return @"accepted";
-        case TSMessageFriendRequestStatusDeclined: return @"declined";
-        case TSMessageFriendRequestStatusExpired: return @"expired";
+        case LKMessageFriendRequestStatusNone: return @"none";
+        case LKMessageFriendRequestStatusSendingOrFailed: return @"sending or failed";
+        case LKMessageFriendRequestStatusPending: return @"pending";
+        case LKMessageFriendRequestStatusAccepted: return @"accepted";
+        case LKMessageFriendRequestStatusDeclined: return @"declined";
+        case LKMessageFriendRequestStatusExpired: return @"expired";
     }
 }
 
@@ -482,12 +482,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)isFriendRequest
 {
-    return self.friendRequestStatus != TSMessageFriendRequestStatusNone;
+    return self.friendRequestStatus != LKMessageFriendRequestStatusNone;
 }
 
 - (BOOL)hasFriendRequestStatusMessage
 {
-    return self.isFriendRequest && self.friendRequestStatus != TSMessageFriendRequestStatusSendingOrFailed;
+    return self.isFriendRequest && self.friendRequestStatus != LKMessageFriendRequestStatusSendingOrFailed;
 }
 
 @end

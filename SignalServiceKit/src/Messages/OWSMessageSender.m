@@ -1111,8 +1111,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
         // Update the message and thread if needed
         if (messageType == TSFriendRequestMessageType) {
-            [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSending withTransaction:transaction];
-            [message saveFriendRequestStatus:TSMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
+            [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSending withTransaction:transaction];
+            [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
         }
     }];
     // Convenience
@@ -1120,8 +1120,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             // Update the thread if needed
             if (messageType == TSFriendRequestMessageType) {
-                [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:transaction];
-                [message saveFriendRequestStatus:TSMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
+                [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:transaction];
+                [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
             }
             // Update the PoW calculation status
             [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
@@ -1157,10 +1157,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     if (messageType == TSFriendRequestMessageType) {
                         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                             // Update the thread
-                            [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:transaction];
+                            [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
                             [message.thread removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:transaction];
                             // Update the message
-                            [message saveFriendRequestStatus:TSMessageFriendRequestStatusPending withTransaction:transaction];
+                            [message saveFriendRequestStatus:LKMessageFriendRequestStatusPending withTransaction:transaction];
                             NSTimeInterval expirationInterval = 72 * kHourInterval;
                             NSDate *expirationDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
                             [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expirationDate] withTransaction:transaction];
