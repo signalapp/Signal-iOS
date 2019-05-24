@@ -37,7 +37,7 @@ extern ConversationColorName const kConversationColorName_Default;
 @interface TSThread : TSYapDatabaseObject
 
 @property (nonatomic) BOOL shouldThreadBeVisible;
-@property (nonatomic, readonly) NSDate *creationDate;
+@property (nonatomic, readonly, nullable) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
 
 // --- CODE GENERATION MARKER

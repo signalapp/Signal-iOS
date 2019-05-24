@@ -240,8 +240,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updatePreview];
 
-    self.dateTimeLabel.text
-        = (overrideDate ? [self stringForDate:overrideDate] : [self stringForDate:thread.lastMessageDate]);
+    NSDate *_Nullable labelDate = overrideDate ?: thread.lastMessageDate;
+    if (labelDate != nil) {
+        self.dateTimeLabel.text = [DateUtil formatDateShort:labelDate];
+    } else {
+        self.dateTimeLabel.text = nil;
+    }
 
     UIColor *textColor = [Theme secondaryColor];
     if (hasUnreadMessages && overrideSnippet == nil) {
@@ -404,18 +408,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return snippetText;
-}
-
-#pragma mark - Date formatting
-
-- (NSString *)stringForDate:(nullable NSDate *)date
-{
-    if (date == nil) {
-        OWSFailDebug(@"date was unexpectedly nil");
-        return @"";
-    }
-
-    return [DateUtil formatDateShort:date];
 }
 
 #pragma mark - Constants

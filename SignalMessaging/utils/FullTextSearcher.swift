@@ -7,14 +7,15 @@ import SignalServiceKit
 
 public typealias MessageSortKey = UInt64
 public struct ConversationSortKey: Comparable {
-    let creationDate: Date
+    let creationDate: Date?
     let lastMessageReceivedAtDate: Date?
 
     // MARK: Comparable
 
     public static func < (lhs: ConversationSortKey, rhs: ConversationSortKey) -> Bool {
-        let lhsDate = lhs.lastMessageReceivedAtDate ?? lhs.creationDate
-        let rhsDate = rhs.lastMessageReceivedAtDate ?? rhs.creationDate
+        let longAgo = Date(timeIntervalSince1970: 0)
+        let lhsDate = lhs.lastMessageReceivedAtDate ?? lhs.creationDate ?? longAgo
+        let rhsDate = rhs.lastMessageReceivedAtDate ?? rhs.creationDate ?? longAgo
         return lhsDate < rhsDate
     }
 }
