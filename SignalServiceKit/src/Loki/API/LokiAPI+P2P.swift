@@ -30,7 +30,7 @@ extension LokiAPI {
     ///   - address: The pther users p2p address
     ///   - port: The other users p2p port
     ///   - receivedThroughP2P: Wether we received the message through p2p
-    @objc public static func didReceiveLokiAddressMessage(forContact pubKey: String, address: String, port: UInt32, receivedThroughP2P: Bool) {
+    @objc public static func didReceiveLokiAddressMessage(forContact pubKey: String, address: String, port: UInt32, receivedThroughP2P: Bool, transaction: YapDatabaseReadTransaction) {
         // Stagger the ping timers so that contacts don't ping each other at the same time
         let timerDuration = pubKey < ourHexEncodedPubKey ? 1 * kMinuteInterval : 2 * kMinuteInterval
         
@@ -55,7 +55,7 @@ extension LokiAPI {
             - The new p2p details match the old one
          */
         if oldContactExists && receivedThroughP2P && wasOnline && p2pDetailsMatch {
-            // TODO: Set contact to online and start the ping timers
+            setOnline(true, forContact: pubKey)
             return;
         }
         
@@ -67,37 +67,45 @@ extension LokiAPI {
             3. We had the contact marked as offline, we need to make sure that we can reach their server.
             4. The other contact details have changed, we need to make sure that we can reach their new server.
          */
-        // TODO: Ping the contact
+        ping(contact: pubKey, withTransaction: transaction)
     }
     
     @objc public static func setOnline(_ isOnline: Bool, forContact pubKey: String) {
-        guard var details = contactP2PDetails[pubKey] else { return }
-        
-        let interval = isOnline ? details.timerDuration : offlinePingTime
-        
-        // Setup a new timer
-        details.pingTimer?.invalidate()
-        details.pingTimer = WeakTimer.scheduledTimer(timeInterval: interval, target: self, userInfo: nil, repeats: true) { _ in ping(contact: pubKey) }
-        details.isOnline = isOnline
-        
-        contactP2PDetails[pubKey] = details
+        // Make sure we are on the main thread
+        DispatchQueue.main.async {
+            guard var details = contactP2PDetails[pubKey] else { return }
+            
+            let interval = isOnline ? details.timerDuration : offlinePingTime
+            
+            // Setup a new timer
+            details.pingTimer?.invalidate()
+            details.pingTimer = WeakTimer.scheduledTimer(timeInterval: interval, target: self, userInfo: nil, repeats: true) { _ in ping(contact: pubKey) }
+            details.isOnline = isOnline
+            
+            contactP2PDetails[pubKey] = details
+        }
     }
     
     @objc public static func ping(contact pubKey: String) {
+        AssertIsOnMainThread()
+        storage.dbReadConnection.read { transaction in
+            ping(contact: pubKey, withTransaction: transaction)
+        }
+    }
+    
+    @objc public static func ping(contact pubKey: String, withTransaction transaction: YapDatabaseReadTransaction) {
+        guard let thread = TSContactThread.fetch(uniqueId: pubKey, transaction: transaction) else {
+            Logger.warn("[Loki][Ping] Failed to fetch thread for \(pubKey)")
+            return
+        }
+        guard let message = lokiAddressMessage(for: thread, isPing: true) else {
+            Logger.warn("[Loki][Ping] Failed to build ping message for \(pubKey)")
+            return
+        }
         
+        messageSender.sendPromise(message: message).retainUntilComplete()
     }
-    
-    /// Set the Contact p2p details
-    ///
-    /// - Parameters:
-    ///   - pubKey: The public key of the contact
-    ///   - address: The contacts p2p address
-    ///   - port: The contacts p2p port
-    @objc public static func setContactP2PDetails(forContact pubKey: String, address: String, port: UInt32) {
-        let details = P2PDetails(address: address, port: port, isOnline: false, timerDuration: 10, pingTimer: nil)
-        contactP2PDetails[pubKey] = details
-    }
-    
+
     /// Set our local P2P address
     ///
     /// - Parameter url: The url to our local server
@@ -123,12 +131,16 @@ extension LokiAPI {
     /// - Parameter thread: The contact thread.
     /// - Returns: The `LokiAddressMessage` for that thread.
     @objc public static func onlineBroadcastMessage(forThread thread: TSThread) -> LokiAddressMessage? {
+        return lokiAddressMessage(for: thread, isPing: false)
+    }
+    
+    private static func lokiAddressMessage(for thread: TSThread, isPing: Bool) -> LokiAddressMessage? {
         guard let ourAddress = ourP2PAddress else {
             Logger.error("P2P Address not set")
             return nil
         }
-
-        return LokiAddressMessage(in: thread, address: ourAddress.address, port: ourAddress.port, isPing: false)
+        
+        return LokiAddressMessage(in: thread, address: ourAddress.address, port: ourAddress.port, isPing: isPing)
     }
     
     /// Send a `Loki Address` message to the given thread

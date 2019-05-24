@@ -76,7 +76,10 @@ import PromiseKit
         // If that failes then fallback to storage server
         if let p2pDetails = contactP2PDetails[destination], message.isPing || p2pDetails.isOnline {
             let targets = Promise.wrap([p2pDetails.target])
-            return sendMessage(message, targets: targets).recover { error -> Promise<Set<Promise<RawResponse>>> in
+            return sendMessage(message, targets: targets).then { result -> Promise<Set<Promise<RawResponse>>> in
+                LokiAPI.setOnline(true, forContact: destination)
+                return Promise.wrap(result)
+            }.recover { error -> Promise<Set<Promise<RawResponse>>> in
                 // The user is not online
                 LokiAPI.setOnline(false, forContact: destination)
 
