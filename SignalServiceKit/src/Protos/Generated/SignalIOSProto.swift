@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -23,6 +24,7 @@ public enum SignalIOSProtoError: Error {
         case interaction = 3
         case attachment = 4
         case misc = 5
+        case unknownEnumValue = 6
     }
 
     private class func SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(_ value: IOSProtos_BackupSnapshot.BackupEntity.TypeEnum) -> SignalIOSProtoBackupSnapshotBackupEntityType {
@@ -33,6 +35,7 @@ public enum SignalIOSProtoError: Error {
         case .interaction: return .interaction
         case .attachment: return .attachment
         case .misc: return .misc
+        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -44,6 +47,7 @@ public enum SignalIOSProtoError: Error {
         case .interaction: return .interaction
         case .attachment: return .attachment
         case .misc: return .misc
+        case .unknownEnumValue: owsFail("Invalid value: SignalIOSProtoBackupSnapshotBackupEntityType")
         }
     }
 

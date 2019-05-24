@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -340,6 +341,7 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         case unknown = 0
         case request = 1
         case response = 2
+        case unknownEnumValue = 3
     }
 
     private class func WebSocketProtoWebSocketMessageTypeWrap(_ value: WebSocketProtos_WebSocketMessage.TypeEnum) -> WebSocketProtoWebSocketMessageType {
@@ -347,6 +349,7 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         case .unknown: return .unknown
         case .request: return .request
         case .response: return .response
+        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -355,6 +358,7 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         case .unknown: return .unknown
         case .request: return .request
         case .response: return .response
+        case .unknownEnumValue: owsFail("Invalid value: WebSocketProtoWebSocketMessageType")
         }
     }
 
