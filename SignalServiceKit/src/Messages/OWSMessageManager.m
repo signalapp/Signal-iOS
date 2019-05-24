@@ -48,6 +48,7 @@
 #import "TSQuotedMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
@@ -1462,10 +1463,12 @@ const SSKProtoDataMessageProtocolVersion kCurrentProtocolVersion = SSKProtoDataM
 
     OWSFailDebug(@"Unknown protocol version: %lu", (unsigned long)protocolVersion);
 
-    // MJK TODO - safe to remove senderTimestamp
-    [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                     inThread:thread
-                                  messageType:TSInfoMessageTypeSessionDidEnd] anySaveWithTransaction:transaction];
+    // We convert protocolVersion to a numeric value here.
+    TSInteraction *message =
+        [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                             thread:thread
+                                                    protocolVersion:protocolVersion];
+    [message anySaveWithTransaction:transaction];
 }
 
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage

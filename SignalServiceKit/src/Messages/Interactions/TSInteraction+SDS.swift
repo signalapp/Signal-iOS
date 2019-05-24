@@ -65,6 +65,7 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
     public let messageType: TSInfoMessageType?
     public let mostRecentFailureText: String?
     public let preKeyBundle: Data?
+    public let protocolVersion: UInt?
     public let quotedMessage: Data?
     public let read: Bool?
     public let recipientId: String?
@@ -121,6 +122,7 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
         case messageType
         case mostRecentFailureText
         case preKeyBundle
+        case protocolVersion
         case quotedMessage
         case read
         case recipientId
@@ -401,6 +403,59 @@ extension TSInteraction {
                                                       read: read,
                                                       recipientId: recipientId,
                                                       contactId: contactId)
+
+        case .unknownProtocolVersionMessage:
+
+            let uniqueId: String = record.uniqueId
+            let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
+            let sortId: UInt64 = record.id
+            let timestamp: UInt64 = record.timestamp
+            let uniqueThreadId: String = record.threadUniqueId
+            let attachmentIdsSerialized: Data? = record.attachmentIds
+            let attachmentIds: [String] = try SDSDeserialization.unarchive(attachmentIdsSerialized, name: "attachmentIds")
+            let body: String? = record.body
+            let contactShareSerialized: Data? = record.contactShare
+            let contactShare: OWSContact? = try SDSDeserialization.optionalUnarchive(contactShareSerialized, name: "contactShare")
+            let expireStartedAt: UInt64 = try SDSDeserialization.required(record.expireStartedAt, name: "expireStartedAt")
+            let expiresAt: UInt64 = try SDSDeserialization.required(record.expiresAt, name: "expiresAt")
+            let expiresInSeconds: UInt32 = try SDSDeserialization.required(record.expiresInSeconds, name: "expiresInSeconds")
+            let linkPreviewSerialized: Data? = record.linkPreview
+            let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
+            let messageStickerSerialized: Data? = record.messageSticker
+            let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let quotedMessageSerialized: Data? = record.quotedMessage
+            let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
+            let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
+            let customMessage: String? = record.customMessage
+            let infoMessageSchemaVersion: UInt = try SDSDeserialization.required(record.infoMessageSchemaVersion, name: "infoMessageSchemaVersion")
+            guard let messageType: TSInfoMessageType = record.messageType else {
+               throw SDSError.missingRequiredField
+            }
+            let read: Bool = try SDSDeserialization.required(record.read, name: "read")
+            let unregisteredRecipientId: String? = record.unregisteredRecipientId
+            let protocolVersion: UInt = try SDSDeserialization.required(record.protocolVersion, name: "protocolVersion")
+
+            return OWSUnknownProtocolVersionMessage(uniqueId: uniqueId,
+                                                    receivedAtTimestamp: receivedAtTimestamp,
+                                                    sortId: sortId,
+                                                    timestamp: timestamp,
+                                                    uniqueThreadId: uniqueThreadId,
+                                                    attachmentIds: attachmentIds,
+                                                    body: body,
+                                                    contactShare: contactShare,
+                                                    expireStartedAt: expireStartedAt,
+                                                    expiresAt: expiresAt,
+                                                    expiresInSeconds: expiresInSeconds,
+                                                    linkPreview: linkPreview,
+                                                    messageSticker: messageSticker,
+                                                    quotedMessage: quotedMessage,
+                                                    schemaVersion: schemaVersion,
+                                                    customMessage: customMessage,
+                                                    infoMessageSchemaVersion: infoMessageSchemaVersion,
+                                                    messageType: messageType,
+                                                    read: read,
+                                                    unregisteredRecipientId: unregisteredRecipientId,
+                                                    protocolVersion: protocolVersion)
 
         case .verificationStateChangeMessage:
 
@@ -946,6 +1001,9 @@ extension TSInteraction: SDSSerializable {
         case let model as OWSVerificationStateChangeMessage:
             assert(type(of: model) == OWSVerificationStateChangeMessage.self)
             return OWSVerificationStateChangeMessageSerializer(model: model)
+        case let model as OWSUnknownProtocolVersionMessage:
+            assert(type(of: model) == OWSUnknownProtocolVersionMessage.self)
+            return OWSUnknownProtocolVersionMessageSerializer(model: model)
         case let model as OWSDisappearingConfigurationUpdateInfoMessage:
             assert(type(of: model) == OWSDisappearingConfigurationUpdateInfoMessage.self)
             return OWSDisappearingConfigurationUpdateInfoMessageSerializer(model: model)
@@ -1043,16 +1101,17 @@ extension TSInteractionSerializer {
     static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 41)
     static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 42)
     static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 43)
-    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 44)
-    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 45)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 46)
-    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 47)
-    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 48)
-    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 49)
-    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 50)
-    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 51)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 52)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 53)
+    static let protocolVersionColumn = SDSColumnMetadata(columnName: "protocolVersion", columnType: .int64, isOptional: true, columnIndex: 44)
+    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 45)
+    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 46)
+    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 47)
+    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 48)
+    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 49)
+    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 50)
+    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 51)
+    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 52)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 53)
+    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 54)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -1101,6 +1160,7 @@ extension TSInteractionSerializer {
         messageTypeColumn,
         mostRecentFailureTextColumn,
         preKeyBundleColumn,
+        protocolVersionColumn,
         quotedMessageColumn,
         readColumn,
         recipientIdColumn,
@@ -1381,6 +1441,60 @@ extension TSInteractionSerializer {
                                                       read: read,
                                                       recipientId: recipientId,
                                                       contactId: contactId)
+
+        case .unknownProtocolVersionMessage:
+
+            let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
+            let receivedAtTimestamp = try deserializer.uint64(at: receivedAtTimestampColumn.columnIndex)
+            let sortId = try deserializer.uint64(at: idColumn.columnIndex)
+            let timestamp = try deserializer.uint64(at: timestampColumn.columnIndex)
+            let uniqueThreadId = try deserializer.string(at: uniqueThreadIdColumn.columnIndex)
+            let attachmentIdsSerialized: Data = try deserializer.blob(at: attachmentIdsColumn.columnIndex)
+            let attachmentIds: [String] = try SDSDeserializer.unarchive(attachmentIdsSerialized)
+            let body = try deserializer.optionalString(at: bodyColumn.columnIndex)
+            let contactShareSerialized: Data? = try deserializer.optionalBlob(at: contactShareColumn.columnIndex)
+            let contactShare: OWSContact? = try SDSDeserializer.optionalUnarchive(contactShareSerialized)
+            let expireStartedAt = try deserializer.uint64(at: expireStartedAtColumn.columnIndex)
+            let expiresAt = try deserializer.uint64(at: expiresAtColumn.columnIndex)
+            let expiresInSeconds = UInt32(try deserializer.int64(at: expiresInSecondsColumn.columnIndex))
+            let linkPreviewSerialized: Data? = try deserializer.optionalBlob(at: linkPreviewColumn.columnIndex)
+            let linkPreview: OWSLinkPreview? = try SDSDeserializer.optionalUnarchive(linkPreviewSerialized)
+            let messageStickerSerialized: Data? = try deserializer.optionalBlob(at: messageStickerColumn.columnIndex)
+            let messageSticker: MessageSticker? = try SDSDeserializer.optionalUnarchive(messageStickerSerialized)
+            let quotedMessageSerialized: Data? = try deserializer.optionalBlob(at: quotedMessageColumn.columnIndex)
+            let quotedMessage: TSQuotedMessage? = try SDSDeserializer.optionalUnarchive(quotedMessageSerialized)
+            let schemaVersion = UInt(try deserializer.int64(at: schemaVersionColumn.columnIndex))
+            let customMessage = try deserializer.optionalString(at: customMessageColumn.columnIndex)
+            let infoMessageSchemaVersion = UInt(try deserializer.int64(at: infoMessageSchemaVersionColumn.columnIndex))
+            let messageTypeRaw = Int(try deserializer.int(at: messageTypeColumn.columnIndex))
+            guard let messageType = TSInfoMessageType(rawValue: messageTypeRaw) else {
+               throw SDSError.invalidValue
+            }
+            let read = try deserializer.bool(at: readColumn.columnIndex)
+            let unregisteredRecipientId = try deserializer.optionalString(at: unregisteredRecipientIdColumn.columnIndex)
+            let protocolVersion = UInt(try deserializer.int64(at: protocolVersionColumn.columnIndex))
+
+            return OWSUnknownProtocolVersionMessage(uniqueId: uniqueId,
+                                                    receivedAtTimestamp: receivedAtTimestamp,
+                                                    sortId: sortId,
+                                                    timestamp: timestamp,
+                                                    uniqueThreadId: uniqueThreadId,
+                                                    attachmentIds: attachmentIds,
+                                                    body: body,
+                                                    contactShare: contactShare,
+                                                    expireStartedAt: expireStartedAt,
+                                                    expiresAt: expiresAt,
+                                                    expiresInSeconds: expiresInSeconds,
+                                                    linkPreview: linkPreview,
+                                                    messageSticker: messageSticker,
+                                                    quotedMessage: quotedMessage,
+                                                    schemaVersion: schemaVersion,
+                                                    customMessage: customMessage,
+                                                    infoMessageSchemaVersion: infoMessageSchemaVersion,
+                                                    messageType: messageType,
+                                                    read: read,
+                                                    unregisteredRecipientId: unregisteredRecipientId,
+                                                    protocolVersion: protocolVersion)
 
         case .verificationStateChangeMessage:
 
