@@ -37,6 +37,8 @@ public class StickerPackViewController: OWSViewController {
 
         super.init(nibName: nil, bundle: nil)
 
+        self.modalPresentationStyle = .overFullScreen
+
         stickerCollectionView.stickerDelegate = self
         stickerCollectionView.show(dataSource: dataSource)
         dataSource.add(delegate: self)
@@ -58,8 +60,9 @@ public class StickerPackViewController: OWSViewController {
             view.backgroundColor = Theme.darkThemeBackgroundColor
         } else {
             view.backgroundColor = .clear
+            view.isOpaque = false
 
-            let blurEffect = Theme.darkThemeBarBlurEffect
+            let blurEffect = Theme.barBlurEffect
             let blurEffectView = UIVisualEffectView(effect: blurEffect)
             view.addSubview(blurEffectView)
             blurEffectView.autoPinEdgesToSuperviewEdges()
@@ -248,6 +251,10 @@ public class StickerPackViewController: OWSViewController {
 
     override public var canBecomeFirstResponder: Bool {
         return true
+    }
+
+    override public var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
 
     // - MARK: Events

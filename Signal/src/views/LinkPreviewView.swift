@@ -103,7 +103,7 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
     }
 
     public func imageState() -> LinkPreviewImageState {
-        if linkPreviewDraft.jpegImageData != nil {
+        if linkPreviewDraft.imageData != nil {
             return .loaded
         } else {
             return .none
@@ -113,11 +113,11 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
     public func image() -> UIImage? {
         assert(imageState() == .loaded)
 
-        guard let jpegImageData = linkPreviewDraft.jpegImageData else {
+        guard let imageData = linkPreviewDraft.imageData else {
             return nil
         }
-        guard let image = UIImage(data: jpegImageData) else {
-            owsFailDebug("Could not load image: \(jpegImageData.count)")
+        guard let image = UIImage(data: imageData) else {
+            owsFailDebug("Could not load image: \(imageData.count)")
             return nil
         }
         return image
@@ -843,7 +843,7 @@ public class LinkPreviewView: UIStackView {
         }
         if let sentBodyView = self.sentBodyView {
             let borderView = OWSBubbleShapeView(draw: ())
-            let borderColor = UIColor(rgbHex: Theme.isDarkThemeEnabled ? 0x0F1012 : 0xD5D6D6)
+            let borderColor = (Theme.isDarkThemeEnabled ? UIColor.ows_gray60 : UIColor.ows_gray15)
             borderView.strokeColor = borderColor
             borderView.strokeThickness = CGHairlineWidth()
             sentBodyView.addSubview(borderView)

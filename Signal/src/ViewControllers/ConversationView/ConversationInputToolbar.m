@@ -277,9 +277,23 @@ const CGFloat kMaxTextViewHeight = 98;
     [vStackWrapper setContentHuggingHorizontalLow];
     [vStackWrapper setCompressionResistanceHorizontalLow];
 
+    // Media Stack
+    UIStackView *mediaStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.sendButton,
+        self.cameraButton,
+        self.voiceMemoButton,
+    ]];
+    mediaStack.axis = UILayoutConstraintAxisHorizontal;
+    mediaStack.alignment = UIStackViewAlignmentCenter;
+    [mediaStack setContentHuggingHorizontalHigh];
+    [mediaStack setCompressionResistanceHorizontalHigh];
+
     // H Stack
-    UIStackView *hStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.cameraButton, vStackWrapper, self.attachmentButton, self.sendButton ]];
+    UIStackView *hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.attachmentButton,
+        vStackWrapper,
+        mediaStack,
+    ]];
     hStack.axis = UILayoutConstraintAxisHorizontal;
     hStack.layoutMarginsRelativeArrangement = YES;
     hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
@@ -289,8 +303,9 @@ const CGFloat kMaxTextViewHeight = 98;
     // Suggested Stickers
     const CGFloat suggestedStickerSize = 48;
     const CGFloat suggestedStickerSpacing = 12;
-    _suggestedStickerView =
-        [[StickerHorizontalListView alloc] initWithCellSize:suggestedStickerSize spacing:suggestedStickerSpacing];
+    _suggestedStickerView = [[StickerHorizontalListView alloc] initWithCellSize:suggestedStickerSize
+                                                                      cellInset:0
+                                                                        spacing:suggestedStickerSpacing];
     self.suggestedStickerView.backgroundColor = UIColor.clearColor;
     self.suggestedStickerView.contentInset = UIEdgeInsetsMake(
         suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing);
@@ -323,12 +338,9 @@ const CGFloat kMaxTextViewHeight = 98;
     self.preservesSuperviewLayoutMargins = NO;
 
     // Input buttons
-    [self addSubview:self.voiceMemoButton];
-    [self.voiceMemoButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
-    [self.voiceMemoButton autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackWrapper withOffset:-4];
     [self addSubview:self.stickerButton];
-    [self.stickerButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
-    [self.voiceMemoButton autoPinLeadingToTrailingEdgeOfView:self.stickerButton offset:0];
+    [self.stickerButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
+    [self.stickerButton autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackWrapper withOffset:-4];
 
     // Border
     //
@@ -570,41 +582,31 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)ensureButtonVisibilityWithIsAnimated:(BOOL)isAnimated doLayout:(BOOL)doLayout
 {
+    void (^ensureViewHiddenState)(UIView *, BOOL) = ^(UIView *subview, BOOL hidden) {
+        if (subview.isHidden != hidden) {
+            subview.hidden = hidden;
+        }
+    };
+
     void (^updateBlock)(void) = ^{
+        ensureViewHiddenState(self.attachmentButton, NO);
+
         BOOL hasTextInput = self.inputTextView.trimmedText.length > 0;
         if (hasTextInput) {
-            if (!self.attachmentButton.isHidden) {
-                self.attachmentButton.hidden = YES;
-            }
-            if (!self.voiceMemoButton.isHidden) {
-                self.voiceMemoButton.hidden = YES;
-            }
-            if (self.sendButton.isHidden) {
-                self.sendButton.hidden = NO;
-            }
+            ensureViewHiddenState(self.cameraButton, YES);
+            ensureViewHiddenState(self.voiceMemoButton, YES);
+            ensureViewHiddenState(self.sendButton, NO);
         } else {
-            if (self.attachmentButton.isHidden) {
-                self.attachmentButton.hidden = NO;
-            }
-            if (self.voiceMemoButton.isHidden) {
-                self.voiceMemoButton.hidden = NO;
-            }
-            if (!self.sendButton.isHidden) {
-                self.sendButton.hidden = YES;
-            }
+            ensureViewHiddenState(self.cameraButton, NO);
+            ensureViewHiddenState(self.voiceMemoButton, NO);
+            ensureViewHiddenState(self.sendButton, YES);
         }
 
         BOOL hideStickerButton = hasTextInput || self.quotedReply != nil || !StickerManager.shared.isStickerSendEnabled;
-        if (hideStickerButton) {
-            if (!self.stickerButton.isHidden) {
-                self.stickerButton.hidden = YES;
-            }
-        } else {
-            if (self.stickerButton.isHidden) {
-                self.stickerButton.hidden = NO;
-            }
+        ensureViewHiddenState(self.stickerButton, hideStickerButton);
+        if (!hideStickerButton) {
             self.stickerButton.imageView.tintColor
-                = (self.isStickerKeyboardActive ? Theme.primaryColor : Theme.navbarIconColor);
+                = (self.isStickerKeyboardActive ? UIColor.ows_signalBlueColor : Theme.navbarIconColor);
         }
 
         [self updateSuggestedStickers];
@@ -1365,13 +1367,13 @@ const CGFloat kMaxTextViewHeight = 98;
     }
     __weak __typeof(self) weakSelf = self;
     BOOL shouldReset = self.suggestedStickerView.isHidden;
-    NSMutableArray<StickerHorizontalListViewItem *> *items = [NSMutableArray new];
+    NSMutableArray<id<StickerHorizontalListViewItem>> *items = [NSMutableArray new];
     for (StickerInfo *stickerInfo in self.suggestedStickerInfos) {
-        [items addObject:[[StickerHorizontalListViewItem alloc] initWithStickerInfo:stickerInfo
-                                                                      selectedBlock:^{
-                                                                          [weakSelf
-                                                                              didSelectSuggestedSticker:stickerInfo];
-                                                                      }]];
+        [items addObject:[[StickerHorizontalListViewItemSticker alloc]
+                             initWithStickerInfo:stickerInfo
+                                  didSelectBlock:^{
+                                      [weakSelf didSelectSuggestedSticker:stickerInfo];
+                                  }]];
     }
     self.suggestedStickerView.items = items;
     self.suggestedStickerView.hidden = NO;

@@ -41,12 +41,16 @@ public class OWSLinkPreviewDraft: NSObject {
     public var title: String?
 
     @objc
-    public var jpegImageData: Data?
+    public var imageData: Data?
 
-    public init(urlString: String, title: String?, jpegImageData: Data? = nil) {
+    @objc
+    public var imageMimeType: String?
+
+    public init(urlString: String, title: String?, imageData: Data? = nil, imageMimeType: String? = nil) {
         self.urlString = urlString
         self.title = title
-        self.jpegImageData = jpegImageData
+        self.imageData = imageData
+        self.imageMimeType = imageMimeType
 
         super.init()
     }
@@ -56,7 +60,7 @@ public class OWSLinkPreviewDraft: NSObject {
         if let titleValue = title {
             hasTitle = titleValue.count > 0
         }
-        let hasImage = jpegImageData != nil
+        let hasImage = imageData != nil && imageMimeType != nil
         return hasTitle || hasImage
     }
 
@@ -181,8 +185,9 @@ public class OWSLinkPreview: MTLModel {
         guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction.asAnyRead) else {
             throw LinkPreviewError.noPreview
         }
-        let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(jpegImageData: info.jpegImageData,
-                                                         transaction: transaction)
+        let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(imageData: info.imageData,
+                                                                        imageMimeType: info.imageMimeType,
+                                                                        transaction: transaction)
 
         let linkPreview = OWSLinkPreview(urlString: info.urlString, title: info.title, imageAttachmentId: imageAttachmentId)
 
@@ -194,22 +199,28 @@ public class OWSLinkPreview: MTLModel {
         return linkPreview
     }
 
-    private class func saveAttachmentIfPossible(jpegImageData: Data?,
+    private class func saveAttachmentIfPossible(imageData: Data?,
+                                                imageMimeType: String?,
                                                 transaction: YapDatabaseReadWriteTransaction) -> String? {
-        guard let jpegImageData = jpegImageData else {
+        guard let imageData = imageData else {
             return nil
         }
-        let fileSize = jpegImageData.count
+        guard let imageMimeType = imageMimeType else {
+            return nil
+        }
+        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: imageMimeType) else {
+            return nil
+        }
+        let fileSize = imageData.count
         guard fileSize > 0 else {
             owsFailDebug("Invalid file size for image data.")
             return nil
         }
-        let fileExtension = "jpg"
-        let contentType = OWSMimeTypeImageJpeg
+        let contentType = imageMimeType
 
         let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
         do {
-            try jpegImageData.write(to: NSURL.fileURL(withPath: filePath))
+            try imageData.write(to: NSURL.fileURL(withPath: filePath))
         } catch let error as NSError {
             owsFailDebug("file write failed: \(filePath), \(error)")
             return nil
@@ -807,7 +818,10 @@ public class OWSLinkPreviewManager: NSObject {
             return downloadImage(url: imageUrlString, imageMimeType: imageMimeType)
                 .map(on: DispatchQueue.global()) { (imageData: Data) -> OWSLinkPreviewDraft in
                     // We always recompress images to Jpeg.
-                    let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, jpegImageData: imageData)
+                    let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString,
+                                                               title: title,
+                                                               imageData: imageData,
+                                                               imageMimeType: OWSMimeTypeImageJpeg)
                     return linkPreviewDraft
                 }
                 .recover(on: DispatchQueue.global()) { (_) -> Promise<OWSLinkPreviewDraft> in
@@ -919,7 +933,7 @@ public class OWSLinkPreviewManager: NSObject {
             // tryToDownloadSticker will use locally saved data if possible.
             return StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo).map(on: DispatchQueue.global()) { (coverData) -> OWSLinkPreviewDraft in
                 // Try to build thumbnail from cover webp.
-                var jpegImageData: Data?
+                var pngImageData: Data?
                 if let stillImage = (coverData as NSData).stillForWebpData() {
                     var stillThumbnail = stillImage
                     let maxImageSize: CGFloat = 1024
@@ -933,8 +947,8 @@ public class OWSLinkPreviewManager: NSObject {
                         }
                     }
 
-                    if let stillData = stillThumbnail.jpegData(compressionQuality: 0.85) {
-                        jpegImageData = stillData
+                    if let stillData = stillThumbnail.pngData() {
+                        pngImageData = stillData
                     } else {
                         owsFailDebug("Could not encode as JPEG.")
                     }
@@ -942,7 +956,10 @@ public class OWSLinkPreviewManager: NSObject {
                     owsFailDebug("Could not extract still.")
                 }
 
-                return OWSLinkPreviewDraft(urlString: url.absoluteString, title: stickerPack.title, jpegImageData: jpegImageData)
+                return OWSLinkPreviewDraft(urlString: url.absoluteString,
+                                           title: stickerPack.title,
+                                           imageData: pngImageData,
+                                           imageMimeType: OWSMimeTypeImagePng)
             }
         }
     }

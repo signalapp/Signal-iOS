@@ -1270,6 +1270,11 @@ typedef enum : NSUInteger {
             break;
         case ConversationViewActionCompose:
             [self popKeyBoard];
+            // When we programmatically pop the keyboard here,
+            // the scroll position gets into a weird state and
+            // content is hidden behind the keyboard so we restore
+            // it to the default position.
+            [self scrollToDefaultPosition:YES];
             break;
         case ConversationViewActionAudioCall:
             [self startAudioCall];
@@ -3617,15 +3622,12 @@ typedef enum : NSUInteger {
 - (void)markVisibleMessagesAsRead
 {
     if (self.presentedViewController) {
-        OWSLogInfo(@"Not marking messages as read; another view is presented.");
         return;
     }
     if (OWSWindowManager.sharedManager.shouldShowCallView) {
-        OWSLogInfo(@"Not marking messages as read; call view is presented.");
         return;
     }
     if (self.navigationController.topViewController != self) {
-        OWSLogInfo(@"Not marking messages as read; another view is pushed.");
         return;
     }
 

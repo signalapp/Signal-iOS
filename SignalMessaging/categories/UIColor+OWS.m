@@ -160,6 +160,16 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIColor colorWithRGBHex:0xEEEFEF];
 }
 
++ (UIColor *)ows_gray10Color
+{
+    return [UIColor colorWithRGBHex:0xE1E2E3];
+}
+
++ (UIColor *)ows_gray15Color
+{
+    return [UIColor colorWithRGBHex:0xD5D6D6];
+}
+
 + (UIColor *)ows_gray25Color
 {
     return [UIColor colorWithRGBHex:0xBBBDBE];
@@ -172,12 +182,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIColor *)ows_gray60Color
 {
-    return [UIColor colorWithRGBHex:0x636467];
+    return [UIColor colorWithRGBHex:0x6B6D70];
 }
 
 + (UIColor *)ows_gray75Color
 {
     return [UIColor colorWithRGBHex:0x3D3E44];
+}
+
++ (UIColor *)ows_gray85Color
+{
+    return [UIColor colorWithRGBHex:0x23252A];
 }
 
 + (UIColor *)ows_gray90Color
