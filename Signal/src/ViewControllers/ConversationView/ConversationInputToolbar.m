@@ -469,7 +469,7 @@ const CGFloat kMaxTextViewHeight = 98;
     _quotedReply = quotedReply;
 
     if (!quotedReply) {
-        [self ensureButtonVisibilityWithIsAnimated:YES doLayout:YES];
+        [self ensureButtonVisibilityWithIsAnimated:NO doLayout:YES];
         return;
     }
 
@@ -628,7 +628,6 @@ const CGFloat kMaxTextViewHeight = 98;
         }
 
         if (doLayout) {
-            [self setNeedsLayout];
             [self layoutIfNeeded];
         }
     };
