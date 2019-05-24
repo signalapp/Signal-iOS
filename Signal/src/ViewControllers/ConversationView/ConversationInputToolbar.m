@@ -89,6 +89,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, readonly) StickerHorizontalListView *suggestedStickerView;
 @property (nonatomic) NSArray<StickerInfo *> *suggestedStickerInfos;
 @property (nonatomic, readonly) UIStackView *outerStack;
+@property (nonatomic, readonly) UIStackView *mediaAndSendStack;
 
 @property (nonatomic) CGFloat textViewHeight;
 @property (nonatomic, readonly) NSLayoutConstraint *textViewHeightConstraint;
@@ -278,21 +279,22 @@ const CGFloat kMaxTextViewHeight = 98;
     [vStackWrapper setCompressionResistanceHorizontalLow];
 
     // Media Stack
-    UIStackView *mediaStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    UIStackView *mediaAndSendStack = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.sendButton,
         self.cameraButton,
         self.voiceMemoButton,
     ]];
-    mediaStack.axis = UILayoutConstraintAxisHorizontal;
-    mediaStack.alignment = UIStackViewAlignmentCenter;
-    [mediaStack setContentHuggingHorizontalHigh];
-    [mediaStack setCompressionResistanceHorizontalHigh];
+    _mediaAndSendStack = mediaAndSendStack;
+    mediaAndSendStack.axis = UILayoutConstraintAxisHorizontal;
+    mediaAndSendStack.alignment = UIStackViewAlignmentCenter;
+    [mediaAndSendStack setContentHuggingHorizontalHigh];
+    [mediaAndSendStack setCompressionResistanceHorizontalHigh];
 
     // H Stack
     UIStackView *hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.attachmentButton,
         vStackWrapper,
-        mediaStack,
+        mediaAndSendStack,
     ]];
     hStack.axis = UILayoutConstraintAxisHorizontal;
     hStack.layoutMarginsRelativeArrangement = YES;
@@ -369,7 +371,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self addSubview:self.stickerKeyboardResponder];
     [self.stickerKeyboardResponder autoSetDimensionsToSize:CGSizeMake(1, 1)];
 
-    [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
+    [self ensureButtonVisibilityWithIsAnimated:NO doLayout:YES];
 }
 
 - (void)updateFontSizes
@@ -467,7 +469,7 @@ const CGFloat kMaxTextViewHeight = 98;
     _quotedReply = quotedReply;
 
     if (!quotedReply) {
-        [self ensureButtonVisibilityWithIsAnimated:YES doLayout:NO];
+        [self ensureButtonVisibilityWithIsAnimated:YES doLayout:YES];
         return;
     }
 
@@ -582,26 +584,36 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)ensureButtonVisibilityWithIsAnimated:(BOOL)isAnimated doLayout:(BOOL)doLayout
 {
+    __block BOOL didChangeLayout = NO;
     void (^ensureViewHiddenState)(UIView *, BOOL) = ^(UIView *subview, BOOL hidden) {
         if (subview.isHidden != hidden) {
             subview.hidden = hidden;
+            didChangeLayout = YES;
         }
     };
 
+    BOOL hasTextInput = self.inputTextView.trimmedText.length > 0;
+    ensureViewHiddenState(self.attachmentButton, NO);
+    if (hasTextInput) {
+        ensureViewHiddenState(self.cameraButton, YES);
+        ensureViewHiddenState(self.voiceMemoButton, YES);
+        ensureViewHiddenState(self.sendButton, NO);
+    } else {
+        ensureViewHiddenState(self.cameraButton, NO);
+        ensureViewHiddenState(self.voiceMemoButton, NO);
+        ensureViewHiddenState(self.sendButton, YES);
+    }
+
+    // If the layout has changed, update the layout
+    // of the "media and send" stack immediately,
+    // to avoid a janky animation where these buttons
+    // move around far from their final positions.
+    if (doLayout && didChangeLayout) {
+        [self.mediaAndSendStack setNeedsLayout];
+        [self.mediaAndSendStack layoutIfNeeded];
+    }
+
     void (^updateBlock)(void) = ^{
-        ensureViewHiddenState(self.attachmentButton, NO);
-
-        BOOL hasTextInput = self.inputTextView.trimmedText.length > 0;
-        if (hasTextInput) {
-            ensureViewHiddenState(self.cameraButton, YES);
-            ensureViewHiddenState(self.voiceMemoButton, YES);
-            ensureViewHiddenState(self.sendButton, NO);
-        } else {
-            ensureViewHiddenState(self.cameraButton, NO);
-            ensureViewHiddenState(self.voiceMemoButton, NO);
-            ensureViewHiddenState(self.sendButton, YES);
-        }
-
         BOOL hideStickerButton = hasTextInput || self.quotedReply != nil || !StickerManager.shared.isStickerSendEnabled;
         ensureViewHiddenState(self.stickerButton, hideStickerButton);
         if (!hideStickerButton) {
@@ -614,8 +626,9 @@ const CGFloat kMaxTextViewHeight = 98;
         if (self.stickerButton.hidden || self.isStickerKeyboardActive) {
             [self removeStickerTooltip];
         }
-        
-        if (doLayout) {
+
+        if (doLayout && didChangeLayout) {
+            [self setNeedsLayout];
             [self layoutIfNeeded];
         }
     };
@@ -1112,7 +1125,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     _isStickerKeyboardActive = isStickerKeyboardActive;
 
-    [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
+    [self ensureButtonVisibilityWithIsAnimated:NO doLayout:YES];
 
     if (self.isInputViewFirstResponder) {
         // If either keyboard is presented, make sure the correct
