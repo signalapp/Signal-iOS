@@ -59,7 +59,7 @@ public class StickerPackViewController: OWSViewController {
         if UIAccessibility.isReduceTransparencyEnabled {
             view.backgroundColor = Theme.darkThemeBackgroundColor
         } else {
-            view.backgroundColor = .clear
+            view.backgroundColor = UIColor(white: 0, alpha: 0.6)
             view.isOpaque = false
 
             let blurEffect = Theme.barBlurEffect
