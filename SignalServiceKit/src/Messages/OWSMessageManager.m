@@ -435,7 +435,9 @@ NS_ASSUME_NONNULL_BEGIN
         
         // Loki: Check if we got p2p address
         if (contentProto.lokiAddressMessage) {
-            [LokiAPI setContactP2PDetailsForContact:envelope.source address:contentProto.lokiAddressMessage.ptpAddress port:contentProto.lokiAddressMessage.ptpPort];
+            NSString *address = contentProto.lokiAddressMessage.ptpAddress;
+            uint32_t port = contentProto.lokiAddressMessage.ptpPort;
+            [LokiAPI didReceiveLokiAddressMessageForContact:envelope.source address:address port:port receivedThroughP2P:envelope.isPtpMessage]
         }
 
         if (contentProto.syncMessage) {

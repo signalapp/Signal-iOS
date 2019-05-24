@@ -87,7 +87,7 @@ import PromiseKit
         // TODO: probably only send to p2p if user is online or we are pinging them
         // p2pDetails && (isPing || peerIsOnline)
         if let p2pDetails = contactP2PDetails[destination] {
-            let targets = Promise.wrap([p2pDetails])
+            let targets = Promise.wrap([p2pDetails.target])
             return sendMessage(message, targets: targets).recover { _ in return sendThroughStorageServer() }
         }
         
