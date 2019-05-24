@@ -144,7 +144,9 @@ class AppUpdateNag: NSObject {
         }
 
         alert.addAction(updateAction)
-        alert.addAction(UIAlertAction(title: dismissButtonText, style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: dismissButtonText, style: .cancel) { _ in
+            Logger.info("dismissed upgrade notice")
+        })
 
         OWSAlerts.showAlert(alert)
     }
