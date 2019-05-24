@@ -737,7 +737,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentInviteFlow
 {
     OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
-    [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
+    [inviteFlow presentWithIsAnimated:YES completion:nil];
 }
 
 - (void)showContactAppropriateViews

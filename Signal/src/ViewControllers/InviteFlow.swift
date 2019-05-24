@@ -10,23 +10,20 @@ import SignalServiceKit
 
 @objc(OWSInviteFlow)
 class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailComposeViewControllerDelegate, ContactsPickerDelegate {
-    enum Channel {
+    private enum Channel {
         case message, mail, twitter
     }
 
-    let installUrl = "https://signal.org/install/"
-    let homepageUrl = "https://signal.org"
+    private let installUrl = "https://signal.org/install/"
+    private let homepageUrl = "https://signal.org"
+
+    private let actionSheetController: UIAlertController
+    private let presentingViewController: UIViewController
+
+    private var channel: Channel?
 
     @objc
-    let actionSheetController: UIAlertController
-
-    @objc
-    let presentingViewController: UIViewController
-
-    var channel: Channel?
-
-    @objc
-    required init(presentingViewController: UIViewController) {
+    public required init(presentingViewController: UIViewController) {
         self.presentingViewController = presentingViewController
         actionSheetController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
@@ -51,21 +48,46 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         Logger.verbose("[InviteFlow] deinit")
     }
 
+    // MARK: -
+
+    @objc
+    public func present(isAnimated: Bool, completion: (() -> Void)?) {
+        // If actions include dismiss + more than one other action, show an interstitial action
+        // sheet, othewise show the action directly.
+        if actionSheetController.actions.count > 2 {
+            presentingViewController.present(actionSheetController, animated: isAnimated, completion: completion)
+        } else if messageAction() != nil {
+            presentInviteViaSMSFlow()
+        } else if mailAction() != nil {
+            presentInviteViaMailFlow()
+        } else if tweetAction() != nil {
+            presentInviteViaTwitterFlow()
+        }
+    }
+
     // MARK: Twitter
 
-    func canTweet() -> Bool {
+    private func canTweet() -> Bool {
         return SLComposeViewController.isAvailable(forServiceType: SLServiceTypeTwitter)
     }
 
-    func tweetAction() -> UIAlertAction? {
+    private func tweetAction() -> UIAlertAction? {
         guard canTweet()  else {
             Logger.info("Twitter not supported.")
             return nil
         }
 
+        let tweetTitle = NSLocalizedString("SHARE_ACTION_TWEET", comment: "action sheet item")
+        return UIAlertAction(title: tweetTitle, style: .default) { _ in
+            Logger.debug("Chose tweet")
+            self.presentInviteViaTwitterFlow()
+        }
+    }
+
+    private func presentInviteViaTwitterFlow() {
         guard let twitterViewController = SLComposeViewController(forServiceType: SLServiceTypeTwitter) else {
-            Logger.error("unable to build twitter controller.")
-            return nil
+            owsFailDebug("twitterViewController was unexpectedly nil")
+            return
         }
 
         let tweetString = NSLocalizedString("SETTINGS_INVITE_TWITTER_TEXT", comment: "content of tweet when inviting via twitter - please do not translate URL")
@@ -74,16 +96,10 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         let tweetUrl = URL(string: installUrl)
         twitterViewController.add(tweetUrl)
         twitterViewController.add(#imageLiteral(resourceName: "twitter_sharing_image"))
-
-        let tweetTitle = NSLocalizedString("SHARE_ACTION_TWEET", comment: "action sheet item")
-        return UIAlertAction(title: tweetTitle, style: .default) { _ in
-            Logger.debug("Chose tweet")
-
-            self.presentingViewController.present(twitterViewController, animated: true, completion: nil)
-        }
+        self.presentingViewController.present(twitterViewController, animated: true, completion: nil)
     }
 
-    func dismissAction() -> UIAlertAction {
+    private func dismissAction() -> UIAlertAction {
         return UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
     }
 
@@ -146,7 +162,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
     // MARK: SMS
 
-    func messageAction() -> UIAlertAction? {
+    private func messageAction() -> UIAlertAction? {
         guard MFMessageComposeViewController.canSendText() else {
             Logger.info("Device cannot send text")
             return nil
@@ -155,13 +171,17 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         let messageTitle = NSLocalizedString("SHARE_ACTION_MESSAGE", comment: "action sheet item to open native messages app")
         return UIAlertAction(title: messageTitle, style: .default) { _ in
             Logger.debug("Chose message.")
-            self.channel = .message
-            let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .phoneNumber)
-            picker.contactsPickerDelegate = self
-            picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
-            let navigationController = OWSNavigationController(rootViewController: picker)
-            self.presentingViewController.present(navigationController, animated: true)
+            self.presentInviteViaSMSFlow()
         }
+    }
+
+    private func presentInviteViaSMSFlow() {
+        self.channel = .message
+        let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .phoneNumber)
+        picker.contactsPickerDelegate = self
+        picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
+        let navigationController = OWSNavigationController(rootViewController: picker)
+        self.presentingViewController.present(navigationController, animated: true)
     }
 
     public func dismissAndSendSMSTo(phoneNumbers: [String]) {
@@ -208,13 +228,15 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
                 Logger.debug("user successfully invited their friends via SMS.")
             case .cancelled:
                 Logger.debug("user cancelled message invite")
+            @unknown default:
+                owsFailDebug("unknown MessageComposeResult: \(result)")
             }
         }
     }
 
     // MARK: Mail
 
-    func mailAction() -> UIAlertAction? {
+    private func mailAction() -> UIAlertAction? {
         guard MFMailComposeViewController.canSendMail() else {
             Logger.info("Device cannot send mail")
             return nil
@@ -223,17 +245,21 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         let mailActionTitle = NSLocalizedString("SHARE_ACTION_MAIL", comment: "action sheet item to open native mail app")
         return UIAlertAction(title: mailActionTitle, style: .default) { _ in
             Logger.debug("Chose mail.")
-            self.channel = .mail
-
-            let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .email)
-            picker.contactsPickerDelegate = self
-            picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
-            let navigationController = OWSNavigationController(rootViewController: picker)
-            self.presentingViewController.present(navigationController, animated: true)
+            self.presentInviteViaMailFlow()
         }
     }
 
-    func sendMailTo(emails recipientEmails: [String]) {
+    private func presentInviteViaMailFlow() {
+        self.channel = .mail
+
+        let picker = ContactsPicker(allowsMultipleSelection: true, subtitleCellType: .email)
+        picker.contactsPickerDelegate = self
+        picker.title = NSLocalizedString("INVITE_FRIENDS_PICKER_TITLE", comment: "Navbar title")
+        let navigationController = OWSNavigationController(rootViewController: picker)
+        self.presentingViewController.present(navigationController, animated: true)
+    }
+
+    private func sendMailTo(emails recipientEmails: [String]) {
         let mailComposeViewController = MFMailComposeViewController()
         mailComposeViewController.mailComposeDelegate = self
         mailComposeViewController.setBccRecipients(recipientEmails)
@@ -264,6 +290,8 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
                 Logger.debug("user saved mail invite.")
             case .cancelled:
                 Logger.debug("user cancelled mail invite.")
+            @unknown default:
+                owsFailDebug("unknown MFMailComposeResult: \(result)")
             }
         }
     }
