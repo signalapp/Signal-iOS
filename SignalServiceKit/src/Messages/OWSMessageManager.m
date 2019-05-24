@@ -993,7 +993,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      inThread:thread
                                   messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
-    [self.primaryStorage deleteAllSessionsForContact:envelope.source transaction:transaction];
+    [self.primaryStorage deleteAllSessionsForContact:envelope.source protocolContext:transaction];
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope

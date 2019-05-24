@@ -200,7 +200,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     __block BOOL result;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        result = [self saveRemoteIdentity:identityKey recipientId:recipientId transaction:transaction];
+        result = [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:transaction];
     }];
 
     return result;
@@ -273,7 +273,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                  createdAt:[NSDate new]
                                          verificationState:verificationState] saveWithTransaction:transaction];
 
-        [self.primaryStorage archiveAllSessionsForContact:recipientId transaction:transaction];
+        [self.primaryStorage archiveAllSessionsForContact:recipientId protocolContext:transaction];
 
         // Cancel any pending verification state sync messages for this recipient.
         [self clearSyncMessageForRecipientId:recipientId transaction:transaction];
@@ -334,7 +334,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     // Ensure a remote identity exists for this key. We may be learning about
     // it for the first time.
-    [self saveRemoteIdentity:identityKey recipientId:recipientId transaction:transaction];
+    [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:transaction];
 
     OWSRecipientIdentity *recipientIdentity =
         [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId transaction:transaction];
@@ -772,8 +772,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         
         // Ensure a remote identity exists for this key. We may be learning about
         // it for the first time.
-        [self saveRemoteIdentity:identityKey recipientId:recipientId transaction:transaction];
-
+        [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:transaction];
+        
         recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId
                                                               transaction:transaction];
         
@@ -824,8 +824,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
             }
 
             OWSLogWarn(@"recipientIdentity has non-matching identityKey; overwriting: %@", recipientId);
-            [self saveRemoteIdentity:identityKey recipientId:recipientId transaction:transaction];
-
+            [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:transaction];
+            
             recipientIdentity = [OWSRecipientIdentity fetchObjectWithUniqueID:recipientId
                                                                   transaction:transaction];
             

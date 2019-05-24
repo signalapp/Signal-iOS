@@ -227,9 +227,9 @@ public class ProfileFetcherJob: NSObject {
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
         primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
-            if self.identityManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, transaction: transaction) {
+            if self.identityManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, protocolContext: transaction) {
                 Logger.info("updated identity key with fetched profile for recipient: \(recipientId)")
-                self.primaryStorage.archiveAllSessions(forContact: recipientId, transaction: transaction)
+                self.primaryStorage.archiveAllSessions(forContact: recipientId, protocolContext: transaction)
             } else {
                 // no change in identity.
             }
