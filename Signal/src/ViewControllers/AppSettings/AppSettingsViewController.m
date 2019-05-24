@@ -24,6 +24,7 @@
 @interface AppSettingsViewController ()
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 
 @end
 
@@ -362,6 +363,7 @@
 - (void)showInviteFlow
 {
     OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
+    self.inviteFlow = inviteFlow;
     [inviteFlow presentWithIsAnimated:YES completion:nil];
 }
 
