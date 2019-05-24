@@ -31,7 +31,7 @@ public extension LokiAPI {
     // MARK: Internal API
     private static func getRandomSnode() -> Promise<Target> {
         return Promise<Target> { seal in
-            seal.fulfill(Target(address: "http://13.236.173.190", port: 8080)) // TODO: For debugging purposes
+            seal.fulfill(Target(address: "http://13.236.173.190", port: defaultSnodePort)) // TODO: For debugging purposes
         }
     }
     
@@ -73,7 +73,7 @@ internal extension Promise {
                 switch error.statusCode {
                 case 0:
                     // The snode is unreachable; usually a problem with LokiNet
-                    Logger.warn("[Loki] There appears to be a problem with LokiNet.")
+                    Logger.warn("[Loki] Couldn't reach snode at: \(target.address):\(target.port).")
                 case 421:
                     // The snode isn't associated with the given public key anymore
                     Logger.warn("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")

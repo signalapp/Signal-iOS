@@ -1342,6 +1342,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     };
 
     switch (statusCode) {
+        case 0: return messageSend.failure(responseError); // Loki
         case 401: {
             OWSLogWarn(@"Unable to send due to invalid credentials. Did the user's client get de-authed by "
                        @"registering elsewhere?");

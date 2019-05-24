@@ -52,7 +52,7 @@ public enum LokiMessageWrapper {
     /// Wrap a `SignalMessage` in an `SSKProtoEnvelope`.
     private static func createEnvelope(around signalMessage: SignalMessage, timestamp: UInt64) throws -> SSKProtoEnvelope {
         guard let keyPair = SSKEnvironment.shared.identityManager.identityKeyPair() else {
-            owsFailDebug("[Loki] Failed to wrap message in envelope: identityManager.identityKeyPair() is invalid.")
+            owsFailDebug("[Loki] Failed to wrap message in envelope: SSKEnvironment.shared.identityManager.identityKeyPair() is invalid.")
             throw WrappingError.failedToWrapMessageInEnvelope
         }
         do {
