@@ -708,17 +708,17 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 #pragma mark - Loki Friend Request Handling
 
-- (void)removeOldOutgoingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self removeOldFriendRequestMessages:OWSInteractionType_OutgoingMessage withTransaction:transaction];
+    [self removeOldFriendRequestMessagesIfNeeded:OWSInteractionType_OutgoingMessage withTransaction:transaction];
 }
 
-- (void)removeOldIncomingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeOldIncomingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self removeOldFriendRequestMessages:OWSInteractionType_IncomingMessage withTransaction:transaction];
+    [self removeOldFriendRequestMessagesIfNeeded:OWSInteractionType_IncomingMessage withTransaction:transaction];
 }
 
-- (void)removeOldFriendRequestMessages:(OWSInteractionType)interactionType withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeOldFriendRequestMessagesIfNeeded:(OWSInteractionType)interactionType withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // If we're friends with the person then we don't need to remove any friend request messages
     if (self.friendRequestStatus == TSThreadFriendRequestStatusFriends) { return; }
@@ -743,7 +743,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         } else {
             // Or if we're sending then remove any failed friend request messages
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
-            removeMessage = outgoingMessage.isFriendRequest && outgoingMessage.messageState == TSOutgoingMessageStateFailed;
+            removeMessage = outgoingMessage.friendRequestStatus == TSMessageFriendRequestStatusSendingOrFailed;
         }
         
         if (removeMessage) {

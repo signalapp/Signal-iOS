@@ -407,7 +407,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
     } else if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage
         && previousLayoutItem.interaction.interactionType == OWSInteractionType_OutgoingMessage
-        && !([previousLayoutItem.interaction isKindOfClass:TSOutgoingMessage.class] && ((TSOutgoingMessage *)previousLayoutItem.interaction).isFriendRequest)) {
+        && !((TSOutgoingMessage *)previousLayoutItem.interaction).hasFriendRequestStatusMessage) {
         return 2.f;
     }
 

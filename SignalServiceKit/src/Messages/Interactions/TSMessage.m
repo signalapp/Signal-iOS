@@ -82,6 +82,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _quotedMessage = quotedMessage;
     _contactShare = contactShare;
     _linkPreview = linkPreview;
+    _friendRequestStatus = TSMessageFriendRequestStatusNone;
     _friendRequestExpiresAt = 0;
 
     return self;
@@ -461,6 +462,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     switch (self.friendRequestStatus) {
         case TSMessageFriendRequestStatusNone: return @"none";
+        case TSMessageFriendRequestStatusSendingOrFailed: return @"sending or failed";
         case TSMessageFriendRequestStatusPending: return @"pending";
         case TSMessageFriendRequestStatusAccepted: return @"accepted";
         case TSMessageFriendRequestStatusDeclined: return @"declined";
@@ -481,6 +483,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (BOOL)isFriendRequest
 {
     return self.friendRequestStatus != TSMessageFriendRequestStatusNone;
+}
+
+- (BOOL)hasFriendRequestStatusMessage
+{
+    return self.isFriendRequest && self.friendRequestStatus != TSMessageFriendRequestStatusSendingOrFailed;
 }
 
 @end

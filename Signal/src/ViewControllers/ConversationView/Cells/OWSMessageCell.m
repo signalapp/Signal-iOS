@@ -214,7 +214,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.viewConstraints addObjectsFromArray:@[
             [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.conversationStyle.gutterLeading],
             [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.conversationStyle.gutterTrailing],
-            [self.friendRequestView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.messageBubbleView withOffset:12.f],
+            [self.friendRequestView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.messageBubbleView],
             [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeBottom]
         ]];
     }

@@ -6,8 +6,6 @@
 
 @implementation LKFriendRequestMessage
 
-- (BOOL)isFriendRequest { return YES; }
-
 - (uint)ttl { return 4 * kDayInMs; } // Friend requests should stay for the longest on the storage server
 
 - (SSKProtoContentBuilder *)contentBuilder:(SignalRecipient *)recipient {

@@ -1112,7 +1112,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // Update the message and thread if needed
         if (messageType == TSFriendRequestMessageType) {
             [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSending withTransaction:transaction];
-            [message saveFriendRequestStatus:TSMessageFriendRequestStatusPending withTransaction:transaction];
+            [message saveFriendRequestStatus:TSMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
         }
     }];
     // Convenience
@@ -1121,6 +1121,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // Update the thread if needed
             if (messageType == TSFriendRequestMessageType) {
                 [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:transaction];
+                [message saveFriendRequestStatus:TSMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
             }
             // Update the PoW calculation status
             [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
@@ -1153,11 +1154,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 .thenOn(OWSDispatch.sendingQueue, ^(id result) {
                     if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
                     isSuccess = YES;
-                    // Update the message and thread if needed
                     if (messageType == TSFriendRequestMessageType) {
                         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                            // Update the thread
                             [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSent withTransaction:transaction];
-                            [message.thread removeOldOutgoingFriendRequestMessagesWithTransaction:transaction];
+                            [message.thread removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:transaction];
+                            // Update the message
+                            [message saveFriendRequestStatus:TSMessageFriendRequestStatusPending withTransaction:transaction];
                             NSTimeInterval expirationInterval = 72 * kHourInterval;
                             NSDate *expirationDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
                             [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expirationDate] withTransaction:transaction];
@@ -1238,16 +1241,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 });
             }) retainUntilComplete];
      */
-}
-
-- (void)saveIsCalculatingProofOfWork:(BOOL)isCalculatingPoW forMessage:(OWSMessageSend *)messageSend
-{
-    OWSAssertDebug(messageSend);
-    dispatch_async(OWSDispatch.sendingQueue, ^{
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [messageSend.message saveIsCalculatingProofOfWork:isCalculatingPoW withTransaction:transaction];
-        }];
-    });
 }
 
 - (void)messageSendDidSucceed:(OWSMessageSend *)messageSend
@@ -1342,7 +1335,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     };
 
     switch (statusCode) {
-        case 0: return messageSend.failure(responseError); // Loki
+        case 0: { // Loki
+            NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
+            [error setIsRetryable:NO];
+            return messageSend.failure(error);
+        }
         case 401: {
             OWSLogWarn(@"Unable to send due to invalid credentials. Did the user's client get de-authed by "
                        @"registering elsewhere?");
