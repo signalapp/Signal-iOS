@@ -55,6 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) UISearchBar *searchBar;
 @property (nonatomic) ComposeScreenSearchResultSet *searchResults;
+@property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 
 // A list of possible phone numbers parsed from the search text as
 // E164 values.
@@ -504,8 +505,9 @@ NS_ASSUME_NONNULL_BEGIN
         for (SignalAccount *signalAccount in signalAccounts) {
             [contactItems addObject:[OWSTableItem
                                         itemWithCustomCellBlock:^{
+                                            typeof(self) strongSelf = weakSelf;
                                             ContactTableViewCell *cell = [ContactTableViewCell new];
-                                            BOOL isBlocked = [self.contactsViewHelper
+                                            BOOL isBlocked = [strongSelf.contactsViewHelper
                                                 isRecipientIdBlocked:signalAccount.recipientId];
                                             if (isBlocked) {
                                                 cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED",
@@ -737,7 +739,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentInviteFlow
 {
     OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
-    [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
+    self.inviteFlow = inviteFlow;
+    [inviteFlow presentWithIsAnimated:YES completion:nil];
 }
 
 - (void)showContactAppropriateViews
@@ -784,6 +787,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)sendTextToPhoneNumber:(NSString *)phoneNumber
 {
     OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
+    self.inviteFlow = inviteFlow;
 
     OWSAssertDebug([phoneNumber length] > 0);
     NSString *confirmMessage = NSLocalizedString(@"SEND_SMS_CONFIRM_TITLE", @"");
