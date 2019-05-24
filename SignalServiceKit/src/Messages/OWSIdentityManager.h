@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecipientIdentity.h"
@@ -32,8 +32,6 @@ extern const NSUInteger kStoredIdentityKeyLength;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
-
-- (nullable ECKeyPair *)identityKeyPairWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 + (instancetype)sharedManager;
 
@@ -69,18 +67,6 @@ extern const NSUInteger kStoredIdentityKeyLength;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId;
 
-- (BOOL)saveRemoteIdentity:(NSData *)identityKey
-               recipientId:(NSString *)recipientId
-               transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-- (BOOL)isTrustedIdentityKey:(NSData *)identityKey
-                 recipientId:(NSString *)recipientId
-                   direction:(TSMessageDirection)direction
-                 transaction:(YapDatabaseReadTransaction *)transaction;
-
-- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
-                                   transaction:(YapDatabaseReadTransaction *)transaction;
-
 #pragma mark - Debug
 
 - (nullable ECKeyPair *)identityKeyPair;
@@ -92,32 +78,6 @@ extern const NSUInteger kStoredIdentityKeyLength;
 - (void)snapshotIdentityState:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)restoreIdentityState:(YapDatabaseReadWriteTransaction *)transaction;
 #endif
-
-#pragma mark - Deprecated IdentityStore methods
-
-- (nullable ECKeyPair *)identityKeyPair:(nullable id)protocolContext
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
-
-- (int)localRegistrationId:(nullable id)protocolContext
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
-
-- (BOOL)saveRemoteIdentity:(NSData *)identityKey
-               recipientId:(NSString *)recipientId
-           protocolContext:(nullable id)protocolContext
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
-
-- (BOOL)isTrustedIdentityKey:(NSData *)identityKey
-                 recipientId:(NSString *)recipientId
-                   direction:(TSMessageDirection)direction
-             protocolContext:(nullable id)protocolContext
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
-
-- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
-
-- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
-                               protocolContext:(nullable id)protocolContext
-    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 @end
 

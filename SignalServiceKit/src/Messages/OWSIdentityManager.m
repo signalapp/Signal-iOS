@@ -183,13 +183,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (int)localRegistrationId:(nullable id)protocolContext
 {
     OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
     YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
-    return [self localRegistrationIdWithTransaction:transaction];
-}
-
-- (int)localRegistrationIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
     return (int)[TSAccountManager getOrGenerateRegistrationId:transaction];
 }
 
@@ -210,18 +206,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                recipientId:(NSString *)recipientId
            protocolContext:(nullable id)protocolContext
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
-
-    return [self saveRemoteIdentity:identityKey recipientId:recipientId transaction:transaction];
-}
-
-- (BOOL)saveRemoteIdentity:(NSData *)identityKey
-               recipientId:(NSString *)recipientId
-               transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
     OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     // Deprecated. We actually no longer use the OWSPrimaryStorageTrustedKeysCollection for trust
     // decisions, but it's desirable to try to keep it up to date with our trusted identitys
@@ -273,7 +262,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                  createdAt:[NSDate new]
                                          verificationState:verificationState] saveWithTransaction:transaction];
 
-        [self.primaryStorage archiveAllSessionsForContact:recipientId protocolContext:transaction];
+        [self.primaryStorage archiveAllSessionsForContact:recipientId protocolContext:protocolContext];
 
         // Cancel any pending verification state sync messages for this recipient.
         [self clearSyncMessageForRecipientId:recipientId transaction:transaction];

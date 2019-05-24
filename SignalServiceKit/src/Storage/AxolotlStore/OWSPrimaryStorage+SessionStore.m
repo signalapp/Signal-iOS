@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPrimaryStorage+SessionStore.h"
@@ -38,18 +38,11 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
                       deviceId:(int)deviceId
                protocolContext:(nullable id)protocolContext
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
-
-    return [self loadSession:contactIdentifier deviceId:deviceId transaction:transaction];
-}
-
-- (SessionRecord *)loadSession:(NSString *)contactIdentifier
-                      deviceId:(int)deviceId
-                   transaction:(YapDatabaseReadTransaction *)transaction
-{
     OWSAssertDebug(contactIdentifier.length > 0);
     OWSAssertDebug(deviceId >= 0);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     NSDictionary *_Nullable dictionary =
         [transaction objectForKey:contactIdentifier inCollection:OWSPrimaryStorageSessionStoreCollection];
@@ -71,18 +64,14 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
 - (NSArray *)subDevicesSessions:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
-
-    return [self subDevicesSessions:contactIdentifier transaction:transaction];
-}
-
-- (NSArray *)subDevicesSessions:(NSString *)contactIdentifier transaction:(YapDatabaseReadTransaction *)transaction
-{
     OWSAssertDebug(contactIdentifier.length > 0);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
     // Deprecated. We aren't currently using this anywhere, but it's "required" by the SessionStore protocol.
     // If we are going to start using it I'd want to re-verify it works as intended.
     OWSFailDebug(@"subDevicesSessions is deprecated");
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     NSDictionary *_Nullable dictionary =
         [transaction objectForKey:contactIdentifier inCollection:OWSPrimaryStorageSessionStoreCollection];
@@ -96,19 +85,11 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
              session:(SessionRecord *)session
      protocolContext:protocolContext
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
-
-    [self storeSession:contactIdentifier deviceId:deviceId session:session transaction:transaction];
-}
-
-- (void)storeSession:(NSString *)contactIdentifier
-            deviceId:(int)deviceId
-             session:(SessionRecord *)session
-         transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
     OWSAssertDebug(contactIdentifier.length > 0);
     OWSAssertDebug(deviceId >= 0);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     // We need to ensure subsequent usage of this SessionRecord does not consider this session as "fresh". Normally this
     // is achieved by marking things as "not fresh" at the point of deserialization - when we fetch a SessionRecord from
@@ -135,39 +116,23 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
                deviceId:(int)deviceId
         protocolContext:(nullable id)protocolContext
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
-
-    return [self containsSession:contactIdentifier deviceId:deviceId transaction:transaction];
-}
-
-- (BOOL)containsSession:(NSString *)contactIdentifier
-               deviceId:(int)deviceId
-            transaction:(YapDatabaseReadTransaction *)transaction
-{
     OWSAssertDebug(contactIdentifier.length > 0);
     OWSAssertDebug(deviceId >= 0);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
 
-    return [self loadSession:contactIdentifier deviceId:deviceId transaction:transaction].sessionState.hasSenderChain;
+    return [self loadSession:contactIdentifier deviceId:deviceId protocolContext:protocolContext]
+        .sessionState.hasSenderChain;
 }
 
 - (void)deleteSessionForContact:(NSString *)contactIdentifier
                        deviceId:(int)deviceId
                 protocolContext:(nullable id)protocolContext
 {
-
-    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
-
-    [self deleteSessionForContact:contactIdentifier deviceId:deviceId transaction:transaction];
-}
-
-- (void)deleteSessionForContact:(NSString *)contactIdentifier
-                       deviceId:(int)deviceId
-                    transaction:(nonnull YapDatabaseReadWriteTransaction *)transaction
-{
     OWSAssertDebug(contactIdentifier.length > 0);
     OWSAssertDebug(deviceId >= 0);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     OWSLogInfo(
         @"[OWSPrimaryStorage (SessionStore)] deleting session for contact: %@ device: %d", contactIdentifier, deviceId);
@@ -187,16 +152,10 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
 - (void)deleteAllSessionsForContact:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
-
-    [self deleteAllSessionsForContact:contactIdentifier transaction:transaction];
-}
-
-- (void)deleteAllSessionsForContact:(NSString *)contactIdentifier
-                        transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
     OWSAssertDebug(contactIdentifier.length > 0);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     OWSLogInfo(@"[OWSPrimaryStorage (SessionStore)] deleting all sessions for contact:%@", contactIdentifier);
 
@@ -205,16 +164,10 @@ NSString *const kSessionStoreDBConnectionKey = @"kSessionStoreDBConnectionKey";
 
 - (void)archiveAllSessionsForContact:(NSString *)contactIdentifier protocolContext:(nullable id)protocolContext
 {
-    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
-    YapDatabaseReadWriteTransaction *transaction = protocolContext;
-
-    [self archiveAllSessionsForContact:contactIdentifier transaction:transaction];
-}
-
-- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier
-                         transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
     OWSAssertDebug(contactIdentifier.length > 0);
+    OWSAssertDebug([protocolContext isKindOfClass:[YapDatabaseReadWriteTransaction class]]);
+
+    YapDatabaseReadWriteTransaction *transaction = protocolContext;
 
     OWSLogInfo(@"[OWSPrimaryStorage (SessionStore)] archiving all sessions for contact: %@", contactIdentifier);
 
