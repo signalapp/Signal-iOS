@@ -69,7 +69,7 @@ class TSContactThreadSerializer: SDSSerializer {
             self.model.archivalDate ?? DatabaseValue.null,
             self.model.archivedAsOfMessageSortId ?? DatabaseValue.null,
             self.model.conversationColorName.rawValue,
-            self.model.creationDate,
+            self.model.creationDate ?? DatabaseValue.null,
             self.model.isArchivedByLegacyTimestampForSorting,
             self.model.lastMessageDate ?? DatabaseValue.null,
             self.model.messageDraft ?? DatabaseValue.null,

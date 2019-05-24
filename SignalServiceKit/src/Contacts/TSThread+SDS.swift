@@ -25,7 +25,7 @@ public struct ThreadRecord: Codable, FetchableRecord, PersistableRecord, TableRe
     public let archivalDate: Date?
     public let archivedAsOfMessageSortId: Bool?
     public let conversationColorName: String
-    public let creationDate: Date
+    public let creationDate: Date?
     public let isArchivedByLegacyTimestampForSorting: Bool
     public let lastMessageDate: Date?
     public let messageDraft: String?
@@ -88,7 +88,7 @@ extension TSThread {
             let archivalDate: Date? = record.archivalDate
             let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
-            let creationDate: Date = record.creationDate
+            let creationDate: Date? = record.creationDate
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
             let lastMessageDate: Date? = record.lastMessageDate
             let messageDraft: String? = record.messageDraft
@@ -114,7 +114,7 @@ extension TSThread {
             let archivalDate: Date? = record.archivalDate
             let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
-            let creationDate: Date = record.creationDate
+            let creationDate: Date? = record.creationDate
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
             let lastMessageDate: Date? = record.lastMessageDate
             let messageDraft: String? = record.messageDraft
@@ -141,7 +141,7 @@ extension TSThread {
             let archivalDate: Date? = record.archivalDate
             let archivedAsOfMessageSortId: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.archivedAsOfMessageSortId, name: "archivedAsOfMessageSortId", conversion: { NSNumber(value: $0) })
             let conversationColorName: ConversationColorName = ConversationColorName(rawValue: record.conversationColorName)
-            let creationDate: Date = record.creationDate
+            let creationDate: Date? = record.creationDate
             let isArchivedByLegacyTimestampForSorting: Bool = record.isArchivedByLegacyTimestampForSorting
             let lastMessageDate: Date? = record.lastMessageDate
             let messageDraft: String? = record.messageDraft
@@ -199,7 +199,7 @@ extension TSThreadSerializer {
     static let archivalDateColumn = SDSColumnMetadata(columnName: "archivalDate", columnType: .int64, isOptional: true, columnIndex: 3)
     static let archivedAsOfMessageSortIdColumn = SDSColumnMetadata(columnName: "archivedAsOfMessageSortId", columnType: .int, isOptional: true, columnIndex: 4)
     static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .unicodeString, columnIndex: 5)
-    static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .int64, columnIndex: 6)
+    static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .int64, isOptional: true, columnIndex: 6)
     static let isArchivedByLegacyTimestampForSortingColumn = SDSColumnMetadata(columnName: "isArchivedByLegacyTimestampForSorting", columnType: .int, columnIndex: 7)
     static let lastMessageDateColumn = SDSColumnMetadata(columnName: "lastMessageDate", columnType: .int64, isOptional: true, columnIndex: 8)
     static let messageDraftColumn = SDSColumnMetadata(columnName: "messageDraft", columnType: .unicodeString, isOptional: true, columnIndex: 9)
@@ -259,7 +259,7 @@ extension TSThreadSerializer {
             let archivalDate = try deserializer.optionalDate(at: archivalDateColumn.columnIndex)
             let archivedAsOfMessageSortId = try deserializer.optionalBoolAsNSNumber(at: archivedAsOfMessageSortIdColumn.columnIndex)
             let conversationColorName = ConversationColorName(rawValue: try deserializer.string(at: conversationColorNameColumn.columnIndex))
-            let creationDate = try deserializer.date(at: creationDateColumn.columnIndex)
+            let creationDate = try deserializer.optionalDate(at: creationDateColumn.columnIndex)
             let isArchivedByLegacyTimestampForSorting = try deserializer.bool(at: isArchivedByLegacyTimestampForSortingColumn.columnIndex)
             let lastMessageDate = try deserializer.optionalDate(at: lastMessageDateColumn.columnIndex)
             let messageDraft = try deserializer.optionalString(at: messageDraftColumn.columnIndex)
@@ -285,7 +285,7 @@ extension TSThreadSerializer {
             let archivalDate = try deserializer.optionalDate(at: archivalDateColumn.columnIndex)
             let archivedAsOfMessageSortId = try deserializer.optionalBoolAsNSNumber(at: archivedAsOfMessageSortIdColumn.columnIndex)
             let conversationColorName = ConversationColorName(rawValue: try deserializer.string(at: conversationColorNameColumn.columnIndex))
-            let creationDate = try deserializer.date(at: creationDateColumn.columnIndex)
+            let creationDate = try deserializer.optionalDate(at: creationDateColumn.columnIndex)
             let isArchivedByLegacyTimestampForSorting = try deserializer.bool(at: isArchivedByLegacyTimestampForSortingColumn.columnIndex)
             let lastMessageDate = try deserializer.optionalDate(at: lastMessageDateColumn.columnIndex)
             let messageDraft = try deserializer.optionalString(at: messageDraftColumn.columnIndex)
@@ -312,7 +312,7 @@ extension TSThreadSerializer {
             let archivalDate = try deserializer.optionalDate(at: archivalDateColumn.columnIndex)
             let archivedAsOfMessageSortId = try deserializer.optionalBoolAsNSNumber(at: archivedAsOfMessageSortIdColumn.columnIndex)
             let conversationColorName = ConversationColorName(rawValue: try deserializer.string(at: conversationColorNameColumn.columnIndex))
-            let creationDate = try deserializer.date(at: creationDateColumn.columnIndex)
+            let creationDate = try deserializer.optionalDate(at: creationDateColumn.columnIndex)
             let isArchivedByLegacyTimestampForSorting = try deserializer.bool(at: isArchivedByLegacyTimestampForSortingColumn.columnIndex)
             let lastMessageDate = try deserializer.optionalDate(at: lastMessageDateColumn.columnIndex)
             let messageDraft = try deserializer.optionalString(at: messageDraftColumn.columnIndex)
@@ -589,7 +589,7 @@ class TSThreadSerializer: SDSSerializer {
             self.model.archivalDate ?? DatabaseValue.null,
             self.model.archivedAsOfMessageSortId ?? DatabaseValue.null,
             self.model.conversationColorName.rawValue,
-            self.model.creationDate,
+            self.model.creationDate ?? DatabaseValue.null,
             self.model.isArchivedByLegacyTimestampForSorting,
             self.model.lastMessageDate ?? DatabaseValue.null,
             self.model.messageDraft ?? DatabaseValue.null,
