@@ -9,6 +9,9 @@ public extension LokiAPI {
         let data: LosslessStringConvertible
         /// The time to live for the message in milliseconds.
         let ttl: UInt64
+        /// Wether this message is a ping.
+        /// This should always be false unless it is from p2p pinging logic.
+        let isPing: Bool
         /// When the proof of work was calculated, if applicable.
         ///
         /// - Note: Expressed as milliseconds since 00:00:00 UTC on 1 January 1970.
@@ -25,9 +28,13 @@ public extension LokiAPI {
                 let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage, timestamp: timestamp)
                 let data = wrappedMessage.base64EncodedString()
                 let destination = signalMessage["destination"] as! String
+                
                 var ttl = LokiAPI.defaultMessageTTL
                 if let messageTTL = signalMessage["ttl"] as? UInt, messageTTL > 0 { ttl = UInt64(messageTTL) }
-                return Message(destination: destination, data: data, ttl: ttl, timestamp: nil, nonce: nil)
+                
+                let isPing = signalMessage["isPing"] as! Bool
+                
+                return Message(destination: destination, data: data, ttl: ttl, isPing: isPing)
             } catch let error {
                 Logger.debug("[Loki] Failed to convert Signal message to Loki message: \(signalMessage)")
                 return nil
@@ -40,17 +47,19 @@ public extension LokiAPI {
         ///   - destination: The destination
         ///   - data: The data
         ///   - ttl: The time to live
-        public init(destination: String, data: LosslessStringConvertible, ttl: UInt64) {
+        public init(destination: String, data: LosslessStringConvertible, ttl: UInt64, isPing: Bool = false) {
             self.destination = destination
             self.data = data
             self.ttl = ttl
+            self.isPing = isPing
         }
         
         /// Private init for setting proof of work. Use `calculatePoW` to get a message with these fields
-        private init(destination: String, data: LosslessStringConvertible, ttl: UInt64, timestamp: UInt64?, nonce: String?) {
+        private init(destination: String, data: LosslessStringConvertible, ttl: UInt64, isPing: Bool, timestamp: UInt64?, nonce: String?) {
             self.destination = destination
             self.data = data
             self.ttl = ttl
+            self.isPing = isPing
             self.timestamp = timestamp
             self.nonce = nonce
         }
@@ -64,7 +73,7 @@ public extension LokiAPI {
                 DispatchQueue.global(qos: .default).async {
                     let now = NSDate.ows_millisecondTimeStamp()
                     if let nonce = ProofOfWork.calculate(data: self.data as! String, pubKey: self.destination, timestamp: now, ttl: self.ttl) {
-                        let result = Message(destination: self.destination, data: self.data, ttl: self.ttl, timestamp: now, nonce: nonce)
+                        let result = Message(destination: self.destination, data: self.data, ttl: self.ttl, isPing: self.isPing, timestamp: now, nonce: nonce)
                         seal.fulfill(result)
                     } else {
                         seal.reject(Error.proofOfWorkCalculationFailed)

@@ -51,16 +51,6 @@ import PromiseKit
         }.map { Set($0) }
     }
     
-    public static func ping(_ hexEncodedPublicKey: String) -> Promise<Set<Promise<RawResponse>>> {
-        let isP2PMessagingPossible = false
-        if isP2PMessagingPossible {
-            // TODO: Send using P2P protocol
-        } else {
-            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ] // TODO: Figure out correct parameters
-            return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { Set($0) }
-        }
-    }
-    
     // MARK: Public API (Obj-C)
     @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64) -> AnyPromise {
         let promise = sendSignalMessage(signalMessage, to: destination, timestamp: timestamp).mapValues { AnyPromise.from($0) }.map { Set($0) }
@@ -82,13 +72,22 @@ import PromiseKit
             }
         }
         
-        // If we have the p2p details then send message to that
+        // If we have the p2p details and we have marked the user as online OR we are pinging the user, then use peer to peer
         // If that failes then fallback to storage server
-        // TODO: probably only send to p2p if user is online or we are pinging them
-        // p2pDetails && (isPing || peerIsOnline)
-        if let p2pDetails = contactP2PDetails[destination] {
+        if let p2pDetails = contactP2PDetails[destination], message.isPing || p2pDetails.isOnline {
             let targets = Promise.wrap([p2pDetails.target])
-            return sendMessage(message, targets: targets).recover { _ in return sendThroughStorageServer() }
+            return sendMessage(message, targets: targets).recover { error -> Promise<Set<Promise<RawResponse>>> in
+                // The user is not online
+                LokiAPI.setOnline(false, forContact: destination)
+
+                // If it was a ping then don't send to the storage server
+                if (message.isPing) {
+                    Logger.warn("[Loki] Failed to ping \(destination) - Marking contact as offline.")
+                    throw error
+                }
+                
+                return sendThroughStorageServer()
+            }
         }
         
         return sendThroughStorageServer()

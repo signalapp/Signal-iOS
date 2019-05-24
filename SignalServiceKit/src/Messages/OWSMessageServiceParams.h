@@ -27,6 +27,9 @@ NS_ASSUME_NONNULL_BEGIN
 // Loki: Message ttl
 @property (nonatomic, readonly) uint ttl;
 
+// Loki: Wether this message is a p2p ping
+@property (nonatomic, readonly) BOOL isPing;
+
 - (instancetype)initWithType:(TSWhisperMessageType)type
                  recipientId:(NSString *)destination
                       device:(int)deviceId
@@ -34,7 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
                     isSilent:(BOOL)isSilent
                     isOnline:(BOOL)isOnline
               registrationId:(int)registrationId
-                         ttl:(uint)ttl;
+                         ttl:(uint)ttl
+                      isPing:(BOOL)isPing;
 
 @end
 

@@ -1,15 +1,17 @@
 
 extension LokiAPI {
-    
     private static let messageSender: MessageSender = SSKEnvironment.shared.messageSender
     
+    /// The amount of time before pinging when a user is set to offline
+    private static let offlinePingTime = 2 * kMinuteInterval
+
     /// A p2p state struct
     internal struct P2PDetails {
         var address: String
         var port: UInt32
         var isOnline: Bool
         var timerDuration: Double
-        var pingTimer: WeakTimer? = nil
+        var pingTimer: Timer? = nil
         
         var target: Target {
             return Target(address: address, port: port)
@@ -68,6 +70,23 @@ extension LokiAPI {
         // TODO: Ping the contact
     }
     
+    @objc public static func setOnline(_ isOnline: Bool, forContact pubKey: String) {
+        guard var details = contactP2PDetails[pubKey] else { return }
+        
+        let interval = isOnline ? details.timerDuration : offlinePingTime
+        
+        // Setup a new timer
+        details.pingTimer?.invalidate()
+        details.pingTimer = WeakTimer.scheduledTimer(timeInterval: interval, target: self, userInfo: nil, repeats: true) { _ in ping(contact: pubKey) }
+        details.isOnline = isOnline
+        
+        contactP2PDetails[pubKey] = details
+    }
+    
+    @objc public static func ping(contact pubKey: String) {
+        
+    }
+    
     /// Set the Contact p2p details
     ///
     /// - Parameters:
@@ -109,7 +128,7 @@ extension LokiAPI {
             return nil
         }
 
-        return LokiAddressMessage(in: thread, address: ourAddress.address, port: ourAddress.port)
+        return LokiAddressMessage(in: thread, address: ourAddress.address, port: ourAddress.port, isPing: false)
     }
     
     /// Send a `Loki Address` message to the given thread

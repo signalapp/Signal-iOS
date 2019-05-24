@@ -7,6 +7,7 @@
 
 @property (nonatomic) NSString *address;
 @property (nonatomic) uint port;
+@property (nonatomic) BOOL isPing;
 
 @end
 
@@ -15,6 +16,7 @@
 - (instancetype)initInThread:(nullable TSThread *)thread
                      address:(NSString *)address
                         port:(uint)port
+                      isPing:(bool)isPing
 {
     self = [super initInThread:thread];
     if (!self) {
@@ -23,6 +25,7 @@
     
     _address = address;
     _port = port;
+    _isPing = isPing;
     
     return self;
 }
