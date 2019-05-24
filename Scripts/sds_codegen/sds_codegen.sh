@@ -48,3 +48,4 @@ $REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalServiceKit/  --
 $REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalShareExtension/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
 $REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalMessaging/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
 $REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path Signal  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
+ 
