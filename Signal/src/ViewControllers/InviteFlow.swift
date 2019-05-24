@@ -29,7 +29,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
 
         super.init()
 
-        actionSheetController.addAction(dismissAction())
+        actionSheetController.addAction(OWSAlerts.dismissAction)
 
         if let messageAction = messageAction() {
             actionSheetController.addAction(messageAction)
@@ -97,10 +97,6 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
         twitterViewController.add(tweetUrl)
         twitterViewController.add(#imageLiteral(resourceName: "twitter_sharing_image"))
         self.presentingViewController.present(twitterViewController, animated: true, completion: nil)
-    }
-
-    private func dismissAction() -> UIAlertAction {
-        return UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
     }
 
     // MARK: ContactsPickerDelegate
@@ -222,7 +218,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
             switch result {
             case .failed:
                 let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"), preferredStyle: .alert)
-                warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
+                warning.addAction(OWSAlerts.dismissAction)
                 self.presentingViewController.present(warning, animated: true, completion: nil)
             case .sent:
                 Logger.debug("user successfully invited their friends via SMS.")
@@ -282,7 +278,7 @@ class InviteFlow: NSObject, MFMessageComposeViewControllerDelegate, MFMailCompos
             switch result {
             case .failed:
                 let warning = UIAlertController(title: nil, message: NSLocalizedString("SEND_INVITE_FAILURE", comment: "Alert body after invite failed"), preferredStyle: .alert)
-                warning.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .default, handler: nil))
+                warning.addAction(OWSAlerts.dismissAction)
                 self.presentingViewController.present(warning, animated: true, completion: nil)
             case .sent:
                 Logger.debug("user successfully invited their friends via mail.")
