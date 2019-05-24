@@ -31,7 +31,7 @@ public extension LokiAPI {
     // MARK: Internal API
     private static func getRandomSnode() -> Promise<Target> {
         return Promise<Target> { seal in
-            seal.fulfill(Target(address: "http://13.236.173.190", port: 8080)) // TODO: For debugging purposes
+            seal.fulfill(Target(address: "http://13.236.173.191", port: 8080)) // TODO: For debugging purposes
         }
     }
     
@@ -53,7 +53,7 @@ public extension LokiAPI {
     private static func parseTargets(from rawResponse: Any) -> [Target] {
         // TODO: For debugging purposes
         // ========
-        let target = Target(address: "http://13.236.173.190", port: defaultSnodePort)
+        let target = Target(address: "http://13.236.173.191", port: defaultSnodePort)
         return Array(repeating: target, count: 3)
         // ========
 //        guard let json = rawResponse as? JSON, let addresses = json["snodes"] as? [String] else {
@@ -76,6 +76,7 @@ internal extension Promise {
                     Logger.warn("[Loki] There appears to be a problem with LokiNet.")
                 case 421:
                     // The snode isn't associated with the given public key anymore
+                    Logger.warn("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
                     let swarm = LokiAPI.swarmCache[hexEncodedPublicKey]
                     if var swarm = swarm, let index = swarm.firstIndex(of: target) {
                         swarm.remove(at: index)

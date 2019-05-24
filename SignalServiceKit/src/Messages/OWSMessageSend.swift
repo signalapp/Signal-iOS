@@ -21,7 +21,7 @@ public class OWSMessageSend: NSObject {
     @objc
     public let recipient: SignalRecipient
 
-    private static let kMaxRetriesPerRecipient: Int = 3
+    private static let kMaxRetriesPerRecipient: Int = 1
 
     @objc
     public var remainingAttempts = OWSMessageSend.kMaxRetriesPerRecipient

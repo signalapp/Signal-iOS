@@ -443,6 +443,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)saveFriendRequestStatus:(TSMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
+    OWSLogInfo(@"[Loki] Setting message friend request status to %d.", friendRequestStatus);
     self.friendRequestStatus = friendRequestStatus;
     void (^postNotification)() = ^() {
         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageFriendRequestStatusChanged object:self.uniqueId];

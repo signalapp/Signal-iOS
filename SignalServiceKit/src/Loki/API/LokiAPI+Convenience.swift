@@ -35,6 +35,18 @@ internal extension LokiAPI {
     }
 }
 
+internal extension Promise {
+    
+    internal func recoveringNetworkErrorsIfNeeded() -> Promise<T> {
+        return recover() { error -> Promise<T> in
+            switch error {
+            case NetworkManagerError.taskError(_, let underlyingError): throw underlyingError
+            default: throw error
+            }
+        }
+    }
+}
+
 internal extension AnyPromise {
 
     internal static func from<T : Any>(_ promise: Promise<T>) -> AnyPromise {

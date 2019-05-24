@@ -1066,10 +1066,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             hasValidMessageType = [validMessageTypes containsObject:messageType];
 
             /* Loki: Original code
-            hasValidMessageType = ([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] ||
-                                   [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
+             * ========
+            hasValidMessageType = ([messageType isEqualToNumber:@(TSEncryptedWhisperMessageType)] || [messageType isEqualToNumber:@(TSPreKeyWhisperMessageType)]);
+             * ========
              */
-
         }
 
         if (!hasValidMessageType) {
@@ -1103,16 +1103,45 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.failure(error);
     }
 
-    // Update the state to show that the proof of work is being calculated
-    [self saveIsCalculatingProofOfWork:YES forMessage:messageSend];
-    // Convert the message to a Loki message and send it using the Loki messaging API
+    // Get the message parameters and type
     NSDictionary *signalMessage = deviceMessages.firstObject;
-    // Update the message and thread if needed
-    NSInteger *messageType = ((NSNumber *)signalMessage[@"type"]).integerValue;
-    if (messageType == TSFriendRequestMessageType) {
-        [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSending withTransaction:nil];
-        [message saveFriendRequestStatus:TSMessageFriendRequestStatusPending withTransaction:nil];
-    }
+    TSWhisperMessageType messageType = ((NSNumber *)signalMessage[@"type"]).integerValue;
+    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        // Update the PoW calculation status
+        [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
+        // Update the message and thread if needed
+        if (messageType == TSFriendRequestMessageType) {
+            [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusRequestSending withTransaction:transaction];
+            [message saveFriendRequestStatus:TSMessageFriendRequestStatusPending withTransaction:transaction];
+        }
+    }];
+    // Convenience
+    void (^handleError)(NSError *error) = ^(NSError *error) {
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            // Update the thread if needed
+            if (messageType == TSFriendRequestMessageType) {
+                [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:transaction];
+            }
+            // Update the PoW calculation status
+            [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
+        }];
+        // Handle the error
+        NSUInteger statusCode = 0;
+        NSData *_Nullable responseData = nil;
+        if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
+            statusCode = error.code;
+            NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
+            if (underlyingError) {
+                responseData = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+            } else {
+                OWSFailDebug(@"Missing underlying error: %@.", error);
+            }
+        } else {
+            OWSFailDebug(@"Unexpected error: %@.", error);
+        }
+        [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
+    };
+    // Convert the message to a Loki message and send it using the Loki API
     [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId with:message.timestamp]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             NSSet<AnyPromise *> *promises = (NSSet<AnyPromise *> *)result;
@@ -1140,29 +1169,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
                     errorCount += 1;
                     if (errorCount != promiseCount) { return; } // Only error out if all promises failed
-                    // Update the thread if needed
-                    if (messageType == TSFriendRequestMessageType) {
-                        [message.thread saveFriendRequestStatus:TSThreadFriendRequestStatusNone withTransaction:nil];
-                    }
-                    // Update the PoW calculation status
-                    [self saveIsCalculatingProofOfWork:NO forMessage:messageSend];
-                    // Handle the error
-                    NSUInteger statusCode = 0;
-                    NSData *_Nullable responseData = nil;
-                    if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
-                        statusCode = error.code;
-                        NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
-                        if (underlyingError) {
-                            responseData = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-                        } else {
-                            OWSFailDebug(@"Missing underlying error: %@.", error);
-                        }
-                    } else {
-                        OWSFailDebug(@"Unexpected error: %@.", error);
-                    }
-                    [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
+                    handleError(error);
                 }) retainUntilComplete];
             }
+        })
+        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // Unreachable snode; usually a problem with LokiNet
+            handleError(error);
         }) retainUntilComplete];
     
     // Loki: Original code

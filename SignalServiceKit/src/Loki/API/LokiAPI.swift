@@ -28,7 +28,8 @@ import PromiseKit
     internal static func invoke(_ method: Target.Method, on target: Target, associatedWith hexEncodedPublicKey: String, parameters: [String:Any] = [:]) -> Promise<RawResponse> {
         let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
-        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
+        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
+            .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey).recoveringNetworkErrorsIfNeeded()
     }
     
     // MARK: Public API
