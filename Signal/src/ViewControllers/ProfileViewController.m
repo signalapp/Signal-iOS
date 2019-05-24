@@ -26,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, ProfileViewMode) {
     ProfileViewMode_AppSettings = 0,
     ProfileViewMode_Registration,
-    ProfileViewMode_UpgradeOrNag,
 };
 
 NSString *const kProfileView_Collection = @"kProfileView_Collection";
@@ -88,8 +87,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [self createViews];
     [self updateNavigationItem];
 
-    if (self.nameTextField.text.length > 0) {
-        self.hasUnsavedChanges = YES;
+    if (self.profileViewMode == ProfileViewMode_Registration) {
+        // mark as dirty if re-registration has content
+        if (self.nameTextField.text.length > 0 || self.avatar != nil) {
+            self.hasUnsavedChanges = YES;
+        }
     }
 }
 
@@ -221,7 +223,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     // Big Button
 
-    if (self.profileViewMode == ProfileViewMode_Registration || self.profileViewMode == ProfileViewMode_UpgradeOrNag) {
+    if (self.profileViewMode == ProfileViewMode_Registration) {
         UIView *buttonRow = [UIView containerView];
         [rows addObject:buttonRow];
 
@@ -355,7 +357,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                 self.navigationItem.rightBarButtonItem = nil;
             }
             break;
-        case ProfileViewMode_UpgradeOrNag:
         case ProfileViewMode_Registration:
             self.navigationItem.hidesBackButton = YES;
             self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
@@ -366,7 +367,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             break;
     }
 
-    // The save button is only used in "registration" and "upgrade or nag" modes.
     if (self.hasUnsavedChanges) {
         self.saveButton.enabled = YES;
         [self.saveButton setBackgroundColorsWithUpColor:[UIColor ows_signalBrandBlueColor]];
@@ -446,9 +446,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             break;
         case ProfileViewMode_Registration:
             [self showHomeView];
-            break;
-        case ProfileViewMode_UpgradeOrNag:
-            [self dismissViewControllerAnimated:YES completion:nil];
             break;
     }
 }
@@ -573,15 +570,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_Registration];
     [navigationController pushViewController:vc animated:YES];
-}
-
-+ (void)presentForUpgradeOrNag:(HomeViewController *)fromViewController
-{
-    OWSAssertDebug(fromViewController);
-
-    ProfileViewController *vc = [[ProfileViewController alloc] initWithMode:ProfileViewMode_UpgradeOrNag];
-    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:vc];
-    [fromViewController presentViewController:navigationController animated:YES completion:nil];
 }
 
 #pragma mark - AvatarViewHelperDelegate
