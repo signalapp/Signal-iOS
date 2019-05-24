@@ -87,8 +87,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [self createViews];
     [self updateNavigationItem];
 
-    if (self.nameTextField.text.length > 0) {
-        self.hasUnsavedChanges = YES;
+    if (self.profileViewMode == ProfileViewMode_Registration) {
+        // mark as dirty if re-registration has content
+        if (self.nameTextField.text.length > 0 || self.avatar != nil) {
+            self.hasUnsavedChanges = YES;
+        }
     }
 }
 
