@@ -63,7 +63,7 @@ extension LokiAPI {
         
         messageSender.sendPromise(message: message).catch { error in
             Logger.warn("Failed to send online status to \(thread.contactIdentifier())")
-        }
+        }.retainUntilComplete()
     }
     
     @objc public static func sendOnlineBroadcastMessage(forThread thread: TSContactThread, transaction: YapDatabaseReadWriteTransaction) {

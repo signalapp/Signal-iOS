@@ -51,6 +51,23 @@ import PromiseKit
         }.map { Set($0) }
     }
     
+    public static func ping(_ hexEncodedPublicKey: String) -> Promise<Set<Promise<RawResponse>>> {
+        let isP2PMessagingPossible = false
+        if isP2PMessagingPossible {
+            // TODO: Send using P2P protocol
+        } else {
+            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ] // TODO: Figure out correct parameters
+            return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { Set($0) }
+        }
+    }
+    
+    // MARK: Public API (Obj-C)
+    @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64) -> AnyPromise {
+        let promise = sendSignalMessage(signalMessage, to: destination, timestamp: timestamp).mapValues { AnyPromise.from($0) }.map { Set($0) }
+        return AnyPromise.from(promise)
+    }
+    
+    // MARK: Sending
     public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64) -> Promise<Set<Promise<RawResponse>>> {
         guard let message = Message.from(signalMessage: signalMessage, timestamp: timestamp) else {
             return Promise(error: Error.internalError)
@@ -70,35 +87,16 @@ import PromiseKit
         // TODO: probably only send to p2p if user is online or we are pinging them
         // p2pDetails && (isPing || peerIsOnline)
         if let p2pDetails = contactP2PDetails[destination] {
-            return sendMessage(message, targets: [p2pDetails]).recover { _ in return sendThroughStorageServer() }
+            let targets = Promise.wrap([p2pDetails])
+            return sendMessage(message, targets: targets).recover { _ in return sendThroughStorageServer() }
         }
         
         return sendThroughStorageServer()
     }
     
-    internal static func sendMessage(_ lokiMessage: Message, targets: [Target]) -> Promise<Set<Promise<RawResponse>>> {
-        return sendMessage(lokiMessage, targets: Promise.wrap(targets))
-    }
-    
     internal static func sendMessage(_ lokiMessage: Message, targets: Promise<[Target]>) -> Promise<Set<Promise<RawResponse>>> {
         let parameters = lokiMessage.toJSON()
         return targets.mapValues { invoke(.sendMessage, on: $0, associatedWith: lokiMessage.destination, parameters: parameters) }.map { Set($0) }
-    }
-    
-    public static func ping(_ hexEncodedPublicKey: String) -> Promise<Set<Promise<RawResponse>>> {
-        let isP2PMessagingPossible = false
-        if isP2PMessagingPossible {
-            // TODO: Send using P2P protocol
-        } else {
-            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ] // TODO: Figure out correct parameters
-            return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { Set($0) }
-        }
-    }
-    
-    // MARK: Public API (Obj-C)
-    @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64) -> AnyPromise {
-        let promise = sendSignalMessage(signalMessage, to: destination, timestamp: timestamp).mapValues { AnyPromise.from($0) }.map { Set($0) }
-        return AnyPromise.from(promise)
     }
     
     // MARK: Parsing
