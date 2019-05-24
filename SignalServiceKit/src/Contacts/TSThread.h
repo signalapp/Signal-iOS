@@ -57,6 +57,7 @@ typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
 // Loki friend request handling
 // ========
 @property (nonatomic) TSThreadFriendRequestStatus friendRequestStatus;
+@property (nonatomic, readonly) NSString *friendRequestStatusDescription;
 /// Shorthand for checking that `friendRequestStatus` is `TSThreadFriendRequestStatusRequestSending`, `TSThreadFriendRequestStatusRequestSent`
 /// or `TSThreadFriendRequestStatusRequestReceived`.
 @property (nonatomic, readonly) BOOL hasPendingFriendRequest;

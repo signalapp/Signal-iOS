@@ -45,6 +45,7 @@ typedef NS_ENUM(NSInteger, TSMessageFriendRequestStatus) {
 // Loki friend request handling
 // ========
 @property (nonatomic) TSMessageFriendRequestStatus friendRequestStatus;
+@property (nonatomic, readonly) NSString *friendRequestStatusDescription;
 @property (nonatomic) uint64_t friendRequestExpiresAt;
 @property (nonatomic, readonly) BOOL isFriendRequest;
 // ========

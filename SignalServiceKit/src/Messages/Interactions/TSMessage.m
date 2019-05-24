@@ -443,8 +443,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (void)saveFriendRequestStatus:(TSMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
-    OWSLogInfo(@"[Loki] Setting message friend request status to %d.", friendRequestStatus);
     self.friendRequestStatus = friendRequestStatus;
+    OWSLogInfo(@"[Loki] Setting message friend request status to %@.", self.friendRequestStatusDescription);
     void (^postNotification)() = ^() {
         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageFriendRequestStatusChanged object:self.uniqueId];
     };
@@ -454,6 +454,17 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else {
         [self saveWithTransaction:transaction];
         [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ postNotification(); }];
+    }
+}
+
+- (NSString *)friendRequestStatusDescription
+{
+    switch (self.friendRequestStatus) {
+        case TSMessageFriendRequestStatusNone: return @"none";
+        case TSMessageFriendRequestStatusPending: return @"pending";
+        case TSMessageFriendRequestStatusAccepted: return @"accepted";
+        case TSMessageFriendRequestStatusDeclined: return @"declined";
+        case TSMessageFriendRequestStatusExpired: return @"expired";
     }
 }
 

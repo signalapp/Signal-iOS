@@ -767,8 +767,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 - (void)saveFriendRequestStatus:(TSThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
-    OWSLogInfo(@"[Loki] Setting thread friend request status to %d.", friendRequestStatus);
     self.friendRequestStatus = friendRequestStatus;
+    OWSLogInfo(@"[Loki] Setting thread friend request status to %@.", self.friendRequestStatusDescription);
     void (^postNotification)() = ^() {
         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.threadFriendRequestStatusChanged object:self.uniqueId];
     };
@@ -778,6 +778,18 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     } else {
         [self saveWithTransaction:transaction];
         [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ postNotification(); }];
+    }
+}
+
+- (NSString *)friendRequestStatusDescription
+{
+    switch (self.friendRequestStatus) {
+        case TSThreadFriendRequestStatusNone: return @"none";
+        case TSThreadFriendRequestStatusRequestSending: return @"sending";
+        case TSThreadFriendRequestStatusRequestSent: return @"sent";
+        case TSThreadFriendRequestStatusRequestReceived: return @"received";
+        case TSThreadFriendRequestStatusFriends: return @"friends";
+        case TSThreadFriendRequestStatusRequestExpired: return @"expired";
     }
 }
 
