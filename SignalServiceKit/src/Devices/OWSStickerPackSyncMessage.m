@@ -42,8 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
     switch (self.operationType) {
         case StickerPackOperationType_Install:
             operationType = SSKProtoSyncMessageStickerPackOperationTypeInstall;
+            break;
         case StickerPackOperationType_Remove:
             operationType = SSKProtoSyncMessageStickerPackOperationTypeRemove;
+            break;
     }
 
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
