@@ -118,6 +118,11 @@ public class StickerHorizontalListView: UICollectionView {
         updateHeightConstraint()
     }
 
+    // Reload visible items to refresh the "selected" state
+    func updateSelections() {
+        reloadItems(at: indexPathsForVisibleItems)
+    }
+
     private func updateHeightConstraint() {
         guard let heightConstraint = heightConstraint else {
             owsFailDebug("Missing heightConstraint.")
