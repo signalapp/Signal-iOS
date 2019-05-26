@@ -6,6 +6,7 @@ import PromiseKit
     // MARK: Settings
     private static let version = "v1"
     public static let defaultMessageTTL: UInt64 = 1 * 24 * 60 * 60 * 1000
+    private static let maxRetryCount: UInt = 3
     
     // MARK: Types
     public typealias RawResponse = Any
@@ -44,7 +45,7 @@ import PromiseKit
                 let newRawMessages = removeDuplicates(from: rawMessages)
                 return parseProtoEnvelopes(from: newRawMessages)
             }
-        }.map { Set($0) }
+        }.retryingIfNeeded(maxRetryCount: maxRetryCount).map { Set($0) }
     }
     
     public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64) -> Promise<Set<Promise<RawResponse>>> {
@@ -58,7 +59,8 @@ import PromiseKit
             // TODO: Send using P2P protocol
         } else {
             let parameters = lokiMessage.toJSON()
-            return getTargetSnodes(for: lokiMessage.destination).mapValues { invoke(.sendMessage, on: $0, associatedWith: lokiMessage.destination, parameters: parameters) }.map { Set($0) }
+            return getTargetSnodes(for: lokiMessage.destination).mapValues { invoke(.sendMessage, on: $0, associatedWith: lokiMessage.destination, parameters: parameters) }
+                .retryingIfNeeded(maxRetryCount: maxRetryCount).map { Set($0) }
         }
     }
     
@@ -68,7 +70,8 @@ import PromiseKit
             // TODO: Send using P2P protocol
         } else {
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ] // TODO: Figure out correct parameters
-            return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { Set($0) }
+            return getTargetSnodes(for: hexEncodedPublicKey).mapValues { invoke(.sendMessage, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }
+                .retryingIfNeeded(maxRetryCount: maxRetryCount).map { Set($0) }
         }
     }
     
