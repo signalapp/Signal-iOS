@@ -86,8 +86,9 @@ import PromiseKit
                 // If it was a ping then don't send to the storage server
                 if (message.isPing) {
                     Logger.warn("[Loki] Failed to ping \(destination) - Marking contact as offline.")
-                    error.isRetryable = false
-                    throw error
+                    let nserror = error as NSError
+                    nserror.isRetryable = false
+                    throw nserror
                 }
                 
                 return sendThroughStorageServer()
