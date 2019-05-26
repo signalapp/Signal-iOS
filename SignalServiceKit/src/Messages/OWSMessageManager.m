@@ -437,7 +437,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (contentProto.lokiAddressMessage) {
             NSString *address = contentProto.lokiAddressMessage.ptpAddress;
             uint32_t port = contentProto.lokiAddressMessage.ptpPort;
-            [LokiAPI didReceiveLokiAddressMessageForContact:envelope.source address:address port:port receivedThroughP2P:envelope.isPtpMessage transaction: transaction];
+            [LokiP2PManager didReceiveLokiAddressMessageForContact:envelope.source address:address port:port receivedThroughP2P:envelope.isPtpMessage];
         }
 
         if (contentProto.syncMessage) {
@@ -1459,6 +1459,16 @@ NS_ASSUME_NONNULL_BEGIN
                 (unsigned long)timestamp);
             return nil;
         }
+        
+        // Loki
+        // If we received a message from a contact in the last 2 minues that was not p2p, then we need to ping them.
+        // We assume this occurred because they don't have our p2p details.
+        if (!envelope.isPtpMessage && envelope.source != nil) {
+            uint64_t timestamp = envelope.timestamp;
+            uint64_t now = NSDate.ows_millisecondTimeStamp;
+            uint64_t ageInSeconds = (now - timestamp) / 1000;
+            if (ageInSeconds <= 120) { [LokiP2PManager pingContact:envelope.source]; }
+        }
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread
@@ -1509,7 +1519,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         
         // Send our p2p details to the other user
-        LKAddressMessage *_Nullable onlineMessage = [LokiAPI onlineBroadcastMessageForThread:thread];
+        LKAddressMessage *_Nullable onlineMessage = [LokiP2PManager onlineBroadcastMessageForThread:thread];
         if (onlineMessage != nil) {
             [self.messageSenderJobQueue addMessage:onlineMessage transaction:transaction];
         }

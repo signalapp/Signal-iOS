@@ -7,7 +7,7 @@ import PromiseKit
     private static let version = "v1"
     public static let defaultMessageTTL: UInt64 = 1 * 24 * 60 * 60 * 1000
     
-    internal static let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+    private static let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
     
     // MARK: Types
     public typealias RawResponse = Any
@@ -74,18 +74,19 @@ import PromiseKit
         
         // If we have the p2p details and we have marked the user as online OR we are pinging the user, then use peer to peer
         // If that failes then fallback to storage server
-        if let p2pDetails = contactP2PDetails[destination], message.isPing || p2pDetails.isOnline {
+        if let p2pDetails = LokiP2PManager.getDetails(forContact: destination), message.isPing || p2pDetails.isOnline {
             let targets = Promise.wrap([p2pDetails.target])
             return sendMessage(message, targets: targets).then { result -> Promise<Set<Promise<RawResponse>>> in
-                LokiAPI.setOnline(true, forContact: destination)
+                LokiP2PManager.setOnline(true, forContact: destination)
                 return Promise.wrap(result)
             }.recover { error -> Promise<Set<Promise<RawResponse>>> in
                 // The user is not online
-                LokiAPI.setOnline(false, forContact: destination)
+                LokiP2PManager.setOnline(false, forContact: destination)
 
                 // If it was a ping then don't send to the storage server
                 if (message.isPing) {
                     Logger.warn("[Loki] Failed to ping \(destination) - Marking contact as offline.")
+                    error.isRetryable = false
                     throw error
                 }
                 
