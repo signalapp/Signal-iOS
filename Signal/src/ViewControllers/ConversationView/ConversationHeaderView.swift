@@ -61,8 +61,6 @@ public class ConversationHeaderView: UIStackView {
 
         let avatarView = ConversationAvatarImageView(thread: thread, diameter: 36, contactsManager: contactsManager)
         self.avatarView = avatarView
-        // remove default border on avatarView
-        avatarView.layer.borderWidth = 0
 
         titleLabel = UILabel()
         titleLabel.textColor = Theme.navbarTitleColor

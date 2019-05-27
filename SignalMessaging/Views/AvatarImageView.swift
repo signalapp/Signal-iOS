@@ -6,30 +6,37 @@ import UIKit
 
 @objc
 public class AvatarImageView: UIImageView {
-
     private let shadowLayer = CAShapeLayer()
+    @objc var contactID: String = ""
 
     public init() {
         super.init(frame: .zero)
-        self.configureView()
+        self.initialize()
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.configureView()
+        self.initialize()
     }
 
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.configureView()
+        self.initialize()
     }
 
     override init(image: UIImage?) {
         super.init(image: image)
-        self.configureView()
+        self.initialize()
     }
 
-    func configureView() {
+    func initialize() {
+        // Loki: Used to indicate a contact's online status
+        layer.borderWidth = 3
+        
+        // Loki: Observe online status changes
+        NotificationCenter.default.addObserver(self, selector: #selector(handleOnlineStatusChangedNotification), name: .contactOnlineStatusChanged, object: nil)
+        
+        // Set up UI
         self.autoPinToSquareAspectRatio()
 
         self.layer.minificationFilter = .trilinear
@@ -44,6 +51,9 @@ public class AvatarImageView: UIImageView {
     override public func layoutSubviews() {
         self.layer.cornerRadius = self.frame.size.width / 2
 
+        // Loki: Update the online status indicator if needed
+        updateOnlineStatusIndicator()
+        
         // Inner shadow.
         // This should usually not be visible; it is used to distinguish
         // profile pics from the background if they are similar.
@@ -62,6 +72,25 @@ public class AvatarImageView: UIImageView {
         self.shadowLayer.shadowRadius = 0.5
         self.shadowLayer.shadowOpacity = 0.15
         self.shadowLayer.shadowOffset = .zero
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc private func handleOnlineStatusChangedNotification(_ notification: Notification) {
+        let contactID = notification.object as! String
+        guard contactID == self.contactID else { return }
+        updateOnlineStatusIndicator()
+    }
+    
+    @objc func updateOnlineStatusIndicator() {
+        let peerInfo = LokiP2PManager.getInfo(for: contactID)
+        let isOnline = peerInfo?.isOnline ?? false
+        let color: UIColor = isOnline ? .ows_green : .ows_gray75
+        let currentUserID = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let isCurrentUser = (contactID == currentUserID)
+        layer.borderColor = isCurrentUser ? UIColor.clear.cgColor : color.cgColor
     }
 }
 
@@ -100,6 +129,7 @@ public class ConversationAvatarImageView: AvatarImageView {
         super.init(frame: .zero)
 
         if recipientId != nil {
+            self.contactID = recipientId! // Loki
             NotificationCenter.default.addObserver(self, selector: #selector(handleOtherUsersProfileChanged(notification:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
 
             NotificationCenter.default.addObserver(self, selector: #selector(handleSignalAccountsChanged(notification:)), name: NSNotification.Name.OWSContactsManagerSignalAccountsDidChange, object: nil)

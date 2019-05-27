@@ -908,6 +908,7 @@ const CGFloat kIconViewLength = 24;
     [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+    avatarView.contactID = self.thread.contactIdentifier;
 
     UIView *threadNameView = [UIView containerView];
     [threadInfoView addSubview:threadNameView];

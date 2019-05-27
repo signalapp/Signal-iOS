@@ -76,9 +76,9 @@ import PromiseKit
                 LokiP2PManager.markOffline(destination)
                 if lokiMessage.isPing {
                     Logger.warn("[Loki] Failed to ping \(destination); marking contact as offline.")
-                    if let nsError = error as? NSError {
-                        nsError.isRetryable = false
-                        throw nsError
+                    if let error = error as? NSError {
+                        error.isRetryable = false
+                        throw error
                     } else {
                         throw error
                     }

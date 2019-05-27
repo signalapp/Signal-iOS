@@ -360,7 +360,8 @@ NS_ASSUME_NONNULL_BEGIN
         self.avatarView.image = nil;
         return;
     }
-
+    self.avatarView.contactID = thread.contactIdentifier;
+    [self.avatarView updateOnlineStatusIndicator];
     self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread.threadRecord diameter:self.avatarSize];
 }
 

@@ -306,6 +306,7 @@
     [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+    avatarView.contactID = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
 
     if (!localProfileAvatarImage) {
         UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];

@@ -8,12 +8,12 @@
     private static let offlinePingTime = 2 * kMinuteInterval
 
     /// A p2p state struct
-    internal struct PeerInfo {
-        var address: String
-        var port: UInt16
-        var isOnline: Bool
-        var timerDuration: Double
-        var pingTimer: Timer? = nil
+    public struct PeerInfo {
+        public var address: String
+        public var port: UInt16
+        public var isOnline: Bool
+        public var timerDuration: Double
+        public var pingTimer: Timer? = nil
     }
     
     /// Our p2p address
@@ -77,7 +77,7 @@
     ///
     /// - Parameter pubKey: The contact hex pubkey
     /// - Returns: The P2P Details or nil if they don't exist
-    internal static func getInfo(for hexEncodedPublicKey: String) -> PeerInfo? {
+    public static func getInfo(for hexEncodedPublicKey: String) -> PeerInfo? {
         return peerInfo[hexEncodedPublicKey]
     }
     
@@ -163,6 +163,8 @@
             info.isOnline = isOnline
             
             peerInfo[pubKey] = info
+            
+            NotificationCenter.default.post(name: .contactOnlineStatusChanged, object: pubKey)
         }
     }
     
