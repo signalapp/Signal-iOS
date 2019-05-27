@@ -53,7 +53,7 @@ import PromiseKit
         }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
-    public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64) -> Promise<Set<RawResponsePromise>> {
+    public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
         guard let lokiMessage = Message.from(signalMessage: signalMessage, with: timestamp) else { return Promise(error: Error.messageConversionFailed) }
         let destination = lokiMessage.destination
         func sendLokiMessage(_ lokiMessage: Message, to target: Target) -> RawResponsePromise {
@@ -65,12 +65,13 @@ import PromiseKit
             let swarmPromise = getTargetSnodes(for: destination)
             return when(fulfilled: powPromise, swarmPromise).map { lokiMessageWithPoW, swarm in
                 return Set(swarm.map { sendLokiMessage(lokiMessageWithPoW, to: $0) })
-            }
+            }.retryingIfNeeded(maxRetryCount: maxRetryCount)
         }
-        if let p2pState = LokiP2PManager.getState(for: destination), (lokiMessage.isPing || p2pState.isOnline) {
-            let target = Target(address: p2pState.address, port: p2pState.port)
+        if let peer = LokiP2PManager.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {
+            let target = Target(address: peer.address, port: peer.port)
             return Promise.value([ target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount).get { _ in
                 LokiP2PManager.markOnline(destination)
+                onP2PSuccess()
             }.recover { error -> Promise<Set<RawResponsePromise>> in
                 LokiP2PManager.markOffline(destination)
                 if lokiMessage.isPing {
@@ -82,16 +83,16 @@ import PromiseKit
                         throw error
                     }
                 }
-                return sendLokiMessageUsingSwarmAPI().retryingIfNeeded(maxRetryCount: maxRetryCount)
+                return sendLokiMessageUsingSwarmAPI()
             }
         } else {
-            return sendLokiMessageUsingSwarmAPI().retryingIfNeeded(maxRetryCount: maxRetryCount)
+            return sendLokiMessageUsingSwarmAPI()
         }
     }
     
     // MARK: Public API (Obj-C)
-    @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64) -> AnyPromise {
-        let promise = sendSignalMessage(signalMessage, to: destination, with: timestamp).mapValues { AnyPromise.from($0) }.map { Set($0) }
+    @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64, onP2PSuccess: @escaping () -> Void) -> AnyPromise {
+        let promise = sendSignalMessage(signalMessage, to: destination, with: timestamp, onP2PSuccess: onP2PSuccess).mapValues { AnyPromise.from($0) }.map { Set($0) }
         return AnyPromise.from(promise)
     }
     

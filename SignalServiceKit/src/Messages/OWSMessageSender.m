@@ -1117,6 +1117,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }];
     // Convenience
+    void (^onP2PSuccess)() = ^() { message.isP2P = YES; };
     void (^handleError)(NSError *error) = ^(NSError *error) {
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             // Update the thread if needed
@@ -1144,7 +1145,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
     };
     // Convert the message to a Loki message and send it using the Loki API
-    [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId with:message.timestamp]
+    [[LokiAPI objc_sendSignalMessage:signalMessage to:recipient.recipientId with:message.timestamp onP2PSuccess:onP2PSuccess]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             NSSet<AnyPromise *> *promises = (NSSet<AnyPromise *> *)result;
             __block BOOL isSuccess = NO;

@@ -1371,6 +1371,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                     linkPreview:linkPreview
                                                                 serverTimestamp:serverTimestamp
                                                                 wasReceivedByUD:wasReceivedByUD];
+                
+                if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
 
                 NSArray<TSAttachmentPointer *> *attachmentPointers =
                     [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments
@@ -1443,6 +1445,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
+        if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
+        
         NSArray<TSAttachmentPointer *> *attachmentPointers =
             [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:incomingMessage];
         for (TSAttachmentPointer *pointer in attachmentPointers) {

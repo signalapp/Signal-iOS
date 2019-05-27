@@ -45,6 +45,7 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 @property (nonatomic) uint64_t friendRequestExpiresAt;
 @property (nonatomic, readonly) BOOL isFriendRequest;
 @property (nonatomic, readonly) BOOL hasFriendRequestStatusMessage;
+@property (nonatomic) BOOL isP2P;
 // ========
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;

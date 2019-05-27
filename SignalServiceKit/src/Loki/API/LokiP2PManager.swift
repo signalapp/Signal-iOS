@@ -8,7 +8,7 @@
     private static let offlinePingTime = 2 * kMinuteInterval
 
     /// A p2p state struct
-    internal struct P2PState {
+    internal struct PeerInfo {
         var address: String
         var port: UInt16
         var isOnline: Bool
@@ -20,7 +20,7 @@
     private static var ourP2PAddress: LokiAPI.Target? = nil
     
     /// This is where we store the p2p details of our contacts
-    private static var contactP2PStates = [String:P2PState]()
+    private static var peerInfo = [String:PeerInfo]()
     
     // MARK: - Public functions
     
@@ -46,12 +46,12 @@
             }
             
             guard let thread = contactThread else {
-                Logger.warn("[Loki][Ping] Failed to fetch thread for \(pubKey).")
+                Logger.warn("[Loki] Failed to fetch thread when attempting to ping: \(pubKey).")
                 return
             }
 
-            guard let message = lokiAddressMessage(for: thread, isPing: true) else {
-                Logger.warn("[Loki][Ping] Failed to build ping message for \(pubKey).")
+            guard let message = createLokiAddressMessage(for: thread, isPing: true) else {
+                Logger.warn("[Loki] Failed to build ping message for \(pubKey).")
                 return
             }
             
@@ -77,8 +77,8 @@
     ///
     /// - Parameter pubKey: The contact hex pubkey
     /// - Returns: The P2P Details or nil if they don't exist
-    internal static func getState(for hexEncodedPublicKey: String) -> P2PState? {
-        return contactP2PStates[hexEncodedPublicKey]
+    internal static func getInfo(for hexEncodedPublicKey: String) -> PeerInfo? {
+        return peerInfo[hexEncodedPublicKey]
     }
     
     /// Get the `LokiAddressMessage` for the given thread.
@@ -86,7 +86,7 @@
     /// - Parameter thread: The contact thread.
     /// - Returns: The `LokiAddressMessage` for that thread.
     @objc public static func onlineBroadcastMessage(forThread thread: TSThread) -> LokiAddressMessage? {
-        return lokiAddressMessage(for: thread, isPing: false)
+        return createLokiAddressMessage(for: thread, isPing: false)
     }
     
     /// Handle P2P logic when we receive a `LokiAddressMessage`
@@ -101,17 +101,17 @@
         let timerDuration = pubKey < ourHexEncodedPubKey ? 1 * kMinuteInterval : 2 * kMinuteInterval
         
         // Get out current contact details
-        let oldContactDetails = contactP2PStates[pubKey]
+        let oldContactInfo = peerInfo[pubKey]
         
         // Set the new contact details
         // A contact is always assumed to be offline unless the specific conditions below are met
-        let details = P2PState(address: address, port: port, isOnline: false, timerDuration: timerDuration, pingTimer: nil)
-        contactP2PStates[pubKey] = details
+        let info = PeerInfo(address: address, port: port, isOnline: false, timerDuration: timerDuration, pingTimer: nil)
+        peerInfo[pubKey] = info
         
         // Set up our checks
-        let oldContactExists = oldContactDetails != nil
-        let wasOnline = oldContactDetails?.isOnline ?? false
-        let p2pDetailsMatch = oldContactDetails?.address == address && oldContactDetails?.port == port
+        let oldContactExists = oldContactInfo != nil
+        let wasOnline = oldContactInfo?.isOnline ?? false
+        let isPeerInfoMatching = oldContactInfo?.address == address && oldContactInfo?.port == port
         
         /*
          We need to check if we should ping the user.
@@ -121,7 +121,7 @@
          - The old contact was set as `Online`
          - The new p2p details match the old one
          */
-        if oldContactExists && receivedThroughP2P && wasOnline && p2pDetailsMatch {
+        if oldContactExists && receivedThroughP2P && wasOnline && isPeerInfoMatching {
             setOnline(true, forContact: pubKey)
             return
         }
@@ -153,16 +153,16 @@
     @objc internal static func setOnline(_ isOnline: Bool, forContact pubKey: String) {
         // Make sure we are on the main thread
         DispatchQueue.main.async {
-            guard var details = contactP2PStates[pubKey] else { return }
+            guard var info = peerInfo[pubKey] else { return }
             
-            let interval = isOnline ? details.timerDuration : offlinePingTime
+            let interval = isOnline ? info.timerDuration : offlinePingTime
             
             // Setup a new timer
-            details.pingTimer?.invalidate()
-            details.pingTimer = WeakTimer.scheduledTimer(timeInterval: interval, target: self, userInfo: nil, repeats: true) { _ in ping(contact: pubKey) }
-            details.isOnline = isOnline
+            info.pingTimer?.invalidate()
+            info.pingTimer = WeakTimer.scheduledTimer(timeInterval: interval, target: self, userInfo: nil, repeats: true) { _ in ping(contact: pubKey) }
+            info.isOnline = isOnline
             
-            contactP2PStates[pubKey] = details
+            peerInfo[pubKey] = info
         }
     }
     
@@ -194,7 +194,7 @@
         return friendThreadIds.compactMap { TSContactThread.fetch(uniqueId: $0) }
     }
     
-    private static func lokiAddressMessage(for thread: TSThread, isPing: Bool) -> LokiAddressMessage? {
+    private static func createLokiAddressMessage(for thread: TSThread, isPing: Bool) -> LokiAddressMessage? {
         guard let ourAddress = ourP2PAddress else {
             Logger.error("P2P Address not set")
             return nil
