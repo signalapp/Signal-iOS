@@ -44,10 +44,16 @@
     public static func ping(contact pubKey: String) {
         // Dispatch on the main queue so we escape any transaction blocks
         DispatchQueue.main.async {
-            guard let thread = TSContactThread.fetch(uniqueId: pubKey) else {
+            var contactThread: TSThread? = nil
+            storage.dbReadConnection.read { transaction in
+                contactThread = TSContactThread.getWithContactId(pubKey, transaction: transaction)
+            }
+            
+            guard let thread = contactThread else {
                 Logger.warn("[Loki][Ping] Failed to fetch thread for \(pubKey)")
                 return
             }
+
             guard let message = lokiAddressMessage(for: thread, isPing: true) else {
                 Logger.warn("[Loki][Ping] Failed to build ping message for \(pubKey)")
                 return
@@ -96,7 +102,6 @@
     ///   - receivedThroughP2P: Wether we received the message through p2p
     @objc internal static func didReceiveLokiAddressMessage(forContact pubKey: String, address: String, port: UInt32, receivedThroughP2P: Bool) {
         // Stagger the ping timers so that contacts don't ping each other at the same time
-        
         let timerDuration = pubKey < ourHexEncodedPubKey ? 1 * kMinuteInterval : 2 * kMinuteInterval
         
         // Get out current contact details
@@ -105,6 +110,7 @@
         // Set the new contact details
         // A contact is always assumed to be offline unless the specific conditions below are met
         let details = P2PDetails(address: address, port: port, isOnline: false, timerDuration: timerDuration, pingTimer: nil)
+        contactP2PDetails[pubKey] = details
         
         // Set up our checks
         let oldContactExists = oldContactDetails != nil
