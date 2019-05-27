@@ -139,7 +139,6 @@ typedef enum : NSUInteger {
     UITextViewDelegate,
     ConversationCollectionViewDelegate,
     ConversationInputToolbarDelegate,
-    GifPickerViewControllerDelegate,
     ConversationViewModelDelegate>
 
 @property (nonatomic) TSThread *thread;
@@ -2804,25 +2803,10 @@ typedef enum : NSUInteger {
 
 - (void)showGifPicker
 {
-    GifPickerViewController *view =
-        [[GifPickerViewController alloc] initWithThread:self.thread messageSender:self.messageSender];
-    view.delegate = self;
-    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:view];
-
+    GifPickerNavigationViewController *gifModal = [GifPickerNavigationViewController new];
+    gifModal.approvalDelegate = self;
     [self dismissKeyBoard];
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-
-#pragma mark GifPickerViewControllerDelegate
-
-- (void)gifPickerDidSelectWithAttachment:(SignalAttachment *)attachment
-{
-    OWSAssertDebug(attachment);
-
-    [self showApprovalDialogForAttachment:attachment];
-
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
+    [self presentViewController:gifModal animated:YES completion:nil];
 }
 
 - (void)messageWasSent:(TSOutgoingMessage *)message

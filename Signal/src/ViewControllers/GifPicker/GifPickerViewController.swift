@@ -9,8 +9,48 @@ import SignalMessaging
 import PromiseKit
 
 @objc
+public class GifPickerNavigationViewController: OWSNavigationController {
+
+    @objc
+    public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
+
+    lazy var gifPickerViewController: GifPickerViewController = {
+        let gifPickerViewController = GifPickerViewController()
+        gifPickerViewController.delegate = self
+        return gifPickerViewController
+    }()
+
+    @objc
+    init() {
+        super.init(owsNavbar: ())
+        pushViewController(gifPickerViewController, animated: false)
+    }
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
+    func gifPickerDidSelect(attachment: SignalAttachment) {
+        let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment)
+        let attachmentApproval = AttachmentApprovalViewController(mode: .sharedNavigation, attachmentApprovalItems: [attachmentApprovalItem])
+        attachmentApproval.approvalDelegate = approvalDelegate
+        pushViewController(attachmentApproval, animated: true) {
+
+            // Remove any selected state in case the user returns "back" to the gif picker.
+            self.gifPickerViewController.clearSelectedState()
+        }
+    }
+
+    func gifPickerDidCancel() {
+        dismiss(animated: true)
+    }
+}
+
 protocol GifPickerViewControllerDelegate: class {
     func gifPickerDidSelect(attachment: SignalAttachment)
+    func gifPickerDidCancel()
 }
 
 class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollectionViewDataSource, UICollectionViewDelegate, GifPickerLayoutDelegate {
@@ -31,11 +71,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     var lastQuery: String = ""
 
-    @objc
     public weak var delegate: GifPickerViewControllerDelegate?
-
-    let thread: TSThread
-    let messageSender: MessageSender
 
     let searchBar: UISearchBar
     let layout: GifPickerLayout
@@ -60,10 +96,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     @objc
-    required init(thread: TSThread, messageSender: MessageSender) {
-        self.thread = thread
-        self.messageSender = messageSender
-
+    required init() {
         self.searchBar = OWSSearchBar()
         self.layout = GifPickerLayout()
         self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.layout)
@@ -114,7 +147,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel,
                                                                 target: self,
-                                                                action: #selector(donePressed))
+                                                                action: #selector(didPressCancel))
         self.navigationItem.title = NSLocalizedString("GIF_PICKER_VIEW_TITLE",
                                                       comment: "Title for the 'GIF picker' dialog.")
 
@@ -129,6 +162,16 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                selector: #selector(didBecomeActive),
                                                name: NSNotification.Name.OWSApplicationDidBecomeActive,
                                                object: nil)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else {
+            owsFailDebug("navigationBar was nil or unexpected class")
+            return
+        }
+        navigationBar.overrideTheme(type: .removeOverride)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -146,6 +189,22 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: Views
 
+    func clearSelectedState() {
+        hasSelectedCell = false
+        collectionView.isUserInteractionEnabled = true
+        selectedMaskingView.isHidden = true
+        if let selectedIndices = collectionView.indexPathsForSelectedItems {
+            for index in selectedIndices {
+                collectionView.deselectItem(at: index, animated: false)
+                if let cell = collectionView.cellForItem(at: index) {
+                    cell.isSelected = false
+                }
+            }
+        }
+    }
+
+    let selectedMaskingView = OWSBezierPathView()
+
     private func createViews() {
 
         let backgroundColor = (Theme.isDarkThemeEnabled
@@ -161,6 +220,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         searchBar.delegate = self
         searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
                                                   comment: "Placeholder text for the search field in GIF view")
+
+        // Selecting cell behind searchbar masks part of search bar.
+        // So we insert mask *behind* the searchbar.
+        view.addSubview(selectedMaskingView)
+        selectedMaskingView.autoPinEdgesToSuperviewEdges()
+        selectedMaskingView.isHidden = true
 
         self.view.addSubview(searchBar)
         searchBar.autoPinWidthToSuperview()
@@ -338,13 +403,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.hasSelectedCell = true
 
         // Fade out all cells except the selected one.
-        let maskingView = OWSBezierPathView()
-
-        // Selecting cell behind searchbar masks part of search bar.
-        // So we insert mask *behind* the searchbar.
-        self.view.insertSubview(maskingView, belowSubview: searchBar)
         let cellRect = self.collectionView.convert(cell.frame, to: self.view)
-        maskingView.configureShapeLayerBlock = { layer, bounds in
+        selectedMaskingView.configureShapeLayerBlock = { layer, bounds in
             let path = UIBezierPath(rect: bounds)
             path.append(UIBezierPath(rect: cellRect))
 
@@ -353,9 +413,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             layer.fillColor = UIColor.black.cgColor
             layer.opacity = 0.7
         }
-        maskingView.autoPinEdgesToSuperviewEdges()
+        selectedMaskingView.isHidden = false
 
-        cell.isCellSelected = true
+        cell.isSelected = true
         self.collectionView.isUserInteractionEnabled = false
 
         getFileForCell(cell)
@@ -367,7 +427,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         firstly {
             cell.requestRenditionForSending()
         }.done { [weak self] (asset: ProxiedContentAsset) in
-            guard let strongSelf = self else {
+            guard let self = self else {
                 Logger.info("ignoring send, since VC was dismissed before fetching finished.")
                 return
             }
@@ -384,12 +444,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             }
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: rendition.utiType, imageQuality: .original)
 
-            strongSelf.dismiss(animated: true) {
-                // Delegate presents view controllers, so it's important that *this* controller be dismissed before that occurs.
-                strongSelf.delegate?.gifPickerDidSelect(attachment: attachment)
-            }
+            self.delegate?.gifPickerDidSelect(attachment: attachment)
         }.catch { [weak self] error in
-            guard let strongSelf = self else {
+            guard let self = self else {
                 Logger.info("ignoring failure, since VC was dismissed before fetching finished.")
                 return
             }
@@ -398,13 +455,13 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                           message: error.localizedDescription,
                                           preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: CommonStrings.retryButton, style: .default) { _ in
-                    strongSelf.getFileForCell(cell)
+                    self.getFileForCell(cell)
             })
             alert.addAction(UIAlertAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
-                strongSelf.dismiss(animated: true, completion: nil)
+                self.delegate?.gifPickerDidCancel()
             })
 
-            strongSelf.presentAlert(alert)
+            self.presentAlert(alert)
         }.retainUntilComplete()
     }
 
@@ -427,8 +484,8 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: - Event Handlers
 
-    @objc func donePressed(sender: UIButton) {
-        dismiss(animated: true, completion: nil)
+    @objc func didPressCancel(sender: UIButton) {
+        delegate?.gifPickerDidCancel()
     }
 
     // MARK: - UISearchBarDelegate
