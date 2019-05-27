@@ -63,7 +63,7 @@ public enum ProofOfWork {
     ///   - data: The message data
     ///   - pubKey: The message recipient
     ///   - timestamp: The timestamp
-    ///   - ttl: The message time to live
+    ///   - ttl: The message time to live in milliseconds
     /// - Returns: A nonce string or `nil` if it failed
     public static func calculate(data: String, pubKey: String, timestamp: UInt64, ttl: UInt64) -> String? {
         let payload = createPayload(pubKey: pubKey, data: data, timestamp: timestamp, ttl: ttl)

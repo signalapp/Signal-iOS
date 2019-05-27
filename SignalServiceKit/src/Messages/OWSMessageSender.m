@@ -44,6 +44,7 @@
 #import "TSSocketManager.h"
 #import "TSThread.h"
 #import "LKFriendRequestMessage.h"
+#import "LKAddressMessage.h"
 #import <AxolotlKit/AxolotlExceptions.h>
 #import <AxolotlKit/CipherMessage.h>
 #import <AxolotlKit/PreKeyBundle.h>
@@ -1802,7 +1803,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                          isSilent:false
                                          isOnline:false
                                    registrationId:0
-                                              ttl:message.ttl];
+                                              ttl:message.ttl
+                                           isPing:false];
     
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
@@ -1889,6 +1891,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     BOOL isSilent = message.isSilent;
     BOOL isOnline = message.isOnline;
+    
+    LKAddressMessage *_Nullable addressMessage = [message as:[LKAddressMessage class]];
+    BOOL isPing = addressMessage != nil && addressMessage.isPing;
     OWSMessageServiceParams *messageParams =
         [[OWSMessageServiceParams alloc] initWithType:messageType
                                           recipientId:recipientId
@@ -1897,7 +1902,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                              isSilent:isSilent
                                              isOnline:isOnline
                                        registrationId:[cipher throws_remoteRegistrationId:transaction]
-                                                  ttl:message.ttl];
+                                                  ttl:message.ttl
+                                               isPing:isPing];
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];

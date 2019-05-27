@@ -496,6 +496,10 @@ dispatch_queue_t NetworkManagerQueue()
 + (void)deregisterAfterAuthErrorIfNecessary:(NSURLSessionDataTask *)task
                                     request:(TSRequest *)request
                                  statusCode:(NSInteger)statusCode {
+    /* Loki: Original code
+     * We don't really care about invalid auth
+     * ========
+    
     OWSLogVerbose(@"Invalid auth: %@", task.originalRequest.allHTTPHeaderFields);
 
     // We only want to de-register for:
@@ -522,6 +526,9 @@ dispatch_queue_t NetworkManagerQueue()
     } else {
         OWSLogWarn(@"Ignoring %d for URL: %@", (int)statusCode, task.originalRequest.URL.absoluteString);
     }
+     
+     * ========
+     */
 }
 
 + (NSError *)errorWithHTTPCode:(NSInteger)code

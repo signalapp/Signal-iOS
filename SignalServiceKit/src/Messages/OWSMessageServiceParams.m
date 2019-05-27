@@ -23,6 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
                     isOnline:(BOOL)isOnline
               registrationId:(int)registrationId
                          ttl:(uint)ttl
+                      isPing:(BOOL)isPing
 {
     self = [super init];
 
@@ -38,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     _silent = isSilent;
     _online = isOnline;
     _ttl = ttl;
+    _isPing = isPing;
 
     return self;
 }
