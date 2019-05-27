@@ -320,12 +320,13 @@ static NSTimeInterval launchStartedAt;
         if (self.lokiP2PServer.isRunning) { break; }
         BOOL isStarted = [self.lokiP2PServer startOnPort:port.unsignedIntegerValue];
         if (isStarted) {
+            NSURL *serverURL = self.lokiP2PServer.serverURL;
             [LokiP2PManager setOurP2PAddressWithUrl:self.lokiP2PServer.serverURL];
-            NSString *serverURL = self.lokiP2PServer.serverURL.absoluteString;
-            if ([serverURL hasSuffix:@"/"]) {
-                serverURL = [serverURL substringToIndex:serverURL.length - 1];
+            NSString *serverURLDescription = serverURL.absoluteString;
+            if ([serverURLDescription hasSuffix:@"/"]) {
+                serverURLDescription = [serverURLDescription substringToIndex:serverURLDescription.length - 1];
             }
-            OWSLogInfo(@"[Loki] Started server at %@.", serverURL);
+            OWSLogInfo(@"[Loki] Started server at %@.", serverURLDescription);
             break;
         }
     }

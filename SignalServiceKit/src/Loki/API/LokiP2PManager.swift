@@ -1,7 +1,7 @@
 
 @objc public class LokiP2PManager : NSObject {
     private static let storage = OWSPrimaryStorage.shared()
-    private static let messageSender: MessageSender = SSKEnvironment.shared.messageSender
+    private static let messageSender = SSKEnvironment.shared.messageSender
     private static let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
     
     /// The amount of time before pinging when a user is set to offline
@@ -10,7 +10,7 @@
     /// A p2p state struct
     internal struct P2PDetails {
         var address: String
-        var port: UInt32
+        var port: UInt16
         var isOnline: Bool
         var timerDuration: Double
         var pingTimer: Timer? = nil
@@ -33,7 +33,7 @@
     /// - Parameter url: The url to our local server
     @objc public static func setOurP2PAddress(url: URL) {
         guard let scheme = url.scheme, let host = url.host, let port = url.port else { return }
-        let target = LokiAPI.Target(address: "\(scheme)://\(host)", port: UInt32(port))
+        let target = LokiAPI.Target(address: "\(scheme)://\(host)", port: UInt16(port))
         ourP2PAddress = target
     }
     
@@ -50,12 +50,12 @@
             }
             
             guard let thread = contactThread else {
-                Logger.warn("[Loki][Ping] Failed to fetch thread for \(pubKey)")
+                Logger.warn("[Loki][Ping] Failed to fetch thread for \(pubKey).")
                 return
             }
 
             guard let message = lokiAddressMessage(for: thread, isPing: true) else {
-                Logger.warn("[Loki][Ping] Failed to build ping message for \(pubKey)")
+                Logger.warn("[Loki][Ping] Failed to build ping message for \(pubKey).")
                 return
             }
             
@@ -63,7 +63,7 @@
         }
     }
 
-    /// Broadcash an online message to all our friends.
+    /// Broadcast an online message to all our friends.
     /// This shouldn't be called inside a transaction.
     @objc public static func broadcastOnlineStatus() {
         // Escape any transaction blocks
@@ -100,7 +100,7 @@
     ///   - address: The pther users p2p address
     ///   - port: The other users p2p port
     ///   - receivedThroughP2P: Wether we received the message through p2p
-    @objc internal static func didReceiveLokiAddressMessage(forContact pubKey: String, address: String, port: UInt32, receivedThroughP2P: Bool) {
+    @objc internal static func didReceiveLokiAddressMessage(forContact pubKey: String, address: String, port: UInt16, receivedThroughP2P: Bool) {
         // Stagger the ping timers so that contacts don't ping each other at the same time
         let timerDuration = pubKey < ourHexEncodedPubKey ? 1 * kMinuteInterval : 2 * kMinuteInterval
         
@@ -127,7 +127,7 @@
          */
         if oldContactExists && receivedThroughP2P && wasOnline && p2pDetailsMatch {
             setOnline(true, forContact: pubKey)
-            return;
+            return
         }
         
         /*
@@ -174,7 +174,7 @@
         
         messageSender.sendPromise(message: message).catch { error in
             Logger.warn("Failed to send online status to \(thread.contactIdentifier())")
-            }.retainUntilComplete()
+        }.retainUntilComplete()
     }
     
     private static func getAllFriendThreads() -> [TSContactThread] {

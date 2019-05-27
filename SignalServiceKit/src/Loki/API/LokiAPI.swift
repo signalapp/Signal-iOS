@@ -5,10 +5,8 @@ import PromiseKit
     
     // MARK: Settings
     private static let version = "v1"
-    public static let defaultMessageTTL: UInt64 = 1 * 24 * 60 * 60 * 1000
     private static let maxRetryCount: UInt = 3
-    
-    private static let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+    public static let defaultMessageTTL: UInt64 = 1 * 24 * 60 * 60 * 1000
     
     // MARK: Types
     public typealias RawResponse = Any
@@ -16,14 +14,12 @@ import PromiseKit
     public enum Error : LocalizedError {
         /// Only applicable to snode targets as proof of work isn't required for P2P messaging.
         case proofOfWorkCalculationFailed
-        
-        // Failed to send the message'
-        case internalError
+        case messageConversionFailed
         
         public var errorDescription: String? {
             switch self {
             case .proofOfWorkCalculationFailed: return NSLocalizedString("Failed to calculate proof of work.", comment: "")
-            case .internalError: return "Failed while trying to send message"
+            case .messageConversionFailed: return "Failed to convert Signal message to Loki message."
             }
         }
     }
@@ -41,10 +37,11 @@ import PromiseKit
     
     // MARK: Public API
     public static func getMessages() -> Promise<Set<Promise<[SSKProtoEnvelope]>>> {
-        return getTargetSnodes(for: ourHexEncodedPubKey).mapValues { targetSnode in
+        let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
             let lastHash = getLastMessageHashValue(for: targetSnode) ?? ""
-            let parameters: [String:Any] = [ "pubKey" : ourHexEncodedPubKey, "lastHash" : lastHash ]
-            return invoke(.getMessages, on: targetSnode, associatedWith: ourHexEncodedPubKey, parameters: parameters).map { rawResponse in
+            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHash ]
+            return invoke(.getMessages, on: targetSnode, associatedWith: hexEncodedPublicKey, parameters: parameters).map { rawResponse in
                 guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
                 updateLastMessageHashValueIfPossible(for: targetSnode, from: rawMessages)
                 let newRawMessages = removeDuplicates(from: rawMessages)
@@ -53,56 +50,43 @@ import PromiseKit
         }.retryingIfNeeded(maxRetryCount: maxRetryCount).map { Set($0) }
     }
     
+    public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64) -> Promise<Set<Promise<RawResponse>>> {
+        guard let lokiMessage = Message.from(signalMessage: signalMessage, timestamp: timestamp) else { return Promise(error: Error.messageConversionFailed) }
+        let destination = lokiMessage.destination
+        func sendLokiMessage(_ lokiMessage: Message, to targets: [Target]) -> Promise<Set<Promise<RawResponse>>> {
+            let parameters = lokiMessage.toJSON()
+            return Promise.value(targets).mapValues { invoke(.sendMessage, on: $0, associatedWith: destination, parameters: parameters) }.map { Set($0) }
+        }
+        func sendLokiMessageUsingSwarmAPI() -> Promise<Set<Promise<RawResponse>>> {
+            return lokiMessage.calculatePoW().then { updatedLokiMessage -> Promise<Set<Promise<RawResponse>>> in
+                return getTargetSnodes(for: destination).then { sendLokiMessage(updatedLokiMessage, to: $0) }
+            }
+        }
+        if let p2pDetails = LokiP2PManager.getDetails(forContact: destination), (lokiMessage.isPing || p2pDetails.isOnline) {
+            return sendLokiMessage(lokiMessage, to: [ p2pDetails.target ]).get { _ in
+                LokiP2PManager.setOnline(true, forContact: destination)
+            }.recover { error -> Promise<Set<Promise<RawResponse>>> in
+                LokiP2PManager.setOnline(false, forContact: destination)
+                if lokiMessage.isPing {
+                    Logger.warn("[Loki] Failed to ping \(destination); marking contact as offline.")
+                    if let nsError = error as? NSError {
+                        nsError.isRetryable = false
+                        throw nsError
+                    } else {
+                        throw error
+                    }
+                }
+                return sendLokiMessageUsingSwarmAPI()
+            }
+        } else {
+            return sendLokiMessageUsingSwarmAPI()
+        }
+    }
+    
     // MARK: Public API (Obj-C)
     @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64) -> AnyPromise {
-        let promise = sendSignalMessage(signalMessage, to: destination, timestamp: timestamp).mapValues { AnyPromise.from($0) }.map { Set($0) }
+        let promise = sendSignalMessage(signalMessage, to: destination, with: timestamp).mapValues { AnyPromise.from($0) }.map { Set($0) }
         return AnyPromise.from(promise)
-    }
-    
-    // MARK: Sending
-    public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, timestamp: UInt64) -> Promise<Set<Promise<RawResponse>>> {
-        guard let message = Message.from(signalMessage: signalMessage, timestamp: timestamp) else {
-            return Promise(error: Error.internalError)
-        }
-        
-        // Send message through the storage server
-        // We put this here because `recover` expects `Promise<Set<Promise<RawResponse>>>`
-        let sendThroughStorageServer: () -> Promise<Set<Promise<RawResponse>>> = { () in
-            return message.calculatePoW().then { powMessage -> Promise<Set<Promise<RawResponse>>> in
-                let snodes = getTargetSnodes(for: powMessage.destination)
-                return sendMessage(powMessage, targets: snodes)
-            }
-        }
-        
-        // If we have the p2p details and we have marked the user as online OR we are pinging the user, then use peer to peer
-        // If that failes then fallback to storage server
-        if let p2pDetails = LokiP2PManager.getDetails(forContact: destination), message.isPing || p2pDetails.isOnline {
-            let targets = Promise.wrap([p2pDetails.target])
-            return sendMessage(message, targets: targets).then { result -> Promise<Set<Promise<RawResponse>>> in
-                LokiP2PManager.setOnline(true, forContact: destination)
-                return Promise.wrap(result)
-            }.recover { error -> Promise<Set<Promise<RawResponse>>> in
-                // The user is not online
-                LokiP2PManager.setOnline(false, forContact: destination)
-
-                // If it was a ping then don't send to the storage server
-                if (message.isPing) {
-                    Logger.warn("[Loki] Failed to ping \(destination) - Marking contact as offline.")
-                    let nserror = error as NSError
-                    nserror.isRetryable = false
-                    throw nserror
-                }
-                
-                return sendThroughStorageServer()
-            }
-        }
-        
-        return sendThroughStorageServer()
-    }
-    
-    internal static func sendMessage(_ lokiMessage: Message, targets: Promise<[Target]>) -> Promise<Set<Promise<RawResponse>>> {
-        let parameters = lokiMessage.toJSON()
-        return targets.mapValues { invoke(.sendMessage, on: $0, associatedWith: lokiMessage.destination, parameters: parameters) }.map { Set($0) }
     }
     
     // MARK: Parsing

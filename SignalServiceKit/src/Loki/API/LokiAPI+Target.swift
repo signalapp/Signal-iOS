@@ -3,9 +3,9 @@ internal extension LokiAPI {
     
     internal struct Target : Hashable {
         internal let address: String
-        internal let port: UInt32
+        internal let port: UInt16
         
-        internal init(address: String, port: UInt32) {
+        internal init(address: String, port: UInt16) {
             self.address = address
             self.port = port
         }

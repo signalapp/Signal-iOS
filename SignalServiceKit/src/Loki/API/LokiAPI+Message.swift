@@ -9,15 +9,25 @@ public extension LokiAPI {
         let data: LosslessStringConvertible
         /// The time to live for the message in milliseconds.
         let ttl: UInt64
-        /// Wether this message is a ping.
-        /// This should always be false unless it is from p2p pinging logic.
+        /// Whether this message is a ping.
+        ///
+        /// - Note: The concept of pinging only applies to P2P messaging.
         let isPing: Bool
-        /// When the proof of work was calculated, if applicable.
+        /// When the proof of work was calculated, if applicable (P2P messages don't require proof of work).
         ///
         /// - Note: Expressed as milliseconds since 00:00:00 UTC on 1 January 1970.
-        var timestamp: UInt64? = nil
-        /// The base 64 encoded proof of work, if applicable.
-        var nonce: String? = nil
+        private(set) var timestamp: UInt64?
+        /// The base 64 encoded proof of work, if applicable (P2P messages don't require proof of work).
+        private(set) var nonce: String?
+        
+        private init(destination: String, data: LosslessStringConvertible, ttl: UInt64, isPing: Bool = false, timestamp: UInt64? = nil, nonce: String? = nil) {
+            self.destination = destination
+            self.data = data
+            self.ttl = ttl
+            self.isPing = isPing
+            self.timestamp = timestamp
+            self.nonce = nonce
+        }
         
         /// Construct a `LokiMessage` from a `SignalMessage`.
         ///
@@ -28,52 +38,28 @@ public extension LokiAPI {
                 let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage, timestamp: timestamp)
                 let data = wrappedMessage.base64EncodedString()
                 let destination = signalMessage["destination"] as! String
-                
                 var ttl = LokiAPI.defaultMessageTTL
-                if let messageTTL = signalMessage["ttl"] as? UInt, messageTTL > 0 { ttl = UInt64(messageTTL) }
-                
+                if let messageTTL = signalMessage["ttl"] as! UInt?, messageTTL > 0 { ttl = UInt64(messageTTL) }
                 let isPing = signalMessage["isPing"] as! Bool
-                
                 return Message(destination: destination, data: data, ttl: ttl, isPing: isPing)
             } catch let error {
-                Logger.debug("[Loki] Failed to convert Signal message to Loki message: \(signalMessage)")
+                Logger.debug("[Loki] Failed to convert Signal message to Loki message: \(signalMessage).")
                 return nil
             }
         }
         
-        /// Create a basic loki message.
+        /// Calculate the proof of work for this message.
         ///
-        /// - Parameters:
-        ///   - destination: The destination
-        ///   - data: The data
-        ///   - ttl: The time to live
-        public init(destination: String, data: LosslessStringConvertible, ttl: UInt64, isPing: Bool = false) {
-            self.destination = destination
-            self.data = data
-            self.ttl = ttl
-            self.isPing = isPing
-        }
-        
-        /// Private init for setting proof of work. Use `calculatePoW` to get a message with these fields
-        private init(destination: String, data: LosslessStringConvertible, ttl: UInt64, isPing: Bool, timestamp: UInt64?, nonce: String?) {
-            self.destination = destination
-            self.data = data
-            self.ttl = ttl
-            self.isPing = isPing
-            self.timestamp = timestamp
-            self.nonce = nonce
-        }
-        
-        /// Calculate the proof of work for this message
-        ///
-        /// - Returns: This will return a promise with a new message which contains the proof of work
+        /// - Returns: The promise of a new message with its `timestamp` and `nonce` set.
         public func calculatePoW() -> Promise<Message> {
-            // To match the desktop application, we have to wrap the data in an envelope and then wrap that in a websocket object
             return Promise<Message> { seal in
                 DispatchQueue.global(qos: .default).async {
                     let now = NSDate.ows_millisecondTimeStamp()
-                    if let nonce = ProofOfWork.calculate(data: self.data as! String, pubKey: self.destination, timestamp: now, ttl: self.ttl) {
-                        let result = Message(destination: self.destination, data: self.data, ttl: self.ttl, isPing: self.isPing, timestamp: now, nonce: nonce)
+                    let dataAsString = self.data as! String // Safe because of the way from(signalMessage:timestamp:) is implemented
+                    if let nonce = ProofOfWork.calculate(data: dataAsString, pubKey: self.destination, timestamp: now, ttl: self.ttl) {
+                        var result = self
+                        result.timestamp = now
+                        result.nonce = nonce
                         seal.fulfill(result)
                     } else {
                         seal.reject(Error.proofOfWorkCalculationFailed)
