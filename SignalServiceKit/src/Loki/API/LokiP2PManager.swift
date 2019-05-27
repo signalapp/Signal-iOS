@@ -8,23 +8,19 @@
     private static let offlinePingTime = 2 * kMinuteInterval
 
     /// A p2p state struct
-    internal struct P2PDetails {
+    internal struct P2PState {
         var address: String
         var port: UInt16
         var isOnline: Bool
         var timerDuration: Double
         var pingTimer: Timer? = nil
-        
-        var target: LokiAPI.Target {
-            return LokiAPI.Target(address: address, port: port)
-        }
     }
     
     /// Our p2p address
     private static var ourP2PAddress: LokiAPI.Target? = nil
     
     /// This is where we store the p2p details of our contacts
-    private static var contactP2PDetails = [String: P2PDetails]()
+    private static var contactP2PStates = [String:P2PState]()
     
     // MARK: - Public functions
     
@@ -81,8 +77,8 @@
     ///
     /// - Parameter pubKey: The contact hex pubkey
     /// - Returns: The P2P Details or nil if they don't exist
-    internal static func getDetails(forContact pubKey: String) -> P2PDetails? {
-        return contactP2PDetails[pubKey]
+    internal static func getState(for hexEncodedPublicKey: String) -> P2PState? {
+        return contactP2PStates[hexEncodedPublicKey]
     }
     
     /// Get the `LokiAddressMessage` for the given thread.
@@ -105,12 +101,12 @@
         let timerDuration = pubKey < ourHexEncodedPubKey ? 1 * kMinuteInterval : 2 * kMinuteInterval
         
         // Get out current contact details
-        let oldContactDetails = contactP2PDetails[pubKey]
+        let oldContactDetails = contactP2PStates[pubKey]
         
         // Set the new contact details
         // A contact is always assumed to be offline unless the specific conditions below are met
-        let details = P2PDetails(address: address, port: port, isOnline: false, timerDuration: timerDuration, pingTimer: nil)
-        contactP2PDetails[pubKey] = details
+        let details = P2PState(address: address, port: port, isOnline: false, timerDuration: timerDuration, pingTimer: nil)
+        contactP2PStates[pubKey] = details
         
         // Set up our checks
         let oldContactExists = oldContactDetails != nil
@@ -141,15 +137,23 @@
         ping(contact: pubKey)
     }
     
+    internal static func markOnline(_ hexEncodedPublicKey: String) {
+        setOnline(true, forContact: hexEncodedPublicKey)
+    }
+    
+    internal static func markOffline(_ hexEncodedPublicKey: String) {
+        setOnline(false, forContact: hexEncodedPublicKey)
+    }
+    
     /// Mark a contact as online or offline.
     ///
     /// - Parameters:
     ///   - isOnline: Whether to set the contact to online or offline.
-    ///   - pubKey: The contact hexh pubKey
+    ///   - pubKey: The contact hex pubKey
     @objc internal static func setOnline(_ isOnline: Bool, forContact pubKey: String) {
         // Make sure we are on the main thread
         DispatchQueue.main.async {
-            guard var details = contactP2PDetails[pubKey] else { return }
+            guard var details = contactP2PStates[pubKey] else { return }
             
             let interval = isOnline ? details.timerDuration : offlinePingTime
             
@@ -158,7 +162,7 @@
             details.pingTimer = WeakTimer.scheduledTimer(timeInterval: interval, target: self, userInfo: nil, repeats: true) { _ in ping(contact: pubKey) }
             details.isOnline = isOnline
             
-            contactP2PDetails[pubKey] = details
+            contactP2PStates[pubKey] = details
         }
     }
     

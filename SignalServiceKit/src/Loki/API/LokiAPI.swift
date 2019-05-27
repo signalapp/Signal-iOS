@@ -67,11 +67,12 @@ import PromiseKit
                 return Set(swarm.map { sendLokiMessage(lokiMessageWithPoW, to: $0) })
             }
         }
-        if let p2pDetails = LokiP2PManager.getDetails(forContact: destination), (lokiMessage.isPing || p2pDetails.isOnline) {
-            return Promise.value([ p2pDetails.target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount).get { _ in
-                LokiP2PManager.setOnline(true, forContact: destination)
+        if let p2pState = LokiP2PManager.getState(for: destination), (lokiMessage.isPing || p2pState.isOnline) {
+            let target = Target(address: p2pState.address, port: p2pState.port)
+            return Promise.value([ target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount).get { _ in
+                LokiP2PManager.markOnline(destination)
             }.recover { error -> Promise<Set<RawResponsePromise>> in
-                LokiP2PManager.setOnline(false, forContact: destination)
+                LokiP2PManager.markOffline(destination)
                 if lokiMessage.isPing {
                     Logger.warn("[Loki] Failed to ping \(destination); marking contact as offline.")
                     if let nsError = error as? NSError {
