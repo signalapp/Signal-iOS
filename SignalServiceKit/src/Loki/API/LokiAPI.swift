@@ -47,23 +47,25 @@ import PromiseKit
                 let newRawMessages = removeDuplicates(from: rawMessages)
                 return parseProtoEnvelopes(from: newRawMessages)
             }
-        }.retryingIfNeeded(maxRetryCount: maxRetryCount).map { Set($0) }
+        }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
     public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64) -> Promise<Set<Promise<RawResponse>>> {
-        guard let lokiMessage = Message.from(signalMessage: signalMessage, timestamp: timestamp) else { return Promise(error: Error.messageConversionFailed) }
+        guard let lokiMessage = Message.from(signalMessage: signalMessage, with: timestamp) else { return Promise(error: Error.messageConversionFailed) }
         let destination = lokiMessage.destination
-        func sendLokiMessage(_ lokiMessage: Message, to targets: [Target]) -> Promise<Set<Promise<RawResponse>>> {
+        func sendLokiMessage(_ lokiMessage: Message, to target: Target) -> Promise<RawResponse> {
             let parameters = lokiMessage.toJSON()
-            return Promise.value(targets).mapValues { invoke(.sendMessage, on: $0, associatedWith: destination, parameters: parameters) }.map { Set($0) }
+            return invoke(.sendMessage, on: target, associatedWith: destination, parameters: parameters)
         }
         func sendLokiMessageUsingSwarmAPI() -> Promise<Set<Promise<RawResponse>>> {
-            return lokiMessage.calculatePoW().then { updatedLokiMessage -> Promise<Set<Promise<RawResponse>>> in
-                return getTargetSnodes(for: destination).then { sendLokiMessage(updatedLokiMessage, to: $0) }
+            let powPromise = lokiMessage.calculatePoW()
+            let swarmPromise = getTargetSnodes(for: destination)
+            return when(fulfilled: powPromise, swarmPromise).map { lokiMessageWithPoW, swarm in
+                return Set(swarm.map { sendLokiMessage(lokiMessageWithPoW, to: $0) })
             }
         }
         if let p2pDetails = LokiP2PManager.getDetails(forContact: destination), (lokiMessage.isPing || p2pDetails.isOnline) {
-            return sendLokiMessage(lokiMessage, to: [ p2pDetails.target ]).get { _ in
+            return Promise.value([ p2pDetails.target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount).get { _ in
                 LokiP2PManager.setOnline(true, forContact: destination)
             }.recover { error -> Promise<Set<Promise<RawResponse>>> in
                 LokiP2PManager.setOnline(false, forContact: destination)
@@ -76,10 +78,10 @@ import PromiseKit
                         throw error
                     }
                 }
-                return sendLokiMessageUsingSwarmAPI()
+                return sendLokiMessageUsingSwarmAPI().retryingIfNeeded(maxRetryCount: maxRetryCount)
             }
         } else {
-            return sendLokiMessageUsingSwarmAPI()
+            return sendLokiMessageUsingSwarmAPI().retryingIfNeeded(maxRetryCount: maxRetryCount)
         }
     }
     

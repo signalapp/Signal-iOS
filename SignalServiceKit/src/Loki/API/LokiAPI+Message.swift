@@ -16,23 +16,21 @@ public extension LokiAPI {
         /// When the proof of work was calculated, if applicable (P2P messages don't require proof of work).
         ///
         /// - Note: Expressed as milliseconds since 00:00:00 UTC on 1 January 1970.
-        private(set) var timestamp: UInt64?
+        private(set) var timestamp: UInt64? = nil
         /// The base 64 encoded proof of work, if applicable (P2P messages don't require proof of work).
-        private(set) var nonce: String?
+        private(set) var nonce: String? = nil
         
-        private init(destination: String, data: LosslessStringConvertible, ttl: UInt64, isPing: Bool = false, timestamp: UInt64? = nil, nonce: String? = nil) {
+        private init(destination: String, data: LosslessStringConvertible, ttl: UInt64, isPing: Bool) {
             self.destination = destination
             self.data = data
             self.ttl = ttl
             self.isPing = isPing
-            self.timestamp = timestamp
-            self.nonce = nonce
         }
         
         /// Construct a `LokiMessage` from a `SignalMessage`.
         ///
         /// - Note: `timestamp` is the original message timestamp (i.e. `TSOutgoingMessage.timestamp`).
-        public static func from(signalMessage: SignalMessage, timestamp: UInt64) -> Message? {
+        public static func from(signalMessage: SignalMessage, with timestamp: UInt64) -> Message? {
             // To match the desktop application, we have to wrap the data in an envelope and then wrap that in a websocket object
             do {
                 let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage, timestamp: timestamp)
@@ -55,7 +53,7 @@ public extension LokiAPI {
             return Promise<Message> { seal in
                 DispatchQueue.global(qos: .default).async {
                     let now = NSDate.ows_millisecondTimeStamp()
-                    let dataAsString = self.data as! String // Safe because of the way from(signalMessage:timestamp:) is implemented
+                    let dataAsString = self.data as! String // Safe because of how from(signalMessage:with:) is implemented
                     if let nonce = ProofOfWork.calculate(data: dataAsString, pubKey: self.destination, timestamp: now, ttl: self.ttl) {
                         var result = self
                         result.timestamp = now
