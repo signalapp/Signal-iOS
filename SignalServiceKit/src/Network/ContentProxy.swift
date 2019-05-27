@@ -28,29 +28,16 @@ public class ContentProxy: NSObject {
         return configuration
     }
 
-    @objc
-    public class func sessionManager(baseUrl baseUrlString: String?) -> AFHTTPSessionManager? {
-        guard let baseUrlString = baseUrlString else {
-            return AFHTTPSessionManager(baseURL: nil, sessionConfiguration: sessionConfiguration())
-        }
-        guard let baseUrl = URL(string: baseUrlString) else {
-            owsFailDebug("Invalid base URL.")
-            return nil
-        }
-        let sessionManager = AFHTTPSessionManager(baseURL: baseUrl,
-                                                  sessionConfiguration: sessionConfiguration())
-        return sessionManager
+    public class func sessionManager(baseUrl: URL) -> AFHTTPSessionManager {
+        return AFHTTPSessionManager(baseURL: baseUrl,
+                                    sessionConfiguration: sessionConfiguration())
     }
 
-    @objc
-    public class func jsonSessionManager(baseUrl: String) -> AFHTTPSessionManager? {
-        guard let sessionManager = self.sessionManager(baseUrl: baseUrl) else {
-            owsFailDebug("Could not create session manager")
-            return nil
-        }
-        sessionManager.requestSerializer = AFJSONRequestSerializer()
-        sessionManager.responseSerializer = AFJSONResponseSerializer()
-        return sessionManager
+    public class func jsonSessionManager(baseUrl: URL) -> AFHTTPSessionManager {
+        let jsonSessionManager = sessionManager(baseUrl: baseUrl)
+        jsonSessionManager.requestSerializer = AFJSONRequestSerializer()
+        jsonSessionManager.responseSerializer = AFJSONResponseSerializer()
+        return jsonSessionManager
     }
 
     static let userAgent = "Signal iOS (+https://signal.org/download)"

@@ -279,25 +279,16 @@ extension GiphyError: LocalizedError {
         NotificationCenter.default.removeObserver(self)
     }
 
-    private let kGiphyBaseURL = "https://api.giphy.com/"
+    private let kGiphyBaseURL = URL(string: "https://api.giphy.com/")!
 
-    private func giphyAPISessionManager() -> AFHTTPSessionManager? {
+    private func giphyAPISessionManager() -> AFHTTPSessionManager {
         return ContentProxy.jsonSessionManager(baseUrl: kGiphyBaseURL)
     }
 
     // MARK: Search
 
     public func search(query: String, success: @escaping (([GiphyImageInfo]) -> Void), failure: @escaping ((NSError?) -> Void)) {
-        guard let sessionManager = giphyAPISessionManager() else {
-            Logger.error("Couldn't create session manager.")
-            failure(nil)
-            return
-        }
-        guard NSURL(string: kGiphyBaseURL) != nil else {
-            Logger.error("Invalid base URL.")
-            failure(nil)
-            return
-        }
+        let sessionManager = giphyAPISessionManager()
 
         // This is the Signal iOS API key.
         let kGiphyApiKey = "ZsUpUm2L6cVbvei347EQNp7HrROjbOdc"
