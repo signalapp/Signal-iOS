@@ -198,10 +198,14 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         navigationBar.overrideTheme(type: .removeOverride)
     }
 
+    var hasEverAppeared = false
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        self.searchBar.becomeFirstResponder()
+        if !hasEverAppeared {
+            searchBar.becomeFirstResponder()
+        }
+        hasEverAppeared = true
     }
 
     override func viewWillDisappear(_ animated: Bool) {
