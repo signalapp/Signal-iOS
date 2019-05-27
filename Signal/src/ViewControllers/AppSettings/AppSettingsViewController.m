@@ -232,6 +232,12 @@
                                          selector:@selector(sharePublicKey)
                                             color:[UIColor ows_materialBlueColor]]];
     
+    [section
+     addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"Show Seed", @"")
+                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_seed")
+                                         selector:@selector(showSeed)
+                                            color:[UIColor ows_materialBlueColor]]];
+    
     if (TSAccountManager.sharedInstance.isDeregistered) {
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
                                                                   @"Label for re-registration button.")
@@ -244,11 +250,14 @@
                                                      selector:@selector(deleteUnregisterUserData)
                                                         color:[UIColor ows_destructiveRedColor]]];
     } else {
-        [section
-            addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_account")
-                                                selector:@selector(unregisterUser)
-                                                   color:[UIColor ows_destructiveRedColor]]];
+        // Loki: Original code
+        // ========
+//        [section
+//            addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
+//                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_account")
+//                                                selector:@selector(unregisterUser)
+//                                                   color:[UIColor ows_destructiveRedColor]]];
+        // ========
     }
 
     [contents addSection:section];
@@ -486,6 +495,17 @@
     NSString *publicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
     UIActivityViewController *shareVC = [[UIActivityViewController alloc] initWithActivityItems:@[ publicKey ] applicationActivities:nil];
     [self presentViewController:shareVC animated:YES completion:nil];
+}
+
+- (void)showSeed
+{
+    NSString *title = NSLocalizedString(@"Your Seed", @"");
+    ECKeyPair *keyPair = OWSIdentityManager.sharedManager.identityKeyPair;
+    NSString *mnemonic = [LKMnemonic encodeHexEncodedString:keyPair.hexEncodedPrivateKey];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:mnemonic preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Copy", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { UIPasteboard.generalPasteboard.string = mnemonic; }]];
+    [self presentAlert:alert];
 }
 
 - (void)reregisterUser

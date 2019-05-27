@@ -140,3 +140,14 @@ private extension String {
         return String(self[startIndex..<index(startIndex, offsetBy: Int(length))])
     }
 }
+
+@objc(LKMnemonic)
+public final class ObjCMnemonic : NSObject {
+    
+    override private init() { }
+    
+    @objc(encodeHexEncodedString:)
+    public static func encode(hexEncodedString string: String) -> String {
+        return Mnemonic.encode(hexEncodedString: string)
+    }
+}

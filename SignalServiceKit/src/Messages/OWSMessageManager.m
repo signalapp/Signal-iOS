@@ -1521,8 +1521,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
             [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
         }
-        
-        // Send our p2p details to the other user
+        // Send our P2P details
         LKAddressMessage *_Nullable onlineMessage = [LokiP2PManager onlineBroadcastMessageForThread:thread];
         if (onlineMessage != nil) {
             [self.messageSenderJobQueue addMessage:onlineMessage transaction:transaction];

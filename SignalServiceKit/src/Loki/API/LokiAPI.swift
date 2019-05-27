@@ -24,7 +24,7 @@ import PromiseKit
         }
     }
     
-    public typealias MessagePromise = Promise<[SSKProtoEnvelope]>
+    public typealias MessageListPromise = Promise<[SSKProtoEnvelope]>
     public typealias RawResponsePromise = Promise<RawResponse>
     
     // MARK: Lifecycle
@@ -39,7 +39,7 @@ import PromiseKit
     }
     
     // MARK: Public API
-    public static func getMessages() -> Promise<Set<MessagePromise>> {
+    public static func getMessages() -> Promise<Set<MessageListPromise>> {
         let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
             let lastHash = getLastMessageHashValue(for: targetSnode) ?? ""
