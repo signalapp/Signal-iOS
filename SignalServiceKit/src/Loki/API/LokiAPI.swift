@@ -22,6 +22,8 @@ import PromiseKit
         }
     }
     
+    public typealias MessagePromise = Promise<[SSKProtoEnvelope]> // To keep the return type of getMessages() readable
+    
     // MARK: Lifecycle
     override private init() { }
     
@@ -34,7 +36,7 @@ import PromiseKit
     }
     
     // MARK: Public API
-    public static func getMessages() -> Promise<Set<Promise<[SSKProtoEnvelope]>>> {
+    public static func getMessages() -> Promise<Set<MessagePromise>> {
         let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
             let lastHash = getLastMessageHashValue(for: targetSnode) ?? ""
