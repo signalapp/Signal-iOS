@@ -1029,7 +1029,7 @@ NS_ASSUME_NONNULL_BEGIN
     [thread saveWithTransaction:transaction];
     
     // Loki: Send an empty message to trigger the session reset code for both parties
-    LKEphemeralMessage *emptyMessage = [LKEphemeralMessage createEmptyOutgoingMessageInThread:thread];
+    LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
     [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
 
     OWSLogDebug(@"[Loki] Session reset received from %@.", envelope.source);
@@ -1498,7 +1498,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
             }
             // The two lines below are equivalent to calling [ThreadUtil enqueueAcceptFriendRequestMessageInThread:thread]
-            LKEphemeralMessage *emptyMessage = [LKEphemeralMessage createEmptyOutgoingMessageInThread:thread];
+            LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
             [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
         } else if (!thread.isContactFriend) {
             // Checking that the sender of the message isn't already a friend is necessary because otherwise
@@ -1736,7 +1736,7 @@ NS_ASSUME_NONNULL_BEGIN
         
         // If we were the ones to initiate the reset then we need to send back an empty message
         if (thread.sessionResetState == TSContactThreadSessionResetStateInitiated) {
-            LKEphemeralMessage *emptyMessage = [LKEphemeralMessage createEmptyOutgoingMessageInThread:thread];
+            LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
             [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
         }
         

@@ -87,7 +87,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
 + (LKEphemeralMessage *)enqueueAcceptFriendRequestMessageInThread:(TSThread *)thread
 {
-    LKEphemeralMessage *emptyMessage = [LKEphemeralMessage createEmptyOutgoingMessageInThread:thread];
+    LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
     }];

@@ -3,8 +3,8 @@
 
 @implementation LKEphemeralMessage
 
-+ (LKEphemeralMessage *)createEmptyOutgoingMessageInThread:(TSThread *)thread {
-    return [[LKEphemeralMessage alloc] initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"" attachmentIds:[NSMutableArray<NSString *> new]
+- (instancetype)initInThread:(nullable TSThread *)thread {
+    return [self initOutgoingMessageWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageBody:@"" attachmentIds:[NSMutableArray<NSString *> new]
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
 }
 

@@ -15,7 +15,7 @@
 
 - (instancetype)initInThread:(nullable TSThread *)thread address:(NSString *)address port:(uint16_t)port isPing:(bool)isPing
 {
-    self = [LKEphemeralMessage createEmptyOutgoingMessageInThread:thread];
+    self = [super initInThread:thread];
     if (self) {
         _address = address;
         _port = port;
