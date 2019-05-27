@@ -93,7 +93,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
             _conversationColorName = [self.class stableColorNameForNewConversationWithString:self.uniqueId];
         }
 
-        _friendRequestStatus = TSThreadFriendRequestStatusNone;
+        _friendRequestStatus = LKThreadFriendRequestStatusNone;
     }
 
     return self;
@@ -708,20 +708,20 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 #pragma mark - Loki Friend Request Handling
 
-- (void)removeOldOutgoingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self removeOldFriendRequestMessages:OWSInteractionType_OutgoingMessage withTransaction:transaction];
+    [self removeOldFriendRequestMessagesIfNeeded:OWSInteractionType_OutgoingMessage withTransaction:transaction];
 }
 
-- (void)removeOldIncomingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeOldIncomingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [self removeOldFriendRequestMessages:OWSInteractionType_IncomingMessage withTransaction:transaction];
+    [self removeOldFriendRequestMessagesIfNeeded:OWSInteractionType_IncomingMessage withTransaction:transaction];
 }
 
-- (void)removeOldFriendRequestMessages:(OWSInteractionType)interactionType withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeOldFriendRequestMessagesIfNeeded:(OWSInteractionType)interactionType withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // If we're friends with the person then we don't need to remove any friend request messages
-    if (self.friendRequestStatus == TSThreadFriendRequestStatusFriends) { return; }
+    if (self.friendRequestStatus == LKThreadFriendRequestStatusFriends) { return; }
     
     NSMutableArray<NSString *> *idsToRemove = [NSMutableArray new];
     __block TSMessage *_Nullable messageToKeep = nil; // We want to keep this interaction and not remove it
@@ -739,11 +739,11 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         
         // We want to remove any old incoming friend request messages which are pending
         if (interactionType == OWSInteractionType_IncomingMessage) {
-            removeMessage = message.friendRequestStatus == TSMessageFriendRequestStatusPending;
+            removeMessage = message.friendRequestStatus == LKMessageFriendRequestStatusPending;
         } else {
             // Or if we're sending then remove any failed friend request messages
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
-            removeMessage = outgoingMessage.isFriendRequest && outgoingMessage.messageState == TSOutgoingMessageStateFailed;
+            removeMessage = outgoingMessage.friendRequestStatus == LKMessageFriendRequestStatusSendingOrFailed;
         }
         
         if (removeMessage) {
@@ -765,9 +765,10 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     }
 }
 
-- (void)saveFriendRequestStatus:(TSThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
+- (void)saveFriendRequestStatus:(LKThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
     self.friendRequestStatus = friendRequestStatus;
+    OWSLogInfo(@"[Loki] Setting thread friend request status to %@.", self.friendRequestStatusDescription);
     void (^postNotification)() = ^() {
         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.threadFriendRequestStatusChanged object:self.uniqueId];
     };
@@ -780,25 +781,37 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     }
 }
 
+- (NSString *)friendRequestStatusDescription
+{
+    switch (self.friendRequestStatus) {
+        case LKThreadFriendRequestStatusNone: return @"none";
+        case LKThreadFriendRequestStatusRequestSending: return @"sending";
+        case LKThreadFriendRequestStatusRequestSent: return @"sent";
+        case LKThreadFriendRequestStatusRequestReceived: return @"received";
+        case LKThreadFriendRequestStatusFriends: return @"friends";
+        case LKThreadFriendRequestStatusRequestExpired: return @"expired";
+    }
+}
+
 - (BOOL)hasPendingFriendRequest
 {
-    return self.friendRequestStatus == TSThreadFriendRequestStatusRequestSending || self.friendRequestStatus == TSThreadFriendRequestStatusRequestSent
-        || self.friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
+    return self.friendRequestStatus == LKThreadFriendRequestStatusRequestSending || self.friendRequestStatus == LKThreadFriendRequestStatusRequestSent
+        || self.friendRequestStatus == LKThreadFriendRequestStatusRequestReceived;
 }
 
 - (BOOL)isContactFriend
 {
-    return self.friendRequestStatus == TSThreadFriendRequestStatusFriends;
+    return self.friendRequestStatus == LKThreadFriendRequestStatusFriends;
 }
 
 - (BOOL)hasCurrentUserSentFriendRequest
 {
-    return self.friendRequestStatus == TSThreadFriendRequestStatusRequestSent;
+    return self.friendRequestStatus == LKThreadFriendRequestStatusRequestSent;
 }
 
 - (BOOL)hasCurrentUserReceivedFriendRequest
 {
-    return self.friendRequestStatus == TSThreadFriendRequestStatusRequestReceived;
+    return self.friendRequestStatus == LKThreadFriendRequestStatusRequestReceived;
 }
 
 @end

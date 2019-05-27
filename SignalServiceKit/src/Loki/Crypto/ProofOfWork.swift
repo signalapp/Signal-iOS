@@ -103,8 +103,8 @@ public enum ProofOfWork {
 
         // Do all the calculations
         let totalLength = UInt64(payloadLength + nonceLength)
-        let ttlSeconds = ttl / 1000
-        let ttlMult = ttlSeconds * totalLength
+        let ttlInSeconds = ttl / 1000
+        let ttlMult = ttlInSeconds * totalLength
         
         // UInt64 values
         let innerFrac = ttlMult / two16

@@ -6,6 +6,7 @@ import PromiseKit
     // MARK: Settings
     private static let version = "v1"
     public static let defaultMessageTTL: UInt64 = 1 * 24 * 60 * 60 * 1000
+    private static let maxRetryCount: UInt = 3
     
     private static let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
     
@@ -34,7 +35,8 @@ import PromiseKit
     internal static func invoke(_ method: Target.Method, on target: Target, associatedWith hexEncodedPublicKey: String, parameters: [String:Any] = [:]) -> Promise<RawResponse> {
         let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
-        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
+        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
+            .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey).recoveringNetworkErrorsIfNeeded()
     }
     
     // MARK: Public API
@@ -48,7 +50,7 @@ import PromiseKit
                 let newRawMessages = removeDuplicates(from: rawMessages)
                 return parseProtoEnvelopes(from: newRawMessages)
             }
-        }.map { Set($0) }
+        }.retryingIfNeeded(maxRetryCount: maxRetryCount).map { Set($0) }
     }
     
     // MARK: Public API (Obj-C)

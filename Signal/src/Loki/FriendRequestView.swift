@@ -12,6 +12,12 @@
     enum Kind : String { case incoming, outgoing }
     
     // MARK: Components
+    private lazy var topSpacer: UIView = {
+        let result = UIView()
+        result.autoSetDimension(.height, toSize: 12)
+        return result
+    }()
+    
     private lazy var label: UILabel = {
         let result = UILabel()
         result.textColor = Theme.secondaryColor
@@ -47,6 +53,7 @@
         let mainStackView = UIStackView()
         mainStackView.axis = .vertical
         mainStackView.distribution = .fill
+        mainStackView.addArrangedSubview(topSpacer)
         mainStackView.addArrangedSubview(label)
         switch kind {
         case .incoming:
@@ -85,23 +92,33 @@
             buttonStackView.isHidden = message.friendRequestStatus != .pending
             let format: String = {
                 switch (message.friendRequestStatus) {
+                case .none, .sendingOrFailed: preconditionFailure()
+                case .pending: return NSLocalizedString("%@ sent you a friend request", comment: "")
                 case .accepted: return NSLocalizedString("You've accepted %@'s friend request", comment: "")
                 case .declined: return NSLocalizedString("You've declined %@'s friend request", comment: "")
                 case .expired: return NSLocalizedString("%@'s friend request has expired", comment: "")
-                default: return NSLocalizedString("%@ sent you a friend request", comment: "")
+                default: preconditionFailure()
                 }
             }()
             label.text = String(format: format, message.authorId)
         case .outgoing:
             guard let message = message as? TSOutgoingMessage else { preconditionFailure() }
-            let format: String = {
+            let format: String? = {
                 switch (message.friendRequestStatus) {
+                case .none: preconditionFailure()
+                case .sendingOrFailed: return nil
+                case .pending: return NSLocalizedString("You've sent %@ a friend request", comment: "")
                 case .accepted: return NSLocalizedString("%@ accepted your friend request", comment: "")
+                case .declined: preconditionFailure()
                 case .expired: return NSLocalizedString("Your friend request to %@ has expired", comment: "")
-                default: return NSLocalizedString("You've sent %@ a friend request", comment: "")
+                default: preconditionFailure()
                 }
             }()
-            label.text = String(format: format, message.thread.contactIdentifier()!)
+            if let format = format {
+                label.text = String(format: format, message.thread.contactIdentifier()!)
+            }
+            label.isHidden = (format == nil)
+            topSpacer.isHidden = (label.isHidden)
         }
     }
     
@@ -121,9 +138,11 @@
     // MARK: Measuring
     @objc static func calculateHeight(message: TSMessage, conversationStyle: ConversationStyle) -> CGFloat {
         let width = conversationStyle.contentWidth
-        let topSpacing: CGFloat = 12
         let dummyFriendRequestView = FriendRequestView(message: message)
-        let labelHeight = dummyFriendRequestView.label.sizeThatFits(CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)).height
+        let hasTopSpacer = !dummyFriendRequestView.topSpacer.isHidden
+        let topSpacing: CGFloat = hasTopSpacer ? 12 : 0
+        let hasLabel = !dummyFriendRequestView.label.isHidden
+        let labelHeight = hasLabel ? dummyFriendRequestView.label.sizeThatFits(CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)).height : 0
         let hasButtonStackView = dummyFriendRequestView.buttonStackView.superview != nil && !dummyFriendRequestView.buttonStackView.isHidden
         let buttonHeight = hasButtonStackView ? dummyFriendRequestView.buttonHeight : 0
         let totalHeight = topSpacing + labelHeight + buttonHeight

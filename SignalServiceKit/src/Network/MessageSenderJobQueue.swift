@@ -81,7 +81,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public typealias DurableOperationType = MessageSenderOperation
     public static let jobRecordLabel: String = "MessageSender"
-    public static let maxRetries: UInt = 30
+    public static let maxRetries: UInt = 1
     public let requiresInternet: Bool = true
     public var runningOperations: [MessageSenderOperation] = []
 

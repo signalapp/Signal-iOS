@@ -29,20 +29,19 @@ extern ConversationColorName const ConversationColorNameSteel;
 
 extern ConversationColorName const kConversationColorName_Default;
 
-// Loki: Friend request status
-typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
-    /// New conversation, no messages sent or received.
-    TSThreadFriendRequestStatusNone,
+typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
+    /// New conversation; no messages sent or received.
+    LKThreadFriendRequestStatusNone,
     /// This state is used to lock the input early while sending.
-    TSThreadFriendRequestStatusRequestSending,
-    /// Friend request sent, awaiting response.
-    TSThreadFriendRequestStatusRequestSent,
-    /// Friend request received, awaiting user input.
-    TSThreadFriendRequestStatusRequestReceived,
+    LKThreadFriendRequestStatusRequestSending,
+    /// Friend request sent; awaiting response.
+    LKThreadFriendRequestStatusRequestSent,
+    /// Friend request received; awaiting user input.
+    LKThreadFriendRequestStatusRequestReceived,
     /// We are friends with the other user in this thread.
-    TSThreadFriendRequestStatusFriends,
-    /// Friend request sent but it timed out (i.e. the other user didn't accept within the allocated time).
-    TSThreadFriendRequestStatusRequestExpired
+    LKThreadFriendRequestStatusFriends,
+    /// A friend request was sent, but it timed out (i.e. the other user didn't accept within the allocated time).
+    LKThreadFriendRequestStatusRequestExpired
 };
 
 /**
@@ -56,9 +55,10 @@ typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
 @property (nonatomic, readonly) TSInteraction *lastInteraction;
 // Loki friend request handling
 // ========
-@property (nonatomic) TSThreadFriendRequestStatus friendRequestStatus;
-/// Shorthand for checking that `friendRequestStatus` is `TSThreadFriendRequestStatusRequestSending`, `TSThreadFriendRequestStatusRequestSent`
-/// or `TSThreadFriendRequestStatusRequestReceived`.
+@property (nonatomic) LKThreadFriendRequestStatus friendRequestStatus;
+@property (nonatomic, readonly) NSString *friendRequestStatusDescription;
+/// Shorthand for checking that `friendRequestStatus` is `LKThreadFriendRequestStatusRequestSending`, `LKThreadFriendRequestStatusRequestSent`
+/// or `LKThreadFriendRequestStatusRequestReceived`.
 @property (nonatomic, readonly) BOOL hasPendingFriendRequest;
 @property (nonatomic, readonly) BOOL isContactFriend;
 @property (nonatomic, readonly) BOOL hasCurrentUserSentFriendRequest;
@@ -199,17 +199,17 @@ typedef NS_ENUM(NSInteger, TSThreadFriendRequestStatus) {
 
 #pragma mark - Loki Friend Request Handling
 
-- (void)saveFriendRequestStatus:(TSThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+- (void)saveFriendRequestStatus:(LKThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 /**
  Remove any outgoing friend request message which failed to send
  */
-- (void)removeOldOutgoingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
  Remove any old incoming friend request message that is still pending
  */
-- (void)removeOldIncomingFriendRequestMessagesWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)removeOldIncomingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

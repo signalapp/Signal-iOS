@@ -17,18 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSQuotedMessage;
 @class YapDatabaseReadWriteTransaction;
 
-// Loki: Friend request status
-typedef NS_ENUM(NSInteger, TSMessageFriendRequestStatus) {
-    /// Not a friend request message.
-    TSMessageFriendRequestStatusNone,
-    /// A pending friend request.
-    TSMessageFriendRequestStatusPending,
-    /// A friend request that has been accepted.
-    TSMessageFriendRequestStatusAccepted,
-    /// A friend request that has been declined.
-    TSMessageFriendRequestStatusDeclined,
-    /// A friend request that has expired.
-    TSMessageFriendRequestStatusExpired
+typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
+    LKMessageFriendRequestStatusNone,
+    LKMessageFriendRequestStatusSendingOrFailed,
+    /// Either sent or received.
+    LKMessageFriendRequestStatusPending,
+    LKMessageFriendRequestStatusAccepted,
+    LKMessageFriendRequestStatusDeclined,
+    LKMessageFriendRequestStatusExpired
 };
 
 @interface TSMessage : TSInteraction <OWSPreviewText>
@@ -44,9 +40,11 @@ typedef NS_ENUM(NSInteger, TSMessageFriendRequestStatus) {
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 // Loki friend request handling
 // ========
-@property (nonatomic) TSMessageFriendRequestStatus friendRequestStatus;
+@property (nonatomic) LKMessageFriendRequestStatus friendRequestStatus;
+@property (nonatomic, readonly) NSString *friendRequestStatusDescription;
 @property (nonatomic) uint64_t friendRequestExpiresAt;
 @property (nonatomic, readonly) BOOL isFriendRequest;
+@property (nonatomic, readonly) BOOL hasFriendRequestStatusMessage;
 // ========
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
@@ -90,7 +88,7 @@ typedef NS_ENUM(NSInteger, TSMessageFriendRequestStatus) {
 
 #pragma mark - Loki Friend Request Handling
 
-- (void)saveFriendRequestStatus:(TSMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+- (void)saveFriendRequestStatus:(LKMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 - (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 @end
