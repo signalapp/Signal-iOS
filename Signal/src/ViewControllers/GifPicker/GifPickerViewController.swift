@@ -34,7 +34,7 @@ public class GifPickerNavigationViewController: OWSNavigationController {
 extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
     func gifPickerDidSelect(attachment: SignalAttachment) {
         let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment)
-        let attachmentApproval = AttachmentApprovalViewController(mode: .sharedNavigation, attachmentApprovalItems: [attachmentApprovalItem])
+        let attachmentApproval = AttachmentApprovalViewController(options: [], attachmentApprovalItems: [attachmentApprovalItem])
         attachmentApproval.approvalDelegate = approvalDelegate
         pushViewController(attachmentApproval, animated: true) {
 
