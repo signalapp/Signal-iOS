@@ -78,7 +78,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     } else {
         // Don't fire an analytics event; if we ever add a new content type, we'd generate a ton of
         // analytics traffic.
-        OWSFailDebug(@"Unknown content type.");
+//        OWSFailDebug(@"Unknown content type.");
         return @"UnknownContent";
     }
 }
