@@ -35,9 +35,8 @@ extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
     func gifPickerDidSelect(attachment: SignalAttachment) {
         let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment)
         let attachmentApproval = AttachmentApprovalViewController(options: [], attachmentApprovalItems: [attachmentApprovalItem])
-        attachmentApproval.approvalDelegate = approvalDelegate
+        attachmentApproval.approvalDelegate = self
         pushViewController(attachmentApproval, animated: true) {
-
             // Remove any selected state in case the user returns "back" to the gif picker.
             self.gifPickerViewController.clearSelectedState()
         }
@@ -45,6 +44,31 @@ extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
 
     func gifPickerDidCancel() {
         dismiss(animated: true)
+    }
+}
+
+extension GifPickerNavigationViewController: AttachmentApprovalViewControllerDelegate {
+    public func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
+        approvalDelegate?.attachmentApprovalDidAppear(attachmentApproval)
+    }
+
+    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
+                                   didApproveAttachments attachments: [SignalAttachment],
+                                   messageText: String?) {
+        approvalDelegate?.attachmentApproval(attachmentApproval, didApproveAttachments: attachments, messageText: messageText)
+    }
+
+    public func attachmentApprovalDidCancel(_ attachmentApproval: AttachmentApprovalViewController) {
+        approvalDelegate?.attachmentApprovalDidCancel(attachmentApproval)
+    }
+
+    public func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController,
+                                   didChangeMessageText newMessageText: String?) {
+        approvalDelegate?.attachmentApproval(attachmentApproval, didChangeMessageText: newMessageText)
+    }
+
+    public func attachmentApprovalBackButtonTitle() -> String {
+        return CommonStrings.backButton
     }
 }
 

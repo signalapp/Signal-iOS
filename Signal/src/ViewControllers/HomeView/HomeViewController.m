@@ -696,7 +696,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)applyArchiveBackButton
 {
     self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
+        [[UIBarButtonItem alloc] initWithTitle:CommonStrings.backButton
                                          style:UIBarButtonItemStylePlain
                                         target:nil
                                         action:nil

@@ -31,6 +31,9 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
 
     @objc
     optional func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController)
+
+    @objc
+    optional func attachmentApprovalBackButtonTitle() -> String
 }
 
 // MARK: -
@@ -320,6 +323,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             let imageName = isRTL ? "NavBarBackRTL" : "NavBarBack"
             let backButton = OWSButton(imageName: imageName, tintColor: .white) { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
+            }
+            if let backButtonTitle = approvalDelegate?.attachmentApprovalBackButtonTitle?() {
+                backButton.setTitle(backButtonTitle, for: .normal)
             }
 
             // Nudge closer to the left edge to match default back button item.
