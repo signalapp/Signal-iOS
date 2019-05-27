@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 // There's no UTI type for webp!
 enum GiphyFormat {
@@ -287,15 +288,44 @@ extension GiphyError: LocalizedError {
 
     // MARK: Search
 
+    // This is the Signal iOS API key.
+    let kGiphyApiKey = "ZsUpUm2L6cVbvei347EQNp7HrROjbOdc"
+    let kGiphyPageSize = 100
+
+    public func trending() -> Promise<[GiphyImageInfo]> {
+        let sessionManager = giphyAPISessionManager()
+
+        let urlString = "/v1/gifs/trending?api_key=\(kGiphyApiKey)&limit=\(kGiphyPageSize)"
+
+        return Promise { resolver in
+            guard ContentProxy.configureSessionManager(sessionManager: sessionManager, forUrl: urlString) else {
+                throw OWSErrorMakeAssertionError("Could not configure trending")
+            }
+
+            sessionManager.get(urlString,
+                               parameters: [:],
+                               progress: nil,
+                               success: { _, value in
+                                Logger.info("pending request succeeded")
+                                guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
+                                    resolver.reject(OWSErrorMakeAssertionError("unable to parse trending images"))
+                                    return
+                                }
+                                resolver.fulfill(imageInfos)
+            },
+                               failure: { _, error in
+                                Logger.error("trending request failed: \(error)")
+                                resolver.reject(error)
+            })
+        }
+    }
+
     public func search(query: String, success: @escaping (([GiphyImageInfo]) -> Void), failure: @escaping ((NSError?) -> Void)) {
         let sessionManager = giphyAPISessionManager()
 
-        // This is the Signal iOS API key.
-        let kGiphyApiKey = "ZsUpUm2L6cVbvei347EQNp7HrROjbOdc"
-        let kGiphyPageSize = 100
         let kGiphyPageOffset = 0
         guard let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-            Logger.error("Could not URL encode query: \(query).")
+            owsFailDebug("Could not URL encode query: \(query).")
             failure(nil)
             return
         }
@@ -308,10 +338,10 @@ extension GiphyError: LocalizedError {
         }
 
         sessionManager.get(urlString,
-                           parameters: [String: AnyObject](),
+                           parameters: [:],
                            progress: nil,
                            success: { _, value in
-                            Logger.error("search request succeeded")
+                            Logger.info("search request succeeded")
                             guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
                                 failure(nil)
                                 return
