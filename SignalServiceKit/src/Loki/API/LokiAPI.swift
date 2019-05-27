@@ -24,7 +24,8 @@ import PromiseKit
         }
     }
     
-    public typealias MessagePromise = Promise<[SSKProtoEnvelope]> // To keep the return type of getMessages() readable
+    public typealias MessagePromise = Promise<[SSKProtoEnvelope]>
+    public typealias RawResponsePromise = Promise<RawResponse>
     
     // MARK: Lifecycle
     override private init() { }
@@ -52,14 +53,14 @@ import PromiseKit
         }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
-    public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64) -> Promise<Set<Promise<RawResponse>>> {
+    public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64) -> Promise<Set<RawResponsePromise>> {
         guard let lokiMessage = Message.from(signalMessage: signalMessage, with: timestamp) else { return Promise(error: Error.messageConversionFailed) }
         let destination = lokiMessage.destination
-        func sendLokiMessage(_ lokiMessage: Message, to target: Target) -> Promise<RawResponse> {
+        func sendLokiMessage(_ lokiMessage: Message, to target: Target) -> RawResponsePromise {
             let parameters = lokiMessage.toJSON()
             return invoke(.sendMessage, on: target, associatedWith: destination, parameters: parameters)
         }
-        func sendLokiMessageUsingSwarmAPI() -> Promise<Set<Promise<RawResponse>>> {
+        func sendLokiMessageUsingSwarmAPI() -> Promise<Set<RawResponsePromise>> {
             let powPromise = lokiMessage.calculatePoW()
             let swarmPromise = getTargetSnodes(for: destination)
             return when(fulfilled: powPromise, swarmPromise).map { lokiMessageWithPoW, swarm in
@@ -69,7 +70,7 @@ import PromiseKit
         if let p2pDetails = LokiP2PManager.getDetails(forContact: destination), (lokiMessage.isPing || p2pDetails.isOnline) {
             return Promise.value([ p2pDetails.target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount).get { _ in
                 LokiP2PManager.setOnline(true, forContact: destination)
-            }.recover { error -> Promise<Set<Promise<RawResponse>>> in
+            }.recover { error -> Promise<Set<RawResponsePromise>> in
                 LokiP2PManager.setOnline(false, forContact: destination)
                 if lokiMessage.isPing {
                     Logger.warn("[Loki] Failed to ping \(destination); marking contact as offline.")
