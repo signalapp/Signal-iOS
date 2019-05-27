@@ -244,31 +244,29 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         // min/max scroll positions.
         self.automaticallyAdjustsScrollViewInsets = false
 
-        // Search
-        searchBar.delegate = self
-        searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
-                                                  comment: "Placeholder text for the search field in GIF view")
-
-        // Selecting cell behind searchbar masks part of search bar.
-        // So we insert mask *behind* the searchbar.
-        view.addSubview(selectedMaskingView)
-        selectedMaskingView.autoPinEdgesToSuperviewEdges()
-        selectedMaskingView.isHidden = true
-
-        self.view.addSubview(searchBar)
-        searchBar.autoPinWidthToSuperview()
-        searchBar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.backgroundColor = backgroundColor
         self.collectionView.register(GifPickerCell.self, forCellWithReuseIdentifier: kCellReuseIdentifier)
-        // Inserted below searchbar because we later occlude the collectionview
-        // by inserting a masking layer between the search bar and collectionview
-        self.view.insertSubview(self.collectionView, belowSubview: searchBar)
+        view.addSubview(self.collectionView)
         self.collectionView.autoPinEdge(toSuperviewSafeArea: .leading)
         self.collectionView.autoPinEdge(toSuperviewSafeArea: .trailing)
-        self.collectionView.autoPinEdge(.top, to: .bottom, of: searchBar)
+
+        view.addSubview(selectedMaskingView)
+        selectedMaskingView.autoPinEdge(.top, to: .top, of: collectionView)
+        selectedMaskingView.autoPinEdge(.leading, to: .leading, of: collectionView)
+        selectedMaskingView.autoPinEdge(.trailing, to: .trailing, of: collectionView)
+        selectedMaskingView.autoPinEdge(.bottom, to: .bottom, of: collectionView)
+        selectedMaskingView.isHidden = true
+
+        // Search
+        searchBar.delegate = self
+        searchBar.placeholder = NSLocalizedString("GIF_VIEW_SEARCH_PLACEHOLDER_TEXT",
+                                                  comment: "Placeholder text for the search field in GIF view")
+        view.addSubview(searchBar)
+        searchBar.autoPinWidthToSuperview()
+        searchBar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        searchBar.autoPinEdge(.bottom, to: .top, of: collectionView)
 
         // for iPhoneX devices, extends the black background to the bottom edge of the view.
         let bottomBannerContainer = UIView()
@@ -431,7 +429,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         self.hasSelectedCell = true
 
         // Fade out all cells except the selected one.
-        let cellRect = self.collectionView.convert(cell.frame, to: self.view)
+        let cellRect = collectionView.convert(cell.frame, to: selectedMaskingView)
         selectedMaskingView.configureShapeLayerBlock = { layer, bounds in
             let path = UIBezierPath(rect: bounds)
             path.append(UIBezierPath(rect: cellRect))
