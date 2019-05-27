@@ -34,7 +34,7 @@ public class AvatarImageView: UIImageView {
         layer.borderWidth = 3
         
         // Loki: Observe online status changes
-        NotificationCenter.default.addObserver(self, selector: #selector(handleOnlineStatusChangedNotification), name: .contactOnlineStatusChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleContactOnlineStatusChangedNotification), name: .contactOnlineStatusChanged, object: nil)
         
         // Set up UI
         self.autoPinToSquareAspectRatio()
@@ -78,7 +78,7 @@ public class AvatarImageView: UIImageView {
         NotificationCenter.default.removeObserver(self)
     }
     
-    @objc private func handleOnlineStatusChangedNotification(_ notification: Notification) {
+    @objc private func handleContactOnlineStatusChangedNotification(_ notification: Notification) {
         let contactID = notification.object as! String
         guard contactID == self.contactID else { return }
         updateOnlineStatusIndicator()
