@@ -91,7 +91,8 @@ import PromiseKit
     }
     
     // MARK: Public API (Obj-C)
-    @objc public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64, onP2PSuccess: @escaping () -> Void) -> AnyPromise {
+    @objc(sendSignalMessage:to:with:onP2PSuccess:)
+    public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64, onP2PSuccess: @escaping () -> Void) -> AnyPromise {
         let promise = sendSignalMessage(signalMessage, to: destination, with: timestamp, onP2PSuccess: onP2PSuccess).mapValues { AnyPromise.from($0) }.map { Set($0) }
         return AnyPromise.from(promise)
     }
