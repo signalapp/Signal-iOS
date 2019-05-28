@@ -49,13 +49,16 @@ public enum SSKProtoError: Error {
 
     // MARK: - SSKProtoEnvelopeBuilder
 
-    @objc public class func builder(type: SSKProtoEnvelopeType, timestamp: UInt64) -> SSKProtoEnvelopeBuilder {
-        return SSKProtoEnvelopeBuilder(type: type, timestamp: timestamp)
+    @objc public class func builder(timestamp: UInt64) -> SSKProtoEnvelopeBuilder {
+        return SSKProtoEnvelopeBuilder(timestamp: timestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoEnvelopeBuilder {
-        let builder = SSKProtoEnvelopeBuilder(type: type, timestamp: timestamp)
+        let builder = SSKProtoEnvelopeBuilder(timestamp: timestamp)
+        if hasType {
+            builder.setType(type)
+        }
         if let _value = source {
             builder.setSource(_value)
         }
@@ -86,10 +89,9 @@ public enum SSKProtoError: Error {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(type: SSKProtoEnvelopeType, timestamp: UInt64) {
+        @objc fileprivate init(timestamp: UInt64) {
             super.init()
 
-            setType(type)
             setTimestamp(timestamp)
         }
 
@@ -140,9 +142,14 @@ public enum SSKProtoError: Error {
 
     fileprivate let proto: SignalServiceProtos_Envelope
 
-    @objc public let type: SSKProtoEnvelopeType
-
     @objc public let timestamp: UInt64
+
+    @objc public var type: SSKProtoEnvelopeType {
+        return SSKProtoEnvelope.SSKProtoEnvelopeTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
 
     @objc public var source: String? {
         guard proto.hasSource else {
@@ -209,10 +216,8 @@ public enum SSKProtoError: Error {
     }
 
     private init(proto: SignalServiceProtos_Envelope,
-                 type: SSKProtoEnvelopeType,
                  timestamp: UInt64) {
         self.proto = proto
-        self.type = type
         self.timestamp = timestamp
     }
 
@@ -227,11 +232,6 @@ public enum SSKProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_Envelope) throws -> SSKProtoEnvelope {
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = SSKProtoEnvelopeTypeWrap(proto.type)
-
         guard proto.hasTimestamp else {
             throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
         }
@@ -242,7 +242,6 @@ public enum SSKProtoError: Error {
         // MARK: - End Validation Logic for SSKProtoEnvelope -
 
         let result = SSKProtoEnvelope(proto: proto,
-                                      type: type,
                                       timestamp: timestamp)
         return result
     }
@@ -295,13 +294,16 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
 
     // MARK: - SSKProtoTypingMessageBuilder
 
-    @objc public class func builder(timestamp: UInt64, action: SSKProtoTypingMessageAction) -> SSKProtoTypingMessageBuilder {
-        return SSKProtoTypingMessageBuilder(timestamp: timestamp, action: action)
+    @objc public class func builder(timestamp: UInt64) -> SSKProtoTypingMessageBuilder {
+        return SSKProtoTypingMessageBuilder(timestamp: timestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoTypingMessageBuilder {
-        let builder = SSKProtoTypingMessageBuilder(timestamp: timestamp, action: action)
+        let builder = SSKProtoTypingMessageBuilder(timestamp: timestamp)
+        if hasAction {
+            builder.setAction(action)
+        }
         if let _value = groupID {
             builder.setGroupID(_value)
         }
@@ -314,11 +316,10 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(timestamp: UInt64, action: SSKProtoTypingMessageAction) {
+        @objc fileprivate init(timestamp: UInt64) {
             super.init()
 
             setTimestamp(timestamp)
-            setAction(action)
         }
 
         @objc public func setTimestamp(_ valueParam: UInt64) {
@@ -346,7 +347,12 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
 
     @objc public let timestamp: UInt64
 
-    @objc public let action: SSKProtoTypingMessageAction
+    @objc public var action: SSKProtoTypingMessageAction {
+        return SSKProtoTypingMessage.SSKProtoTypingMessageActionWrap(proto.action)
+    }
+    @objc public var hasAction: Bool {
+        return proto.hasAction
+    }
 
     @objc public var groupID: Data? {
         guard proto.hasGroupID else {
@@ -359,11 +365,9 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
     }
 
     private init(proto: SignalServiceProtos_TypingMessage,
-                 timestamp: UInt64,
-                 action: SSKProtoTypingMessageAction) {
+                 timestamp: UInt64) {
         self.proto = proto
         self.timestamp = timestamp
-        self.action = action
     }
 
     @objc
@@ -382,18 +386,12 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
         }
         let timestamp = proto.timestamp
 
-        guard proto.hasAction else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: action")
-        }
-        let action = SSKProtoTypingMessageActionWrap(proto.action)
-
         // MARK: - Begin Validation Logic for SSKProtoTypingMessage -
 
         // MARK: - End Validation Logic for SSKProtoTypingMessage -
 
         let result = SSKProtoTypingMessage(proto: proto,
-                                           timestamp: timestamp,
-                                           action: action)
+                                           timestamp: timestamp)
         return result
     }
 
@@ -3517,13 +3515,16 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
 
     // MARK: - SSKProtoReceiptMessageBuilder
 
-    @objc public class func builder(type: SSKProtoReceiptMessageType) -> SSKProtoReceiptMessageBuilder {
-        return SSKProtoReceiptMessageBuilder(type: type)
+    @objc public class func builder() -> SSKProtoReceiptMessageBuilder {
+        return SSKProtoReceiptMessageBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoReceiptMessageBuilder {
-        let builder = SSKProtoReceiptMessageBuilder(type: type)
+        let builder = SSKProtoReceiptMessageBuilder()
+        if hasType {
+            builder.setType(type)
+        }
         builder.setTimestamp(timestamp)
         return builder
     }
@@ -3533,12 +3534,6 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
         private var proto = SignalServiceProtos_ReceiptMessage()
 
         @objc fileprivate override init() {}
-
-        @objc fileprivate init(type: SSKProtoReceiptMessageType) {
-            super.init()
-
-            setType(type)
-        }
 
         @objc public func setType(_ valueParam: SSKProtoReceiptMessageType) {
             proto.type = SSKProtoReceiptMessageTypeUnwrap(valueParam)
@@ -3565,16 +3560,19 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
 
     fileprivate let proto: SignalServiceProtos_ReceiptMessage
 
-    @objc public let type: SSKProtoReceiptMessageType
+    @objc public var type: SSKProtoReceiptMessageType {
+        return SSKProtoReceiptMessage.SSKProtoReceiptMessageTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
 
     @objc public var timestamp: [UInt64] {
         return proto.timestamp
     }
 
-    private init(proto: SignalServiceProtos_ReceiptMessage,
-                 type: SSKProtoReceiptMessageType) {
+    private init(proto: SignalServiceProtos_ReceiptMessage) {
         self.proto = proto
-        self.type = type
     }
 
     @objc
@@ -3588,17 +3586,11 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_ReceiptMessage) throws -> SSKProtoReceiptMessage {
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = SSKProtoReceiptMessageTypeWrap(proto.type)
-
         // MARK: - Begin Validation Logic for SSKProtoReceiptMessage -
 
         // MARK: - End Validation Logic for SSKProtoReceiptMessage -
 
-        let result = SSKProtoReceiptMessage(proto: proto,
-                                            type: type)
+        let result = SSKProtoReceiptMessage(proto: proto)
         return result
     }
 
@@ -4420,13 +4412,16 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
 
     // MARK: - SSKProtoSyncMessageRequestBuilder
 
-    @objc public class func builder(type: SSKProtoSyncMessageRequestType) -> SSKProtoSyncMessageRequestBuilder {
-        return SSKProtoSyncMessageRequestBuilder(type: type)
+    @objc public class func builder() -> SSKProtoSyncMessageRequestBuilder {
+        return SSKProtoSyncMessageRequestBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoSyncMessageRequestBuilder {
-        let builder = SSKProtoSyncMessageRequestBuilder(type: type)
+        let builder = SSKProtoSyncMessageRequestBuilder()
+        if hasType {
+            builder.setType(type)
+        }
         return builder
     }
 
@@ -4435,12 +4430,6 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
         private var proto = SignalServiceProtos_SyncMessage.Request()
 
         @objc fileprivate override init() {}
-
-        @objc fileprivate init(type: SSKProtoSyncMessageRequestType) {
-            super.init()
-
-            setType(type)
-        }
 
         @objc public func setType(_ valueParam: SSKProtoSyncMessageRequestType) {
             proto.type = SSKProtoSyncMessageRequestTypeUnwrap(valueParam)
@@ -4457,12 +4446,15 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Request
 
-    @objc public let type: SSKProtoSyncMessageRequestType
+    @objc public var type: SSKProtoSyncMessageRequestType {
+        return SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
 
-    private init(proto: SignalServiceProtos_SyncMessage.Request,
-                 type: SSKProtoSyncMessageRequestType) {
+    private init(proto: SignalServiceProtos_SyncMessage.Request) {
         self.proto = proto
-        self.type = type
     }
 
     @objc
@@ -4476,17 +4468,11 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Request) throws -> SSKProtoSyncMessageRequest {
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = SSKProtoSyncMessageRequestTypeWrap(proto.type)
-
         // MARK: - Begin Validation Logic for SSKProtoSyncMessageRequest -
 
         // MARK: - End Validation Logic for SSKProtoSyncMessageRequest -
 
-        let result = SSKProtoSyncMessageRequest(proto: proto,
-                                                type: type)
+        let result = SSKProtoSyncMessageRequest(proto: proto)
         return result
     }
 
@@ -4783,13 +4769,16 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 
     // MARK: - SSKProtoSyncMessageStickerPackOperationBuilder
 
-    @objc public class func builder(packID: Data, packKey: Data, type: SSKProtoSyncMessageStickerPackOperationType) -> SSKProtoSyncMessageStickerPackOperationBuilder {
-        return SSKProtoSyncMessageStickerPackOperationBuilder(packID: packID, packKey: packKey, type: type)
+    @objc public class func builder(packID: Data, packKey: Data) -> SSKProtoSyncMessageStickerPackOperationBuilder {
+        return SSKProtoSyncMessageStickerPackOperationBuilder(packID: packID, packKey: packKey)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoSyncMessageStickerPackOperationBuilder {
-        let builder = SSKProtoSyncMessageStickerPackOperationBuilder(packID: packID, packKey: packKey, type: type)
+        let builder = SSKProtoSyncMessageStickerPackOperationBuilder(packID: packID, packKey: packKey)
+        if hasType {
+            builder.setType(type)
+        }
         return builder
     }
 
@@ -4799,12 +4788,11 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(packID: Data, packKey: Data, type: SSKProtoSyncMessageStickerPackOperationType) {
+        @objc fileprivate init(packID: Data, packKey: Data) {
             super.init()
 
             setPackID(packID)
             setPackKey(packKey)
-            setType(type)
         }
 
         @objc public func setPackID(_ valueParam: Data) {
@@ -4834,16 +4822,19 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 
     @objc public let packKey: Data
 
-    @objc public let type: SSKProtoSyncMessageStickerPackOperationType
+    @objc public var type: SSKProtoSyncMessageStickerPackOperationType {
+        return SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPackOperationTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
 
     private init(proto: SignalServiceProtos_SyncMessage.StickerPackOperation,
                  packID: Data,
-                 packKey: Data,
-                 type: SSKProtoSyncMessageStickerPackOperationType) {
+                 packKey: Data) {
         self.proto = proto
         self.packID = packID
         self.packKey = packKey
-        self.type = type
     }
 
     @objc
@@ -4867,19 +4858,13 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
         }
         let packKey = proto.packKey
 
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = SSKProtoSyncMessageStickerPackOperationTypeWrap(proto.type)
-
         // MARK: - Begin Validation Logic for SSKProtoSyncMessageStickerPackOperation -
 
         // MARK: - End Validation Logic for SSKProtoSyncMessageStickerPackOperation -
 
         let result = SSKProtoSyncMessageStickerPackOperation(proto: proto,
                                                              packID: packID,
-                                                             packKey: packKey,
-                                                             type: type)
+                                                             packKey: packKey)
         return result
     }
 
@@ -5464,13 +5449,16 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
 
     // MARK: - SSKProtoGroupContextBuilder
 
-    @objc public class func builder(id: Data, type: SSKProtoGroupContextType) -> SSKProtoGroupContextBuilder {
-        return SSKProtoGroupContextBuilder(id: id, type: type)
+    @objc public class func builder(id: Data) -> SSKProtoGroupContextBuilder {
+        return SSKProtoGroupContextBuilder(id: id)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoGroupContextBuilder {
-        let builder = SSKProtoGroupContextBuilder(id: id, type: type)
+        let builder = SSKProtoGroupContextBuilder(id: id)
+        if hasType {
+            builder.setType(type)
+        }
         if let _value = name {
             builder.setName(_value)
         }
@@ -5487,11 +5475,10 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(id: Data, type: SSKProtoGroupContextType) {
+        @objc fileprivate init(id: Data) {
             super.init()
 
             setId(id)
-            setType(type)
         }
 
         @objc public func setId(_ valueParam: Data) {
@@ -5533,9 +5520,14 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
 
     @objc public let id: Data
 
-    @objc public let type: SSKProtoGroupContextType
-
     @objc public let avatar: SSKProtoAttachmentPointer?
+
+    @objc public var type: SSKProtoGroupContextType {
+        return SSKProtoGroupContext.SSKProtoGroupContextTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
 
     @objc public var name: String? {
         guard proto.hasName else {
@@ -5553,11 +5545,9 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
 
     private init(proto: SignalServiceProtos_GroupContext,
                  id: Data,
-                 type: SSKProtoGroupContextType,
                  avatar: SSKProtoAttachmentPointer?) {
         self.proto = proto
         self.id = id
-        self.type = type
         self.avatar = avatar
     }
 
@@ -5577,11 +5567,6 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         }
         let id = proto.id
 
-        guard proto.hasType else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = SSKProtoGroupContextTypeWrap(proto.type)
-
         var avatar: SSKProtoAttachmentPointer? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
@@ -5593,7 +5578,6 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
 
         let result = SSKProtoGroupContext(proto: proto,
                                           id: id,
-                                          type: type,
                                           avatar: avatar)
         return result
     }

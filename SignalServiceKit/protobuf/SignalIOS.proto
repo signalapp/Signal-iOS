@@ -21,7 +21,6 @@ message BackupSnapshot {
             ATTACHMENT  = 4;
             MISC        = 5;
         }
-        // @required
         optional Type type         = 1;
         // @required
         optional bytes entityData  = 2;

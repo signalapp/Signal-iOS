@@ -32,7 +32,6 @@ struct SignalServiceProtos_Envelope {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// @required
   var type: SignalServiceProtos_Envelope.TypeEnum {
     get {return _type ?? .unknown}
     set {_type = newValue}
@@ -195,7 +194,6 @@ struct SignalServiceProtos_TypingMessage {
   /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
   mutating func clearTimestamp() {self._timestamp = nil}
 
-  /// @required
   var action: SignalServiceProtos_TypingMessage.Action {
     get {return _action ?? .started}
     set {_action = newValue}
@@ -1427,7 +1425,6 @@ struct SignalServiceProtos_ReceiptMessage {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// @required
   var type: SignalServiceProtos_ReceiptMessage.TypeEnum {
     get {return _type ?? .delivery}
     set {_type = newValue}
@@ -1823,7 +1820,6 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// @required
     var type: SignalServiceProtos_SyncMessage.Request.TypeEnum {
       get {return _type ?? .unknown}
       set {_type = newValue}
@@ -1984,7 +1980,6 @@ struct SignalServiceProtos_SyncMessage {
     /// Clears the value of `packKey`. Subsequent reads from it will return its default value.
     mutating func clearPackKey() {self._packKey = nil}
 
-    /// @required
     var type: SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum {
       get {return _type ?? .install}
       set {_type = newValue}
@@ -2202,7 +2197,6 @@ struct SignalServiceProtos_GroupContext {
   /// Clears the value of `id`. Subsequent reads from it will return its default value.
   mutating func clearID() {_uniqueStorage()._id = nil}
 
-  /// @required
   var type: SignalServiceProtos_GroupContext.TypeEnum {
     get {return _storage._type ?? .unknown}
     set {_uniqueStorage()._type = newValue}

@@ -360,13 +360,16 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
 
     // MARK: - WebSocketProtoWebSocketMessageBuilder
 
-    @objc public class func builder(type: WebSocketProtoWebSocketMessageType) -> WebSocketProtoWebSocketMessageBuilder {
-        return WebSocketProtoWebSocketMessageBuilder(type: type)
+    @objc public class func builder() -> WebSocketProtoWebSocketMessageBuilder {
+        return WebSocketProtoWebSocketMessageBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> WebSocketProtoWebSocketMessageBuilder {
-        let builder = WebSocketProtoWebSocketMessageBuilder(type: type)
+        let builder = WebSocketProtoWebSocketMessageBuilder()
+        if hasType {
+            builder.setType(type)
+        }
         if let _value = request {
             builder.setRequest(_value)
         }
@@ -381,12 +384,6 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         private var proto = WebSocketProtos_WebSocketMessage()
 
         @objc fileprivate override init() {}
-
-        @objc fileprivate init(type: WebSocketProtoWebSocketMessageType) {
-            super.init()
-
-            setType(type)
-        }
 
         @objc public func setType(_ valueParam: WebSocketProtoWebSocketMessageType) {
             proto.type = WebSocketProtoWebSocketMessageTypeUnwrap(valueParam)
@@ -411,18 +408,21 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
 
     fileprivate let proto: WebSocketProtos_WebSocketMessage
 
-    @objc public let type: WebSocketProtoWebSocketMessageType
-
     @objc public let request: WebSocketProtoWebSocketRequestMessage?
 
     @objc public let response: WebSocketProtoWebSocketResponseMessage?
 
+    @objc public var type: WebSocketProtoWebSocketMessageType {
+        return WebSocketProtoWebSocketMessage.WebSocketProtoWebSocketMessageTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
+
     private init(proto: WebSocketProtos_WebSocketMessage,
-                 type: WebSocketProtoWebSocketMessageType,
                  request: WebSocketProtoWebSocketRequestMessage?,
                  response: WebSocketProtoWebSocketResponseMessage?) {
         self.proto = proto
-        self.type = type
         self.request = request
         self.response = response
     }
@@ -438,11 +438,6 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
     }
 
     fileprivate class func parseProto(_ proto: WebSocketProtos_WebSocketMessage) throws -> WebSocketProtoWebSocketMessage {
-        guard proto.hasType else {
-            throw WebSocketProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = WebSocketProtoWebSocketMessageTypeWrap(proto.type)
-
         var request: WebSocketProtoWebSocketRequestMessage? = nil
         if proto.hasRequest {
             request = try WebSocketProtoWebSocketRequestMessage.parseProto(proto.request)
@@ -458,7 +453,6 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         // MARK: - End Validation Logic for WebSocketProtoWebSocketMessage -
 
         let result = WebSocketProtoWebSocketMessage(proto: proto,
-                                                    type: type,
                                                     request: request,
                                                     response: response)
         return result

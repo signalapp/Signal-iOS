@@ -49,13 +49,16 @@ public enum SignalIOSProtoError: Error {
 
     // MARK: - SignalIOSProtoBackupSnapshotBackupEntityBuilder
 
-    @objc public class func builder(type: SignalIOSProtoBackupSnapshotBackupEntityType, entityData: Data, collection: String, key: String) -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
-        return SignalIOSProtoBackupSnapshotBackupEntityBuilder(type: type, entityData: entityData, collection: collection, key: key)
+    @objc public class func builder(entityData: Data, collection: String, key: String) -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
+        return SignalIOSProtoBackupSnapshotBackupEntityBuilder(entityData: entityData, collection: collection, key: key)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
-        let builder = SignalIOSProtoBackupSnapshotBackupEntityBuilder(type: type, entityData: entityData, collection: collection, key: key)
+        let builder = SignalIOSProtoBackupSnapshotBackupEntityBuilder(entityData: entityData, collection: collection, key: key)
+        if hasType {
+            builder.setType(type)
+        }
         return builder
     }
 
@@ -65,10 +68,9 @@ public enum SignalIOSProtoError: Error {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(type: SignalIOSProtoBackupSnapshotBackupEntityType, entityData: Data, collection: String, key: String) {
+        @objc fileprivate init(entityData: Data, collection: String, key: String) {
             super.init()
 
-            setType(type)
             setEntityData(entityData)
             setCollection(collection)
             setKey(key)
@@ -101,21 +103,24 @@ public enum SignalIOSProtoError: Error {
 
     fileprivate let proto: IOSProtos_BackupSnapshot.BackupEntity
 
-    @objc public let type: SignalIOSProtoBackupSnapshotBackupEntityType
-
     @objc public let entityData: Data
 
     @objc public let collection: String
 
     @objc public let key: String
 
+    @objc public var type: SignalIOSProtoBackupSnapshotBackupEntityType {
+        return SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
+
     private init(proto: IOSProtos_BackupSnapshot.BackupEntity,
-                 type: SignalIOSProtoBackupSnapshotBackupEntityType,
                  entityData: Data,
                  collection: String,
                  key: String) {
         self.proto = proto
-        self.type = type
         self.entityData = entityData
         self.collection = collection
         self.key = key
@@ -132,11 +137,6 @@ public enum SignalIOSProtoError: Error {
     }
 
     fileprivate class func parseProto(_ proto: IOSProtos_BackupSnapshot.BackupEntity) throws -> SignalIOSProtoBackupSnapshotBackupEntity {
-        guard proto.hasType else {
-            throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
-
         guard proto.hasEntityData else {
             throw SignalIOSProtoError.invalidProtobuf(description: "\(logTag) missing required field: entityData")
         }
@@ -157,7 +157,6 @@ public enum SignalIOSProtoError: Error {
         // MARK: - End Validation Logic for SignalIOSProtoBackupSnapshotBackupEntity -
 
         let result = SignalIOSProtoBackupSnapshotBackupEntity(proto: proto,
-                                                              type: type,
                                                               entityData: entityData,
                                                               collection: collection,
                                                               key: key)

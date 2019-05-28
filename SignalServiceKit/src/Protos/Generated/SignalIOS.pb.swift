@@ -41,7 +41,6 @@ struct IOSProtos_BackupSnapshot {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// @required
     var type: IOSProtos_BackupSnapshot.BackupEntity.TypeEnum {
       get {return _type ?? .unknown}
       set {_type = newValue}
