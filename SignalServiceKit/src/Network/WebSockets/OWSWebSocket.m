@@ -528,8 +528,8 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    WebSocketProtoWebSocketMessageBuilder *messageBuilder =
-        [WebSocketProtoWebSocketMessage builderWithType:WebSocketProtoWebSocketMessageTypeRequest];
+    WebSocketProtoWebSocketMessageBuilder *messageBuilder = [WebSocketProtoWebSocketMessage builder];
+    [messageBuilder setType:WebSocketProtoWebSocketMessageTypeRequest];
     [messageBuilder setRequest:requestProto];
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
@@ -834,8 +834,8 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    WebSocketProtoWebSocketMessageBuilder *messageBuilder =
-        [WebSocketProtoWebSocketMessage builderWithType:WebSocketProtoWebSocketMessageTypeResponse];
+    WebSocketProtoWebSocketMessageBuilder *messageBuilder = [WebSocketProtoWebSocketMessage builder];
+    [messageBuilder setType:WebSocketProtoWebSocketMessageTypeResponse];
     [messageBuilder setResponse:response];
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];

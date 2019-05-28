@@ -253,7 +253,9 @@ class BaseContext(object):
         #     return False
         # elif self.is_field_an_enum(field):
         if self.is_field_an_enum(field):
-            return False
+            if field.is_required:
+                raise Exception('Enum field should not be @required: %s.%s' % ( self.proto_name, field.name, ))
+            return True
         else:
             return True
         
@@ -1094,7 +1096,7 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
                 raise Exception('Duplicate message field index[%s]: %s' % (proto_file_path, item_name))
             # context.field_indices.add(item_index)
             
-            is_required = '@required' in field_comments
+            is_required = '@required' in field_comments 
             # if is_required:
             #     print 'is_required:', item_name
             context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default, sort_index, is_required)

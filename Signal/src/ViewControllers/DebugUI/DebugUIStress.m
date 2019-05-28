@@ -393,8 +393,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
                                                 SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext
-                                                    builderWithId:[Cryptography generateRandomBytes:1]
-                                                             type:SSKProtoGroupContextTypeDeliver];
+                                                    builderWithId:[Cryptography generateRandomBytes:1]];
+                                                [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
                                                 dataBuilder.group = [groupBuilder buildIgnoringErrors];
                                                 sentBuilder.message = [dataBuilder buildIgnoringErrors];
                                                 syncMessageBuilder.sent = [sentBuilder buildIgnoringErrors];
@@ -420,8 +420,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
                                                 SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext
-                                                    builderWithId:[Cryptography generateRandomBytes:1]
-                                                             type:SSKProtoGroupContextTypeDeliver];
+                                                    builderWithId:[Cryptography generateRandomBytes:1]];
+                                                [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
                                                 dataBuilder.group = [groupBuilder buildIgnoringErrors];
                                                 sentBuilder.message = [dataBuilder buildIgnoringErrors];
                                                 syncMessageBuilder.sent = [sentBuilder buildIgnoringErrors];
@@ -480,8 +480,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSGroupThread *groupThread = (TSGroupThread *)thread;
-    SSKProtoGroupContextBuilder *groupBuilder =
-        [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId type:SSKProtoGroupContextTypeDeliver];
+    SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId];
+    [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
     [groupBuilder setId:groupThread.groupModel.groupId];
     [dataBuilder setGroup:groupBuilder.buildIgnoringErrors];
 }

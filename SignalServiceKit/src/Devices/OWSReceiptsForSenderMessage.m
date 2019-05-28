@@ -103,7 +103,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
 {
-    SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builderWithType:self.receiptType];
+    SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builder];
+    [builder setType:self.receiptType];
 
     OWSAssertDebug(self.messageTimestamps.count > 0);
     for (NSNumber *messageTimestamp in self.messageTimestamps) {
