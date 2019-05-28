@@ -204,7 +204,7 @@ void AssertIsOnSendingQueue()
 
 - (void)run
 {
-    if (CurrentAppContext().isExpired) {
+    if (SSKAppExpiry.isExpired) {
         OWSLogWarn(@"Unable to send because the application has expired.");
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeAppExired,
             NSLocalizedString(

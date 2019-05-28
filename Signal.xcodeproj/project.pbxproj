@@ -2873,7 +2873,7 @@
 				16FA77C536F8C08C5046FA6B /* [CP] Check Pods Manifest.lock */,
 				453518641FC635DD00210559 /* Sources */,
 				453518651FC635DD00210559 /* Frameworks */,
-				88905E9F229CDE3A004E4234 /* Generate Build Timestamp */,
+				88905E9F229CDE3A004E4234 /* Run Script: update_share_plist_info */,
 				453518661FC635DD00210559 /* Resources */,
 			);
 			buildRules = (
@@ -2913,7 +2913,7 @@
 				45AE48531E073428004D96C2 /* Swift Lint */,
 				D221A085169C9E5E00537ABF /* Sources */,
 				D221A086169C9E5E00537ABF /* Frameworks */,
-				34C239432180B01B00B6108F /* Run Script: update_list_info */,
+				34C239432180B01B00B6108F /* Run Script: update_plist_info */,
 				D221A087169C9E5E00537ABF /* Resources */,
 				59C9DBA462715B5C999FFB02 /* [CP] Embed Pods Frameworks */,
 				451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */,
@@ -3252,14 +3252,14 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		34C239432180B01B00B6108F /* Run Script: update_list_info */ = {
+		34C239432180B01B00B6108F /* Run Script: update_plist_info */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Run Script: update_list_info";
+			name = "Run Script: update_plist_info";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3392,7 +3392,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		88905E9F229CDE3A004E4234 /* Generate Build Timestamp */ = {
+		88905E9F229CDE3A004E4234 /* Run Script: update_share_plist_info */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -3401,14 +3401,14 @@
 			);
 			inputPaths = (
 			);
-			name = "Generate Build Timestamp";
+			name = "Run Script: update_share_plist_info";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/libexec/PlistBuddy -c \"Delete BuildTimestamp\" SignalShareExtension/Info.plist || true\n\nif [ \"${CONFIGURATION}\" = \"App Store Release\" ]; then\n    _build_timestamp=`date +%s`\n    /usr/libexec/PlistBuddy -c \"add :BuildTimestamp string '$_build_timestamp'\" SignalShareExtension/Info.plist\nfi\n";
+			shellScript = "$PROJECT_DIR/Scripts/update_share_plist_info.sh\n";
 		};
 		B4E9B04E862FB64FC9A8F79B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;

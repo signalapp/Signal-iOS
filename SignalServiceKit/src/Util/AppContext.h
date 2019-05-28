@@ -44,9 +44,6 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 @property (nonatomic, readonly) BOOL isRunningTests;
 
 @property (nonatomic, readonly) NSDate *buildTime;
-@property (nonatomic, readonly) NSInteger daysUntilBuildExpiry;
-@property (nonatomic, readonly) BOOL isExpiringSoon;
-@property (nonatomic, readonly) BOOL isExpired;
 
 @property (atomic, nullable) UIWindow *mainWindow;
 
