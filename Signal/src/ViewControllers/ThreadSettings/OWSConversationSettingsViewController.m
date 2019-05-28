@@ -172,10 +172,8 @@ const CGFloat kIconViewLength = 24;
 - (NSString *)threadName
 {
     NSString *threadName = self.thread.name;
-    if (self.thread.contactIdentifier &&
-        [threadName isEqualToString:self.thread.contactIdentifier]) {
-        threadName =
-            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:self.thread.contactIdentifier];
+    if (self.thread.contactIdentifier) {
+        return [self.contactsManager profileNameForRecipientId:self.thread.contactIdentifier];
     } else if (threadName.length == 0 && [self isGroupThread]) {
         threadName = [MessageStrings newGroupDefaultTitle];
     }
@@ -929,49 +927,54 @@ const CGFloat kIconViewLength = 24;
 
     if (![self isGroupThread]) {
         const CGFloat kSubtitlePointSize = 12.f;
-        void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
+        void (^addSubtitle)(NSString *) = ^(NSString *subtitle) {
             UILabel *subtitleLabel = [UILabel new];
             subtitleLabel.textColor = [Theme secondaryColor];
             subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-            subtitleLabel.attributedText = subtitle;
+            subtitleLabel.text = subtitle;
             subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
             [threadNameView addSubview:subtitleLabel];
             [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
             [subtitleLabel autoPinLeadingToSuperviewMargin];
+            [subtitleLabel autoPinTrailingToSuperviewMargin];
             lastTitleView = subtitleLabel;
         };
 
         NSString *recipientId = self.thread.contactIdentifier;
-
-        BOOL hasName = ![self.thread.name isEqualToString:recipientId];
-        if (hasName) {
-            NSAttributedString *subtitle = [[NSAttributedString alloc]
-                initWithString:[PhoneNumber
-                                   bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]];
-            addSubtitle(subtitle);
-        } else {
-            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForRecipientId:recipientId];
-            if (profileName) {
-                addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
-            }
-        }
-
-        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
-            == OWSVerificationStateVerified;
-        if (isVerified) {
-            NSMutableAttributedString *subtitle = [NSMutableAttributedString new];
-            // "checkmark"
-            [subtitle appendAttributedString:[[NSAttributedString alloc]
-                                                 initWithString:LocalizationNotNeeded(@"\uf00c ")
-                                                     attributes:@{
-                                                         NSFontAttributeName :
-                                                             [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
-                                                     }]];
-            [subtitle appendAttributedString:[[NSAttributedString alloc]
-                                                 initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
-                                                                    @"Badge indicating that the user is verified.")]];
-            addSubtitle(subtitle);
-        }
+        addSubtitle(recipientId);
+        
+        // Loki: Original code
+        // ========
+//        BOOL hasName = ![self.thread.name isEqualToString:recipientId];
+//        if (hasName) {
+//            NSAttributedString *subtitle = [[NSAttributedString alloc]
+//                initWithString:[PhoneNumber
+//                                   bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]];
+//            addSubtitle(subtitle);
+//        } else {
+//            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForRecipientId:recipientId];
+//            if (profileName) {
+//                addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
+//            }
+//        }
+//
+//        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+//            == OWSVerificationStateVerified;
+//        if (isVerified) {
+//            NSMutableAttributedString *subtitle = [NSMutableAttributedString new];
+//            // "checkmark"
+//            [subtitle appendAttributedString:[[NSAttributedString alloc]
+//                                                 initWithString:LocalizationNotNeeded(@"\uf00c ")
+//                                                     attributes:@{
+//                                                         NSFontAttributeName :
+//                                                             [UIFont ows_fontAwesomeFont:kSubtitlePointSize],
+//                                                     }]];
+//            [subtitle appendAttributedString:[[NSAttributedString alloc]
+//                                                 initWithString:NSLocalizedString(@"PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
+//                                                                    @"Badge indicating that the user is verified.")]];
+//            addSubtitle(subtitle);
+//        }
+        // ========
     }
 
     [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
