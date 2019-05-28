@@ -285,9 +285,9 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 #pragma mark - Dependencies
 
-- (YapDatabaseConnection *)dbConnection
+- (SDSDatabaseStorage *)databaseStorage
 {
-    return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
+    return SSKEnvironment.shared.databaseStorage;
 }
 
 - (TSAccountManager *)tsAccountManager
@@ -599,7 +599,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
         }];
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             [ThreadUtil enqueueMessageWithText:url.absoluteString
                                       inThread:thread
                               quotedReplyModel:nil
@@ -624,7 +624,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     }];
     DispatchMainThreadSafe(^{
         if (thread) {
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                 [ThreadUtil enqueueMessageWithText:url.absoluteString
                                           inThread:thread
                                   quotedReplyModel:nil

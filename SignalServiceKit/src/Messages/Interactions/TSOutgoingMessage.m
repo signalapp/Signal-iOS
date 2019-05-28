@@ -759,12 +759,16 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)updateWithSentRecipient:(NSString *)recipientId
                     wasSentByUD:(BOOL)wasSentByUD
-                    transaction:(YapDatabaseReadWriteTransaction *)transaction {
+                    transaction:(SDSAnyWriteTransaction *)transaction
+{
     OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 OWSAssertDebug([interaction isKindOfClass:TSOutgoingMessage.class]);
+
+                                 TSOutgoingMessage *message = (TSOutgoingMessage *)interaction;
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {

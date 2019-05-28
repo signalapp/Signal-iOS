@@ -3865,7 +3865,7 @@ typedef enum : NSUInteger {
         BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
 
         __block TSOutgoingMessage *message;
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
             message = [ThreadUtil enqueueMessageWithText:messageText
                                         mediaAttachments:attachments
                                                 inThread:self.thread
@@ -4450,7 +4450,8 @@ typedef enum : NSUInteger {
     // which are presented as normal text messages.
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     __block TSOutgoingMessage *message;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         message = [ThreadUtil enqueueMessageWithText:text
                                             inThread:self.thread
                                     quotedReplyModel:self.inputToolbar.quotedReply

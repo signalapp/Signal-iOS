@@ -159,12 +159,12 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 }
 
 + (NSString *)conversationColorNameForRecipientId:(NSString *)recipientId
-                                      transaction:(YapDatabaseReadTransaction *)transaction
+                                      transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(recipientId.length > 0);
 
     TSContactThread *_Nullable contactThread =
-        [TSContactThread getThreadWithContactId:recipientId transaction:transaction];
+        [TSContactThread getThreadWithContactId:recipientId anyTransaction:transaction];
     if (contactThread) {
         return contactThread.conversationColorName;
     }

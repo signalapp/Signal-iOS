@@ -352,7 +352,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return ConversationViewCell(forAutoLayout: ())
     }
 
-    func replace(_ interaction: TSInteraction, transaction: YapDatabaseReadTransaction) {
+    func replace(_ interaction: TSInteraction, transaction: SDSAnyReadTransaction) {
         owsFailDebug("unexpected invocation")
         return
     }

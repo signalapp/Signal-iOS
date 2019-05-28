@@ -1689,9 +1689,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
 
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         TSInteraction *_Nullable interaction =
-            [TSInteraction fetchObjectWithUniqueID:viewItem.interaction.uniqueId transaction:transaction];
+            [TSInteraction anyFetchWithUniqueId:viewItem.interaction.uniqueId transaction:transaction];
         if (!interaction) {
             OWSFailDebug(@"could not reload interaction");
         } else {

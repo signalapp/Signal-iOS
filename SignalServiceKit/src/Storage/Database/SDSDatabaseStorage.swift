@@ -442,6 +442,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             try OWSMessageContentJobSerializer.table.createTable(database: db)
             try OWSRecipientIdentitySerializer.table.createTable(database: db)
             try ExperienceUpgradeSerializer.table.createTable(database: db)
+            try OWSDisappearingMessagesConfigurationSerializer.table.createTable(database: db)
 
             try db.create(index: "index_interactions_on_id_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,

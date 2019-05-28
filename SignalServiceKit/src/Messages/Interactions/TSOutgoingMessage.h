@@ -233,7 +233,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // This method is used to record a successful send to one recipient.
 - (void)updateWithSentRecipient:(NSString *)recipientId
                     wasSentByUD:(BOOL)wasSentByUD
-                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method is used to record a skipped send to one recipient.
 - (void)updateWithSkippedRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;

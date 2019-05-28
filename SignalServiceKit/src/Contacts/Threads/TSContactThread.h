@@ -65,7 +65,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 // recipient without using a read/write transaction to create a
 // contact thread.
 + (NSString *)conversationColorNameForRecipientId:(NSString *)recipientId
-                                      transaction:(YapDatabaseReadTransaction *)transaction;
+                                      transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

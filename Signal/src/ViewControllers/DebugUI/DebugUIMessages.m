@@ -395,15 +395,11 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
     __block TSOutgoingMessage *message;
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        if (!transaction.transitional_yapWriteTransaction) {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-            return;
-        }
         message = [ThreadUtil enqueueMessageWithText:text
                                             inThread:thread
                                     quotedReplyModel:nil
                                     linkPreviewDraft:nil
-                                         transaction:transaction.transitional_yapWriteTransaction];
+                                         transaction:transaction];
     }];
     OWSLogError(@"sendTextMessageInThread timestamp: %llu.", message.timestamp);
 }
@@ -1781,11 +1777,6 @@ NS_ASSUME_NONNULL_BEGIN
            messageBody:(nullable NSString *)messageBody
 {
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        if (!transaction.transitional_yapReadTransaction) {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-            return;
-        }
-
         NSArray<SignalAttachment *> *attachments = @[];
         if (attachment != nil) {
             attachments = @[ attachment ];
@@ -1795,7 +1786,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   inThread:thread
                           quotedReplyModel:nil
                           linkPreviewDraft:nil
-                               transaction:transaction.transitional_yapReadTransaction];
+                               transaction:transaction];
     }];
 }
 
@@ -4009,16 +4000,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            if (!transaction.transitional_yapWriteTransaction) {
-                OWSFailDebug(@"failure: not yet implemented for GRDB");
-                return;
-            }
-
             [ThreadUtil enqueueMessageWithText:[@(counter) description]
                                       inThread:thread
                               quotedReplyModel:nil
                               linkPreviewDraft:nil
-                                   transaction:transaction.transitional_yapWriteTransaction];
+                                   transaction:transaction];
         }];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             [self createNewGroups:counter - 1 recipientId:recipientId];
@@ -4440,10 +4426,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                ephemeralMessage:nil];
                 [message anyInsertWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
+                [message updateWithSentRecipient:recipientId wasSentByUD:NO transaction:transaction];
                 if (transaction.transitional_yapWriteTransaction) {
-                    [message updateWithSentRecipient:recipientId
-                                         wasSentByUD:NO
-                                         transaction:transaction.transitional_yapWriteTransaction];
                     [message updateWithDeliveredRecipient:recipientId
                                         deliveryTimestamp:timestamp
                                               transaction:transaction.transitional_yapWriteTransaction];
@@ -4994,17 +4978,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        if (!transaction.transitional_yapReadTransaction) {
-            OWSFailDebug(@"failure: not yet supported for GRDB");
-            return;
-        }
-
         TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithText:messageBody
                                                        mediaAttachments:attachments
                                                                inThread:thread
                                                        quotedReplyModel:nil
                                                        linkPreviewDraft:nil
-                                                            transaction:transaction.transitional_yapReadTransaction];
+                                                            transaction:transaction];
         OWSLogDebug(@"timestamp: %llu.", message.timestamp);
     }];
 }

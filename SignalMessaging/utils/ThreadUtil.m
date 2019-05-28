@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMessage,
     NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos,
-    YapDatabaseReadWriteTransaction *writeTransaction);
+    SDSAnyWriteTransaction *writeTransaction);
 
 @implementation ThreadUtil
 
@@ -84,13 +84,18 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
 }
 
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SSKEnvironment.shared.databaseStorage;
+}
+
 #pragma mark - Durable Message Enqueue
 
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(YapDatabaseReadTransaction *)transaction
+                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self enqueueMessageWithText:fullMessageText
                        mediaAttachments:@[]
@@ -105,7 +110,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(YapDatabaseReadTransaction *)transaction
+                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(thread);
@@ -119,10 +124,9 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                          transaction:transaction
                           completion:^(TSOutgoingMessage *savedMessage,
                               NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos,
-                              YapDatabaseReadWriteTransaction *writeTransaction) {
+                              SDSAnyWriteTransaction *writeTransaction) {
                               if (attachmentInfos.count == 0) {
-                                  [self.messageSenderJobQueue addMessage:savedMessage
-                                                             transaction:writeTransaction.asAnyWrite];
+                                  [self.messageSenderJobQueue addMessage:savedMessage transaction:writeTransaction];
                               } else {
                                   [self.messageSenderJobQueue addMediaMessage:savedMessage
                                                               attachmentInfos:attachmentInfos
@@ -136,7 +140,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                              thread:(TSThread *)thread
                                    quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                                    linkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                        transaction:(YapDatabaseReadTransaction *)transaction
+                                        transaction:(SDSAnyReadTransaction *)transaction
                                          completion:(BuildOutgoingMessageCompletionBlock)completionBlock
 {
     NSString *_Nullable truncatedText;
@@ -164,7 +168,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     }
 
     OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId transaction:transaction];
+        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:transaction];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
 
@@ -195,16 +199,18 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                       block:^(void (^benchmarkCompletion)(void)) {
                           // To avoid blocking the send flow, we dispatch an async write from within this read
                           // transaction
-                          [self.dbConnection
-                              asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull writeTransaction) {
-                                  [message saveWithTransaction:writeTransaction];
+                          [self.databaseStorage
+                              asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+                                  [message anyInsertWithTransaction:writeTransaction];
 
-                                  OWSLinkPreview *_Nullable linkPreview =
-                                      [self linkPreviewForLinkPreviewDraft:linkPreviewDraft
-                                                               transaction:writeTransaction];
-                                  if (linkPreview) {
-                                      [message updateWithLinkPreview:linkPreview
-                                                         transaction:writeTransaction.asAnyWrite];
+                                  if (writeTransaction.transitional_yapWriteTransaction != nil) {
+                                      OWSLinkPreview *_Nullable linkPreview =
+                                          [self linkPreviewForLinkPreviewDraft:linkPreviewDraft
+                                                                   transaction:writeTransaction
+                                                                                   .transitional_yapWriteTransaction];
+                                      if (linkPreview) {
+                                          [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
+                                      }
                                   }
 
                                   NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
@@ -215,7 +221,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                   }
                                   completionBlock(message, attachmentInfos, writeTransaction);
                               }
-                                      completionBlock:benchmarkCompletion];
+                                       completion:benchmarkCompletion];
                       }];
 
     return message;
@@ -409,10 +415,10 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                     thread:thread
                           quotedReplyModel:quotedReplyModel
                           linkPreviewDraft:nil
-                               transaction:transaction
+                               transaction:transaction.asAnyRead
                                 completion:^(TSOutgoingMessage *_Nonnull savedMessage,
                                     NSMutableArray<OWSOutgoingAttachmentInfo *> *_Nonnull attachmentInfos,
-                                    YapDatabaseReadWriteTransaction *_Nonnull writeTransaction) {
+                                    SDSAnyWriteTransaction *writeTransaction) {
                                     if (attachmentInfos.count == 0) {
                                         [messageSender sendMessage:savedMessage
                                             success:^{
