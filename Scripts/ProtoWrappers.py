@@ -321,7 +321,6 @@ class FileContext(BaseContext):
 //
 
 import Foundation
-import SignalCoreKit
 ''')
 
         writer.extend('''
@@ -897,8 +896,6 @@ class EnumContext(BaseContext):
                 case_name = '`default`'
             writer.add('case %s = %s' % (case_name, case_index,))
             max_case_index = max(max_case_index, int(case_index))
-
-        writer.add('case unknownEnumValue = %s' % str(max_case_index + 1))
         
         writer.pop_context()
 
@@ -912,7 +909,6 @@ class EnumContext(BaseContext):
         writer.add('switch value {')
         for case_name, case_index in self.case_pairs():
             writer.add('case .%s: return .%s' % (case_name, case_name,))
-        writer.add('@unknown default: return .unknownEnumValue')
         writer.add('}')
         writer.pop_indent()
         writer.add('}')
@@ -922,8 +918,6 @@ class EnumContext(BaseContext):
         writer.add('switch value {')
         for case_name, case_index in self.case_pairs():
             writer.add('case .%s: return .%s' % (case_name, case_name,))
-        writer.add('case .unknownEnumValue: owsFail("Invalid value: %s")' % ( self.swift_name, ) )
-            
         writer.add('}')
         writer.pop_indent()
         writer.add('}')

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import SignalCoreKit
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -24,7 +23,6 @@ public enum SSKProtoError: Error {
         case prekeyBundle = 3
         case receipt = 5
         case unidentifiedSender = 6
-        case unknownEnumValue = 7
     }
 
     private class func SSKProtoEnvelopeTypeWrap(_ value: SignalServiceProtos_Envelope.TypeEnum) -> SSKProtoEnvelopeType {
@@ -35,7 +33,6 @@ public enum SSKProtoError: Error {
         case .prekeyBundle: return .prekeyBundle
         case .receipt: return .receipt
         case .unidentifiedSender: return .unidentifiedSender
-        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -47,7 +44,6 @@ public enum SSKProtoError: Error {
         case .prekeyBundle: return .prekeyBundle
         case .receipt: return .receipt
         case .unidentifiedSender: return .unidentifiedSender
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoEnvelopeType")
         }
     }
 
@@ -281,14 +277,12 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
     @objc public enum SSKProtoTypingMessageAction: Int32 {
         case started = 0
         case stopped = 1
-        case unknownEnumValue = 2
     }
 
     private class func SSKProtoTypingMessageActionWrap(_ value: SignalServiceProtos_TypingMessage.Action) -> SSKProtoTypingMessageAction {
         switch value {
         case .started: return .started
         case .stopped: return .stopped
-        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -296,7 +290,6 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
         switch value {
         case .started: return .started
         case .stopped: return .stopped
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoTypingMessageAction")
         }
     }
 
@@ -1353,20 +1346,17 @@ extension SSKProtoCallMessage.SSKProtoCallMessageBuilder {
 
     @objc public enum SSKProtoDataMessageQuoteQuotedAttachmentFlags: Int32 {
         case voiceMessage = 1
-        case unknownEnumValue = 2
     }
 
     private class func SSKProtoDataMessageQuoteQuotedAttachmentFlagsWrap(_ value: SignalServiceProtos_DataMessage.Quote.QuotedAttachment.Flags) -> SSKProtoDataMessageQuoteQuotedAttachmentFlags {
         switch value {
         case .voiceMessage: return .voiceMessage
-        @unknown default: return .unknownEnumValue
         }
     }
 
     private class func SSKProtoDataMessageQuoteQuotedAttachmentFlagsUnwrap(_ value: SSKProtoDataMessageQuoteQuotedAttachmentFlags) -> SignalServiceProtos_DataMessage.Quote.QuotedAttachment.Flags {
         switch value {
         case .voiceMessage: return .voiceMessage
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoDataMessageQuoteQuotedAttachmentFlags")
         }
     }
 
@@ -1846,7 +1836,6 @@ extension SSKProtoDataMessageContactName.SSKProtoDataMessageContactNameBuilder {
         case mobile = 2
         case work = 3
         case custom = 4
-        case unknownEnumValue = 5
     }
 
     private class func SSKProtoDataMessageContactPhoneTypeWrap(_ value: SignalServiceProtos_DataMessage.Contact.Phone.TypeEnum) -> SSKProtoDataMessageContactPhoneType {
@@ -1855,7 +1844,6 @@ extension SSKProtoDataMessageContactName.SSKProtoDataMessageContactNameBuilder {
         case .mobile: return .mobile
         case .work: return .work
         case .custom: return .custom
-        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -1865,7 +1853,6 @@ extension SSKProtoDataMessageContactName.SSKProtoDataMessageContactNameBuilder {
         case .mobile: return .mobile
         case .work: return .work
         case .custom: return .custom
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoDataMessageContactPhoneType")
         }
     }
 
@@ -2001,7 +1988,6 @@ extension SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneBuilder
         case mobile = 2
         case work = 3
         case custom = 4
-        case unknownEnumValue = 5
     }
 
     private class func SSKProtoDataMessageContactEmailTypeWrap(_ value: SignalServiceProtos_DataMessage.Contact.Email.TypeEnum) -> SSKProtoDataMessageContactEmailType {
@@ -2010,7 +1996,6 @@ extension SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneBuilder
         case .mobile: return .mobile
         case .work: return .work
         case .custom: return .custom
-        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -2020,7 +2005,6 @@ extension SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneBuilder
         case .mobile: return .mobile
         case .work: return .work
         case .custom: return .custom
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoDataMessageContactEmailType")
         }
     }
 
@@ -2155,7 +2139,6 @@ extension SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailBuilder
         case home = 1
         case work = 2
         case custom = 3
-        case unknownEnumValue = 4
     }
 
     private class func SSKProtoDataMessageContactPostalAddressTypeWrap(_ value: SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum) -> SSKProtoDataMessageContactPostalAddressType {
@@ -2163,7 +2146,6 @@ extension SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailBuilder
         case .home: return .home
         case .work: return .work
         case .custom: return .custom
-        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -2172,7 +2154,6 @@ extension SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailBuilder
         case .home: return .home
         case .work: return .work
         case .custom: return .custom
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoDataMessageContactPostalAddressType")
         }
     }
 
@@ -2975,7 +2956,6 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         case endSession = 1
         case expirationTimerUpdate = 2
         case profileKeyUpdate = 4
-        case unknownEnumValue = 5
     }
 
     private class func SSKProtoDataMessageFlagsWrap(_ value: SignalServiceProtos_DataMessage.Flags) -> SSKProtoDataMessageFlags {
@@ -2983,7 +2963,6 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         case .endSession: return .endSession
         case .expirationTimerUpdate: return .expirationTimerUpdate
         case .profileKeyUpdate: return .profileKeyUpdate
-        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -2992,7 +2971,6 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         case .endSession: return .endSession
         case .expirationTimerUpdate: return .expirationTimerUpdate
         case .profileKeyUpdate: return .profileKeyUpdate
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoDataMessageFlags")
         }
     }
 
@@ -3000,20 +2978,17 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
     @objc public enum SSKProtoDataMessageProtocolVersion: Int32 {
         case initial = 0
-        case unknownEnumValue = 1
     }
 
     private class func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos_DataMessage.ProtocolVersion) -> SSKProtoDataMessageProtocolVersion {
         switch value {
         case .initial: return .initial
-        @unknown default: return .unknownEnumValue
         }
     }
 
     private class func SSKProtoDataMessageProtocolVersionUnwrap(_ value: SSKProtoDataMessageProtocolVersion) -> SignalServiceProtos_DataMessage.ProtocolVersion {
         switch value {
         case .initial: return .initial
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoDataMessageProtocolVersion")
         }
     }
 
@@ -3391,14 +3366,12 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
     @objc public enum SSKProtoReceiptMessageType: Int32 {
         case delivery = 0
         case read = 1
-        case unknownEnumValue = 2
     }
 
     private class func SSKProtoReceiptMessageTypeWrap(_ value: SignalServiceProtos_ReceiptMessage.TypeEnum) -> SSKProtoReceiptMessageType {
         switch value {
         case .delivery: return .delivery
         case .read: return .read
-        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -3406,7 +3379,6 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
         switch value {
         case .delivery: return .delivery
         case .read: return .read
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoReceiptMessageType")
         }
     }
 
@@ -3528,7 +3500,6 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
         case `default` = 0
         case verified = 1
         case unverified = 2
-        case unknownEnumValue = 3
     }
 
     private class func SSKProtoVerifiedStateWrap(_ value: SignalServiceProtos_Verified.State) -> SSKProtoVerifiedState {
@@ -3536,7 +3507,6 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
         case .default: return .default
         case .verified: return .verified
         case .unverified: return .unverified
-        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -3545,7 +3515,6 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
         case .default: return .default
         case .verified: return .verified
         case .unverified: return .unverified
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoVerifiedState")
         }
     }
 
@@ -4294,7 +4263,6 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
         case groups = 2
         case blocked = 3
         case configuration = 4
-        case unknownEnumValue = 5
     }
 
     private class func SSKProtoSyncMessageRequestTypeWrap(_ value: SignalServiceProtos_SyncMessage.Request.TypeEnum) -> SSKProtoSyncMessageRequestType {
@@ -4304,7 +4272,6 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
         case .groups: return .groups
         case .blocked: return .blocked
         case .configuration: return .configuration
-        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -4315,7 +4282,6 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
         case .groups: return .groups
         case .blocked: return .blocked
         case .configuration: return .configuration
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoSyncMessageRequestType")
         }
     }
 
@@ -4666,14 +4632,12 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
     @objc public enum SSKProtoSyncMessageStickerPackOperationType: Int32 {
         case install = 0
         case remove = 1
-        case unknownEnumValue = 2
     }
 
     private class func SSKProtoSyncMessageStickerPackOperationTypeWrap(_ value: SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum) -> SSKProtoSyncMessageStickerPackOperationType {
         switch value {
         case .install: return .install
         case .remove: return .remove
-        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -4681,7 +4645,6 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
         switch value {
         case .install: return .install
         case .remove: return .remove
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoSyncMessageStickerPackOperationType")
         }
     }
 
@@ -5067,20 +5030,17 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
 
     @objc public enum SSKProtoAttachmentPointerFlags: Int32 {
         case voiceMessage = 1
-        case unknownEnumValue = 2
     }
 
     private class func SSKProtoAttachmentPointerFlagsWrap(_ value: SignalServiceProtos_AttachmentPointer.Flags) -> SSKProtoAttachmentPointerFlags {
         switch value {
         case .voiceMessage: return .voiceMessage
-        @unknown default: return .unknownEnumValue
         }
     }
 
     private class func SSKProtoAttachmentPointerFlagsUnwrap(_ value: SSKProtoAttachmentPointerFlags) -> SignalServiceProtos_AttachmentPointer.Flags {
         switch value {
         case .voiceMessage: return .voiceMessage
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoAttachmentPointerFlags")
         }
     }
 
@@ -5347,7 +5307,6 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         case deliver = 2
         case quit = 3
         case requestInfo = 4
-        case unknownEnumValue = 5
     }
 
     private class func SSKProtoGroupContextTypeWrap(_ value: SignalServiceProtos_GroupContext.TypeEnum) -> SSKProtoGroupContextType {
@@ -5357,7 +5316,6 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         case .deliver: return .deliver
         case .quit: return .quit
         case .requestInfo: return .requestInfo
-        @unknown default: return .unknownEnumValue
         }
     }
 
@@ -5368,7 +5326,6 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         case .deliver: return .deliver
         case .quit: return .quit
         case .requestInfo: return .requestInfo
-        case .unknownEnumValue: owsFail("Invalid value: SSKProtoGroupContextType")
         }
     }
 
