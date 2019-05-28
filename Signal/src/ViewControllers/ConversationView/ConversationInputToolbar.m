@@ -132,8 +132,18 @@ const CGFloat kMaxTextViewHeight = 98;
     if (self) {
         [self createContents];
     }
-    
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(applicationDidBecomeActive:)
+                                                 name:OWSApplicationDidBecomeActiveNotification
+                                               object:nil];
+
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Dependencies
@@ -1184,6 +1194,11 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 }
 
+- (void)textViewDidBecomeFirstResponder:(UITextView *)textView
+{
+    self.isStickerKeyboardActive = NO;
+}
+
 #pragma mark QuotedReplyPreviewViewDelegate
 
 - (void)quotedReplyPreviewDidPressCancel:(QuotedReplyPreview *)preview
@@ -1427,6 +1442,25 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)viewDidAppear
 {
     [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    [self restoreStickerKeyboardIfNecessary];
+}
+
+- (void)ensureFirstResponderState
+{
+    [self restoreStickerKeyboardIfNecessary];
+}
+
+- (void)restoreStickerKeyboardIfNecessary
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.isStickerKeyboardActive && !self.desiredFirstResponder.isFirstResponder) {
+        [self.desiredFirstResponder becomeFirstResponder];
+    }
 }
 
 @end

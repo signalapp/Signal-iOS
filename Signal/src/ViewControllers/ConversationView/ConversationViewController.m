@@ -653,7 +653,14 @@ typedef enum : NSUInteger {
 - (BOOL)becomeFirstResponder
 {
     OWSLogDebug(@"");
-    return [super becomeFirstResponder];
+
+    BOOL result = [super becomeFirstResponder];
+
+    if (result) {
+        [self.inputToolbar ensureFirstResponderState];
+    }
+
+    return result;
 }
 
 - (BOOL)resignFirstResponder

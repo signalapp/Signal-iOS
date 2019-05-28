@@ -23,7 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ConversationTextViewToolbarDelegate <NSObject>
 
 - (void)textViewDidChange:(UITextView *)textView;
+
 - (void)textViewDidChangeSelection:(UITextView *)textView;
+
+- (void)textViewDidBecomeFirstResponder:(UITextView *)textView;
 
 @end
 
