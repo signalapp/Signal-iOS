@@ -216,6 +216,7 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
                 @"Message shown in conversation view that offers to share your profile with a group.");
         default:
             OWSFailDebug(@"Unknown info message type.");
+            break;
     }
 
     return @"Unknown Info Message Type";
