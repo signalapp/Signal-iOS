@@ -3127,8 +3127,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
             proto.sticker = valueParam.proto
         }
 
-        @objc public func setRequiredProtocolVersion(_ valueParam: SSKProtoDataMessageProtocolVersion) {
-            proto.requiredProtocolVersion = SSKProtoDataMessageProtocolVersionUnwrap(valueParam)
+        @objc public func setRequiredProtocolVersion(_ valueParam: UInt32) {
+            proto.requiredProtocolVersion = valueParam
         }
 
         @objc public func build() throws -> SSKProtoDataMessage {
@@ -3195,8 +3195,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         return proto.hasTimestamp
     }
 
-    @objc public var requiredProtocolVersion: SSKProtoDataMessageProtocolVersion {
-        return SSKProtoDataMessage.SSKProtoDataMessageProtocolVersionWrap(proto.requiredProtocolVersion)
+    @objc public var requiredProtocolVersion: UInt32 {
+        return proto.requiredProtocolVersion
     }
     @objc public var hasRequiredProtocolVersion: Bool {
         return proto.hasRequiredProtocolVersion

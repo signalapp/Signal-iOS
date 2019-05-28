@@ -648,8 +648,8 @@ struct SignalServiceProtos_DataMessage {
   /// Clears the value of `sticker`. Subsequent reads from it will return its default value.
   mutating func clearSticker() {_uniqueStorage()._sticker = nil}
 
-  var requiredProtocolVersion: SignalServiceProtos_DataMessage.ProtocolVersion {
-    get {return _storage._requiredProtocolVersion ?? .initial}
+  var requiredProtocolVersion: UInt32 {
+    get {return _storage._requiredProtocolVersion ?? 0}
     set {_uniqueStorage()._requiredProtocolVersion = newValue}
   }
   /// Returns true if `requiredProtocolVersion` has been explicitly set.
@@ -3103,7 +3103,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _contact: [SignalServiceProtos_DataMessage.Contact] = []
     var _preview: [SignalServiceProtos_DataMessage.Preview] = []
     var _sticker: SignalServiceProtos_DataMessage.Sticker? = nil
-    var _requiredProtocolVersion: SignalServiceProtos_DataMessage.ProtocolVersion? = nil
+    var _requiredProtocolVersion: UInt32? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -3148,7 +3148,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 9: try decoder.decodeRepeatedMessageField(value: &_storage._contact)
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
         case 11: try decoder.decodeSingularMessageField(value: &_storage._sticker)
-        case 12: try decoder.decodeSingularEnumField(value: &_storage._requiredProtocolVersion)
+        case 12: try decoder.decodeSingularUInt32Field(value: &_storage._requiredProtocolVersion)
         default: break
         }
       }
@@ -3191,7 +3191,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
       }
       if let v = _storage._requiredProtocolVersion {
-        try visitor.visitSingularEnumField(value: v, fieldNumber: 12)
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 12)
       }
     }
     try unknownFields.traverse(visitor: &visitor)

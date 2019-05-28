@@ -241,7 +241,7 @@ message DataMessage {
   repeated Contact           contact                 =  9;
   repeated Preview           preview                 = 10;
   optional Sticker           sticker                 = 11;
-  optional ProtocolVersion   requiredProtocolVersion = 12 [default = INITIAL];
+  optional uint32            requiredProtocolVersion = 12;
 }
 
 message NullMessage {
