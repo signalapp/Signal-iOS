@@ -338,6 +338,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return SSKEnvironment.shared.signedPreKeyStore;
 }
 
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark -
 
 - (NSOperationQueue *)sendingQueueForMessage:(TSOutgoingMessage *)message
@@ -1199,14 +1204,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     dispatch_async([OWSDispatch sendingQueue], ^{
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [messageSend.message updateWithSentRecipient:messageSend.recipient.uniqueId
                                              wasSentByUD:wasSentByUD
                                              transaction:transaction];
 
-            // If we've just delivered a message to a user, we know they
-            // have a valid Signal account.
-            [SignalRecipient markRecipientAsRegisteredAndGet:recipient.recipientId transaction:transaction];
+            if (transaction.transitional_yapWriteTransaction) {
+                // If we've just delivered a message to a user, we know they
+                // have a valid Signal account.
+                [SignalRecipient markRecipientAsRegisteredAndGet:recipient.recipientId
+                                                     transaction:transaction.transitional_yapWriteTransaction];
+            }
         }];
 
         messageSend.success();

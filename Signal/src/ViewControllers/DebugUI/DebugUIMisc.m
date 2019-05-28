@@ -40,6 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSPrimaryStorage.sharedManager dbReadWriteConnection];
 }
 
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -268,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
         return;
     }
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
         [ThreadUtil enqueueMessageWithText:nil
                           mediaAttachments:@[ attachment ]
                                   inThread:thread

@@ -90,7 +90,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
                                              indexPath:(NSIndexPath *)indexPath;
 
-- (void)replaceInteraction:(TSInteraction *)interaction transaction:(YapDatabaseReadTransaction *)transaction;
+- (void)replaceInteraction:(TSInteraction *)interaction transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)clearCachedLayoutState;
 

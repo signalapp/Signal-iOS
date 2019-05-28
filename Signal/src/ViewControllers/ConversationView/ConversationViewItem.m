@@ -145,18 +145,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     _isGroupThread = isGroupThread;
     _conversationStyle = conversationStyle;
 
-    if (transaction.transitional_yapReadTransaction) {
-        [self updateAuthorConversationColorNameWithTransaction:transaction.transitional_yapReadTransaction];
-    } else {
-        _authorConversationColorName = kConversationColorName_Default;
-    }
+    [self setAuthorConversationColorNameWithTransaction:transaction];
 
     [self ensureViewState:transaction];
 
     return self;
 }
 
-- (void)replaceInteraction:(TSInteraction *)interaction transaction:(YapDatabaseReadTransaction *)transaction
+- (void)replaceInteraction:(TSInteraction *)interaction transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(interaction);
 
@@ -179,14 +175,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.linkPreview = nil;
     self.linkPreviewAttachment = nil;
 
-    [self updateAuthorConversationColorNameWithTransaction:transaction];
+    [self setAuthorConversationColorNameWithTransaction:transaction];
 
     [self clearCachedLayoutState];
 
-    [self ensureViewState:transaction.asAnyRead];
+    [self ensureViewState:transaction];
 }
 
-- (void)updateAuthorConversationColorNameWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (void)setAuthorConversationColorNameWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 

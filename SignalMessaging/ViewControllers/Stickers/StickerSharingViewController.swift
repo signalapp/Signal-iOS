@@ -78,7 +78,7 @@ public class StickerSharingViewController: SelectThreadViewController {
         AssertIsOnMainThread()
 
         primaryStorage.dbReadConnection.read { (transaction) in
-            ThreadUtil.enqueueMessage(withText: packUrl, in: thread, quotedReplyModel: nil, linkPreviewDraft: linkPreviewDraft, transaction: transaction)
+            ThreadUtil.enqueueMessage(withText: packUrl, in: thread, quotedReplyModel: nil, linkPreviewDraft: linkPreviewDraft, transaction: transaction.asAnyRead)
         }
 
         self.dismiss(animated: true)

@@ -51,14 +51,14 @@ NS_ASSUME_NONNULL_BEGIN
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(YapDatabaseReadTransaction *)transaction;
+                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 + (TSOutgoingMessage *)enqueueMessageWithText:(nullable NSString *)fullMessageText
                              mediaAttachments:(NSArray<SignalAttachment *> *)attachments
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(YapDatabaseReadTransaction *)transaction;
+                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread;
