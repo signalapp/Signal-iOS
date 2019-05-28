@@ -37,9 +37,17 @@ extern NSString *const kLocalProfileUniqueId;
 + (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId
                                            dbConnection:(YapDatabaseConnection *)dbConnection;
 
++ (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction;
+
 + (BOOL)localUserProfileExists:(YapDatabaseConnection *)dbConnection;
 
 #pragma mark - Update With... Methods
+
+- (void)updateWithProfileName:(nullable NSString *)profileName
+                avatarUrlPath:(nullable NSString *)avatarUrlPath
+               avatarFileName:(nullable NSString *)avatarFileName
+                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+                   completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath

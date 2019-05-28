@@ -8,6 +8,7 @@
 #import "OWSMessageSender.h"
 #import "OWSOutgoingSyncMessage.h"
 #import "OWSPrimaryStorage.h"
+#import "ProfileManagerProtocol.h"
 #import "ProtoUtils.h"
 #import "SSKEnvironment.h"
 #import "SignalRecipient.h"
@@ -1102,13 +1103,17 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId dataMessageBuilder:builder];
 
-    SSKProtoDataMessageContactBuilder *profileBuilder = [SSKProtoDataMessageContact builder];
-    SSKProtoDataMessageContactNameBuilder *nameBuilder = [SSKProtoDataMessageContactName builder];
-    [nameBuilder setDisplayName:@"Test"]; // TODO: Use actual name
-    SSKProtoDataMessageContactName *name = [nameBuilder buildIgnoringErrors];
-    [profileBuilder setName:name];
-    SSKProtoDataMessageContact *profile = [profileBuilder buildIgnoringErrors];
-    [builder setProfile:profile];
+    id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
+    NSString *displayName = [profileManager localProfileName];
+    if (displayName != nil) {
+        SSKProtoDataMessageContactBuilder *profileBuilder = [SSKProtoDataMessageContact builder];
+        SSKProtoDataMessageContactNameBuilder *nameBuilder = [SSKProtoDataMessageContactName builder];
+        [nameBuilder setDisplayName:displayName];
+        SSKProtoDataMessageContactName *name = [nameBuilder buildIgnoringErrors];
+        [profileBuilder setName:name];
+        SSKProtoDataMessageContact *profile = [profileBuilder buildIgnoringErrors];
+        [builder setProfile:profile];
+    }
     
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];

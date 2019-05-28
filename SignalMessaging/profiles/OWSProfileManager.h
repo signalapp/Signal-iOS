@@ -17,6 +17,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 @class OWSPrimaryStorage;
 @class TSNetworkManager;
 @class TSThread;
+@class YapDatabaseReadWriteTransaction;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
@@ -80,6 +81,8 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (void)updateProfileForRecipientId:(NSString *)recipientId
                profileNameEncrypted:(nullable NSData *)profileNameEncrypted
                       avatarUrlPath:(nullable NSString *)avatarUrlPath;
+
+- (void)setDisplayNameForContactWithID:(NSString *)contactID to:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - User Interface
 

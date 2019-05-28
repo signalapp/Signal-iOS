@@ -1445,6 +1445,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
+        NSString *displayName = dataMessage.profile.name.displayName;
+        [self.profileManager setDisplayNameForContactWithID:thread.contactIdentifier to:displayName with:transaction];
+        
         if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
         
         NSArray<TSAttachmentPointer *> *attachmentPointers =
@@ -1478,6 +1481,7 @@ NS_ASSUME_NONNULL_BEGIN
                                thread:thread
                              envelope:envelope
                           transaction:transaction];
+        
         return incomingMessage;
     }
 }

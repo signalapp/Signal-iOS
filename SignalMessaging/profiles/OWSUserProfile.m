@@ -54,19 +54,25 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 + (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId
                                            dbConnection:(YapDatabaseConnection *)dbConnection
 {
-    OWSAssertDebug(recipientId.length > 0);
-
     __block OWSUserProfile *userProfile;
     [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        userProfile = [OWSUserProfile fetchObjectWithUniqueID:recipientId transaction:transaction];
+        userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId transaction:transaction];
     }];
+    return userProfile;
+}
+
++ (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssertDebug(recipientId.length > 0);
+
+    OWSUserProfile *userProfile = [OWSUserProfile fetchObjectWithUniqueID:recipientId transaction:transaction];
 
     if (!userProfile) {
         userProfile = [[OWSUserProfile alloc] initWithRecipientId:recipientId];
 
         if ([recipientId isEqualToString:kLocalProfileUniqueId]) {
             [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
-                                 dbConnection:dbConnection
+                                 dbConnection:transaction.connection
                                    completion:nil];
         }
     }
@@ -180,38 +186,46 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         functionName:(const char *)functionName
         dbConnection:(YapDatabaseConnection *)dbConnection
           completion:(nullable OWSUserProfileCompletion)completion
-{
+    {
+        [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [self applyChanges:changeBlock functionName:functionName transaction:transaction completion:completion];
+        }];
+}
+    
+- (void)applyChanges:(void (^)(id))changeBlock
+        functionName:(const char *)functionName
+        transaction:(YapDatabaseReadWriteTransaction *)transaction
+          completion:(nullable OWSUserProfileCompletion)completion
+    {
     // self might be the latest instance, so take a "before" snapshot
     // before any changes have been made.
     __block NSDictionary *beforeSnapshot = [self.dictionaryValue copy];
 
     changeBlock(self);
 
-    __block BOOL didChange = YES;
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        NSString *collection = [[self class] collection];
-        OWSUserProfile *_Nullable latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-        if (latestInstance) {
-            // If self is NOT the latest instance, take a new "before" snapshot
-            // before updating.
-            if (self != latestInstance) {
-                beforeSnapshot = [latestInstance.dictionaryValue copy];
-            }
-
-            changeBlock(latestInstance);
-
-            NSDictionary *afterSnapshot = [latestInstance.dictionaryValue copy];
-
-            if ([beforeSnapshot isEqual:afterSnapshot]) {
-                OWSLogVerbose(@"Ignoring redundant update in %s: %@", functionName, self.debugDescription);
-                didChange = NO;
-            } else {
-                [latestInstance saveWithTransaction:transaction];
-            }
-        } else {
-            [self saveWithTransaction:transaction];
+    BOOL didChange = YES;
+    NSString *collection = [[self class] collection];
+    OWSUserProfile *_Nullable latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
+    if (latestInstance) {
+        // If self is NOT the latest instance, take a new "before" snapshot
+        // before updating.
+        if (self != latestInstance) {
+            beforeSnapshot = [latestInstance.dictionaryValue copy];
         }
-    }];
+
+        changeBlock(latestInstance);
+
+        NSDictionary *afterSnapshot = [latestInstance.dictionaryValue copy];
+
+        if ([beforeSnapshot isEqual:afterSnapshot]) {
+            OWSLogVerbose(@"Ignoring redundant update in %s: %@", functionName, self.debugDescription);
+            didChange = NO;
+        } else {
+            [latestInstance saveWithTransaction:transaction];
+        }
+    } else {
+        [self saveWithTransaction:transaction];
+    }
 
     if (completion) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
@@ -255,9 +269,27 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                avatarFileName:(nullable NSString *)avatarFileName
+                 transaction:(YapDatabaseReadWriteTransaction *)transaction
+                   completion:(nullable OWSUserProfileCompletion)completion
+    {
+    [self applyChanges:^(OWSUserProfile *userProfile) {
+        [userProfile setProfileName:[profileName ows_stripped]];
+        // Always setAvatarUrlPath: before you setAvatarFileName: since
+        // setAvatarUrlPath: may clear the avatar filename.
+        [userProfile setAvatarUrlPath:avatarUrlPath];
+        [userProfile setAvatarFileName:avatarFileName];
+    }
+          functionName:__PRETTY_FUNCTION__
+          transaction:transaction
+            completion:completion];
+}
+    
+- (void)updateWithProfileName:(nullable NSString *)profileName
+                avatarUrlPath:(nullable NSString *)avatarUrlPath
+               avatarFileName:(nullable NSString *)avatarFileName
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
-{
+    {
     [self applyChanges:^(OWSUserProfile *userProfile) {
         [userProfile setProfileName:[profileName ows_stripped]];
         // Always setAvatarUrlPath: before you setAvatarFileName: since

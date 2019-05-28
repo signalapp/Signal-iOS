@@ -1325,6 +1325,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     });
 }
 
+- (void)setDisplayNameForContactWithID:(NSString *)contactID to:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:contactID transaction:transaction];
+    [userProfile updateWithProfileName:displayName avatarUrlPath:@"" avatarFileName:@"" transaction:transaction completion:nil];
+}
+
 - (BOOL)isNullableDataEqual:(NSData *_Nullable)left toData:(NSData *_Nullable)right
 {
     if (left == nil && right == nil) {

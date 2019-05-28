@@ -4,12 +4,15 @@
 
 @class OWSAES256Key;
 @class TSThread;
+@class YapDatabaseReadWriteTransaction;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol ProfileManagerProtocol <NSObject>
 
 - (OWSAES256Key *)localProfileKey;
+
+- (nullable NSString *)localProfileName;
 
 - (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId;
 - (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId;
@@ -24,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)fetchLocalUsersProfile;
 
 - (void)fetchProfileForRecipientId:(NSString *)recipientId;
+
+- (void)setDisplayNameForContactWithID:(NSString *)contactID to:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 
