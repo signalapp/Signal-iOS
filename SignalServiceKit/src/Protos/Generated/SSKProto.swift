@@ -3150,6 +3150,100 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageLokiProfile
+
+@objc public class SSKProtoDataMessageLokiProfile: NSObject {
+
+    // MARK: - SSKProtoDataMessageLokiProfileBuilder
+
+    @objc public class func builder() -> SSKProtoDataMessageLokiProfileBuilder {
+        return SSKProtoDataMessageLokiProfileBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoDataMessageLokiProfileBuilder {
+        let builder = SSKProtoDataMessageLokiProfileBuilder()
+        if let _value = displayName {
+            builder.setDisplayName(_value)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoDataMessageLokiProfileBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.LokiProfile()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setDisplayName(_ valueParam: String) {
+            proto.displayName = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoDataMessageLokiProfile {
+            return try SSKProtoDataMessageLokiProfile.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageLokiProfile.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.LokiProfile
+
+    @objc public var displayName: String? {
+        guard proto.hasDisplayName else {
+            return nil
+        }
+        return proto.displayName
+    }
+    @objc public var hasDisplayName: Bool {
+        return proto.hasDisplayName
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.LokiProfile) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageLokiProfile {
+        let proto = try SignalServiceProtos_DataMessage.LokiProfile(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.LokiProfile) throws -> SSKProtoDataMessageLokiProfile {
+        // MARK: - Begin Validation Logic for SSKProtoDataMessageLokiProfile -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessageLokiProfile -
+
+        let result = SSKProtoDataMessageLokiProfile(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessageLokiProfile {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoDataMessageLokiProfile? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessage
 
 @objc public class SSKProtoDataMessage: NSObject {
@@ -3281,7 +3375,7 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
             proto.preview = wrappedItems.map { $0.proto }
         }
 
-        @objc public func setProfile(_ valueParam: SSKProtoDataMessageContact) {
+        @objc public func setProfile(_ valueParam: SSKProtoDataMessageLokiProfile) {
             proto.profile = valueParam.proto
         }
 
@@ -3306,7 +3400,7 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
 
     @objc public let preview: [SSKProtoDataMessagePreview]
 
-    @objc public let profile: SSKProtoDataMessageContact?
+    @objc public let profile: SSKProtoDataMessageLokiProfile?
 
     @objc public var body: String? {
         guard proto.hasBody else {
@@ -3355,7 +3449,7 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
                  quote: SSKProtoDataMessageQuote?,
                  contact: [SSKProtoDataMessageContact],
                  preview: [SSKProtoDataMessagePreview],
-                 profile: SSKProtoDataMessageContact?) {
+                 profile: SSKProtoDataMessageLokiProfile?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -3395,9 +3489,9 @@ extension SSKProtoDataMessagePreview.SSKProtoDataMessagePreviewBuilder {
         var preview: [SSKProtoDataMessagePreview] = []
         preview = try proto.preview.map { try SSKProtoDataMessagePreview.parseProto($0) }
 
-        var profile: SSKProtoDataMessageContact? = nil
+        var profile: SSKProtoDataMessageLokiProfile? = nil
         if proto.hasProfile {
-            profile = try SSKProtoDataMessageContact.parseProto(proto.profile)
+            profile = try SSKProtoDataMessageLokiProfile.parseProto(proto.profile)
         }
 
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -

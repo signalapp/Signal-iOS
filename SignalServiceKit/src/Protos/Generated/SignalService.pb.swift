@@ -793,8 +793,8 @@ struct SignalServiceProtos_DataMessage {
   }
 
   /// Loki: The current user's profile
-  var profile: SignalServiceProtos_DataMessage.Contact {
-    get {return _storage._profile ?? SignalServiceProtos_DataMessage.Contact()}
+  var profile: SignalServiceProtos_DataMessage.LokiProfile {
+    get {return _storage._profile ?? SignalServiceProtos_DataMessage.LokiProfile()}
     set {_uniqueStorage()._profile = newValue}
   }
   /// Returns true if `profile` has been explicitly set.
@@ -1418,6 +1418,28 @@ struct SignalServiceProtos_DataMessage {
     init() {}
 
     fileprivate var _storage = _StorageClass.defaultInstance
+  }
+
+  /// Loki: A custom message for our profile
+  struct LokiProfile {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var displayName: String {
+      get {return _displayName ?? String()}
+      set {_displayName = newValue}
+    }
+    /// Returns true if `displayName` has been explicitly set.
+    var hasDisplayName: Bool {return self._displayName != nil}
+    /// Clears the value of `displayName`. Subsequent reads from it will return its default value.
+    mutating func clearDisplayName() {self._displayName = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _displayName: String? = nil
   }
 
   init() {}
@@ -3137,7 +3159,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _quote: SignalServiceProtos_DataMessage.Quote? = nil
     var _contact: [SignalServiceProtos_DataMessage.Contact] = []
     var _preview: [SignalServiceProtos_DataMessage.Preview] = []
-    var _profile: SignalServiceProtos_DataMessage.Contact? = nil
+    var _profile: SignalServiceProtos_DataMessage.LokiProfile? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -3883,6 +3905,35 @@ extension SignalServiceProtos_DataMessage.Preview: SwiftProtobuf.Message, SwiftP
       }
       if !storagesAreEqual {return false}
     }
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_DataMessage.LokiProfile: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".LokiProfile"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "displayName"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self._displayName)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._displayName {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.LokiProfile, rhs: SignalServiceProtos_DataMessage.LokiProfile) -> Bool {
+    if lhs._displayName != rhs._displayName {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
