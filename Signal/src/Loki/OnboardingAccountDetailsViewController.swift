@@ -10,17 +10,6 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         result.accessibilityIdentifier = "onboarding.accountDetailsStep.userNameTextField"
         return result
     }()
-    
-    private lazy var passwordTextField: UITextField = {
-        let result = UITextField()
-        result.textColor = Theme.primaryColor
-        result.font = UIFont.ows_dynamicTypeBodyClamped
-        result.textAlignment = .center
-        result.placeholder = NSLocalizedString("Password (Optional)", comment: "")
-        result.accessibilityIdentifier = "onboarding.accountDetailsStep.passwordTextField"
-        result.isSecureTextEntry = true
-        return result
-    }()
 
     private var normalizedUserName: String? {
         let result = userNameTextField.text!.ows_stripped()
@@ -36,8 +25,6 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         let topSpacer = UIView.vStretchingSpacer()
         let displayNameLabel = createExplanationLabel(text: NSLocalizedString("Enter a name to be shown to your contacts", comment: ""))
         displayNameLabel.accessibilityIdentifier = "onboarding.accountDetailsStep.displayNameLabel"
-        let passwordLabel = createExplanationLabel(text: NSLocalizedString("Type an optional password for added security", comment: ""))
-        passwordLabel.accessibilityIdentifier = "onboarding.accountDetailsStep.passwordLabel"
         let bottomSpacer = UIView.vStretchingSpacer()
         let nextButton = createButton(title: NSLocalizedString("Next", comment: ""), selector: #selector(handleNextButtonPressed))
         nextButton.accessibilityIdentifier = "onboarding.accountDetailsStep.nextButton"
@@ -47,10 +34,6 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
             displayNameLabel,
             UIView.spacer(withHeight: 8),
             userNameTextField,
-            UIView.spacer(withHeight: 16),
-            passwordLabel,
-            UIView.spacer(withHeight: 8),
-            passwordTextField,
             bottomSpacer,
             nextButton
         ])
