@@ -55,8 +55,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const SSKProtoDataMessageProtocolVersion kCurrentProtocolVersion = SSKProtoDataMessageProtocolVersionInitial;
-
 @interface OWSMessageManager ()
 
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
@@ -1234,7 +1232,8 @@ const SSKProtoDataMessageProtocolVersion kCurrentProtocolVersion = SSKProtoDataM
             [newMemberIds addObjectsFromArray:oldGroupThread.groupModel.groupMemberIds];
         }
 
-        if (dataMessage.requiredProtocolVersion > kCurrentProtocolVersion) {
+        if (dataMessage.hasRequiredProtocolVersion
+            && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
             [self insertUnknownProtocolVersionErrorInThread:oldGroupThread
                                             protocolVersion:dataMessage.requiredProtocolVersion
                                                 transaction:transaction.asAnyWrite];
@@ -1380,7 +1379,8 @@ const SSKProtoDataMessageProtocolVersion kCurrentProtocolVersion = SSKProtoDataM
         TSContactThread *thread =
             [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
-        if (dataMessage.requiredProtocolVersion > kCurrentProtocolVersion) {
+        if (dataMessage.hasRequiredProtocolVersion
+            && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
             [self insertUnknownProtocolVersionErrorInThread:thread
                                             protocolVersion:dataMessage.requiredProtocolVersion
                                                 transaction:transaction.asAnyWrite];
