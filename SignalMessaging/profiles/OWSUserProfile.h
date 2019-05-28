@@ -37,7 +37,7 @@ extern NSString *const kLocalProfileUniqueId;
 + (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId
                                            dbConnection:(YapDatabaseConnection *)dbConnection;
 
-+ (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction;
++ (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 + (BOOL)localUserProfileExists:(YapDatabaseConnection *)dbConnection;
 

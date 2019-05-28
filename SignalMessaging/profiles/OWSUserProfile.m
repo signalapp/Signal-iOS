@@ -55,13 +55,13 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                            dbConnection:(YapDatabaseConnection *)dbConnection
 {
     __block OWSUserProfile *userProfile;
-    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId transaction:transaction];
     }];
     return userProfile;
 }
 
-+ (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction
++ (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(recipientId.length > 0);
 
@@ -72,7 +72,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
         if ([recipientId isEqualToString:kLocalProfileUniqueId]) {
             [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
-                                 dbConnection:transaction.connection
+                                  transaction:transaction
                                    completion:nil];
         }
     }
@@ -365,13 +365,22 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                 dbConnection:(YapDatabaseConnection *)dbConnection
                   completion:(nullable OWSUserProfileCompletion)completion
 {
+    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self updateWithProfileKey:profileKey transaction:transaction completion:completion];
+    }];
+}
+
+- (void)updateWithProfileKey:(OWSAES256Key *)profileKey
+                transaction:(YapDatabaseReadWriteTransaction *)transaction
+                  completion:(nullable OWSUserProfileCompletion)completion
+{
     OWSAssertDebug(profileKey);
 
     [self applyChanges:^(OWSUserProfile *userProfile) {
         [userProfile setProfileKey:profileKey];
     }
           functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
+           transaction:transaction
             completion:completion];
 }
 
@@ -438,7 +447,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 + (NSString *)profileAvatarFilepathWithFilename:(NSString *)filename
 {
-    OWSAssertDebug(filename.length > 0);
+    if (filename.length <= 0) { return @""; };
 
     return [self.profileAvatarsDirPath stringByAppendingPathComponent:filename];
 }

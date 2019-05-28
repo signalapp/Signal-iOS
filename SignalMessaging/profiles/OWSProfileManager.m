@@ -1441,7 +1441,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (nullable NSData *)loadProfileDataWithFilename:(NSString *)filename
 {
-    OWSAssertDebug(filename.length > 0);
+    if (filename.length <= 0) { return nil; };
 
     NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:filename];
     return [NSData dataWithContentsOfFile:filePath];
@@ -1473,7 +1473,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (void)updateProfileAvatarCache:(nullable UIImage *)image filename:(NSString *)filename
 {
-    OWSAssertDebug(filename.length > 0);
+    if (filename.length <= 0) { return; };
 
     @synchronized(self.profileAvatarImageCache)
     {

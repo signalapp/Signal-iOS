@@ -1104,7 +1104,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId dataMessageBuilder:builder];
 
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-    NSString *displayName = [profileManager localProfileName];
+    NSString *displayName = profileManager.localProfileName;
     if (displayName != nil) {
         SSKProtoDataMessageContactBuilder *profileBuilder = [SSKProtoDataMessageContact builder];
         SSKProtoDataMessageContactNameBuilder *nameBuilder = [SSKProtoDataMessageContactName builder];
