@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @synthesize mainWindow = _mainWindow;
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize buildTime = _buildTime;
 
 - (instancetype)init
 {
@@ -116,6 +117,33 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isRunningTests
 {
     return YES;
+}
+
+- (NSDate *)buildTime
+{
+    if (!_buildTime) {
+        _buildTime = [NSDate new];
+    }
+    return _buildTime;
+}
+
+- (NSInteger)daysUntilBuildExpiry
+{
+    NSInteger buildAge = [[[NSCalendar currentCalendar] components:NSCalendarUnitDay
+                                                          fromDate:self.buildTime
+                                                            toDate:[NSDate new]
+                                                           options:0] day];
+    return 90 - buildAge;
+}
+
+- (BOOL)isExpiringSoon
+{
+    return self.daysUntilBuildExpiry <= 10;
+}
+
+- (BOOL)isExpired
+{
+    return self.daysUntilBuildExpiry <= 0;
 }
 
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value

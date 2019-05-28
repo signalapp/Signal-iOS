@@ -522,6 +522,8 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
     OWSLogInfo(@"Build Carthage Version: %@", buildDetails[@"CarthageVersion"]);
     OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
+
+    OWSLogInfo(@"Build Expires in: %d days", CurrentAppContext().daysUntilBuildExpiry);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken

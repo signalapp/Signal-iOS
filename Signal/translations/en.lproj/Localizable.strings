@@ -2542,3 +2542,15 @@
 
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
+
+/* Info message embedding a {{days}} count. */
+"EXPIRATION_WARNING_SOON" = "Your version of Signal will expire in %d days. Tap to update to the most recent version.";
+
+/* Info message specifying expiration today. */
+"EXPIRATION_WARNING_TODAY" = "Your version of Signal will expire today. Tap to update to the most recent version.";
+
+/* An error indicating that a build has expired. */
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Messages will no longer send successfully. Tap to update to the most recent version.";
+
+/* Error indicating a send failure due to an expired application. */
+"ERROR_SENDING_EXPIRED" = "Your version of Signal has expired. Please update to send further messages.";

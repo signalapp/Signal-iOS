@@ -90,6 +90,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 @property (nonatomic, readonly) UIStackView *reminderStackView;
 @property (nonatomic, readonly) UITableViewCell *reminderViewCell;
+@property (nonatomic, readonly) ExpirationNagView *expiredView;
 @property (nonatomic, readonly) UIView *deregisteredView;
 @property (nonatomic, readonly) UIView *outageView;
 @property (nonatomic, readonly) UIView *archiveReminderView;
@@ -308,6 +309,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     _deregisteredView = deregisteredView;
     [reminderStackView addArrangedSubview:deregisteredView];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, deregisteredView);
+
+    ExpirationNagView *expiredView = [ExpirationNagView new];
+    _expiredView = expiredView;
+    [reminderStackView addArrangedSubview:expiredView];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, expiredView);
 
     ReminderView *outageView = [ReminderView
         nagWithText:NSLocalizedString(@"OUTAGE_WARNING", @"Label warning the user that the Signal service may be down.")
@@ -590,8 +596,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.deregisteredView.hidden = !TSAccountManager.sharedInstance.isDeregistered;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
 
+    self.expiredView.hidden = !CurrentAppContext().isExpiringSoon;
+    [self.expiredView updateText];
+
     self.hasVisibleReminders = !self.archiveReminderView.isHidden || !self.missingContactsPermissionView.isHidden
-        || !self.deregisteredView.isHidden || !self.outageView.isHidden;
+        || !self.deregisteredView.isHidden || !self.outageView.isHidden || !self.expiredView.isHidden;
 }
 
 - (void)setHasVisibleReminders:(BOOL)hasVisibleReminders

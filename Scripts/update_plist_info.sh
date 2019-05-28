@@ -33,5 +33,8 @@ if [ "${CONFIGURATION}" = "App Store Release" ]; then
     # Use UTC
     _build_datetime=`date -u`
     /usr/libexec/PlistBuddy -c "add :BuildDetails:DateTime string '$_build_datetime'" Signal/Signal-Info.plist
+
+    _build_timestamp=`date +%s`
+    /usr/libexec/PlistBuddy -c "add :BuildDetails:Timestamp string '$_build_timestamp'" Signal/Signal-Info.plist
 fi
 

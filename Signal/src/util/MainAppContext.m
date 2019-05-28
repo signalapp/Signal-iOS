@@ -28,6 +28,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 @synthesize mainWindow = _mainWindow;
 @synthesize appLaunchTime = _appLaunchTime;
+@synthesize buildTime = _buildTime;
 
 - (instancetype)init
 {
@@ -240,6 +241,46 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 - (BOOL)isRunningTests
 {
     return getenv("runningTests_dontStartApp");
+}
+
+- (NSDate *)buildTime
+{
+    if (!_buildTime) {
+        NSInteger buildTimestamp =
+        [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"][@"Timestamp"] integerValue];
+
+#if RELEASE
+        OWSAssert(buildTimestamp != 0);
+#endif
+
+        if (buildTimestamp == 0) {
+            OWSLogDebug(@"No build timestamp, assuming app never expires.");
+            _buildTime = [NSDate distantFuture];
+        } else {
+            _buildTime = [NSDate dateWithTimeIntervalSince1970:buildTimestamp];
+        }
+    }
+
+    return _buildTime;
+}
+
+- (NSInteger)daysUntilBuildExpiry
+{
+    NSInteger buildAge = [[[NSCalendar currentCalendar] components:NSCalendarUnitDay
+                                                          fromDate:self.buildTime
+                                                            toDate:[NSDate new]
+                                                           options:0] day];
+    return 90 - buildAge;
+}
+
+- (BOOL)isExpiringSoon
+{
+    return self.daysUntilBuildExpiry <= 10;
+}
+
+- (BOOL)isExpired
+{
+    return self.daysUntilBuildExpiry <= 0;
 }
 
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value

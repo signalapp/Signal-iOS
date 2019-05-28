@@ -40,7 +40,7 @@ class ReminderView: UIView {
         notImplemented()
     }
 
-    private init(mode: ReminderViewMode,
+    init(mode: ReminderViewMode,
          text: String, tapAction: Action?) {
         self.mode = mode
         self.tapAction = tapAction

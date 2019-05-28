@@ -204,6 +204,16 @@ void AssertIsOnSendingQueue()
 
 - (void)run
 {
+    if (CurrentAppContext().isExpired) {
+        OWSLogWarn(@"Unable to send because the application has expired.");
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeAppExired,
+            NSLocalizedString(
+                @"ERROR_SENDING_EXPIRED", @"Error indicating a send failure due to an expired application."));
+        error.isRetryable = NO;
+        [self reportError:error];
+        return;
+    }
+
     // If the message has been deleted, abort send.
     if (self.message.shouldBeSaved && ![TSOutgoingMessage fetchObjectWithUniqueID:self.message.uniqueId]) {
         OWSLogInfo(@"aborting message send; message deleted.");
