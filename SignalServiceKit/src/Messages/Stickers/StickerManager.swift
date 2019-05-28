@@ -1097,7 +1097,11 @@ public class StickerManager: NSObject {
             return
         }
 
-        switch proto.type {
+        guard let type = proto.type else {
+            owsFailDebug("Pack operation missing type.")
+            return
+        }
+        switch type {
         case .install:
             tryToDownloadAndSaveStickerPack(stickerPackInfo: stickerPackInfo,
                                             installMode: .install)

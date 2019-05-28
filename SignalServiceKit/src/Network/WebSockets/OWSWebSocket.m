@@ -730,12 +730,14 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    if (wsMessage.type == WebSocketProtoWebSocketMessageTypeRequest) {
+    if (!wsMessage.hasType) {
+        OWSFailDebug(@"webSocket:didReceiveMessage: missing type.");
+    } else if (wsMessage.typeRequired == WebSocketProtoWebSocketMessageTypeRequest) {
         [self processWebSocketRequestMessage:wsMessage.request];
-    } else if (wsMessage.type == WebSocketProtoWebSocketMessageTypeResponse) {
+    } else if (wsMessage.typeRequired == WebSocketProtoWebSocketMessageTypeResponse) {
         [self processWebSocketResponseMessage:wsMessage.response];
     } else {
-        OWSLogWarn(@"webSocket:didReceiveMessage: unknown.");
+        OWSFailDebug(@"webSocket:didReceiveMessage: unknown.");
     }
 }
 

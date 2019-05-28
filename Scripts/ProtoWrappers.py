@@ -294,6 +294,8 @@ class BaseContext(object):
         elif field.proto_type == 'bool':
             return 'false'
         elif self.is_field_an_enum(field):
+            if field.is_required:
+                raise Exception('Enum field default values should not be used: %s.%s' % ( self.proto_name, field.name, ))
             # TODO: Assert that rules is empty.
             enum_context = self.context_for_proto_type(field)
             return enum_context.default_value()
@@ -456,7 +458,6 @@ class MessageContext(BaseContext):
         if len(implict_fields) > 0:
             for field in implict_fields:
                 if field.rules == 'optional':
-                    # can_be_optional = (not self.is_field_primitive(field)) and (not self.is_field_an_enum(field))
                     can_be_optional = not self.is_field_primitive(field)
                     if can_be_optional:
                         def write_field_getter(is_objc_accessible, is_required_optional):
@@ -465,6 +466,7 @@ class MessageContext(BaseContext):
                             else:
                                 objc_keyword = ''
                             if is_required_optional:
+                                writer.add('// This "required" accessor should only be used if the "has value" accessor has already been checked.')
                                 writer.add('%spublic var %sRequired: %s {' % ( objc_keyword, field.name_swift, field.type_swift_not_optional, ))
                             else:
                                 writer.add('%spublic var %s: %s? {' % ( objc_keyword, field.name_swift, field.type_swift_not_optional, ))
@@ -717,7 +719,7 @@ public func serializedData() throws -> Data {
                 accessor_name = field.name_swift
                 accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
 
-                can_be_optional = (not self.is_field_primitive(field)) and (not self.is_field_an_enum(field))
+                can_be_optional = not self.is_field_primitive(field)
                 if field.rules == 'repeated':
                     writer.add('builder.%s(%s)' % ( accessor_name, field.name_swift, ))
                 elif can_be_optional:

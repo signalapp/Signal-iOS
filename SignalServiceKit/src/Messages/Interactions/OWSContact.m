@@ -1023,7 +1023,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     OWSContactPhoneNumber *result = [OWSContactPhoneNumber new];
     result.phoneType = OWSContactPhoneType_Custom;
     if (phoneNumberProto.hasType) {
-        switch (phoneNumberProto.type) {
+        switch (phoneNumberProto.typeRequired) {
             case SSKProtoDataMessageContactPhoneTypeHome:
                 result.phoneType = OWSContactPhoneType_Home;
                 break;
@@ -1053,7 +1053,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     OWSContactEmail *result = [OWSContactEmail new];
     result.emailType = OWSContactEmailType_Custom;
     if (emailProto.hasType) {
-        switch (emailProto.type) {
+        switch (emailProto.typeRequired) {
             case SSKProtoDataMessageContactEmailTypeHome:
                 result.emailType = OWSContactEmailType_Home;
                 break;
@@ -1083,7 +1083,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     OWSContactAddress *result = [OWSContactAddress new];
     result.addressType = OWSContactAddressType_Custom;
     if (addressProto.hasType) {
-        switch (addressProto.type) {
+        switch (addressProto.typeRequired) {
             case SSKProtoDataMessageContactPostalAddressTypeHome:
                 result.addressType = OWSContactAddressType_Home;
                 break;
