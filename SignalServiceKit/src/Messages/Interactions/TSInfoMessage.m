@@ -215,7 +215,8 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
             return NSLocalizedString(@"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER",
                 @"Message shown in conversation view that offers to share your profile with a group.");
         default:
-            break;
+            OWSFailDebug(@"Unknown info message type.");
+            return @"";
     }
 
     return @"Unknown Info Message Type";

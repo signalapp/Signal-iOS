@@ -2456,6 +2456,15 @@
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "Unknown Country";
 
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE" = "This message can't be processed or displayed because it uses a new Signal feature.";
+
+/* Label for button that lets users upgrade the app. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE" = "You can ask your contact to re-send this message now that you are using an up-to-date version of Signal.";
+
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Unknown";
 

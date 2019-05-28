@@ -3,6 +3,7 @@
 //
 
 #import "OWSUnknownProtocolVersionMessage.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -91,6 +92,29 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return self.messageText;
+}
+
+- (NSString *)messageText
+{
+    if (self.isProtocolVersionUnknown) {
+        return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE",
+            @"Info message recorded in conversation history when local user receives an unknown message and needs to "
+            @"upgrade.");
+    } else {
+        return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE",
+            @"Info message recorded in conversation history when local user has received an unknown message and has "
+            @"upgraded.");
+    }
+}
+
+- (BOOL)isProtocolVersionUnknown
+{
+    return self.protocolVersion > SSKProtos.currentProtocolVersion;
+}
 
 @end
 

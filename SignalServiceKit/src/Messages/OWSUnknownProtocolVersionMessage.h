@@ -52,6 +52,10 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                                 thread:(TSThread *)thread
                                              contactId:(NSString *)contactId;
 
+@property (nonatomic, readonly) NSString *messageText;
+
+@property (nonatomic, readonly) BOOL isProtocolVersionUnknown;
+
 @end
 
 NS_ASSUME_NONNULL_END
