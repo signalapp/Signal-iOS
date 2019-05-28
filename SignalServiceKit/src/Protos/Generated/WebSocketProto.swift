@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -367,8 +368,8 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> WebSocketProtoWebSocketMessageBuilder {
         let builder = WebSocketProtoWebSocketMessageBuilder()
-        if hasType {
-            builder.setType(type)
+        if let _value = type {
+            builder.setType(_value)
         }
         if let _value = request {
             builder.setRequest(_value)
@@ -418,6 +419,7 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         }
         return WebSocketProtoWebSocketMessage.WebSocketProtoWebSocketMessageTypeWrap(proto.type)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var typeRequired: WebSocketProtoWebSocketMessageType {
         return WebSocketProtoWebSocketMessage.WebSocketProtoWebSocketMessageTypeWrap(proto.type)
     }

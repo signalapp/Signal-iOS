@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -56,8 +57,8 @@ public enum SSKProtoError: Error {
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoEnvelopeBuilder {
         let builder = SSKProtoEnvelopeBuilder(timestamp: timestamp)
-        if hasType {
-            builder.setType(type)
+        if let _value = type {
+            builder.setType(_value)
         }
         if let _value = source {
             builder.setSource(_value)
@@ -150,6 +151,7 @@ public enum SSKProtoError: Error {
         }
         return SSKProtoEnvelope.SSKProtoEnvelopeTypeWrap(proto.type)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var typeRequired: SSKProtoEnvelopeType {
         return SSKProtoEnvelope.SSKProtoEnvelopeTypeWrap(proto.type)
     }
@@ -307,8 +309,8 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoTypingMessageBuilder {
         let builder = SSKProtoTypingMessageBuilder(timestamp: timestamp)
-        if hasAction {
-            builder.setAction(action)
+        if let _value = action {
+            builder.setAction(_value)
         }
         if let _value = groupID {
             builder.setGroupID(_value)
@@ -359,6 +361,7 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
         }
         return SSKProtoTypingMessage.SSKProtoTypingMessageActionWrap(proto.action)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var actionRequired: SSKProtoTypingMessageAction {
         return SSKProtoTypingMessage.SSKProtoTypingMessageActionWrap(proto.action)
     }
@@ -1878,8 +1881,8 @@ extension SSKProtoDataMessageContactName.SSKProtoDataMessageContactNameBuilder {
         if let _value = value {
             builder.setValue(_value)
         }
-        if hasType {
-            builder.setType(type)
+        if let _value = type {
+            builder.setType(_value)
         }
         if let _value = label {
             builder.setLabel(_value)
@@ -1932,6 +1935,7 @@ extension SSKProtoDataMessageContactName.SSKProtoDataMessageContactNameBuilder {
         }
         return SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneTypeWrap(proto.type)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var typeRequired: SSKProtoDataMessageContactPhoneType {
         return SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneTypeWrap(proto.type)
     }
@@ -2036,8 +2040,8 @@ extension SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneBuilder
         if let _value = value {
             builder.setValue(_value)
         }
-        if hasType {
-            builder.setType(type)
+        if let _value = type {
+            builder.setType(_value)
         }
         if let _value = label {
             builder.setLabel(_value)
@@ -2090,6 +2094,7 @@ extension SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneBuilder
         }
         return SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailTypeWrap(proto.type)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var typeRequired: SSKProtoDataMessageContactEmailType {
         return SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailTypeWrap(proto.type)
     }
@@ -2188,8 +2193,8 @@ extension SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailBuilder
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoDataMessageContactPostalAddressBuilder {
         let builder = SSKProtoDataMessageContactPostalAddressBuilder()
-        if hasType {
-            builder.setType(type)
+        if let _value = type {
+            builder.setType(_value)
         }
         if let _value = label {
             builder.setLabel(_value)
@@ -2277,6 +2282,7 @@ extension SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailBuilder
         }
         return SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPostalAddressTypeWrap(proto.type)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var typeRequired: SSKProtoDataMessageContactPostalAddressType {
         return SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPostalAddressTypeWrap(proto.type)
     }
@@ -3552,8 +3558,8 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoReceiptMessageBuilder {
         let builder = SSKProtoReceiptMessageBuilder()
-        if hasType {
-            builder.setType(type)
+        if let _value = type {
+            builder.setType(_value)
         }
         builder.setTimestamp(timestamp)
         return builder
@@ -3596,6 +3602,7 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
         }
         return SSKProtoReceiptMessage.SSKProtoReceiptMessageTypeWrap(proto.type)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var typeRequired: SSKProtoReceiptMessageType {
         return SSKProtoReceiptMessage.SSKProtoReceiptMessageTypeWrap(proto.type)
     }
@@ -3691,8 +3698,8 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
         if let _value = identityKey {
             builder.setIdentityKey(_value)
         }
-        if hasState {
-            builder.setState(state)
+        if let _value = state {
+            builder.setState(_value)
         }
         if let _value = nullMessage {
             builder.setNullMessage(_value)
@@ -3757,6 +3764,7 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
         }
         return SSKProtoVerified.SSKProtoVerifiedStateWrap(proto.state)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var stateRequired: SSKProtoVerifiedState {
         return SSKProtoVerified.SSKProtoVerifiedStateWrap(proto.state)
     }
@@ -4461,8 +4469,8 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoSyncMessageRequestBuilder {
         let builder = SSKProtoSyncMessageRequestBuilder()
-        if hasType {
-            builder.setType(type)
+        if let _value = type {
+            builder.setType(_value)
         }
         return builder
     }
@@ -4494,6 +4502,7 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
         }
         return SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestTypeWrap(proto.type)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var typeRequired: SSKProtoSyncMessageRequestType {
         return SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestTypeWrap(proto.type)
     }
@@ -4824,8 +4833,8 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoSyncMessageStickerPackOperationBuilder {
         let builder = SSKProtoSyncMessageStickerPackOperationBuilder(packID: packID, packKey: packKey)
-        if hasType {
-            builder.setType(type)
+        if let _value = type {
+            builder.setType(_value)
         }
         return builder
     }
@@ -4876,6 +4885,7 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
         }
         return SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPackOperationTypeWrap(proto.type)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var typeRequired: SSKProtoSyncMessageStickerPackOperationType {
         return SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPackOperationTypeWrap(proto.type)
     }
@@ -5510,8 +5520,8 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoGroupContextBuilder {
         let builder = SSKProtoGroupContextBuilder(id: id)
-        if hasType {
-            builder.setType(type)
+        if let _value = type {
+            builder.setType(_value)
         }
         if let _value = name {
             builder.setName(_value)
@@ -5582,6 +5592,7 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         }
         return SSKProtoGroupContext.SSKProtoGroupContextTypeWrap(proto.type)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var typeRequired: SSKProtoGroupContextType {
         return SSKProtoGroupContext.SSKProtoGroupContextTypeWrap(proto.type)
     }

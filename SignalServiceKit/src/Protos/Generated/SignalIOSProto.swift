@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -56,8 +57,8 @@ public enum SignalIOSProtoError: Error {
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SignalIOSProtoBackupSnapshotBackupEntityBuilder {
         let builder = SignalIOSProtoBackupSnapshotBackupEntityBuilder(entityData: entityData, collection: collection, key: key)
-        if hasType {
-            builder.setType(type)
+        if let _value = type {
+            builder.setType(_value)
         }
         return builder
     }
@@ -115,6 +116,7 @@ public enum SignalIOSProtoError: Error {
         }
         return SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
     }
+    // This "required" accessor should only be used if the "has value" accessor has already been checked.
     @objc public var typeRequired: SignalIOSProtoBackupSnapshotBackupEntityType {
         return SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
     }
