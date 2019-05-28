@@ -532,6 +532,17 @@ NS_ASSUME_NONNULL_BEGIN
             name = [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
                                                                               primaryFont:self.nameFont
                                                                             secondaryFont:self.nameSecondaryFont];
+            BOOL hasCheckmark = self.thread.threadRecord.isContactFriend;
+            if (hasCheckmark) {
+                NSMutableAttributedString *checkmark = [[NSMutableAttributedString alloc] initWithString:@"✓"];
+                [checkmark beginEditing];
+                [checkmark addAttribute:NSForegroundColorAttributeName value:UIColor.ows_greenColor range:NSMakeRange(0, 1)];
+                [checkmark endEditing];
+                NSMutableAttributedString *mutableName = [name mutableCopy];
+                [mutableName appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];
+                [mutableName appendAttributedString:checkmark];
+                name = [mutableName copy];
+            }
         }
     }
 
