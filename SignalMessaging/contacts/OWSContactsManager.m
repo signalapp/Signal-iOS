@@ -952,13 +952,17 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
     if (profileName.length > 0) {
-        NSAttributedString *result =
-            [[NSAttributedString alloc] initWithString:recipientId attributes:primaryAttributes];
-        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@" "]];
-        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@"~" attributes:secondaryAttributes]];
-        result = [result
-            rtlSafeAppend:[[NSAttributedString alloc] initWithString:profileName attributes:secondaryAttributes]];
-        return [result copy];
+        return [[NSAttributedString alloc] initWithString:profileName];
+        // Loki: Original code
+        // ========
+//        NSAttributedString *result =
+//            [[NSAttributedString alloc] initWithString:recipientId attributes:primaryAttributes];
+//        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@" "]];
+//        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@"~" attributes:secondaryAttributes]];
+//        result = [result
+//            rtlSafeAppend:[[NSAttributedString alloc] initWithString:profileName attributes:secondaryAttributes]];
+//        return [result copy];
+        // ========
     }
 
     // else fall back to recipient id
