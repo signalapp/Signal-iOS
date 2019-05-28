@@ -43,6 +43,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (nonatomic, readonly) BOOL isRunningTests;
 
+@property (nonatomic, readonly) NSDate *buildTime;
+
 @property (atomic, nullable) UIWindow *mainWindow;
 
 // Unlike UIApplication.applicationState, this is thread-safe.
