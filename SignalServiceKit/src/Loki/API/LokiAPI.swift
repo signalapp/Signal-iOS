@@ -31,7 +31,7 @@ import PromiseKit
     override private init() { }
     
     // MARK: Internal API
-    internal static func invoke(_ method: Target.Method, on target: Target, associatedWith hexEncodedPublicKey: String, parameters: [String:Any] = [:]) -> Promise<RawResponse> {
+    internal static func invoke(_ method: Target.Method, on target: Target, associatedWith hexEncodedPublicKey: String, parameters: [String:Any] = [:]) -> RawResponsePromise {
         let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }

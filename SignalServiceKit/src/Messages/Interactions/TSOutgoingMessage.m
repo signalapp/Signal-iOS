@@ -1102,6 +1102,14 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId dataMessageBuilder:builder];
 
+    SSKProtoDataMessageContactBuilder *profileBuilder = [SSKProtoDataMessageContact builder];
+    SSKProtoDataMessageContactNameBuilder *nameBuilder = [SSKProtoDataMessageContactName builder];
+    [nameBuilder setDisplayName:@"Test"]; // TODO: Use actual name
+    SSKProtoDataMessageContactName *name = [nameBuilder buildIgnoringErrors];
+    [profileBuilder setName:name];
+    SSKProtoDataMessageContact *profile = [profileBuilder buildIgnoringErrors];
+    [builder setProfile:profile];
+    
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
     if (error || !dataProto) {
