@@ -109,7 +109,13 @@ public enum SignalIOSProtoError: Error {
 
     @objc public let key: String
 
-    @objc public var type: SignalIOSProtoBackupSnapshotBackupEntityType {
+    public var type: SignalIOSProtoBackupSnapshotBackupEntityType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
+    }
+    @objc public var typeRequired: SignalIOSProtoBackupSnapshotBackupEntityType {
         return SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {

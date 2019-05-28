@@ -144,7 +144,13 @@ public enum SSKProtoError: Error {
 
     @objc public let timestamp: UInt64
 
-    @objc public var type: SSKProtoEnvelopeType {
+    public var type: SSKProtoEnvelopeType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return SSKProtoEnvelope.SSKProtoEnvelopeTypeWrap(proto.type)
+    }
+    @objc public var typeRequired: SSKProtoEnvelopeType {
         return SSKProtoEnvelope.SSKProtoEnvelopeTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -347,7 +353,13 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
 
     @objc public let timestamp: UInt64
 
-    @objc public var action: SSKProtoTypingMessageAction {
+    public var action: SSKProtoTypingMessageAction? {
+        guard proto.hasAction else {
+            return nil
+        }
+        return SSKProtoTypingMessage.SSKProtoTypingMessageActionWrap(proto.action)
+    }
+    @objc public var actionRequired: SSKProtoTypingMessageAction {
         return SSKProtoTypingMessage.SSKProtoTypingMessageActionWrap(proto.action)
     }
     @objc public var hasAction: Bool {
@@ -1914,7 +1926,13 @@ extension SSKProtoDataMessageContactName.SSKProtoDataMessageContactNameBuilder {
         return proto.hasValue
     }
 
-    @objc public var type: SSKProtoDataMessageContactPhoneType {
+    public var type: SSKProtoDataMessageContactPhoneType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneTypeWrap(proto.type)
+    }
+    @objc public var typeRequired: SSKProtoDataMessageContactPhoneType {
         return SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -2066,7 +2084,13 @@ extension SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneBuilder
         return proto.hasValue
     }
 
-    @objc public var type: SSKProtoDataMessageContactEmailType {
+    public var type: SSKProtoDataMessageContactEmailType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailTypeWrap(proto.type)
+    }
+    @objc public var typeRequired: SSKProtoDataMessageContactEmailType {
         return SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -2247,7 +2271,13 @@ extension SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailBuilder
 
     fileprivate let proto: SignalServiceProtos_DataMessage.Contact.PostalAddress
 
-    @objc public var type: SSKProtoDataMessageContactPostalAddressType {
+    public var type: SSKProtoDataMessageContactPostalAddressType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPostalAddressTypeWrap(proto.type)
+    }
+    @objc public var typeRequired: SSKProtoDataMessageContactPostalAddressType {
         return SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPostalAddressTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -3560,7 +3590,13 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
 
     fileprivate let proto: SignalServiceProtos_ReceiptMessage
 
-    @objc public var type: SSKProtoReceiptMessageType {
+    public var type: SSKProtoReceiptMessageType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return SSKProtoReceiptMessage.SSKProtoReceiptMessageTypeWrap(proto.type)
+    }
+    @objc public var typeRequired: SSKProtoReceiptMessageType {
         return SSKProtoReceiptMessage.SSKProtoReceiptMessageTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -3715,7 +3751,13 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
         return proto.hasIdentityKey
     }
 
-    @objc public var state: SSKProtoVerifiedState {
+    public var state: SSKProtoVerifiedState? {
+        guard proto.hasState else {
+            return nil
+        }
+        return SSKProtoVerified.SSKProtoVerifiedStateWrap(proto.state)
+    }
+    @objc public var stateRequired: SSKProtoVerifiedState {
         return SSKProtoVerified.SSKProtoVerifiedStateWrap(proto.state)
     }
     @objc public var hasState: Bool {
@@ -4446,7 +4488,13 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Request
 
-    @objc public var type: SSKProtoSyncMessageRequestType {
+    public var type: SSKProtoSyncMessageRequestType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestTypeWrap(proto.type)
+    }
+    @objc public var typeRequired: SSKProtoSyncMessageRequestType {
         return SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -4822,7 +4870,13 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 
     @objc public let packKey: Data
 
-    @objc public var type: SSKProtoSyncMessageStickerPackOperationType {
+    public var type: SSKProtoSyncMessageStickerPackOperationType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPackOperationTypeWrap(proto.type)
+    }
+    @objc public var typeRequired: SSKProtoSyncMessageStickerPackOperationType {
         return SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPackOperationTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -5522,7 +5576,13 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
 
     @objc public let avatar: SSKProtoAttachmentPointer?
 
-    @objc public var type: SSKProtoGroupContextType {
+    public var type: SSKProtoGroupContextType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return SSKProtoGroupContext.SSKProtoGroupContextTypeWrap(proto.type)
+    }
+    @objc public var typeRequired: SSKProtoGroupContextType {
         return SSKProtoGroupContext.SSKProtoGroupContextTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {

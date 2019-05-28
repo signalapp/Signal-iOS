@@ -412,7 +412,13 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
 
     @objc public let response: WebSocketProtoWebSocketResponseMessage?
 
-    @objc public var type: WebSocketProtoWebSocketMessageType {
+    public var type: WebSocketProtoWebSocketMessageType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return WebSocketProtoWebSocketMessage.WebSocketProtoWebSocketMessageTypeWrap(proto.type)
+    }
+    @objc public var typeRequired: WebSocketProtoWebSocketMessageType {
         return WebSocketProtoWebSocketMessage.WebSocketProtoWebSocketMessageTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
