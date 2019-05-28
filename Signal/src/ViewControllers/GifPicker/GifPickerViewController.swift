@@ -409,6 +409,26 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: - UICollectionViewDelegate
 
+    public func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? GifPickerCell else {
+            owsFailDebug("unexpected cell.")
+            return false
+        }
+
+        guard cell.stillAsset != nil || cell.animatedAsset != nil else {
+            // we don't want to let the user blindly select a gray cell
+            Logger.debug("ignoring selection of cell with no preview")
+            return false
+        }
+
+        guard self.hasSelectedCell == false else {
+            owsFailDebug("Already selected cell")
+            return false
+        }
+
+        return true
+    }
+
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
         guard let cell = collectionView.cellForItem(at: indexPath) as? GifPickerCell else {
