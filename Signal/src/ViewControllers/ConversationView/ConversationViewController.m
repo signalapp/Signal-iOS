@@ -4511,6 +4511,11 @@ typedef enum : NSUInteger {
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (CGSize)rootViewSize
+{
+    return self.view.bounds.size;
+}
+
 - (void)voiceMemoGestureDidStart
 {
     OWSAssertIsOnMainThread();

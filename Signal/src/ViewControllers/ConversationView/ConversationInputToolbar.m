@@ -1347,6 +1347,11 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.inputToolbarDelegate presentManageStickersView];
 }
 
+- (CGSize)rootViewSize
+{
+    return self.inputToolbarDelegate.rootViewSize;
+}
+
 #pragma mark - Suggested Stickers
 
 - (void)updateSuggestedStickers

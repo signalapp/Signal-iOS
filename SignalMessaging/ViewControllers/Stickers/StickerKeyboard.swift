@@ -8,6 +8,7 @@ import Foundation
 public protocol StickerKeyboardDelegate {
     func didSelectSticker(stickerInfo: StickerInfo)
     func presentManageStickersView()
+    func rootViewSize() -> CGSize
 }
 
 // MARK: -
@@ -61,6 +62,10 @@ public class StickerKeyboard: UIStackView {
                                                selector: #selector(stickersOrPacksDidChange),
                                                name: StickerManager.StickersOrPacksDidChange,
                                                object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(orientationDidChange),
+                                               name: UIDevice.orientationDidChangeNotification,
+                                               object: UIDevice.current)
     }
 
     required public init(coder: NSCoder) {
@@ -68,11 +73,21 @@ public class StickerKeyboard: UIStackView {
     }
 
     // TODO: Tune this value.
-    private let keyboardHeight: CGFloat = 300
+    private let kDefaultKeyboardHeight: CGFloat = 300
 
     @objc
     public override var intrinsicContentSize: CGSize {
-        return CGSize(width: 0, height: keyboardHeight)
+        // Never take up more than half of the root view's height.
+        let rootViewSize = self.rootViewSize
+        let maxKeyboardHeight = rootViewSize.height / 2
+        return CGSize(width: 0, height: min(kDefaultKeyboardHeight, maxKeyboardHeight))
+    }
+
+    private var rootViewSize: CGSize {
+        guard let delegate = delegate else {
+            return .zero
+        }
+        return delegate.rootViewSize()
     }
 
     private func createSubviews() {
@@ -190,13 +205,23 @@ public class StickerKeyboard: UIStackView {
 
     // MARK: Events
 
-    @objc func stickersOrPacksDidChange() {
+    @objc
+    func stickersOrPacksDidChange() {
         AssertIsOnMainThread()
 
         Logger.verbose("")
 
         reloadStickers()
         updateHeaderView()
+    }
+
+    @objc
+    func orientationDidChange() {
+        AssertIsOnMainThread()
+
+        Logger.verbose("")
+
+        invalidateIntrinsicContentSize()
     }
 
     private func searchButtonWasTapped() {
