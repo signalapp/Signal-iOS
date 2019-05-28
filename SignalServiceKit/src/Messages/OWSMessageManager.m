@@ -1445,7 +1445,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
-        NSString *displayName = dataMessage.profile.name.displayName;
+        NSString *displayName = dataMessage.profile.displayName;
         [self.profileManager setDisplayNameForContactWithID:thread.contactIdentifier to:displayName with:transaction];
         
         if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }

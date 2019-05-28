@@ -1106,12 +1106,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
     NSString *displayName = profileManager.localProfileName;
     if (displayName != nil) {
-        SSKProtoDataMessageContactBuilder *profileBuilder = [SSKProtoDataMessageContact builder];
-        SSKProtoDataMessageContactNameBuilder *nameBuilder = [SSKProtoDataMessageContactName builder];
-        [nameBuilder setDisplayName:displayName];
-        SSKProtoDataMessageContactName *name = [nameBuilder buildIgnoringErrors];
-        [profileBuilder setName:name];
-        SSKProtoDataMessageContact *profile = [profileBuilder buildIgnoringErrors];
+        SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
+        [profileBuilder setDisplayName:displayName];
+        
+        SSKProtoDataMessageLokiProfile *profile = [profileBuilder buildIgnoringErrors];
         [builder setProfile:profile];
     }
     
