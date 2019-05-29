@@ -129,6 +129,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      @"upgrade. Embeds {{user's name or phone number}}."),
                 senderName];
         } else {
+            OWSFailDebug(@"Missing sender name.");
+
             return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME",
                 @"Info message recorded in conversation history when local user receives an unknown message and needs "
                 @"to "
@@ -143,6 +145,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      @"upgraded. Embeds {{user's name or phone number}}."),
                 senderName];
         } else {
+            OWSFailDebug(@"Missing sender name.");
+
             return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME",
                 @"Info message recorded in conversation history when local user has received an unknown message and "
                 @"has "
