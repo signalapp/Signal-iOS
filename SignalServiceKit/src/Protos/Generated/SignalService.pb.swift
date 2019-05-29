@@ -698,7 +698,8 @@ struct SignalServiceProtos_DataMessage {
   enum ProtocolVersion: SwiftProtobuf.Enum {
     typealias RawValue = Int
     case initial // = 0
-    static let current = initial
+    case messageTimers // = 1
+    static let current = messageTimers
 
     init() {
       self = .initial
@@ -707,6 +708,7 @@ struct SignalServiceProtos_DataMessage {
     init?(rawValue: Int) {
       switch rawValue {
       case 0: self = .initial
+      case 1: self = .messageTimers
       default: return nil
       }
     }
@@ -714,6 +716,7 @@ struct SignalServiceProtos_DataMessage {
     var rawValue: Int {
       switch self {
       case .initial: return 0
+      case .messageTimers: return 1
       }
     }
 
@@ -3282,7 +3285,8 @@ extension SignalServiceProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProvidi
 
 extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .aliased(proto: "INITIAL", aliases: ["CURRENT"]),
+    0: .same(proto: "INITIAL"),
+    1: .aliased(proto: "MESSAGE_TIMERS", aliases: ["CURRENT"]),
   ]
 }
 

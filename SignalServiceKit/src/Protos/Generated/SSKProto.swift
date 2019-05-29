@@ -3032,17 +3032,20 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
     @objc public enum SSKProtoDataMessageProtocolVersion: Int32 {
         case initial = 0
+        case messageTimers = 1
     }
 
     private class func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos_DataMessage.ProtocolVersion) -> SSKProtoDataMessageProtocolVersion {
         switch value {
         case .initial: return .initial
+        case .messageTimers: return .messageTimers
         }
     }
 
     private class func SSKProtoDataMessageProtocolVersionUnwrap(_ value: SSKProtoDataMessageProtocolVersion) -> SignalServiceProtos_DataMessage.ProtocolVersion {
         switch value {
         case .initial: return .initial
+        case .messageTimers: return .messageTimers
         }
     }
 
