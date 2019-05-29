@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
 @property (nonatomic, readonly, nullable) NSString *body;
 
+// Per-conversation expiration.
 @property (nonatomic, readonly) uint32_t expiresInSeconds;
 @property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
@@ -36,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 
-// Per-message expire timer.
+// Per-message expiration.
 @property (nonatomic, readonly) uint32_t perMessageExpirationDurationSeconds;
 @property (nonatomic, readonly) uint64_t perMessageExpireStartedAt;
 @property (nonatomic, readonly) uint64_t perMessageExpiresAt;
@@ -123,6 +124,8 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 #pragma mark - Per-message expiration
 
 // This method can be used to start expiration of per-message expiration.
+//
+// NOTE: To start "count down", use PerMessageExpiration.  Don't call this method directly.
 - (void)updateWithPerMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
