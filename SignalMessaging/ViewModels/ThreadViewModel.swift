@@ -7,7 +7,7 @@ import Foundation
 @objc
 public class ThreadViewModel: NSObject {
     @objc public let hasUnreadMessages: Bool
-    @objc public let lastMessageDate: Date
+    @objc public let lastMessageDate: Date?
     @objc public let isGroupThread: Bool
     @objc public let threadRecord: TSThread
     @objc public let unreadCount: UInt
@@ -32,7 +32,7 @@ public class ThreadViewModel: NSObject {
         self.lastMessageText = thread.lastMessageText(transaction: transaction)
         let lastInteraction = thread.lastInteractionForInbox(transaction: transaction)
         self.lastMessageForInbox = lastInteraction
-        self.lastMessageDate = lastInteraction?.receivedAtDate() ?? thread.creationDate
+        self.lastMessageDate = lastInteraction?.receivedAtDate()
 
         if let contactThread = thread as? TSContactThread {
             self.contactIdentifier = contactThread.contactIdentifier()

@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)presentManageStickersView;
 
+- (CGSize)rootViewSize;
+
 #pragma mark - Voice Memo
 
 - (void)voiceMemoGestureDidStart;
@@ -68,6 +70,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ensureTextViewHeight;
 
 - (void)viewDidAppear;
+
+- (void)ensureFirstResponderState;
 
 #pragma mark - Voice Memo
 

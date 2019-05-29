@@ -890,10 +890,12 @@ class EnumContext(BaseContext):
         
         writer.push_context(self.proto_name, self.swift_name)
 
+        max_case_index = 0
         for case_name, case_index in self.case_pairs():
             if case_name == 'default':
                 case_name = '`default`'
             writer.add('case %s = %s' % (case_name, case_index,))
+            max_case_index = max(max_case_index, int(case_index))
         
         writer.pop_context()
 
@@ -966,12 +968,17 @@ def parse_enum(args, proto_file_path, parser, parent_context, enum_name):
     
     context = EnumContext(args, parent_context, enum_name)
     
+    allow_alias = False
     while True:
         try:
             line = parser.next()
         except StopIteration:
             raise Exception('Incomplete enum: %s' % proto_file_path)
     
+        if line == 'option allow_alias = true;':
+            allow_alias = True
+            continue
+
         if line == '}':
             # if args.verbose:
             #     print
@@ -991,13 +998,15 @@ def parse_enum(args, proto_file_path, parser, parent_context, enum_name):
                 raise Exception('Duplicate enum name[%s]: %s' % (proto_file_path, item_name))
             
             if item_index in context.item_indices():
+                if allow_alias:
+                    continue
                 raise Exception('Duplicate enum index[%s]: %s' % (proto_file_path, item_name))
             
             context.item_map[item_index] = item_name
                 
             continue
     
-        raise Exception('Invalid enum syntax[%s]: %s' % (proto_file_path, line))
+        raise Exception('Invalid enum syntax[%s]: "%s"' % (proto_file_path, line))
         
 
 def optional_match_group(match, index):
@@ -1047,7 +1056,7 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
         #
         # optional bytes  id          = 1;
         # optional bool              isComplete = 2 [default = false];
-        item_regex = re.compile(r'^(optional|required|repeated)?\s*([\w\d]+?)\s+([\w\d]+?)\s*=\s*(\d+?)\s*(\[default = (true|false)\])?;$')
+        item_regex = re.compile(r'^(optional|required|repeated)?\s*([\w\d]+?)\s+([\w\d]+?)\s*=\s*(\d+?)\s*(\[default = (.+)\])?;$')
         item_match = item_regex.search(line)
         if item_match:
             # print 'item_rules:', item_match.groups()

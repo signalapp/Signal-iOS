@@ -35,7 +35,7 @@ class TSGroupThreadSerializer: SDSSerializer {
         let archivalDate: Date? = model.archivalDate
         let archivedAsOfMessageSortId: Bool? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { $0.boolValue })
         let conversationColorName: String = model.conversationColorName.rawValue
-        let creationDate: Date = model.creationDate
+        let creationDate: Date? = model.creationDate
         let isArchivedByLegacyTimestampForSorting: Bool = model.isArchivedByLegacyTimestampForSorting
         let lastMessageDate: Date? = model.lastMessageDate
         let messageDraft: String? = model.messageDraft

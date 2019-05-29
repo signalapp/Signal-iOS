@@ -223,24 +223,32 @@ message DataMessage {
     optional AttachmentPointer data = 4;
   }
 
+  enum ProtocolVersion {
+    option allow_alias = true;
+
+    INITIAL = 0;
+    CURRENT = 0;
+  }
+
   message EphemeralMessage {
     // @required
     optional uint32            expireTimer = 1;
     repeated AttachmentPointer attachments = 2;
   }
 
-  optional string            body             =  1;
-  repeated AttachmentPointer attachments      =  2;
-  optional GroupContext      group            =  3;
-  optional uint32            flags            =  4;
-  optional uint32            expireTimer      =  5;
-  optional bytes             profileKey       =  6;
-  optional uint64            timestamp        =  7;
-  optional Quote             quote            =  8;
-  repeated Contact           contact          =  9;
-  repeated Preview           preview          = 10;
-  optional Sticker           sticker          = 11;
-  optional EphemeralMessage  ephemeralMessage = 12;
+  optional string            body                    =  1;
+  repeated AttachmentPointer attachments             =  2;
+  optional GroupContext      group                   =  3;
+  optional uint32            flags                   =  4;
+  optional uint32            expireTimer             =  5;
+  optional bytes             profileKey              =  6;
+  optional uint64            timestamp               =  7;
+  optional Quote             quote                   =  8;
+  repeated Contact           contact                 =  9;
+  repeated Preview           preview                 = 10;
+  optional Sticker           sticker                 = 11;
+  optional uint32            requiredProtocolVersion = 12;
+  optional EphemeralMessage  ephemeralMessage        = 13;
 }
 
 message NullMessage {

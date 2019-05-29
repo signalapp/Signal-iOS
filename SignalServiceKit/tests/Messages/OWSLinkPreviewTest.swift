@@ -222,7 +222,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 XCTAssertNotNil(draft)
 
                 XCTAssertEqual(draft.title, "Randomness is Random - Numberphile")
-                XCTAssertNotNil(draft.jpegImageData)
+                XCTAssertNotNil(draft.imageData)
 
                 expectation.fulfill()
             }.catch { (error) in

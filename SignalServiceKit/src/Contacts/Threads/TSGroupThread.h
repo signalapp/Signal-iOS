@@ -27,7 +27,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
                     archivalDate:(nullable NSDate *)archivalDate
        archivedAsOfMessageSortId:(nullable NSNumber *)archivedAsOfMessageSortId
            conversationColorName:(ConversationColorName)conversationColorName
-                    creationDate:(NSDate *)creationDate
+                    creationDate:(nullable NSDate *)creationDate
 isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSorting
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft

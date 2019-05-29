@@ -3090,6 +3090,24 @@ extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessag
         }
     }
 
+    // MARK: - SSKProtoDataMessageProtocolVersion
+
+    @objc public enum SSKProtoDataMessageProtocolVersion: Int32 {
+        case initial = 0
+    }
+
+    private class func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos_DataMessage.ProtocolVersion) -> SSKProtoDataMessageProtocolVersion {
+        switch value {
+        case .initial: return .initial
+        }
+    }
+
+    private class func SSKProtoDataMessageProtocolVersionUnwrap(_ value: SSKProtoDataMessageProtocolVersion) -> SignalServiceProtos_DataMessage.ProtocolVersion {
+        switch value {
+        case .initial: return .initial
+        }
+    }
+
     // MARK: - SSKProtoDataMessageBuilder
 
     @objc public class func builder() -> SSKProtoDataMessageBuilder {
@@ -3125,6 +3143,9 @@ extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessag
         builder.setPreview(preview)
         if let _value = sticker {
             builder.setSticker(_value)
+        }
+        if hasRequiredProtocolVersion {
+            builder.setRequiredProtocolVersion(requiredProtocolVersion)
         }
         if let _value = ephemeralMessage {
             builder.setEphemeralMessage(_value)
@@ -3200,6 +3221,10 @@ extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessag
             proto.sticker = valueParam.proto
         }
 
+        @objc public func setRequiredProtocolVersion(_ valueParam: UInt32) {
+            proto.requiredProtocolVersion = valueParam
+        }
+
         @objc public func setEphemeralMessage(_ valueParam: SSKProtoDataMessageEphemeralMessage) {
             proto.ephemeralMessage = valueParam.proto
         }
@@ -3268,6 +3293,13 @@ extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessag
     }
     @objc public var hasTimestamp: Bool {
         return proto.hasTimestamp
+    }
+
+    @objc public var requiredProtocolVersion: UInt32 {
+        return proto.requiredProtocolVersion
+    }
+    @objc public var hasRequiredProtocolVersion: Bool {
+        return proto.hasRequiredProtocolVersion
     }
 
     private init(proto: SignalServiceProtos_DataMessage,

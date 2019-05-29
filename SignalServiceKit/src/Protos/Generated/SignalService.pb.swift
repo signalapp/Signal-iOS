@@ -648,6 +648,15 @@ struct SignalServiceProtos_DataMessage {
   /// Clears the value of `sticker`. Subsequent reads from it will return its default value.
   mutating func clearSticker() {_uniqueStorage()._sticker = nil}
 
+  var requiredProtocolVersion: UInt32 {
+    get {return _storage._requiredProtocolVersion ?? 0}
+    set {_uniqueStorage()._requiredProtocolVersion = newValue}
+  }
+  /// Returns true if `requiredProtocolVersion` has been explicitly set.
+  var hasRequiredProtocolVersion: Bool {return _storage._requiredProtocolVersion != nil}
+  /// Clears the value of `requiredProtocolVersion`. Subsequent reads from it will return its default value.
+  mutating func clearRequiredProtocolVersion() {_uniqueStorage()._requiredProtocolVersion = nil}
+
   var ephemeralMessage: SignalServiceProtos_DataMessage.EphemeralMessage {
     get {return _storage._ephemeralMessage ?? SignalServiceProtos_DataMessage.EphemeralMessage()}
     set {_uniqueStorage()._ephemeralMessage = newValue}
@@ -683,6 +692,30 @@ struct SignalServiceProtos_DataMessage {
       case .endSession: return 1
       case .expirationTimerUpdate: return 2
       case .profileKeyUpdate: return 4
+      }
+    }
+
+  }
+
+  enum ProtocolVersion: SwiftProtobuf.Enum {
+    typealias RawValue = Int
+    case initial // = 0
+    static let current = initial
+
+    init() {
+      self = .initial
+    }
+
+    init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .initial
+      default: return nil
+      }
+    }
+
+    var rawValue: Int {
+      switch self {
+      case .initial: return 0
       }
     }
 
@@ -1359,6 +1392,10 @@ struct SignalServiceProtos_DataMessage {
 #if swift(>=4.2)
 
 extension SignalServiceProtos_DataMessage.Flags: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_DataMessage.ProtocolVersion: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -3084,7 +3121,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     9: .same(proto: "contact"),
     10: .same(proto: "preview"),
     11: .same(proto: "sticker"),
-    12: .same(proto: "ephemeralMessage"),
+    12: .same(proto: "requiredProtocolVersion"),
+    13: .same(proto: "ephemeralMessage"),
   ]
 
   fileprivate class _StorageClass {
@@ -3099,6 +3137,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _contact: [SignalServiceProtos_DataMessage.Contact] = []
     var _preview: [SignalServiceProtos_DataMessage.Preview] = []
     var _sticker: SignalServiceProtos_DataMessage.Sticker? = nil
+    var _requiredProtocolVersion: UInt32? = nil
     var _ephemeralMessage: SignalServiceProtos_DataMessage.EphemeralMessage? = nil
 
     static let defaultInstance = _StorageClass()
@@ -3117,6 +3156,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _contact = source._contact
       _preview = source._preview
       _sticker = source._sticker
+      _requiredProtocolVersion = source._requiredProtocolVersion
       _ephemeralMessage = source._ephemeralMessage
     }
   }
@@ -3144,7 +3184,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 9: try decoder.decodeRepeatedMessageField(value: &_storage._contact)
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
         case 11: try decoder.decodeSingularMessageField(value: &_storage._sticker)
-        case 12: try decoder.decodeSingularMessageField(value: &_storage._ephemeralMessage)
+        case 12: try decoder.decodeSingularUInt32Field(value: &_storage._requiredProtocolVersion)
+        case 13: try decoder.decodeSingularMessageField(value: &_storage._ephemeralMessage)
         default: break
         }
       }
@@ -3186,8 +3227,11 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if let v = _storage._sticker {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
       }
+      if let v = _storage._requiredProtocolVersion {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 12)
+      }
       if let v = _storage._ephemeralMessage {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 12)
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -3209,6 +3253,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._contact != rhs_storage._contact {return false}
         if _storage._preview != rhs_storage._preview {return false}
         if _storage._sticker != rhs_storage._sticker {return false}
+        if _storage._requiredProtocolVersion != rhs_storage._requiredProtocolVersion {return false}
         if _storage._ephemeralMessage != rhs_storage._ephemeralMessage {return false}
         return true
       }
@@ -3224,6 +3269,12 @@ extension SignalServiceProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProvidi
     1: .same(proto: "END_SESSION"),
     2: .same(proto: "EXPIRATION_TIMER_UPDATE"),
     4: .same(proto: "PROFILE_KEY_UPDATE"),
+  ]
+}
+
+extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .aliased(proto: "INITIAL", aliases: ["CURRENT"]),
   ]
 }
 

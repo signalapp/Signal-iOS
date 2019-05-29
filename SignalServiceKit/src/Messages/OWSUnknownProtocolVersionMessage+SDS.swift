@@ -13,10 +13,10 @@ import SignalCoreKit
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSCallSerializer: SDSSerializer {
+class OWSUnknownProtocolVersionMessageSerializer: SDSSerializer {
 
-    private let model: TSCall
-    public required init(model: TSCall) {
+    private let model: OWSUnknownProtocolVersionMessage
+    public required init(model: OWSUnknownProtocolVersionMessage) {
         self.model = model
     }
 
@@ -25,7 +25,7 @@ class TSCallSerializer: SDSSerializer {
     func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
-        let recordType: SDSRecordType = .call
+        let recordType: SDSRecordType = .unknownProtocolVersionMessage
         guard let uniqueId: String = model.uniqueId else {
             owsFailDebug("Missing uniqueId.")
             throw SDSError.missingRequiredField
@@ -38,54 +38,54 @@ class TSCallSerializer: SDSSerializer {
 
         // Subclass properties
         let attachmentFilenameMap: Data? = nil
-        let attachmentIds: Data? = nil
+        let attachmentIds: Data? = optionalArchive(model.attachmentIds)
         let authorId: String? = nil
         let beforeInteractionId: String? = nil
-        let body: String? = nil
-        let callSchemaVersion: UInt? = model.callSchemaVersion
-        let callType: RPRecentCallType? = model.callType
+        let body: String? = model.body
+        let callSchemaVersion: UInt? = nil
+        let callType: RPRecentCallType? = nil
         let configurationDurationSeconds: UInt32? = nil
         let configurationIsEnabled: Bool? = nil
         let contactId: String? = nil
-        let contactShare: Data? = nil
+        let contactShare: Data? = optionalArchive(model.contactShare)
         let createdByRemoteName: String? = nil
         let createdInExistingGroup: Bool? = nil
-        let customMessage: String? = nil
+        let customMessage: String? = model.customMessage
         let envelopeData: Data? = nil
-        let ephemeralMessage: Data? = nil
+        let ephemeralMessage: Data? = optionalArchive(model.ephemeralMessage)
         let errorMessageSchemaVersion: UInt? = nil
         let errorType: TSErrorMessageType? = nil
-        let expireStartedAt: UInt64? = nil
-        let expiresAt: UInt64? = nil
-        let expiresInSeconds: UInt32? = nil
+        let expireStartedAt: UInt64? = model.expireStartedAt
+        let expiresAt: UInt64? = model.expiresAt
+        let expiresInSeconds: UInt32? = model.expiresInSeconds
         let groupMetaMessage: TSGroupMetaMessage? = nil
         let hasAddToContactsOffer: Bool? = nil
         let hasAddToProfileWhitelistOffer: Bool? = nil
         let hasBlockOffer: Bool? = nil
         let hasLegacyMessageState: Bool? = nil
         let hasSyncedTranscript: Bool? = nil
-        let infoMessageSchemaVersion: UInt? = nil
+        let infoMessageSchemaVersion: UInt? = model.infoMessageSchemaVersion
         let isFromLinkedDevice: Bool? = nil
         let isLocalChange: Bool? = nil
         let isVoiceMessage: Bool? = nil
         let legacyMessageState: TSOutgoingMessageState? = nil
         let legacyWasDelivered: Bool? = nil
-        let linkPreview: Data? = nil
+        let linkPreview: Data? = optionalArchive(model.linkPreview)
         let messageId: String? = nil
-        let messageSticker: Data? = nil
-        let messageType: TSInfoMessageType? = nil
+        let messageSticker: Data? = optionalArchive(model.messageSticker)
+        let messageType: TSInfoMessageType? = model.messageType
         let mostRecentFailureText: String? = nil
         let preKeyBundle: Data? = nil
-        let protocolVersion: UInt? = nil
-        let quotedMessage: Data? = nil
+        let protocolVersion: UInt? = model.protocolVersion
+        let quotedMessage: Data? = optionalArchive(model.quotedMessage)
         let read: Bool? = model.wasRead
         let recipientId: String? = nil
         let recipientStateMap: Data? = nil
-        let schemaVersion: UInt? = nil
-        let senderId: String? = nil
+        let schemaVersion: UInt? = model.schemaVersion
+        let senderId: String? = model.senderId
         let serverTimestamp: UInt64? = nil
         let sourceDeviceId: UInt32? = nil
-        let unregisteredRecipientId: String? = nil
+        let unregisteredRecipientId: String? = model.unregisteredRecipientId
         let verificationState: OWSVerificationState? = nil
         let wasReceivedByUD: Bool? = nil
 

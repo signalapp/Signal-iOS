@@ -653,7 +653,14 @@ typedef enum : NSUInteger {
 - (BOOL)becomeFirstResponder
 {
     OWSLogDebug(@"");
-    return [super becomeFirstResponder];
+
+    BOOL result = [super becomeFirstResponder];
+
+    if (result) {
+        [self.inputToolbar ensureFirstResponderState];
+    }
+
+    return result;
 }
 
 - (BOOL)resignFirstResponder
@@ -4510,6 +4517,11 @@ typedef enum : NSUInteger {
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:manageStickersView];
     [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (CGSize)rootViewSize
+{
+    return self.view.bounds.size;
 }
 
 - (void)voiceMemoGestureDidStart
