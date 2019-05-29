@@ -3475,8 +3475,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         }
     }();
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithType:SSKProtoEnvelopeTypeCiphertext
-                                                                       timestamp:timestamp];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:timestamp];
+    [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
     [envelopeBuilder setSource:source];
     [envelopeBuilder setSourceDevice:1];
     NSError *error;
@@ -4039,8 +4039,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        SSKProtoGroupContextBuilder *groupBuilder =
-            [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId type:SSKProtoGroupContextTypeDeliver];
+        SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId];
+        [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
         [dataMessageBuilder setGroup:groupBuilder.buildIgnoringErrors];
     }
 
@@ -4063,7 +4063,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     SSKProtoEnvelopeType envelopeType = SSKProtoEnvelopeTypeCiphertext;
     NSData *content = plaintextData;
 
-    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithType:envelopeType timestamp:timestamp];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:timestamp];
+    [envelopeBuilder setType:envelopeType];
     [envelopeBuilder setSource:source];
     [envelopeBuilder setSourceDevice:sourceDevice];
     envelopeBuilder.content = content;

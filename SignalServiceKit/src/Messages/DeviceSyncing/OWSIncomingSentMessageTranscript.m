@@ -42,7 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
     _body = _dataMessage.body;
     _dataMessageTimestamp = _dataMessage.timestamp;
     _groupId = _dataMessage.group.id;
-    _isGroupUpdate = _dataMessage.group != nil && (_dataMessage.group.type == SSKProtoGroupContextTypeUpdate);
+    _isGroupUpdate = (_dataMessage.group != nil && _dataMessage.group.hasType
+        && _dataMessage.group.unwrappedType == SSKProtoGroupContextTypeUpdate);
     _isExpirationTimerUpdate = (_dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0;
     _isEndSessionMessage = (_dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0;
     _isRecipientUpdate = sentProto.isRecipientUpdate;

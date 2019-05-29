@@ -143,7 +143,6 @@ struct WebSocketProtos_WebSocketMessage {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// @required
   var type: WebSocketProtos_WebSocketMessage.TypeEnum {
     get {return _storage._type ?? .unknown}
     set {_uniqueStorage()._type = newValue}

@@ -63,8 +63,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
-    SSKProtoGroupContextBuilder *groupContextBuilder =
-        [SSKProtoGroupContext builderWithId:self.groupId type:SSKProtoGroupContextTypeRequestInfo];
+    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContext builderWithId:self.groupId];
+    [groupContextBuilder setType:SSKProtoGroupContextTypeRequestInfo];
 
     NSError *error;
     SSKProtoGroupContext *_Nullable groupContextProto = [groupContextBuilder buildAndReturnError:&error];

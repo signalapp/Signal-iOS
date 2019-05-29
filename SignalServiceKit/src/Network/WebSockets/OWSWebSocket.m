@@ -528,8 +528,8 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    WebSocketProtoWebSocketMessageBuilder *messageBuilder =
-        [WebSocketProtoWebSocketMessage builderWithType:WebSocketProtoWebSocketMessageTypeRequest];
+    WebSocketProtoWebSocketMessageBuilder *messageBuilder = [WebSocketProtoWebSocketMessage builder];
+    [messageBuilder setType:WebSocketProtoWebSocketMessageTypeRequest];
     [messageBuilder setRequest:requestProto];
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
@@ -730,12 +730,14 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    if (wsMessage.type == WebSocketProtoWebSocketMessageTypeRequest) {
+    if (!wsMessage.hasType) {
+        OWSFailDebug(@"webSocket:didReceiveMessage: missing type.");
+    } else if (wsMessage.unwrappedType == WebSocketProtoWebSocketMessageTypeRequest) {
         [self processWebSocketRequestMessage:wsMessage.request];
-    } else if (wsMessage.type == WebSocketProtoWebSocketMessageTypeResponse) {
+    } else if (wsMessage.unwrappedType == WebSocketProtoWebSocketMessageTypeResponse) {
         [self processWebSocketResponseMessage:wsMessage.response];
     } else {
-        OWSLogWarn(@"webSocket:didReceiveMessage: unknown.");
+        OWSFailDebug(@"webSocket:didReceiveMessage: unknown.");
     }
 }
 
@@ -834,8 +836,8 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    WebSocketProtoWebSocketMessageBuilder *messageBuilder =
-        [WebSocketProtoWebSocketMessage builderWithType:WebSocketProtoWebSocketMessageTypeResponse];
+    WebSocketProtoWebSocketMessageBuilder *messageBuilder = [WebSocketProtoWebSocketMessage builder];
+    [messageBuilder setType:WebSocketProtoWebSocketMessageTypeResponse];
     [messageBuilder setResponse:response];
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];

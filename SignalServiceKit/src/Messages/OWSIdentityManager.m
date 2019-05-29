@@ -717,7 +717,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
     NSData *identityKey = [rawIdentityKey throws_removeKeyType];
 
-    switch (verified.state) {
+    if (!verified.hasState) {
+        OWSFailDebug(@"Verification state sync message missing state.");
+        return;
+    }
+    switch (verified.unwrappedState) {
         case SSKProtoVerifiedStateDefault:
             [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateDefault
                                                  recipientId:recipientId

@@ -19,7 +19,11 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 {
     OWSAssertDebug(envelope != nil);
 
-    switch (envelope.type) {
+    if (!envelope.hasType) {
+        OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeUnknown]);
+        return @"Missing Type.";
+    }
+    switch (envelope.unwrappedType) {
         case SSKProtoEnvelopeTypeReceipt:
             return @"DeliveryReceipt";
         case SSKProtoEnvelopeTypeUnknown:
@@ -141,34 +145,39 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
  */
 - (NSString *)descriptionForSyncMessage:(SSKProtoSyncMessage *)syncMessage
 {
-    NSMutableString *description = [NSMutableString new];
     if (syncMessage.sent) {
-        [description appendString:@"SentTranscript"];
+        return @"SentTranscript";
     } else if (syncMessage.request) {
-        if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeContacts) {
-            [description appendString:@"ContactRequest"];
-        } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeGroups) {
-            [description appendString:@"GroupRequest"];
-        } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeBlocked) {
-            [description appendString:@"BlockedRequest"];
-        } else if (syncMessage.request.type == SSKProtoSyncMessageRequestTypeConfiguration) {
-            [description appendString:@"ConfigurationRequest"];
+        if (!syncMessage.request.hasType) {
+            return @"Unknown sync request.";
+        }
+        if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeContacts) {
+            return @"ContactRequest";
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeGroups) {
+            return @"GroupRequest";
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeBlocked) {
+            return @"BlockedRequest";
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeConfiguration) {
+            return @"ConfigurationRequest";
         } else {
             OWSFailDebug(@"Unknown sync message request type");
-            [description appendString:@"UnknownRequest"];
+            return @"UnknownRequest";
         }
     } else if (syncMessage.blocked) {
-        [description appendString:@"Blocked"];
+        return @"Blocked";
     } else if (syncMessage.read.count > 0) {
-        [description appendString:@"ReadReceipt"];
+        return @"ReadReceipt";
     } else if (syncMessage.verified) {
-        NSString *verifiedString =
-            [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destination];
-        [description appendString:verifiedString];
+        return [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destination];
     } else if (syncMessage.stickerPackOperation) {
+        NSMutableString *description = [NSMutableString new];
         NSMutableArray<NSString *> *operationTypes = [NSMutableArray new];
         for (SSKProtoSyncMessageStickerPackOperation *packOperationProto in syncMessage.stickerPackOperation) {
-            switch (packOperationProto.type) {
+            if (!packOperationProto.hasType) {
+                [operationTypes addObject:@"unknown"];
+                continue;
+            }
+            switch (packOperationProto.unwrappedType) {
                 case SSKProtoSyncMessageStickerPackOperationTypeInstall:
                     [operationTypes addObject:@"install"];
                     break;
@@ -181,12 +190,11 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
             }
         }
         [description appendFormat:@"StickerPackOperation: %@", [operationTypes componentsJoinedByString:@", "]];
+        return description;
     } else {
         OWSFailDebug(@"Unknown sync message type");
-        [description appendString:@"Unknown"];
+        return @"Unknown";
     }
-
-    return description;
 }
 
 @end

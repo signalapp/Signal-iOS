@@ -52,9 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (StickerPackInfo *pack in self.packs) {
         SSKProtoSyncMessageStickerPackOperationBuilder *packOperationBuilder =
-            [SSKProtoSyncMessageStickerPackOperation builderWithPackID:pack.packId
-                                                               packKey:pack.packKey
-                                                                  type:operationType];
+            [SSKProtoSyncMessageStickerPackOperation builderWithPackID:pack.packId packKey:pack.packKey];
+        [packOperationBuilder setType:operationType];
 
         NSError *error;
         SSKProtoSyncMessageStickerPackOperation *_Nullable packOperationProto =

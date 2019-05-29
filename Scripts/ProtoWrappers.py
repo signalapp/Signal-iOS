@@ -253,7 +253,7 @@ class BaseContext(object):
         #     return False
         # elif self.is_field_an_enum(field):
         if self.is_field_an_enum(field):
-            return False
+            return True
         else:
             return True
         
@@ -321,6 +321,7 @@ class FileContext(BaseContext):
 //
 
 import Foundation
+import SignalCoreKit
 ''')
 
         writer.extend('''
@@ -432,6 +433,10 @@ class MessageContext(BaseContext):
             else:
                 implict_fields.append(field)
 
+            # Ensure that no enum are required. 
+            if self.is_field_an_enum(field) and field.is_required:
+                raise Exception('Enum field default values should not be used: %s.%s' % ( self.proto_name, field.name, ))
+
         self.generate_builder(writer)
         
         writer.add('fileprivate let proto: %s' % wrapped_swift_name )
@@ -454,22 +459,46 @@ class MessageContext(BaseContext):
         if len(implict_fields) > 0:
             for field in implict_fields:
                 if field.rules == 'optional':
-                    can_be_optional = (not self.is_field_primitive(field)) and (not self.is_field_an_enum(field))
+                    can_be_optional = not self.is_field_primitive(field)
                     if can_be_optional:
-                        writer.add('@objc public var %s: %s? {' % (field.name_swift, field.type_swift_not_optional))
-                        writer.push_indent()
-                        writer.add('guard proto.%s else {' % field.has_accessor_name() )
-                        writer.push_indent()
-                        writer.add('return nil')
-                        writer.pop_indent()
-                        writer.add('}')
+                        def write_field_getter(is_objc_accessible, is_required_optional):
+                            if is_objc_accessible:
+                                objc_keyword = '@objc '
+                            else:
+                                objc_keyword = ''
+                            if is_required_optional:
+                                def captialize_first_letter(s):
+                                    return field.name_swift[0].upper() + field.name_swift[1:]
+                                writer.add('// This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.')
+                                writer.add('%spublic var unwrapped%s: %s {' % ( objc_keyword, captialize_first_letter(field.name_swift), field.type_swift_not_optional, ))
+                                writer.push_indent()
+                                writer.add('if !%s {' % field.has_accessor_name() )
+                                writer.push_indent()
+                                writer.add('// TODO: We could make this a crashing assert.')
+                                writer.add('owsFailDebug("Unsafe unwrap of missing optional: %s.%s.")' % ( self.proto_name, field.name_swift, ) )
+                                writer.pop_indent()
+                                writer.add('}')
+                            else:
+                                writer.add('%spublic var %s: %s? {' % ( objc_keyword, field.name_swift, field.type_swift_not_optional, ))
+                                writer.push_indent()
+                            if not is_required_optional:
+                                writer.add('guard proto.%s else {' % field.has_accessor_name() )
+                                writer.push_indent()
+                                writer.add('return nil')
+                                writer.pop_indent()
+                                writer.add('}')
+                            if self.is_field_an_enum(field):
+                                enum_context = self.context_for_proto_type(field)
+                                writer.add('return %s.%sWrap(proto.%s)' % ( enum_context.parent.swift_name, enum_context.swift_name, field.name_swift, ) )
+                            else:
+                                writer.add('return proto.%s' % field.name_swift )
+                            writer.pop_indent()
+                            writer.add('}')
                         if self.is_field_an_enum(field):
-                            enum_context = self.context_for_proto_type(field)
-                            writer.add('return %s.%sWrap(proto.%s)' % ( enum_context.parent.swift_name, enum_context.swift_name, field.name_swift, ) )
+                            write_field_getter(is_objc_accessible=False, is_required_optional=False)
+                            write_field_getter(is_objc_accessible=True, is_required_optional=True)
                         else:
-                            writer.add('return proto.%s' % field.name_swift )
-                        writer.pop_indent()
-                        writer.add('}')
+                            write_field_getter(is_objc_accessible=True, is_required_optional=False)
                     else:
                         writer.add('@objc public var %s: %s {' % (field.name_swift, field.type_swift_not_optional))
                         writer.push_indent()
@@ -700,7 +729,7 @@ public func serializedData() throws -> Data {
                 accessor_name = field.name_swift
                 accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
 
-                can_be_optional = (not self.is_field_primitive(field)) and (not self.is_field_an_enum(field))
+                can_be_optional = not self.is_field_primitive(field)
                 if field.rules == 'repeated':
                     writer.add('builder.%s(%s)' % ( accessor_name, field.name_swift, ))
                 elif can_be_optional:
@@ -1094,7 +1123,7 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
                 raise Exception('Duplicate message field index[%s]: %s' % (proto_file_path, item_name))
             # context.field_indices.add(item_index)
             
-            is_required = '@required' in field_comments
+            is_required = '@required' in field_comments 
             # if is_required:
             #     print 'is_required:', item_name
             context.field_map[item_index] = MessageField(item_name, item_index, item_rules, item_type, item_default, sort_index, is_required)

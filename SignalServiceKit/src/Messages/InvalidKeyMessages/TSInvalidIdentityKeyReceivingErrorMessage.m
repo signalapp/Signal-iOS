@@ -189,8 +189,11 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
         OWSLogError(@"Error message had no envelope data to extract key from");
         return nil;
     }
-
-    if (self.envelope.type != SSKProtoEnvelopeTypePrekeyBundle) {
+    if (!self.envelope.hasType) {
+        OWSLogError(@"Error message envelope is missing type.");
+        return nil;
+    }
+    if (self.envelope.unwrappedType != SSKProtoEnvelopeTypePrekeyBundle) {
         OWSLogError(@"Refusing to attempt key extraction from an envelope which isn't a prekey bundle");
         return nil;
     }

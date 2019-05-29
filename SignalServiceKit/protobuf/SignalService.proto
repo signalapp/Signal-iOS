@@ -24,7 +24,6 @@ message Envelope {
     UNIDENTIFIED_SENDER = 6;
   }
 
-  // @required
   optional Type   type            = 1;
   optional string source          = 2;
   optional uint32 sourceDevice    = 7;
@@ -47,7 +46,6 @@ message TypingMessage {
 
   // @required
   optional uint64 timestamp = 1;
-  // @required
   optional Action action = 2;
   optional bytes groupId = 3;
 }
@@ -261,7 +259,6 @@ message ReceiptMessage {
     READ     = 1;
   }
 
-  // @required
   optional Type   type      = 1;
   repeated uint64 timestamp = 2;
 }
@@ -319,7 +316,6 @@ message SyncMessage {
       CONFIGURATION = 4;
     }
 
-    // @required
     optional Type type = 1;
   }
 
@@ -346,7 +342,6 @@ message SyncMessage {
     optional bytes packId = 1;
     // @required
     optional bytes packKey = 2;
-    // @required
     optional Type  type    = 3;
   }
 
@@ -391,7 +386,6 @@ message GroupContext {
   }
   // @required
   optional bytes             id      = 1;
-  // @required
   optional Type              type    = 2;
   optional string            name    = 3;
   repeated string            members = 4;

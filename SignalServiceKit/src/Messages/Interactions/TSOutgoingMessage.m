@@ -1020,8 +1020,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                 groupMessageType = SSKProtoGroupContextTypeDeliver;
                 break;
         }
-        SSKProtoGroupContextBuilder *groupBuilder =
-            [SSKProtoGroupContext builderWithId:gThread.groupModel.groupId type:groupMessageType];
+        SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:gThread.groupModel.groupId];
+        [groupBuilder setType:groupMessageType];
         if (groupMessageType == SSKProtoGroupContextTypeUpdate) {
             if (gThread.groupModel.groupImage != nil && self.attachmentIds.count == 1) {
                 attachmentWasGroupAvatar = YES;

@@ -42,7 +42,6 @@ message WebSocketMessage {
         RESPONSE = 2;
     }
 
-    // @required
     optional Type type = 1;
     optional WebSocketRequestMessage request = 2;
     optional WebSocketResponseMessage response = 3;
