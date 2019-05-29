@@ -211,7 +211,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return failureBlock();
         }
 
-        if (envelope.typeRequired != SSKProtoEnvelopeTypeUnidentifiedSender) {
+        if (envelope.unwrappedType != SSKProtoEnvelopeTypeUnidentifiedSender) {
             if (!envelope.hasSource || envelope.source.length < 1 || !envelope.source.isValidE164) {
                 OWSFailDebug(@"incoming envelope has invalid source");
                 return failureBlock();
@@ -228,7 +228,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             }
         }
 
-        switch (envelope.typeRequired) {
+        switch (envelope.unwrappedType) {
             case SSKProtoEnvelopeTypeCiphertext: {
                 [self throws_decryptSecureMessage:envelope
                     envelopeData:envelopeData
@@ -298,7 +298,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
             default:
-                OWSLogWarn(@"Received unhandled envelope type: %d", (int)envelope.typeRequired);
+                OWSLogWarn(@"Received unhandled envelope type: %d", (int)envelope.unwrappedType);
                 break;
         }
     } @catch (NSException *exception) {

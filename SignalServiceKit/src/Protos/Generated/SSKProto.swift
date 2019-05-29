@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -150,8 +151,12 @@ public enum SSKProtoError: Error {
         }
         return SSKProtoEnvelope.SSKProtoEnvelopeTypeWrap(proto.type)
     }
-    // This "required" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var typeRequired: SSKProtoEnvelopeType {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedType: SSKProtoEnvelopeType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: Envelope.type.")
+        }
         return SSKProtoEnvelope.SSKProtoEnvelopeTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -360,8 +365,12 @@ extension SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
         }
         return SSKProtoTypingMessage.SSKProtoTypingMessageActionWrap(proto.action)
     }
-    // This "required" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var actionRequired: SSKProtoTypingMessageAction {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedAction: SSKProtoTypingMessageAction {
+        if !hasAction {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: TypingMessage.action.")
+        }
         return SSKProtoTypingMessage.SSKProtoTypingMessageActionWrap(proto.action)
     }
     @objc public var hasAction: Bool {
@@ -1934,8 +1943,12 @@ extension SSKProtoDataMessageContactName.SSKProtoDataMessageContactNameBuilder {
         }
         return SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneTypeWrap(proto.type)
     }
-    // This "required" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var typeRequired: SSKProtoDataMessageContactPhoneType {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedType: SSKProtoDataMessageContactPhoneType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: Phone.type.")
+        }
         return SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -2093,8 +2106,12 @@ extension SSKProtoDataMessageContactPhone.SSKProtoDataMessageContactPhoneBuilder
         }
         return SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailTypeWrap(proto.type)
     }
-    // This "required" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var typeRequired: SSKProtoDataMessageContactEmailType {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedType: SSKProtoDataMessageContactEmailType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: Email.type.")
+        }
         return SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -2281,8 +2298,12 @@ extension SSKProtoDataMessageContactEmail.SSKProtoDataMessageContactEmailBuilder
         }
         return SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPostalAddressTypeWrap(proto.type)
     }
-    // This "required" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var typeRequired: SSKProtoDataMessageContactPostalAddressType {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedType: SSKProtoDataMessageContactPostalAddressType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: PostalAddress.type.")
+        }
         return SSKProtoDataMessageContactPostalAddress.SSKProtoDataMessageContactPostalAddressTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -3601,8 +3622,12 @@ extension SSKProtoNullMessage.SSKProtoNullMessageBuilder {
         }
         return SSKProtoReceiptMessage.SSKProtoReceiptMessageTypeWrap(proto.type)
     }
-    // This "required" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var typeRequired: SSKProtoReceiptMessageType {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedType: SSKProtoReceiptMessageType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: ReceiptMessage.type.")
+        }
         return SSKProtoReceiptMessage.SSKProtoReceiptMessageTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -3763,8 +3788,12 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
         }
         return SSKProtoVerified.SSKProtoVerifiedStateWrap(proto.state)
     }
-    // This "required" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var stateRequired: SSKProtoVerifiedState {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedState: SSKProtoVerifiedState {
+        if !hasState {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: Verified.state.")
+        }
         return SSKProtoVerified.SSKProtoVerifiedStateWrap(proto.state)
     }
     @objc public var hasState: Bool {
@@ -4501,8 +4530,12 @@ extension SSKProtoSyncMessageBlocked.SSKProtoSyncMessageBlockedBuilder {
         }
         return SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestTypeWrap(proto.type)
     }
-    // This "required" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var typeRequired: SSKProtoSyncMessageRequestType {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedType: SSKProtoSyncMessageRequestType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: Request.type.")
+        }
         return SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -4884,8 +4917,12 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
         }
         return SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPackOperationTypeWrap(proto.type)
     }
-    // This "required" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var typeRequired: SSKProtoSyncMessageStickerPackOperationType {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedType: SSKProtoSyncMessageStickerPackOperationType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: StickerPackOperation.type.")
+        }
         return SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPackOperationTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {
@@ -5591,8 +5628,12 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         }
         return SSKProtoGroupContext.SSKProtoGroupContextTypeWrap(proto.type)
     }
-    // This "required" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var typeRequired: SSKProtoGroupContextType {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedType: SSKProtoGroupContextType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: GroupContext.type.")
+        }
         return SSKProtoGroupContext.SSKProtoGroupContextTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -115,8 +116,12 @@ public enum SignalIOSProtoError: Error {
         }
         return SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
     }
-    // This "required" accessor should only be used if the "has value" accessor has already been checked.
-    @objc public var typeRequired: SignalIOSProtoBackupSnapshotBackupEntityType {
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedType: SignalIOSProtoBackupSnapshotBackupEntityType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: BackupEntity.type.")
+        }
         return SignalIOSProtoBackupSnapshotBackupEntity.SignalIOSProtoBackupSnapshotBackupEntityTypeWrap(proto.type)
     }
     @objc public var hasType: Bool {

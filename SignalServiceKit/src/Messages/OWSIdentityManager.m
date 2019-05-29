@@ -721,7 +721,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         OWSFailDebug(@"Verification state sync message missing state.");
         return;
     }
-    switch (verified.stateRequired) {
+    switch (verified.unwrappedState) {
         case SSKProtoVerifiedStateDefault:
             [self tryToApplyVerificationStateFromSyncMessage:OWSVerificationStateDefault
                                                  recipientId:recipientId

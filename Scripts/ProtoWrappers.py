@@ -253,8 +253,6 @@ class BaseContext(object):
         #     return False
         # elif self.is_field_an_enum(field):
         if self.is_field_an_enum(field):
-            if field.is_required:
-                raise Exception('Enum field should not be @required: %s.%s' % ( self.proto_name, field.name, ))
             return True
         else:
             return True
@@ -294,8 +292,6 @@ class BaseContext(object):
         elif field.proto_type == 'bool':
             return 'false'
         elif self.is_field_an_enum(field):
-            if field.is_required:
-                raise Exception('Enum field default values should not be used: %s.%s' % ( self.proto_name, field.name, ))
             # TODO: Assert that rules is empty.
             enum_context = self.context_for_proto_type(field)
             return enum_context.default_value()
@@ -325,6 +321,7 @@ class FileContext(BaseContext):
 //
 
 import Foundation
+import SignalCoreKit
 ''')
 
         writer.extend('''
@@ -436,6 +433,10 @@ class MessageContext(BaseContext):
             else:
                 implict_fields.append(field)
 
+            # Ensure that no enum are required. 
+            if self.is_field_an_enum(field) and field.is_required:
+                raise Exception('Enum field default values should not be used: %s.%s' % ( self.proto_name, field.name, ))
+
         self.generate_builder(writer)
         
         writer.add('fileprivate let proto: %s' % wrapped_swift_name )
@@ -466,11 +467,20 @@ class MessageContext(BaseContext):
                             else:
                                 objc_keyword = ''
                             if is_required_optional:
-                                writer.add('// This "required" accessor should only be used if the "has value" accessor has already been checked.')
-                                writer.add('%spublic var %sRequired: %s {' % ( objc_keyword, field.name_swift, field.type_swift_not_optional, ))
+                                def captialize_first_letter(s):
+                                    return field.name_swift[0].upper() + field.name_swift[1:]
+                                writer.add('// This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.')
+                                writer.add('%spublic var unwrapped%s: %s {' % ( objc_keyword, captialize_first_letter(field.name_swift), field.type_swift_not_optional, ))
+                                writer.push_indent()
+                                writer.add('if !%s {' % field.has_accessor_name() )
+                                writer.push_indent()
+                                writer.add('// TODO: We could make this a crashing assert.')
+                                writer.add('owsFailDebug("Unsafe unwrap of missing optional: %s.%s.")' % ( self.proto_name, field.name_swift, ) )
+                                writer.pop_indent()
+                                writer.add('}')
                             else:
                                 writer.add('%spublic var %s: %s? {' % ( objc_keyword, field.name_swift, field.type_swift_not_optional, ))
-                            writer.push_indent()
+                                writer.push_indent()
                             if not is_required_optional:
                                 writer.add('guard proto.%s else {' % field.has_accessor_name() )
                                 writer.push_indent()

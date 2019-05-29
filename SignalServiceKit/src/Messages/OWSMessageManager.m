@@ -257,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self checkForUnknownLinkedDevice:envelope transaction:transaction];
 
-    switch (envelope.typeRequired) {
+    switch (envelope.unwrappedType) {
         case SSKProtoEnvelopeTypeCiphertext:
         case SSKProtoEnvelopeTypePrekeyBundle:
         case SSKProtoEnvelopeTypeUnidentifiedSender:
@@ -282,7 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogWarn(@"Received an unknown message type");
             break;
         default:
-            OWSLogWarn(@"Received unhandled envelope type: %d", (int)envelope.typeRequired);
+            OWSLogWarn(@"Received unhandled envelope type: %d", (int)envelope.unwrappedType);
             break;
     }
 }
@@ -511,7 +511,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
         if (groupThread) {
-            if (dataMessage.group.typeRequired != SSKProtoGroupContextTypeUpdate) {
+            if (dataMessage.group.unwrappedType != SSKProtoGroupContextTypeUpdate) {
                 if (!groupThread.isLocalUserInGroup) {
                     OWSLogInfo(@"Ignoring messages for left group.");
                     return;
@@ -519,9 +519,9 @@ NS_ASSUME_NONNULL_BEGIN
             }
         } else {
             // Unknown group.
-            if (dataMessage.group.typeRequired == SSKProtoGroupContextTypeUpdate) {
+            if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeUpdate) {
                 // Accept group updates for unknown groups.
-            } else if (dataMessage.group.typeRequired == SSKProtoGroupContextTypeDeliver) {
+            } else if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeDeliver) {
                 [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
                 return;
             } else {
@@ -613,7 +613,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<NSNumber *> *sentTimestamps = receiptMessage.timestamp;
 
-    switch (receiptMessage.typeRequired) {
+    switch (receiptMessage.unwrappedType) {
         case SSKProtoReceiptMessageTypeDelivery:
             OWSLogVerbose(@"Processing receipt message with delivery receipts.");
             [self processDeliveryReceiptsFromRecipientId:envelope.source
@@ -628,7 +628,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       readTimestamp:envelope.timestamp];
             break;
         default:
-            OWSLogInfo(@"Ignoring receipt message of unknown type: %d.", (int)receiptMessage.typeRequired);
+            OWSLogInfo(@"Ignoring receipt message of unknown type: %d.", (int)receiptMessage.unwrappedType);
             return;
     }
 }
@@ -732,7 +732,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Type message is missing action.");
             return;
         }
-        switch (typingMessage.actionRequired) {
+        switch (typingMessage.unwrappedAction) {
             case SSKProtoTypingMessageActionStarted:
                 [self.typingIndicators didReceiveTypingStartedMessageInThread:thread
                                                                   recipientId:envelope.source
@@ -928,7 +928,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Ignoring sync request without type.");
             return;
         }
-        if (syncMessage.request.typeRequired == SSKProtoSyncMessageRequestTypeContacts) {
+        if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeContacts) {
             // We respond asynchronously because populating the sync message will
             // create transactions and it's not practical (due to locking in the OWSIdentityManager)
             // to plumb our transaction through.
@@ -938,7 +938,7 @@ NS_ASSUME_NONNULL_BEGIN
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [[self.syncManager syncAllContacts] retainUntilComplete];
             });
-        } else if (syncMessage.request.typeRequired == SSKProtoSyncMessageRequestTypeGroups) {
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
             NSData *_Nullable syncData = [syncGroupsMessage
                 buildPlainTextAttachmentDataWithTransaction:transaction.transitional_yapReadTransaction];
@@ -954,10 +954,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                 caption:nil
                                          albumMessageId:nil
                                   isTemporaryAttachment:YES];
-        } else if (syncMessage.request.typeRequired == SSKProtoSyncMessageRequestTypeBlocked) {
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeBlocked) {
             OWSLogInfo(@"Received request for block list");
             [self.blockingManager syncBlockList];
-        } else if (syncMessage.request.typeRequired == SSKProtoSyncMessageRequestTypeConfiguration) {
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeConfiguration) {
             [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
 
             // We send _two_ responses to the "configuration request".
@@ -1143,7 +1143,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Missing group message type.");
         return;
     }
-    if (dataMessage.group.typeRequired != SSKProtoGroupContextTypeRequestInfo) {
+    if (dataMessage.group.unwrappedType != SSKProtoGroupContextTypeRequestInfo) {
         OWSFailDebug(@"Unexpected group message type.");
         return;
     }
@@ -1238,7 +1238,7 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSContacts contactForDataMessage:dataMessage transaction:transaction.transitional_yapWriteTransaction];
     NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
 
-    if (dataMessage.group.typeRequired == SSKProtoGroupContextTypeRequestInfo) {
+    if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeRequestInfo) {
         [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
         return nil;
     }
@@ -1275,7 +1275,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
 
-        switch (dataMessage.group.typeRequired) {
+        switch (dataMessage.group.unwrappedType) {
             case SSKProtoGroupContextTypeUpdate: {
                 // Ensures that the thread exists but doesn't update it.
                 TSGroupThread *newGroupThread =
@@ -1427,7 +1427,7 @@ NS_ASSUME_NONNULL_BEGIN
                 return incomingMessage;
             }
             default: {
-                OWSLogWarn(@"Ignoring unknown group message type: %d", (int)dataMessage.group.typeRequired);
+                OWSLogWarn(@"Ignoring unknown group message type: %d", (int)dataMessage.group.unwrappedType);
                 return nil;
             }
         }
@@ -1680,7 +1680,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return (dataMessage.group != nil && dataMessage.group.hasType
-        && dataMessage.group.typeRequired == SSKProtoGroupContextTypeUpdate && dataMessage.group.avatar != nil);
+        && dataMessage.group.unwrappedType == SSKProtoGroupContextTypeUpdate && dataMessage.group.avatar != nil);
 }
 
 /**

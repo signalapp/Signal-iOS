@@ -23,7 +23,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeUnknown]);
         return @"Missing Type.";
     }
-    switch (envelope.typeRequired) {
+    switch (envelope.unwrappedType) {
         case SSKProtoEnvelopeTypeReceipt:
             return @"DeliveryReceipt";
         case SSKProtoEnvelopeTypeUnknown:
@@ -151,13 +151,13 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
         if (!syncMessage.request.hasType) {
             return @"Unknown sync request.";
         }
-        if (syncMessage.request.typeRequired == SSKProtoSyncMessageRequestTypeContacts) {
+        if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeContacts) {
             return @"ContactRequest";
-        } else if (syncMessage.request.typeRequired == SSKProtoSyncMessageRequestTypeGroups) {
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeGroups) {
             return @"GroupRequest";
-        } else if (syncMessage.request.typeRequired == SSKProtoSyncMessageRequestTypeBlocked) {
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeBlocked) {
             return @"BlockedRequest";
-        } else if (syncMessage.request.typeRequired == SSKProtoSyncMessageRequestTypeConfiguration) {
+        } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeConfiguration) {
             return @"ConfigurationRequest";
         } else {
             OWSFailDebug(@"Unknown sync message request type");
@@ -177,7 +177,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
                 [operationTypes addObject:@"unknown"];
                 continue;
             }
-            switch (packOperationProto.typeRequired) {
+            switch (packOperationProto.unwrappedType) {
                 case SSKProtoSyncMessageStickerPackOperationTypeInstall:
                     [operationTypes addObject:@"install"];
                     break;

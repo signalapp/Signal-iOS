@@ -732,9 +732,9 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
     if (!wsMessage.hasType) {
         OWSFailDebug(@"webSocket:didReceiveMessage: missing type.");
-    } else if (wsMessage.typeRequired == WebSocketProtoWebSocketMessageTypeRequest) {
+    } else if (wsMessage.unwrappedType == WebSocketProtoWebSocketMessageTypeRequest) {
         [self processWebSocketRequestMessage:wsMessage.request];
-    } else if (wsMessage.typeRequired == WebSocketProtoWebSocketMessageTypeResponse) {
+    } else if (wsMessage.unwrappedType == WebSocketProtoWebSocketMessageTypeResponse) {
         [self processWebSocketResponseMessage:wsMessage.response];
     } else {
         OWSFailDebug(@"webSocket:didReceiveMessage: unknown.");

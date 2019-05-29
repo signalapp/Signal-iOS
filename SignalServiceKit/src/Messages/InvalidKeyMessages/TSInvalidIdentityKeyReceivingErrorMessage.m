@@ -193,7 +193,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
         OWSLogError(@"Error message envelope is missing type.");
         return nil;
     }
-    if (self.envelope.typeRequired != SSKProtoEnvelopeTypePrekeyBundle) {
+    if (self.envelope.unwrappedType != SSKProtoEnvelopeTypePrekeyBundle) {
         OWSLogError(@"Refusing to attempt key extraction from an envelope which isn't a prekey bundle");
         return nil;
     }

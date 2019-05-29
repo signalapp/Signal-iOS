@@ -382,7 +382,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Envelope is missing type.");
         return NO;
     }
-    return (envelope.typeRequired == SSKProtoEnvelopeTypeUnidentifiedSender
+    return (envelope.unwrappedType == SSKProtoEnvelopeTypeUnidentifiedSender
         && (!envelope.hasSource || envelope.source.length < 1));
 }
 
