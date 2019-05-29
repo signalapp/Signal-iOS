@@ -66,7 +66,12 @@ struct YAPDBThreadFinder: ThreadFinder {
     }
 
     private func ext(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction {
-        return transaction.ext(type(of: self).extensionName) as! YapDatabaseViewTransaction
+        guard let ext = transaction.ext(type(of: self).extensionName) as? YapDatabaseViewTransaction else {
+            OWSPrimaryStorage.incrementVersion(ofDatabaseExtension: type(of: self).extensionName)
+            owsFail("unable to load extension")
+        }
+
+        return ext
     }
 }
 
