@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 // regardless of which view is currently visible.
 @property (nonatomic, nullable) NSNumber *ows_prefersStatusBarHidden;
 
+- (instancetype)initWithOWSNavbar NS_DESIGNATED_INITIALIZER;
+
 @end
 
 NS_ASSUME_NONNULL_END

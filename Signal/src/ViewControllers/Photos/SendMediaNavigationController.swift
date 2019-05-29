@@ -254,7 +254,7 @@ class SendMediaNavigationController: OWSNavigationController {
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachmentApprovalItems: attachmentApprovalItems)
+        let approvalViewController = AttachmentApprovalViewController(options: [.canAddMore], attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 

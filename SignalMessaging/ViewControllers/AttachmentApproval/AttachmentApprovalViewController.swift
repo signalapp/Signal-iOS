@@ -31,14 +31,22 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
 
     @objc
     optional func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController)
+
+    @objc
+    optional func attachmentApprovalBackButtonTitle() -> String
 }
 
 // MARK: -
 
-@objc
-public enum AttachmentApprovalViewControllerMode: UInt {
-    case modal
-    case sharedNavigation
+public struct AttachmentApprovalViewControllerOptions: OptionSet {
+    public let rawValue: Int
+
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+
+    public static let canAddMore = AttachmentApprovalViewControllerOptions(rawValue: 1 << 0)
+    public static let hasCancel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 1)
 }
 
 // MARK: -
@@ -48,8 +56,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     // MARK: - Properties
 
-    private let mode: AttachmentApprovalViewControllerMode
-    private let isAddMoreVisible: Bool
+    private let options: AttachmentApprovalViewControllerOptions
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
 
@@ -68,13 +75,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     let kSpacingBetweenItems: CGFloat = 20
 
-    required public init(mode: AttachmentApprovalViewControllerMode,
+    required public init(options: AttachmentApprovalViewControllerOptions,
                          attachmentApprovalItems: [AttachmentApprovalItem]) {
         assert(attachmentApprovalItems.count > 0)
-        self.mode = mode
-        self.isAddMoreVisible = mode == .sharedNavigation
+        self.options = options
 
-        self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(attachmentApprovalItems: attachmentApprovalItems, isAddMoreVisible: isAddMoreVisible)
+        self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(attachmentApprovalItems: attachmentApprovalItems, isAddMoreVisible: options.contains(.canAddMore))
 
         let options: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
@@ -96,7 +102,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     @objc
     public class func wrappedInNavController(attachments: [SignalAttachment], approvalDelegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
         let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0) }
-        let vc = AttachmentApprovalViewController(mode: .modal, attachmentApprovalItems: attachmentApprovalItems)
+        let vc = AttachmentApprovalViewController(options: [.hasCancel], attachmentApprovalItems: attachmentApprovalItems)
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
         navController.ows_prefersStatusBarHidden = true
@@ -294,8 +300,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         updateNavigationBar(navigationBarItems: navigationBarItems)
 
-        let hasCancel = (mode != .sharedNavigation)
-        if hasCancel {
+        if options.contains(.hasCancel) {
             // Mimic a UIBarButtonItem of type .cancel, but with a shadow.
             let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
                 self?.cancelPressed()
@@ -318,6 +323,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             let imageName = isRTL ? "NavBarBackRTL" : "NavBarBack"
             let backButton = OWSButton(imageName: imageName, tintColor: .white) { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
+            }
+            if let backButtonTitle = approvalDelegate?.attachmentApprovalBackButtonTitle?() {
+                backButton.setTitle(backButtonTitle, for: .normal)
             }
 
             // Nudge closer to the left edge to match default back button item.
@@ -566,7 +574,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                                            focusedItem: currentItem,
                                            cellViewBuilder: cellViewBuilder)
 
-        if isAddMoreVisible {
+        if options.contains(.canAddMore) {
             galleryRailView.isHidden = false
         } else if attachmentApprovalItemCollection.attachmentApprovalItems.count > 1 {
             galleryRailView.isHidden = false
