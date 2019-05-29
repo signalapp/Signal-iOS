@@ -142,6 +142,17 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (BOOL)becomeFirstResponder
+{
+    BOOL result = [super becomeFirstResponder];
+
+    if (result) {
+        [self.textViewToolbarDelegate textViewDidBecomeFirstResponder:self];
+    }
+
+    return result;
+}
+
 - (BOOL)pasteboardHasPossibleAttachment
 {
     // We don't want to load/convert images more than once so we
