@@ -141,11 +141,6 @@ const CGFloat kMaxTextViewHeight = 98;
     return self;
 }
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 #pragma mark - Dependencies
 
 - (OWSLinkPreviewManager *)linkPreviewManager
