@@ -69,7 +69,8 @@ class OWSUnknownProtocolVersionMessageSerializer: SDSSerializer {
             TSInteractionSerializer.messageTypeColumn,
             TSInteractionSerializer.readColumn,
             TSInteractionSerializer.unregisteredRecipientIdColumn,
-            TSInteractionSerializer.protocolVersionColumn
+            TSInteractionSerializer.protocolVersionColumn,
+            TSInteractionSerializer.senderIdColumn
             ].map { $0.columnName }
     }
 
@@ -93,7 +94,8 @@ class OWSUnknownProtocolVersionMessageSerializer: SDSSerializer {
             self.model.messageType.rawValue,
             self.model.wasRead,
             self.model.unregisteredRecipientId ?? DatabaseValue.null,
-            self.model.protocolVersion
+            self.model.protocolVersion,
+            self.model.senderId
 
         ]
         if OWSIsDebugBuild() {

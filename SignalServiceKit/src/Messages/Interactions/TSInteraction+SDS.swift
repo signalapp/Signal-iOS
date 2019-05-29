@@ -71,6 +71,7 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
     public let recipientId: String?
     public let recipientStateMap: Data?
     public let schemaVersion: UInt?
+    public let senderId: String?
     public let serverTimestamp: UInt64?
     public let sourceDeviceId: UInt32?
     public let unregisteredRecipientId: String?
@@ -128,6 +129,7 @@ public struct InteractionRecord: Codable, FetchableRecord, PersistableRecord, Ta
         case recipientId
         case recipientStateMap
         case schemaVersion
+        case senderId
         case serverTimestamp
         case sourceDeviceId
         case unregisteredRecipientId
@@ -434,6 +436,7 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let unregisteredRecipientId: String? = record.unregisteredRecipientId
             let protocolVersion: UInt = try SDSDeserialization.required(record.protocolVersion, name: "protocolVersion")
+            let senderId: String = try SDSDeserialization.required(record.senderId, name: "senderId")
 
             return OWSUnknownProtocolVersionMessage(uniqueId: uniqueId,
                                                     receivedAtTimestamp: receivedAtTimestamp,
@@ -455,7 +458,8 @@ extension TSInteraction {
                                                     messageType: messageType,
                                                     read: read,
                                                     unregisteredRecipientId: unregisteredRecipientId,
-                                                    protocolVersion: protocolVersion)
+                                                    protocolVersion: protocolVersion,
+                                                    senderId: senderId)
 
         case .verificationStateChangeMessage:
 
@@ -1107,11 +1111,12 @@ extension TSInteractionSerializer {
     static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 47)
     static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 48)
     static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 49)
-    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 50)
-    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 51)
-    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 52)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 53)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 54)
+    static let senderIdColumn = SDSColumnMetadata(columnName: "senderId", columnType: .unicodeString, isOptional: true, columnIndex: 50)
+    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 51)
+    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 52)
+    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 53)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 54)
+    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 55)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -1166,6 +1171,7 @@ extension TSInteractionSerializer {
         recipientIdColumn,
         recipientStateMapColumn,
         schemaVersionColumn,
+        senderIdColumn,
         serverTimestampColumn,
         sourceDeviceIdColumn,
         unregisteredRecipientIdColumn,
@@ -1473,6 +1479,7 @@ extension TSInteractionSerializer {
             let read = try deserializer.bool(at: readColumn.columnIndex)
             let unregisteredRecipientId = try deserializer.optionalString(at: unregisteredRecipientIdColumn.columnIndex)
             let protocolVersion = UInt(try deserializer.int64(at: protocolVersionColumn.columnIndex))
+            let senderId = try deserializer.string(at: senderIdColumn.columnIndex)
 
             return OWSUnknownProtocolVersionMessage(uniqueId: uniqueId,
                                                     receivedAtTimestamp: receivedAtTimestamp,
@@ -1494,7 +1501,8 @@ extension TSInteractionSerializer {
                                                     messageType: messageType,
                                                     read: read,
                                                     unregisteredRecipientId: unregisteredRecipientId,
-                                                    protocolVersion: protocolVersion)
+                                                    protocolVersion: protocolVersion,
+                                                    senderId: senderId)
 
         case .verificationStateChangeMessage:
 

@@ -3,6 +3,8 @@
 //
 
 #import "OWSUnknownProtocolVersionMessage.h"
+#import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -10,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSUnknownProtocolVersionMessage ()
 
 @property (nonatomic) NSUInteger protocolVersion;
+@property (nonatomic) NSString *senderId;
 
 @end
 
@@ -17,14 +20,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSUnknownProtocolVersionMessage
 
+- (id<ContactsManagerProtocol>)contactsManager
+{
+    return SSKEnvironment.shared.contactsManager;
+}
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
+                         senderId:(NSString *)senderId
                   protocolVersion:(NSUInteger)protocolVersion
 {
     self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageUnknownProtocolVersion];
 
     if (self) {
+        OWSAssertDebug(senderId.length > 0);
+
         _protocolVersion = protocolVersion;
+        _senderId = senderId;
     }
 
     return self;
@@ -58,6 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                  protocolVersion:(NSUInteger)protocolVersion
+                        senderId:(NSString *)senderId
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -85,6 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _protocolVersion = protocolVersion;
+    _senderId = senderId;
 
     return self;
 }
@@ -95,19 +109,45 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return self.messageText;
+    return [self messageTextWithTransaction:transaction];
 }
 
-- (NSString *)messageText
+- (NSString *)messageTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    NSString *senderName = nil;
+    if (transaction.transitional_yapReadTransaction && self.senderId.length > 0) {
+        senderName = [self.contactsManager displayNameForPhoneIdentifier:self.senderId
+                                                             transaction:transaction.transitional_yapReadTransaction];
+    }
+
     if (self.isProtocolVersionUnknown) {
-        return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE",
-            @"Info message recorded in conversation history when local user receives an unknown message and needs to "
-            @"upgrade.");
+        if (senderName.length > 0) {
+            return [NSString
+                stringWithFormat:NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT",
+                                     @"Info message recorded in conversation history when local user receives an "
+                                     @"unknown message and needs to "
+                                     @"upgrade. Embeds {{user's name or phone number}}."),
+                senderName];
+        } else {
+            return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME",
+                @"Info message recorded in conversation history when local user receives an unknown message and needs "
+                @"to "
+                @"upgrade.");
+        }
     } else {
-        return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE",
-            @"Info message recorded in conversation history when local user has received an unknown message and has "
-            @"upgraded.");
+        if (senderName.length > 0) {
+            return [NSString
+                stringWithFormat:NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT",
+                                     @"Info message recorded in conversation history when local user has received an "
+                                     @"unknown message and has "
+                                     @"upgraded. Embeds {{user's name or phone number}}."),
+                senderName];
+        } else {
+            return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME",
+                @"Info message recorded in conversation history when local user has received an unknown message and "
+                @"has "
+                @"upgraded.");
+        }
     }
 }
 

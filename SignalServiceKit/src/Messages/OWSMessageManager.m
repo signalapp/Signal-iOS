@@ -1234,8 +1234,10 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (dataMessage.hasRequiredProtocolVersion
             && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
+            NSString *senderId = envelope.source;
             [self insertUnknownProtocolVersionErrorInThread:oldGroupThread
                                             protocolVersion:dataMessage.requiredProtocolVersion
+                                                   senderId:senderId
                                                 transaction:transaction.asAnyWrite];
             return nil;
         }
@@ -1381,8 +1383,10 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (dataMessage.hasRequiredProtocolVersion
             && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
+            NSString *senderId = envelope.source;
             [self insertUnknownProtocolVersionErrorInThread:thread
                                             protocolVersion:dataMessage.requiredProtocolVersion
+                                                   senderId:senderId
                                                 transaction:transaction.asAnyWrite];
             return nil;
         }
@@ -1455,7 +1459,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)insertUnknownProtocolVersionErrorInThread:(TSThread *)thread
-                                  protocolVersion:(SSKProtoDataMessageProtocolVersion)protocolVersion
+                                  protocolVersion:(NSUInteger)protocolVersion
+                                         senderId:(NSString *)senderId
                                       transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
@@ -1467,6 +1472,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSInteraction *message =
         [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                              thread:thread
+                                                           senderId:senderId
                                                     protocolVersion:protocolVersion];
     [message anySaveWithTransaction:transaction];
 }

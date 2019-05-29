@@ -10,8 +10,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSUInteger protocolVersion;
 
+@property (nonatomic, readonly) NSString *senderId;
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
+                         senderId:(NSString *)senderId
                   protocolVersion:(NSUInteger)protocolVersion NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
@@ -42,7 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                  protocolVersion:(NSUInteger)protocolVersion
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:protocolVersion:));
+                        senderId:(NSString *)senderId
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:protocolVersion:senderId:));
 
 // clang-format on
 
@@ -51,8 +55,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 + (instancetype)addToContactsOfferMessageWithTimestamp:(uint64_t)timestamp
                                                 thread:(TSThread *)thread
                                              contactId:(NSString *)contactId;
-
-@property (nonatomic, readonly) NSString *messageText;
 
 @property (nonatomic, readonly) BOOL isProtocolVersionUnknown;
 

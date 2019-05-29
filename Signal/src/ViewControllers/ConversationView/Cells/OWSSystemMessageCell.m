@@ -280,6 +280,7 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageAddGroupToProfileWhitelistOffer:
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
+                return nil;
             case TSInfoMessageUnknownProtocolVersion:
                 OWSAssertDebug([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]);
                 if ([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]) {
