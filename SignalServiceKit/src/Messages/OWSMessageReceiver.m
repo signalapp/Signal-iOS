@@ -13,6 +13,7 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"
 #import "OWSStorage.h"
+#import "OWSIdentityManager.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSDatabaseView.h"
@@ -25,6 +26,7 @@
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -392,7 +394,16 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         });
         return;
     }
-
+    
+    // Loki: Don't process any messages from ourself
+    ECKeyPair *_Nullable keyPair = OWSIdentityManager.sharedManager.identityKeyPair;
+    if (keyPair && [envelope.source isEqualToString:keyPair.hexEncodedPublicKey]) {
+        dispatch_async(self.serialQueue, ^{
+            completion(YES);
+        });
+        return;
+    }
+    
     // We use the original envelope for this check;
     // the decryption process might rewrite the envelope.
     BOOL wasReceivedByUD = [self wasReceivedByUD:envelope];
