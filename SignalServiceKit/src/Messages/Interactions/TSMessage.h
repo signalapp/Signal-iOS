@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint32_t perMessageExpirationDurationSeconds;
 @property (nonatomic, readonly) uint64_t perMessageExpireStartedAt;
 @property (nonatomic, readonly) uint64_t perMessageExpiresAt;
+@property (nonatomic, readonly) BOOL hasPerMessageExpiration;
 @property (nonatomic, readonly) BOOL perMessageExpirationHasExpired;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
