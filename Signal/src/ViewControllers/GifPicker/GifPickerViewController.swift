@@ -93,7 +93,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
     }
 
-    var lastQuery: String = ""
+    var lastQuery: String?
 
     public weak var delegate: GifPickerViewControllerDelegate?
 
@@ -592,11 +592,17 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     private func loadTrending() {
         assert(progressiveSearchTimer == nil)
         assert(searchBar.text == nil || searchBar.text?.count == 0)
+        assert(lastQuery == nil)
 
         giphyAPI.trending().done { [weak self] imageInfos in
             guard let self = self else { return }
 
-            Logger.info("search complete")
+            guard self.lastQuery == nil else {
+                Logger.info("not showing trending results due to subsequent searche")
+                return
+            }
+
+            Logger.info("showing trending")
             if imageInfos.count > 0 {
                 self.imageInfos = imageInfos
                 self.viewMode = .results
