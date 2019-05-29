@@ -573,7 +573,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     //
     // TODO: Revisit this decision.
 
-    if (!self.isExpiringMessage) {
+    if (!self.hasPerConversationExpiration) {
         return NO;
     } else if (self.messageState == TSOutgoingMessageStateSent) {
         return YES;

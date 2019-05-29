@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     self.timestampLabel.textColor = textColor;
 
-    if (viewItem.isExpiringMessage) {
+    if (viewItem.hasPerConversationExpiration) {
         TSMessage *message = (TSMessage *)viewItem.interaction;
         uint64_t expirationTimestamp = message.expiresAt;
         uint32_t expiresInSeconds = message.expiresInSeconds;
@@ -239,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    if (viewItem.isExpiringMessage) {
+    if (viewItem.hasPerConversationExpiration) {
         result.width += ([OWSMessageTimerView measureSize].width + self.hSpacing);
     }
 

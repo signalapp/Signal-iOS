@@ -592,10 +592,10 @@ NS_ASSUME_NONNULL_BEGIN
             [TSInteraction collection],
             [TSInteraction class],
             ^(id object) {
-                // Ignore disappearing messages.
+                // Ignore both kinds of disappearing messages.
                 if ([object isKindOfClass:[TSMessage class]]) {
                     TSMessage *message = object;
-                    if (message.isExpiringMessage) {
+                    if (message.hasPerConversationExpiration || message.hasPerMessageExpiration) {
                         return NO;
                     }
                 }

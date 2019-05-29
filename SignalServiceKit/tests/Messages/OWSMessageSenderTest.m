@@ -313,7 +313,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *messageDidNotStartExpiration = [self expectationWithDescription:@"messageDidNotStartExpiration"];
     [messageSender sendMessageToService:self.unexpiringMessage
         success:^() {
-            if (self.unexpiringMessage.isExpiringMessage || self.unexpiringMessage.expiresAt > 0) {
+            if (self.unexpiringMessage.hasPerConversationExpiration || self.unexpiringMessage.expiresAt > 0) {
                 XCTFail(@"Message expiration was not supposed to start.");
             } else {
                 [messageDidNotStartExpiration fulfill];

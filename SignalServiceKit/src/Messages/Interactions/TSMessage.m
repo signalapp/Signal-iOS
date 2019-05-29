@@ -242,7 +242,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    return self.isExpiringMessage;
+    return self.hasPerConversationExpiration;
 }
 
 // TODO a downloaded media doesn't start counting until download is complete.
@@ -527,7 +527,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     };
 }
 
-- (BOOL)isExpiringMessage
+- (BOOL)hasPerConversationExpiration
 {
     return self.expiresInSeconds > 0;
 }
