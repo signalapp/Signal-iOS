@@ -33,7 +33,7 @@ public class StickerKeyboard: UIStackView {
 
     private var selectedStickerPack: StickerPack? {
         didSet {
-            selectedPackChanged(previouslySelectedPack: oldValue)
+            selectedPackChanged(oldSelectedPack: oldValue)
         }
     }
 
@@ -145,7 +145,7 @@ public class StickerKeyboard: UIStackView {
         }
 
         // Update paging to reflect any potentially new ordering of sticker packs
-        selectedPackChanged(previouslySelectedPack: nil)
+        selectedPackChanged(oldSelectedPack: nil)
     }
 
     private static let packCoverSize: CGFloat = 32
@@ -210,7 +210,7 @@ public class StickerKeyboard: UIStackView {
         Logger.verbose("")
 
         invalidateIntrinsicContentSize()
-        updatePageConstraints()
+        updatePageConstraints(ignoreScrollingState: true)
     }
 
     private func searchButtonWasTapped() {
@@ -288,6 +288,13 @@ public class StickerKeyboard: UIStackView {
     }
 
     private var pageWidth: CGFloat { return stickerPagingScrollView.frame.width }
+    private var numberOfPages: CGFloat { return CGFloat(stickerPackCollectionViews.count) }
+
+    // These thresholds indicate the offset at which we update the next / previous page.
+    // They're not exactly half way through the transition, to avoid us continously
+    // bouncing back and forth between pages.
+    private var previousPageThreshold: CGFloat { return pageWidth * 0.45 }
+    private var nextPageThreshold: CGFloat { return pageWidth + previousPageThreshold }
 
     private func setupPaging() {
         stickerPagingScrollView.isPagingEnabled = true
@@ -302,7 +309,7 @@ public class StickerKeyboard: UIStackView {
         stickerPagingScrollView.addSubview(stickerPagesContainer)
         stickerPagesContainer.autoPinEdgesToSuperviewEdges()
         stickerPagesContainer.autoMatch(.height, to: .height, of: stickerPagingScrollView)
-        stickerPagesContainer.autoMatch(.width, to: .width, of: stickerPagingScrollView, withMultiplier: 3)
+        stickerPagesContainer.autoMatch(.width, to: .width, of: stickerPagingScrollView, withMultiplier: numberOfPages)
 
         for (index, collectionView) in stickerPackCollectionViews.enumerated() {
             collectionView.backgroundColor = keyboardBackgroundColor
@@ -313,6 +320,9 @@ public class StickerKeyboard: UIStackView {
             collectionView.autoMatch(.width, to: .width, of: stickerPagingScrollView)
             collectionView.autoMatch(.height, to: .height, of: stickerPagingScrollView)
 
+            collectionView.autoPinEdge(toSuperviewEdge: .top)
+            collectionView.autoPinEdge(toSuperviewEdge: .bottom)
+
             stickerPackCollectionViewConstraints.append(
                 collectionView.autoPinEdge(toSuperviewEdge: .left, withInset: CGFloat(index) * pageWidth)
             )
@@ -321,44 +331,61 @@ public class StickerKeyboard: UIStackView {
     }
 
     private func checkForPageChange() {
+        let offsetX = stickerPagingScrollView.contentOffset.x
+
         // Scrolled left a page
-        if stickerPagingScrollView.contentOffset.x == 0 {
+        if offsetX <= previousPageThreshold {
             selectedStickerPack = previousPageStickerPack
 
         // Scrolled right a page
-        } else if stickerPagingScrollView.contentOffset.x == pageWidth * 2 {
+        } else if offsetX >= nextPageThreshold {
             selectedStickerPack = nextPageStickerPack
+
+        // We're about to cross the threshold into a new page, execute any pending updates.
+        // We wait to execute these until we're sure we're going to cross over as it
+        // can cause some UI jitter that interupts scrolling.
+        } else if offsetX >= pageWidth * 0.95 && offsetX <= pageWidth * 1.05 {
+            pendingPageChangeUpdates?()
+            pendingPageChangeUpdates = nil
         }
     }
 
-    private func selectedPackChanged(previouslySelectedPack: StickerPack?) {
+    private var pendingPageChangeUpdates: (() -> Void)?
+
+    private func selectedPackChanged(oldSelectedPack: StickerPack?) {
         AssertIsOnMainThread()
 
-        // We paged backwards!
-        if previouslySelectedPack == nextPageStickerPack {
+        // We're paging backwards!
+        if oldSelectedPack == nextPageStickerPack {
             // The previous page becomes the current page and the current page becomes
             // the next page. We have to load the new previous.
 
             stickerPackCollectionViews.insert(stickerPackCollectionViews.removeLast(), at: 0)
             stickerPackCollectionViewConstraints.insert(stickerPackCollectionViewConstraints.removeLast(), at: 0)
 
-            previousPageCollectionView.showInstalledPackOrRecents(stickerPack: previousPageStickerPack)
+            pendingPageChangeUpdates = {
+                self.previousPageCollectionView.showInstalledPackOrRecents(stickerPack: self.previousPageStickerPack)
+            }
 
-        // We paged forwards!
-        } else if previouslySelectedPack == previousPageStickerPack {
+        // We're paging forwards!
+        } else if oldSelectedPack == previousPageStickerPack {
             // The next page becomes the current page and the current page becomes
             // the previous page. We have to load the new next.
 
             stickerPackCollectionViews.append(stickerPackCollectionViews.removeFirst())
             stickerPackCollectionViewConstraints.append(stickerPackCollectionViewConstraints.removeFirst())
 
-            nextPageCollectionView.showInstalledPackOrRecents(stickerPack: nextPageStickerPack)
+            pendingPageChangeUpdates = {
+                self.nextPageCollectionView.showInstalledPackOrRecents(stickerPack: self.nextPageStickerPack)
+            }
 
         // We didn't get here through paging, stuff probably changed. Reload all the things.
         } else {
             currentPageCollectionView.showInstalledPackOrRecents(stickerPack: selectedStickerPack)
             previousPageCollectionView.showInstalledPackOrRecents(stickerPack: previousPageStickerPack)
             nextPageCollectionView.showInstalledPackOrRecents(stickerPack: nextPageStickerPack)
+
+            pendingPageChangeUpdates = nil
         }
 
         updatePageConstraints()
@@ -367,21 +394,31 @@ public class StickerKeyboard: UIStackView {
         packsCollectionView.updateSelections()
     }
 
-    private func updatePageConstraints() {
+    private func updatePageConstraints(ignoreScrollingState: Bool = false) {
         // Setup the collection views in their page positions
         for (index, constraint) in stickerPackCollectionViewConstraints.enumerated() {
             constraint.constant = CGFloat(index) * pageWidth
         }
 
-        // Scroll back to the center page, so we can go forward and back again
-        stickerPagingScrollView.contentOffset.x = pageWidth
+        // Scrolling backwards
+        if !ignoreScrollingState && stickerPagingScrollView.contentOffset.x <= previousPageThreshold {
+            stickerPagingScrollView.contentOffset.x += pageWidth
+
+        // Scrolling forward
+        } else if !ignoreScrollingState && stickerPagingScrollView.contentOffset.x >= nextPageThreshold {
+            stickerPagingScrollView.contentOffset.x -= pageWidth
+
+        // Not moving forward or back, just scroll back to center so we can go forward and back again
+        } else {
+            stickerPagingScrollView.contentOffset.x = pageWidth
+        }
     }
 }
 
 // MARK: -
 
 extension StickerKeyboard: UIScrollViewDelegate {
-    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         checkForPageChange()
     }
 }
