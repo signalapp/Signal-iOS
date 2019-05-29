@@ -90,6 +90,14 @@ public class StickerPackCollectionView: UICollectionView {
         self.stickerPackDataSource = RecentStickerPackDataSource()
     }
 
+    public func showInstalledPackOrRecents(stickerPack: StickerPack?) {
+        if let stickerPack = stickerPack {
+            showInstalledPack(stickerPack: stickerPack)
+        } else {
+            showRecents()
+        }
+    }
+
     func show(dataSource: StickerPackDataSource) {
         AssertIsOnMainThread()
 
