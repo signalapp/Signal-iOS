@@ -42,7 +42,7 @@ def shared_pods
 
   # Forked for performance optimizations that are not likely to be upstreamed as they are specific
   # to our limited use of Mantle 
-  pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
+  pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'mkirk/type-annotations'
   # pod 'Mantle', path: '../Mantle'
 
   # Forked for compatibily with the ShareExtension, changes have an open PR, but have not been merged.
