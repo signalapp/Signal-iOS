@@ -286,7 +286,7 @@ typedef void (^SystemMessageActionBlock)(void);
                 if ([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]) {
                     OWSUnknownProtocolVersionMessage *message = (OWSUnknownProtocolVersionMessage *)interaction;
                     result = [UIImage imageNamed:(message.isProtocolVersionUnknown ? @"message_status_failed"
-                                                                                   : @"system_message_verified")];
+                                                                                   : @"check-circle-outline-28")];
                 }
                 break;
             case TSInfoMessageTypeDisappearingMessagesUpdate: {
@@ -311,7 +311,7 @@ typedef void (^SystemMessageActionBlock)(void);
                         return nil;
                     }
                 }
-                result = [UIImage imageNamed:@"system_message_verified"];
+                result = [UIImage imageNamed:@"check-circle-outline-28"];
                 break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
