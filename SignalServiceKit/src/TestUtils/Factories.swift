@@ -139,8 +139,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                      quotedMessage: quotedMessageBuilder(),
                                      contactShare: contactShareBuilder(),
                                      linkPreview: linkPreviewBuilder(),
-                                     messageSticker: messageStickerBuilder(),
-                                     ephemeralMessage: ephemeralMessageBuilder())
+                                     messageSticker: messageStickerBuilder())
 
         return item
     }
@@ -217,11 +216,6 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return nil
     }
 
-    @objc
-    public var ephemeralMessageBuilder: () -> EphemeralMessage? = {
-        return nil
-    }
-
     // MARK: Delivery Receipts
 
     @objc
@@ -267,7 +261,6 @@ public class IncomingMessageFactory: NSObject, Factory {
                                      contactShare: contactShareBuilder(),
                                      linkPreview: linkPreviewBuilder(),
                                      messageSticker: messageStickerBuilder(),
-                                     ephemeralMessage: ephemeralMessageBuilder(),
                                      serverTimestamp: serverTimestampBuilder(),
                                      wasReceivedByUD: wasReceivedByUDBuilder())
 
@@ -340,11 +333,6 @@ public class IncomingMessageFactory: NSObject, Factory {
 
     @objc
     public var messageStickerBuilder: () -> MessageSticker? = {
-        return nil
-    }
-
-    @objc
-    public var ephemeralMessageBuilder: () -> EphemeralMessage? = {
         return nil
     }
 

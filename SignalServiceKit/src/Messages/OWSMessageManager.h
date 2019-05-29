@@ -8,7 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
-@class TSMessage;
 
 @interface OWSMessageManager : OWSMessageHandler
 
@@ -20,8 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This should be invoked by the main app when the app is ready.
 - (void)startObserving;
-
-+ (BOOL)messageHasRenderableContent:(TSMessage *)message;
 
 @end
 

@@ -3000,122 +3000,6 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
 
 #endif
 
-// MARK: - SSKProtoDataMessageEphemeralMessage
-
-@objc public class SSKProtoDataMessageEphemeralMessage: NSObject {
-
-    // MARK: - SSKProtoDataMessageEphemeralMessageBuilder
-
-    @objc public class func builder(expireTimer: UInt32) -> SSKProtoDataMessageEphemeralMessageBuilder {
-        return SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer)
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SSKProtoDataMessageEphemeralMessageBuilder {
-        let builder = SSKProtoDataMessageEphemeralMessageBuilder(expireTimer: expireTimer)
-        builder.setAttachments(attachments)
-        return builder
-    }
-
-    @objc public class SSKProtoDataMessageEphemeralMessageBuilder: NSObject {
-
-        private var proto = SignalServiceProtos_DataMessage.EphemeralMessage()
-
-        @objc fileprivate override init() {}
-
-        @objc fileprivate init(expireTimer: UInt32) {
-            super.init()
-
-            setExpireTimer(expireTimer)
-        }
-
-        @objc public func setExpireTimer(_ valueParam: UInt32) {
-            proto.expireTimer = valueParam
-        }
-
-        @objc public func addAttachments(_ valueParam: SSKProtoAttachmentPointer) {
-            var items = proto.attachments
-            items.append(valueParam.proto)
-            proto.attachments = items
-        }
-
-        @objc public func setAttachments(_ wrappedItems: [SSKProtoAttachmentPointer]) {
-            proto.attachments = wrappedItems.map { $0.proto }
-        }
-
-        @objc public func build() throws -> SSKProtoDataMessageEphemeralMessage {
-            return try SSKProtoDataMessageEphemeralMessage.parseProto(proto)
-        }
-
-        @objc public func buildSerializedData() throws -> Data {
-            return try SSKProtoDataMessageEphemeralMessage.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: SignalServiceProtos_DataMessage.EphemeralMessage
-
-    @objc public let expireTimer: UInt32
-
-    @objc public let attachments: [SSKProtoAttachmentPointer]
-
-    private init(proto: SignalServiceProtos_DataMessage.EphemeralMessage,
-                 expireTimer: UInt32,
-                 attachments: [SSKProtoAttachmentPointer]) {
-        self.proto = proto
-        self.expireTimer = expireTimer
-        self.attachments = attachments
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageEphemeralMessage {
-        let proto = try SignalServiceProtos_DataMessage.EphemeralMessage(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.EphemeralMessage) throws -> SSKProtoDataMessageEphemeralMessage {
-        guard proto.hasExpireTimer else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: expireTimer")
-        }
-        let expireTimer = proto.expireTimer
-
-        var attachments: [SSKProtoAttachmentPointer] = []
-        attachments = try proto.attachments.map { try SSKProtoAttachmentPointer.parseProto($0) }
-
-        // MARK: - Begin Validation Logic for SSKProtoDataMessageEphemeralMessage -
-
-        // MARK: - End Validation Logic for SSKProtoDataMessageEphemeralMessage -
-
-        let result = SSKProtoDataMessageEphemeralMessage(proto: proto,
-                                                         expireTimer: expireTimer,
-                                                         attachments: attachments)
-        return result
-    }
-
-    @objc public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension SSKProtoDataMessageEphemeralMessage {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessageBuilder {
-    @objc public func buildIgnoringErrors() -> SSKProtoDataMessageEphemeralMessage? {
-        return try! self.build()
-    }
-}
-
-#endif
-
 // MARK: - SSKProtoDataMessage
 
 @objc public class SSKProtoDataMessage: NSObject {
@@ -3201,8 +3085,8 @@ extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessag
         if hasRequiredProtocolVersion {
             builder.setRequiredProtocolVersion(requiredProtocolVersion)
         }
-        if let _value = ephemeralMessage {
-            builder.setEphemeralMessage(_value)
+        if hasMessageTimer {
+            builder.setMessageTimer(messageTimer)
         }
         return builder
     }
@@ -3279,8 +3163,8 @@ extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessag
             proto.requiredProtocolVersion = valueParam
         }
 
-        @objc public func setEphemeralMessage(_ valueParam: SSKProtoDataMessageEphemeralMessage) {
-            proto.ephemeralMessage = valueParam.proto
+        @objc public func setMessageTimer(_ valueParam: UInt32) {
+            proto.messageTimer = valueParam
         }
 
         @objc public func build() throws -> SSKProtoDataMessage {
@@ -3305,8 +3189,6 @@ extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessag
     @objc public let preview: [SSKProtoDataMessagePreview]
 
     @objc public let sticker: SSKProtoDataMessageSticker?
-
-    @objc public let ephemeralMessage: SSKProtoDataMessageEphemeralMessage?
 
     @objc public var body: String? {
         guard proto.hasBody else {
@@ -3356,14 +3238,20 @@ extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessag
         return proto.hasRequiredProtocolVersion
     }
 
+    @objc public var messageTimer: UInt32 {
+        return proto.messageTimer
+    }
+    @objc public var hasMessageTimer: Bool {
+        return proto.hasMessageTimer
+    }
+
     private init(proto: SignalServiceProtos_DataMessage,
                  attachments: [SSKProtoAttachmentPointer],
                  group: SSKProtoGroupContext?,
                  quote: SSKProtoDataMessageQuote?,
                  contact: [SSKProtoDataMessageContact],
                  preview: [SSKProtoDataMessagePreview],
-                 sticker: SSKProtoDataMessageSticker?,
-                 ephemeralMessage: SSKProtoDataMessageEphemeralMessage?) {
+                 sticker: SSKProtoDataMessageSticker?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -3371,7 +3259,6 @@ extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessag
         self.contact = contact
         self.preview = preview
         self.sticker = sticker
-        self.ephemeralMessage = ephemeralMessage
     }
 
     @objc
@@ -3409,11 +3296,6 @@ extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessag
             sticker = try SSKProtoDataMessageSticker.parseProto(proto.sticker)
         }
 
-        var ephemeralMessage: SSKProtoDataMessageEphemeralMessage? = nil
-        if proto.hasEphemeralMessage {
-            ephemeralMessage = try SSKProtoDataMessageEphemeralMessage.parseProto(proto.ephemeralMessage)
-        }
-
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -3424,8 +3306,7 @@ extension SSKProtoDataMessageEphemeralMessage.SSKProtoDataMessageEphemeralMessag
                                          quote: quote,
                                          contact: contact,
                                          preview: preview,
-                                         sticker: sticker,
-                                         ephemeralMessage: ephemeralMessage)
+                                         sticker: sticker)
         return result
     }
 
@@ -4989,6 +4870,118 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
 
 #endif
 
+// MARK: - SSKProtoSyncMessageMessageTimerRead
+
+@objc public class SSKProtoSyncMessageMessageTimerRead: NSObject {
+
+    // MARK: - SSKProtoSyncMessageMessageTimerReadBuilder
+
+    @objc public class func builder(sender: String, timestamp: UInt64) -> SSKProtoSyncMessageMessageTimerReadBuilder {
+        return SSKProtoSyncMessageMessageTimerReadBuilder(sender: sender, timestamp: timestamp)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoSyncMessageMessageTimerReadBuilder {
+        let builder = SSKProtoSyncMessageMessageTimerReadBuilder(sender: sender, timestamp: timestamp)
+        return builder
+    }
+
+    @objc public class SSKProtoSyncMessageMessageTimerReadBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.MessageTimerRead()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(sender: String, timestamp: UInt64) {
+            super.init()
+
+            setSender(sender)
+            setTimestamp(timestamp)
+        }
+
+        @objc public func setSender(_ valueParam: String) {
+            proto.sender = valueParam
+        }
+
+        @objc public func setTimestamp(_ valueParam: UInt64) {
+            proto.timestamp = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoSyncMessageMessageTimerRead {
+            return try SSKProtoSyncMessageMessageTimerRead.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageMessageTimerRead.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.MessageTimerRead
+
+    @objc public let sender: String
+
+    @objc public let timestamp: UInt64
+
+    private init(proto: SignalServiceProtos_SyncMessage.MessageTimerRead,
+                 sender: String,
+                 timestamp: UInt64) {
+        self.proto = proto
+        self.sender = sender
+        self.timestamp = timestamp
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageMessageTimerRead {
+        let proto = try SignalServiceProtos_SyncMessage.MessageTimerRead(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.MessageTimerRead) throws -> SSKProtoSyncMessageMessageTimerRead {
+        guard proto.hasSender else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sender")
+        }
+        let sender = proto.sender
+
+        guard proto.hasTimestamp else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
+        }
+        let timestamp = proto.timestamp
+
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageMessageTimerRead -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessageMessageTimerRead -
+
+        let result = SSKProtoSyncMessageMessageTimerRead(proto: proto,
+                                                         sender: sender,
+                                                         timestamp: timestamp)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessageMessageTimerRead {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerReadBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageMessageTimerRead? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoSyncMessage
 
 @objc public class SSKProtoSyncMessage: NSObject {
@@ -5028,6 +5021,7 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
             builder.setPadding(_value)
         }
         builder.setStickerPackOperation(stickerPackOperation)
+        builder.setMessageTimerRead(messageTimerRead)
         return builder
     }
 
@@ -5089,6 +5083,16 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
             proto.stickerPackOperation = wrappedItems.map { $0.proto }
         }
 
+        @objc public func addMessageTimerRead(_ valueParam: SSKProtoSyncMessageMessageTimerRead) {
+            var items = proto.messageTimerRead
+            items.append(valueParam.proto)
+            proto.messageTimerRead = items
+        }
+
+        @objc public func setMessageTimerRead(_ wrappedItems: [SSKProtoSyncMessageMessageTimerRead]) {
+            proto.messageTimerRead = wrappedItems.map { $0.proto }
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessage {
             return try SSKProtoSyncMessage.parseProto(proto)
         }
@@ -5118,6 +5122,8 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
 
     @objc public let stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation]
 
+    @objc public let messageTimerRead: [SSKProtoSyncMessageMessageTimerRead]
+
     @objc public var padding: Data? {
         guard proto.hasPadding else {
             return nil
@@ -5137,7 +5143,8 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
                  blocked: SSKProtoSyncMessageBlocked?,
                  verified: SSKProtoVerified?,
                  configuration: SSKProtoSyncMessageConfiguration?,
-                 stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation]) {
+                 stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation],
+                 messageTimerRead: [SSKProtoSyncMessageMessageTimerRead]) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -5148,6 +5155,7 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
         self.verified = verified
         self.configuration = configuration
         self.stickerPackOperation = stickerPackOperation
+        self.messageTimerRead = messageTimerRead
     }
 
     @objc
@@ -5202,6 +5210,9 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
         var stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation] = []
         stickerPackOperation = try proto.stickerPackOperation.map { try SSKProtoSyncMessageStickerPackOperation.parseProto($0) }
 
+        var messageTimerRead: [SSKProtoSyncMessageMessageTimerRead] = []
+        messageTimerRead = try proto.messageTimerRead.map { try SSKProtoSyncMessageMessageTimerRead.parseProto($0) }
+
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
 
         // MARK: - End Validation Logic for SSKProtoSyncMessage -
@@ -5215,7 +5226,8 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
                                          blocked: blocked,
                                          verified: verified,
                                          configuration: configuration,
-                                         stickerPackOperation: stickerPackOperation)
+                                         stickerPackOperation: stickerPackOperation,
+                                         messageTimerRead: messageTimerRead)
         return result
     }
 

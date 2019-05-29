@@ -228,12 +228,6 @@ message DataMessage {
     CURRENT = 0;
   }
 
-  message EphemeralMessage {
-    // @required
-    optional uint32            expireTimer = 1;
-    repeated AttachmentPointer attachments = 2;
-  }
-
   optional string            body                    =  1;
   repeated AttachmentPointer attachments             =  2;
   optional GroupContext      group                   =  3;
@@ -246,7 +240,7 @@ message DataMessage {
   repeated Preview           preview                 = 10;
   optional Sticker           sticker                 = 11;
   optional uint32            requiredProtocolVersion = 12;
-  optional EphemeralMessage  ephemeralMessage        = 13;
+  optional uint32            messageTimer            = 13;
 }
 
 message NullMessage {
@@ -345,16 +339,24 @@ message SyncMessage {
     optional Type  type    = 3;
   }
 
-  optional Sent                 sent                  = 1;
-  optional Contacts             contacts              = 2;
-  optional Groups               groups                = 3;
-  optional Request              request               = 4;
-  repeated Read                 read                  = 5;
-  optional Blocked              blocked               = 6;
-  optional Verified             verified              = 7;
-  optional Configuration        configuration         = 9;
-  optional bytes                padding               = 8;
+  message MessageTimerRead {
+    // @required
+    optional string sender    = 1;
+    // @required
+    optional uint64 timestamp = 2;
+  }
+
+  optional Sent                 sent                 =  1;
+  optional Contacts             contacts             =  2;
+  optional Groups               groups               =  3;
+  optional Request              request              =  4;
+  repeated Read                 read                 =  5;
+  optional Blocked              blocked              =  6;
+  optional Verified             verified             =  7;
+  optional Configuration        configuration        =  9;
+  optional bytes                padding              =  8;
   repeated StickerPackOperation stickerPackOperation = 10;
+  repeated MessageTimerRead     messageTimerRead     = 11;
 }
 
 message AttachmentPointer {

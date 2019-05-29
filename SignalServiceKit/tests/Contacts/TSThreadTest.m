@@ -53,7 +53,6 @@
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
-                                                   ephemeralMessage:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO];
     [incomingMessage save];
@@ -70,8 +69,7 @@
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil
-                                                   ephemeralMessage:nil];
+                                                     messageSticker:nil];
     [outgoingMessage save];
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
@@ -116,7 +114,6 @@
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
-                                                   ephemeralMessage:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO];
     [incomingMessage save];
@@ -141,8 +138,7 @@
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil
-                                                   ephemeralMessage:nil];
+                                                     messageSticker:nil];
     [outgoingMessage save];
 
     // Sanity check

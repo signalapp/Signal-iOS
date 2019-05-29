@@ -655,14 +655,14 @@ struct SignalServiceProtos_DataMessage {
   /// Clears the value of `requiredProtocolVersion`. Subsequent reads from it will return its default value.
   mutating func clearRequiredProtocolVersion() {_uniqueStorage()._requiredProtocolVersion = nil}
 
-  var ephemeralMessage: SignalServiceProtos_DataMessage.EphemeralMessage {
-    get {return _storage._ephemeralMessage ?? SignalServiceProtos_DataMessage.EphemeralMessage()}
-    set {_uniqueStorage()._ephemeralMessage = newValue}
+  var messageTimer: UInt32 {
+    get {return _storage._messageTimer ?? 0}
+    set {_uniqueStorage()._messageTimer = newValue}
   }
-  /// Returns true if `ephemeralMessage` has been explicitly set.
-  var hasEphemeralMessage: Bool {return _storage._ephemeralMessage != nil}
-  /// Clears the value of `ephemeralMessage`. Subsequent reads from it will return its default value.
-  mutating func clearEphemeralMessage() {_uniqueStorage()._ephemeralMessage = nil}
+  /// Returns true if `messageTimer` has been explicitly set.
+  var hasMessageTimer: Bool {return _storage._messageTimer != nil}
+  /// Clears the value of `messageTimer`. Subsequent reads from it will return its default value.
+  mutating func clearMessageTimer() {_uniqueStorage()._messageTimer = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1358,30 +1358,6 @@ struct SignalServiceProtos_DataMessage {
     fileprivate var _storage = _StorageClass.defaultInstance
   }
 
-  struct EphemeralMessage {
-    // SwiftProtobuf.Message conformance is added in an extension below. See the
-    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-    // methods supported on all messages.
-
-    /// @required
-    var expireTimer: UInt32 {
-      get {return _expireTimer ?? 0}
-      set {_expireTimer = newValue}
-    }
-    /// Returns true if `expireTimer` has been explicitly set.
-    var hasExpireTimer: Bool {return self._expireTimer != nil}
-    /// Clears the value of `expireTimer`. Subsequent reads from it will return its default value.
-    mutating func clearExpireTimer() {self._expireTimer = nil}
-
-    var attachments: [SignalServiceProtos_AttachmentPointer] = []
-
-    var unknownFields = SwiftProtobuf.UnknownStorage()
-
-    init() {}
-
-    fileprivate var _expireTimer: UInt32? = nil
-  }
-
   init() {}
 
   fileprivate var _storage = _StorageClass.defaultInstance
@@ -1651,6 +1627,11 @@ struct SignalServiceProtos_SyncMessage {
   var stickerPackOperation: [SignalServiceProtos_SyncMessage.StickerPackOperation] {
     get {return _storage._stickerPackOperation}
     set {_uniqueStorage()._stickerPackOperation = newValue}
+  }
+
+  var messageTimerRead: [SignalServiceProtos_SyncMessage.MessageTimerRead] {
+    get {return _storage._messageTimerRead}
+    set {_uniqueStorage()._messageTimerRead = newValue}
   }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -2022,6 +2003,39 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _packID: Data? = nil
     fileprivate var _packKey: Data? = nil
     fileprivate var _type: SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum? = nil
+  }
+
+  struct MessageTimerRead {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var sender: String {
+      get {return _sender ?? String()}
+      set {_sender = newValue}
+    }
+    /// Returns true if `sender` has been explicitly set.
+    var hasSender: Bool {return self._sender != nil}
+    /// Clears the value of `sender`. Subsequent reads from it will return its default value.
+    mutating func clearSender() {self._sender = nil}
+
+    /// @required
+    var timestamp: UInt64 {
+      get {return _timestamp ?? 0}
+      set {_timestamp = newValue}
+    }
+    /// Returns true if `timestamp` has been explicitly set.
+    var hasTimestamp: Bool {return self._timestamp != nil}
+    /// Clears the value of `timestamp`. Subsequent reads from it will return its default value.
+    mutating func clearTimestamp() {self._timestamp = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _sender: String? = nil
+    fileprivate var _timestamp: UInt64? = nil
   }
 
   init() {}
@@ -3116,7 +3130,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     10: .same(proto: "preview"),
     11: .same(proto: "sticker"),
     12: .same(proto: "requiredProtocolVersion"),
-    13: .same(proto: "ephemeralMessage"),
+    13: .same(proto: "messageTimer"),
   ]
 
   fileprivate class _StorageClass {
@@ -3132,7 +3146,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _preview: [SignalServiceProtos_DataMessage.Preview] = []
     var _sticker: SignalServiceProtos_DataMessage.Sticker? = nil
     var _requiredProtocolVersion: UInt32? = nil
-    var _ephemeralMessage: SignalServiceProtos_DataMessage.EphemeralMessage? = nil
+    var _messageTimer: UInt32? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -3151,7 +3165,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _preview = source._preview
       _sticker = source._sticker
       _requiredProtocolVersion = source._requiredProtocolVersion
-      _ephemeralMessage = source._ephemeralMessage
+      _messageTimer = source._messageTimer
     }
   }
 
@@ -3179,7 +3193,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
         case 11: try decoder.decodeSingularMessageField(value: &_storage._sticker)
         case 12: try decoder.decodeSingularUInt32Field(value: &_storage._requiredProtocolVersion)
-        case 13: try decoder.decodeSingularMessageField(value: &_storage._ephemeralMessage)
+        case 13: try decoder.decodeSingularUInt32Field(value: &_storage._messageTimer)
         default: break
         }
       }
@@ -3224,8 +3238,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if let v = _storage._requiredProtocolVersion {
         try visitor.visitSingularUInt32Field(value: v, fieldNumber: 12)
       }
-      if let v = _storage._ephemeralMessage {
-        try visitor.visitSingularMessageField(value: v, fieldNumber: 13)
+      if let v = _storage._messageTimer {
+        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 13)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -3248,7 +3262,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._preview != rhs_storage._preview {return false}
         if _storage._sticker != rhs_storage._sticker {return false}
         if _storage._requiredProtocolVersion != rhs_storage._requiredProtocolVersion {return false}
-        if _storage._ephemeralMessage != rhs_storage._ephemeralMessage {return false}
+        if _storage._messageTimer != rhs_storage._messageTimer {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -3986,41 +4000,6 @@ extension SignalServiceProtos_DataMessage.Sticker: SwiftProtobuf.Message, SwiftP
   }
 }
 
-extension SignalServiceProtos_DataMessage.EphemeralMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".EphemeralMessage"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "expireTimer"),
-    2: .same(proto: "attachments"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self._expireTimer)
-      case 2: try decoder.decodeRepeatedMessageField(value: &self.attachments)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._expireTimer {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 1)
-    }
-    if !self.attachments.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.attachments, fieldNumber: 2)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SignalServiceProtos_DataMessage.EphemeralMessage, rhs: SignalServiceProtos_DataMessage.EphemeralMessage) -> Bool {
-    if lhs._expireTimer != rhs._expireTimer {return false}
-    if lhs.attachments != rhs.attachments {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
 extension SignalServiceProtos_NullMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".NullMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -4160,6 +4139,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     9: .same(proto: "configuration"),
     8: .same(proto: "padding"),
     10: .same(proto: "stickerPackOperation"),
+    11: .same(proto: "messageTimerRead"),
   ]
 
   fileprivate class _StorageClass {
@@ -4173,6 +4153,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _configuration: SignalServiceProtos_SyncMessage.Configuration? = nil
     var _padding: Data? = nil
     var _stickerPackOperation: [SignalServiceProtos_SyncMessage.StickerPackOperation] = []
+    var _messageTimerRead: [SignalServiceProtos_SyncMessage.MessageTimerRead] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -4189,6 +4170,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _configuration = source._configuration
       _padding = source._padding
       _stickerPackOperation = source._stickerPackOperation
+      _messageTimerRead = source._messageTimerRead
     }
   }
 
@@ -4214,6 +4196,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 8: try decoder.decodeSingularBytesField(value: &_storage._padding)
         case 9: try decoder.decodeSingularMessageField(value: &_storage._configuration)
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._stickerPackOperation)
+        case 11: try decoder.decodeRepeatedMessageField(value: &_storage._messageTimerRead)
         default: break
         }
       }
@@ -4252,6 +4235,9 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if !_storage._stickerPackOperation.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._stickerPackOperation, fieldNumber: 10)
       }
+      if !_storage._messageTimerRead.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._messageTimerRead, fieldNumber: 11)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4271,6 +4257,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._configuration != rhs_storage._configuration {return false}
         if _storage._padding != rhs_storage._padding {return false}
         if _storage._stickerPackOperation != rhs_storage._stickerPackOperation {return false}
+        if _storage._messageTimerRead != rhs_storage._messageTimerRead {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -4748,6 +4735,41 @@ extension SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum: SwiftPr
     0: .same(proto: "INSTALL"),
     1: .same(proto: "REMOVE"),
   ]
+}
+
+extension SignalServiceProtos_SyncMessage.MessageTimerRead: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".MessageTimerRead"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "sender"),
+    2: .same(proto: "timestamp"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self._sender)
+      case 2: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._sender {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
+    if let v = self._timestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_SyncMessage.MessageTimerRead, rhs: SignalServiceProtos_SyncMessage.MessageTimerRead) -> Bool {
+    if lhs._sender != rhs._sender {return false}
+    if lhs._timestamp != rhs._timestamp {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
 }
 
 extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
