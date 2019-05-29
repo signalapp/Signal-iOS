@@ -91,14 +91,16 @@ extension OWS115GRDBMigration {
             var interactionFinder: LegacyInteractionFinder!
             var decryptJobFinder: LegacyUnorderedFinder<OWSMessageDecryptJob>!
 
-            // LegacyUnorderedFinder - These are simple to migrate
-            var attachmentFinder: LegacyUnorderedFinder<TSAttachment>!
-            var contentJobFinder: LegacyUnorderedFinder<OWSMessageContentJob>!
-            var recipientIdentityFinder: LegacyUnorderedFinder<OWSRecipientIdentity>!
-            var threadFinder: LegacyUnorderedFinder<TSThread>!
-
             // KeyValue Finders
             var migrators = [GRDBMigrator]()
+
+            // TODO: OWSMessageContentJob
+            // TODO: OWSMessageDecryptJob
+            // TODO: SSKMessageDecryptJobRecord
+            // TODO: SSKMessageSenderJobRecord
+            // TODO: OWSSessionResetJobRecord
+            // TODO: OWSDatabaseMigration
+            // TODO: RecipientReadReceiptRecord: Should we convert this to be an obj-c TSYapDatabaseModel?
 
             dbReadConnection.read { yapTransaction in
                 jobRecordFinder = LegacyJobRecordFinder(transaction: yapTransaction)
@@ -107,11 +109,7 @@ extension OWS115GRDBMigration {
 
                 migrators += self.allKeyValueMigrators(yapTransaction: yapTransaction)
 
-                // unordered finders
-                attachmentFinder = LegacyUnorderedFinder(transaction: yapTransaction)
-                contentJobFinder = LegacyUnorderedFinder(transaction: yapTransaction)
-                recipientIdentityFinder = LegacyUnorderedFinder(transaction: yapTransaction)
-                threadFinder = LegacyUnorderedFinder(transaction: yapTransaction)
+                migrators += self.allUnorderedRecordMigrators(yapTransaction: yapTransaction)
             }
 
             // custom migrations
@@ -127,12 +125,6 @@ extension OWS115GRDBMigration {
             for migrator in migrators {
                 try! migrator.migrate(grdbTransaction: grdbTransaction)
             }
-
-            // unordered migrations
-            try! self.migrateUnorderedRecords(label: "threads", finder: threadFinder, memorySamplerRatio: 0.2, transaction: grdbTransaction)
-            try! self.migrateUnorderedRecords(label: "attachments", finder: attachmentFinder, memorySamplerRatio: 0.003, transaction: grdbTransaction)
-            try! self.migrateUnorderedRecords(label: "contentJob", finder: contentJobFinder, memorySamplerRatio: 0.05, transaction: grdbTransaction)
-            try! self.migrateUnorderedRecords(label: "recipientIdentities", finder: recipientIdentityFinder, memorySamplerRatio: 0.02, transaction: grdbTransaction)
 
             // Logging queries is helpful for normal debugging, but expensive during a migration
             SDSDatabaseStorage.shouldLogDBQueries = true
@@ -159,7 +151,27 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "SSKPreferences", keyStore: SSKPreferences.store, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
             GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.store", keyStore: StickerManager.store, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
             GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.emojiMapStore", keyStore: StickerManager.emojiMapStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0)
-            ]
+        ]
+    }
+
+    private func allUnorderedRecordMigrators(yapTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
+        return [
+            GRDBUnorderedRecordMigrator<TSAttachment>(label: "attachments", yapTransaction: yapTransaction, memorySamplerRatio: 0.003),
+            GRDBUnorderedRecordMigrator<OWSMessageContentJob>(label: "contentJob", yapTransaction: yapTransaction, memorySamplerRatio: 0.05),
+            GRDBUnorderedRecordMigrator<OWSRecipientIdentity>(label: "recipientIdentities", yapTransaction: yapTransaction, memorySamplerRatio: 0.02),
+            GRDBUnorderedRecordMigrator<TSThread>(label: "threads", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<ExperienceUpgrade>(label: "ExperienceUpgrade", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<StickerPack>(label: "StickerPack", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<InstalledSticker>(label: "InstalledSticker", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<KnownStickerPack>(label: "KnownStickerPack", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<OWSBackupFragment>(label: "OWSBackupFragment", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<SignalRecipient>(label: "SignalRecipient", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<OWSDisappearingMessagesConfiguration>(label: "OWSDisappearingMessagesConfiguration", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<SignalAccount>(label: "SignalAccount", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<OWSLinkedDeviceReadReceipt>(label: "OWSLinkedDeviceReadReceipt", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<OWSDevice>(label: "OWSDevice", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<OWSUserProfile>(label: "OWSUserProfile", yapTransaction: yapTransaction, memorySamplerRatio: 0.2)
+        ]
     }
 
     private func migrateUnorderedRecords<T>(label: String, finder: LegacyUnorderedFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws where T: SDSModel {
@@ -399,6 +411,32 @@ private class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
             try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
                 recordCount += 1
                 self.finder.store.setObject(legacyObject, key: legacyKey, transaction: grdbTransaction.asAnyWrite)
+                memorySampler.sample()
+            }
+            Logger.info("completed with recordCount: \(recordCount)")
+        }
+    }
+}
+
+// MARK: -
+
+private class GRDBUnorderedRecordMigrator<T> : GRDBMigrator where T: SDSModel {
+    private let label: String
+    private let finder: LegacyUnorderedFinder<T>
+    private let memorySamplerRatio: Float
+
+    init(label: String, yapTransaction: YapDatabaseReadTransaction, memorySamplerRatio: Float) {
+        self.label = label
+        self.finder = LegacyUnorderedFinder(transaction: yapTransaction)
+        self.memorySamplerRatio = memorySamplerRatio
+    }
+
+    func migrate(grdbTransaction: GRDBWriteTransaction) throws {
+        try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
+            var recordCount = 0
+            try finder.enumerateLegacyObjects { legacyRecord in
+                recordCount += 1
+                legacyRecord.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 memorySampler.sample()
             }
             Logger.info("completed with recordCount: \(recordCount)")

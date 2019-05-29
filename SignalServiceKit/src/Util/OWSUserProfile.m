@@ -143,7 +143,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 - (TSAccountManager *)tsAccountManager
 {
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-    
+
     return SSKEnvironment.shared.tsAccountManager;
 }
 
@@ -151,16 +151,14 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 - (nullable NSString *)avatarUrlPath
 {
-    @synchronized(self)
-    {
+    @synchronized(self) {
         return _avatarUrlPath;
     }
 }
 
 - (void)setAvatarUrlPath:(nullable NSString *)avatarUrlPath
 {
-    @synchronized(self)
-    {
+    @synchronized(self) {
         BOOL didChange = ![NSObject isNullableObject:_avatarUrlPath equalTo:avatarUrlPath];
 
         _avatarUrlPath = avatarUrlPath;
@@ -291,16 +289,17 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    [self applyChanges:^(OWSUserProfile *userProfile) {
-        [userProfile setProfileName:[profileName ows_stripped]];
-        // Always setAvatarUrlPath: before you setAvatarFileName: since
-        // setAvatarUrlPath: may clear the avatar filename.
-        [userProfile setAvatarUrlPath:avatarUrlPath];
-        [userProfile setAvatarFileName:avatarFileName];
-    }
-          functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
-            completion:completion];
+    [self
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setProfileName:[profileName ows_stripped]];
+            // Always setAvatarUrlPath: before you setAvatarFileName: since
+            // setAvatarUrlPath: may clear the avatar filename.
+            [userProfile setAvatarUrlPath:avatarUrlPath];
+            [userProfile setAvatarFileName:avatarFileName];
+        }
+        functionName:__PRETTY_FUNCTION__
+        dbConnection:dbConnection
+          completion:completion];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
@@ -308,13 +307,14 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                  dbConnection:(YapDatabaseConnection *)dbConnection
                    completion:(nullable OWSUserProfileCompletion)completion
 {
-    [self applyChanges:^(OWSUserProfile *userProfile) {
-        [userProfile setProfileName:[profileName ows_stripped]];
-        [userProfile setAvatarUrlPath:avatarUrlPath];
-    }
-          functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
-            completion:completion];
+    [self
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setProfileName:[profileName ows_stripped]];
+            [userProfile setAvatarUrlPath:avatarUrlPath];
+        }
+        functionName:__PRETTY_FUNCTION__
+        dbConnection:dbConnection
+          completion:completion];
 }
 
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
@@ -322,44 +322,47 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                    dbConnection:(YapDatabaseConnection *)dbConnection
                      completion:(nullable OWSUserProfileCompletion)completion
 {
-    [self applyChanges:^(OWSUserProfile *userProfile) {
-        // Always setAvatarUrlPath: before you setAvatarFileName: since
-        // setAvatarUrlPath: may clear the avatar filename.
-        [userProfile setAvatarUrlPath:avatarUrlPath];
-        [userProfile setAvatarFileName:avatarFileName];
-    }
-          functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
-            completion:completion];
+    [self
+        applyChanges:^(OWSUserProfile *userProfile) {
+            // Always setAvatarUrlPath: before you setAvatarFileName: since
+            // setAvatarUrlPath: may clear the avatar filename.
+            [userProfile setAvatarUrlPath:avatarUrlPath];
+            [userProfile setAvatarFileName:avatarFileName];
+        }
+        functionName:__PRETTY_FUNCTION__
+        dbConnection:dbConnection
+          completion:completion];
 }
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
                     dbConnection:(YapDatabaseConnection *)dbConnection
                       completion:(nullable OWSUserProfileCompletion)completion
 {
-    [self applyChanges:^(OWSUserProfile *userProfile) {
-        [userProfile setAvatarFileName:avatarFileName];
-    }
-          functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
-            completion:completion];
+    [self
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setAvatarFileName:avatarFileName];
+        }
+        functionName:__PRETTY_FUNCTION__
+        dbConnection:dbConnection
+          completion:completion];
 }
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
                dbConnection:(YapDatabaseConnection *)dbConnection
                  completion:(nullable OWSUserProfileCompletion)completion
 {
-    [self applyChanges:^(OWSUserProfile *userProfile) {
-        [userProfile setProfileKey:profileKey];
-        [userProfile setProfileName:nil];
-        // Always setAvatarUrlPath: before you setAvatarFileName: since
-        // setAvatarUrlPath: may clear the avatar filename.
-        [userProfile setAvatarUrlPath:nil];
-        [userProfile setAvatarFileName:nil];
-    }
-          functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
-            completion:completion];
+    [self
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setProfileKey:profileKey];
+            [userProfile setProfileName:nil];
+            // Always setAvatarUrlPath: before you setAvatarFileName: since
+            // setAvatarUrlPath: may clear the avatar filename.
+            [userProfile setAvatarUrlPath:nil];
+            [userProfile setAvatarFileName:nil];
+        }
+        functionName:__PRETTY_FUNCTION__
+        dbConnection:dbConnection
+          completion:completion];
 }
 
 - (void)updateWithProfileKey:(OWSAES256Key *)profileKey
@@ -368,12 +371,13 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 {
     OWSAssertDebug(profileKey);
 
-    [self applyChanges:^(OWSUserProfile *userProfile) {
-        [userProfile setProfileKey:profileKey];
-    }
-          functionName:__PRETTY_FUNCTION__
-          dbConnection:dbConnection
-            completion:completion];
+    [self
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setProfileKey:profileKey];
+        }
+        functionName:__PRETTY_FUNCTION__
+        dbConnection:dbConnection
+          completion:completion];
 }
 
 #pragma mark - Database Connection Accessors
@@ -421,16 +425,14 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 
 - (nullable NSString *)profileName
 {
-    @synchronized(self)
-    {
+    @synchronized(self) {
         return _profileName.filterStringForDisplay;
     }
 }
 
 - (void)setProfileName:(nullable NSString *)profileName
 {
-    @synchronized(self)
-    {
+    @synchronized(self) {
         _profileName = profileName.filterStringForDisplay;
     }
 }
