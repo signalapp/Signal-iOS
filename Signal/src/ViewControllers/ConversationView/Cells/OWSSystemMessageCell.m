@@ -11,6 +11,7 @@
 #import "UIView+OWS.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
+#import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSErrorMessage.h>
@@ -280,6 +281,14 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
                 return nil;
+            case TSInfoMessageUnknownProtocolVersion:
+                OWSAssertDebug([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]);
+                if ([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]) {
+                    OWSUnknownProtocolVersionMessage *message = (OWSUnknownProtocolVersionMessage *)interaction;
+                    result = [UIImage imageNamed:(message.isProtocolVersionUnknown ? @"message_status_failed"
+                                                                                   : @"system_message_verified")];
+                }
+                break;
             case TSInfoMessageTypeDisappearingMessagesUpdate: {
                 BOOL areDisappearingMessagesEnabled = YES;
                 if ([interaction isKindOfClass:[OWSDisappearingConfigurationUpdateInfoMessage class]]) {
@@ -463,12 +472,12 @@ typedef void (^SystemMessageActionBlock)(void);
     return nil;
 }
 
-- (nullable SystemMessageAction *)actionForInfoMessage:(TSInfoMessage *)message
+- (nullable SystemMessageAction *)actionForInfoMessage:(TSInfoMessage *)infoMessage
 {
-    OWSAssertDebug(message);
+    OWSAssertDebug(infoMessage);
 
     __weak OWSSystemMessageCell *weakSelf = self;
-    switch (message.messageType) {
+    switch (infoMessage.messageType) {
         case TSInfoMessageUserNotRegistered:
         case TSInfoMessageTypeSessionDidEnd:
             return nil;
@@ -491,6 +500,23 @@ typedef void (^SystemMessageActionBlock)(void);
             return nil;
         case TSInfoMessageTypeGroupQuit:
             return nil;
+        case TSInfoMessageUnknownProtocolVersion: {
+            if (![infoMessage isKindOfClass:[OWSUnknownProtocolVersionMessage class]]) {
+                OWSFailDebug(@"Unexpected message type.");
+                return nil;
+            }
+            OWSUnknownProtocolVersionMessage *message = (OWSUnknownProtocolVersionMessage *)infoMessage;
+            if (message.isProtocolVersionUnknown) {
+                return [SystemMessageAction
+                            actionWithTitle:NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON",
+                                                @"Label for button that lets users upgrade the app.")
+                                      block:^{
+                                          [weakSelf showUpgradeAppUI];
+                                      }
+                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_upgrade_app_ui")];
+            }
+            return nil;
+        }
         case TSInfoMessageTypeDisappearingMessagesUpdate:
             return [SystemMessageAction
                         actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_TAP_TO_CHANGE",
@@ -504,13 +530,14 @@ typedef void (^SystemMessageActionBlock)(void);
                         actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
                                   block:^{
                                       [weakSelf.delegate
-                                          showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)message)
+                                          showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)
+                                                                                 infoMessage)
                                                                              .recipientId];
                                   }
                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")];
     }
 
-    OWSLogInfo(@"Unhandled tap for info message: %@", message);
+    OWSLogInfo(@"Unhandled tap for info message: %@", infoMessage);
     return nil;
 }
 
@@ -582,6 +609,12 @@ typedef void (^SystemMessageActionBlock)(void);
     } else {
         self.action.block();
     }
+}
+
+- (void)showUpgradeAppUI
+{
+    NSString *url = @"https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8";
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:url]];
 }
 
 #pragma mark - Reuse

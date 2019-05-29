@@ -27,6 +27,7 @@
     "OWSSessionResetJobRecord": 52, 
     "OWSUnknownContactBlockOfferMessage": 5, 
     "OWSUnknownDBObject": 37, 
+    "OWSUnknownProtocolVersionMessage": 53, 
     "OWSUserProfile": 41, 
     "OWSVerificationStateChangeMessage": 13, 
     "SSKJobRecord": 34, 

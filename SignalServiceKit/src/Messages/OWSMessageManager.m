@@ -48,6 +48,7 @@
 #import "TSQuotedMessage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
@@ -1231,6 +1232,16 @@ NS_ASSUME_NONNULL_BEGIN
             [newMemberIds addObjectsFromArray:oldGroupThread.groupModel.groupMemberIds];
         }
 
+        if (dataMessage.hasRequiredProtocolVersion
+            && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
+            NSString *senderId = envelope.source;
+            [self insertUnknownProtocolVersionErrorInThread:oldGroupThread
+                                            protocolVersion:dataMessage.requiredProtocolVersion
+                                                   senderId:senderId
+                                                transaction:transaction.asAnyWrite];
+            return nil;
+        }
+
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
                 // Ensures that the thread exists but doesn't update it.
@@ -1370,6 +1381,16 @@ NS_ASSUME_NONNULL_BEGIN
         TSContactThread *thread =
             [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
+        if (dataMessage.hasRequiredProtocolVersion
+            && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
+            NSString *senderId = envelope.source;
+            [self insertUnknownProtocolVersionErrorInThread:thread
+                                            protocolVersion:dataMessage.requiredProtocolVersion
+                                                   senderId:senderId
+                                                transaction:transaction.asAnyWrite];
+            return nil;
+        }
+
         [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                   thread:thread
                                                               createdByRemoteRecipientId:envelope.source
@@ -1435,6 +1456,25 @@ NS_ASSUME_NONNULL_BEGIN
                           transaction:transaction];
         return incomingMessage;
     }
+}
+
+- (void)insertUnknownProtocolVersionErrorInThread:(TSThread *)thread
+                                  protocolVersion:(NSUInteger)protocolVersion
+                                         senderId:(NSString *)senderId
+                                      transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(thread);
+    OWSAssertDebug(transaction);
+
+    OWSFailDebug(@"Unknown protocol version: %lu", (unsigned long)protocolVersion);
+
+    // We convert protocolVersion to a numeric value here.
+    TSInteraction *message =
+        [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                             thread:thread
+                                                           senderId:senderId
+                                                    protocolVersion:protocolVersion];
+    [message anySaveWithTransaction:transaction];
 }
 
 - (void)finalizeIncomingMessage:(TSIncomingMessage *)incomingMessage
