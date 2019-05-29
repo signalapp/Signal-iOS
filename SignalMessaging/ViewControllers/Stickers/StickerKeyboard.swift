@@ -102,17 +102,6 @@ public class StickerKeyboard: UIStackView {
     }
 
     @objc public func wasPresented() {
-        // If there are no recents, default to showing the first sticker pack.
-        if currentPageCollectionView.stickerCount < 1 {
-            selectedStickerPack = stickerPacks.first
-
-            if selectedStickerPack == nil {
-                // If the keyboard is presented and no stickers are
-                // installed, show the manage stickers view.
-                delegate?.presentManageStickersView()
-            }
-        }
-
         updatePageConstraints()
     }
 
@@ -247,7 +236,7 @@ public class StickerKeyboard: UIStackView {
     private var stickerPackCollectionViews = [
         StickerPackCollectionView(),
         StickerPackCollectionView(),
-        StickerPackCollectionView(),
+        StickerPackCollectionView()
     ]
     private var stickerPackCollectionViewConstraints = [NSLayoutConstraint]()
 

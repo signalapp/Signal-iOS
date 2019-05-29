@@ -1105,7 +1105,18 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)stickerButtonPressed
 {
     OWSLogVerbose(@"");
-    
+
+    __block BOOL hasInstalledStickerPacks;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        hasInstalledStickerPacks = [StickerManager installedStickerPacksWithTransaction:transaction].count > 0;
+    }];
+    if (!hasInstalledStickerPacks) {
+        // If the keyboard is presented and no stickers are installed,
+        // show the manage stickers view. Do not show the sticker keyboard.
+        [self presentManageStickersView];
+        return;
+    }
+
     [self activateStickerKeyboard];
 }
 
