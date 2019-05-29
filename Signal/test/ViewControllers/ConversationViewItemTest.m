@@ -66,14 +66,17 @@
 
     DataSource *dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
     dataSource.sourceFilename = filename;
-    TSAttachmentStream *attachment = [AttachmentStreamFactory createWithContentType:mimeType dataSource:dataSource];
-
-    TSOutgoingMessage *message =
-        [TSOutgoingMessage outgoingMessageInThread:self.thread messageBody:nil attachmentId:attachment.uniqueId];
-    [message save];
 
     __block ConversationInteractionViewItem *viewItem = nil;
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSAttachmentStream *attachment = [AttachmentStreamFactory createWithContentType:mimeType
+                                                                             dataSource:dataSource
+                                                                            transaction:transaction.asAnyWrite];
+
+        TSOutgoingMessage *message =
+            [TSOutgoingMessage outgoingMessageInThread:self.thread messageBody:nil attachmentId:attachment.uniqueId];
+        [message anyInsertWithTransaction:transaction.asAnyWrite];
+
         viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:message
                                                                   isGroupThread:NO
                                                                     transaction:transaction.asAnyRead

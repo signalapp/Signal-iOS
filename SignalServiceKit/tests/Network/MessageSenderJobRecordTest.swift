@@ -20,7 +20,7 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
     func test_unsavedVisibleMessage() {
         var message: TSOutgoingMessage!
         self.yapWrite { transaction in
-            message = OutgoingMessageFactory().build(transaction: transaction)
+            message = OutgoingMessageFactory().build(transaction: transaction.asAnyWrite)
         }
         message.uniqueId = nil
 
