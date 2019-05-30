@@ -169,15 +169,7 @@ public class ManageStickersViewController: OWSTableViewController {
             .map { installedSource($0.info) }
 
             let sortKnownPacks = { (pack0: KnownStickerPack, pack1: KnownStickerPack) -> Bool in
-                guard let date0 = pack0.dateCreated else {
-                    owsFailDebug("Missing date created.")
-                    return false
-                }
-                guard let date1 = pack1.dateCreated else {
-                    owsFailDebug("Missing date created.")
-                    return false
-                }
-                return date0 > date1
+                return pack0.dateCreated > pack1.dateCreated
             }
             let allKnownStickerPacks = StickerManager.allKnownStickerPacks(transaction: transaction)
             let availableKnownStickerPacks = allKnownStickerPacks.filter { !allPackInfos.contains($0.info) }

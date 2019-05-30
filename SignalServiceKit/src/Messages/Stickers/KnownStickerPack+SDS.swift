@@ -22,7 +22,7 @@ public struct KnownStickerPackRecord: Codable, FetchableRecord, PersistableRecor
     public let uniqueId: String
 
     // Base class properties
-    public let dateCreated: Date?
+    public let dateCreated: Date
     public let info: Data
     public let referenceCount: Int
 
@@ -67,7 +67,7 @@ extension KnownStickerPack {
         case .knownStickerPack:
 
             let uniqueId: String = record.uniqueId
-            let dateCreated: Date? = record.dateCreated
+            let dateCreated: Date = record.dateCreated
             let infoSerialized: Data = record.info
             let info: StickerPackInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
             let referenceCount: Int = record.referenceCount
@@ -108,7 +108,7 @@ extension KnownStickerPackSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let dateCreatedColumn = SDSColumnMetadata(columnName: "dateCreated", columnType: .int64, isOptional: true, columnIndex: 3)
+    static let dateCreatedColumn = SDSColumnMetadata(columnName: "dateCreated", columnType: .int64, columnIndex: 3)
     static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 4)
     static let referenceCountColumn = SDSColumnMetadata(columnName: "referenceCount", columnType: .int64, columnIndex: 5)
 
@@ -151,7 +151,7 @@ extension KnownStickerPackSerializer {
         case .knownStickerPack:
 
             let uniqueId = try deserializer.string(at: uniqueIdColumn.columnIndex)
-            let dateCreated = try deserializer.optionalDate(at: dateCreatedColumn.columnIndex)
+            let dateCreated = try deserializer.date(at: dateCreatedColumn.columnIndex)
             let infoSerialized: Data = try deserializer.blob(at: infoColumn.columnIndex)
             let info: StickerPackInfo = try SDSDeserializer.unarchive(infoSerialized)
             let referenceCount = Int(try deserializer.int64(at: referenceCountColumn.columnIndex))
@@ -411,7 +411,7 @@ class KnownStickerPackSerializer: SDSSerializer {
 
     public func updateColumnValues() -> [DatabaseValueConvertible] {
         let result: [DatabaseValueConvertible] = [
-            self.model.dateCreated ?? DatabaseValue.null,
+            self.model.dateCreated,
             SDSDeserializer.archive(self.model.info) ?? DatabaseValue.null,
             self.model.referenceCount
 
