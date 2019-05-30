@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalServiceKit
+import YYImage
 
 private class StickerPackActionButton: UIView {
 
@@ -111,6 +112,7 @@ public class ManageStickersViewController: OWSTableViewController {
     private var availableKnownStickerPackSources = [StickerPackDataSource]()
 
     private func updateState() {
+        // We need to recyle data sources to maintain continuity.
         var oldInstalledSources = [StickerPackInfo: StickerPackDataSource]()
         var oldTransientSources = [StickerPackInfo: StickerPackDataSource]()
         let updateMapWithOldSources = { (map: inout [StickerPackInfo: StickerPackDataSource], sources: [StickerPackDataSource]) in
@@ -137,7 +139,9 @@ public class ManageStickersViewController: OWSTableViewController {
             if let source = oldTransientSources[info] {
                 return source
             }
-            let source = TransientStickerPackDataSource(stickerPackInfo: info)
+            // Don't download all stickers; we only need covers for this view.
+            let source = TransientStickerPackDataSource(stickerPackInfo: info,
+                                                        shouldDownloadAllStickers: false)
             source.add(delegate: self)
             return source
         }
@@ -304,14 +308,16 @@ public class ManageStickersViewController: OWSTableViewController {
         let titleValue: String? = dataSource.title
         let authorNameValue: String? = dataSource.author
 
-        let iconSize: CGFloat = 64
         let iconView: UIView
-        if let stickerInfo = stickerInfo {
-            iconView = StickerView(stickerInfo: stickerInfo, size: iconSize)
+        if let stickerInfo = stickerInfo,
+            let coverView = imageView(forStickerInfo: stickerInfo,
+                                      dataSource: dataSource) {
+            iconView = coverView
         } else {
             iconView = UIView()
-            iconView.autoSetDimensions(to: CGSize(width: iconSize, height: iconSize))
         }
+        let iconSize: CGFloat = 64
+        iconView.autoSetDimensions(to: CGSize(width: iconSize, height: iconSize))
 
         let title: String
         if let titleValue = titleValue?.ows_stripped(),
@@ -384,6 +390,27 @@ public class ManageStickersViewController: OWSTableViewController {
         stack.ows_autoPinToSuperviewMargins()
 
         return cell
+    }
+
+    private func imageView(forStickerInfo stickerInfo: StickerInfo,
+                           dataSource: StickerPackDataSource) -> UIView? {
+
+        guard let filePath = dataSource.filePath(forSticker: stickerInfo) else {
+            owsFailDebug("Missing sticker data file path.")
+            return nil
+        }
+        guard NSData.ows_isValidImage(atPath: filePath, mimeType: OWSMimeTypeImageWebp) else {
+            owsFailDebug("Invalid sticker.")
+            return nil
+        }
+        guard let stickerImage = YYImage(contentsOfFile: filePath) else {
+            owsFailDebug("Sticker could not be parsed.")
+            return nil
+        }
+
+        let stickerView = YYAnimatedImageView()
+        stickerView.image = stickerImage
+        return stickerView
     }
 
     private func buildEmptySectionCell(labelText: String) -> UITableViewCell {
