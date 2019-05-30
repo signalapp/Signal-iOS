@@ -1226,10 +1226,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFail(@"Missing transaction.");
         return nil;
     }
-    if (!dataMessage.group.hasType) {
-        OWSFailDebug(@"Missing group message type.");
-        return nil;
-    }
 
     uint64_t timestamp = envelope.timestamp;
     NSString *body = dataMessage.body;
@@ -1238,12 +1234,17 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSContacts contactForDataMessage:dataMessage transaction:transaction.transitional_yapWriteTransaction];
     NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
 
-    if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeRequestInfo) {
-        [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
-        return nil;
-    }
-
     if (groupId.length > 0) {
+        if (!dataMessage.group.hasType) {
+            OWSFailDebug(@"Missing group message type.");
+            return nil;
+        }
+
+        if (dataMessage.group.unwrappedType == SSKProtoGroupContextTypeRequestInfo) {
+            [self handleGroupInfoRequest:envelope dataMessage:dataMessage transaction:transaction];
+            return nil;
+        }
+
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
         for (NSString *recipientId in newMemberIds) {
             if (!recipientId.isValidE164) {
