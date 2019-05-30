@@ -180,7 +180,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             return nil;
         }
         TSMessage *message = (TSMessage *)object;
-        if (message.hasPerMessageExpiration) {
+        if (message.hasPerMessageExpiration && message.hasPerMessageExpirationStarted) {
             return TSPerMessageExpirationMessagesGroup;
         } else {
             return nil;

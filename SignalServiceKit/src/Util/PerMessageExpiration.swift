@@ -34,17 +34,19 @@ public class PerMessageExpiration: NSObject {
             owsFailDebug("Per-message expiration countdown already begun.")
         }
 
-        schedulePerMessageExpiration(forMessage: message)
+        schedulePerMessageExpiration(forMessage: message,
+                                     transaction: transaction)
     }
 
-    private class func schedulePerMessageExpiration(forMessage message: TSMessage) {
+    private class func schedulePerMessageExpiration(forMessage message: TSMessage,
+                                                    transaction: SDSAnyWriteTransaction) {
         let perMessageExpiresAtMS = message.perMessageExpiresAt
         let nowMs = NSDate.ows_millisecondTimeStamp()
 
         guard perMessageExpiresAtMS > nowMs else {
-            DispatchQueue.global().async {
-                self.completePerMessageExpiration(forMessage: message)
-            }
+            // Message has expired; remove it immediately.
+            completePerMessageExpiration(forMessage: message,
+                                         transaction: transaction)
             return
         }
 
@@ -72,12 +74,14 @@ public class PerMessageExpiration: NSObject {
     public class func appDidBecomeReady() {
         AssertIsOnMainThread()
 
-        databaseStorage.write { (transaction) in
-            AnyPerMessageExpirationFinder().enumerateAllMessagesWithPerMessageExpiration(transaction: transaction) { (_, _) in
-            }
-        }
         // Find all messages with per-message expiration whose countdown has begun.
         // Cull expired messages & resume countdown for others.
+        databaseStorage.write { (transaction) in
+            let messages = AnyPerMessageExpirationFinder().allMessagesWithPerMessageExpiration(transaction: transaction)
+            for message in messages {
+                schedulePerMessageExpiration(forMessage: message, transaction: transaction)
+            }
+        }
     }
 }
 
@@ -144,7 +148,8 @@ class GRDBPerMessageExpirationFinder: PerMessageExpirationFinder {
                 owsFailDebug("expecting message but found: \(next)")
                 return
             }
-            guard message.hasPerMessageExpiration else {
+            guard message.hasPerMessageExpiration,
+                message.hasPerMessageExpirationStarted else {
                 owsFailDebug("expecting message with per message expiration but found: \(next)")
                 return
             }
@@ -171,7 +176,8 @@ class YAPDBPerMessageExpirationFinder: PerMessageExpirationFinder {
                 owsFailDebug("Invalid database entity: \(type(of: object)).")
                 return
             }
-            guard message.hasPerMessageExpiration else {
+            guard message.hasPerMessageExpiration,
+                message.hasPerMessageExpirationStarted else {
                 return
             }
             block(message, stopPointer)

@@ -44,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL perMessageExpirationHasExpired;
 // See: hasPerConversationExpiration.
 @property (nonatomic, readonly) BOOL hasPerMessageExpiration;
+@property (nonatomic, readonly) BOOL hasPerMessageExpirationStarted;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 

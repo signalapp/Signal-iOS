@@ -612,6 +612,11 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     return self.perMessageExpirationDurationSeconds > 0;
 }
 
+- (BOOL)hasPerMessageExpirationStarted
+{
+    return self.perMessageExpireStartedAt > 0;
+}
+
 - (uint64_t)perMessageExpiresAt
 {
     // We should call this method if:
