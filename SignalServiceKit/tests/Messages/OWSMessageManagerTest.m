@@ -2,7 +2,6 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMessageManager.h"
 #import "ContactsManagerProtocol.h"
 #import "ContactsUpdater.h"
 #import "MockSSKEnvironment.h"
@@ -10,6 +9,7 @@
 #import "OWSFakeMessageSender.h"
 #import "OWSFakeNetworkManager.h"
 #import "OWSIdentityManager.h"
+#import "OWSMessageManager.h"
 #import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSSyncGroupsMessage.h"
@@ -88,13 +88,15 @@ NSString *const kAliceRecipientId = @"+13213214321";
     };
 
     SSKProtoSyncMessageRequestBuilder *requestBuilder =
-        [SSKProtoSyncMessageRequest builderWithType:SSKProtoSyncMessageRequestTypeGroups];
-
+        [SSKProtoSyncMessageRequest builder];
+    [requestBuilder setType:SSKProtoSyncMessageRequestTypeGroups];
+    
     SSKProtoSyncMessageBuilder *messageBuilder = [SSKProtoSyncMessage builder];
     [messageBuilder setRequest:[requestBuilder buildIgnoringErrors]];
 
     SSKProtoEnvelopeBuilder *envelopeBuilder =
-        [SSKProtoEnvelope builderWithType:SSKProtoEnvelopeTypeCiphertext timestamp:12345];
+        [SSKProtoEnvelope builderWithTimestamp:12345];
+    [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
     [envelopeBuilder setSource:kAliceRecipientId];
     [envelopeBuilder setSourceDevice:1];
 
@@ -121,10 +123,12 @@ NSString *const kAliceRecipientId = @"+13213214321";
     }];
 
     SSKProtoEnvelopeBuilder *envelopeBuilder =
-        [SSKProtoEnvelope builderWithType:SSKProtoEnvelopeTypeCiphertext timestamp:12345];
+        [SSKProtoEnvelope builderWithTimestamp:12345];
+    [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
 
     SSKProtoGroupContextBuilder *groupContextBuilder =
-        [SSKProtoGroupContext builderWithId:groupIdData type:SSKProtoGroupContextTypeUpdate];
+        [SSKProtoGroupContext builderWithId:groupIdData];
+    [groupContextBuilder setType:SSKProtoGroupContextTypeUpdate];
     [groupContextBuilder setName:@"Newly created Group Name"];
 
     SSKProtoDataMessageBuilder *messageBuilder = [SSKProtoDataMessage builder];
@@ -157,10 +161,12 @@ NSString *const kAliceRecipientId = @"+13213214321";
     }];
 
     SSKProtoEnvelopeBuilder *envelopeBuilder =
-        [SSKProtoEnvelope builderWithType:SSKProtoEnvelopeTypeCiphertext timestamp:12345];
+        [SSKProtoEnvelope builderWithTimestamp:12345];
+    [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
 
     SSKProtoGroupContextBuilder *groupContextBuilder =
-        [SSKProtoGroupContext builderWithId:groupIdData type:SSKProtoGroupContextTypeUpdate];
+        [SSKProtoGroupContext builderWithId:groupIdData];
+    [groupContextBuilder setType:SSKProtoGroupContextTypeUpdate];
     [groupContextBuilder setName:@"Newly created Group Name"];
 
     SSKProtoAttachmentPointerBuilder *attachmentBuilder = [SSKProtoAttachmentPointer builderWithId:1234];
