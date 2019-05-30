@@ -459,7 +459,10 @@ public class ManageStickersViewController: OWSTableViewController {
 
         Logger.verbose("")
 
-        StickerManager.installStickerPack(stickerPack: stickerPack)
+        databaseStorage.write { (transaction) in
+            StickerManager.installStickerPack(stickerPack: stickerPack,
+                                              transaction: transaction)
+        }
     }
 
     @objc func stickersOrPacksDidChange() {

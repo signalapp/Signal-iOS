@@ -274,7 +274,10 @@ public class StickerPackViewController: OWSViewController {
             return
         }
 
-        StickerManager.saveStickerPack(stickerPack: stickerPack, installMode: .install)
+        databaseStorage.write { (transaction) in
+            StickerManager.installStickerPack(stickerPack: stickerPack,
+                                              transaction: transaction)
+        }
 
         updateContent()
 
