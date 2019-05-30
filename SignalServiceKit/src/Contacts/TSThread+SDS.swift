@@ -294,7 +294,12 @@ extension TSThread {
             return
         }
 
-        block(dbCopy)
+        // Don't apply the block twice to the same instance.
+        // It's at least unnecessary and actually wrong for some blocks.
+        // e.g. `block: { $0 in $0.someField++ }`
+        if dbCopy !== self {
+            block(dbCopy)
+        }
 
         dbCopy.anyUpdate(transaction: transaction)
     }
