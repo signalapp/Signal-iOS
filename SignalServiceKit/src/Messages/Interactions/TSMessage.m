@@ -423,6 +423,12 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 // TODO: This method contains view-specific logic and probably belongs in NotificationsManager, not in SSK.
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    if (self.hasPerMessageExpiration) {
+        // Currently, we use the same copy as NotificationStrings.incomingMessageBody.
+        // Despite the name, the actual copy doesn't have anything to do with being
+        // an incoming message.  We could use something different.
+        return NSLocalizedString(@"APN_Message", @"notification body");
+    }
     NSString *_Nullable bodyDescription = nil;
     if (self.body.length > 0) {
         bodyDescription = self.body;
