@@ -149,7 +149,8 @@ class GRDBPerMessageExpirationFinder: PerMessageExpirationFinder {
                 return
             }
             guard message.hasPerMessageExpiration,
-                message.hasPerMessageExpirationStarted else {
+                message.hasPerMessageExpirationStarted,
+                !message.perMessageExpirationHasExpired else {
                 owsFailDebug("expecting message with per message expiration but found: \(next)")
                 return
             }
@@ -177,7 +178,8 @@ class YAPDBPerMessageExpirationFinder: PerMessageExpirationFinder {
                 return
             }
             guard message.hasPerMessageExpiration,
-                message.hasPerMessageExpirationStarted else {
+                message.hasPerMessageExpirationStarted,
+                !message.perMessageExpirationHasExpired else {
                 return
             }
             block(message, stopPointer)
