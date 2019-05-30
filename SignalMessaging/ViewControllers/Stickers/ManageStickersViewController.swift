@@ -109,7 +109,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
     private var installedStickerPackSources = [StickerPackDataSource]()
     private var availableBuiltInStickerPackSources = [StickerPackDataSource]()
-    private var availableKnownStickerPackSources = [StickerPackDataSource]()
+    private var knownStickerPackSources = [StickerPackDataSource]()
 
     private func updateState() {
         // We need to recyle data sources to maintain continuity.
@@ -126,7 +126,7 @@ public class ManageStickersViewController: OWSTableViewController {
         }
         updateMapWithOldSources(&oldInstalledSources, installedStickerPackSources)
         updateMapWithOldSources(&oldInstalledSources, availableBuiltInStickerPackSources)
-        updateMapWithOldSources(&oldTransientSources, availableKnownStickerPackSources)
+        updateMapWithOldSources(&oldTransientSources, knownStickerPackSources)
         let installedSource = { (info: StickerPackInfo) -> StickerPackDataSource in
             if let source = oldInstalledSources[info] {
                 return source
@@ -181,7 +181,7 @@ public class ManageStickersViewController: OWSTableViewController {
             }
             let allKnownStickerPacks = StickerManager.allKnownStickerPacks(transaction: transaction)
             let availableKnownStickerPacks = allKnownStickerPacks.filter { !allPackInfos.contains($0.info) }
-            self.availableKnownStickerPackSources = availableKnownStickerPacks.sorted(by: sortKnownPacks)
+            self.knownStickerPackSources = availableKnownStickerPacks.sorted(by: sortKnownPacks)
                 .map { transientSource($0.info) }
         }
 
@@ -238,6 +238,8 @@ public class ManageStickersViewController: OWSTableViewController {
             })
         }
 
+        // Hide known sticker packs until their manifest is available.
+        let availableKnownStickerPackSources = knownStickerPackSources.filter { $0.getStickerPack() != nil }
         if availableBuiltInStickerPackSources.count > 0 {
             let section = OWSTableSection()
             section.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE", comment: "Title for the 'available built-in stickers' section of the 'manage stickers' view.")
