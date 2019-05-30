@@ -102,6 +102,11 @@ public class StickerKeyboard: UIStackView {
     }
 
     @objc public func wasPresented() {
+        // If there are no recents, default to showing the first sticker pack.
+        if currentPageCollectionView.stickerCount < 1 {
+            selectedStickerPack = stickerPacks.first
+        }
+
         updatePageConstraints()
     }
 

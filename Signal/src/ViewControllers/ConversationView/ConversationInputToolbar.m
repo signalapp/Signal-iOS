@@ -1107,7 +1107,7 @@ const CGFloat kMaxTextViewHeight = 98;
     OWSLogVerbose(@"");
 
     __block BOOL hasInstalledStickerPacks;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         hasInstalledStickerPacks = [StickerManager installedStickerPacksWithTransaction:transaction].count > 0;
     }];
     if (!hasInstalledStickerPacks) {
