@@ -195,4 +195,10 @@ private struct OWSThumbnailRequest {
         let isWebp = contentType == OWSMimeTypeImageWebp
         return isWebp ? "png" : "jpg"
     }
+
+    @objc
+    public class func thumbnailMimetype(forContentType contentType: String) -> String {
+        let isWebp = contentType == OWSMimeTypeImageWebp
+        return isWebp ? OWSMimeTypeImagePng : OWSMimeTypeImageJpeg
+    }
 }
