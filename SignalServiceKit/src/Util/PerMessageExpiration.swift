@@ -5,6 +5,11 @@
 import Foundation
 import SignalCoreKit
 
+// Unlike per-conversation expiration, per-message expiration has
+// short expiration times and the countdown is manually initiated.
+// There should be very few countdowns in flight at a time.
+// Therefore we can adopt a much simpler approach to countdown
+// logic and use async dispatch for each countdown.
 @objc
 public class PerMessageExpiration: NSObject {
 
@@ -19,6 +24,7 @@ public class PerMessageExpiration: NSObject {
     @objc
     public class func startPerMessageExpiration(forMessage message: TSMessage,
                                                 transaction: SDSAnyWriteTransaction) {
+        AssertIsOnMainThread()
 
         if message.perMessageExpireStartedAt < 1 {
             // Mark the countdown as begun.
@@ -64,6 +70,8 @@ public class PerMessageExpiration: NSObject {
 
     @objc
     public class func appDidBecomeReady() {
+        AssertIsOnMainThread()
+
         // Find all messages with per-message expiration whose countdown has begun.
         // Cull expired messages & resume countdown for others.
     }
