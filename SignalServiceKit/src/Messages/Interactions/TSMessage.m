@@ -450,7 +450,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else if (self.contactShare) {
         return [[self.contactShare.name.displayName rtlSafeAppend:@" "] rtlSafeAppend:@"👤"];
     } else if (self.messageSticker) {
-        return [TSAttachment emojiForMimeType:OWSMimeTypeImageWebp];
+        return NSLocalizedString(
+            @"STICKER_MESSAGE_PREVIEW", @"Preview text shown in notifications and home view for sticker messages.");
     } else {
         if (transaction.transitional_yapReadTransaction) {
             // some cases aren't yet handled by GRDB
