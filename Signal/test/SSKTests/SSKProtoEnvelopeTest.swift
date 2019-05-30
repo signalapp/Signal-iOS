@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -67,8 +67,8 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
     }
 
     func testParse_roundtrip() {
-        let builder = SSKProtoEnvelope.builder(type: SSKProtoEnvelope.SSKProtoEnvelopeType.prekeyBundle,
-                                               timestamp: 123)
+        let builder = SSKProtoEnvelope.builder(timestamp: 123)
+        builder.setType(SSKProtoEnvelope.SSKProtoEnvelopeType.prekeyBundle)
         builder.setSource("+13213214321")
         builder.setSourceDevice(1)
 
