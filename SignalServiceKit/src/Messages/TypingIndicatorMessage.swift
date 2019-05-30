@@ -42,7 +42,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     }
 
     @objc
-    public required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
         self.action = .started
         try super.init(dictionary: dictionaryValue)
     }

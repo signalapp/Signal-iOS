@@ -229,7 +229,7 @@ DEPENDENCIES:
   - GRKOpenSSLFramework (from `https://github.com/signalapp/GRKOpenSSLFramework`)
   - HKDFKit (from `https://github.com/signalapp/HKDFKit.git`)
   - HKDFKit/Tests (from `https://github.com/signalapp/HKDFKit.git`)
-  - Mantle (from `https://github.com/signalapp/Mantle`, branch `signal-master`)
+  - Mantle (from `https://github.com/signalapp/Mantle`, branch `mkirk/type-annotations`)
   - PromiseKit (= 6.5.3)
   - PureLayout
   - Reachability
@@ -273,7 +273,7 @@ EXTERNAL SOURCES:
   HKDFKit:
     :git: https://github.com/signalapp/HKDFKit.git
   Mantle:
-    :branch: signal-master
+    :branch: mkirk/type-annotations
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
     :git: https://github.com/signalapp/SignalCoreKit.git
@@ -305,7 +305,7 @@ CHECKOUT OPTIONS:
     :commit: 3e0c2371d125f2d3db26daa498d5d436961b1795
     :git: https://github.com/signalapp/HKDFKit.git
   Mantle:
-    :commit: 9599b1d9796280c97cb2f786f34984fc98a3b6ef
+    :commit: a39c1dce4523c9529cd11f6464f0301722087f47
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
     :commit: 947cf18a1dafab10fab1a91803d89c3937f34f2c
@@ -345,6 +345,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: c7bf8e3ae4248918afdf0f22707228e9df7a466c
+PODFILE CHECKSUM: cf3a0631dc837d917736912865d6c7994c689484
 
 COCOAPODS: 1.5.3
