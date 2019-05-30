@@ -429,10 +429,10 @@ extension StickerKeyboard: StickerPackCollectionViewDelegate {
     public func stickerPreviewHostView() -> UIView? {
         AssertIsOnMainThread()
 
-        return self
+        return window
     }
 
     public func stickerPreviewHasOverlay() -> Bool {
-        return false
+        return true
     }
 }
