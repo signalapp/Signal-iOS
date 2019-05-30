@@ -50,7 +50,7 @@ public class StickerKeyboard: UIStackView {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
-                                               name: StickerManager.StickersOrPacksDidChange,
+                                               name: StickerManager.stickersOrPacksDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(orientationDidChange),

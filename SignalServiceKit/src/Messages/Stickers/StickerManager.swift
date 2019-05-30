@@ -38,8 +38,11 @@ public class StickerManager: NSObject {
     // MARK: - Notifications
 
     @objc
-    public static let StickersOrPacksDidChange = Notification.Name("StickersOrPacksDidChange")
-    public static let RecentStickersDidChange = Notification.Name("RecentStickersDidChange")
+    public static let stickersOrPacksDidChange = Notification.Name("stickersOrPacksDidChange")
+    @objc
+    public static let recentStickersDidChange = Notification.Name("recentStickersDidChange")
+    @objc
+    public static let isStickerSendEnabledDidChange = Notification.Name("isStickerSendEnabledDidChange")
 
     // MARK: - Dependencies
 
@@ -236,7 +239,7 @@ public class StickerManager: NSObject {
                                   packs: [stickerPackInfo],
                                   transaction: transaction)
 
-        NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
     }
 
     @objc
@@ -331,7 +334,7 @@ public class StickerManager: NSObject {
             }
         }
 
-        NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
     }
 
     private class func markSavedStickerPackAsInstalled(stickerPack: StickerPack,
@@ -513,7 +516,7 @@ public class StickerManager: NSObject {
             OWSFileSystem.deleteFileIfExists(url.path)
         }
 
-        // No need to post StickersOrPacksDidChange; caller will do that.
+        // No need to post stickersOrPacksDidChange; caller will do that.
     }
 
     @objc
@@ -574,7 +577,7 @@ public class StickerManager: NSObject {
             }
         }
 
-        NotificationCenter.default.postNotificationNameAsync(StickersOrPacksDidChange, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
     }
 
     private class func tryToDownloadAndInstallSticker(stickerPack: StickerPack,
@@ -791,7 +794,7 @@ public class StickerManager: NSObject {
                                 value: stickerInfo.asKey(),
                                 transaction: transaction,
                                 maxCount: kRecentStickersMaxCount)
-        NotificationCenter.default.postNotificationNameAsync(RecentStickersDidChange, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(recentStickersDidChange, object: nil)
     }
 
     private class func removeFromRecentStickers(_ stickerInfo: StickerInfo,
@@ -799,7 +802,7 @@ public class StickerManager: NSObject {
         store.removeFromStringSet(key: kRecentStickersKey,
                                   value: stickerInfo.asKey(),
                                   transaction: transaction)
-        NotificationCenter.default.postNotificationNameAsync(RecentStickersDidChange, object: nil)
+        NotificationCenter.default.postNotificationNameAsync(recentStickersDidChange, object: nil)
     }
 
     // Returned in descending order of recency.
@@ -856,6 +859,8 @@ public class StickerManager: NSObject {
         }
 
         StickerManager.store.setBool(true, key: kHasReceivedStickersKey, transaction: transaction)
+
+        NotificationCenter.default.postNotificationNameAsync(StickerManager.isStickerSendEnabledDidChange, object: nil)
     }
 
     @objc
