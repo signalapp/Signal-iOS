@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSYapDatabaseObject.h"
@@ -213,7 +213,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *collection = [[self class] collection];
     id latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
     if (latestInstance) {
-        changeBlock(latestInstance);
+        // Don't apply changeBlock twice to the same instance.
+        // It's at least unnecessary and actually wrong for some blocks.
+        // e.g. `changeBlock: { $0 in $0.someField++ }`
+        if (latestInstance != self) {
+            changeBlock(latestInstance);
+        }
         [latestInstance saveWithTransaction:transaction];
     }
 }
