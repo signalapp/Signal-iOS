@@ -106,13 +106,46 @@ public class ManageStickersViewController: OWSTableViewController {
         StickerManager.refreshContents()
     }
 
-    private var installedStickerPacks = [StickerPack]()
-    private var availableBuiltInStickerPacks = [StickerPack]()
-    private var availableKnownStickerPacks = [StickerPack]()
+    private var installedStickerPackSources = [StickerPackDataSource]()
+    private var availableBuiltInStickerPackSources = [StickerPackDataSource]()
+    private var availableKnownStickerPackSources = [StickerPackDataSource]()
 
     private func updateState() {
+        var oldInstalledSources = [StickerPackInfo: StickerPackDataSource]()
+        var oldTransientSources = [StickerPackInfo: StickerPackDataSource]()
+        let updateMapWithOldSources = { (map: inout [StickerPackInfo: StickerPackDataSource], sources: [StickerPackDataSource]) in
+            for source in sources {
+                guard let info = source.info else {
+                    owsFailDebug("Source missing info.")
+                    continue
+                }
+                map[info] = source
+            }
+        }
+        updateMapWithOldSources(&oldInstalledSources, installedStickerPackSources)
+        updateMapWithOldSources(&oldInstalledSources, availableBuiltInStickerPackSources)
+        updateMapWithOldSources(&oldTransientSources, availableKnownStickerPackSources)
+        let installedSource = { (info: StickerPackInfo) -> StickerPackDataSource in
+            if let source = oldInstalledSources[info] {
+                return source
+            }
+            let source = InstalledStickerPackDataSource(stickerPackInfo: info)
+            source.add(delegate: self)
+            return source
+        }
+        let transientSource = { (info: StickerPackInfo) -> StickerPackDataSource in
+            if let source = oldTransientSources[info] {
+                return source
+            }
+            let source = TransientStickerPackDataSource(stickerPackInfo: info)
+            source.add(delegate: self)
+            return source
+        }
+
         self.databaseStorage.read { (transaction) in
             let allPacks = StickerManager.allStickerPacks(transaction: transaction)
+            let allPackInfos = allPacks.map { $0.info }
+
             // Only show packs with installed covers.
             let packsWithCovers = allPacks.filter {
                 StickerManager.isStickerInstalled(stickerInfo: $0.coverInfo,
@@ -121,25 +154,31 @@ public class ManageStickersViewController: OWSTableViewController {
             // Sort sticker packs by "date saved, descending" so that we feature
             // packs that the user has just learned about.
             let installedStickerPacks = packsWithCovers.filter { $0.isInstalled }
-            let availableBuiltInStickerPacks = packsWithCovers.filter { !$0.isInstalled && StickerManager.isDefaultStickerPack($0) }
-            let availableKnownStickerPacks = packsWithCovers.filter { !$0.isInstalled && !StickerManager.isDefaultStickerPack($0) }
-            self.installedStickerPacks = installedStickerPacks.sorted {
+            let availableBuiltInStickerPacks = packsWithCovers.filter { !$0.isInstalled && StickerManager.isDefaultStickerPack($0.info) }
+            self.installedStickerPackSources = installedStickerPacks.sorted {
                 $0.dateCreated > $1.dateCreated
-            }
+                }.map { installedSource($0.info) }
             let sortAvailablePacks = { (pack0: StickerPack, pack1: StickerPack) -> Bool in
-                // Sort "default" packs before "known" packs.
-                let isDefault0 = StickerManager.isDefaultStickerPack(pack0)
-                let isDefault1 = StickerManager.isDefaultStickerPack(pack1)
-                if isDefault0 && !isDefault1 {
-                    return true
-                }
-                if !isDefault0 && isDefault1 {
-                    return false
-                }
                 return pack0.dateCreated > pack1.dateCreated
             }
-            self.availableBuiltInStickerPacks = availableBuiltInStickerPacks.sorted(by: sortAvailablePacks)
-            self.availableKnownStickerPacks = availableKnownStickerPacks.sorted(by: sortAvailablePacks)
+            self.availableBuiltInStickerPackSources = availableBuiltInStickerPacks.sorted(by: sortAvailablePacks)
+            .map { installedSource($0.info) }
+
+            let sortKnownPacks = { (pack0: KnownStickerPack, pack1: KnownStickerPack) -> Bool in
+                guard let date0 = pack0.dateCreated else {
+                    owsFailDebug("Missing date created.")
+                    return false
+                }
+                guard let date1 = pack1.dateCreated else {
+                    owsFailDebug("Missing date created.")
+                    return false
+                }
+                return date0 > date1
+            }
+            let allKnownStickerPacks = StickerManager.allKnownStickerPacks(transaction: transaction)
+            let availableKnownStickerPacks = allKnownStickerPacks.filter { !allPackInfos.contains($0.info) }
+            self.availableKnownStickerPackSources = availableKnownStickerPacks.sorted(by: sortKnownPacks)
+                .map { transientSource($0.info) }
         }
 
         updateTableContents()
@@ -150,7 +189,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
         let installedSection = OWSTableSection()
         installedSection.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE", comment: "Title for the 'installed stickers' section of the 'manage stickers' view.")
-        if installedStickerPacks.count < 1 {
+        if installedStickerPackSources.count < 1 {
             installedSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     return UITableViewCell()
@@ -160,45 +199,53 @@ public class ManageStickersViewController: OWSTableViewController {
                 },
                                               customRowHeight: UITableView.automaticDimension))
         }
-        for stickerPack in installedStickerPacks {
+        for dataSource in installedStickerPackSources {
             installedSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     return UITableViewCell()
                 }
-                return self.buildTableCell(installedStickerPack: stickerPack)
+                return self.buildTableCell(installedStickerPack: dataSource)
                 },
                                      customRowHeight: UITableView.automaticDimension,
                                      actionBlock: { [weak self] in
-                                        self?.show(stickerPack: stickerPack)
+                                        guard let packInfo = dataSource.info else {
+                                            owsFailDebug("Source missing info.")
+                                            return
+                                        }
+                                        self?.show(packInfo: packInfo)
             }))
         }
         contents.addSection(installedSection)
 
-        let itemForAvailablePack = { (stickerPack: StickerPack) -> OWSTableItem in
+        let itemForAvailablePack = { (dataSource: StickerPackDataSource) -> OWSTableItem in
             OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     return UITableViewCell()
                 }
-                return self.buildTableCell(availableStickerPack: stickerPack)
+                return self.buildTableCell(availableStickerPack: dataSource)
                 },
                          customRowHeight: UITableView.automaticDimension,
                          actionBlock: { [weak self] in
-                            self?.show(stickerPack: stickerPack)
+                            guard let packInfo = dataSource.info else {
+                                owsFailDebug("Source missing info.")
+                                return
+                            }
+                            self?.show(packInfo: packInfo)
             })
         }
 
-        if availableBuiltInStickerPacks.count > 0 {
+        if availableBuiltInStickerPackSources.count > 0 {
             let section = OWSTableSection()
             section.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE", comment: "Title for the 'available built-in stickers' section of the 'manage stickers' view.")
-            for stickerPack in availableBuiltInStickerPacks {
-                section.add(itemForAvailablePack(stickerPack))
+            for dataSource in availableBuiltInStickerPackSources {
+                section.add(itemForAvailablePack(dataSource))
             }
             contents.addSection(section)
         }
 
         let knownSection = OWSTableSection()
         knownSection.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE", comment: "Title for the 'available known stickers' section of the 'manage stickers' view.")
-        if availableKnownStickerPacks.count < 1 {
+        if availableKnownStickerPackSources.count < 1 {
             knownSection.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     return UITableViewCell()
@@ -208,45 +255,63 @@ public class ManageStickersViewController: OWSTableViewController {
                 },
                                           customRowHeight: UITableView.automaticDimension))
         }
-        for stickerPack in availableKnownStickerPacks {
-            knownSection.add(itemForAvailablePack(stickerPack))
+        for dataSource in availableKnownStickerPackSources {
+            knownSection.add(itemForAvailablePack(dataSource))
         }
         contents.addSection(knownSection)
 
         self.contents = contents
     }
 
-    private func buildTableCell(installedStickerPack stickerPack: StickerPack) -> UITableViewCell {
-        var actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
-        return buildTableCell(stickerPack: stickerPack,
-                              stickerInfo: stickerPack.coverInfo,
-                              title: stickerPack.title,
-                              authorName: stickerPack.author,
+    private func buildTableCell(installedStickerPack dataSource: StickerPackDataSource) -> UITableViewCell {
+        let actionIconName = CurrentAppContext().isRTL ? "reply-filled-24" : "reply-filled-reversed-24"
+        return buildTableCell(dataSource: dataSource,
                               actionIconName: actionIconName) { [weak self] in
-                                self?.share(stickerPack: stickerPack)
+                                guard let packInfo = dataSource.info else {
+                                    owsFailDebug("Source missing info.")
+                                    return
+                                }
+                                self?.share(packInfo: packInfo)
         }
     }
 
-    private func buildTableCell(availableStickerPack stickerPack: StickerPack) -> UITableViewCell {
-        let actionIconName = "download-filled-24"
-        return buildTableCell(stickerPack: stickerPack,
-                              stickerInfo: stickerPack.coverInfo,
-                              title: stickerPack.title,
-                              authorName: stickerPack.author,
-                              actionIconName: actionIconName) { [weak self] in
-                                self?.install(stickerPack: stickerPack)
+    private func buildTableCell(availableStickerPack dataSource: StickerPackDataSource) -> UITableViewCell {
+        if let stickerPack = dataSource.getStickerPack() {
+            let actionIconName = "download-filled-24"
+            return buildTableCell(dataSource: dataSource,
+                                  actionIconName: actionIconName) { [weak self] in
+                                    self?.install(stickerPack: stickerPack)
+            }
+        } else {
+            // Hide "install" button if manifest isn't downloaded yet.
+            return buildTableCell(dataSource: dataSource,
+                                  actionIconName: nil) { }
         }
     }
 
-    private func buildTableCell(stickerPack: StickerPack,
-                                stickerInfo: StickerInfo,
-                                title titleValue: String?,
-                                authorName authorNameValue: String?,
+    private func buildTableCell(dataSource: StickerPackDataSource,
                                 actionIconName: String?,
                                 block: @escaping () -> Void) -> UITableViewCell {
+
         let cell = OWSTableItem.newCell()
 
-        let iconView = StickerView(stickerInfo: stickerInfo, size: 64)
+        guard let packInfo = dataSource.info else {
+            owsFailDebug("Source missing info.")
+            return cell
+        }
+
+        let stickerInfo: StickerInfo? = dataSource.installedCoverInfo
+        let titleValue: String? = dataSource.title
+        let authorNameValue: String? = dataSource.author
+
+        let iconSize: CGFloat = 64
+        let iconView: UIView
+        if let stickerInfo = stickerInfo {
+            iconView = StickerView(stickerInfo: stickerInfo, size: iconSize)
+        } else {
+            iconView = UIView()
+            iconView.autoSetDimensions(to: CGSize(width: iconSize, height: iconSize))
+        }
 
         let title: String
         if let titleValue = titleValue?.ows_stripped(),
@@ -272,7 +337,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
         // TODO: Should we show a default author name?
 
-        let isDefaultStickerPack = StickerManager.isDefaultStickerPack(stickerPack)
+        let isDefaultStickerPack = StickerManager.isDefaultStickerPack(packInfo)
 
         var authorViews = [UIView]()
         if isDefaultStickerPack {
@@ -345,21 +410,21 @@ public class ManageStickersViewController: OWSTableViewController {
 
     // MARK: Events
 
-    private func show(stickerPack: StickerPack) {
+    private func show(packInfo: StickerPackInfo) {
         AssertIsOnMainThread()
 
         Logger.verbose("")
 
-        let packView = StickerPackViewController(stickerPackInfo: stickerPack.info)
+        let packView = StickerPackViewController(stickerPackInfo: packInfo)
         present(packView, animated: true)
     }
 
-    private func share(stickerPack: StickerPack) {
+    private func share(packInfo: StickerPackInfo) {
         AssertIsOnMainThread()
 
         Logger.verbose("")
 
-        StickerSharingViewController.shareStickerPack(stickerPack.info, from: self)
+        StickerSharingViewController.shareStickerPack(packInfo, from: self)
     }
 
     private func install(stickerPack: StickerPack) {
@@ -394,5 +459,15 @@ public class ManageStickersViewController: OWSTableViewController {
         Logger.verbose("")
 
         dismiss(animated: true)
+    }
+}
+
+// MARK: -
+
+extension ManageStickersViewController: StickerPackDataSourceDelegate {
+    public func stickerPackDataDidChange() {
+        AssertIsOnMainThread()
+
+        updateTableContents()
     }
 }

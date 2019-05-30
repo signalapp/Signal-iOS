@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _info = info;
+    _dateCreated = [NSDate new];
 
     return self;
 }
@@ -31,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     dateCreated:(nullable NSDate *)dateCreated
                             info:(StickerPackInfo *)info
                   referenceCount:(NSInteger)referenceCount
 {
@@ -40,8 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    _dateCreated = dateCreated;
     _info = info;
     _referenceCount = referenceCount;
+
+    [self sdsFinalizeKnownStickerPack];
 
     return self;
 }
@@ -49,6 +54,13 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (void)sdsFinalizeKnownStickerPack
+{
+    if (_dateCreated == nil) {
+        _dateCreated = [NSDate new];
+    }
+}
 
 + (NSString *)uniqueIdForStickerPackInfo:(StickerPackInfo *)info
 {

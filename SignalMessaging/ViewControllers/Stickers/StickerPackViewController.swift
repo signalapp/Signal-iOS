@@ -183,7 +183,7 @@ public class StickerPackViewController: OWSViewController {
 
         authorLabel.text = stickerPack.author
 
-        defaultPackIconView.isHidden = !StickerManager.isDefaultStickerPack(stickerPack)
+        defaultPackIconView.isHidden = !StickerManager.isDefaultStickerPack(stickerPack.info)
 
         // We need to consult StickerManager for the latest "isInstalled"
         // state, since the data source may be caching stale state.

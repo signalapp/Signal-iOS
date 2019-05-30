@@ -24,7 +24,7 @@ import HKDFKit
 // * All of the above (default packs, packs installed from shares, known packs)
 //   show up in the sticker management view.  Those that are installed are
 //   shown as such; the others are shown as "available".
-// * We download pack manifests & covers for "default" and "known" packs.
+// * We download pack manifests & covers for "default" but not "known" packs.
 //   Once we've download the manifest the pack is "saved" but not "installed".
 // * We discard sticker and pack info once it is no longer in use.
 @objc
@@ -121,9 +121,6 @@ public class StickerManager: NSObject {
     public class func refreshContents() {
         // Try to download the manifests for "default" sticker packs.
         tryToDownloadDefaultStickerPacks(shouldInstall: false)
-
-        // Try to download the manifests for "known" sticker packs.
-        tryToDownloadKnownStickerPacks()
 
         // Try to download the stickers for "installed" sticker packs.
         ensureAllStickerDownloadsAsync()
@@ -262,7 +259,7 @@ public class StickerManager: NSObject {
 
         stickerPack.update(withIsInstalled: true, transaction: transaction)
 
-        if !isDefaultStickerPack(stickerPack) {
+        if !isDefaultStickerPack(stickerPack.info) {
             shared.setHasUsedStickers(transaction: transaction)
         }
 
@@ -409,8 +406,8 @@ public class StickerManager: NSObject {
     }
 
     @objc
-    public class func isDefaultStickerPack(_ stickerPack: StickerPack) -> Bool {
-        return DefaultStickerPack.isDefaultStickerPack(stickerPackInfo: stickerPack.info)
+    public class func isDefaultStickerPack(_ packInfo: StickerPackInfo) -> Bool {
+        return DefaultStickerPack.isDefaultStickerPack(stickerPackInfo: packInfo)
     }
 
     @objc
@@ -721,10 +718,6 @@ public class StickerManager: NSObject {
             pack = existing
         } else {
             pack = KnownStickerPack(info: packInfo)
-
-            DispatchQueue.global().async {
-                self.tryToDownloadStickerPacks(stickerPacks: [packInfo], installMode: .doNotInstall)
-            }
         }
         pack.referenceCount += 1
         pack.anySave(transaction: transaction)
@@ -742,43 +735,24 @@ public class StickerManager: NSObject {
         pack.referenceCount -= 1
         if pack.referenceCount < 1 {
             pack.anyRemove(transaction: transaction)
-
-            // Clean up the pack metadata unless either:
-            //
-            // * It's a default sticker pack.
-            // * The pack has been installed.
-            guard !DefaultStickerPack.isDefaultStickerPack(stickerPackInfo: packInfo) else {
-                return
-            }
-            guard let latestCopy = StickerPack.anyFetch(uniqueId: StickerPack.uniqueId(for: packInfo), transaction: transaction) else {
-                return
-            }
-            guard !latestCopy.isInstalled else {
-                return
-            }
-            uninstallStickerPack(stickerPackInfo: packInfo,
-                                 transaction: transaction)
         } else {
             pack.anySave(transaction: transaction)
         }
     }
 
     @objc
-    public class func allKnownStickerPacks() -> [StickerPackInfo] {
-        var result = [StickerPackInfo]()
-        databaseStorage.read { (transaction) in
-            KnownStickerPack.anyVisitAll(transaction: transaction) { (knownStickerPack) in
-                result.append(knownStickerPack.info)
-                return true
-            }
-        }
-        return result
+    public class func allKnownStickerPackInfos(transaction: SDSAnyReadTransaction) -> [StickerPackInfo] {
+        return allKnownStickerPacks(transaction: transaction).map { $0.info }
     }
 
-    private class func tryToDownloadKnownStickerPacks() {
-        let stickerPacks = allKnownStickerPacks()
-        tryToDownloadStickerPacks(stickerPacks: stickerPacks,
-                                  installMode: .doNotInstall)
+    @objc
+    public class func allKnownStickerPacks(transaction: SDSAnyReadTransaction) -> [KnownStickerPack] {
+        var result = [KnownStickerPack]()
+        KnownStickerPack.anyVisitAll(transaction: transaction) { (knownStickerPack) in
+            result.append(knownStickerPack)
+            return true
+        }
+        return result
     }
 
     private class func tryToDownloadStickerPacks(stickerPacks: [StickerPackInfo],
