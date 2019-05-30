@@ -42,8 +42,8 @@ import PromiseKit
     public static func getMessages() -> Promise<Set<MessageListPromise>> {
         let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
-            let lastHash = getLastMessageHashValue(for: targetSnode) ?? ""
-            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHash ]
+            let lastHashValue = getLastMessageHashValue(for: targetSnode) ?? ""
+            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHashValue ]
             return invoke(.getMessages, on: targetSnode, associatedWith: hexEncodedPublicKey, parameters: parameters).map { rawResponse in
                 guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
                 updateLastMessageHashValueIfPossible(for: targetSnode, from: rawMessages)

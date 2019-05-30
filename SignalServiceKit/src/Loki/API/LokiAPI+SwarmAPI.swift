@@ -43,7 +43,8 @@ public extension LokiAPI {
             return getRandomSnode().then { invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { parseTargets(from: $0) }.get { swarmCache[hexEncodedPublicKey] = $0 }
         }
     }
-    
+
+    // MARK: Public API
     internal static func getTargetSnodes(for hexEncodedPublicKey: String) -> Promise<[Target]> {
         // shuffled() uses the system's default random generator, which is cryptographically secure
         return getSwarm(for: hexEncodedPublicKey).map { Array($0.shuffled().prefix(targetSnodeCount)) }
