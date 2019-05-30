@@ -213,6 +213,26 @@ extension SignalAccount {
             }
         }
     }
+
+    public func anyReload(transaction: SDSAnyReadTransaction) {
+        anyReload(transaction: transaction, ignoreMissing: false)
+    }
+
+    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+        guard let uniqueId = self.uniqueId else {
+            owsFailDebug("uniqueId was unexpectedly nil")
+            return
+        }
+
+        guard let latestVersion = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+            if !ignoreMissing {
+                owsFailDebug("`latest` was unexpectedly nil")
+            }
+            return
+        }
+
+        setValuesForKeys(latestVersion.dictionaryValue)
+    }
 }
 
 // MARK: - SignalAccountCursor
