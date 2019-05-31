@@ -168,7 +168,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         let textContainer = UIView()
 
         textContainer.layer.borderColor = Theme.darkThemePrimaryColor.cgColor
-        textContainer.layer.borderWidth = 0.5
+        textContainer.layer.borderWidth = CGHairlineWidthFraction(1.4)
         textContainer.layer.cornerRadius = kMinTextViewHeight / 2
         textContainer.clipsToBounds = true
 

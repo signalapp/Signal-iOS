@@ -629,4 +629,9 @@ CGFloat CGHairlineWidth()
     return 1.f / UIScreen.mainScreen.scale;
 }
 
+CGFloat CGHairlineWidthFraction(CGFloat fraction)
+{
+    return CGHairlineWidth() * fraction;
+}
+
 NS_ASSUME_NONNULL_END
