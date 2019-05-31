@@ -80,7 +80,8 @@ public class StickerPackCollectionView: UICollectionView {
     public func showUninstalledPack(stickerPack: StickerPack) {
         AssertIsOnMainThread()
 
-        self.stickerPackDataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPack.info)
+        self.stickerPackDataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPack.info,
+                                                                    shouldDownloadAllStickers: true)
     }
 
     @objc

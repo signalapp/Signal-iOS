@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) StickerPackInfo *info;
 @property (nonatomic) NSInteger referenceCount;
+@property (nonatomic, readonly) NSDate *dateCreated;
 
 - (instancetype)initWithInfo:(StickerPackInfo *)info;
 
@@ -23,9 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     dateCreated:(NSDate *)dateCreated
                             info:(StickerPackInfo *)info
                   referenceCount:(NSInteger)referenceCount
-NS_SWIFT_NAME(init(uniqueId:info:referenceCount:));
+NS_SWIFT_NAME(init(uniqueId:dateCreated:info:referenceCount:));
 
 // clang-format on
 

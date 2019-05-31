@@ -20,6 +20,21 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _info = info;
+    _dateCreated = [NSDate new];
+
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return nil;
+    }
+
+    if (_dateCreated == nil) {
+        _dateCreated = [NSDate new];
+    }
 
     return self;
 }
@@ -31,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+                     dateCreated:(NSDate *)dateCreated
                             info:(StickerPackInfo *)info
                   referenceCount:(NSInteger)referenceCount
 {
@@ -40,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    _dateCreated = dateCreated;
     _info = info;
     _referenceCount = referenceCount;
 

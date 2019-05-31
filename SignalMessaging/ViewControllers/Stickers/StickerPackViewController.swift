@@ -33,7 +33,8 @@ public class StickerPackViewController: OWSViewController {
     @objc
     public required init(stickerPackInfo: StickerPackInfo) {
         self.stickerPackInfo = stickerPackInfo
-        self.dataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPackInfo)
+        self.dataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPackInfo,
+                                                         shouldDownloadAllStickers: true)
 
         super.init(nibName: nil, bundle: nil)
 
@@ -183,7 +184,7 @@ public class StickerPackViewController: OWSViewController {
 
         authorLabel.text = stickerPack.author
 
-        defaultPackIconView.isHidden = !StickerManager.isDefaultStickerPack(stickerPack)
+        defaultPackIconView.isHidden = !StickerManager.isDefaultStickerPack(stickerPack.info)
 
         // We need to consult StickerManager for the latest "isInstalled"
         // state, since the data source may be caching stale state.
@@ -274,7 +275,10 @@ public class StickerPackViewController: OWSViewController {
             return
         }
 
-        StickerManager.saveStickerPack(stickerPack: stickerPack, installMode: .install)
+        databaseStorage.write { (transaction) in
+            StickerManager.installStickerPack(stickerPack: stickerPack,
+                                              transaction: transaction)
+        }
 
         updateContent()
 
