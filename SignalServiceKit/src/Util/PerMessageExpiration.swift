@@ -75,32 +75,40 @@ public class PerMessageExpiration: NSObject {
         let perMessageExpiresAtMS = message.perMessageExpiresAt
 
         guard perMessageExpiresAtMS > nowMs else {
+            Logger.verbose("Expiring immediately.")
             // Message has expired; remove it immediately.
             completePerMessageExpiration(forMessage: message,
                                          transaction: transaction)
             return
         }
 
+        Logger.verbose("Scheduling expiration.")
         let delaySeconds: TimeInterval = Double(perMessageExpiresAtMS - nowMs) / 1000
         DispatchQueue.global().asyncAfter(wallDeadline: .now() + delaySeconds) {
-            self.completePerMessageExpiration(forMessage: message)
-        }
-    }
-
-    private class func completePerMessageExpiration(forMessage message: TSMessage) {
-        databaseStorage.write { (transaction) in
-            self.completePerMessageExpiration(forMessage: message,
-                                              transaction: transaction)
+            databaseStorage.write { (transaction) in
+                self.completePerMessageExpiration(forMessage: message,
+                                                  transaction: transaction)
+            }
         }
     }
 
     private class func completePerMessageExpiration(forMessage message: TSMessage,
                                                     transaction: SDSAnyWriteTransaction) {
-        guard message.perMessageExpirationHasExpired else {
+        Logger.verbose("Expiring message per schedule.")
+        guard let uniqueId = message.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            return
+        }
+        guard let latestCopy = TSMessage.anyFetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
+            // Message has been deleted.
+            Logger.warn("Couldn't expire message; not in database.")
+            return
+        }
+        guard latestCopy.perMessageExpirationHasExpired else {
             // Already expired, no need to expire again.
             return
         }
-        message.updateWithHasPerMessageExpiredAndRemoveRenderableContent(with: transaction)
+        latestCopy.updateWithHasPerMessageExpiredAndRemoveRenderableContent(with: transaction)
     }
 
     // MARK: - Events
