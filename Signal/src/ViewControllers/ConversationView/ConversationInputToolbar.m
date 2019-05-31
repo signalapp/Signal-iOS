@@ -363,10 +363,7 @@ const CGFloat kMaxTextViewHeight = 98;
     borderView.backgroundColor = UIColor.clearColor;
     borderView.opaque = NO;
     borderView.layer.borderColor = Theme.secondaryColor.CGColor;
-
-    // Slightly larger than 1px to ease anti-aliasing around the corners in dark mode.
-    borderView.layer.borderWidth = CGHairlineWidth() * 1.4;
-
+    borderView.layer.borderWidth = CGHairlineWidthFraction(1.4);
     borderView.layer.cornerRadius = vStackRounding;
     [self addSubview:borderView];
     [borderView autoPinToEdgesOfView:vStackWrapper];

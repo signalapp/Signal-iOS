@@ -174,4 +174,9 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 CGFloat CGHairlineWidth(void);
 
+/// Primarily useful to adjust border widths to
+/// compensate for antialiasing around light
+/// color curves on dark backgrounds.
+CGFloat CGHairlineWidthFraction(CGFloat);
+
 NS_ASSUME_NONNULL_END
