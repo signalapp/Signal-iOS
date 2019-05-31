@@ -53,7 +53,7 @@ import PromiseKit
         }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
-    public static func sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
+    public static func sendSignalMessage(_ signalMessage: SignalMessage, with timestamp: UInt64, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
         guard let lokiMessage = Message.from(signalMessage: signalMessage, with: timestamp) else { return Promise(error: Error.messageConversionFailed) }
         let destination = lokiMessage.destination
         func sendLokiMessage(_ lokiMessage: Message, to target: Target) -> RawResponsePromise {
@@ -91,9 +91,9 @@ import PromiseKit
     }
     
     // MARK: Public API (Obj-C)
-    @objc(sendSignalMessage:to:with:onP2PSuccess:)
-    public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, to destination: String, with timestamp: UInt64, onP2PSuccess: @escaping () -> Void) -> AnyPromise {
-        let promise = sendSignalMessage(signalMessage, to: destination, with: timestamp, onP2PSuccess: onP2PSuccess).mapValues { AnyPromise.from($0) }.map { Set($0) }
+    @objc(sendSignalMessage:with:onP2PSuccess:)
+    public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, with timestamp: UInt64, onP2PSuccess: @escaping () -> Void) -> AnyPromise {
+        let promise = sendSignalMessage(signalMessage, with: timestamp, onP2PSuccess: onP2PSuccess).mapValues { AnyPromise.from($0) }.map { Set($0) }
         return AnyPromise.from(promise)
     }
     
