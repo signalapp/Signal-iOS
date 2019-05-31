@@ -157,6 +157,23 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 }
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
+                                 anyTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(groupModel);
+    OWSAssertDebug(groupModel.groupId.length > 0);
+    OWSAssertDebug(transaction);
+
+    TSGroupThread *thread = (TSGroupThread *)[self anyFetchWithUniqueId:[self threadIdFromGroupId:groupModel.groupId]
+                                                            transaction:transaction];
+
+    if (!thread) {
+        thread = [[TSGroupThread alloc] initWithGroupModel:groupModel];
+        [thread anyInsertWithTransaction:transaction];
+    }
+    return thread;
+}
+
++ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction {
     OWSAssertDebug(groupModel);
     OWSAssertDebug(groupModel.groupId.length > 0);

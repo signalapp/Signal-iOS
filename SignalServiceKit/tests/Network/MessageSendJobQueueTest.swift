@@ -135,11 +135,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         self.wait(for: [expectation], timeout: 0.1)
 
         self.read { transaction in
-            guard let transitional_yapReadTransaction = transaction.transitional_yapReadTransaction else {
-                XCTFail("GRDB TODO")
-                return
-            }
-            jobRecord.reload(with: transitional_yapReadTransaction)
+            jobRecord.anyReload(transaction: transaction)
         }
 
         XCTAssertEqual(1, jobRecord.failureCount)
@@ -163,11 +159,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         // Verify one retry left
         self.read { transaction in
-            guard let transitional_yapReadTransaction = transaction.transitional_yapReadTransaction else {
-                XCTFail("GRDB TODO")
-                return
-            }
-            jobRecord.reload(with: transitional_yapReadTransaction)
+            jobRecord.anyReload(transaction: transaction)
         }
         XCTAssertEqual(retryCount, jobRecord.failureCount)
         XCTAssertEqual(.running, jobRecord.status)
@@ -178,11 +170,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         self.wait(for: [expectedFinalResend], timeout: 0.1)
 
         self.read { transaction in
-            guard let transitional_yapReadTransaction = transaction.transitional_yapReadTransaction else {
-                XCTFail("GRDB TODO")
-                return
-            }
-            jobRecord.reload(with: transitional_yapReadTransaction)
+            jobRecord.anyReload(transaction: transaction)
         }
 
         XCTAssertEqual(retryCount + 1, jobRecord.failureCount)
@@ -221,11 +209,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         self.wait(for: [expectation], timeout: 0.1)
 
         self.read { transaction in
-            guard let transitional_yapReadTransaction = transaction.transitional_yapReadTransaction else {
-                XCTFail("GRDB TODO")
-                return
-            }
-            jobRecord.reload(with: transitional_yapReadTransaction)
+            jobRecord.anyReload(transaction: transaction)
         }
 
         XCTAssertEqual(1, jobRecord.failureCount)

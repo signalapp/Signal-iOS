@@ -14,11 +14,17 @@ class DebugUINotifications: DebugUIPage {
     var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
     }
+
     var messageSender: MessageSender {
         return SSKEnvironment.shared.messageSender
     }
+
     var contactsManager: OWSContactsManager {
         return Environment.shared.contactsManager
+    }
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SSKEnvironment.shared.databaseStorage
     }
 
     // MARK: Overrides
@@ -73,10 +79,6 @@ class DebugUINotifications: DebugUIPage {
     }
 
     // MARK: Helpers
-
-    func readWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
-        OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite(block)
-    }
 
     // After enqueing the notification you may want to background the app or lock the screen before it triggers, so
     // we give a little delay.
@@ -163,14 +165,14 @@ class DebugUINotifications: DebugUIPage {
     func notifyForIncomingMessage(thread: TSThread) -> Guarantee<Void> {
         Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatch {
-            self.readWrite { transaction in
+            self.databaseStorage.write { transaction in
                 let factory = IncomingMessageFactory()
                 factory.threadCreator = { _ in return thread }
                 let incomingMessage = factory.create(transaction: transaction)
 
                 self.notificationPresenter.notifyUser(for: incomingMessage,
                                                      in: thread,
-                                                     transaction: transaction.asAnyWrite)
+                                                     transaction: transaction)
             }
         }
     }
@@ -182,8 +184,8 @@ class DebugUINotifications: DebugUIPage {
                                               in: thread,
                                               failedMessageType: TSErrorMessageType.invalidMessage)
 
-            self.readWrite { transaction in
-                self.notificationPresenter.notifyUser(for: errorMessage, thread: thread, transaction: transaction.asAnyWrite)
+            self.databaseStorage.write { transaction in
+                self.notificationPresenter.notifyUser(for: errorMessage, thread: thread, transaction: transaction)
             }
         }
     }
@@ -191,11 +193,11 @@ class DebugUINotifications: DebugUIPage {
     func notifyUserForThreadlessErrorMessage() -> Guarantee<Void> {
         Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatch {
-            self.readWrite { transaction in
+            self.databaseStorage.write { transaction in
                 let errorMessage = TSErrorMessage.corruptedMessageInUnknownThread()
 
                 self.notificationPresenter.notifyUser(forThreadlessErrorMessage: errorMessage,
-                                                      transaction: transaction.asAnyWrite)
+                                                      transaction: transaction)
             }
         }
     }

@@ -49,6 +49,8 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
+                                 anyTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId;
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId

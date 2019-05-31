@@ -94,8 +94,12 @@
         XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction.asAnyRead]);
     }];
 
-    TSAttachmentStream *incomingAttachment =
-        [AttachmentStreamFactory createWithContentType:@"image/jpeg" dataSource:DataSourceValue.emptyDataSource];
+    __block TSAttachmentStream *incomingAttachment;
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        incomingAttachment = [AttachmentStreamFactory createWithContentType:OWSMimeTypeImageJpeg
+                                                                 dataSource:DataSourceValue.emptyDataSource
+                                                                transaction:transaction.asAnyWrite];
+    }];
 
     // Sanity check
     BOOL incomingFileWasCreated =
@@ -118,8 +122,12 @@
                                                     wasReceivedByUD:NO];
     [incomingMessage save];
 
-    TSAttachmentStream *outgoingAttachment =
-        [AttachmentStreamFactory createWithContentType:@"image/jpeg" dataSource:DataSourceValue.emptyDataSource];
+    __block TSAttachmentStream *outgoingAttachment;
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        outgoingAttachment = [AttachmentStreamFactory createWithContentType:OWSMimeTypeImageJpeg
+                                                                 dataSource:DataSourceValue.emptyDataSource
+                                                                transaction:transaction.asAnyWrite];
+    }];
 
     // Sanity check
     BOOL outgoingFileWasCreated =
