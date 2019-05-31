@@ -56,17 +56,19 @@ NS_ASSUME_NONNULL_BEGIN
                                   messageSticker:(nullable MessageSticker *)messageSticker
                                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                                  wasReceivedByUD:(BOOL)wasReceivedByUD
+             perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
 {
     self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:body
-                             attachmentIds:attachmentIds
-                          expiresInSeconds:expiresInSeconds
-                           expireStartedAt:0
-                             quotedMessage:quotedMessage
-                              contactShare:contactShare
-                               linkPreview:linkPreview
-                            messageSticker:messageSticker];
+                                   inThread:thread
+                                messageBody:body
+                              attachmentIds:attachmentIds
+                           expiresInSeconds:expiresInSeconds
+                            expireStartedAt:0
+                              quotedMessage:quotedMessage
+                               contactShare:contactShare
+                                linkPreview:linkPreview
+                             messageSticker:messageSticker
+        perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds];
 
     if (!self) {
         return self;

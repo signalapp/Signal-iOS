@@ -99,7 +99,9 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
-                                  messageSticker:(nullable MessageSticker *)messageSticker NS_DESIGNATED_INITIALIZER;
+                                  messageSticker:(nullable MessageSticker *)messageSticker
+             perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
+    NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

@@ -358,7 +358,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                          quotedMessage:quotedMessage
                                                           contactShare:nil
                                                            linkPreview:linkPreview
-                                                        messageSticker:messageSticker];
+                                                        messageSticker:messageSticker
+                                   perMessageExpirationDurationSeconds:0];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -377,7 +378,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                          quotedMessage:nil
                                                           contactShare:nil
                                                            linkPreview:nil
-                                                        messageSticker:nil];
+                                                        messageSticker:nil
+                                   perMessageExpirationDurationSeconds:0];
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -392,17 +394,19 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
+             perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
 {
     self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:body
-                             attachmentIds:attachmentIds
-                          expiresInSeconds:expiresInSeconds
-                           expireStartedAt:expireStartedAt
-                             quotedMessage:quotedMessage
-                              contactShare:contactShare
-                               linkPreview:linkPreview
-                            messageSticker:messageSticker];
+                                   inThread:thread
+                                messageBody:body
+                              attachmentIds:attachmentIds
+                           expiresInSeconds:expiresInSeconds
+                            expireStartedAt:expireStartedAt
+                              quotedMessage:quotedMessage
+                               contactShare:contactShare
+                                linkPreview:linkPreview
+                             messageSticker:messageSticker
+        perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds];
     if (!self) {
         return self;
     }

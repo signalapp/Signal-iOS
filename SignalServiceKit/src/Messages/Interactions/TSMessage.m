@@ -75,6 +75,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                             contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
                           messageSticker:(nullable MessageSticker *)messageSticker
+     perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
@@ -93,6 +94,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _contactShare = contactShare;
     _linkPreview = linkPreview;
     _messageSticker = messageSticker;
+    _perMessageExpirationDurationSeconds = perMessageExpirationDurationSeconds;
 
     return self;
 }
@@ -619,20 +621,6 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     OWSAssertDebug(self.perMessageExpireStartedAt > 0);
 
     return self.perMessageExpireStartedAt + self.perMessageExpirationDurationSeconds * 1000;
-}
-
-- (void)updateWithPerMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
-                                          transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(perMessageExpirationDurationSeconds > 0);
-    OWSAssertDebug(transaction);
-
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 TSMessage *message = (TSMessage *)interaction;
-
-                                 message.perMessageExpirationDurationSeconds = perMessageExpirationDurationSeconds;
-                             }];
 }
 
 - (void)updateWithPerMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt

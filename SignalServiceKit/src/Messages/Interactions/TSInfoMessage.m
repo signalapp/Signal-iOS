@@ -51,15 +51,16 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 {
     // MJK TODO - remove senderTimestamp
     self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:nil
-                             attachmentIds:@[]
-                          expiresInSeconds:0
-                           expireStartedAt:0
-                             quotedMessage:nil
-                              contactShare:nil
-                               linkPreview:nil
-                            messageSticker:nil];
+                                   inThread:thread
+                                messageBody:nil
+                              attachmentIds:@[]
+                           expiresInSeconds:0
+                            expireStartedAt:0
+                              quotedMessage:nil
+                               contactShare:nil
+                                linkPreview:nil
+                             messageSticker:nil
+        perMessageExpirationDurationSeconds:0];
 
     if (!self) {
         return self;

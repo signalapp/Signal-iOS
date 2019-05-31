@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 @property (nonatomic, readonly) BOOL isRecipientUpdate;
+@property (nonatomic, readonly) uint32_t perMessageExpirationDurationSeconds;
 
 // If either nonUdRecipientIds or udRecipientIds is nil,
 // this is either a legacy transcript or it reflects a legacy sync message.

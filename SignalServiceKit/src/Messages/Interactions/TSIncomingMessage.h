@@ -61,7 +61,9 @@ NS_ASSUME_NONNULL_BEGIN
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
                                  serverTimestamp:(nullable NSNumber *)serverTimestamp
-                                 wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
+                                 wasReceivedByUD:(BOOL)wasReceivedByUD
+             perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
+    NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

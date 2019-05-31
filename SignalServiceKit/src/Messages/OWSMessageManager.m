@@ -1486,7 +1486,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         linkPreview:linkPreview
                                                      messageSticker:messageSticker
                                                     serverTimestamp:serverTimestamp
-                                                    wasReceivedByUD:wasReceivedByUD];
+                                                    wasReceivedByUD:wasReceivedByUD
+                                perMessageExpirationDurationSeconds:dataMessage.messageTimer];
     if (!incomingMessage) {
         OWSFailDebug(@"Missing incomingMessage.");
         return nil;
@@ -1505,11 +1506,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [incomingMessage anyInsertWithTransaction:transaction];
-
-    if (dataMessage.messageTimer > 0) {
-        [incomingMessage updateWithPerMessageExpirationDurationSeconds:dataMessage.messageTimer
-                                                           transaction:transaction];
-    }
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if ([envelope.source isEqualToString:self.tsAccountManager.localNumber]) {

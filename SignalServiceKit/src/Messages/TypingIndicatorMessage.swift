@@ -32,7 +32,8 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
                    quotedMessage: nil,
                    contactShare: nil,
                    linkPreview: nil,
-                   messageSticker: nil)
+                   messageSticker: nil,
+                   perMessageExpirationDurationSeconds: 0)
     }
 
     @objc

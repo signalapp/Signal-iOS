@@ -38,7 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      quotedMessage:nil
                                       contactShare:nil
                                        linkPreview:nil
-                                    messageSticker:nil];
+                                    messageSticker:nil
+               perMessageExpirationDurationSeconds:0];
     if (!self) {
         return self;
     }

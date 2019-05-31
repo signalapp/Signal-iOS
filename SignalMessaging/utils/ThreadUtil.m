@@ -191,7 +191,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                perMessageExpirationDurationSeconds:0];
 
     [BenchManager
         benchAsyncWithTitle:@"Saving outgoing message"
@@ -249,7 +250,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:nil
                                                        contactShare:contactShare
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                perMessageExpirationDurationSeconds:0];
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [message saveWithTransaction:transaction];
@@ -282,7 +284,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                perMessageExpirationDurationSeconds:0];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Load the sticker data async.
@@ -430,7 +433,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:nil
                                                        contactShare:contactShare
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                perMessageExpirationDurationSeconds:0];
 
     [messageSender sendMessage:message
         success:^{

@@ -54,15 +54,16 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                       recipientId:(nullable NSString *)recipientId
 {
     self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:nil
-                             attachmentIds:@[]
-                          expiresInSeconds:0
-                           expireStartedAt:0
-                             quotedMessage:nil
-                              contactShare:nil
-                               linkPreview:nil
-                            messageSticker:nil];
+                                   inThread:thread
+                                messageBody:nil
+                              attachmentIds:@[]
+                           expiresInSeconds:0
+                            expireStartedAt:0
+                              quotedMessage:nil
+                               contactShare:nil
+                                linkPreview:nil
+                             messageSticker:nil
+        perMessageExpirationDurationSeconds:0];
 
     if (!self) {
         return self;

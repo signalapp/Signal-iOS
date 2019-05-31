@@ -50,7 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
-                          messageSticker:(nullable MessageSticker *)messageSticker NS_DESIGNATED_INITIALIZER;
+                          messageSticker:(nullable MessageSticker *)messageSticker
+     perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -115,11 +116,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Per-message expiration
-
-// This method can be used to add a per-message expiration to
-// an incoming or outgoing message.
-- (void)updateWithPerMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
-                                          transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method can be used to start expiration of per-message expiration.
 - (void)updateWithPerMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
