@@ -55,7 +55,8 @@
                                                         linkPreview:nil
                                                      messageSticker:nil
                                                     serverTimestamp:nil
-                                                    wasReceivedByUD:NO];
+                                                    wasReceivedByUD:NO
+                                perMessageExpirationDurationSeconds:0];
     [incomingMessage save];
 
     TSOutgoingMessage *outgoingMessage =
@@ -70,7 +71,8 @@
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                perMessageExpirationDurationSeconds:0];
     [outgoingMessage save];
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
@@ -120,7 +122,8 @@
                                                         linkPreview:nil
                                                      messageSticker:nil
                                                     serverTimestamp:nil
-                                                    wasReceivedByUD:NO];
+                                                    wasReceivedByUD:NO
+                                perMessageExpirationDurationSeconds:0];
     [incomingMessage save];
 
     __block TSAttachmentStream *outgoingAttachment;
@@ -147,7 +150,8 @@
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                perMessageExpirationDurationSeconds:0];
     [outgoingMessage save];
 
     // Sanity check

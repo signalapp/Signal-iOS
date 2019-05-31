@@ -58,7 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                          linkPreview:nil
                                                                                       messageSticker:nil
                                                                                      serverTimestamp:nil
-                                                                                     wasReceivedByUD:NO];
+                                                                                     wasReceivedByUD:NO
+                                                                 perMessageExpirationDurationSeconds:0];
     [incomingMessage save];
 }
 
