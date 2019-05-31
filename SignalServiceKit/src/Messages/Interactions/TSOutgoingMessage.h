@@ -242,7 +242,8 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // When we start a message send, all "failed" recipients should be marked as "sending".
-- (void)updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(updateAllUnsentRecipientsAsSending(transaction:));
 
 // This method is used to forge the message state for fake messages.
 //
@@ -252,8 +253,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 // This method is used to record a failed send to all "sending" recipients.
 - (void)updateWithSendingError:(NSError *)error
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction
-    NS_SWIFT_NAME(update(sendingError:transaction:));
+                   transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(update(sendingError:transaction:));
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
                           transaction:(YapDatabaseReadWriteTransaction *)transaction;

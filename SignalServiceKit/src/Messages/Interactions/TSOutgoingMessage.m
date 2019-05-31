@@ -683,11 +683,13 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithSendingError:(NSError *)error transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithSendingError:(NSError *)error transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(error);
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 OWSAssertDebug([interaction isKindOfClass:TSMessage.class]);
+                                 TSOutgoingMessage *message = (TSOutgoingMessage *)interaction;
                                  // Mark any "sending" recipients as "failed."
                                  for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap
                                           .allValues) {
@@ -715,12 +717,15 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                              }];
 }
 
-- (void)updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction;
 {
     OWSAssertDebug(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 OWSAssertDebug([interaction isKindOfClass:TSMessage.class]);
+                                 TSOutgoingMessage *message = (TSOutgoingMessage *)interaction;
+
                                  // Mark any "sending" recipients as "failed."
                                  for (TSOutgoingMessageRecipientState *recipientState in message.recipientStateMap
                                           .allValues) {

@@ -52,11 +52,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                                                   completionHandler: { error in
                                                     if let error = error {
                                                         self.databaseStorage.write { transaction in
-                                                            guard let transitional_yapWriteTransaction = transaction.transitional_yapWriteTransaction else {
-                                                                owsFailDebug("GRDB TODO")
-                                                                return
-                                                            }
-                                                            mediaMessage.update(sendingError: error, transaction: transitional_yapWriteTransaction)
+                                                            mediaMessage.update(sendingError: error, transaction: transaction)
                                                         }
                                                     } else {
                                                         self.databaseStorage.write { transaction in
@@ -100,12 +96,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public func didMarkAsReady(oldJobRecord: SSKMessageSenderJobRecord, transaction: SDSAnyWriteTransaction) {
         if let messageId = oldJobRecord.messageId, let message = TSOutgoingMessage.anyFetch(uniqueId: messageId, transaction: transaction) as? TSOutgoingMessage {
-
-            guard let transitional_yapWriteTransaction = transaction.transitional_yapWriteTransaction else {
-                owsFailDebug("GRDB TODO")
-                return
-            }
-            message.updateWithMarkingAllUnsentRecipientsAsSending(with: transitional_yapWriteTransaction)
+            message.updateAllUnsentRecipientsAsSending(transaction: transaction)
         }
     }
 
@@ -228,11 +219,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
 
-            if let transitional_yapWriteTransaction = transaction.transitional_yapWriteTransaction {
-                self.message.update(sendingError: error, transaction: transitional_yapWriteTransaction)
-            } else {
-                owsFailDebug("GRDB TODO")
-            }
+            self.message.update(sendingError: error, transaction: transaction)
 
             if self.jobRecord.removeMessageAfterSending {
                 self.message.anyRemove(transaction: transaction)

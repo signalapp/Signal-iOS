@@ -1898,7 +1898,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // All outgoing messages should be saved at the time they are enqueued.
     [message saveWithTransaction:transaction];
     // When we start a message send, all "failed" recipients should be marked as "sending".
-    [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
+    [message updateAllUnsentRecipientsAsSendingWithTransaction:transaction.asAnyWrite];
 
     if (message.messageSticker != nil) {
         // Update "Recent Stickers" list to reflect sends.
