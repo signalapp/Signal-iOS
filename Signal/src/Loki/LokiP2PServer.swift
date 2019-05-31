@@ -79,7 +79,7 @@ final class LokiP2PServer : NSObject {
             }
             
             // Pass it off to the message handler
-            LokiP2PMessageHandler.shared.handleReceivedMessage(base64EncodedData: data)
+            LokiP2PMessageHandler.handleReceivedMessage(base64EncodedData: data)
             
             // Send a response back
             return GCDWebServerResponse(statusCode: StatusCode.ok.rawValue)

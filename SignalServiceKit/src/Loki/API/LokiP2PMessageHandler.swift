@@ -1,14 +1,12 @@
 
 public final class LokiP2PMessageHandler {
-    private let messageReceiver = SSKEnvironment.shared.messageReceiver
+    private static let messageReceiver = SSKEnvironment.shared.messageReceiver
     
     // MARK: Initialization
-    public static let shared = LokiP2PMessageHandler()
-    
     private init() { }
     
     // MARK: General
-    public func handleReceivedMessage(base64EncodedData: String) {
+    public static func handleReceivedMessage(base64EncodedData: String) {
         guard let data = Data(base64Encoded: base64EncodedData) else {
             Logger.warn("[Loki] Failed to decode data for P2P message.")
             return
