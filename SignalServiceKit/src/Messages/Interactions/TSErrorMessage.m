@@ -54,15 +54,16 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                       recipientId:(nullable NSString *)recipientId
 {
     self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:nil
-                             attachmentIds:@[]
-                          expiresInSeconds:0
-                           expireStartedAt:0
-                             quotedMessage:nil
-                              contactShare:nil
-                               linkPreview:nil
-                            messageSticker:nil];
+                                   inThread:thread
+                                messageBody:nil
+                              attachmentIds:@[]
+                           expiresInSeconds:0
+                            expireStartedAt:0
+                              quotedMessage:nil
+                               contactShare:nil
+                                linkPreview:nil
+                             messageSticker:nil
+        perMessageExpirationDurationSeconds:0];
 
     if (!self) {
         return self;
@@ -117,6 +118,9 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
+perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
+  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
+       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
@@ -137,6 +141,9 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                   expiresInSeconds:expiresInSeconds
                        linkPreview:linkPreview
                     messageSticker:messageSticker
+perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
+    perMessageExpirationHasExpired:perMessageExpirationHasExpired
+         perMessageExpireStartedAt:perMessageExpireStartedAt
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
 

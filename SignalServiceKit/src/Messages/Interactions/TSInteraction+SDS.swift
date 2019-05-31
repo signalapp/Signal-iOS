@@ -68,6 +68,9 @@ public struct InteractionRecord: SDSRecord {
     public let messageSticker: Data?
     public let messageType: TSInfoMessageType?
     public let mostRecentFailureText: String?
+    public let perMessageExpirationDurationSeconds: UInt32?
+    public let perMessageExpirationHasExpired: Bool?
+    public let perMessageExpireStartedAt: UInt64?
     public let preKeyBundle: Data?
     public let protocolVersion: UInt?
     public let quotedMessage: Data?
@@ -126,6 +129,9 @@ public struct InteractionRecord: SDSRecord {
         case messageSticker
         case messageType
         case mostRecentFailureText
+        case perMessageExpirationDurationSeconds
+        case perMessageExpirationHasExpired
+        case perMessageExpireStartedAt
         case preKeyBundle
         case protocolVersion
         case quotedMessage
@@ -190,6 +196,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -215,6 +224,9 @@ extension TSInteraction {
                                                 expiresInSeconds: expiresInSeconds,
                                                 linkPreview: linkPreview,
                                                 messageSticker: messageSticker,
+                                                perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                                perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                                perMessageExpireStartedAt: perMessageExpireStartedAt,
                                                 quotedMessage: quotedMessage,
                                                 schemaVersion: schemaVersion,
                                                 customMessage: customMessage,
@@ -243,6 +255,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -268,6 +283,9 @@ extension TSInteraction {
                                                         expiresInSeconds: expiresInSeconds,
                                                         linkPreview: linkPreview,
                                                         messageSticker: messageSticker,
+                                                        perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                                        perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                                        perMessageExpireStartedAt: perMessageExpireStartedAt,
                                                         quotedMessage: quotedMessage,
                                                         schemaVersion: schemaVersion,
                                                         customMessage: customMessage,
@@ -320,6 +338,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -348,6 +369,9 @@ extension TSInteraction {
                                                                  expiresInSeconds: expiresInSeconds,
                                                                  linkPreview: linkPreview,
                                                                  messageSticker: messageSticker,
+                                                                 perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                                                 perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                                                 perMessageExpireStartedAt: perMessageExpireStartedAt,
                                                                  quotedMessage: quotedMessage,
                                                                  schemaVersion: schemaVersion,
                                                                  customMessage: customMessage,
@@ -379,6 +403,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -403,6 +430,9 @@ extension TSInteraction {
                                                       expiresInSeconds: expiresInSeconds,
                                                       linkPreview: linkPreview,
                                                       messageSticker: messageSticker,
+                                                      perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                                      perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                                      perMessageExpireStartedAt: perMessageExpireStartedAt,
                                                       quotedMessage: quotedMessage,
                                                       schemaVersion: schemaVersion,
                                                       errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -430,6 +460,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -456,6 +489,9 @@ extension TSInteraction {
                                                     expiresInSeconds: expiresInSeconds,
                                                     linkPreview: linkPreview,
                                                     messageSticker: messageSticker,
+                                                    perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                                    perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                                    perMessageExpireStartedAt: perMessageExpireStartedAt,
                                                     quotedMessage: quotedMessage,
                                                     schemaVersion: schemaVersion,
                                                     customMessage: customMessage,
@@ -485,6 +521,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -514,6 +553,9 @@ extension TSInteraction {
                                                      expiresInSeconds: expiresInSeconds,
                                                      linkPreview: linkPreview,
                                                      messageSticker: messageSticker,
+                                                     perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                                     perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                                     perMessageExpireStartedAt: perMessageExpireStartedAt,
                                                      quotedMessage: quotedMessage,
                                                      schemaVersion: schemaVersion,
                                                      customMessage: customMessage,
@@ -566,6 +608,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -589,6 +634,9 @@ extension TSInteraction {
                                   expiresInSeconds: expiresInSeconds,
                                   linkPreview: linkPreview,
                                   messageSticker: messageSticker,
+                                  perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                  perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                  perMessageExpireStartedAt: perMessageExpireStartedAt,
                                   quotedMessage: quotedMessage,
                                   schemaVersion: schemaVersion,
                                   errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -615,6 +663,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -637,6 +688,9 @@ extension TSInteraction {
                                      expiresInSeconds: expiresInSeconds,
                                      linkPreview: linkPreview,
                                      messageSticker: messageSticker,
+                                     perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                     perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                     perMessageExpireStartedAt: perMessageExpireStartedAt,
                                      quotedMessage: quotedMessage,
                                      schemaVersion: schemaVersion,
                                      authorId: authorId,
@@ -664,6 +718,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -688,6 +745,9 @@ extension TSInteraction {
                                  expiresInSeconds: expiresInSeconds,
                                  linkPreview: linkPreview,
                                  messageSticker: messageSticker,
+                                 perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                 perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                 perMessageExpireStartedAt: perMessageExpireStartedAt,
                                  quotedMessage: quotedMessage,
                                  schemaVersion: schemaVersion,
                                  customMessage: customMessage,
@@ -729,6 +789,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -752,6 +815,9 @@ extension TSInteraction {
                                                     expiresInSeconds: expiresInSeconds,
                                                     linkPreview: linkPreview,
                                                     messageSticker: messageSticker,
+                                                    perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                                    perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                                    perMessageExpireStartedAt: perMessageExpireStartedAt,
                                                     quotedMessage: quotedMessage,
                                                     schemaVersion: schemaVersion,
                                                     errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -778,6 +844,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -803,6 +872,9 @@ extension TSInteraction {
                                                              expiresInSeconds: expiresInSeconds,
                                                              linkPreview: linkPreview,
                                                              messageSticker: messageSticker,
+                                                             perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                                             perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                                             perMessageExpireStartedAt: perMessageExpireStartedAt,
                                                              quotedMessage: quotedMessage,
                                                              schemaVersion: schemaVersion,
                                                              errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -831,6 +903,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -857,6 +932,9 @@ extension TSInteraction {
                                                            expiresInSeconds: expiresInSeconds,
                                                            linkPreview: linkPreview,
                                                            messageSticker: messageSticker,
+                                                           perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                                           perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                                           perMessageExpireStartedAt: perMessageExpireStartedAt,
                                                            quotedMessage: quotedMessage,
                                                            schemaVersion: schemaVersion,
                                                            errorMessageSchemaVersion: errorMessageSchemaVersion,
@@ -885,6 +963,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -902,6 +983,9 @@ extension TSInteraction {
                              expiresInSeconds: expiresInSeconds,
                              linkPreview: linkPreview,
                              messageSticker: messageSticker,
+                             perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                             perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                             perMessageExpireStartedAt: perMessageExpireStartedAt,
                              quotedMessage: quotedMessage,
                              schemaVersion: schemaVersion)
 
@@ -924,6 +1008,9 @@ extension TSInteraction {
             let linkPreview: OWSLinkPreview? = try SDSDeserialization.optionalUnarchive(linkPreviewSerialized, name: "linkPreview")
             let messageStickerSerialized: Data? = record.messageSticker
             let messageSticker: MessageSticker? = try SDSDeserialization.optionalUnarchive(messageStickerSerialized, name: "messageSticker")
+            let perMessageExpirationDurationSeconds: UInt32 = try SDSDeserialization.required(record.perMessageExpirationDurationSeconds, name: "perMessageExpirationDurationSeconds")
+            let perMessageExpirationHasExpired: Bool = try SDSDeserialization.required(record.perMessageExpirationHasExpired, name: "perMessageExpirationHasExpired")
+            let perMessageExpireStartedAt: UInt64 = try SDSDeserialization.required(record.perMessageExpireStartedAt, name: "perMessageExpireStartedAt")
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let schemaVersion: UInt = try SDSDeserialization.required(record.schemaVersion, name: "schemaVersion")
@@ -958,6 +1045,9 @@ extension TSInteraction {
                                      expiresInSeconds: expiresInSeconds,
                                      linkPreview: linkPreview,
                                      messageSticker: messageSticker,
+                                     perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds,
+                                     perMessageExpirationHasExpired: perMessageExpirationHasExpired,
+                                     perMessageExpireStartedAt: perMessageExpireStartedAt,
                                      quotedMessage: quotedMessage,
                                      schemaVersion: schemaVersion,
                                      attachmentFilenameMap: attachmentFilenameMap,
@@ -1113,19 +1203,22 @@ extension TSInteractionSerializer {
     static let messageStickerColumn = SDSColumnMetadata(columnName: "messageSticker", columnType: .blob, isOptional: true, columnIndex: 40)
     static let messageTypeColumn = SDSColumnMetadata(columnName: "messageType", columnType: .int, isOptional: true, columnIndex: 41)
     static let mostRecentFailureTextColumn = SDSColumnMetadata(columnName: "mostRecentFailureText", columnType: .unicodeString, isOptional: true, columnIndex: 42)
-    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 43)
-    static let protocolVersionColumn = SDSColumnMetadata(columnName: "protocolVersion", columnType: .int64, isOptional: true, columnIndex: 44)
-    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 45)
-    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 46)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 47)
-    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 48)
-    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 49)
-    static let senderIdColumn = SDSColumnMetadata(columnName: "senderId", columnType: .unicodeString, isOptional: true, columnIndex: 50)
-    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 51)
-    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 52)
-    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 53)
-    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 54)
-    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 55)
+    static let perMessageExpirationDurationSecondsColumn = SDSColumnMetadata(columnName: "perMessageExpirationDurationSeconds", columnType: .int64, isOptional: true, columnIndex: 43)
+    static let perMessageExpirationHasExpiredColumn = SDSColumnMetadata(columnName: "perMessageExpirationHasExpired", columnType: .int, isOptional: true, columnIndex: 44)
+    static let perMessageExpireStartedAtColumn = SDSColumnMetadata(columnName: "perMessageExpireStartedAt", columnType: .int64, isOptional: true, columnIndex: 45)
+    static let preKeyBundleColumn = SDSColumnMetadata(columnName: "preKeyBundle", columnType: .blob, isOptional: true, columnIndex: 46)
+    static let protocolVersionColumn = SDSColumnMetadata(columnName: "protocolVersion", columnType: .int64, isOptional: true, columnIndex: 47)
+    static let quotedMessageColumn = SDSColumnMetadata(columnName: "quotedMessage", columnType: .blob, isOptional: true, columnIndex: 48)
+    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int, isOptional: true, columnIndex: 49)
+    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, isOptional: true, columnIndex: 50)
+    static let recipientStateMapColumn = SDSColumnMetadata(columnName: "recipientStateMap", columnType: .blob, isOptional: true, columnIndex: 51)
+    static let schemaVersionColumn = SDSColumnMetadata(columnName: "schemaVersion", columnType: .int64, isOptional: true, columnIndex: 52)
+    static let senderIdColumn = SDSColumnMetadata(columnName: "senderId", columnType: .unicodeString, isOptional: true, columnIndex: 53)
+    static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 54)
+    static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 55)
+    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 56)
+    static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 57)
+    static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 58)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -1173,6 +1266,9 @@ extension TSInteractionSerializer {
         messageStickerColumn,
         messageTypeColumn,
         mostRecentFailureTextColumn,
+        perMessageExpirationDurationSecondsColumn,
+        perMessageExpirationHasExpiredColumn,
+        perMessageExpireStartedAtColumn,
         preKeyBundleColumn,
         protocolVersionColumn,
         quotedMessageColumn,
@@ -1509,6 +1605,9 @@ class TSInteractionSerializer: SDSSerializer {
         let messageSticker: Data? = nil
         let messageType: TSInfoMessageType? = nil
         let mostRecentFailureText: String? = nil
+        let perMessageExpirationDurationSeconds: UInt32? = nil
+        let perMessageExpirationHasExpired: Bool? = nil
+        let perMessageExpireStartedAt: UInt64? = nil
         let preKeyBundle: Data? = nil
         let protocolVersion: UInt? = nil
         let quotedMessage: Data? = nil
@@ -1523,6 +1622,6 @@ class TSInteractionSerializer: SDSSerializer {
         let verificationState: OWSVerificationState? = nil
         let wasReceivedByUD: Bool? = nil
 
-        return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentFilenameMap: attachmentFilenameMap, attachmentIds: attachmentIds, authorId: authorId, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientId: recipientId, recipientStateMap: recipientStateMap, schemaVersion: schemaVersion, senderId: senderId, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, unregisteredRecipientId: unregisteredRecipientId, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
+        return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentFilenameMap: attachmentFilenameMap, attachmentIds: attachmentIds, authorId: authorId, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds, perMessageExpirationHasExpired: perMessageExpirationHasExpired, perMessageExpireStartedAt: perMessageExpireStartedAt, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientId: recipientId, recipientStateMap: recipientStateMap, schemaVersion: schemaVersion, senderId: senderId, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, unregisteredRecipientId: unregisteredRecipientId, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
     }
 }

@@ -128,7 +128,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:transcript.quotedMessage
                                                        contactShare:transcript.contact
                                                         linkPreview:transcript.linkPreview
-                                                     messageSticker:transcript.messageSticker];
+                                                     messageSticker:transcript.messageSticker
+                                perMessageExpirationDurationSeconds:transcript.perMessageExpirationDurationSeconds];
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
@@ -181,8 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (outgoingMessage.body.length < 1 && outgoingMessage.attachmentIds.count < 1 && !outgoingMessage.contactShare
-        && !outgoingMessage.messageSticker) {
+    if (!outgoingMessage.hasRenderableContent) {
         OWSFailDebug(@"Ignoring message transcript for empty message.");
         return;
     }

@@ -116,6 +116,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
+perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
+  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
+       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
@@ -143,6 +146,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                   expiresInSeconds:expiresInSeconds
                        linkPreview:linkPreview
                     messageSticker:messageSticker
+perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
+    perMessageExpirationHasExpired:perMessageExpirationHasExpired
+         perMessageExpireStartedAt:perMessageExpireStartedAt
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
 
@@ -352,7 +358,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                          quotedMessage:quotedMessage
                                                           contactShare:nil
                                                            linkPreview:linkPreview
-                                                        messageSticker:messageSticker];
+                                                        messageSticker:messageSticker
+                                   perMessageExpirationDurationSeconds:0];
 }
 
 + (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
@@ -371,7 +378,8 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                                          quotedMessage:nil
                                                           contactShare:nil
                                                            linkPreview:nil
-                                                        messageSticker:nil];
+                                                        messageSticker:nil
+                                   perMessageExpirationDurationSeconds:0];
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -386,17 +394,19 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
+             perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
 {
     self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:body
-                             attachmentIds:attachmentIds
-                          expiresInSeconds:expiresInSeconds
-                           expireStartedAt:expireStartedAt
-                             quotedMessage:quotedMessage
-                              contactShare:contactShare
-                               linkPreview:linkPreview
-                            messageSticker:messageSticker];
+                                   inThread:thread
+                                messageBody:body
+                              attachmentIds:attachmentIds
+                           expiresInSeconds:expiresInSeconds
+                            expireStartedAt:expireStartedAt
+                              quotedMessage:quotedMessage
+                               contactShare:contactShare
+                                linkPreview:linkPreview
+                             messageSticker:messageSticker
+        perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds];
     if (!self) {
         return self;
     }
@@ -979,6 +989,10 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
     SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessage builder];
     [builder setTimestamp:self.timestamp];
+
+    if (self.perMessageExpirationDurationSeconds > 0) {
+        [builder setMessageTimer:self.perMessageExpirationDurationSeconds];
+    }
 
     if ([self.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
         [builder setBody:self.body];

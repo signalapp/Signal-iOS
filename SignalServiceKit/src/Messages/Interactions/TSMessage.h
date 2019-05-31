@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
-@class YapDatabaseReadWriteTransaction;
 
 @interface TSMessage : TSInteraction <OWSPreviewText>
 
@@ -34,6 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 
+// Per-message expire timer.
+@property (nonatomic, readonly) uint32_t perMessageExpirationDurationSeconds;
+@property (nonatomic, readonly) uint64_t perMessageExpireStartedAt;
+@property (nonatomic, readonly) uint64_t perMessageExpiresAt;
+@property (nonatomic, readonly) BOOL perMessageExpirationHasExpired;
+
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
@@ -45,7 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
                            quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                             contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
-                          messageSticker:(nullable MessageSticker *)messageSticker NS_DESIGNATED_INITIALIZER;
+                          messageSticker:(nullable MessageSticker *)messageSticker
+     perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -66,9 +72,12 @@ NS_ASSUME_NONNULL_BEGIN
                 expiresInSeconds:(unsigned int)expiresInSeconds
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
+perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
+  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
+       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:quotedMessage:schemaVersion:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:));
 
 // clang-format on
 
@@ -96,14 +105,23 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
+- (BOOL)hasRenderableContent;
+
 #pragma mark - Update With... Methods
 
-- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithExpireStartedAt:(uint64_t)expireStartedAt transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)saveWithMessageSticker:(MessageSticker *)messageSticker
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction;
+
+#pragma mark - Per-message expiration
+
+// This method can be used to start expiration of per-message expiration.
+- (void)updateWithPerMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
+                                transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)updateWithHasPerMessageExpiredAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

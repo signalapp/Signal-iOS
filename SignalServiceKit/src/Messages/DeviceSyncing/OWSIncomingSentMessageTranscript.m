@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
     _isExpirationTimerUpdate = (_dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0;
     _isEndSessionMessage = (_dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0;
     _isRecipientUpdate = sentProto.isRecipientUpdate;
+    _perMessageExpirationDurationSeconds = _dataMessage.messageTimer;
 
     if (self.isRecipientUpdate) {
         // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.

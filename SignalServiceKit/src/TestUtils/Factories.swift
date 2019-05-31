@@ -141,7 +141,8 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                      quotedMessage: quotedMessageBuilder(),
                                      contactShare: contactShareBuilder(),
                                      linkPreview: linkPreviewBuilder(),
-                                     messageSticker: messageStickerBuilder())
+                                     messageSticker: messageStickerBuilder(),
+                                     perMessageExpirationDurationSeconds: 0)
 
         return item
     }
@@ -264,7 +265,8 @@ public class IncomingMessageFactory: NSObject, Factory {
                                      linkPreview: linkPreviewBuilder(),
                                      messageSticker: messageStickerBuilder(),
                                      serverTimestamp: serverTimestampBuilder(),
-                                     wasReceivedByUD: wasReceivedByUDBuilder())
+                                     wasReceivedByUD: wasReceivedByUDBuilder(),
+                                     perMessageExpirationDurationSeconds: 0)
 
         item.anyInsert(transaction: transaction)
 

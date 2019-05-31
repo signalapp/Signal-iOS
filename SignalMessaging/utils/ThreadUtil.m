@@ -191,7 +191,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:[quotedReplyModel buildQuotedMessageForSending]
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                perMessageExpirationDurationSeconds:0];
 
     [BenchManager
         benchAsyncWithTitle:@"Saving outgoing message"
@@ -208,8 +209,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                                    transaction:writeTransaction
                                                                                    .transitional_yapWriteTransaction];
                                       if (linkPreview) {
-                                          [message updateWithLinkPreview:linkPreview transaction:writeTransaction
-                                           .transitional_yapWriteTransaction];
+                                          [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
                                       }
                                   }
 
@@ -250,7 +250,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:nil
                                                        contactShare:contactShare
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                perMessageExpirationDurationSeconds:0];
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [message saveWithTransaction:transaction];
@@ -283,7 +284,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                perMessageExpirationDurationSeconds:0];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Load the sticker data async.
@@ -308,7 +310,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                 return;
             }
 
-            [message saveWithMessageSticker:messageSticker transaction:transaction];
+            [message anyInsertWithTransaction:transaction.asAnyWrite];
+            [message updateWithMessageSticker:messageSticker transaction:transaction.asAnyWrite];
 
             [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
         }];
@@ -430,7 +433,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                       quotedMessage:nil
                                                        contactShare:contactShare
                                                         linkPreview:nil
-                                                     messageSticker:nil];
+                                                     messageSticker:nil
+                                perMessageExpirationDurationSeconds:0];
 
     [messageSender sendMessage:message
         success:^{

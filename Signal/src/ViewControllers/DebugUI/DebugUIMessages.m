@@ -3849,7 +3849,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                     linkPreview:nil
                                                                  messageSticker:nil
                                                                 serverTimestamp:nil
-                                                                wasReceivedByUD:NO];
+                                                                wasReceivedByUD:NO
+                                            perMessageExpirationDurationSeconds:0];
                 if (transaction.transitional_yapWriteTransaction) {
                     [message markAsReadNowWithSendReadReceipt:NO
                                                   transaction:transaction.transitional_yapWriteTransaction];
@@ -3905,7 +3906,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                     linkPreview:nil
                                                                  messageSticker:nil
                                                                 serverTimestamp:nil
-                                                                wasReceivedByUD:NO];
+                                                                wasReceivedByUD:NO
+                                            perMessageExpirationDurationSeconds:0];
                 if (transaction.transitional_yapWriteTransaction) {
                     [message markAsReadNowWithSendReadReceipt:NO
                                                   transaction:transaction.transitional_yapWriteTransaction];
@@ -4307,18 +4309,19 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
         // MJK TODO - remove senderTimestamp
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc]
-            initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                    inThread:thread
-                                 messageBody:text
-                               attachmentIds:[NSMutableArray new]
-                            expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
-                                                                      : 0)expireStartedAt:0
-                              isVoiceMessage:NO
-                            groupMetaMessage:TSGroupMetaMessageUnspecified
-                               quotedMessage:nil
-                                contactShare:nil
-                                 linkPreview:nil
-                              messageSticker:nil];
+               initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                       inThread:thread
+                                    messageBody:text
+                                  attachmentIds:[NSMutableArray new]
+                               expiresInSeconds:(configuration.isEnabled ? configuration.durationSeconds
+                                                                         : 0)expireStartedAt:0
+                                 isVoiceMessage:NO
+                               groupMetaMessage:TSGroupMetaMessageUnspecified
+                                  quotedMessage:nil
+                                   contactShare:nil
+                                    linkPreview:nil
+                                 messageSticker:nil
+            perMessageExpirationDurationSeconds:0];
         OWSLogError(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
@@ -4388,7 +4391,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                     linkPreview:nil
                                                                  messageSticker:nil
                                                                 serverTimestamp:nil
-                                                                wasReceivedByUD:NO];
+                                                                wasReceivedByUD:NO
+                                            perMessageExpirationDurationSeconds:0];
                 if (transaction.transitional_yapWriteTransaction) {
                     [message markAsReadNowWithSendReadReceipt:NO
                                                   transaction:transaction.transitional_yapWriteTransaction];
@@ -4410,7 +4414,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                   quotedMessage:nil
                                                                    contactShare:nil
                                                                     linkPreview:nil
-                                                                 messageSticker:nil];
+                                                                 messageSticker:nil
+                                            perMessageExpirationDurationSeconds:0];
                 [message anyInsertWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
                 [message updateWithSentRecipient:recipientId wasSentByUD:NO transaction:transaction];
@@ -4435,20 +4440,21 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     // MJK TODO - should be safe to remove this senderTimestamp
     TSIncomingMessage *message = [[TSIncomingMessage alloc]
-        initIncomingMessageWithTimestamp:now
-                                inThread:thread
-                                authorId:thread.recipientIdentifiers.firstObject
-                          sourceDeviceId:0
-                             messageBody:[NSString
-                                             stringWithFormat:@"Should disappear 60s after %lu", (unsigned long)now]
-                           attachmentIds:[NSMutableArray new]
-                        expiresInSeconds:60
-                           quotedMessage:nil
-                            contactShare:nil
-                             linkPreview:nil
-                          messageSticker:nil
-                         serverTimestamp:nil
-                         wasReceivedByUD:NO];
+           initIncomingMessageWithTimestamp:now
+                                   inThread:thread
+                                   authorId:thread.recipientIdentifiers.firstObject
+                             sourceDeviceId:0
+                                messageBody:[NSString
+                                                stringWithFormat:@"Should disappear 60s after %lu", (unsigned long)now]
+                              attachmentIds:[NSMutableArray new]
+                           expiresInSeconds:60
+                              quotedMessage:nil
+                               contactShare:nil
+                                linkPreview:nil
+                             messageSticker:nil
+                            serverTimestamp:nil
+                            wasReceivedByUD:NO
+        perMessageExpirationDurationSeconds:0];
     // private setter to avoid starting expire machinery.
     message.read = YES;
     [message save];
@@ -4748,7 +4754,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                       quotedMessage:quotedMessage
                                                        contactShare:contactShare
                                                         linkPreview:linkPreview
-                                                     messageSticker:messageSticker];
+                                                     messageSticker:messageSticker
+                                perMessageExpirationDurationSeconds:0];
 
     if (attachmentId.length > 0 && filename.length > 0) {
         message.attachmentFilenameMap[attachmentId] = filename;
@@ -4849,7 +4856,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                         linkPreview:nil
                                                      messageSticker:nil
                                                     serverTimestamp:nil
-                                                    wasReceivedByUD:NO];
+                                                    wasReceivedByUD:NO
+                                perMessageExpirationDurationSeconds:0];
     if (transaction.transitional_yapWriteTransaction) {
         [message markAsReadNowWithSendReadReceipt:NO transaction:transaction.transitional_yapWriteTransaction];
     } else {
