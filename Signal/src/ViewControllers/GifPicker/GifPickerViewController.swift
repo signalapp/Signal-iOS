@@ -93,7 +93,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }
     }
 
-    var lastQuery: String = ""
+    var lastQuery: String?
 
     public weak var delegate: GifPickerViewControllerDelegate?
 
@@ -136,6 +136,13 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         progressiveSearchTimer?.invalidate()
     }
 
+    // MARK: - Dependencies
+
+    var giphyAPI: GiphyAPI {
+        return GiphyAPI.sharedInstance
+    }
+
+    // MARK: -
     @objc func didBecomeActive() {
         AssertIsOnMainThread()
 
@@ -186,6 +193,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
                                                selector: #selector(didBecomeActive),
                                                name: NSNotification.Name.OWSApplicationDidBecomeActive,
                                                object: nil)
+        loadTrending()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -581,6 +589,32 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         search(query: query)
     }
 
+    private func loadTrending() {
+        assert(progressiveSearchTimer == nil)
+        assert(searchBar.text == nil || searchBar.text?.count == 0)
+        assert(lastQuery == nil)
+
+        giphyAPI.trending().done { [weak self] imageInfos in
+            guard let self = self else { return }
+
+            guard self.lastQuery == nil else {
+                Logger.info("not showing trending results due to subsequent searche")
+                return
+            }
+
+            Logger.info("showing trending")
+            if imageInfos.count > 0 {
+                self.imageInfos = imageInfos
+                self.viewMode = .results
+            } else {
+                owsFailDebug("trending results was unexpectedly empty")
+            }
+        }.catch { error in
+            // Don't both showing error UI feedback for default "trending" results.
+            Logger.error("error: \(error)")
+        }.retainUntilComplete()
+    }
+
     private func search(query: String) {
         Logger.info("searching: \(query)")
 
@@ -591,7 +625,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         lastQuery = query
         self.collectionView.contentOffset = CGPoint.zero
 
-        GiphyAPI.sharedInstance.search(query: query, success: { [weak self] imageInfos in
+        giphyAPI.search(query: query, success: { [weak self] imageInfos in
             guard let strongSelf = self else { return }
             Logger.info("search complete")
             strongSelf.imageInfos = imageInfos
