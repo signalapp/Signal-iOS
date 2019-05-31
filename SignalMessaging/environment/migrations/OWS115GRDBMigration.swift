@@ -169,7 +169,7 @@ extension OWS115GRDBMigration {
             GRDBUnorderedRecordMigrator<SignalAccount>(label: "SignalAccount", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
             GRDBUnorderedRecordMigrator<OWSLinkedDeviceReadReceipt>(label: "OWSLinkedDeviceReadReceipt", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
             GRDBUnorderedRecordMigrator<OWSDevice>(label: "OWSDevice", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<OWSUserProfile>(label: "OWSUserProfile", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<OWSUserProfile>(label: "OWSUserProfile", yapTransaction: yapTransaction, memorySamplerRatio: 0.02),
             GRDBUnorderedRecordMigrator<TSRecipientReadReceipt>(label: "TSRecipientReadReceipt", yapTransaction: yapTransaction, memorySamplerRatio: 0.2)
         ]
     }
