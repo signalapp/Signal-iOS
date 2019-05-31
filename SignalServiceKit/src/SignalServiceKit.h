@@ -20,6 +20,7 @@
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSSyncManagerProtocol.h>
+#import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SSKJobRecord.h>
 #import <SignalServiceKit/SSKMessageDecryptJobRecord.h>
 #import <SignalServiceKit/SignalAccount.h>
