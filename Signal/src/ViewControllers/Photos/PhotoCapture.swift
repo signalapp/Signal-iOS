@@ -400,7 +400,6 @@ extension PhotoCapture: CaptureButtonDelegate {
     }
 
     func longPressCaptureButton(_ captureButton: CaptureButton, didUpdateZoomAlpha zoomAlpha: CGFloat) {
-        Logger.verbose("zoomAlpha: \(zoomAlpha)")
         updateZoom(alpha: zoomAlpha)
     }
 }
