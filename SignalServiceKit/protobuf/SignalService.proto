@@ -225,7 +225,8 @@ message DataMessage {
     option allow_alias = true;
 
     INITIAL = 0;
-    CURRENT = 0;
+    MESSAGE_TIMERS = 1;
+    CURRENT = 1;
   }
 
   optional string            body                    =  1;

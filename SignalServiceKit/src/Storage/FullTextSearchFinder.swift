@@ -223,6 +223,10 @@ public class FullTextSearchFinder: NSObject {
             }
             return self.contactThreadIndexer.index(contactThread, transaction: transaction)
         } else if let message = object as? TSMessage {
+            guard !message.hasPerMessageExpiration else {
+                // Don't index "one-off disappearing messages".
+                return nil
+            }
             return self.messageIndexer.index(message, transaction: transaction)
         } else if let signalAccount = object as? SignalAccount {
             return self.recipientIndexer.index(signalAccount.recipientId, transaction: transaction)

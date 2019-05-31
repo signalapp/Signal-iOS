@@ -989,6 +989,12 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
     SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessage builder];
     [builder setTimestamp:self.timestamp];
+    
+    NSUInteger requiredProtocolVersion = SSKProtos.initialProtocolVersion;
+    if (self.hasPerMessageExpiration) {
+        requiredProtocolVersion = SSKProtos.perMessageExpirationProtocolVersion;
+    }
+    [builder setRequiredProtocolVersion:(uint32_t) requiredProtocolVersion];
 
     if (self.perMessageExpirationDurationSeconds > 0) {
         [builder setMessageTimer:self.perMessageExpirationDurationSeconds];
