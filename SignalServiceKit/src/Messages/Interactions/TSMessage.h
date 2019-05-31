@@ -125,7 +125,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (void)updateWithPerMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)setPerMessageExpiredAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithHasPerMessageExpiredAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

@@ -567,6 +567,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     [self anyUpdateWithTransaction:transaction
                              block:^(TSInteraction *interaction) {
                                  TSMessage *message = (TSMessage *)interaction;
+                                 [message setExpireStartedAt:expireStartedAt];
                              }];
 }
 
@@ -650,7 +651,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                              }];
 }
 
-- (void)setPerMessageExpiredAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithHasPerMessageExpiredAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(self.hasPerMessageExpiration);
