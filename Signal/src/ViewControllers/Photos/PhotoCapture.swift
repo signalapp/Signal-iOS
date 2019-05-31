@@ -516,6 +516,10 @@ class CaptureOutput {
         }
 
         movieOutput = AVCaptureMovieFileOutput()
+        // disable movie fragment writing since it's not supported on mp4
+        // leaving it enabled causes all audio to be lost on videos longer
+        // than the default length (10s).
+        movieOutput.movieFragmentInterval = CMTime.invalid
     }
 
     var photoOutput: AVCaptureOutput? {
