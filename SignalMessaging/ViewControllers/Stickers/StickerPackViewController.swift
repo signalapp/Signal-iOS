@@ -33,7 +33,8 @@ public class StickerPackViewController: OWSViewController {
     @objc
     public required init(stickerPackInfo: StickerPackInfo) {
         self.stickerPackInfo = stickerPackInfo
-        self.dataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPackInfo)
+        self.dataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPackInfo,
+                                                         shouldDownloadAllStickers: true)
 
         super.init(nibName: nil, bundle: nil)
 

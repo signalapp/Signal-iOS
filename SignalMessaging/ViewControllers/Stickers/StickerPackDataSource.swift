@@ -265,7 +265,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 
     @objc
     public required init(stickerPackInfo: StickerPackInfo,
-                         shouldDownloadAllStickers: Bool = true) {
+                         shouldDownloadAllStickers: Bool) {
         self.stickerPackInfo = stickerPackInfo
         self.shouldDownloadAllStickers = shouldDownloadAllStickers
 
