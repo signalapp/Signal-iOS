@@ -280,9 +280,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.audioProgressSlider = audioProgressSlider;
     [self updateAudioProgressSlider];
     [audioProgressSlider autoSetDimension:ALDimensionHeight toSize:[OWSAudioMessageView audioProgressSliderHeight]];
-    [audioProgressSlider addTarget:self
-                            action:@selector(progressSliderUpdated:)
-                  forControlEvents:UIControlEventValueChanged];
 
     UIStackView *labelsView = [UIStackView new];
     labelsView.axis = UILayoutConstraintAxisVertical;

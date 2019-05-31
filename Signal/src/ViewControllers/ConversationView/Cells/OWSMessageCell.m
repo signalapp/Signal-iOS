@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageCell ()
+@interface OWSMessageCell () <UIGestureRecognizerDelegate>
 
 // The nullable properties are created as needed.
 // The non-nullable properties are so frequently used that it's easier
@@ -73,6 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self
                                                                           action:@selector(handlePanGesture:)];
+    pan.delegate = self;
     [self.contentView addGestureRecognizer:pan];
     [tap requireGestureRecognizerToFail:pan];
 }
@@ -503,6 +504,16 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint location = [sender locationInView:self];
     CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
     return location.y <= headerBottom.y;
+}
+
+# pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer
+{
+    // Only allow the pan gesture to recognize horizontal panning,
+    // to avoid conflicts with the conversation view scroll view.
+    CGPoint velocity = [gestureRecognizer velocityInView:self];
+    return fabs(velocity.x) > fabs(velocity.y);
 }
 
 @end
