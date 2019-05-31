@@ -118,6 +118,11 @@ public class StickerHorizontalListView: UICollectionView {
         updateHeightConstraint()
     }
 
+    // Reload visible items to refresh the "selected" state
+    func updateSelections() {
+        reloadItems(at: indexPathsForVisibleItems)
+    }
+
     private func updateHeightConstraint() {
         guard let heightConstraint = heightConstraint else {
             owsFailDebug("Missing heightConstraint.")
@@ -183,8 +188,8 @@ extension StickerHorizontalListView: UICollectionViewDataSource {
         if item.isSelected {
             let selectionView = UIView()
             selectionView.backgroundColor = (Theme.isDarkThemeEnabled
-                ? UIColor(rgbHex: 0x1e1d1c)
-                : UIColor(rgbHex: 0xe1e2e3))
+                ? UIColor.ows_gray75
+                : UIColor.ows_gray10)
             selectionView.layer.cornerRadius = 8
             cell.contentView.addSubview(selectionView)
             selectionView.autoPinEdgesToSuperviewEdges()

@@ -137,6 +137,10 @@ const CGFloat kMaxTextViewHeight = 98;
                                              selector:@selector(applicationDidBecomeActive:)
                                                  name:OWSApplicationDidBecomeActiveNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(isStickerSendEnabledDidChange:)
+                                                 name:StickerManager.isStickerSendEnabledDidChange
+                                               object:nil];
 
     return self;
 }
@@ -1105,7 +1109,18 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)stickerButtonPressed
 {
     OWSLogVerbose(@"");
-    
+
+    __block BOOL hasInstalledStickerPacks;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        hasInstalledStickerPacks = [StickerManager installedStickerPacksWithTransaction:transaction].count > 0;
+    }];
+    if (!hasInstalledStickerPacks) {
+        // If the keyboard is presented and no stickers are installed,
+        // show the manage stickers view. Do not show the sticker keyboard.
+        [self presentManageStickersView];
+        return;
+    }
+
     [self activateStickerKeyboard];
 }
 
@@ -1439,9 +1454,18 @@ const CGFloat kMaxTextViewHeight = 98;
     [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 }
 
-- (void)applicationDidBecomeActive:(UIApplication *)application
+- (void)applicationDidBecomeActive:(NSNotification *)notification
 {
+    OWSAssertIsOnMainThread();
+
     [self restoreStickerKeyboardIfNecessary];
+}
+
+- (void)isStickerSendEnabledDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self ensureButtonVisibilityWithIsAnimated:YES doLayout:YES];
 }
 
 - (void)ensureFirstResponderState

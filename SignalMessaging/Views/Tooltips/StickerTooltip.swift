@@ -149,7 +149,7 @@ public class StickerTooltip: UIView {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
-                                               name: StickerManager.StickersOrPacksDidChange,
+                                               name: StickerManager.stickersOrPacksDidChange,
                                                object: nil)
     }
 

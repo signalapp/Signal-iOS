@@ -29,7 +29,7 @@ NSString *const OWSUIDatabaseConnectionDidUpdateExternallyNotification = @"OWSUI
 
 NSString *const OWSUIDatabaseConnectionNotificationsKey = @"OWSUIDatabaseConnectionNotificationsKey";
 
-void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
+void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t completion)
 {
     OWSCAssertDebug(storage);
 
@@ -43,6 +43,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
                 [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
             }
         }
+
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
     }];
 }
 
@@ -221,17 +223,18 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
                                       OWSAssertDebug(!self.areAsyncRegistrationsComplete);
                                       OWSLogVerbose(@"async registrations complete.");
 
-                                      self.areAsyncRegistrationsComplete = YES;
+                                      // We verify that all database views registered successfully and are
+                                      // accessible on launch _before_ "database is ready".  This ensures
+                                      // that if a view becomes corrupted it, we detect that now and
+                                      // increment the view version, so that it will be rebuilt on next launch.
+                                      // Otherwise, the app might crash later in a place that won't increment
+                                      // the view version.
+                                      VerifyRegistrationsForPrimaryStorage(self, ^{
+                                          self.areAsyncRegistrationsComplete = YES;
 
-                                      completion();
-
-                                      [self verifyDatabaseViews];
+                                          completion();
+                                      });
                                   }];
-}
-
-- (void)verifyDatabaseViews
-{
-    VerifyRegistrationsForPrimaryStorage(self);
 }
 
 + (void)protectFiles

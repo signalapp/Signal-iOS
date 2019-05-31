@@ -260,11 +260,21 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
     }
 
     private func unreadExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction {
-        return transaction.ext(TSUnreadDatabaseViewExtensionName) as! YapDatabaseViewTransaction
+        guard let ext = transaction.ext(TSUnreadDatabaseViewExtensionName) as? YapDatabaseViewTransaction else {
+            OWSPrimaryStorage.incrementVersion(ofDatabaseExtension: TSUnreadDatabaseViewExtensionName)
+            owsFail("unable to load extension")
+        }
+
+        return ext
     }
 
     private func interactionExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction {
-        return transaction.ext(TSMessageDatabaseViewExtensionName) as! YapDatabaseViewTransaction
+        guard let ext = transaction.ext(TSMessageDatabaseViewExtensionName) as? YapDatabaseViewTransaction else {
+            OWSPrimaryStorage.incrementVersion(ofDatabaseExtension: TSMessageDatabaseViewExtensionName)
+            owsFail("unable to load extension")
+        }
+
+        return ext
     }
 }
 

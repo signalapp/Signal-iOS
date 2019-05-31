@@ -26,6 +26,7 @@ public struct KnownStickerPackRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
+    public let dateCreated: Date
     public let info: Data
     public let referenceCount: Int
 
@@ -33,6 +34,7 @@ public struct KnownStickerPackRecord: SDSRecord {
         case id
         case recordType
         case uniqueId
+        case dateCreated
         case info
         case referenceCount
     }
@@ -70,11 +72,13 @@ extension KnownStickerPack {
         case .knownStickerPack:
 
             let uniqueId: String = record.uniqueId
+            let dateCreated: Date = record.dateCreated
             let infoSerialized: Data = record.info
             let info: StickerPackInfo = try SDSDeserialization.unarchive(infoSerialized, name: "info")
             let referenceCount: Int = record.referenceCount
 
             return KnownStickerPack(uniqueId: uniqueId,
+                                    dateCreated: dateCreated,
                                     info: info,
                                     referenceCount: referenceCount)
 
@@ -113,8 +117,9 @@ extension KnownStickerPackSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 3)
-    static let referenceCountColumn = SDSColumnMetadata(columnName: "referenceCount", columnType: .int64, columnIndex: 4)
+    static let dateCreatedColumn = SDSColumnMetadata(columnName: "dateCreated", columnType: .int64, columnIndex: 3)
+    static let infoColumn = SDSColumnMetadata(columnName: "info", columnType: .blob, columnIndex: 4)
+    static let referenceCountColumn = SDSColumnMetadata(columnName: "referenceCount", columnType: .int64, columnIndex: 5)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -122,6 +127,7 @@ extension KnownStickerPackSerializer {
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,
+        dateCreatedColumn,
         infoColumn,
         referenceCountColumn
         ])
@@ -405,9 +411,10 @@ class KnownStickerPackSerializer: SDSSerializer {
         }
 
         // Base class properties
+        let dateCreated: Date = model.dateCreated
         let info: Data = requiredArchive(model.info)
         let referenceCount: Int = model.referenceCount
 
-        return KnownStickerPackRecord(id: id, recordType: recordType, uniqueId: uniqueId, info: info, referenceCount: referenceCount)
+        return KnownStickerPackRecord(id: id, recordType: recordType, uniqueId: uniqueId, dateCreated: dateCreated, info: info, referenceCount: referenceCount)
     }
 }

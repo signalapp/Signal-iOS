@@ -1321,8 +1321,6 @@ static NSTimeInterval launchStartedAt;
 
     [self.udManager setup];
 
-    [self preheatDatabaseViews];
-
     [self.primaryStorage touchDbAsync];
 
     // Every time the user upgrades to a new version:
@@ -1338,23 +1336,6 @@ static NSTimeInterval launchStartedAt;
             [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
         }
     }
-}
-
-- (void)preheatDatabaseViews
-{
-    [self.primaryStorage.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        for (NSString *viewName in @[
-                 TSThreadDatabaseViewExtensionName,
-                 TSMessageDatabaseViewExtensionName,
-                 TSThreadOutgoingMessageDatabaseViewExtensionName,
-                 TSUnreadDatabaseViewExtensionName,
-                 TSUnseenDatabaseViewExtensionName,
-                 TSThreadSpecialMessagesDatabaseViewExtensionName,
-             ]) {
-            YapDatabaseViewTransaction *databaseView = [transaction ext:viewName];
-            OWSAssertDebug([databaseView isKindOfClass:[YapDatabaseViewTransaction class]]);
-        }
-    }];
 }
 
 - (void)registrationStateDidChange

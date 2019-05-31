@@ -16,6 +16,7 @@ public protocol StickerPackDataSourceDelegate: class {
 protocol StickerPackDataSource: class {
     func add(delegate: StickerPackDataSourceDelegate)
 
+    // This will be nil for the "recents" source.
     var info: StickerPackInfo? { get }
     var title: String? { get }
     var author: String? { get }
@@ -122,7 +123,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
-                                               name: StickerManager.StickersOrPacksDidChange,
+                                               name: StickerManager.stickersOrPacksDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -240,6 +241,9 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
 
     private let stickerPackInfo: StickerPackInfo
 
+    // If false, only download manifest and cover.
+    private let shouldDownloadAllStickers: Bool
+
     fileprivate var stickerPack: StickerPack? {
         didSet {
             AssertIsOnMainThread()
@@ -260,8 +264,10 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
     private var stickerFilePathMap = [String: String]()
 
     @objc
-    public required init(stickerPackInfo: StickerPackInfo) {
+    public required init(stickerPackInfo: StickerPackInfo,
+                         shouldDownloadAllStickers: Bool) {
         self.stickerPackInfo = stickerPackInfo
+        self.shouldDownloadAllStickers = shouldDownloadAllStickers
 
         self.installedDataSource = InstalledStickerPackDataSource(stickerPackInfo: stickerPackInfo)
 
@@ -309,13 +315,17 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
             self.coverInfo = nil
         }
 
-        var downloadedStickerInfos = [StickerInfo]()
-        for stickerInfo in stickerPack.stickerInfos {
-            if ensureStickerDownload(stickerPack: stickerPack, stickerInfo: stickerInfo) {
-                downloadedStickerInfos.append(stickerInfo)
+        if shouldDownloadAllStickers {
+            var downloadedStickerInfos = [StickerInfo]()
+            for stickerInfo in stickerPack.stickerInfos {
+                if ensureStickerDownload(stickerPack: stickerPack, stickerInfo: stickerInfo) {
+                    downloadedStickerInfos.append(stickerInfo)
+                }
             }
+            self.stickerInfos = downloadedStickerInfos
+        } else {
+            self.stickerInfos = []
         }
-        self.stickerInfos = downloadedStickerInfos
     }
 
     // This should only be accessed on the main thread.
@@ -405,6 +415,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
         }
         stickerFilePathMap[key] = filePath
         ensureState()
+        fireDidChange()
     }
 
     // MARK: Events
@@ -506,7 +517,7 @@ public class RecentStickerPackDataSource: BaseStickerPackDataSource {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(recentStickersDidChange),
-                                               name: StickerManager.RecentStickersDidChange,
+                                               name: StickerManager.recentStickersDidChange,
                                                object: nil)
 
         ensureState()

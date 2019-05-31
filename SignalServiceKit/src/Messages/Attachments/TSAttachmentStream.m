@@ -882,6 +882,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         return nil;
     }
 
+    NSString *thumbnailMimeType = [OWSThumbnailService thumbnailMimetypeForContentType:self.contentType];
+    NSString *thumbnailFileExtension = [OWSThumbnailService thumbnailFileExtensionForContentType:self.contentType];
+
     NSData *_Nullable thumbnailData = self.thumbnailDataSmallSync;
     //  Only some media types have thumbnails
     if (!thumbnailData) {
@@ -889,14 +892,15 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 
     // Copy the thumbnail to a new attachment.
-    NSString *thumbnailName = [NSString stringWithFormat:@"quoted-thumbnail-%@", self.sourceFilename];
+    NSString *thumbnailName =
+        [NSString stringWithFormat:@"quoted-thumbnail-%@.%@", self.sourceFilename, thumbnailFileExtension];
     TSAttachmentStream *thumbnailAttachment =
-        [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg
+        [[TSAttachmentStream alloc] initWithContentType:thumbnailMimeType
                                               byteCount:(uint32_t)thumbnailData.length
                                          sourceFilename:thumbnailName
                                                 caption:nil
                                          albumMessageId:nil
-                                      shouldAlwaysPad:NO];
+                                        shouldAlwaysPad:NO];
 
     NSError *error;
     BOOL success = [thumbnailAttachment writeData:thumbnailData error:&error];
