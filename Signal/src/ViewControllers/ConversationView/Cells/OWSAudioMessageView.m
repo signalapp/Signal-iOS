@@ -53,13 +53,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateContents
 {
-    [self updateAudioProgressSlider];
-    [self updateAudioBottomLabel];
-
     if (self.audioPlaybackState == AudioPlaybackState_Playing) {
         [self setAudioIconToPause];
     } else {
         [self setAudioIconToPlay];
+    }
+
+    // Don't update the position if we're current scrubbing, as it conflicts with the user interaction.
+    if (!self.isScrubbing) {
+        [self updateAudioProgressSlider];
+        [self updateAudioBottomLabel:self.audioProgressSeconds];
     }
 }
 
@@ -83,14 +86,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self.audioPlaybackState == AudioPlaybackState_Playing;
 }
 
-- (void)updateAudioBottomLabel
+- (void)updateAudioBottomLabel:(CGFloat)progressSeconds
 {
-    if (self.audioProgressSeconds > 0 && self.audioDurationSeconds > 0) {
-        self.playbackTimeLabel.text =
-            [OWSFormat formatDurationSeconds:(long)round(self.audioDurationSeconds - self.audioProgressSeconds)];
-    } else {
-        self.playbackTimeLabel.text = [OWSFormat formatDurationSeconds:(long)round(self.audioDurationSeconds)];
-    }
+    self.playbackTimeLabel.text =
+        [OWSFormat formatDurationSeconds:(long)round(self.audioDurationSeconds - progressSeconds)];
 }
 
 - (void)setAudioIcon:(UIImage *)icon
@@ -297,7 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     UILabel *playbackTimeLabel = [UILabel new];
     self.playbackTimeLabel = playbackTimeLabel;
-    [self updateAudioBottomLabel];
+    [self updateAudioBottomLabel:self.audioProgressSeconds];
     playbackTimeLabel.textColor = [self.conversationStyle bubbleSecondaryTextColorWithIsIncoming:self.isIncoming];
     playbackTimeLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     playbackTimeLabel.font = [OWSAudioMessageView progressLabelFont];
@@ -336,7 +335,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.audioProgressSlider setValue:(float)CGFloatClamp01(newRatio)];
 
-    return newRatio * self.audioDurationSeconds;
+    CGFloat newProgressSeconds = newRatio * self.audioDurationSeconds;
+
+    [self updateAudioBottomLabel:newProgressSeconds];
+
+    return newProgressSeconds;
 }
 
 @end

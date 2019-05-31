@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSTimeInterval)scrubToLocation:(CGPoint)location;
 
+@property (nonatomic) BOOL isScrubbing;
+
 @end
 
 NS_ASSUME_NONNULL_END

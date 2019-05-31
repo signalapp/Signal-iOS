@@ -1525,10 +1525,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender
 {
-    if (sender.state != UIGestureRecognizerStateChanged) {
-        return;
-    }
-
     CGPoint locationInMessageBubble = [sender locationInView:self];
     if ([self gestureLocationForLocation:locationInMessageBubble] == OWSMessageGestureLocation_Media) {
         [self handleMediaPanGesture:sender];
@@ -1551,9 +1547,27 @@ NS_ASSUME_NONNULL_BEGIN
         CGPoint locationInAudioView = [sender locationInView:audioMessageView];
 
         NSTimeInterval scrubbedTime = [audioMessageView scrubToLocation:locationInAudioView];
-        [self.delegate didScrubAudioViewItem:self.viewItem
-                                      toTime:scrubbedTime
-                            attachmentStream:self.viewItem.attachmentStream];
+
+        switch (sender.state) {
+            case UIGestureRecognizerStateBegan:
+                audioMessageView.isScrubbing = YES;
+                break;
+            case UIGestureRecognizerStateEnded:
+                // Only update the actual playback position when the user finishes scrubbing,
+                // we still call `scrubToLocation` above in order to update the slider.
+                [self.delegate didScrubAudioViewItem:self.viewItem
+                                              toTime:scrubbedTime
+                                    attachmentStream:self.viewItem.attachmentStream];
+
+                // fallthrough
+            case UIGestureRecognizerStateFailed:
+            case UIGestureRecognizerStateCancelled:
+                audioMessageView.isScrubbing = NO;
+                break;
+            case UIGestureRecognizerStateChanged:
+            case UIGestureRecognizerStatePossible:
+                break;
+        }
     }
 }
 
