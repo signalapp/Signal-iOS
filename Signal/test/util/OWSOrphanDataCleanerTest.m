@@ -92,7 +92,7 @@
 {
     NSError *error;
     TSAttachmentStream *attachmentStream =
-        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:12 sourceFilename:nil];
+        [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg byteCount:12 sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
 
     XCTAssertNil(error);
@@ -221,7 +221,7 @@
 {
     NSError *error;
     TSAttachmentStream *attachmentStream =
-        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:0 sourceFilename:nil];
+        [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg byteCount:0 sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
     // Intentionally not saved, because we want a lingering file.
 

@@ -96,7 +96,7 @@
 
     __block TSAttachmentStream *incomingAttachment;
     [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        incomingAttachment = [AttachmentStreamFactory createWithContentType:@"image/jpeg"
+        incomingAttachment = [AttachmentStreamFactory createWithContentType:OWSMimeTypeImageJpeg
                                                                  dataSource:DataSourceValue.emptyDataSource
                                                                 transaction:transaction.asAnyWrite];
     }];
@@ -124,7 +124,7 @@
 
     __block TSAttachmentStream *outgoingAttachment;
     [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        outgoingAttachment = [AttachmentStreamFactory createWithContentType:@"image/jpeg"
+        outgoingAttachment = [AttachmentStreamFactory createWithContentType:OWSMimeTypeImageJpeg
                                                                  dataSource:DataSourceValue.emptyDataSource
                                                                 transaction:transaction.asAnyWrite];
     }];
