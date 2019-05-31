@@ -186,6 +186,16 @@ const CGFloat kIconViewLength = 24;
     return [self.thread isKindOfClass:[TSGroupThread class]];
 }
 
+- (BOOL)hasSavedGroupIcon
+{
+    if (![self isGroupThread]) {
+        return NO;
+    }
+
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    return groupThread.groupModel.groupImage != nil;
+}
+
 - (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
 {
     OWSAssertDebug(thread);
@@ -909,6 +919,14 @@ const CGFloat kIconViewLength = 24;
     [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+
+    if (self.isGroupThread && !self.hasSavedGroupIcon) {
+        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
+        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+        [threadInfoView addSubview:cameraImageView];
+        [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
+        [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
+    }
 
     UIView *threadNameView = [UIView containerView];
     [threadInfoView addSubview:threadNameView];

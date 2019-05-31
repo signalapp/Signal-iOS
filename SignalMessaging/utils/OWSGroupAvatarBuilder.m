@@ -1,14 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSGroupAvatarBuilder.h"
 #import "OWSContactsManager.h"
 #import "TSGroupThread.h"
 #import "UIColor+OWS.h"
+#import <SignalCoreKit/NSData+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/SSKEnvironment.h>
-#import <SignalCoreKit/NSData+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIColor *backgroundColor =
         [OWSConversationColor conversationColorOrDefaultForColorName:conversationColorName].themeColor;
 #else
-    UIColor *backgroundColor = UIColor.ows_darkSkyBlueColor;
+    UIColor *backgroundColor = [OWSConversationColor ows_steelColor];
 #endif
     UIImage *_Nullable image =
         [OWSGroupAvatarBuilder groupAvatarImageWithBackgroundColor:backgroundColor diameter:diameter];
