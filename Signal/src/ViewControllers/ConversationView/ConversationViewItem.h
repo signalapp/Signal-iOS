@@ -16,6 +16,7 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_MediaMessage,
     OWSMessageCellType_OversizeTextDownloading,
     OWSMessageCellType_StickerMessage,
+    OWSMessageCellType_PerMessageExpiration,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);

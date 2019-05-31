@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageHeaderView *headerView;
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) OWSMessageStickerView *messageStickerView;
+@property (nonatomic) OWSMessageHiddenView *messageHiddenView;
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
 
@@ -61,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.messageBubbleView = [OWSMessageBubbleView new];
     self.messageStickerView = [OWSMessageStickerView new];
+    self.messageHiddenView = [OWSMessageHiddenView new];
 
     self.headerView = [OWSMessageHeaderView new];
 
@@ -98,6 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.messageBubbleView.conversationStyle = conversationStyle;
     self.messageStickerView.conversationStyle = conversationStyle;
+    self.messageHiddenView.conversationStyle = conversationStyle;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -142,6 +145,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (self.cellType == OWSMessageCellType_StickerMessage) {
         return self.messageStickerView;
+    } else if (self.cellType == OWSMessageCellType_PerMessageExpiration) {
+        return self.messageHiddenView;
     } else {
         return self.messageBubbleView;
     }
@@ -157,6 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
     OWSAssertDebug(self.messageBubbleView);
     OWSAssertDebug(self.messageStickerView);
+    OWSAssertDebug(self.messageHiddenView);
 
     OWSMessageView *messageView = self.messageView;
     messageView.viewItem = self.viewItem;
@@ -392,6 +398,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.messageStickerView prepareForReuse];
     [self.messageStickerView unloadContent];
     [self.messageStickerView removeFromSuperview];
+    [self.messageHiddenView prepareForReuse];
+    [self.messageHiddenView unloadContent];
+    [self.messageHiddenView removeFromSuperview];
 
     [self.headerView removeFromSuperview];
 

@@ -36,6 +36,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return @"OWSMessageCellType_OversizeTextDownloading";
         case OWSMessageCellType_StickerMessage:
             return @"OWSMessageCellType_StickerMessage";
+        case OWSMessageCellType_PerMessageExpiration:
+            return @"OWSMessageCellType_PerMessageExpiration";
     }
 }
 
@@ -669,6 +671,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.hasViewState = YES;
 
     TSMessage *message = (TSMessage *)self.interaction;
+
+    if (message.hasPerMessageExpiration) {
+        self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+        return;
+    }
+
     if (transaction.transitional_yapReadTransaction != nil) {
         if (message.contactShare) {
             self.contactShare =
@@ -1037,6 +1045,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_OversizeTextDownloading:
             OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
             return;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Can't copy message with per-message expiration");
+            return;
     }
 }
 
@@ -1080,6 +1091,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             } else {
                 OWSFailDebug(@"Sticked not yet downloaded.");
             }
+            return;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Can't copy message with per-message expiration");
             return;
     }
 }
@@ -1144,6 +1158,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
                 OWSFailDebug(@"Sticked not yet downloaded.");
             }
             return;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Can't share message with per-message expiration");
+            return;
     }
 }
 
@@ -1158,7 +1175,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare:
-            return NO;
         case OWSMessageCellType_Audio:
             return NO;
         case OWSMessageCellType_GenericAttachment:
@@ -1172,8 +1188,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return NO;
         }
         case OWSMessageCellType_OversizeTextDownloading:
-            return NO;
         case OWSMessageCellType_StickerMessage:
+        case OWSMessageCellType_PerMessageExpiration:
             return NO;
     }
 }
@@ -1189,9 +1205,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare:
-            return NO;
         case OWSMessageCellType_Audio:
-            return NO;
         case OWSMessageCellType_GenericAttachment:
             return NO;
         case OWSMessageCellType_MediaMessage: {
@@ -1215,8 +1229,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return NO;
         }
         case OWSMessageCellType_OversizeTextDownloading:
-            return NO;
         case OWSMessageCellType_StickerMessage:
+        case OWSMessageCellType_PerMessageExpiration:
             return NO;
     }
 }
@@ -1248,6 +1262,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return;
         case OWSMessageCellType_StickerMessage:
             return [self saveSticker];
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Can't save message with per-message expiration");
+            return;
     }
 }
 
@@ -1345,6 +1362,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return NO;
         case OWSMessageCellType_StickerMessage:
             return self.stickerAttachment != nil;
+        case OWSMessageCellType_PerMessageExpiration:
+            return NO;
     }
 }
 
