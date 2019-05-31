@@ -48,7 +48,7 @@ public class StickerPackViewController: OWSViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: UIApplication.didChangeStatusBarFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
-                                               name: StickerManager.StickersOrPacksDidChange,
+                                               name: StickerManager.stickersOrPacksDidChange,
                                                object: nil)
     }
 

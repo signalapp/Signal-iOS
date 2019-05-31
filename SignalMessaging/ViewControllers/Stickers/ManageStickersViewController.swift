@@ -99,7 +99,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
-                                               name: StickerManager.StickersOrPacksDidChange,
+                                               name: StickerManager.stickersOrPacksDidChange,
                                                object: nil)
 
         updateState()

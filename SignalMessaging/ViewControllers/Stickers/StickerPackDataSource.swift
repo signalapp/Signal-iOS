@@ -123,7 +123,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(stickersOrPacksDidChange),
-                                               name: StickerManager.StickersOrPacksDidChange,
+                                               name: StickerManager.stickersOrPacksDidChange,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -517,7 +517,7 @@ public class RecentStickerPackDataSource: BaseStickerPackDataSource {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(recentStickersDidChange),
-                                               name: StickerManager.RecentStickersDidChange,
+                                               name: StickerManager.recentStickersDidChange,
                                                object: nil)
 
         ensureState()
