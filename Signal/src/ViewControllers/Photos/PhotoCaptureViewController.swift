@@ -540,8 +540,6 @@ class CaptureButton: UIView {
 
     @objc
     func didLongPress(_ gesture: UILongPressGestureRecognizer) {
-        Logger.verbose("")
-
         guard let gestureView = gesture.view else {
             owsFailDebug("gestureView was unexpectedly nil")
             return
@@ -591,8 +589,6 @@ class CaptureButton: UIView {
             let ratio = distance / distanceForFullZoom
 
             let alpha = ratio.clamp(0, 1)
-
-            Logger.verbose("distance: \(distance), alpha: \(alpha)")
 
             let zoomIndicatorDiameter = CGFloatLerp(type(of: self).recordingDiameter, 3, alpha)
             self.zoomIndicatorSizeConstraints.forEach { $0.constant = zoomIndicatorDiameter }
@@ -757,7 +753,6 @@ class RecordingTimerView: UIView {
     @objc
     private func updateView() {
         let recordingDuration = self.recordingDuration
-        Logger.verbose("recordingDuration: \(recordingDuration)")
         let durationDate = Date(timeIntervalSinceReferenceDate: recordingDuration)
         label.text = timeFormatter.string(from: durationDate)
         if #available(iOS 10, *) {
