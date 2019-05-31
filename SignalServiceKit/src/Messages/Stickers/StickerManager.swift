@@ -1005,6 +1005,18 @@ public class StickerManager: NSObject {
                     stickerPackMap[stickerPack.info.asKey()] = stickerPack
                 }
 
+                // Cull any orphan packs.
+                let savedStickerPacks = Array(stickerPackMap.values)
+                for stickerPack in savedStickerPacks {
+                    let isDefaultStickerPack = self.isDefaultStickerPack(stickerPack.info)
+                    let isInstalled = stickerPack.isInstalled
+                    if !isDefaultStickerPack && !isInstalled {
+                        owsFailDebug("Removing orphan pack")
+                        stickerPack.anyRemove(transaction: transaction)
+                        stickerPackMap.removeValue(forKey: stickerPack.info.asKey())
+                    }
+                }
+
                 var stickersToUninstall = [InstalledSticker]()
                 InstalledSticker.anyVisitAll(transaction: transaction) { (sticker) in
                     guard let pack = stickerPackMap[sticker.info.packInfo.asKey()] else {
