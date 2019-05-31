@@ -168,9 +168,11 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         let textContainer = UIView()
 
         textContainer.layer.borderColor = Theme.darkThemePrimaryColor.cgColor
-        textContainer.layer.borderWidth = 0.5
         textContainer.layer.cornerRadius = kMinTextViewHeight / 2
         textContainer.clipsToBounds = true
+
+        // Slightly larger than 1px to ease anti-aliasing around the corners in dark mode.
+        textContainer.layer.borderWidth = CGHairlineWidth() * 1.4;
 
         textContainer.addSubview(placeholderTextView)
         placeholderTextView.autoPinEdgesToSuperviewEdges()
