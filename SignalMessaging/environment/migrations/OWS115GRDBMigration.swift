@@ -94,13 +94,11 @@ extension OWS115GRDBMigration {
             // KeyValue Finders
             var migrators = [GRDBMigrator]()
 
-            // TODO: OWSMessageContentJob
             // TODO: OWSMessageDecryptJob
             // TODO: SSKMessageDecryptJobRecord
             // TODO: SSKMessageSenderJobRecord
             // TODO: OWSSessionResetJobRecord
             // TODO: OWSDatabaseMigration
-            // TODO: RecipientReadReceiptRecord: Should we convert this to be an obj-c TSYapDatabaseModel?
 
             dbReadConnection.read { yapTransaction in
                 jobRecordFinder = LegacyJobRecordFinder(transaction: yapTransaction)
@@ -155,6 +153,7 @@ extension OWS115GRDBMigration {
     }
 
     private func allUnorderedRecordMigrators(yapTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
+        // TODO: We need to test all of these migrations.
         return [
             GRDBUnorderedRecordMigrator<TSAttachment>(label: "attachments", yapTransaction: yapTransaction, memorySamplerRatio: 0.003),
             GRDBUnorderedRecordMigrator<OWSMessageContentJob>(label: "contentJob", yapTransaction: yapTransaction, memorySamplerRatio: 0.05),
@@ -170,7 +169,8 @@ extension OWS115GRDBMigration {
             GRDBUnorderedRecordMigrator<SignalAccount>(label: "SignalAccount", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
             GRDBUnorderedRecordMigrator<OWSLinkedDeviceReadReceipt>(label: "OWSLinkedDeviceReadReceipt", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
             GRDBUnorderedRecordMigrator<OWSDevice>(label: "OWSDevice", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
-            GRDBUnorderedRecordMigrator<OWSUserProfile>(label: "OWSUserProfile", yapTransaction: yapTransaction, memorySamplerRatio: 0.2)
+            GRDBUnorderedRecordMigrator<OWSUserProfile>(label: "OWSUserProfile", yapTransaction: yapTransaction, memorySamplerRatio: 0.2),
+            GRDBUnorderedRecordMigrator<TSRecipientReadReceipt>(label: "TSRecipientReadReceipt", yapTransaction: yapTransaction, memorySamplerRatio: 0.2)
         ]
     }
 
