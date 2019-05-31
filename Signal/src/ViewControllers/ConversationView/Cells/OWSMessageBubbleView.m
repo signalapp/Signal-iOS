@@ -1540,18 +1540,20 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.delegate);
 
     if (self.cellType == OWSMessageCellType_Audio && self.viewItem.attachmentStream) {
-        if ([self.bodyMediaView isKindOfClass:[OWSAudioMessageView class]]) {
-            OWSAudioMessageView *_Nullable audioMessageView = (OWSAudioMessageView *)self.bodyMediaView;
 
-            CGPoint locationInAudioView = [sender locationInView:audioMessageView];
-
-            if ([audioMessageView canScrubToLocation:locationInAudioView]) {
-                NSTimeInterval scrubbedTime = [audioMessageView scrubToLocation:locationInAudioView];
-                [self.delegate didScrubAudioViewItem:self.viewItem
-                                              toTime:scrubbedTime
-                                    attachmentStream:self.viewItem.attachmentStream];
-            }
+        if (![self.bodyMediaView isKindOfClass:[OWSAudioMessageView class]]) {
+            OWSFailDebug(@"Unexpected body media view: %@", self.bodyMediaView.class);
+            return;
         }
+
+        OWSAudioMessageView *_Nullable audioMessageView = (OWSAudioMessageView *)self.bodyMediaView;
+
+        CGPoint locationInAudioView = [sender locationInView:audioMessageView];
+
+        NSTimeInterval scrubbedTime = [audioMessageView scrubToLocation:locationInAudioView];
+        [self.delegate didScrubAudioViewItem:self.viewItem
+                                      toTime:scrubbedTime
+                            attachmentStream:self.viewItem.attachmentStream];
     }
 }
 

@@ -102,17 +102,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)play
 {
-
-    // get current audio activity
-    OWSAssertIsOnMainThread();
-    [self playWithAudioActivity:self.audioActivity];
-}
-
-- (void)playWithAudioActivity:(OWSAudioActivity *)audioActivity
-{
     OWSAssertIsOnMainThread();
 
-    BOOL success = [self.audioSession startAudioActivity:audioActivity];
+    BOOL success = [self.audioSession startAudioActivity:self.audioActivity];
     OWSAssertDebug(success);
 
     [self setupAudioPlayer];
@@ -205,7 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.delegate.audioPlaybackState == AudioPlaybackState_Playing) {
         [self pause];
     } else {
-        [self playWithAudioActivity:self.audioActivity];
+        [self play];
     }
 }
 

@@ -508,12 +508,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 # pragma mark - UIGestureRecognizerDelegate
 
-- (BOOL)gestureRecognizerShouldBegin:(UIPanGestureRecognizer *)gestureRecognizer
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    // Only allow the pan gesture to recognize horizontal panning,
-    // to avoid conflicts with the conversation view scroll view.
-    CGPoint velocity = [gestureRecognizer velocityInView:self];
-    return fabs(velocity.x) > fabs(velocity.y);
+    if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        UIPanGestureRecognizer *_Nullable panGestureRecognizer = (UIPanGestureRecognizer *)gestureRecognizer;
+        // Only allow the pan gesture to recognize horizontal panning,
+        // to avoid conflicts with the conversation view scroll view.
+        CGPoint velocity = [panGestureRecognizer velocityInView:self];
+        return fabs(velocity.x) > fabs(velocity.y);
+    }
+
+    return YES;
 }
 
 @end

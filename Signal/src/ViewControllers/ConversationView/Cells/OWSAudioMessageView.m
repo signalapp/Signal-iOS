@@ -86,12 +86,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateAudioBottomLabel
 {
     if (self.audioProgressSeconds > 0 && self.audioDurationSeconds > 0) {
-        self.playbackTimeLabel.text = [NSString
-            stringWithFormat:@"%@",
-            [OWSFormat formatDurationSeconds:(long)round(self.audioDurationSeconds - self.audioProgressSeconds)]];
-    } else {
         self.playbackTimeLabel.text =
-            [NSString stringWithFormat:@"%@", [OWSFormat formatDurationSeconds:(long)round(self.audioDurationSeconds)]];
+            [OWSFormat formatDurationSeconds:(long)round(self.audioDurationSeconds - self.audioProgressSeconds)];
+    } else {
+        self.playbackTimeLabel.text = [OWSFormat formatDurationSeconds:(long)round(self.audioDurationSeconds)];
     }
 }
 
@@ -106,12 +104,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setAudioIconToPlay
 {
-    [self setAudioIcon:[UIImage imageNamed:@"play-filled-30"]];
+    [self setAudioIcon:[UIImage imageNamed:@"play-filled-24"]];
 }
 
 - (void)setAudioIconToPause
 {
-    [self setAudioIcon:[UIImage imageNamed:@"pause-filled-30"]];
+    [self setAudioIcon:[UIImage imageNamed:@"pause-filled-24"]];
 }
 
 - (void)updateAudioProgressSlider
@@ -199,7 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)hSpacing
 {
-    return 8.f;
+    return 15.f;
 }
 
 + (CGFloat)vMargin
@@ -228,7 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (CGFloat)iconSize
 {
-    return 30;
+    return 24;
 }
 
 - (CGFloat)iconSize
@@ -329,28 +327,16 @@ NS_ASSUME_NONNULL_BEGIN
     return 2.f;
 }
 
-- (BOOL)canScrubToLocation:(CGPoint)location
-{
-    // If we're anywhere within the X range of the slider, we allow it to be dragged.
-    // This allows for a larger touch area for user interaction.
-    
-    CGRect sliderContainer = [self convertRect:self.audioProgressSlider.frame
-                                      fromView:self.audioProgressSlider.superview];
-    return location.x >= CGRectGetMinX(sliderContainer) && location.x <= CGRectGetMaxX(sliderContainer);
-}
-
 - (NSTimeInterval)scrubToLocation:(CGPoint)location
 {
-    OWSAssertDebug([self canScrubToLocation:location]);
-
     CGRect sliderContainer = [self convertRect:self.audioProgressSlider.frame
                                       fromView:self.audioProgressSlider.superview];
 
-    CGFloat newPercentage = (location.x - CGRectGetMinX(sliderContainer)) / sliderContainer.size.width;
+    CGFloat newRatio = CGFloatInverseLerp(location.x, CGRectGetMinX(sliderContainer), CGRectGetMaxX(sliderContainer));
 
-    [self.audioProgressSlider setValue:(float)newPercentage];
+    [self.audioProgressSlider setValue:(float)CGFloatClamp01(newRatio)];
 
-    return newPercentage * self.audioDurationSeconds;
+    return newRatio * self.audioDurationSeconds;
 }
 
 @end

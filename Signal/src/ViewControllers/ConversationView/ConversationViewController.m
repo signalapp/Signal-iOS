@@ -2357,12 +2357,12 @@ typedef enum : NSUInteger {
 
     NSFileManager *fileManager = [NSFileManager defaultManager];
     if (![fileManager fileExistsAtPath:attachmentStream.originalFilePath]) {
-        OWSFailDebug(@"Missing video file: %@", attachmentStream.originalMediaURL);
+        OWSFailDebug(@"Missing audio file: %@", attachmentStream.originalMediaURL);
     }
 
     if (self.audioAttachmentPlayer) {
         // Is this player associated with this media adapter?
-        if (self.audioAttachmentPlayer.owner == viewItem) {
+        if (self.audioAttachmentPlayer.owner == viewItem.interaction.uniqueId) {
             return;
         }
 
@@ -2375,7 +2375,7 @@ typedef enum : NSUInteger {
                                                                  delegate:viewItem];
 
     // Associate the player with this media adapter.
-    self.audioAttachmentPlayer.owner = viewItem;
+    self.audioAttachmentPlayer.owner = viewItem.interaction.uniqueId;
 
     [self.audioAttachmentPlayer setupAudioPlayer];
 }

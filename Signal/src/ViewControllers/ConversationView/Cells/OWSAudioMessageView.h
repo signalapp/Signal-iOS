@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateContents;
 
-- (BOOL)canScrubToLocation:(CGPoint)location;
 - (NSTimeInterval)scrubToLocation:(CGPoint)location;
 
 @end

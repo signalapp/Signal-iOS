@@ -656,7 +656,7 @@ class MessageDetailViewController: OWSViewController {
 
         if let audioAttachmentPlayer = self.audioAttachmentPlayer {
             // Is this player associated with this media adapter?
-            if audioAttachmentPlayer.owner === viewItem {
+            if audioAttachmentPlayer.owner?.isEqual(viewItem.interaction.uniqueId) == true {
                 return
             }
             audioAttachmentPlayer.stop()
@@ -667,7 +667,7 @@ class MessageDetailViewController: OWSViewController {
         self.audioAttachmentPlayer = audioAttachmentPlayer
 
         // Associate the player with this media adapter.
-        audioAttachmentPlayer.owner = viewItem
+        audioAttachmentPlayer.owner = viewItem.interaction.uniqueId as AnyObject
 
         audioAttachmentPlayer.setupAudioPlayer()
     }
