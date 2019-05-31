@@ -390,7 +390,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Contacto de Signal";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Take a picture and then send it";
+"CAMERA_BUTTON_HINT" = "Haz una foto y envíala";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Cámara";
@@ -919,7 +919,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Este contacto no utiliza Signal.";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Attachment download failed.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Fallo al descargar adjunto.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Fallo con el adjunto: Pide a tu contacto que actualice Signal y reenvíe el mensaje. ";
@@ -958,7 +958,7 @@
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Ahora no";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Let's Go";
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "¡Vamos!";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Demasiados fallos con este contacto. Vuelve a intentarlo más tarde.";
@@ -2345,20 +2345,23 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Sin sonido";
 
+/* Preview text shown in notifications and home view for sticker messages. */
+"STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+
 /* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Sticker pack installed";
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Paquete de cromos instalado";
 
 /* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Sticker";
+"STICKERS_FAILED_DOWNLOAD" = "Cromo";
 
 /* Label for the 'install sticker pack' button. */
-"STICKERS_INSTALL_BUTTON" = "Install";
+"STICKERS_INSTALL_BUTTON" = "Instalar";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Series de artistas de Signal";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Stickers You Received";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Cromos recibidos";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Cromos instalados (stickers)";
@@ -2367,25 +2370,25 @@
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No hay ningún paquete de cromos (stickers) instalado ";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Stickers from incoming messages will appear here";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Los cromos recibidos en mensajes aparecerán aquí";
 
 /* Title for the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_TITLE" = "Pegatinas (stickers)";
+"STICKERS_MANAGE_VIEW_TITLE" = "Cromos (stickers)";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Sticker Pack";
+"STICKERS_PACK_DEFAULT_TITLE" = "Paquete de cromos";
 
 /* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "Sticker pack install failed.";
+"STICKERS_PACK_INSTALL_FAILED" = "Fallo al instalar paquete de cromos.";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Compartir paquete de cromos";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Sticker Pack";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Paquete de cromos";
 
 /* Label for the 'uninstall sticker pack' button. */
-"STICKERS_UNINSTALL_BUTTON" = "Uninstall";
+"STICKERS_UNINSTALL_BUTTON" = "Desinstalar";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Tus cifras de seguridad con %@ coinciden. Puedes marcar este contacto como verificado.";
@@ -2456,6 +2459,21 @@
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "País desconocido";
 
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ sent you a message that can't be processed or displayed because it uses a new Signal feature.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
+
+/* Label for button that lets users upgrade the app. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "You can ask %@ to re-send this message now that you are using an up-to-date version of Signal.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
+
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Desconocido";
 
@@ -2490,10 +2508,10 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "No permitido";
 
 /* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Why use words when you can use stickers? Tap this icon on your keyboard:";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "¿Por qué usar palabras si puedes usar cromos (stickers)? Toca este icono en tu teclado:";
 
 /* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Introducing Stickers";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Presentamos los cromos (stickers)";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal próximamente solo funcionará en iOS 10 o versiones posteriores. Actualiza en Ajustes >> General >> Actualización de software.";

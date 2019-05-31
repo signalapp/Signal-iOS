@@ -390,7 +390,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal 用户";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Take a picture and then send it";
+"CAMERA_BUTTON_HINT" = "拍照并发送";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "相机";
@@ -919,7 +919,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "联系人不是 Signal 用户。";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Attachment download failed.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "附件下载失败。";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "附件出错：请通知发送者升级新版 Signal 后，再重新发送消息。";
@@ -958,7 +958,7 @@
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "以后再说";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Let's Go";
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "开始吧";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "与此联系人通信时发生大量错误，请稍后再试。";
@@ -2280,7 +2280,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "私密发件人";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "显示“正在输入”提示";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "显示指示图标";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "在使用私密发件人发送的信息上查看“更多信息”时，显示一个状态图标。";
@@ -2345,11 +2345,14 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "无";
 
+/* Preview text shown in notifications and home view for sticker messages. */
+"STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+
 /* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Sticker pack installed";
+"STICKER_PACK_INSTALLED_TOOLTIP" = "表情包已安装";
 
 /* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Sticker";
+"STICKERS_FAILED_DOWNLOAD" = "表情包";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "安装";
@@ -2358,16 +2361,16 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Series";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Stickers You Received";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "你收到的贴纸";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "可用表情";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No stickers installed";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "没有安装任何贴纸包";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Stickers from incoming messages will appear here";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "消息中的表情包会显示在这里";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "表情";
@@ -2376,10 +2379,10 @@
 "STICKERS_PACK_DEFAULT_TITLE" = "表情组";
 
 /* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "Sticker pack install failed.";
+"STICKERS_PACK_INSTALL_FAILED" = "表情包安装失败。";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "分享贴纸包";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "表情组";
@@ -2456,6 +2459,21 @@
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "未知国家";
 
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ sent you a message that can't be processed or displayed because it uses a new Signal feature.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
+
+/* Label for button that lets users upgrade the app. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "You can ask %@ to re-send this message now that you are using an up-to-date version of Signal.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
+
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "无法识别";
 
@@ -2490,10 +2508,10 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "不支持";
 
 /* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Why use words when you can use stickers? Tap this icon on your keyboard:";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "既然可以用表情包为什么还要打字呢？点击键盘上的这个图标：";
 
 /* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Introducing Stickers";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "表情包介绍";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal 即将仅支持 iOS 10 或更新的系统版本。请到 设置 >> 通用 >> 软件更新 升级 iOS。";

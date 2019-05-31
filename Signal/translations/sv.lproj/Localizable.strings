@@ -390,7 +390,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signalanvändare";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Take a picture and then send it";
+"CAMERA_BUTTON_HINT" = "Ta en bild och sedan skicka den";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Kamera";
@@ -453,7 +453,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Det här kommer att återställa appen, radera dina meddelanden och avregistrera dig från servern. Appen kommer att stängas när allt är klart.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Är du säker på att du vill radera ditt konto?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Är du säker på att du vill ta bort ditt konto?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Du kommer inte längre att kunna skicka eller ta emot meddelanden i den här gruppen.";
@@ -567,7 +567,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Denna åtgärd kan inte ångras.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Radera konversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Ta bort konversation?";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Inga resultat";
@@ -690,10 +690,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimerar databas";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ timmar sen";
+"DATE_HOURS_AGO_FORMAT" = "%@ timmar sedan";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ minuter sen";
+"DATE_MINUTES_AGO_FORMAT" = "%@ minuter sedan";
 
 /* The present; the current time. */
 "DATE_NOW" = "Nu";
@@ -919,7 +919,7 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakten är inte en Signal-användare.";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Attachment download failed.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Hämtning av bilagan misslyckades.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Misslyckades att ta emot bilaga: Be den här kontakten att skicka sitt meddelande igen efter att ha uppdaterat till den senaste versionen av Signal.";
@@ -958,7 +958,7 @@
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Inte nu";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Let's Go";
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Nu kör vi";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Får för många fel med den här kontakten. Försök igen senare.";
@@ -1042,7 +1042,7 @@
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Rensa verifiering för alla";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Det här kommer rensa verifieringen av alla gruppmedlemmarna vars säkerhetsnummer har ändrats sen förra verifieringen.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Det här kommer rensa verifieringen av alla gruppmedlemmarna vars säkerhetsnummer har ändrats sedan förra verifieringen.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Medlemmar";
@@ -2142,16 +2142,16 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nLicenserad under GPLv3";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Radera konto";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Ta bort konto";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Radera all data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Ta bort all data";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Är du säker på att du vill radera all historik (meddelanden, bifogade filer, samtal, etc.)? Du kan inte ångra dig.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Är du säker på att du vill ta bort all historik (meddelanden, bifogade filer, samtal, etc.)? Du kan inte ångra dig.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Radera allt";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Ta bort allt";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Hjälp";
@@ -2187,7 +2187,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Inställningar";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Samtals- och meddelandenotiser kan visas medan din telefon är låst. Du kanske vill begränsa vad som visas i dessa notiser.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Samtals- och meddelandeaviseringar kan visas medan din telefon är låst. Du kanske vill begränsa vad som visas i dessa notiser.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notisinnehåll";
@@ -2345,47 +2345,50 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Inget";
 
+/* Preview text shown in notifications and home view for sticker messages. */
+"STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+
 /* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Sticker pack installed";
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Klistermärkepaket installerat";
 
 /* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Sticker";
+"STICKERS_FAILED_DOWNLOAD" = "Klistermärke";
 
 /* Label for the 'install sticker pack' button. */
-"STICKERS_INSTALL_BUTTON" = "Install";
+"STICKERS_INSTALL_BUTTON" = "Installera";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Series";
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Serier";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Stickers You Received";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Klistermärken du mottagit";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installed Stickers";
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installera klistermärken";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No stickers installed";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Inga klistermärken installerade";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Stickers from incoming messages will appear here";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Klistermärken från inkommande meddelanden visas här";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "Stickers";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Sticker Pack";
+"STICKERS_PACK_DEFAULT_TITLE" = "Klistermärkepaket";
 
 /* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "Sticker pack install failed.";
+"STICKERS_PACK_INSTALL_FAILED" = "Installation av klistermärkepaket misslyckades.";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Dela klistermärkepaket";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Sticker Pack";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Klistermärkepaket";
 
 /* Label for the 'uninstall sticker pack' button. */
-"STICKERS_UNINSTALL_BUTTON" = "Uninstall";
+"STICKERS_UNINSTALL_BUTTON" = "Avinstallera";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ditt säkerhetsnummer med %@ stämmer. Du kan markera den är kontakten som verifierad.";
@@ -2442,7 +2445,7 @@
 "TXT_CANCEL_TITLE" = "Avbryt";
 
 /* No comment provided by engineer. */
-"TXT_DELETE_TITLE" = "Radera";
+"TXT_DELETE_TITLE" = "Ta bort";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Avarkivera";
@@ -2455,6 +2458,21 @@
 
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "Okänt land";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ sent you a message that can't be processed or displayed because it uses a new Signal feature.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
+
+/* Label for button that lets users upgrade the app. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "You can ask %@ to re-send this message now that you are using an up-to-date version of Signal.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Okänt";
@@ -2490,10 +2508,10 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Stöds inte";
 
 /* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Why use words when you can use stickers? Tap this icon on your keyboard:";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Varför använda ord när du kan använda klistermärken? Tryck på den här ikonen på tangentbordet:";
 
 /* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Introducing Stickers";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Introducerar Klistermärken";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal kommer snart att kräva iOS 10 eller senare. Vänligen uppgradera i Inställningar-app >> Allmänt >> Programuppdatering.";

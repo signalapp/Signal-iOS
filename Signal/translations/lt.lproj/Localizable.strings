@@ -15,7 +15,7 @@
 "ACTION_SEND_MESSAGE" = "Siųsti žinutę";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Bendrinti kontaktą";
+"ACTION_SHARE_CONTACT" = "Bendrinti adresatą";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Vaizdo skambutis";
@@ -24,7 +24,7 @@
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Pridėti";
 
 /* Title for the 'add contact' section of the 'add group member' view. */
-"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Pridėti kontaktą";
+"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE" = "Pridėti adresatą";
 
 /* Title for the 'add by phone number' section of the 'add group member' view. */
 "ADD_GROUP_MEMBER_VIEW_PHONE_NUMBER_TITLE" = "Pridėti pagal telefono numerį";
@@ -36,7 +36,7 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Ar norėtumėte bendrinti savo profilį su šia grupe?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Ar norėtumėte pridėti šį naudotoją prie savo kontaktų?";
+"ADD_TO_CONTACTS_OFFER" = "Ar norėtumėte pridėti šį naudotoją prie savo adresatų?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Ar norėtumėte bendrinti savo profilį  su šiuo naudotoju?";
@@ -153,7 +153,7 @@
 "ATTACHMENT_LABEL" = "Priedas";
 
 /* attachment menu option to send contact */
-"ATTACHMENT_MENU_CONTACT_BUTTON" = "Kontaktas";
+"ATTACHMENT_MENU_CONTACT_BUTTON" = "Adresatas";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Nepavyko pasirinkti dokumento.";
@@ -390,7 +390,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal naudotojas";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Take a picture and then send it";
+"CAMERA_BUTTON_HINT" = "Padaryti nuotrauką, o tuomet ją išsiųsti";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Kamera";
@@ -438,7 +438,7 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Palyginti su iškarpine";
 
 /* Table section header for contact listing when composing a new message */
-"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontaktai";
+"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Adresatai";
 
 /* Table section header for group listing when composing a new message */
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Grupės";
@@ -447,7 +447,7 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Pakviesti";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Norėdami matyti, kurie iš jūsų kontaktų yra Signal naudotojai, iOS nustatymų programėlėje galite įjungti prieigą prie kontaktų.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Norėdami matyti, kurie iš jūsų adresatų yra Signal naudotojai, iOS nustatymų programėlėje galite įjungti prieigą prie adresatų.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Tai atstatys programą, ištrinant jūsų žinutes ir išregistruojant jus iš serverio. Užbaigus šį procesą, programa bus užverta.";
@@ -540,19 +540,19 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Telefono numeris neprieinamas.";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Pasirinkti kontaktą";
+"CONTACT_PICKER_TITLE" = "Pasirinkti adresatą";
 
 /* Title for the 'Approve contact share' view. */
-"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Bendrinti kontaktą";
+"CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Bendrinti adresatą";
 
 /* Title for the 'edit contact share name' view. */
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Taisyti vardą";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Neteisingas kontaktas.";
+"CONTACT_SHARE_INVALID_CONTACT" = "Neteisingas adresatas.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nepažymėti jokie kontakto laukeliai.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nepažymėti jokie adresato laukeliai.";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Atverti žemėlapiuose";
@@ -561,7 +561,7 @@
 "CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Siųsti el. paštą";
 
 /* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "Bevardis kontaktas";
+"CONTACT_WITHOUT_NAME" = "Bevardis adresatas";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Šio veiksmo neįmanoma bus atšaukti.";
@@ -582,7 +582,7 @@
 "CONVERSATION_SETTINGS" = "Pokalbio nustatymai";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Pridėti prie esamo kontakto";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Pridėti prie esamo adresato";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Užblokuoti šią grupę";
@@ -627,7 +627,7 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "iki %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Sukurti naują kontaktą";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Sukurti naują adresatą";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Ieškoti pokalbyje";
@@ -654,13 +654,13 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Bendrinti savo profilį";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Įtraukti į kontaktus";
+"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Įtraukti į adresatus";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Bendrinti savo profilį su šiuo naudotoju";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Šio naudotojo nėra jūsų kontaktuose.";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Šio naudotojo nėra jūsų adresatuose.";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Įkeliama daugiau žinučių…";
@@ -790,13 +790,13 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Prieigą galite įjungti iOS nustatymų programėlėje.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Norint taisyti kontaktinę informaciją, Signal reikia kontaktų prieigos";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Norint taisyti kontaktinę informaciją, Signal reikia adresatų prieigos";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Taisyti grupę";
 
 /* a title for the contacts section of the 'new/update group' view. */
-"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Kontaktai";
+"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Adresatai";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Taisyti grupę";
@@ -832,7 +832,7 @@
 "EMAIL_INVITE_SUBJECT" = "Persijunkime į Signal";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Nei vienas iš jūsų kontaktų neturi Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Nei vienas iš jūsų adresatų neturi Signal.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Kodėl gi jums ko nors nepakvietus?";
@@ -877,7 +877,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Skambutis nepavyko.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Nepavyko gauti prieigos prie kontaktų.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Nepavyko gauti prieigos prie adresatų.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Nepavyko išsiųsti žinutę.";
@@ -916,13 +916,13 @@
 "ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Įvyko nežinoma klaida.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontaktas nėra Signal naudotojas.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Adresatas nėra Signal naudotojas.";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Attachment download failed.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Nepavyko atsisiųsti priedo.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Priedo nesėkmė: Paprašykite šio kontakto, kad atsinaujintų Signal į naujausią versiją ir išsiųstų savo žinutę dar kartą.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Priedo nesėkmė: Paprašykite šio adresato, kad atsinaujintų Signal į naujausią versiją ir išsiųstų savo žinutę dar kartą.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Gauta dviguba žinutė.";
@@ -937,7 +937,7 @@
 "ERROR_MESSAGE_INVALID_VERSION" = "Gauta žinutė, kuri yra nesuderinama su šia versija.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "Nėra kontaktui prieinamo seanso.";
+"ERROR_MESSAGE_NO_SESSION" = "Nėra adresatui prieinamo seanso.";
 
 /* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Saugumo numeris pasikeitė.";
@@ -958,10 +958,10 @@
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Ne dabar";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
-"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Let's Go";
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Pirmyn";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Per daug nesėkmių su šiuo kontaktu. Bandykite dar kartą vėliau.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Per daug nesėkmių su šiuo adresatu. Bandykite dar kartą vėliau.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Jūsų saugumo numeris su %@ neseniai pasikeitė. Prieš siųsdami iš naujo, jūs, tikriausiai, norėtumėte jį patvirtinti.";
@@ -1033,7 +1033,7 @@
 "GROUP_MEMBER_LEFT" = " %@ išėjo iš grupės. ";
 
 /* Button label to add information to an unknown contact */
-"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Pridėti kontaktą";
+"GROUP_MEMBERS_ADD_CONTACT_INFO" = "Pridėti adresatą";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "Skambinti";
@@ -1075,13 +1075,13 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Ieškoti";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Kai kurie jūsų kontaktai, įskaitant %@, jau yra Signal.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Kai kurie jūsų adresatai, įskaitant %@, jau yra Signal.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Kai kurie jūsų kontaktai, įskaitant %@ ir %@, jau yra Signal";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Kai kurie jūsų adresatai, įskaitant %@ ir %@, jau yra Signal";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Kai kurie jūsų kontaktai, įskaitant %@, %@ ir %@, jau yra Signal";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Kai kurie jūsų adresatai, įskaitant %@, %@ ir %@, jau yra Signal";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Pradėkite savo pirmąjį pokalbį čia.";
@@ -1123,7 +1123,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Pradėkite, bendraudami su draugais.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Norėdami savo Signal pokalbių sąraše matyti kontaktų vardus, iOS nustatymų programėlėje galite įjungti prieigą prie kontaktų.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Norėdami savo Signal pokalbių sąraše matyti adresatų vardus, iOS nustatymų programėlėje galite įjungti prieigą prie adresatų.";
 
 /* info message text in conversation view */
 "INCOMING_CALL" = "Gaunamasis skambutis";
@@ -1141,10 +1141,10 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Neteisingas garso failas.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Norėdami kviesti savo draugus prisijungti prie Signal, iOS nustatymų programėlėje galite įjungti prieigą prie kontaktų.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Norėdami kviesti savo draugus prisijungti prie Signal, iOS nustatymų programėlėje galite įjungti prieigą prie adresatų.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Leisti kontaktų prieigą";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Leisti adresatų prieigą";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Pakviesti draugus į Signal";
@@ -1177,7 +1177,7 @@
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Įrenginio susiejimas nepavyko";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Šis įrenginys galės matyti jūsų grupes ir kontaktus, galės gauti prieigą prie jūsų pokalbių ir siųsti žinutes jūsų vardu.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Šis įrenginys galės matyti jūsų grupes ir adresatus, galės gauti prieigą prie jūsų pokalbių ir siųsti žinutes jūsų vardu.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Susieti šį įrenginį?";
@@ -1476,7 +1476,7 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Rasti naudotoją";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Rasti kontaktus pagal telefono numerį";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Rasti adresatus pagal telefono numerį";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Pastabos sau";
@@ -1686,7 +1686,7 @@
 "PRIVACY_UNVERIFY_BUTTON" = "Išvalyti patvirtinimą";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Tai neatrodo kaip jūsų saugumo numeris, skirtas %@. Ar tikrai tvirtinate teisingą kontaktą?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Tai neatrodo kaip jūsų saugumo numeris, skirtas naudotojui %@. Ar tikrai tvirtinate teisingą adresatą?";
 
 /* Alert body */
 "PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Jūsų iškarpinėje esantis numeris neatrodo kaip teisingas šiam pokalbiui skirtas numeris.";
@@ -1743,7 +1743,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avataras";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Jūsų Signal profilis bus matomas jūsų kontaktams, kai inicijuosite naujus pokalbius, o taip pat, kai bendrinsite jį su kitais naudotojais ir grupėmis.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Jūsų Signal profilis bus matomas jūsų adresatams, kai inicijuosite naujus pokalbius, o taip pat, kai bendrinsite profilį su kitais naudotojais ir grupėmis.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Bakstelėkite čia, norėdami sužinoti daugiau.";
@@ -1926,7 +1926,7 @@
 "SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Jūsų saugumo numeris, skirtas kontaktui %@ pasikeitė. Jūs, tikriausiai, norėtumėte jį patvirtinti.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Nuskenuokite QR kodą savo kontakto įrenginyje.";
+"SCAN_CODE_INSTRUCTIONS" = "Nuskenuokite QR kodą savo adresato įrenginyje.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "Skenuoti QR kodą";
@@ -1965,7 +1965,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Ieškokite vardo ar numerio";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
-"SEARCH_SECTION_CONTACTS" = "Kiti kontaktai";
+"SEARCH_SECTION_CONTACTS" = "Kiti adresatai";
 
 /* section header for search results that match existing conversations (either group or contact conversations) */
 "SEARCH_SECTION_CONVERSATIONS" = "Pokalbiai";
@@ -1980,7 +1980,7 @@
 "SELECT_GIF_BUTTON" = "GIF";
 
 /* Table section header for conversations you haven't recently used. */
-"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Kiti kontaktai";
+"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Kiti adresatai";
 
 /* Table section header for recently active conversations */
 "SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Paskiausi pokalbiai";
@@ -2025,7 +2025,7 @@
 "SETTINGS_ABOUT" = "Apie";
 
 /* Title for the 'block contact' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Užblokuoti kontaktą";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Užblokuoti adresatą";
 
 /* Title for the 'block phone number' section of the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Užblokuoti telefono numerį";
@@ -2121,7 +2121,7 @@
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Pridėti užblokuotą naudotoją";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Jūs neturite Signal kontaktų.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Jūs neturite Signal adresatų.";
 
 /* A label that indicates the user's search has no matching results. */
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Nėra paieškos rezultatų";
@@ -2133,7 +2133,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Visada retransliuoti skambučius";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Retransliuoti visus skambučius per Signal serverį, kad išvengtumėte savo IP adreso atskleidimo savo kontaktui. Įjungus, pablogės skambučio kokybė.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Retransliuoti visus skambučius per Signal serverį, kad išvengtumėte savo IP adreso atskleidimo savo adresatui. Įjungus, pablogės skambučio kokybė.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Išvalyti pokalbių istoriją";
@@ -2238,7 +2238,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Neleisti Signal peržiūroms atsirasti programėlių perjungiklyje.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS skambučių integracija rodo Signal skambučius jūsų užrakto ekrane ir sistemos skambučių žurnale. Pasirinktinai, gali būti rodomi jūsų kontakto vardas ir numeris. Jeigu iCloud yra įjungta, tuomet šis skambučių žurnalas bus bendrinamas su Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS skambučių integracija rodo Signal skambučius jūsų užrakto ekrane ir sistemos skambučių žurnale. Pasirinktinai, gali būti rodomi jūsų adresato vardas ir numeris. Jeigu iCloud yra įjungta, tuomet šis skambučių žurnalas bus bendrinamas su Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Pranešimai";
@@ -2289,7 +2289,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Leisti nuo bet ko";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Įjungti užantspauduotą siuntėją gaunamosioms žinutėms nuo asmenų, kurių nėra kontaktų sąraše ir žmonių su kuriais nebendrinote savo profilį.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Įjungti užantspauduotą siuntėją gaunamosioms žinutėms nuo asmenų, kurių nėra adresatų sąraše ir žmonių su kuriais nebendrinote savo profilį.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Versija";
@@ -2345,11 +2345,14 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Nėra";
 
+/* Preview text shown in notifications and home view for sticker messages. */
+"STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+
 /* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Sticker pack installed";
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Lipdukų paketas įdiegtas";
 
 /* Label for a sticker that failed to download. */
-"STICKERS_FAILED_DOWNLOAD" = "Sticker";
+"STICKERS_FAILED_DOWNLOAD" = "Lipdukas";
 
 /* Label for the 'install sticker pack' button. */
 "STICKERS_INSTALL_BUTTON" = "Įdiegti";
@@ -2370,16 +2373,16 @@
 "STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Čia bus rodomi lipdukai iš gaunamų žinučių";
 
 /* Title for the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_TITLE" = "Paveiksliukai";
+"STICKERS_MANAGE_VIEW_TITLE" = "Lipdukai";
 
 /* Default title for sticker packs. */
 "STICKERS_PACK_DEFAULT_TITLE" = "Lipdukų paketas";
 
 /* Error message shown when a sticker pack failed to install. */
-"STICKERS_PACK_INSTALL_FAILED" = "Sticker pack install failed.";
+"STICKERS_PACK_INSTALL_FAILED" = "Lipdukų paketo įdiegimas nepavyko.";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Bendrinti lipdukų paketą";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Lipdukų paketas";
@@ -2388,7 +2391,7 @@
 "STICKERS_UNINSTALL_BUTTON" = "Pašalinti";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Jūsų saugumo numeris su %@ sutampa. Dabar galite pažymėti šį kontaktą kaip patvirtintą.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Jūsų saugumo numeris su %@ sutampa. Dabar galite pažymėti šį adresatą kaip patvirtintą.";
 
 /* No comment provided by engineer. */
 "SUCCESSFUL_VERIFICATION_TITLE" = "Saugumo numeris sutampa!";
@@ -2448,13 +2451,28 @@
 "UNARCHIVE_ACTION" = "Nebearchyvuoti";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Naudotojo nėra jūsų kontaktų sąraše. Ar norėtumėte užblokuoti šį naudotoją?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Naudotojo nėra jūsų adresatų sąraše. Ar norėtumėte užblokuoti šį naudotoją?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "Nežinomas kontaktas";
+"UNKNOWN_CONTACT_NAME" = "Nežinomas adresatas";
 
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "Nežinoma šalis";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ sent you a message that can't be processed or displayed because it uses a new Signal feature.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
+
+/* Label for button that lets users upgrade the app. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "You can ask %@ to re-send this message now that you are using an up-to-date version of Signal.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Nežinoma";
@@ -2490,7 +2508,7 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Nepalaikoma";
 
 /* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Why use words when you can use stickers? Tap this icon on your keyboard:";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Kam naudoti žodžius, kai galima naudoti lipdukus? Bakstelėkite savo klaviatūroje šią piktogramą:";
 
 /* Header for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Pristatome lipdukus";
