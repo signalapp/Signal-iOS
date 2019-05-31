@@ -382,7 +382,8 @@ class GRDBPerMessageExpirationFinder: PerMessageExpirationFinder {
         SELECT * FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .perMessageExpirationDurationSeconds) IS NOT NULL
         AND \(interactionColumn: .perMessageExpirationDurationSeconds) > 0
-        AND \(interactionColumn: .perMessageExpirationHasExpired) is 0
+        AND \(interactionColumn: .perMessageExpirationHasExpired) IS NOT NULL
+        AND \(interactionColumn: .perMessageExpirationHasExpired) == FALSE
         """
 
         let cursor = TSInteraction.grdbFetchCursor(sql: sql,
@@ -424,6 +425,7 @@ class YAPDBPerMessageExpirationFinder: PerMessageExpirationFinder {
             }
             guard message.hasPerMessageExpiration,
                 !message.perMessageExpirationHasExpired else {
+                    owsFailDebug("expecting message with per message expiration but found: \(message)")
                 return
             }
             block(message, stopPointer)
