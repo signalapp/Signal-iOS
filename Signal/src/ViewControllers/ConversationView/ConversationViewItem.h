@@ -132,6 +132,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *stickerAttachment;
 @property (nonatomic, readonly) BOOL isFailedSticker;
+@property (nonatomic, readonly) BOOL perMessageExpirationHasExpired;
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
 

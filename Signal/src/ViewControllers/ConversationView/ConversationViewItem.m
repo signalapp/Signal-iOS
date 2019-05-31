@@ -99,6 +99,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, nullable) TSAttachmentStream *stickerAttachment;
 @property (nonatomic) BOOL isFailedSticker;
+@property (nonatomic) BOOL perMessageExpirationHasExpired;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
@@ -171,6 +172,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.stickerInfo = nil;
     self.stickerAttachment = nil;
     self.isFailedSticker = NO;
+    self.perMessageExpirationHasExpired = NO;
     self.contactShare = nil;
     self.systemMessageText = nil;
     self.authorConversationColorName = nil;
@@ -375,6 +377,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     _isFailedSticker = isFailedSticker;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setPerMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
+{
+    if (_perMessageExpirationHasExpired == perMessageExpirationHasExpired) {
+        return;
+    }
+
+    _perMessageExpirationHasExpired = perMessageExpirationHasExpired;
 
     [self clearCachedLayoutState];
 }
@@ -673,7 +686,30 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     TSMessage *message = (TSMessage *)self.interaction;
 
     if (message.hasPerMessageExpiration) {
-        self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+        if (transaction.transitional_yapReadTransaction) {
+            NSArray<TSAttachment *> *mediaAttachments =
+                [message mediaAttachmentsWithTransaction:transaction.transitional_yapReadTransaction];
+            // TODO: We currently only support single attachments for messages
+            //       with per-message expiration.
+            TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
+            if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
+                self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+                self.perMessageExpirationHasExpired = message.perMessageExpirationHasExpired;
+                self.attachmentPointer = (TSAttachmentPointer *)mediaAttachment;
+                return;
+            } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
+                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
+                if (attachmentStream.isValidVisualMedia) {
+                    self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+                    self.perMessageExpirationHasExpired = message.perMessageExpirationHasExpired;
+                    self.attachmentStream = attachmentStream;
+                    return;
+                }
+            }
+        }
+
+        OWSFailDebug(@"Invalid media for message with per-message expiration.");
+        self.messageCellType = OWSMessageCellType_GenericAttachment;
         return;
     }
 

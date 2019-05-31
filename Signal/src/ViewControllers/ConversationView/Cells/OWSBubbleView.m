@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBubbleView.h"
@@ -40,10 +40,13 @@ UIRectCorner UIRectCornerForOWSDirectionalRectCorner(OWSDirectionalRectCorner co
 const CGFloat kOWSMessageCellCornerRadius_Large = 18;
 const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 
+#pragma mark -
+
 @interface OWSBubbleView ()
 
 @property (nonatomic) CAShapeLayer *maskLayer;
 @property (nonatomic) CAShapeLayer *shapeLayer;
+@property (nonatomic) CAGradientLayer *gradientLayer;
 
 @property (nonatomic, readonly) NSMutableArray<id<OWSBubbleViewPartner>> *partnerViews;
 
@@ -64,6 +67,11 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 
     self.shapeLayer = [CAShapeLayer new];
     [self.layer addSublayer:self.shapeLayer];
+    self.shapeLayer.hidden = YES;
+
+    self.gradientLayer = [CAGradientLayer new];
+    [self.layer addSublayer:self.gradientLayer];
+    self.gradientLayer.hidden = YES;
 
     self.maskLayer = [CAShapeLayer new];
     self.layer.mask = self.maskLayer;
@@ -118,17 +126,22 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
 
 - (void)setBubbleColor:(nullable UIColor *)bubbleColor
 {
+    OWSAssertIsOnMainThread();
+
     _bubbleColor = bubbleColor;
+    _bubbleGradientColors = nil;
 
     [self updateLayers];
+}
 
-    // Prevent the shape layer from animating changes.
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
+- (void)setBubbleGradientColors:(nullable NSArray<UIColor *> *)bubbleGradientColors
+{
+    OWSAssertIsOnMainThread();
 
-    self.shapeLayer.fillColor = bubbleColor.CGColor;
+    _bubbleColor = nil;
+    _bubbleGradientColors = bubbleGradientColors;
 
-    [CATransaction commit];
+    [self updateLayers];
 }
 
 - (void)setSharpCorners:(OWSDirectionalRectCorner)sharpCorners
@@ -146,6 +159,9 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     if (!self.shapeLayer) {
         return;
     }
+    if (!self.gradientLayer) {
+        return;
+    }
 
     UIBezierPath *bezierPath = [self maskPath];
 
@@ -154,10 +170,30 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     [CATransaction setDisableActions:YES];
 
     self.shapeLayer.fillColor = self.bubbleColor.CGColor;
+    self.shapeLayer.hidden = self.bubbleColor == nil;
     self.shapeLayer.path = bezierPath.CGPath;
+
+    NSArray *bubbleGradientCGColors = self.bubbleGradientCGColors;
+    self.gradientLayer.colors = bubbleGradientCGColors;
+    self.gradientLayer.hidden = bubbleGradientCGColors.count < 1;
+    // Currently this view only supports linear (or axial) gradients
+    // from the top-left to bottom-right.
+    self.gradientLayer.startPoint = CGPointMake(0, 1);
+    self.gradientLayer.endPoint = CGPointMake(1, 0);
+    self.gradientLayer.frame = self.bounds;
+
     self.maskLayer.path = bezierPath.CGPath;
 
     [CATransaction commit];
+}
+
+- (NSArray *)bubbleGradientCGColors
+{
+    NSMutableArray *result = [NSMutableArray new];
+    for (UIColor *color in self.bubbleGradientColors) {
+        [result addObject:(id)color.CGColor];
+    }
+    return result;
 }
 
 - (UIBezierPath *)maskPath

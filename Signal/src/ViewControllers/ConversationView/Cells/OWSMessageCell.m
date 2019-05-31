@@ -6,6 +6,7 @@
 #import "OWSContactAvatarBuilder.h"
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageHeaderView.h"
+#import "OWSMessageHiddenView.h"
 #import "OWSMessageStickerView.h"
 #import "Signal-Swift.h"
 
