@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAudioPlayer.h"
@@ -115,35 +115,9 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL success = [self.audioSession startAudioActivity:audioActivity];
     OWSAssertDebug(success);
 
-    OWSAssertDebug(self.mediaUrl);
-    OWSAssertDebug([self.delegate audioPlaybackState] != AudioPlaybackState_Playing);
-
-    [self.audioPlayerPoller invalidate];
+    [self setupAudioPlayer];
 
     self.delegate.audioPlaybackState = AudioPlaybackState_Playing;
-
-    if (!self.audioPlayer) {
-        NSError *error;
-        self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaUrl error:&error];
-        if (error) {
-            OWSLogError(@"error: %@", error);
-            [self stop];
-
-            if ([error.domain isEqualToString:NSOSStatusErrorDomain]
-                && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
-                [OWSAlerts
-                    showErrorAlertWithMessage:NSLocalizedString(@"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
-                                                  @"Message for the alert indicating that an audio file is invalid.")];
-            }
-
-            return;
-        }
-        self.audioPlayer.delegate = self;
-        if (self.isLooping) {
-            self.audioPlayer.numberOfLoops = -1;
-        }
-    }
-
     [self.audioPlayer play];
     [self.audioPlayerPoller invalidate];
     self.audioPlayerPoller = [NSTimer weakScheduledTimerWithTimeInterval:.05f
@@ -167,6 +141,43 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self endAudioActivities];
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+}
+
+- (void)setupAudioPlayer
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.delegate.audioPlaybackState != AudioPlaybackState_Stopped) {
+        return;
+    }
+
+    OWSAssertDebug(self.mediaUrl);
+
+    if (!self.audioPlayer) {
+        NSError *error;
+        self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaUrl error:&error];
+        if (error) {
+            OWSLogError(@"error: %@", error);
+            [self stop];
+
+            if ([error.domain isEqualToString:NSOSStatusErrorDomain]
+                && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
+                [OWSAlerts
+                    showErrorAlertWithMessage:NSLocalizedString(@"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
+                                                  @"Message for the alert indicating that an audio file is invalid.")];
+            }
+
+            return;
+        }
+        self.audioPlayer.delegate = self;
+        if (self.isLooping) {
+            self.audioPlayer.numberOfLoops = -1;
+        }
+    }
+
+    if (self.delegate.audioPlaybackState == AudioPlaybackState_Stopped) {
+        self.delegate.audioPlaybackState = AudioPlaybackState_Paused;
+    }
 }
 
 - (void)stop
@@ -198,6 +209,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)setCurrentTime:(NSTimeInterval)currentTime
+{
+    self.audioPlayer.currentTime = currentTime;
+
+    [self.delegate setAudioProgress:(CGFloat)[self.audioPlayer currentTime]
+                           duration:(CGFloat)[self.audioPlayer duration]];
+}
+
 #pragma mark - Events
 
 - (void)audioPlayerUpdated:(NSTimer *)timer
@@ -215,6 +234,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     [self stop];
+
+    if ([self.delegate respondsToSelector:@selector(audioPlayerDidFinish)]) {
+        [self.delegate audioPlayerDidFinish];
+    }
 }
 
 @end

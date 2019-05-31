@@ -70,6 +70,11 @@ NS_ASSUME_NONNULL_BEGIN
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.contentView addGestureRecognizer:longPress];
+
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                                          action:@selector(handlePanGesture:)];
+    [self.contentView addGestureRecognizer:pan];
+    [tap requireGestureRecognizerToFail:pan];
 }
 
 - (void)dealloc
@@ -480,6 +485,11 @@ NS_ASSUME_NONNULL_BEGIN
             [self.delegate conversationCell:self didLongpressSticker:self.viewItem];
             break;
     }
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    [self.messageView handlePanGesture:sender];
 }
 
 - (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender

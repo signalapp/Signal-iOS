@@ -518,9 +518,24 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     OWSAssertIsOnMainThread();
 
-    self.audioProgressSeconds = progress;
+    // We don't want to reset the progress slider when the playback stops,
+    // only when we finish playing the recording. This lets the user pick
+    // back up where they left off if they, for example, play another message.
+    if (self.audioPlaybackState != AudioPlaybackState_Stopped) {
+        self.audioProgressSeconds = progress;
+    }
 
     [self.lastAudioMessageView updateContents];
+}
+
+- (void)audioPlayerDidFinish
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.audioPlaybackState == AudioPlaybackState_Stopped) {
+        self.audioProgressSeconds = 0;
+        [self.lastAudioMessageView updateContents];
+    }
 }
 
 #pragma mark - Displayable Text

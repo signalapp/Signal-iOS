@@ -27,6 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
 
+- (void)didScrubAudioViewItem:(id<ConversationViewItem>)viewItem
+                       toTime:(NSTimeInterval)time
+             attachmentStream:(TSAttachmentStream *)attachmentStream;
+
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem;
 
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem;

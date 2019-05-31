@@ -385,7 +385,7 @@ class MessageDetailViewController: OWSViewController {
             messageView = messageBubbleView
         }
 
-        messageView.addTapGestureHandler()
+        messageView.addGestureHandlers()
         self.messageView = messageView
         messageView.viewItem = viewItem
         messageView.cellMediaCache = NSCache()
@@ -639,6 +639,39 @@ class MessageDetailViewController: OWSViewController {
         }
     }
 
+    // MARK: - Audio Setup
+
+    private func prepareAudioPlayer(for viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
+        AssertIsOnMainThread()
+
+        guard let mediaURL = attachmentStream.originalMediaURL else {
+            owsFailDebug("mediaURL was unexpectedly nil for attachment: \(attachmentStream)")
+            return
+        }
+
+        guard FileManager.default.fileExists(atPath: mediaURL.path) else {
+            owsFailDebug("audio file missing at path: \(mediaURL)")
+            return
+        }
+
+        if let audioAttachmentPlayer = self.audioAttachmentPlayer {
+            // Is this player associated with this media adapter?
+            if audioAttachmentPlayer.owner === viewItem {
+                return
+            }
+            audioAttachmentPlayer.stop()
+            self.audioAttachmentPlayer = nil
+        }
+
+        let audioAttachmentPlayer = OWSAudioPlayer(mediaUrl: mediaURL, audioBehavior: .audioMessagePlayback, delegate: viewItem)
+        self.audioAttachmentPlayer = audioAttachmentPlayer
+
+        // Associate the player with this media adapter.
+        audioAttachmentPlayer.owner = viewItem
+
+        audioAttachmentPlayer.setupAudioPlayer()
+    }
+
     // MARK: - Message Bubble Layout
 
     private func updateMessageViewLayout() {
@@ -707,33 +740,20 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
     func didTapAudioViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
         AssertIsOnMainThread()
 
-        guard let mediaURL = attachmentStream.originalMediaURL else {
-            owsFailDebug("mediaURL was unexpectedly nil for attachment: \(attachmentStream)")
-            return
-        }
+        self.prepareAudioPlayer(for: viewItem, attachmentStream: attachmentStream)
 
-        guard FileManager.default.fileExists(atPath: mediaURL.path) else {
-            owsFailDebug("audio file missing at path: \(mediaURL)")
-            return
-        }
+        // Resume from where we left off
+        audioAttachmentPlayer?.setCurrentTime(TimeInterval(viewItem.audioProgressSeconds))
 
-        if let audioAttachmentPlayer = self.audioAttachmentPlayer {
-            // Is this player associated with this media adapter?
-            if audioAttachmentPlayer.owner === viewItem {
-                // Tap to pause & unpause.
-                audioAttachmentPlayer.togglePlayState()
-                return
-            }
-            audioAttachmentPlayer.stop()
-            self.audioAttachmentPlayer = nil
-        }
+        audioAttachmentPlayer?.togglePlayState()
+    }
 
-        let audioAttachmentPlayer = OWSAudioPlayer(mediaUrl: mediaURL, audioBehavior: .audioMessagePlayback, delegate: viewItem)
-        self.audioAttachmentPlayer = audioAttachmentPlayer
+    func didScrubAudioViewItem(_ viewItem: ConversationViewItem, toTime time: TimeInterval, attachmentStream: TSAttachmentStream) {
+        AssertIsOnMainThread()
 
-        // Associate the player with this media adapter.
-        audioAttachmentPlayer.owner = viewItem
-        audioAttachmentPlayer.play()
+        self.prepareAudioPlayer(for: viewItem, attachmentStream: attachmentStream)
+
+        audioAttachmentPlayer?.setCurrentTime(time)
     }
 
     func didTapTruncatedTextMessage(_ conversationItem: ConversationViewItem) {

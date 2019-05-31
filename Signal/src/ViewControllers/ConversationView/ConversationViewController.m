@@ -2346,6 +2346,40 @@ typedef enum : NSUInteger {
                                                                   success:successHandler];
 }
 
+#pragma mark - Audio Setup
+
+- (void)prepareAudioPlayerForViewItem:(id<ConversationViewItem>)viewItem
+                     attachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(attachmentStream);
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:attachmentStream.originalFilePath]) {
+        OWSFailDebug(@"Missing video file: %@", attachmentStream.originalMediaURL);
+    }
+
+    if (self.audioAttachmentPlayer) {
+        // Is this player associated with this media adapter?
+        if (self.audioAttachmentPlayer.owner == viewItem) {
+            return;
+        }
+
+        [self.audioAttachmentPlayer stop];
+        self.audioAttachmentPlayer = nil;
+    }
+
+    self.audioAttachmentPlayer = [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.originalMediaURL
+                                                            audioBehavior:OWSAudioBehavior_AudioMessagePlayback
+                                                                 delegate:viewItem];
+
+    // Associate the player with this media adapter.
+    self.audioAttachmentPlayer.owner = viewItem;
+
+    [self.audioAttachmentPlayer setupAudioPlayer];
+}
+
 #pragma mark - OWSMessageBubbleViewDelegate
 
 - (void)didTapImageViewItem:(id<ConversationViewItem>)viewItem
@@ -2396,34 +2430,23 @@ typedef enum : NSUInteger {
 
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(viewItem);
-    OWSAssertDebug(attachmentStream);
-
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:attachmentStream.originalFilePath]) {
-        OWSFailDebug(@"Missing video file: %@", attachmentStream.originalMediaURL);
-    }
+    [self prepareAudioPlayerForViewItem:viewItem attachmentStream:attachmentStream];
 
     [self dismissKeyBoard];
 
-    if (self.audioAttachmentPlayer) {
-        // Is this player associated with this media adapter?
-        if (self.audioAttachmentPlayer.owner == viewItem) {
-            // Tap to pause & unpause.
-            [self.audioAttachmentPlayer togglePlayState];
-            return;
-        }
-        [self.audioAttachmentPlayer stop];
-        self.audioAttachmentPlayer = nil;
-    }
+    // Resume from where we left off
+    [self.audioAttachmentPlayer setCurrentTime:viewItem.audioProgressSeconds];
 
-    self.audioAttachmentPlayer =
-        [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.originalMediaURL audioBehavior:OWSAudioBehavior_AudioMessagePlayback delegate:viewItem];
-    
-    // Associate the player with this media adapter.
-    self.audioAttachmentPlayer.owner = viewItem;
-    [self.audioAttachmentPlayer play];
+    [self.audioAttachmentPlayer togglePlayState];
+}
+
+- (void)didScrubAudioViewItem:(id<ConversationViewItem>)viewItem
+                       toTime:(NSTimeInterval)time
+             attachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    [self prepareAudioPlayerForViewItem:viewItem attachmentStream:attachmentStream];
+
+    [self.audioAttachmentPlayer setCurrentTime:time];
 }
 
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem

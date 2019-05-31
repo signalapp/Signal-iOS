@@ -1523,6 +1523,38 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    if (sender.state != UIGestureRecognizerStateChanged) {
+        return;
+    }
+
+    CGPoint locationInMessageBubble = [sender locationInView:self];
+    if ([self gestureLocationForLocation:locationInMessageBubble] == OWSMessageGestureLocation_Media) {
+        [self handleMediaPanGesture:sender];
+    }
+}
+
+- (void)handleMediaPanGesture:(UIPanGestureRecognizer *)sender
+{
+    OWSAssertDebug(self.delegate);
+
+    if (self.cellType == OWSMessageCellType_Audio && self.viewItem.attachmentStream) {
+        if ([self.bodyMediaView isKindOfClass:[OWSAudioMessageView class]]) {
+            OWSAudioMessageView *_Nullable audioMessageView = (OWSAudioMessageView *)self.bodyMediaView;
+
+            CGPoint locationInAudioView = [sender locationInView:audioMessageView];
+
+            if ([audioMessageView canScrubToLocation:locationInAudioView]) {
+                NSTimeInterval scrubbedTime = [audioMessageView scrubToLocation:locationInAudioView];
+                [self.delegate didScrubAudioViewItem:self.viewItem
+                                              toTime:scrubbedTime
+                                    attachmentStream:self.viewItem.attachmentStream];
+            }
+        }
+    }
+}
+
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble
 {
     if (self.quotedMessageView) {

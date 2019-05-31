@@ -46,9 +46,10 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 
 // This only needs to be called when we use the cell _outside_ the context
 // of a conversation view message cell.
-- (void)addTapGestureHandler;
+- (void)addGestureHandlers;
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender;
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender;
 
 @end
 
