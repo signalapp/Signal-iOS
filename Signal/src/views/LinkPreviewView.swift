@@ -211,10 +211,24 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
             owsFailDebug("Attachment is missing file path.")
             return nil
         }
-        guard let image = UIImage(contentsOfFile: imageFilepath) else {
+
+        let imageClass: UIImage.Type
+        if attachmentStream.contentType == OWSMimeTypeImageWebp {
+            guard NSData.ows_isValidImage(atPath: imageFilepath, mimeType: OWSMimeTypeImageWebp) else {
+                owsFailDebug("Invalid image.")
+                return nil
+            }
+
+            imageClass = YYImage.self
+        } else {
+            imageClass = UIImage.self
+        }
+
+        guard let image = imageClass.init(contentsOfFile: imageFilepath) else {
             owsFailDebug("Could not load image: \(imageFilepath)")
             return nil
         }
+
         return image
     }
 }
