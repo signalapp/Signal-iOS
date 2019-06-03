@@ -9,7 +9,6 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
     override func setUp() {
         super.setUp()
-        self.databaseStorage.useGRDB = false
     }
 
     override func tearDown() {
@@ -222,7 +221,8 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let expectation = self.expectation(description: "sent message")
 
         messageSender.sendMessageWasCalledBlock = { [weak messageSender] sentMessage in
-            guard sentMessage == message else {
+            XCTAssert(message.uniqueId != nil)
+            guard sentMessage.uniqueId == message.uniqueId else {
                 XCTFail("unexpected sentMessage: \(sentMessage)")
                 return
             }
