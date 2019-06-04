@@ -212,13 +212,13 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
             return nil
         }
 
+        guard NSData.ows_isValidImage(atPath: imageFilepath, mimeType: attachmentStream.contentType) else {
+            owsFailDebug("Invalid image.")
+            return nil
+        }
+
         let imageClass: UIImage.Type
         if attachmentStream.contentType == OWSMimeTypeImageWebp {
-            guard NSData.ows_isValidImage(atPath: imageFilepath, mimeType: OWSMimeTypeImageWebp) else {
-                owsFailDebug("Invalid image.")
-                return nil
-            }
-
             imageClass = YYImage.self
         } else {
             imageClass = UIImage.self
