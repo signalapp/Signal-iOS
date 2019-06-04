@@ -303,7 +303,7 @@ public class ManageStickersViewController: OWSTableViewController {
 
         let stickerInfo: StickerInfo? = dataSource.installedCoverInfo
         let titleValue: String? = dataSource.title?.filterForDisplay
-        let authorNameValue: String? = dataSource.author?.filterStringForDisplay()
+        let authorNameValue: String? = dataSource.author?.filterForDisplay
 
         let iconView: UIView
         if let stickerInfo = stickerInfo,

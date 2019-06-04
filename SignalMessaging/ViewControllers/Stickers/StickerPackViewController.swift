@@ -184,7 +184,7 @@ public class StickerPackViewController: OWSViewController {
             titleLabel.text = defaultTitle
         }
 
-        authorLabel.text = stickerPack.author?.filterStringForDisplay()
+        authorLabel.text = stickerPack.author?.filterForDisplay
 
         defaultPackIconView.isHidden = !StickerManager.isDefaultStickerPack(stickerPack.info)
 
