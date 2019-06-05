@@ -12,6 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
                            withOptions:(NSEnumerationOptions)options
                             usingBlock:
 (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block {
+
+    if (group.length < 1) {
+        OWSFail(@"Invalid group.");
+        return;
+    }
+
     [self enumerateKeysAndObjectsInGroup:group
                              withOptions:options
                               usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
