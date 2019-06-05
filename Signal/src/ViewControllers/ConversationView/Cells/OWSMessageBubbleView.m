@@ -18,6 +18,7 @@
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1473,7 +1474,12 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         case OWSMessageCellType_GenericAttachment:
             if (self.viewItem.attachmentStream) {
-                [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
+                if (PdfViewController.canRenderPdf &&
+                    [OWSMimeTypeImagePdf isEqualToString:self.viewItem.attachmentStream.contentType]) {
+                    [self.delegate didTapPdfForItem:self.viewItem attachmentStream:self.viewItem.attachmentStream];
+                } else {
+                    [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
+                }
             }
             break;
         case OWSMessageCellType_ContactShare:

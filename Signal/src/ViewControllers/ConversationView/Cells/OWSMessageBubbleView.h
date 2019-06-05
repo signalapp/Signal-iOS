@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
                        toTime:(NSTimeInterval)time
              attachmentStream:(TSAttachmentStream *)attachmentStream;
 
+- (void)didTapPdfForItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
+
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem;
 
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem;
