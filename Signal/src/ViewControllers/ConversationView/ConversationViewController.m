@@ -2447,6 +2447,17 @@ typedef enum : NSUInteger {
     [self.audioAttachmentPlayer setCurrentTime:time];
 }
 
+- (void)didTapPdfForItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(attachmentStream);
+
+    PdfViewController *pdfView = [[PdfViewController alloc] initWithAttachmentStream:attachmentStream];
+    UIViewController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:pdfView];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem
 {
     OWSAssertIsOnMainThread();
