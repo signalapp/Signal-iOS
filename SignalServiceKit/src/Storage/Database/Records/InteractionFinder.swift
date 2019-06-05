@@ -163,7 +163,7 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
     func mostRecentInteractionForInbox(transaction: YapDatabaseReadTransaction) -> TSInteraction? {
         var last: TSInteraction?
         var missedCount: UInt = 0
-        interactionExt(transaction).enumerateKeysAndObjects(inGroup: threadUniqueId, with: NSEnumerationOptions.reverse) { (_, _, object, _, stopPtr) in
+        interactionExt(transaction).safe_enumerateKeysAndObjects(inGroup: threadUniqueId, with: NSEnumerationOptions.reverse) { (_, _, object, _, _) in
             guard let interaction = object as? TSInteraction else {
                 owsFailDebug("unexpected interaction: \(type(of: object))")
                 return
