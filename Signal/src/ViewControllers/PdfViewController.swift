@@ -135,20 +135,15 @@ public class PdfViewController: OWSViewController {
         return true
     }
 
-    override public var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-
     // MARK: - Actions
 
     @objc func shareButtonPressed() {
+        // TODO: Maybe we could add better share actions for PDFs?
         AttachmentSharing.showShareUI(forAttachment: attachmentStream)
     }
 
     @objc
     private func didPressCloseButton(sender: UIButton) {
-        Logger.info("")
-        // We'll ask again next time they launch
         self.dismiss(animated: true)
     }
 }
