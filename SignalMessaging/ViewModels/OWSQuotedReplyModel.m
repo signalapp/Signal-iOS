@@ -258,11 +258,15 @@ NS_ASSUME_NONNULL_BEGIN
         hasText = YES;
     }
 
+    UIImage *_Nullable thumbnailImage;
+    if (quotedAttachment.isValidVisualMedia) {
+        thumbnailImage = quotedAttachment.thumbnailImageSmallSync;
+    }
     return [[self alloc] initWithTimestamp:timestamp
                                   authorId:authorId
                                       body:quotedText
                                 bodySource:TSQuotedMessageContentSourceLocal
-                            thumbnailImage:quotedAttachment.thumbnailImageSmallSync
+                            thumbnailImage:thumbnailImage
                                contentType:quotedAttachment.contentType
                             sourceFilename:quotedAttachment.sourceFilename
                           attachmentStream:quotedAttachment
