@@ -165,7 +165,7 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         var missedCount: UInt = 0
         interactionExt(transaction).safe_enumerateKeysAndObjects(inGroup: threadUniqueId,
                                                                  extensionName: TSMessageDatabaseViewExtensionName,
-                                                                 with: NSEnumerationOptions.reverse) { (_, _, object, _, _) in
+                                                                 with: NSEnumerationOptions.reverse) { (_, _, object, _, stopPtr) in
             guard let interaction = object as? TSInteraction else {
                 owsFailDebug("unexpected interaction: \(type(of: object))")
                 return
