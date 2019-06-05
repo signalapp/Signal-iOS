@@ -569,7 +569,10 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (CGSize)imageSize
 {
-    OWSAssertDebug(self.shouldHaveImageSize);
+    if (!self.shouldHaveImageSize) {
+        OWSFailDebug(@"Content type does not have image sync.");
+        return CGSizeZero;
+    }
 
     @synchronized(self)
     {
