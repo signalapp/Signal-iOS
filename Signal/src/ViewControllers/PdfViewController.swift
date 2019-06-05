@@ -111,8 +111,8 @@ public class PdfViewController: OWSViewController {
             let pdfView = pdfView as? PDFView else {
             return
         }
-        pdfView.scaleFactor = pdfView.scaleFactorForSizeToFit
         if !viewHasAppeared {
+            pdfView.scaleFactor = pdfView.scaleFactorForSizeToFit
             pdfView.goToFirstPage(self)
         }
     }
