@@ -43,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 @property (nonatomic, readonly) AvatarImageView *avatarView;
+@property (nonatomic, readonly) UIImageView *cameraImageView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
 @property (nonatomic, nullable) UIImage *groupAvatar;
@@ -190,6 +191,14 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
     _groupAvatar = self.thread.groupModel.groupImage;
+
+    UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
+    UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+    [threadInfoView addSubview:cameraImageView];
+    [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
+    [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
+    _cameraImageView = cameraImageView;
+
     [self updateAvatarView];
 
     UITextField *groupNameTextField = [OWSTextField new];
@@ -408,9 +417,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateAvatarView
 {
     UIImage *_Nullable groupAvatar = self.groupAvatar;
+    self.cameraImageView.hidden = groupAvatar != nil;
+
     if (!groupAvatar) {
         groupAvatar = [[[OWSGroupAvatarBuilder alloc] initWithThread:self.thread diameter:kLargeAvatarSize] build];
     }
+
     self.avatarView.image = groupAvatar;
 }
 
