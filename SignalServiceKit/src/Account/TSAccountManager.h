@@ -83,14 +83,6 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
                         failure:(void (^)(NSError *error))failureBlock
                 smsVerification:(BOOL)isSMS;
 
-- (void)rerequestSMSWithCaptchaToken:(nullable NSString *)captchaToken
-                             success:(void (^)(void))successBlock
-                             failure:(void (^)(NSError *error))failureBlock;
-
-- (void)rerequestVoiceWithCaptchaToken:(nullable NSString *)captchaToken
-                               success:(void (^)(void))successBlock
-                               failure:(void (^)(NSError *error))failureBlock;
-
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin
                       success:(void (^)(void))successBlock

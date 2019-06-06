@@ -40,6 +40,7 @@
 #import "OWSProgressView.h"
 #import "OWSQuotedMessageView.h"
 #import "OWSWindowManager.h"
+#import "Pastelog.h"
 #import "PinEntryView.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"

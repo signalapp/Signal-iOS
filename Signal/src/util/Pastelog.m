@@ -326,8 +326,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_email")
                                             style:UIAlertActionStyleDefault
                                           handler:^(UIAlertAction *action) {
-                                              [Pastelog.sharedManager submitEmail:url];
-
+                                              [self submitEmailWithLogUrl:url];
                                               completion();
                                           }]];
         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_COPY_LINK",
@@ -524,7 +523,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
 #pragma mark Logs submission
 
-- (void)submitEmail:(NSURL *)url
++ (void)submitEmailWithLogUrl:(nullable NSURL *)url
 {
     NSString *emailAddress = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LOGS_EMAIL"];
 
@@ -542,7 +541,9 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     [body appendFormat:@"Device: %@ (%@)\n", UIDevice.currentDevice.model, platform];
     [body appendFormat:@"iOS Version: %@ \n", [UIDevice currentDevice].systemVersion];
     [body appendFormat:@"Signal Version: %@ \n", [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]];
-    [body appendFormat:@"Log URL: %@ \n", url];
+    if (url != nil) {
+        [body appendFormat:@"Log URL: %@ \n", url];
+    }
 
     NSString *escapedBody =
         [body stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
