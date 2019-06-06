@@ -72,8 +72,10 @@ class PhotoCaptureViewController: OWSViewController {
         tapToFocusGesture.require(toFail: doubleTapToSwitchCameraGesture)
     }
 
+    private var isVisible = false
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        isVisible = true
         UIDevice.current.ows_setOrientation(.portrait)
     }
 
@@ -87,6 +89,7 @@ class PhotoCaptureViewController: OWSViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        isVisible = false
         VolumeButtons.shared?.removeObserver(photoCapture)
     }
 
@@ -338,8 +341,13 @@ class PhotoCaptureViewController: OWSViewController {
         view.addSubview(captureButton)
         captureButton.autoHCenterInSuperview()
         captureButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
-        
-        VolumeButtons.shared?.addObserver(observer: photoCapture)
+
+        // If the view is already visible, setup the volume button listener
+        // now that the capture UI is ready. Otherwise, we'll wait until
+        // we're visible.
+        if isVisible {
+            VolumeButtons.shared?.addObserver(observer: photoCapture)
+        }
     }
 
     private func showFailureUI(error: Error) {
