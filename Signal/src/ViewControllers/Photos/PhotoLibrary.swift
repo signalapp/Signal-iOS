@@ -202,11 +202,11 @@ class PhotoCollectionContents {
         }
     }
 
-    func outgoingAttachment(for asset: PHAsset) -> Promise<SignalAttachment> {
+    func outgoingAttachment(for asset: PHAsset, imageQuality: TSImageQuality) -> Promise<SignalAttachment> {
         switch asset.mediaType {
         case .image:
             return requestImageDataSource(for: asset).map(on: .global()) { (dataSource: DataSource, dataUTI: String) in
-                return SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium)
+                return SignalAttachment.attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: imageQuality)
             }
         case .video:
             return requestVideoDataSource(for: asset).map(on: .global()) { (dataSource: DataSource, dataUTI: String) in

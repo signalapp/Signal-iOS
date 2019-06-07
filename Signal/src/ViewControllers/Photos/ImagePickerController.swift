@@ -15,6 +15,7 @@ protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset)
 
     var isInBatchSelectMode: Bool { get }
+    var isPickingAsDocument: Bool { get }
     func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool
     func imagePickerDidTryToSelectTooMany(_ imagePicker: ImagePickerGridController)
 }
@@ -157,6 +158,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         case .cancelled, .ended, .failed:
             collectionView.isUserInteractionEnabled = true
             collectionView.isScrollEnabled = true
+        @unknown default:
+            owsFailDebug("unexpected selectionPanGesture.state: \(selectionPanGesture.state)")
         }
     }
 
@@ -188,7 +191,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
                 return
             }
 
-            let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset)
+            let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset, imageQuality: imageQuality)
             delegate.imagePicker(self, didSelectAsset: asset, attachmentPromise: attachmentPromise)
             collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
         case .deselect:
@@ -199,6 +202,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             delegate.imagePicker(self, didDeselectAsset: asset)
             collectionView.deselectItem(at: indexPath, animated: true)
         }
+    }
+
+    var imageQuality: TSImageQuality {
+        guard let delegate = delegate else {
+            return .medium
+        }
+
+        return delegate.isPickingAsDocument ? .original : .medium
     }
 
     override func viewWillLayoutSubviews() {
@@ -508,7 +519,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
 
         let asset: PHAsset = photoCollectionContents.asset(at: indexPath.item)
-        let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset)
+        let attachmentPromise: Promise<SignalAttachment> = photoCollectionContents.outgoingAttachment(for: asset, imageQuality: imageQuality)
         delegate.imagePicker(self, didSelectAsset: asset, attachmentPromise: attachmentPromise)
 
         if !delegate.isInBatchSelectMode {

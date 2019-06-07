@@ -192,7 +192,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic, readonly) BOOL hasUnreadMessages;
-@property (nonatomic) BOOL isPickingMediaAsDocument;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 @property (nonatomic) NSTimer *reloadTimer;
@@ -2965,7 +2964,6 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [BenchManager startEventWithTitle:@"Show-Media-Library" eventId:@"Show-Media-Library"];
-    self.isPickingMediaAsDocument = shouldTreatAsDocument;
 
     [self ows_askForMediaLibraryPermissions:^(BOOL granted) {
         if (!granted) {
@@ -2973,7 +2971,13 @@ typedef enum : NSUInteger {
             return;
         }
 
-        SendMediaNavigationController *pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
+        SendMediaNavigationController *pickerModal;
+        if (shouldTreatAsDocument) {
+            pickerModal = [SendMediaNavigationController asMediaDocumentPicker];
+        } else {
+            pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
+        }
+
         pickerModal.sendMediaNavDelegate = self;
 
         [self dismissKeyBoard];
