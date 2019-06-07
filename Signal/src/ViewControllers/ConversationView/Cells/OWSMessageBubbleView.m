@@ -1523,6 +1523,54 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    CGPoint locationInMessageBubble = [sender locationInView:self];
+    if ([self gestureLocationForLocation:locationInMessageBubble] == OWSMessageGestureLocation_Media) {
+        [self handleMediaPanGesture:sender];
+    }
+}
+
+- (void)handleMediaPanGesture:(UIPanGestureRecognizer *)sender
+{
+    OWSAssertDebug(self.delegate);
+
+    if (self.cellType == OWSMessageCellType_Audio && self.viewItem.attachmentStream) {
+
+        if (![self.bodyMediaView isKindOfClass:[OWSAudioMessageView class]]) {
+            OWSFailDebug(@"Unexpected body media view: %@", self.bodyMediaView.class);
+            return;
+        }
+
+        OWSAudioMessageView *_Nullable audioMessageView = (OWSAudioMessageView *)self.bodyMediaView;
+
+        CGPoint locationInAudioView = [sender locationInView:audioMessageView];
+
+        NSTimeInterval scrubbedTime = [audioMessageView scrubToLocation:locationInAudioView];
+
+        switch (sender.state) {
+            case UIGestureRecognizerStateBegan:
+                audioMessageView.isScrubbing = YES;
+                break;
+            case UIGestureRecognizerStateEnded:
+                // Only update the actual playback position when the user finishes scrubbing,
+                // we still call `scrubToLocation` above in order to update the slider.
+                [self.delegate didScrubAudioViewItem:self.viewItem
+                                              toTime:scrubbedTime
+                                    attachmentStream:self.viewItem.attachmentStream];
+
+                // fallthrough
+            case UIGestureRecognizerStateFailed:
+            case UIGestureRecognizerStateCancelled:
+                audioMessageView.isScrubbing = NO;
+                break;
+            case UIGestureRecognizerStateChanged:
+            case UIGestureRecognizerStatePossible:
+                break;
+        }
+    }
+}
+
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble
 {
     if (self.quotedMessageView) {

@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageCell ()
+@interface OWSMessageCell () <UIGestureRecognizerDelegate>
 
 // The nullable properties are created as needed.
 // The non-nullable properties are so frequently used that it's easier
@@ -70,6 +70,12 @@ NS_ASSUME_NONNULL_BEGIN
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.contentView addGestureRecognizer:longPress];
+
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                                          action:@selector(handlePanGesture:)];
+    pan.delegate = self;
+    [self.contentView addGestureRecognizer:pan];
+    [tap requireGestureRecognizerToFail:pan];
 }
 
 - (void)dealloc
@@ -482,6 +488,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    [self.messageView handlePanGesture:sender];
+}
+
 - (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
 {
     OWSAssertDebug(self.viewItem);
@@ -493,6 +504,21 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint location = [sender locationInView:self];
     CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
     return location.y <= headerBottom.y;
+}
+
+# pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+        UIPanGestureRecognizer *_Nullable panGestureRecognizer = (UIPanGestureRecognizer *)gestureRecognizer;
+        // Only allow the pan gesture to recognize horizontal panning,
+        // to avoid conflicts with the conversation view scroll view.
+        CGPoint velocity = [panGestureRecognizer velocityInView:self];
+        return fabs(velocity.x) > fabs(velocity.y);
+    }
+
+    return YES;
 }
 
 @end

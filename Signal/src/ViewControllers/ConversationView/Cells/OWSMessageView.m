@@ -66,14 +66,24 @@ NS_ASSUME_NONNULL_BEGIN
     return OWSMessageGestureLocation_Default;
 }
 
-- (void)addTapGestureHandler
+- (void)addGestureHandlers
 {
     UITapGestureRecognizer *tap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
     [self addGestureRecognizer:tap];
+
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                                          action:@selector(handlePanGesture:)];
+    [self addGestureRecognizer:pan];
+    [tap requireGestureRecognizerToFail:pan];
 }
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAbstractMethod();
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
 {
     OWSAbstractMethod();
 }

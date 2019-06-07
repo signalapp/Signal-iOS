@@ -22,6 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateContents;
 
+- (NSTimeInterval)scrubToLocation:(CGPoint)location;
+
+@property (nonatomic) BOOL isScrubbing;
+
 @end
 
 NS_ASSUME_NONNULL_END
