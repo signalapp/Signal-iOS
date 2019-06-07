@@ -2227,6 +2227,11 @@ typedef enum : NSUInteger {
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
+- (void)conversationCell:(ConversationViewCell *)cell didReplyToItem:(id<ConversationViewItem>)viewItem
+{
+    [self populateReplyForViewItem:viewItem];
+}
+
 - (void)presentMessageActions:(NSArray<MenuAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
 {
     MenuActionsViewController *menuActionsViewController =

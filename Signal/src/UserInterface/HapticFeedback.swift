@@ -47,7 +47,8 @@ class ModernSelectionHapticFeedbackAdapter: NSObject, SelectionHapticFeedbackAda
     }
 }
 
-enum NotificationHapticFeedbackType {
+@objc
+enum NotificationHapticFeedbackType: Int {
     case error, success, warning
 }
 
@@ -66,11 +67,12 @@ protocol NotificationHapticFeedbackAdapter {
     func notificationOccurred(_ notificationType: NotificationHapticFeedbackType)
 }
 
-class NotificationHapticFeedback: NotificationHapticFeedbackAdapter {
+@objc
+class NotificationHapticFeedback: NSObject, NotificationHapticFeedbackAdapter {
 
     let adapter: NotificationHapticFeedbackAdapter
 
-    init() {
+    override init() {
         if #available(iOS 10, *) {
             adapter = ModernNotificationHapticFeedbackAdapter()
         } else {
@@ -78,6 +80,7 @@ class NotificationHapticFeedback: NotificationHapticFeedbackAdapter {
         }
     }
 
+    @objc
     func notificationOccurred(_ notificationType: NotificationHapticFeedbackType) {
         adapter.notificationOccurred(notificationType)
     }

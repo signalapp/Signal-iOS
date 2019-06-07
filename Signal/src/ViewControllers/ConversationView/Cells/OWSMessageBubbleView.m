@@ -1523,52 +1523,65 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
+- (BOOL)handlePanGesture:(UIPanGestureRecognizer *)sender
 {
     CGPoint locationInMessageBubble = [sender locationInView:self];
     if ([self gestureLocationForLocation:locationInMessageBubble] == OWSMessageGestureLocation_Media) {
-        [self handleMediaPanGesture:sender];
+        if (self.cellType == OWSMessageCellType_Audio && self.viewItem.attachmentStream) {
+            return [self handleAudioPanGesture:sender];
+        }
     }
+
+    return NO;
 }
 
-- (void)handleMediaPanGesture:(UIPanGestureRecognizer *)sender
+- (BOOL)handleAudioPanGesture:(UIPanGestureRecognizer *)sender
 {
     OWSAssertDebug(self.delegate);
 
-    if (self.cellType == OWSMessageCellType_Audio && self.viewItem.attachmentStream) {
-
-        if (![self.bodyMediaView isKindOfClass:[OWSAudioMessageView class]]) {
-            OWSFailDebug(@"Unexpected body media view: %@", self.bodyMediaView.class);
-            return;
-        }
-
-        OWSAudioMessageView *_Nullable audioMessageView = (OWSAudioMessageView *)self.bodyMediaView;
-
-        CGPoint locationInAudioView = [sender locationInView:audioMessageView];
-
-        NSTimeInterval scrubbedTime = [audioMessageView scrubToLocation:locationInAudioView];
-
-        switch (sender.state) {
-            case UIGestureRecognizerStateBegan:
-                audioMessageView.isScrubbing = YES;
-                break;
-            case UIGestureRecognizerStateEnded:
-                // Only update the actual playback position when the user finishes scrubbing,
-                // we still call `scrubToLocation` above in order to update the slider.
-                [self.delegate didScrubAudioViewItem:self.viewItem
-                                              toTime:scrubbedTime
-                                    attachmentStream:self.viewItem.attachmentStream];
-
-                // fallthrough
-            case UIGestureRecognizerStateFailed:
-            case UIGestureRecognizerStateCancelled:
-                audioMessageView.isScrubbing = NO;
-                break;
-            case UIGestureRecognizerStateChanged:
-            case UIGestureRecognizerStatePossible:
-                break;
-        }
+    if (![self.bodyMediaView isKindOfClass:[OWSAudioMessageView class]]) {
+        OWSFailDebug(@"Unexpected body media view: %@", self.bodyMediaView.class);
+        return NO;
     }
+
+    OWSAudioMessageView *_Nullable audioMessageView = (OWSAudioMessageView *)self.bodyMediaView;
+
+    CGPoint locationInAudioView = [sender locationInView:audioMessageView];
+
+    // If we're outside of the message bubble, don't handle the pan
+    if (locationInAudioView.x < 0 || locationInAudioView.y > audioMessageView.frame.size.width) {
+        return NO;
+    }
+
+    // If the gesture has already began, and we're not scrubbing, don't handle the pan
+    if (sender.state != UIGestureRecognizerStateBegan && !audioMessageView.isScrubbing) {
+        return NO;
+    }
+
+    NSTimeInterval scrubbedTime = [audioMessageView scrubToLocation:locationInAudioView];
+
+    switch (sender.state) {
+        case UIGestureRecognizerStateBegan:
+            audioMessageView.isScrubbing = YES;
+            break;
+        case UIGestureRecognizerStateEnded:
+            // Only update the actual playback position when the user finishes scrubbing,
+            // we still call `scrubToLocation` above in order to update the slider.
+            [self.delegate didScrubAudioViewItem:self.viewItem
+                                          toTime:scrubbedTime
+                                attachmentStream:self.viewItem.attachmentStream];
+
+            // fallthrough
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStateCancelled:
+            audioMessageView.isScrubbing = NO;
+            break;
+        case UIGestureRecognizerStateChanged:
+        case UIGestureRecognizerStatePossible:
+            break;
+    }
+
+    return YES;
 }
 
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble
