@@ -370,7 +370,8 @@ public class ManageStickersViewController: OWSTableViewController {
             iconView,
             textStack
         ]
-        if let actionIconName = actionIconName {
+
+        if FeatureFlags.stickerSharing, let actionIconName = actionIconName {
             let actionButton = StickerPackActionButton(actionIconName: actionIconName, block: block)
             subviews.append(actionButton)
         }

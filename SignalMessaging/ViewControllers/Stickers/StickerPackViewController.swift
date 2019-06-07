@@ -92,8 +92,10 @@ public class StickerPackViewController: OWSViewController {
         defaultPackIconView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_signalBrandBlue)
         defaultPackIconView.isHidden = true
 
-        shareButton.setTemplateImageName("forward-outline-24", tintColor: Theme.darkThemePrimaryColor)
-        shareButton.addTarget(self, action: #selector(shareButtonPressed(sender:)), for: .touchUpInside)
+        if FeatureFlags.stickerSharing {
+            shareButton.setTemplateImageName("forward-outline-24", tintColor: Theme.darkThemePrimaryColor)
+            shareButton.addTarget(self, action: #selector(shareButtonPressed(sender:)), for: .touchUpInside)
+        }
 
         view.addSubview(dismissButton)
         dismissButton.autoPinEdge(toSuperviewEdge: .leading)
