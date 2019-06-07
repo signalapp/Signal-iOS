@@ -660,8 +660,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self addChildViewController:searchResultsController];
     [self.view addSubview:searchResultsController.view];
     [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [searchResultsController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
-    [searchResultsController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
+    [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
     if (@available(iOS 11, *)) {
         [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
     } else {
