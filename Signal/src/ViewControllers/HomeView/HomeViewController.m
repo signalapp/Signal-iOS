@@ -844,6 +844,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     if (isShowingSearchResults) {
         OWSAssertDebug(self.searchBar.text.ows_stripped.length > 0);
         [self scrollSearchBarToTopAnimated:NO];
+        [self.searchBar becomeFirstResponder];
     } else if (self.lastThread) {
         OWSAssertDebug(self.searchBar.text.ows_stripped.length == 0);
 
