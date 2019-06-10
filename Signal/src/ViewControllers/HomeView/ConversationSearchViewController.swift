@@ -310,13 +310,10 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         label.tag = section
 
-        let hMargin: CGFloat = 15
-        let vMargin: CGFloat = 4
         let wrapper = UIView()
         wrapper.backgroundColor = Theme.offBackgroundColor
         wrapper.addSubview(label)
-        label.autoPinWidthToSuperview(withMargin: hMargin)
-        label.autoPinHeightToSuperview(withMargin: vMargin)
+        label.autoPinEdgesToSuperviewMargins()
 
         return wrapper
     }

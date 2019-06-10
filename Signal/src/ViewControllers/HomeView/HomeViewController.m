@@ -660,8 +660,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self addChildViewController:searchResultsController];
     [self.view addSubview:searchResultsController.view];
     [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [searchResultsController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
-    [searchResultsController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
+    [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
     if (@available(iOS 11, *)) {
         [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
     } else {
@@ -844,6 +844,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     if (isShowingSearchResults) {
         OWSAssertDebug(self.searchBar.text.ows_stripped.length > 0);
         [self scrollSearchBarToTopAnimated:NO];
+        [self.searchBar becomeFirstResponder];
     } else if (self.lastThread) {
         OWSAssertDebug(self.searchBar.text.ows_stripped.length == 0);
 
@@ -1261,7 +1262,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 - (void)ensureSearchBarCancelButton
 {
-    self.searchBar.showsCancelButton = (self.searchBar.isFirstResponder || self.searchBar.text.length > 0);
+    BOOL shouldShowCancelButton = (self.searchBar.isFirstResponder || self.searchBar.text.length > 0);
+    if (self.searchBar.showsCancelButton == shouldShowCancelButton) {
+        return;
+    }
+    [self.searchBar setShowsCancelButton:shouldShowCancelButton animated:self.isViewVisible];
 }
 
 - (void)updateSearchResultsVisibility
