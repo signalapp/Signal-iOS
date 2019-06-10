@@ -608,11 +608,23 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CGPoint translation = [sender translationInView:self];
-    BOOL mayReply = translation.x >= self.maxSwipeDistance;
+
+    // The direction the user must swipe to trigger a reply
+    // matches the language layout direction, so for example
+    // you swipe RTL for RTL languages.
+    BOOL mayReply;
+    BOOL wantsHaptic;
+    if (CurrentAppContext().isRTL) {
+        mayReply = translation.x <= -self.maxSwipeDistance;
+        wantsHaptic = self.swipeToReplyPosition > -self.maxSwipeDistance;
+    } else {
+        mayReply = translation.x >= self.maxSwipeDistance;
+        wantsHaptic = self.swipeToReplyPosition < self.maxSwipeDistance;
+    }
 
     if (mayReply && !hasFailed) {
         // When we transition into the reply range, play haptic feedback for the user
-        if (self.swipeToReplyPosition < self.maxSwipeDistance) {
+        if (wantsHaptic) {
             [[ImpactHapticFeedback new] impactOccurred];
         }
 
@@ -632,18 +644,33 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Scale the translation above or below the desired range,
     // to produce an elastic feeling when you overscroll.
-    if (position < 0) {
-        position = position / 4;
-    } else if (position > self.maxSwipeDistance) {
-        CGFloat overflow = position - self.maxSwipeDistance;
-        position = self.maxSwipeDistance + overflow / 4;
+    if (CurrentAppContext().isRTL) {
+        if (position > 0) {
+            position = position / 4;
+        } else if (position < -self.maxSwipeDistance) {
+            CGFloat overflow = position + self.maxSwipeDistance;
+            position = -self.maxSwipeDistance + overflow / 4;
+        }
+    } else {
+        if (position < 0) {
+            position = position / 4;
+        } else if (position > self.maxSwipeDistance) {
+            CGFloat overflow = position - self.maxSwipeDistance;
+            position = self.maxSwipeDistance + overflow / 4;
+        }
     }
 
     for (NSLayoutConstraint *constraint in self.swipeToReplyConstraints) {
         constraint.constant = position;
     }
 
-    CGFloat alpha = CGFloatClamp01(CGFloatInverseLerp(position, 0, self.maxSwipeDistance));
+    CGFloat alpha;
+    if (CurrentAppContext().isRTL) {
+        alpha = CGFloatClamp01(CGFloatInverseLerp(position, 0, -self.maxSwipeDistance));
+    } else {
+        alpha = CGFloatClamp01(CGFloatInverseLerp(position, 0, self.maxSwipeDistance));
+    }
+
     if (animated) {
         [UIView animateWithDuration:0.1
                          animations:^{
