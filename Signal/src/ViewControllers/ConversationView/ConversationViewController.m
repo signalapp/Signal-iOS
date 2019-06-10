@@ -133,7 +133,6 @@ typedef enum : NSUInteger {
     UICollectionViewDataSource,
     UIDocumentMenuDelegate,
     UIDocumentPickerDelegate,
-    UIImagePickerControllerDelegate,
     SendMediaNavDelegate,
     UINavigationControllerDelegate,
     UITextViewDelegate,
@@ -193,7 +192,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
 @property (nonatomic, readonly) BOOL hasUnreadMessages;
-@property (nonatomic) BOOL isPickingMediaAsDocument;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 @property (nonatomic) NSTimer *reloadTimer;
@@ -731,12 +729,6 @@ typedef enum : NSUInteger {
     }
 
     if ([presentedViewController isKindOfClass:[UIAlertController class]]) {
-        OWSLogDebug(@"dismissing presentedViewController: %@", presentedViewController);
-        [self dismissViewControllerAnimated:NO completion:nil];
-        return;
-    }
-
-    if ([presentedViewController isKindOfClass:[UIImagePickerController class]]) {
         OWSLogDebug(@"dismissing presentedViewController: %@", presentedViewController);
         [self dismissViewControllerAnimated:NO completion:nil];
         return;
@@ -2815,7 +2807,7 @@ typedef enum : NSUInteger {
                                  image:takeMediaImage
                                  order:UIDocumentMenuOrderFirst
                                handler:^{
-                                   [self chooseFromLibraryAsDocument];
+                                   [self chooseFromLibraryAsDocument:YES];
                                }];
 
     [self dismissKeyBoard];
@@ -2934,11 +2926,8 @@ typedef enum : NSUInteger {
     [self showApprovalDialogForAttachment:attachment];
 }
 
-#pragma mark - UIImagePickerController
+#pragma mark - Media Libary
 
-/*
- *  Presenting UIImagePickerController
- */
 - (void)takePictureOrVideo
 {
     [BenchManager startEventWithTitle:@"Show-Camera" eventId:@"Show-Camera"];
@@ -2954,33 +2943,13 @@ typedef enum : NSUInteger {
                 // be silent.
             }
 
-            UIViewController *pickerModal;
-
-            if (SSKFeatureFlags.useCustomPhotoCapture) {
-                SendMediaNavigationController *navController = [SendMediaNavigationController showingCameraFirst];
-                navController.sendMediaNavDelegate = self;
-                pickerModal = navController;
-            } else {
-                UIImagePickerController *picker = [OWSImagePickerController new];
-                pickerModal = picker;
-                picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-                picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
-                picker.allowsEditing = NO;
-                picker.delegate = self;
-            }
-            OWSAssertDebug(pickerModal);
+            SendMediaNavigationController *pickerModal = [SendMediaNavigationController showingCameraFirst];
+            pickerModal.sendMediaNavDelegate = self;
 
             [self dismissKeyBoard];
             [self presentViewController:pickerModal animated:YES completion:nil];
         }];
     }];
-}
-
-- (void)chooseFromLibraryAsDocument
-{
-    OWSAssertIsOnMainThread();
-
-    [self chooseFromLibraryAsDocument:YES];
 }
 
 - (void)chooseFromLibraryAsMedia
@@ -2995,7 +2964,6 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [BenchManager startEventWithTitle:@"Show-Media-Library" eventId:@"Show-Media-Library"];
-    self.isPickingMediaAsDocument = shouldTreatAsDocument;
 
     [self ows_askForMediaLibraryPermissions:^(BOOL granted) {
         if (!granted) {
@@ -3003,28 +2971,18 @@ typedef enum : NSUInteger {
             return;
         }
 
-        SendMediaNavigationController *pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
+        SendMediaNavigationController *pickerModal;
+        if (shouldTreatAsDocument) {
+            pickerModal = [SendMediaNavigationController asMediaDocumentPicker];
+        } else {
+            pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
+        }
+
         pickerModal.sendMediaNavDelegate = self;
 
         [self dismissKeyBoard];
         [self presentViewController:pickerModal animated:YES completion:nil];
     }];
-}
-
-/*
- *  Dismissing UIImagePickerController
- */
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)resetFrame
-{
-    // fixes bug on frame being off after this selection
-    CGRect frame = [UIScreen mainScreen].bounds;
-    self.view.frame = frame;
 }
 
 #pragma mark - SendMediaNavDelegate
@@ -3065,140 +3023,6 @@ typedef enum : NSUInteger {
     didChangeMessageText:(nullable NSString *)messageText
 {
     [self.inputToolbar setMessageText:messageText animated:NO];
-}
-
-#pragma mark - UIImagePickerControllerDelegate
-
-/*
- *  Fetching data from UIImagePickerController
- */
-- (void)imagePickerController:(UIImagePickerController *)picker
-    didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
-{
-    [self resetFrame];
-
-    NSURL *referenceURL = [info valueForKey:UIImagePickerControllerReferenceURL];
-    if (!referenceURL) {
-        OWSLogVerbose(@"Could not retrieve reference URL for picked asset");
-        [self imagePickerController:picker didFinishPickingMediaWithInfo:info filename:nil];
-        return;
-    }
-
-    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *imageAsset) {
-        ALAssetRepresentation *imageRep = [imageAsset defaultRepresentation];
-        NSString *filename = [imageRep filename];
-        [self imagePickerController:picker didFinishPickingMediaWithInfo:info filename:filename];
-    };
-
-    ALAssetsLibrary *assetslibrary = [[ALAssetsLibrary alloc] init];
-    [assetslibrary assetForURL:referenceURL
-                   resultBlock:resultblock
-                  failureBlock:^(NSError *error) {
-                      OWSCFailDebug(@"Error retrieving filename for asset: %@", error);
-                  }];
-}
-
-- (void)imagePickerController:(UIImagePickerController *)picker
-    didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
-                         filename:(NSString *_Nullable)filename
-{
-    OWSAssertIsOnMainThread();
-
-    void (^failedToPickAttachment)(NSError *error) = ^void(NSError *error) {
-        OWSLogError(@"failed to pick attachment with error: %@", error);
-    };
-
-    NSString *mediaType = info[UIImagePickerControllerMediaType];
-    if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeMovie]) {
-        // Video picked from library or captured with camera
-
-        NSURL *videoURL = info[UIImagePickerControllerMediaURL];
-        [self dismissViewControllerAnimated:YES
-                                 completion:^{
-                                     [self showApprovalDialogAfterProcessingVideoURL:videoURL filename:filename];
-                                 }];
-    } else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
-        // Static Image captured from camera
-
-        UIImage *imageFromCamera = [info[UIImagePickerControllerOriginalImage] normalizedImage];
-
-        [self dismissViewControllerAnimated:YES
-                                 completion:^{
-                                     OWSAssertIsOnMainThread();
-
-                                     if (imageFromCamera) {
-                                         // "Camera" attachments _SHOULD_ be resized, if possible.
-                                         SignalAttachment *attachment =
-                                             [SignalAttachment imageAttachmentWithImage:imageFromCamera
-                                                                                dataUTI:(NSString *)kUTTypeJPEG
-                                                                               filename:filename
-                                                                           imageQuality:TSImageQualityCompact];
-                                         if (!attachment || [attachment hasError]) {
-                                             OWSLogWarn(@"Invalid attachment: %@.",
-                                                 attachment ? [attachment errorName] : @"Missing data");
-                                             [self showErrorAlertForAttachment:attachment];
-                                             failedToPickAttachment(nil);
-                                         } else {
-                                             [self showApprovalDialogForAttachment:attachment];
-                                         }
-                                     } else {
-                                         failedToPickAttachment(nil);
-                                     }
-                                 }];
-    } else {
-        // Non-Video image picked from library
-        OWSFailDebug(
-            @"Only use UIImagePicker for camera/video capture. Picking media from UIImagePicker is not supported. ");
-
-        // To avoid re-encoding GIF and PNG's as JPEG we have to get the raw data of
-        // the selected item vs. using the UIImagePickerControllerOriginalImage
-        NSURL *assetURL = info[UIImagePickerControllerReferenceURL];
-        PHAsset *asset = [[PHAsset fetchAssetsWithALAssetURLs:@[ assetURL ] options:nil] lastObject];
-        if (!asset) {
-            return failedToPickAttachment(nil);
-        }
-
-        // Images chosen from the "attach document" UI should be sent as originals;
-        // images chosen from the "attach media" UI should be resized to "medium" size;
-        TSImageQuality imageQuality = (self.isPickingMediaAsDocument ? TSImageQualityOriginal : TSImageQualityMedium);
-
-        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-        options.synchronous = YES; // We're only fetching one asset.
-        options.networkAccessAllowed = YES; // iCloud OK
-        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat; // Don't need quick/dirty version
-        [[PHImageManager defaultManager]
-            requestImageDataForAsset:asset
-                             options:options
-                       resultHandler:^(NSData *_Nullable imageData,
-                           NSString *_Nullable dataUTI,
-                           UIImageOrientation orientation,
-                           NSDictionary *_Nullable assetInfo) {
-                           NSError *assetFetchingError = assetInfo[PHImageErrorKey];
-                           if (assetFetchingError || !imageData) {
-                               return failedToPickAttachment(assetFetchingError);
-                           }
-                           OWSAssertIsOnMainThread();
-
-                           DataSource *_Nullable dataSource =
-                               [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
-                           [dataSource setSourceFilename:filename];
-                           SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
-                                                                                             dataUTI:dataUTI
-                                                                                        imageQuality:imageQuality];
-                           [self dismissViewControllerAnimated:YES
-                                                    completion:^{
-                                                        OWSAssertIsOnMainThread();
-                                                        if (!attachment || [attachment hasError]) {
-                                                            OWSLogWarn(@"Invalid attachment: %@.",
-                                                                attachment ? [attachment errorName] : @"Missing data");
-                                                            [self showErrorAlertForAttachment:attachment];
-                                                            failedToPickAttachment(nil);
-                                                        } else {
-                                                            [self showApprovalDialogForAttachment:attachment];
-                                                        }
-                                                    }];
-                       }];
-    }
 }
 
 - (void)sendContactShare:(ContactShareViewModel *)contactShare

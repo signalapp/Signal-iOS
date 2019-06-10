@@ -101,6 +101,16 @@ class SendMediaNavigationController: OWSNavigationController {
         return navController
     }
 
+    private(set) var isPickingAsDocument = false
+    @objc
+    public class func asMediaDocumentPicker() -> SendMediaNavigationController {
+        let navController = SendMediaNavigationController()
+        navController.isPickingAsDocument = true
+        navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
+
+        return navController
+    }
+
     var isInBatchSelectMode: Bool {
         get {
             return self.batchModeButton.isSelected
