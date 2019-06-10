@@ -65,7 +65,7 @@ public class PerMessageExpiration: NSObject {
 
     private class func completePerMessageExpiration(forMessage message: TSMessage,
                                                     transaction: SDSAnyWriteTransaction) {
-        message.setPerMessageExpiredAndRemoveRenderableContentWith(transaction)
+        message.updateWithHasPerMessageExpiredAndRemoveRenderableContent(with: transaction)
     }
 
     // MARK: -
