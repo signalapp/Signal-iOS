@@ -561,6 +561,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.swipeableContentView = [UIView new];
     [self.contentView addSubview:self.swipeableContentView];
     self.swipeToReplyConstraints = [self.swipeableContentView autoPinWidthToSuperview];
+    [self.swipeableContentView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow forConstraints:^{
+        [self.swipeableContentView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    }];
 
     self.swipeToReplyImageView = [UIImageView new];
     self.swipeToReplyImageView.image = [[UIImage imageNamed:@"ic_reply"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
