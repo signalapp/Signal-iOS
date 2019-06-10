@@ -2346,7 +2346,7 @@
 "SOUNDS_NONE" = "Geen";
 
 /* Preview text shown in notifications and home view for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+"STICKER_MESSAGE_PREVIEW" = "Stickerbericht";
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Stikkerpakket geïnstalleerd";
@@ -2460,19 +2460,19 @@
 "UNKNOWN_COUNTRY_NAME" = "Onbekend land";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ sent you a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "Je hebt een bericht ontvangen van %@ dat niet kan worden verwerkt of niet kan worden weergegeven, omdat het gebruik maakt van een nieuwe functie van Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Je hebt een bericht ontvangen dat niet kan worden verwerkt of niet kan worden weergegeven omdat het gebruik maakt van een nieuwe functie van Signal.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Signal nu bijwerken";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "You can ask %@ to re-send this message now that you are using an up-to-date version of Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Je kunt %@ vragen om dit bericht nu opnieuw te verzenden omdat je nu de meest recente versie van Signal gebruikt.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Je kunt de verzender vragen om dit bericht nu opnieuw te verzenden omdat je nu de meest recente versie van Signal gebruikt.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Onbekend";
@@ -2508,10 +2508,10 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Niet ondersteund";
 
 /* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Waarom woorden gebruiken als je stikkers kunt gebruiken? Tik op dit pictogram op je toetsenbord:";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Waarom woorden gebruiken als je stickers kunt gebruiken? Tik op dit pictogram op je toetsenbord:";
 
 /* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "We introduceren stikkers";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "We introduceren stickers";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Binnenkort vereist Signal dat je iOS 10 of een latere versie gebruikt. Werk je besturingssysteem bij via Instellingen >> Algemeen >> Software-update.";
