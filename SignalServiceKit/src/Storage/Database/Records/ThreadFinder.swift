@@ -47,13 +47,14 @@ struct YAPDBThreadFinder: ThreadFinder {
     }
 
     func enumerateThreads(isArchived: Bool, transaction: YapDatabaseReadTransaction, block: @escaping (TSThread) -> Void) {
-        ext(transaction).enumerateKeysAndObjects(inGroup: group(isArchived: isArchived),
-                                                 with: NSEnumerationOptions.reverse) { _, _, object, _, _ in
-                                                    guard let thread = object as? TSThread else {
-                                                        owsFailDebug("unexpected object: \(type(of: object))")
-                                                        return
-                                                    }
-                                                    block(thread)
+        ext(transaction).safe_enumerateKeysAndObjects(inGroup: group(isArchived: isArchived),
+                                                      extensionName: type(of: self).extensionName,
+                                                      with: NSEnumerationOptions.reverse) { _, _, object, _, _ in
+                                                        guard let thread = object as? TSThread else {
+                                                            owsFailDebug("unexpected object: \(type(of: object))")
+                                                            return
+                                                        }
+                                                        block(thread)
         }
     }
 

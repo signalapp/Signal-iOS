@@ -55,10 +55,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 // --- CODE GENERATION MARKER
 
-+ (instancetype)addToContactsOfferMessageWithTimestamp:(uint64_t)timestamp
-                                                thread:(TSThread *)thread
-                                             contactId:(NSString *)contactId;
-
 @property (nonatomic, readonly) BOOL isProtocolVersionUnknown;
 
 @end
