@@ -517,6 +517,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate showStickerPack:stickerPackInfo];
 }
 
+- (BOOL)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    return NO;
+}
+
 - (void)handleMediaTapGesture:(CGPoint)locationInMessageBubble
 {
     OWSFailDebug(@"This method should never be called.");

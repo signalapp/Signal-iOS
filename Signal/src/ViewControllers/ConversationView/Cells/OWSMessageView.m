@@ -83,9 +83,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAbstractMethod();
 }
 
-- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
+- (BOOL)handlePanGesture:(UIPanGestureRecognizer *)sender
 {
     OWSAbstractMethod();
+    return NO;
 }
 
 @end

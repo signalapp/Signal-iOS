@@ -49,7 +49,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 - (void)addGestureHandlers;
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender;
-- (void)handlePanGesture:(UIPanGestureRecognizer *)sender;
+- (BOOL)handlePanGesture:(UIPanGestureRecognizer *)sender;
 
 @end
 

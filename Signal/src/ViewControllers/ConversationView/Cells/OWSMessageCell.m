@@ -24,6 +24,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
+
+@property (nonatomic) UIView *swipeableContentView;
+@property (nonatomic) UIImageView *swipeToReplyImageView;
+@property (nonatomic) NSArray<NSLayoutConstraint *> *swipeToReplyConstraints;
+@property (nonatomic, readonly) CGFloat swipeToReplyPosition;
+
 @property (nonatomic) BOOL isPresentingMenuController;
 
 @end
@@ -76,6 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
     pan.delegate = self;
     [self.contentView addGestureRecognizer:pan];
     [tap requireGestureRecognizerToFail:pan];
+
+    [self setupSwipeContainer];
 }
 
 - (void)dealloc
@@ -154,7 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
     messageView.cellMediaCache = self.delegate.cellMediaCache;
     [messageView configureViews];
     [messageView loadContent];
-    [self.contentView addSubview:messageView];
+    [self.swipeableContentView addSubview:messageView];
     [messageView autoPinBottomToSuperviewMarginWithInset:0];
 
     if (self.viewItem.hasCellHeader) {
@@ -189,7 +197,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.sendFailureBadgeView.image =
                 [self.sendFailureBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
             self.sendFailureBadgeView.tintColor = [UIColor ows_destructiveRedColor];
-            [self.contentView addSubview:self.sendFailureBadgeView];
+            [self.swipeableContentView addSubview:self.sendFailureBadgeView];
 
             CGFloat sendFailureBadgeBottomMargin
                 = round(self.conversationStyle.lastTextLineAxis - self.sendFailureBadgeSize * 0.5f);
@@ -228,7 +236,11 @@ NS_ASSUME_NONNULL_BEGIN
             // would be).
             [messageView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
             [messageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView],
+            [self.swipeToReplyImageView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.avatarView],
         ]];
+    } else {
+        [self.viewConstraints addObject:[self.swipeToReplyImageView autoAlignAxis:ALAxisHorizontal
+                                                                 toSameAxisOfView:messageView]];
     }
 }
 
@@ -287,7 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  colorName:self.viewItem.authorConversationColorName
                                                   diameter:self.avatarSize] build];
     self.avatarView.image = authorAvatarImage;
-    [self.contentView addSubview:self.avatarView];
+    [self.swipeableContentView addSubview:self.avatarView];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -389,6 +401,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.sendFailureBadgeView = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+    [self resetSwipePositionAnimated:NO];
 }
 
 #pragma mark - Notifications
@@ -446,19 +460,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    BOOL shouldAllowReply = YES;
-    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
-            // Don't allow "delete" or "reply" on "failed" outgoing messages.
-            shouldAllowReply = NO;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
-            // Don't allow "delete" or "reply" on "sending" outgoing messages.
-            shouldAllowReply = NO;
-        }
-    }
+    BOOL shouldAllowReply = [self shouldAllowReply];
 
-    // TODO:
     CGPoint locationInMessageBubble = [sender locationInView:self.messageView];
     switch ([self.messageView gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
@@ -490,7 +493,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender
 {
-    [self.messageView handlePanGesture:sender];
+    if ([self.messageView handlePanGesture:sender]) {
+        return;
+    }
+
+    [self handleSwipeToReplyGesture:sender];
 }
 
 - (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
@@ -519,6 +526,138 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return YES;
+}
+
+#pragma mark - Swipe To Reply
+
+- (BOOL)shouldAllowReply
+{
+    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
+            // Don't allow "delete" or "reply" on "failed" outgoing messages.
+            return NO;
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
+            // Don't allow "delete" or "reply" on "sending" outgoing messages.
+            return NO;
+        }
+    }
+    return YES;
+}
+
+- (CGFloat)maxSwipeDistance
+{
+    return ScaleFromIPhone5(74.f);
+}
+
+- (CGFloat)swipeToReplyPosition
+{
+    OWSAssertDebug(self.swipeToReplyConstraints.firstObject);
+    return self.swipeToReplyConstraints.firstObject.constant;
+}
+
+- (void)setupSwipeContainer
+{
+    self.swipeableContentView = [UIView new];
+    [self.contentView addSubview:self.swipeableContentView];
+    self.swipeToReplyConstraints = [self.swipeableContentView autoPinWidthToSuperview];
+    [self.swipeableContentView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow forConstraints:^{
+        [self.swipeableContentView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    }];
+
+    self.swipeToReplyImageView = [UIImageView new];
+    self.swipeToReplyImageView.image = [[UIImage imageNamed:@"ic_reply"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.swipeToReplyImageView.tintColor = Theme.isDarkThemeEnabled ? [UIColor ows_gray25Color] : [UIColor ows_blackColor];
+    self.swipeToReplyImageView.contentMode = UIViewContentModeScaleAspectFit;
+    self.swipeToReplyImageView.alpha = 0;
+    [self.swipeableContentView addSubview:self.swipeToReplyImageView];
+    [self.swipeToReplyImageView autoPinEdge:ALEdgeTrailing
+                                     toEdge:ALEdgeLeading
+                                     ofView:self.swipeableContentView
+                                 withOffset:ScaleFromIPhone5(-25)];
+}
+
+- (void)handleSwipeToReplyGesture:(UIPanGestureRecognizer *)sender
+{
+    OWSAssert(self.delegate);
+
+    BOOL hasFailed = NO;
+    BOOL hasFinished = NO;
+
+    switch (sender.state) {
+        case UIGestureRecognizerStateBegan: {
+            // If this message doesn't allow reply, end the gesture
+            if (![self shouldAllowReply]) {
+                sender.enabled = NO;
+                sender.enabled = YES;
+                return;
+            }
+            break;
+        }
+        case UIGestureRecognizerStateEnded:
+            hasFinished = YES;
+            break;
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStateCancelled:
+            hasFailed = YES;
+            break;
+        case UIGestureRecognizerStateChanged:
+        case UIGestureRecognizerStatePossible:
+            break;
+    }
+
+    CGPoint translation = [sender translationInView:self];
+    BOOL mayReply = translation.x >= self.maxSwipeDistance;
+
+    if (mayReply && !hasFailed) {
+        // When we transition into the reply range, play haptic feedback for the user
+        if (self.swipeToReplyPosition < self.maxSwipeDistance) {
+            [[ImpactHapticFeedback new] impactOccurred];
+        }
+
+        if (hasFinished) {
+            [self.delegate conversationCell:self didReplyToItem:self.viewItem];
+        }
+    }
+
+    if (hasFailed || hasFinished) {
+        [self resetSwipePositionAnimated:YES];
+    } else {
+        [self setSwipePosition:translation.x animated:hasFinished];
+    }
+}
+
+- (void)setSwipePosition:(CGFloat)position animated:(BOOL)animated
+{
+    // Scale the translation above or below the desired range,
+    // to produce an elastic feeling when you overscroll.
+    if (position < 0) {
+        position = position / 4;
+    } else if (position > self.maxSwipeDistance) {
+        CGFloat overflow = position - self.maxSwipeDistance;
+        position = self.maxSwipeDistance + overflow / 4;
+    }
+
+    for (NSLayoutConstraint *constraint in self.swipeToReplyConstraints) {
+        constraint.constant = position;
+    }
+
+    CGFloat alpha = CGFloatClamp01(CGFloatInverseLerp(position, 0, self.maxSwipeDistance));
+    if (animated) {
+        [UIView animateWithDuration:0.1
+                         animations:^{
+                             self.swipeToReplyImageView.alpha = alpha;
+                             [self layoutIfNeeded];
+                         }];
+    } else {
+        self.swipeToReplyImageView.alpha = alpha;
+    }
+}
+
+- (void)resetSwipePositionAnimated:(BOOL)animated
+{
+    [self setSwipePosition:0 animated:animated];
 }
 
 @end
