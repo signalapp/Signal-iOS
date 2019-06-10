@@ -57,6 +57,9 @@ public class FeatureFlags: NSObject {
     public static let stickerSend = false
 
     @objc
+    public static let stickerSharing = false
+
+    @objc
     public static let stickerAutoEnable = true
 
     @objc
