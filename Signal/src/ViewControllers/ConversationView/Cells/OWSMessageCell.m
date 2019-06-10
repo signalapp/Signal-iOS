@@ -472,7 +472,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     BOOL shouldAllowReply = [self shouldAllowReply];
-
     CGPoint locationInMessageBubble = [sender locationInView:self.messageView];
     switch ([self.messageView gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
@@ -542,7 +541,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldAllowReply
 {
-    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+    if (self.viewItem.messageCellType == OWSMessageCellType_PerMessageExpiration) {
+        // Don't allow "reply" messages with per-message expiration.
+        return NO;
+    } else if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
             // Don't allow "delete" or "reply" on "failed" outgoing messages.
