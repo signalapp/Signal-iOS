@@ -331,9 +331,9 @@ NS_ASSUME_NONNULL_BEGIN
     CGRect sliderContainer = [self convertRect:self.audioProgressSlider.frame
                                       fromView:self.audioProgressSlider.superview];
 
-    CGFloat newRatio = CGFloatInverseLerp(location.x, CGRectGetMinX(sliderContainer), CGRectGetMaxX(sliderContainer));
+    CGFloat newRatio = CGFloatClamp01(CGFloatInverseLerp(location.x, CGRectGetMinX(sliderContainer), CGRectGetMaxX(sliderContainer)));
 
-    [self.audioProgressSlider setValue:(float)CGFloatClamp01(newRatio)];
+    [self.audioProgressSlider setValue:(float)newRatio];
 
     CGFloat newProgressSeconds = newRatio * self.audioDurationSeconds;
 
