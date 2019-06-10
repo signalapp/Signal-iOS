@@ -179,12 +179,12 @@ public class StickerPackViewController: OWSViewController {
         let defaultTitle = NSLocalizedString("STICKERS_PACK_VIEW_DEFAULT_TITLE", comment: "The default title for the 'sticker pack' view.")
         if let title = stickerPack.title?.ows_stripped(),
             title.count > 0 {
-            titleLabel.text = title
+            titleLabel.text = title.filterForDisplay
         } else {
             titleLabel.text = defaultTitle
         }
 
-        authorLabel.text = stickerPack.author
+        authorLabel.text = stickerPack.author?.filterForDisplay
 
         defaultPackIconView.isHidden = !StickerManager.isDefaultStickerPack(stickerPack.info)
 
