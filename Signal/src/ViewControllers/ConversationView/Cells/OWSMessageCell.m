@@ -609,7 +609,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (mayReply && !hasFailed) {
         // When we transition into the reply range, play haptic feedback for the user
         if (self.swipeToReplyPosition < self.maxSwipeDistance) {
-            [[NotificationHapticFeedback new] notificationOccurred:NotificationHapticFeedbackTypeSuccess];
+            [[ImpactHapticFeedback new] impactOccurred];
         }
 
         if (hasFinished) {
