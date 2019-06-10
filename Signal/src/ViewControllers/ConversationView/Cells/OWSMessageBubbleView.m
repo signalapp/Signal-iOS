@@ -1544,7 +1544,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    OWSAudioMessageView *_Nullable audioMessageView = (OWSAudioMessageView *)self.bodyMediaView;
+    OWSAudioMessageView *audioMessageView = (OWSAudioMessageView *)self.bodyMediaView;
 
     CGPoint locationInAudioView = [sender locationInView:audioMessageView];
 

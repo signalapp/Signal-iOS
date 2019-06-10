@@ -493,8 +493,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handlePanGesture:(UIPanGestureRecognizer *)sender
 {
-    if ([self.messageView handlePanGesture:sender])
+    if ([self.messageView handlePanGesture:sender]) {
         return;
+    }
 
     [self handleSwipeToReplyGesture:sender];
 }
@@ -531,18 +532,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldAllowReply
 {
-    BOOL shouldAllowReply = YES;
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
             // Don't allow "delete" or "reply" on "failed" outgoing messages.
-            shouldAllowReply = NO;
+            return NO;
         } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
             // Don't allow "delete" or "reply" on "sending" outgoing messages.
-            shouldAllowReply = NO;
+            return NO;
         }
     }
-    return shouldAllowReply;
+    return YES;
 }
 
 - (CGFloat)maxSwipeDistance
@@ -550,13 +550,9 @@ NS_ASSUME_NONNULL_BEGIN
     return ScaleFromIPhone5(74.f);
 }
 
-- (NSTimeInterval)maxSwipeAnimationDuration
-{
-    return 0.1;
-}
-
 - (CGFloat)swipeToReplyPosition
 {
+    OWSAssertDebug(self.swipeToReplyConstraints.firstObject);
     return self.swipeToReplyConstraints.firstObject.constant;
 }
 
@@ -567,13 +563,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.swipeToReplyConstraints = [self.swipeableContentView autoPinWidthToSuperview];
 
     self.swipeToReplyImageView = [UIImageView new];
-
-    UIImage *image = [UIImage imageNamed:@"ic_reply"];
-    if (Theme.isDarkThemeEnabled) {
-        image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.swipeToReplyImageView.tintColor = [UIColor ows_gray25Color];
-    }
-    self.swipeToReplyImageView.image = image;
+    self.swipeToReplyImageView.image = [[UIImage imageNamed:@"ic_reply"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    self.swipeToReplyImageView.tintColor = Theme.isDarkThemeEnabled ? [UIColor ows_gray25Color] : [UIColor ows_blackColor];
     self.swipeToReplyImageView.contentMode = UIViewContentModeScaleAspectFit;
     self.swipeToReplyImageView.alpha = 0;
     [self.swipeableContentView addSubview:self.swipeToReplyImageView];
