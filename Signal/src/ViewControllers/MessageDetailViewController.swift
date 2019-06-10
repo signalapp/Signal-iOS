@@ -850,7 +850,8 @@ extension MessageDetailViewController: OWSMessageStickerViewDelegate {
 
 extension MessageDetailViewController: OWSMessageHiddenViewDelegate {
     public func didTapAttachment(withPerMessageExpiration viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
-        // TODO:
+        PerMessageExpirationViewController.tryToPresent(interaction: viewItem.interaction,
+                                                        from: self)
     }
 }
 

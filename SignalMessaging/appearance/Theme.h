@@ -47,6 +47,7 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *darkThemePrimaryColor;
 @property (class, readonly, nonatomic) UIBlurEffect *darkThemeBarBlurEffect;
 @property (class, readonly, nonatomic) UIColor *galleryHighlightColor;
+@property (class, readonly, nonatomic) UIColor *darkThemeOffBackgroundColor;
 
 #pragma mark -
 
