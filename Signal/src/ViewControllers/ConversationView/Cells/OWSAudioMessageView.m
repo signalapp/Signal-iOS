@@ -333,6 +333,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGFloat newRatio = CGFloatClamp01(CGFloatInverseLerp(location.x, CGRectGetMinX(sliderContainer), CGRectGetMaxX(sliderContainer)));
 
+    // When in RTL mode, the slider moves in the opposite direction so inverse the ratio.
+    if (CurrentAppContext().isRTL) {
+        newRatio = 1 - newRatio;
+    }
+
     [self.audioProgressSlider setValue:(float)newRatio];
 
     CGFloat newProgressSeconds = newRatio * self.audioDurationSeconds;
