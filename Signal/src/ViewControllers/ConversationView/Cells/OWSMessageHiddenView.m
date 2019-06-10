@@ -240,12 +240,12 @@ NS_ASSUME_NONNULL_BEGIN
         self.bubbleView.bubbleColor = UIColor.ows_gray15Color;
     } else if (self.isIncoming) {
         self.bubbleView.bubbleGradientColors = @[
-            [UIColor colorWithRGBHex:0xD0D1D1],
+            [UIColor.ows_gray05Color blendWithColor:UIColor.ows_blackColor alpha:0.15],
             UIColor.ows_gray05Color,
         ];
     } else {
         self.bubbleView.bubbleGradientColors = @[
-            [UIColor colorWithRGBHex:0x1C7ECD],
+            [UIColor.ows_signalBlueColor blendWithColor:UIColor.ows_blackColor alpha:0.15],
             UIColor.ows_signalBlueColor,
         ];
     }

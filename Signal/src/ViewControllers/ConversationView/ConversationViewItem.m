@@ -709,7 +709,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
 
         OWSFailDebug(@"Invalid media for message with per-message expiration.");
-        self.messageCellType = OWSMessageCellType_GenericAttachment;
+        self.messageCellType = OWSMessageCellType_Unknown;
         return;
     }
 
