@@ -6,51 +6,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-//@class ContactShareViewModel;
-//@class OWSContact;
-//@class OWSLinkPreview;
-//@class OWSQuotedReplyModel;
-//@class StickerPackInfo;
-//@class TSAttachmentPointer;
-//@class TSAttachmentStream;
-//@class TSOutgoingMessage;
+@class TSAttachmentStream;
 
 @protocol OWSMessageHiddenViewDelegate
 
-//- (void)didTapImageViewItem:(id<ConversationViewItem>)viewItem
-//           attachmentStream:(TSAttachmentStream *)attachmentStream
-//                  imageView:(UIView *)imageView;
-//
-//- (void)didTapVideoViewItem:(id<ConversationViewItem>)viewItem
-//           attachmentStream:(TSAttachmentStream *)attachmentStream
-//                  imageView:(UIView *)imageView;
-//
-//- (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream
-//*)attachmentStream;
-//
-//- (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem;
-//
-//- (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem;
-//
-//- (void)didTapConversationItem:(id<ConversationViewItem>)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply;
-//- (void)didTapConversationItem:(id<ConversationViewItem>)viewItem
-//                                 quotedReply:(OWSQuotedReplyModel *)quotedReply
-//    failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer;
-//
-//- (void)didTapConversationItem:(id<ConversationViewItem>)viewItem linkPreview:(OWSLinkPreview *)linkPreview;
-//
-//- (void)didTapContactShareViewItem:(id<ConversationViewItem>)viewItem;
-//
-//- (void)didTapSendMessageToContactShare:(ContactShareViewModel *)contactShare
-//    NS_SWIFT_NAME(didTapSendMessage(toContactShare:));
-//- (void)didTapSendInviteToContactShare:(ContactShareViewModel *)contactShare
-//    NS_SWIFT_NAME(didTapSendInvite(toContactShare:));
-//- (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
-//    NS_SWIFT_NAME(didTapShowAddToContactUI(forContactShare:));
-//
-//- (void)didTapStickerPack:(StickerPackInfo *)stickerPackInfo NS_SWIFT_NAME(didTapStickerPack(_:));
-//
-//@property (nonatomic, readonly, nullable) NSString *lastSearchedText;
+- (void)didTapAttachmentWithPerMessageExpiration:(id<ConversationViewItem>)viewItem
+                                attachmentStream:(TSAttachmentStream *)attachmentStream;
+
+- (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem;
 
 @end
 

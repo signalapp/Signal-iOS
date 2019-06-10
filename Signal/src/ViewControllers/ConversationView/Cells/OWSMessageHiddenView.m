@@ -5,19 +5,10 @@
 #import "OWSMessageHiddenView.h"
 #import "AttachmentUploadView.h"
 #import "ConversationViewItem.h"
-
-//#import "OWSAudioMessageView.h"
 #import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
-
-//#import "OWSContactShareButtonsView.h"
-//#import "OWSContactShareView.h"
-//#import "OWSGenericAttachmentView.h"
 #import "OWSLabel.h"
 #import "OWSMessageFooterView.h"
-
-//#import "OWSMessageTextView.h"
-//#import "OWSQuotedMessageView.h"
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
@@ -36,22 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UILabel *label;
 
-//@property (nonatomic) UIView *senderNameContainer;
-//
-//@property (nonatomic) OWSMessageTextView *bodyTextView;
-//
-//@property (nonatomic, nullable) UIView *quotedMessageView;
-//
-//@property (nonatomic, nullable) UIView *bodyMediaView;
-//
-//@property (nonatomic) LinkPreviewView *linkPreviewView;
-//
-//// Should lazy-load expensive view contents (images, etc.).
-//// Should do nothing if view is already loaded.
-//@property (nonatomic, nullable) dispatch_block_t loadCellContentBlock;
-//// Should unload all expensive view contents (images, etc.).
-//@property (nonatomic, nullable) dispatch_block_t unloadCellContentBlock;
-
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
 @property (nonatomic) OWSMessageFooterView *footerView;
@@ -68,13 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return SSKEnvironment.shared.attachmentDownloads;
 }
-
-//- (TSAccountManager *)tsAccountManager
-//{
-//    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-//
-//    return SSKEnvironment.shared.tsAccountManager;
-//}
 
 #pragma mark -
 
@@ -168,12 +136,16 @@ NS_ASSUME_NONNULL_BEGIN
     [self.bubbleView addSubview:self.vStackView];
     [self.viewConstraints addObjectsFromArray:[self.vStackView autoPinEdgesToSuperviewEdges]];
     NSMutableArray<UIView *> *textViews = [NSMutableArray new];
-    // TODO:
-    [self addProgressViewsIfNecessary:self.overlayHostView shouldShowDownloadProgress:NO];
 
-    [self configureIconView];
-    [self configureLabel];
-    [textViews addObject:self.hStackView];
+    UIView *_Nullable downloadView = [self createDownloadViewIfNecessary];
+    if (downloadView) {
+        [textViews addObject:downloadView];
+    } else {
+        [self configureIconView];
+        [self configureLabel];
+        self.iconView.hidden = !self.shouldShowIcon;
+        [textViews addObject:self.hStackView];
+    }
 
     if (self.viewItem.shouldHideFooter) {
         // Do nothing.
@@ -267,22 +239,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (UIView *)overlayHostView
-{
-    return self.hStackView;
-}
-
-- (UIColor *)overlayBackgroundColor
-{
-    if (self.perMessageExpirationHasExpired) {
-        return UIColor.ows_gray15Color;
-    } else if (self.isIncoming) {
-        return UIColor.ows_gray05Color;
-    } else {
-        return UIColor.ows_signalBlueColor;
-    }
-}
-
 - (BOOL)hasBottomFooter
 {
     return !self.viewItem.shouldHideFooter;
@@ -331,13 +287,24 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.label.textColor = self.contentForegroundColor;
     self.label.font = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
-    self.label.text
-        = (self.perMessageExpirationHasExpired ? NSLocalizedString(@"PER_MESSAGE_EXPIRATION_VIEWED",
-                                                     @"Label for messages with per-message expiration indicating that "
-                                                     @"user has viewed the message's contents.")
-                                               : NSLocalizedString(@"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW",
-                                                     @"Label for messages with per-message expiration indicating that "
-                                                     @"user can tap to view the message's contents."));
+
+    if (self.isFailedDownload) {
+        self.label.text = NSLocalizedString(
+            @"ATTACHMENT_DOWNLOADING_STATUS_FAILED", @"Status label when an attachment download has failed.");
+    } else if (self.isAvailable) {
+        if (self.perMessageExpirationHasExpired) {
+            self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_VIEWED",
+                @"Label for messages with per-message expiration indicating that "
+                @"user has viewed the message's contents.");
+        } else {
+            self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW",
+                @"Label for messages with per-message expiration indicating that "
+                @"user can tap to view the message's contents.");
+        }
+    } else {
+        OWSFailDebug(@"Unexpected view state.");
+    }
+
     self.label.lineBreakMode = NSLineBreakByTruncatingTail;
 }
 
@@ -349,102 +316,87 @@ NS_ASSUME_NONNULL_BEGIN
                               tintColor:self.contentForegroundColor];
 }
 
-- (void)addProgressViewsIfNecessary:(UIView *)bodyMediaView shouldShowDownloadProgress:(BOOL)shouldShowDownloadProgress
+- (nullable UIView *)createDownloadViewIfNecessary
 {
-    if (self.viewItem.attachmentStream) {
-        [self addUploadViewIfNecessary:bodyMediaView];
-    } else if (self.viewItem.attachmentPointer) {
-        [self addDownloadViewIfNecessary:bodyMediaView shouldShowDownloadProgress:(BOOL)shouldShowDownloadProgress];
-    }
-}
-
-- (void)addUploadViewIfNecessary:(UIView *)bodyMediaView
-{
-    OWSAssertDebug(self.viewItem.attachmentStream);
-
-    if (!self.isOutgoing) {
-        return;
-    }
-    if (self.viewItem.attachmentStream.isUploaded) {
-        return;
+    if (!self.isOngoingDownload) {
+        return nil;
     }
 
-    AttachmentUploadView *uploadView = [[AttachmentUploadView alloc] initWithAttachment:self.viewItem.attachmentStream];
-    [self.bubbleView addSubview:uploadView];
-    [uploadView autoPinEdgesToSuperviewEdges];
-    [uploadView setContentHuggingLow];
-    [uploadView setCompressionResistanceLow];
-}
-
-- (void)addDownloadViewIfNecessary:(UIView *)bodyMediaView shouldShowDownloadProgress:(BOOL)shouldShowDownloadProgress
-{
-    OWSAssertDebug(self.viewItem.attachmentPointer);
-
-    switch (self.viewItem.attachmentPointer.state) {
-        case TSAttachmentPointerStateFailed:
-            [self addTapToRetryView:self.overlayHostView];
-            return;
-        case TSAttachmentPointerStateEnqueued:
-        case TSAttachmentPointerStateDownloading:
-            break;
-    }
-    switch (self.viewItem.attachmentPointer.pointerType) {
-        case TSAttachmentPointerTypeRestoring:
-            // TODO: Show "restoring" indicator and possibly progress.
-            return;
-        case TSAttachmentPointerTypeUnknown:
-        case TSAttachmentPointerTypeIncoming:
-            break;
-    }
-    if (!shouldShowDownloadProgress) {
-        return;
-    }
     NSString *_Nullable uniqueId = self.viewItem.attachmentPointer.uniqueId;
     if (uniqueId.length < 1) {
         OWSFailDebug(@"Missing uniqueId.");
-        return;
+        return [UIView new];
     }
     if ([self.attachmentDownloads downloadProgressForAttachmentId:uniqueId] == nil) {
         OWSFailDebug(@"Missing download progress.");
-        return;
+        return [UIView new];
     }
 
-    UIView *overlayView = [UIView new];
-    overlayView.backgroundColor = [self.overlayBackgroundColor colorWithAlphaComponent:0.5];
-    [bodyMediaView addSubview:overlayView];
-    [overlayView autoPinEdgesToSuperviewEdges];
-    [overlayView setContentHuggingLow];
-    [overlayView setCompressionResistanceLow];
-
     MediaDownloadView *downloadView =
-        [[MediaDownloadView alloc] initWithAttachmentId:uniqueId radius:self.conversationStyle.maxMessageWidth * 0.1f];
-    bodyMediaView.layer.opacity = 0.5f;
-    [self.bubbleView addSubview:downloadView];
-    [downloadView autoPinEdgesToSuperviewEdges];
+        [[MediaDownloadView alloc] initWithAttachmentId:uniqueId radius:self.downloadProgressRadius];
+    [downloadView autoSetDimension:ALDimensionHeight toSize:self.downloadProgressHeight];
     [downloadView setContentHuggingLow];
     [downloadView setCompressionResistanceLow];
+    return downloadView;
 }
 
-// TODO:
-- (void)addTapToRetryView:(UIView *)bodyMediaView
+- (CGFloat)downloadProgressMinWidth
 {
-    OWSAssertDebug(self.viewItem.attachmentPointer);
+    return MIN(self.conversationStyle.maxMessageWidth, ceil(self.downloadProgressRadius * 7));
+}
 
-    // Hide the body media view, replace with "tap to retry" indicator.
+- (CGFloat)downloadProgressHeight
+{
+    return ceil(self.downloadProgressRadius * 2);
+}
 
-    UILabel *label = [UILabel new];
-    label.text = NSLocalizedString(
-        @"ATTACHMENT_DOWNLOADING_STATUS_FAILED", @"Status label when an attachment download has failed.");
-    label.font = UIFont.ows_dynamicTypeBodyFont;
-    label.textColor = Theme.secondaryColor;
-    label.numberOfLines = 0;
-    label.lineBreakMode = NSLineBreakByWordWrapping;
-    label.textAlignment = NSTextAlignmentCenter;
-    label.backgroundColor = self.overlayBackgroundColor;
-    [bodyMediaView addSubview:label];
-    [label autoPinEdgesToSuperviewMargins];
-    [label setContentHuggingLow];
-    [label setCompressionResistanceLow];
+- (CGFloat)downloadProgressRadius
+{
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
+
+    return self.conversationStyle.maxMessageWidth * 0.1f;
+}
+
+- (BOOL)shouldShowIcon
+{
+    return self.isAvailable;
+}
+
+- (BOOL)isAvailable
+{
+    if (self.viewItem.attachmentStream) {
+        return YES;
+    } else if (self.viewItem.attachmentPointer) {
+        return NO;
+    } else {
+        OWSFailDebug(@"Unexpected view state.");
+        return NO;
+    }
+}
+
+- (BOOL)isFailedDownload
+{
+    if (self.viewItem.attachmentStream) {
+        return NO;
+    } else if (self.viewItem.attachmentPointer) {
+        return self.viewItem.attachmentPointer.state == TSAttachmentPointerStateFailed;
+    } else {
+        OWSFailDebug(@"Unexpected view state.");
+        return NO;
+    }
+}
+
+- (BOOL)isOngoingDownload
+{
+    if (self.viewItem.attachmentStream) {
+        return NO;
+    } else if (self.viewItem.attachmentPointer) {
+        return self.viewItem.attachmentPointer.state != TSAttachmentPointerStateFailed;
+    } else {
+        OWSFailDebug(@"Unexpected view state.");
+        return NO;
+    }
 }
 
 #pragma mark - Measurement
@@ -454,14 +406,24 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
+    if (self.isOngoingDownload) {
+        return CGSizeMake(self.downloadProgressMinWidth, self.downloadProgressHeight);
+    }
+
     CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
-    const int maxTextWidth
-        = (int)floor(self.conversationStyle.maxMessageWidth - (hMargins + self.contentHSpacing + self.iconSize));
+    CGFloat maxTextWidth = self.conversationStyle.maxMessageWidth - hMargins;
+    if (self.shouldShowIcon) {
+        maxTextWidth -= self.contentHSpacing + self.iconSize;
+    }
+    maxTextWidth = floor(maxTextWidth);
     [self configureLabel];
     CGSize result = CGSizeCeil([self.label sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
-    result.width += self.contentHSpacing + self.iconSize;
     result.width = MIN(result.width, self.conversationStyle.maxMessageWidth);
-    result.height = MAX(result.height, self.iconSize);
+    if (self.shouldShowIcon) {
+        result.width += self.contentHSpacing + self.iconSize;
+        result.height = MAX(result.height, self.iconSize);
+    }
+
     return result;
 }
 
@@ -568,7 +530,12 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // TODO:
+    if (self.isFailedDownload) {
+        [self.delegate didTapFailedIncomingAttachment:self.viewItem];
+    } else if (self.isAvailable) {
+        [self.delegate didTapAttachmentWithPerMessageExpiration:self.viewItem
+                                               attachmentStream:self.viewItem.attachmentStream];
+    }
 }
 
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble

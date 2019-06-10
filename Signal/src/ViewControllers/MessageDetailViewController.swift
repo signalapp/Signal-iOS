@@ -379,6 +379,10 @@ class MessageDetailViewController: OWSViewController {
             let messageStickerView = OWSMessageStickerView(frame: CGRect.zero)
             messageStickerView.delegate = self
             messageView = messageStickerView
+        } else if viewItem.messageCellType == .perMessageExpiration {
+            let messageHiddenView = OWSMessageHiddenView(frame: CGRect.zero)
+            messageHiddenView.delegate = self
+            messageView = messageHiddenView
         } else {
             let messageBubbleView = OWSMessageBubbleView(frame: CGRect.zero)
             messageBubbleView.delegate = self
@@ -841,6 +845,12 @@ extension MessageDetailViewController: OWSMessageStickerViewDelegate {
     public func showStickerPack(_ stickerPackInfo: StickerPackInfo) {
         let packView = StickerPackViewController(stickerPackInfo: stickerPackInfo)
         present(packView, animated: true)
+    }
+}
+
+extension MessageDetailViewController: OWSMessageHiddenViewDelegate {
+    public func didTapAttachment(withPerMessageExpiration viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
+        // TODO:
     }
 }
 
