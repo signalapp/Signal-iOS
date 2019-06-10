@@ -46,7 +46,7 @@ NS_SWIFT_NAME(init(uniqueId:devices:));
                                   devicesToRemove:(nullable NSArray *)devicesToRemove
                                       transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (NSString *)recipientId;
+@property (nonatomic, readonly) NSString *recipientId;
 
 - (NSComparisonResult)compare:(SignalRecipient *)other;
 

@@ -166,6 +166,15 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 // --- CODE GENERATION MARKER
 
+#pragma mark - Dependencies
+
+- (id<ContactsManagerProtocol>)contactsManager
+{
+    return SSKEnvironment.shared.contactsManager;
+}
+
+#pragma mark -
+
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId
 {
     OWSAssertDebug(thread);
@@ -192,16 +201,16 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
             return NSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
         case TSInfoMessageUserNotRegistered:
             if (self.unregisteredRecipientId.length > 0) {
-                if (transaction.transitional_yapReadTransaction) {
-                    id<ContactsManagerProtocol> contactsManager = SSKEnvironment.shared.contactsManager;
-                    NSString *recipientName =
-                        [contactsManager displayNameForPhoneIdentifier:self.unregisteredRecipientId
-                                                           transaction:transaction.transitional_yapReadTransaction];
-                    return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
-                                                          @"Format string for 'unregistered user' error. Embeds {{the "
-                                                          @"unregistered user's name or signal id}}."),
-                                     recipientName];
+                NSString *recipientName;
+                if (transaction.transitional_yapReadTransaction != nil) {
+                    recipientName = [self.contactsManager
+                        displayNameForPhoneIdentifier:self.unregisteredRecipientId
+                                          transaction:transaction.transitional_yapReadTransaction];
                 }
+                return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
+                                                      @"Format string for 'unregistered user' error. Embeds {{the "
+                                                      @"unregistered user's name or signal id}}."),
+                                 recipientName];
             } else {
                 return NSLocalizedString(@"CONTACT_DETAIL_COMM_TYPE_INSECURE", nil);
             }
@@ -221,19 +230,50 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         case TSInfoMessageAddGroupToProfileWhitelistOffer:
             return NSLocalizedString(@"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER",
                 @"Message shown in conversation view that offers to share your profile with a group.");
-        default:
-            OWSFailDebug(@"Unknown info message type.");
+        case TSInfoMessageTypeDisappearingMessagesUpdate:
             break;
+        case TSInfoMessageUnknownProtocolVersion:
+            break;
+        case TSInfoMessageUserJoinedSignal: {
+            NSString *recipientName;
+            if (transaction.transitional_yapReadTransaction != nil) {
+                NSString *contactId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
+                recipientName =
+                    [self.contactsManager displayNameForPhoneIdentifier:contactId
+                                                            transaction:transaction.transitional_yapReadTransaction];
+            }
+            NSString *format = NSLocalizedString(@"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT",
+                @"Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}}");
+            return [NSString stringWithFormat:format, recipientName];
+        }
     }
 
-    return @"Unknown Info Message Type";
+    OWSFailDebug(@"Unknown info message type");
+    return @"";
 }
 
 #pragma mark - OWSReadTracking
 
 - (BOOL)shouldAffectUnreadCounts
 {
-    return NO;
+    switch (self.messageType) {
+        case TSInfoMessageTypeSessionDidEnd:
+        case TSInfoMessageUserNotRegistered:
+        case TSInfoMessageTypeUnsupportedMessage:
+        case TSInfoMessageTypeGroupUpdate:
+        case TSInfoMessageTypeGroupQuit:
+        case TSInfoMessageTypeDisappearingMessagesUpdate:
+        case TSInfoMessageAddToContactsOffer:
+        case TSInfoMessageVerificationStateChange:
+        case TSInfoMessageAddUserToProfileWhitelistOffer:
+        case TSInfoMessageAddGroupToProfileWhitelistOffer:
+        case TSInfoMessageUnknownProtocolVersion:
+            return NO;
+        case TSInfoMessageUserJoinedSignal:
+            // In the home view, we want conversations with an unread "new user" notification to
+            // be badged and bolded, like they received a message.
+            return YES;
+    }
 }
 
 - (uint64_t)expireStartedAt

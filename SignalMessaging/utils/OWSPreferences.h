@@ -20,9 +20,14 @@ extern NSString *const OWSPreferencesSignalDatabaseCollection;
 extern NSString *const OWSPreferencesKeyEnableDebugLog;
 extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
 @class YapDatabaseReadWriteTransaction;
 
 @interface OWSPreferences : NSObject
+
+@property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 #pragma mark - Helpers
 
@@ -62,6 +67,13 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 
 - (BOOL)shouldShowUnidentifiedDeliveryIndicators;
 - (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value;
+
+- (BOOL)shouldNotifyOfNewAccountsWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(shouldNotifyOfNewAccounts(transaction:));
+
+- (void)setShouldNotifyOfNewAccounts:(BOOL)newValue
+                         transaction:(SDSAnyWriteTransaction *)transactio
+    NS_SWIFT_NAME(shouldNotifyOfNewAccounts(_:transaction:));
 
 #pragma mark Callkit
 

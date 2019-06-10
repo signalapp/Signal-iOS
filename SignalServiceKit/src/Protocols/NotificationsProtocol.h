@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class TSErrorMessage;
 @class TSIncomingMessage;
+@class TSInfoMessage;
 @class TSThread;
 
 @protocol ContactsManagerProtocol;
@@ -21,6 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)error
                            thread:(TSThread *)thread
                       transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)notifyUserForInfoMessage:(TSInfoMessage *)error
+                          thread:(TSThread *)thread
+                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)notifyUserForThreadlessErrorMessage:(TSErrorMessage *)error
                                 transaction:(SDSAnyWriteTransaction *)transaction;

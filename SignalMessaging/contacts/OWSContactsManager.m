@@ -268,11 +268,15 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertDebug(contacts);
     OWSAssertDebug(completion);
+    OWSAssertIsOnMainThread();
+
 
     dispatch_async(self.serialQueue, ^{
         __block BOOL isFullIntersection = YES;
+        __block BOOL isRegularlyScheduledRun = NO;
         __block NSSet<NSString *> *allContactRecipientIds;
         __block NSSet<NSString *> *recipientIdsForIntersection;
+        __block NSMutableSet<SignalRecipient *> *existingRegisteredRecipients = [NSMutableSet new];
         [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             // Contact updates initiated by the user should always do a full intersection.
             if (!isUserRequested) {
@@ -281,8 +285,23 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                                inCollection:OWSContactsManagerCollection];
                 if (nextFullIntersectionDate && [nextFullIntersectionDate isAfterNow]) {
                     isFullIntersection = NO;
+                } else {
+                    isRegularlyScheduledRun = YES;
                 }
             }
+
+            [SignalRecipient
+                enumerateCollectionObjectsWithTransaction:transaction
+                                               usingBlock:^(id _Nonnull object, BOOL *_Nonnull stop) {
+                                                   if (![object isKindOfClass:[SignalRecipient class]]) {
+                                                       OWSFailDebug(@"unexpected object: %@", object);
+                                                       return;
+                                                   }
+                                                   SignalRecipient *signalRecipient = (SignalRecipient *)object;
+                                                   if (signalRecipient.devices.count > 0) {
+                                                       [existingRegisteredRecipients addObject:(SignalRecipient *)object];
+                                                   }
+                                               }];
 
             allContactRecipientIds = [self recipientIdsForIntersectionWithContacts:contacts];
             recipientIdsForIntersection = allContactRecipientIds;
@@ -323,6 +342,15 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         [self intersectContacts:recipientIdsForIntersection
             retryDelaySeconds:1.0
             success:^(NSSet<SignalRecipient *> *registeredRecipients) {
+                if (isRegularlyScheduledRun) {
+                    NSMutableSet<SignalRecipient *> *newSignalRecipients = [registeredRecipients mutableCopy];
+                    [newSignalRecipients minusSet:existingRegisteredRecipients];
+                    // Not for first time users
+                    if (existingRegisteredRecipients.count > 0 && newSignalRecipients.count > 0) {
+                        [OWSNewAccountDiscovery.shared discoveredNewRecipients:newSignalRecipients];
+                    }
+                }
+
                 [self markIntersectionAsComplete:allContactRecipientIds isFullIntersection:isFullIntersection];
 
                 completion(nil);

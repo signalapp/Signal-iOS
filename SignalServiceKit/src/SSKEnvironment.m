@@ -196,7 +196,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     }
 }
 
-- (nullable id<NotificationsProtocol>)notificationsManager
+- (id<NotificationsProtocol>)notificationsManager
 {
     @synchronized(self) {
         OWSAssertDebug(_notificationsManager);
@@ -205,7 +205,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     }
 }
 
-- (void)setNotificationsManager:(nullable id<NotificationsProtocol>)notificationsManager
+- (void)setNotificationsManager:(id<NotificationsProtocol>)notificationsManager
 {
     @synchronized(self) {
         OWSAssertDebug(notificationsManager);
