@@ -181,7 +181,7 @@ void AssertIsOnDisappearingMessagesQueue()
 {
     OWSAssertDebug(transaction);
 
-    if (!message.isExpiringMessage) {
+    if (!message.hasPerConversationExpiration) {
         return;
     }
 

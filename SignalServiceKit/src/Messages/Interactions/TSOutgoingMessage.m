@@ -573,7 +573,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     //
     // TODO: Revisit this decision.
 
-    if (!self.isExpiringMessage) {
+    if (!self.hasPerConversationExpiration) {
         return NO;
     } else if (self.messageState == TSOutgoingMessageStateSent) {
         return YES;
@@ -1000,6 +1000,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         requiredProtocolVersion = SSKProtos.perMessageExpirationProtocolVersion;
     }
     [builder setRequiredProtocolVersion:(uint32_t) requiredProtocolVersion];
+
+    if (self.perMessageExpirationDurationSeconds > 0) {
+        [builder setMessageTimer:self.perMessageExpirationDurationSeconds];
+    }
 
     if (self.perMessageExpirationDurationSeconds > 0) {
         [builder setMessageTimer:self.perMessageExpirationDurationSeconds];

@@ -236,7 +236,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return self.stickerInfo != nil;
 }
 
-- (BOOL)isExpiringMessage
+- (BOOL)hasPerConversationExpiration
 {
     if (self.interaction.interactionType != OWSInteractionType_OutgoingMessage
         && self.interaction.interactionType != OWSInteractionType_IncomingMessage) {
@@ -244,7 +244,18 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     TSMessage *message = (TSMessage *)self.interaction;
-    return message.isExpiringMessage;
+    return message.hasPerConversationExpiration;
+}
+
+- (BOOL)hasPerMessageExpiration
+{
+    if (self.interaction.interactionType != OWSInteractionType_OutgoingMessage
+        && self.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+        return NO;
+    }
+
+    TSMessage *message = (TSMessage *)self.interaction;
+    return message.hasPerMessageExpiration;
 }
 
 - (BOOL)hasCellHeader

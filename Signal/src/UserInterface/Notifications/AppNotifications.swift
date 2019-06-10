@@ -409,11 +409,16 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         let notificationBody: String?
-        switch previewType {
-        case .noNameNoPreview, .nameNoPreview:
+        if incomingMessage.hasPerMessageExpiration {
+            // Don't reveal the contents of messages with per-message expiration.
             notificationBody = NotificationStrings.incomingMessageBody
-        case .namePreview:
-            notificationBody = messageText
+        } else {
+            switch previewType {
+            case .noNameNoPreview, .nameNoPreview:
+                notificationBody = NotificationStrings.incomingMessageBody
+            case .namePreview:
+                notificationBody = messageText
+            }
         }
 
         guard let threadId = thread.uniqueId else {

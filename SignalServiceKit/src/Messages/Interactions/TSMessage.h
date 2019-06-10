@@ -24,21 +24,27 @@ NS_ASSUME_NONNULL_BEGIN
 // NOTE: These correspond to just the "body" attachments.
 @property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
 @property (nonatomic, readonly, nullable) NSString *body;
+
+// Per-conversation expiration.
 @property (nonatomic, readonly) uint32_t expiresInSeconds;
 @property (nonatomic, readonly) uint64_t expireStartedAt;
 @property (nonatomic, readonly) uint64_t expiresAt;
-@property (nonatomic, readonly) BOOL isExpiringMessage;
+// See: hasPerMessageExpiration.
+@property (nonatomic, readonly) BOOL hasPerConversationExpiration;
+
 @property (nonatomic, readonly, nullable) TSQuotedMessage *quotedMessage;
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 
-// Per-message expire timer.
+// Per-message expiration.
 @property (nonatomic, readonly) uint32_t perMessageExpirationDurationSeconds;
 @property (nonatomic, readonly) uint64_t perMessageExpireStartedAt;
 @property (nonatomic, readonly) uint64_t perMessageExpiresAt;
-@property (nonatomic, readonly) BOOL hasPerMessageExpiration;
 @property (nonatomic, readonly) BOOL perMessageExpirationHasExpired;
+// See: hasPerConversationExpiration.
+@property (nonatomic, readonly) BOOL hasPerMessageExpiration;
+@property (nonatomic, readonly) BOOL hasPerMessageExpirationStarted;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -119,6 +125,8 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 #pragma mark - Per-message expiration
 
 // This method can be used to start expiration of per-message expiration.
+//
+// NOTE: To start "count down", use PerMessageExpiration.  Don't call this method directly.
 - (void)updateWithPerMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                                 transaction:(SDSAnyWriteTransaction *)transaction;
 

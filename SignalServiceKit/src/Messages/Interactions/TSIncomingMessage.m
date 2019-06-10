@@ -193,7 +193,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
             return NO;
         }
     }
-    return self.isExpiringMessage;
+    return self.hasPerConversationExpiration;
 }
 
 #pragma mark - OWSReadTracking

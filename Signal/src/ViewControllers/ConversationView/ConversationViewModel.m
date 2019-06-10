@@ -1529,7 +1529,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
             MessageReceiptStatus receiptStatus =
                 [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
-            BOOL isDisappearingMessage = outgoingMessage.isExpiringMessage;
+            BOOL isDisappearingMessage = outgoingMessage.hasPerConversationExpiration;
 
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                 TSOutgoingMessage *nextOutgoingMessage = (TSOutgoingMessage *)nextViewItem.interaction;
@@ -1569,7 +1569,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
             NSString *incomingSenderId = incomingMessage.authorId;
             OWSAssertDebug(incomingSenderId.length > 0);
-            BOOL isDisappearingMessage = incomingMessage.isExpiringMessage;
+            BOOL isDisappearingMessage = incomingMessage.hasPerConversationExpiration;
 
             NSString *_Nullable nextIncomingSenderId = nil;
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {

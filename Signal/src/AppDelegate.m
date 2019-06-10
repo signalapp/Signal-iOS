@@ -1336,6 +1336,8 @@ static NSTimeInterval launchStartedAt;
             [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
         }
     }
+
+    [PerMessageExpiration appDidBecomeReady];
 }
 
 - (void)registrationStateDidChange
