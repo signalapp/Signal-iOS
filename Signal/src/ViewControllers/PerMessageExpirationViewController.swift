@@ -84,6 +84,10 @@ class PerMessageExpirationViewController: OWSViewController {
             guard let attachmentStream = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) as? TSAttachmentStream else {
                 return
             }
+            guard attachmentStream.isValidVisualMedia,
+                attachmentStream.isImage || attachmentStream.isAnimated else {
+                    return
+            }
 
             presentation = (message: message, attachmentStream: attachmentStream)
         }
