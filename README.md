@@ -1,20 +1,10 @@
-<p align="center">
-	<img src="https://gist.githubusercontent.com/Imperiopolis-Signal/ca9d03d14b514e59eb5d0ffc2bdde9a4/raw/41af3412763334a668721a4e39058c6645da8597/signal-logo.svg?sanitize=true" width="375px" alt="Signal for iOS">	
-</p>
-<p align="center">Free, worldwide, encrypted text messages, phone calls, & video chat</p>
-<p align="center">
-  <a href="https://github.com/signalapp/signal-ios/blob/master/LICENSE" title="License"><img src="https://img.shields.io/badge/license-GPLv3-55acee.svg" alt="License"></a>
-  <a href="https://twitter.com/signalapp" title="@signalapp on Twitter"><img src="https://img.shields.io/badge/twitter-@signalapp-55acee.svg" alt="@signalapp on Twitter"></a>
-  <a href="https://community.signalusers.org/" title="Community Forum"><img src="https://img.shields.io/badge/community-forum-55acee.svg" alt="Signal Community Forum"></a>
-  <a href="https://github.com/signalapp/signal-ios" title="Signal iOS stars on Github"><img src="https://img.shields.io/github/stars/signalapp/signal-ios.svg?style=social&label=Stars" alt="Github stars"></a>
-</p>
-<p align="center">
-  <a href="https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8" title="Available on the App Store"><img src="http://cl.ly/WouG/Download_on_the_App_Store_Badge_US-UK_135x40.svg" alt="Available on the App Store" width="133px"></a>
-</p>
+# Signal iOS
 
----
+Signal is a free, open source, messaging app for simple private communication with friends. 
 
-Signal for iOS is a free, open source, [iOS messaging app](https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8) for simple private communication with friends. Also available on [Android](https://github.com/signalapp/signal-android) and [Desktop](https://github.com/signalapp/signal-desktop).
+[![Available on the App Store](http://cl.ly/WouG/Download_on_the_App_Store_Badge_US-UK_135x40.svg)](https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8)
+
+Also available on [Android](https://github.com/signalapp/signal-android) and [Desktop](https://github.com/signalapp/signal-desktop).
 
 ## Questions?
 
