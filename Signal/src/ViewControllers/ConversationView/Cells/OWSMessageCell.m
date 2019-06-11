@@ -607,24 +607,20 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
 
-    CGPoint translation = [sender translationInView:self];
+    CGFloat translationX = [sender translationInView:self].x;
+    CGFloat currentPosition = self.swipeToReplyPosition;
 
-    // The direction the user must swipe to trigger a reply
-    // matches the language layout direction, so for example
-    // you swipe RTL for RTL languages.
-    BOOL mayReply;
-    BOOL wantsHaptic;
+    // Invert positions for RTL logic, since the user is swiping in the opposite direction.
     if (CurrentAppContext().isRTL) {
-        mayReply = translation.x <= -self.maxSwipeDistance;
-        wantsHaptic = self.swipeToReplyPosition > -self.maxSwipeDistance;
-    } else {
-        mayReply = translation.x >= self.maxSwipeDistance;
-        wantsHaptic = self.swipeToReplyPosition < self.maxSwipeDistance;
+        translationX = -translationX;
+        currentPosition = -currentPosition;
     }
+
+    BOOL mayReply = translationX >= self.maxSwipeDistance;
 
     if (mayReply && !hasFailed) {
         // When we transition into the reply range, play haptic feedback for the user
-        if (wantsHaptic) {
+        if (currentPosition < self.maxSwipeDistance) {
             [[ImpactHapticFeedback new] impactOccurred];
         }
 
@@ -636,7 +632,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (hasFailed || hasFinished) {
         [self resetSwipePositionAnimated:YES];
     } else {
-        [self setSwipePosition:translation.x animated:hasFinished];
+        [self setSwipePosition:translationX animated:hasFinished];
     }
 }
 
@@ -644,32 +640,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Scale the translation above or below the desired range,
     // to produce an elastic feeling when you overscroll.
-    if (CurrentAppContext().isRTL) {
-        if (position > 0) {
-            position = position / 4;
-        } else if (position < -self.maxSwipeDistance) {
-            CGFloat overflow = position + self.maxSwipeDistance;
-            position = -self.maxSwipeDistance + overflow / 4;
-        }
-    } else {
-        if (position < 0) {
-            position = position / 4;
-        } else if (position > self.maxSwipeDistance) {
-            CGFloat overflow = position - self.maxSwipeDistance;
-            position = self.maxSwipeDistance + overflow / 4;
-        }
+    if (position < 0) {
+        position = position / 4;
+    } else if (position > self.maxSwipeDistance) {
+        CGFloat overflow = position - self.maxSwipeDistance;
+        position = self.maxSwipeDistance + overflow / 4;
     }
 
     for (NSLayoutConstraint *constraint in self.swipeToReplyConstraints) {
-        constraint.constant = position;
+        // The position passed to this function is assumed to always be
+        // relative to a LTR swipe. If we're actually swiping RTL, we
+        // must invert the position before updating the constraints.
+        constraint.constant = CurrentAppContext().isRTL ? -position : position;
     }
 
-    CGFloat alpha;
-    if (CurrentAppContext().isRTL) {
-        alpha = CGFloatClamp01(CGFloatInverseLerp(position, 0, -self.maxSwipeDistance));
-    } else {
-        alpha = CGFloatClamp01(CGFloatInverseLerp(position, 0, self.maxSwipeDistance));
-    }
+    CGFloat alpha = CGFloatClamp01(CGFloatInverseLerp(position, 0, self.maxSwipeDistance));
 
     if (animated) {
         [UIView animateWithDuration:0.1
