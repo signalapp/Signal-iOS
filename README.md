@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="https://p75.f0.n0.cdn.getcloudapp.com/items/7Ku1NYAb/signal-logo.svg" width="375px" alt="Signal for iOS">	
+	<img src="https://gist.githubusercontent.com/Imperiopolis-Signal/ca9d03d14b514e59eb5d0ffc2bdde9a4/raw/41af3412763334a668721a4e39058c6645da8597/signal-logo.svg?sanitize=true" width="375px" alt="Signal for iOS">	
 </p>
 <p align="center">Free, worldwide, encrypted text messages, phone calls, & video chat</p>
 <p align="center">

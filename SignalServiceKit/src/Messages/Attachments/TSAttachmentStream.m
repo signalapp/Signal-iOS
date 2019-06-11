@@ -203,12 +203,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
     if (attachmentSchemaVersion < 5) {
         // Older audio attachments could have incorrect durations due
-        // to weirdness in AVAudioPlayer.
-        // Per comments on cachedAudioDurationSeconds, we should only update
-        // this on the main thread.
-        if ([NSThread isMainThread]) {
-            self.cachedAudioDurationSeconds = nil;
-        }
+        // to weirdness in AVAudioPlayer. Reset so we can recalculate.
+        self.cachedAudioDurationSeconds = nil;
     }
 }
 
@@ -654,13 +650,13 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
     NSError *error;
     AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.originalMediaURL error:&error];
-    [audioPlayer prepareToPlay];
     if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]
         && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
         // Ignore "invalid audio file" errors.
         return 0.f;
     }
     if (!error) {
+        [audioPlayer prepareToPlay];
         return (CGFloat)[audioPlayer duration];
     } else {
         OWSLogError(@"Could not find audio duration: %@", self.originalMediaURL);
