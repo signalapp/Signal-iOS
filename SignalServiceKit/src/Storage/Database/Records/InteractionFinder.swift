@@ -461,8 +461,6 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .timestamp) = ?
-        ORDER BY \(interactionColumn: .id) DESC
-        LIMIT 1
         """
         let arguments: [DatabaseValueConvertible] = [timestamp]
 
