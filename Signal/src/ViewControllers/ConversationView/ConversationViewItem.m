@@ -686,6 +686,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     TSMessage *message = (TSMessage *)self.interaction;
 
     if (message.hasPerMessageExpiration) {
+        if (message.perMessageExpirationHasExpired) {
+            self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+            self.perMessageExpirationHasExpired = YES;
+            return;
+        }
+
         if (transaction.transitional_yapReadTransaction) {
             NSArray<TSAttachment *> *mediaAttachments =
                 [message mediaAttachmentsWithTransaction:transaction.transitional_yapReadTransaction];
@@ -694,14 +700,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
             if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
                 self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-                self.perMessageExpirationHasExpired = message.perMessageExpirationHasExpired;
+                self.perMessageExpirationHasExpired = NO;
                 self.attachmentPointer = (TSAttachmentPointer *)mediaAttachment;
                 return;
             } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
                 TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
                 if (attachmentStream.isValidVisualMedia) {
                     self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-                    self.perMessageExpirationHasExpired = message.perMessageExpirationHasExpired;
+                    self.perMessageExpirationHasExpired = NO;
                     self.attachmentStream = attachmentStream;
                     return;
                 }

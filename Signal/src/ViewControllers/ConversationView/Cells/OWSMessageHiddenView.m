@@ -129,11 +129,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage;
 }
 
-- (BOOL)perMessageExpirationHasExpired
-{
-    return self.viewItem.perMessageExpirationHasExpired;
-}
-
 #pragma mark - Load
 
 - (void)configureViews
@@ -167,7 +162,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          conversationStyle:self.conversationStyle
                                                 isIncoming:self.isIncoming
                                          isOverlayingMedia:NO
-                                           isOutsideBubble:NO];
+                                           isOutsideBubble:self.isExpired];
         [textViews addObject:self.footerView];
     }
 
@@ -181,6 +176,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateBubbleColor];
 
     [self configureBubbleRounding];
+
+    if (self.isExpired) {
+        self.bubbleView.strokeColor = self.contentForegroundColor;
+        self.bubbleView.strokeThickness = 1.f;
+    }
 }
 
 - (CGFloat)senderNameBottomSpacing
@@ -250,15 +250,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateBubbleColor
 {
-    if (self.perMessageExpirationHasExpired) {
-        self.bubbleView.bubbleColor = UIColor.ows_gray15Color;
+    if (self.isExpired) {
+        self.bubbleView.fillColor = Theme.backgroundColor;
     } else if (self.isIncoming) {
-        self.bubbleView.bubbleGradientColors = @[
+        self.bubbleView.fillGradientColors = @[
             [UIColor.ows_gray05Color blendWithColor:UIColor.ows_blackColor alpha:0.15],
             UIColor.ows_gray05Color,
         ];
     } else {
-        self.bubbleView.bubbleGradientColors = @[
+        self.bubbleView.fillGradientColors = @[
             [UIColor.ows_signalBlueColor blendWithColor:UIColor.ows_blackColor alpha:0.15],
             UIColor.ows_signalBlueColor,
         ];
@@ -272,7 +272,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIColor *)contentForegroundColor
 {
-    if (self.perMessageExpirationHasExpired) {
+    if (self.isExpired) {
         return UIColor.ows_gray60Color;
     } else if (self.isIncoming) {
         return UIColor.ows_gray90Color;
@@ -330,19 +330,17 @@ NS_ASSUME_NONNULL_BEGIN
     self.label.textColor = self.contentForegroundColor;
     self.label.font = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
 
-    if (self.isFailedDownload) {
+    if (self.isExpired) {
+        self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_VIEWED",
+            @"Label for messages with per-message expiration indicating that "
+            @"user has viewed the message's contents.");
+    } else if (self.isFailedDownload) {
         self.label.text = NSLocalizedString(
             @"ATTACHMENT_DOWNLOADING_STATUS_FAILED", @"Status label when an attachment download has failed.");
     } else if (self.isAvailable) {
-        if (self.perMessageExpirationHasExpired) {
-            self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_VIEWED",
-                @"Label for messages with per-message expiration indicating that "
-                @"user has viewed the message's contents.");
-        } else {
-            self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW",
-                @"Label for messages with per-message expiration indicating that "
-                @"user can tap to view the message's contents.");
-        }
+        self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW",
+            @"Label for messages with per-message expiration indicating that "
+            @"user can tap to view the message's contents.");
     } else {
         OWSFailDebug(@"Unexpected view state.");
     }
@@ -354,8 +352,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.iconView);
 
-    [self.iconView setTemplateImageName:(self.perMessageExpirationHasExpired ? @"play-outline-24" : @"play-filled-24")
-                              tintColor:self.contentForegroundColor];
+    [self.iconView setTemplateImageName:self.iconName tintColor:self.contentForegroundColor];
+}
+
+- (NSString *)iconName
+{
+    if (self.isExpired) {
+        return @"play-outline-24";
+    } else if (self.isAvailable) {
+        return @"play-filled-24";
+    } else if (self.isFailedDownload) {
+        // TODO: Waiting on design.
+        return @"play-outline-24";
+    } else {
+        return @"play-filled-24";
+    }
 }
 
 - (nullable UIView *)createDownloadViewIfNecessary
@@ -403,12 +414,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldShowIcon
 {
-    return self.isAvailable;
+    // TODO: Pending design.
+    return YES;
+}
+
+- (BOOL)isExpired
+{
+    return self.viewItem.perMessageExpirationHasExpired;
 }
 
 - (BOOL)isAvailable
 {
-    if (self.viewItem.attachmentStream) {
+    if (self.viewItem.perMessageExpirationHasExpired) {
+        return NO;
+    } else if (self.viewItem.attachmentStream) {
         return YES;
     } else if (self.viewItem.attachmentPointer) {
         return NO;
@@ -420,7 +439,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isFailedDownload
 {
-    if (self.viewItem.attachmentStream) {
+    if (self.viewItem.perMessageExpirationHasExpired) {
+        return NO;
+    } else if (self.viewItem.attachmentStream) {
         return NO;
     } else if (self.viewItem.attachmentPointer) {
         return self.viewItem.attachmentPointer.state == TSAttachmentPointerStateFailed;
@@ -432,7 +453,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isOngoingDownload
 {
-    if (self.viewItem.attachmentStream) {
+    if (self.viewItem.perMessageExpirationHasExpired) {
+        return NO;
+    } else if (self.viewItem.attachmentStream) {
         return NO;
     } else if (self.viewItem.attachmentPointer) {
         return self.viewItem.attachmentPointer.state != TSAttachmentPointerStateFailed;
@@ -565,7 +588,10 @@ NS_ASSUME_NONNULL_BEGIN
     self.label.text = nil;
     self.iconView.image = nil;
 
-    self.bubbleView.bubbleColor = nil;
+    self.bubbleView.fillColor = nil;
+    self.bubbleView.fillGradientColors = nil;
+    self.bubbleView.strokeColor = nil;
+    self.bubbleView.strokeThickness = 0.f;
     [self.bubbleView clearPartnerViews];
 
     for (UIView *subview in self.bubbleView.subviews) {
