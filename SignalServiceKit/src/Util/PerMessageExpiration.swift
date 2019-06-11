@@ -19,6 +19,14 @@ public class PerMessageExpiration: NSObject {
         return SDSDatabaseStorage.shared
     }
 
+    private class var messageSenderJobQueue: MessageSenderJobQueue {
+        return SSKEnvironment.shared.messageSenderJobQueue
+    }
+
+    private class var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
     // MARK: -
 
     @objc
@@ -26,10 +34,12 @@ public class PerMessageExpiration: NSObject {
                                                 transaction: SDSAnyWriteTransaction) {
         AssertIsOnMainThread()
 
-        if message.perMessageExpireStartedAt < 1 {
+        if !message.hasPerMessageExpirationStarted {
             // Mark the countdown as begun.
             message.updateWithPerMessageExpireStarted(at: NSDate.ows_millisecondTimeStamp(),
                                                       transaction: transaction)
+
+            sendSyncMessage(forMessage: message, transaction: transaction)
         } else {
             owsFailDebug("Per-message expiration countdown already begun.")
         }
@@ -68,7 +78,7 @@ public class PerMessageExpiration: NSObject {
         message.updateWithHasPerMessageExpiredAndRemoveRenderableContent(with: transaction)
     }
 
-    // MARK: -
+    // MARK: - Events
 
     @objc
     public class func appDidBecomeReady() {
@@ -82,6 +92,31 @@ public class PerMessageExpiration: NSObject {
                 schedulePerMessageExpiration(forMessage: message, transaction: transaction)
             }
         }
+    }
+
+    // MARK: - Sync Messages
+
+    private class func sendSyncMessage(forMessage message: TSMessage,
+                                       transaction: SDSAnyWriteTransaction) {
+        let senderId: String
+        if let incomingMessage = message as? TSIncomingMessage {
+            senderId = incomingMessage.authorId
+        } else {
+            guard let localNumber = tsAccountManager.localNumber() else {
+                owsFailDebug("Could not send sync message; no local number.")
+                return
+            }
+            // We also need to send "per-message expiration read" sync messages
+            // for outgoing messages, unlike normal read receipts.
+            senderId = localNumber
+        }
+        let messageIdTimestamp: UInt64 = message.timestamp
+        let readTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()
+
+        let syncMessage = OWSPerMessageExpirationReadSyncMessage(senderId: senderId,
+                                                                 messageIdTimestamp: messageIdTimestamp,
+                                                                 readTimestamp: readTimestamp)
+        messageSenderJobQueue.add(message: syncMessage, transaction: transaction)
     }
 }
 
