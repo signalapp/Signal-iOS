@@ -20,13 +20,17 @@ class PerMessageExpirationViewController: OWSViewController {
 
     // MARK: - Properties
 
-    private let interaction: TSInteraction
+    private let message: TSMessage
     private let attachmentStream: TSAttachmentStream
+
+    private var progressView: CircularProgressView?
+
+    private var timer: Timer?
 
     // MARK: - Initializers
 
-    required init(interaction: TSInteraction, attachmentStream: TSAttachmentStream) {
-        self.interaction = interaction
+    required init(message: TSMessage, attachmentStream: TSAttachmentStream) {
+        self.message = message
         self.attachmentStream = attachmentStream
 
         super.init(nibName: nil, bundle: nil)
@@ -38,7 +42,7 @@ class PerMessageExpirationViewController: OWSViewController {
 
     // MARK: -
 
-    private typealias Presentation = (interaction: TSInteraction, attachmentStream: TSAttachmentStream)
+    private typealias Presentation = (message: TSMessage, attachmentStream: TSAttachmentStream)
 
     @objc
     public class func tryToPresent(interaction: TSInteraction,
@@ -50,31 +54,40 @@ class PerMessageExpirationViewController: OWSViewController {
             return
         }
 
-        let view = PerMessageExpirationViewController(interaction: presentation.interaction, attachmentStream: presentation.attachmentStream)
+        let view = PerMessageExpirationViewController(message: presentation.message, attachmentStream: presentation.attachmentStream)
         fromViewController.present(view, animated: true)
     }
 
     private class func loadPresentation(interaction: TSInteraction) -> Presentation? {
         AssertIsOnMainThread()
 
-        return databaseStorage.uiReadReturningResult { transaction in
+        var presentation: Presentation?
+        databaseStorage.write { transaction in
             guard let interactionId = interaction.uniqueId else {
-                return nil
+                return
             }
             guard let message = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction) as? TSMessage else {
-                return nil
+                return
             }
+
+            // Kick off expiration now if necessary.
+            if !message.hasPerMessageExpirationStarted {
+                PerMessageExpiration.startPerMessageExpiration(forMessage: message, transaction: transaction)
+            }
+
             guard !message.perMessageExpirationHasExpired else {
-                return nil
+                return
             }
             guard let attachmentId = message.attachmentIds.firstObject as? String else {
-                return nil
+                return
             }
             guard let attachmentStream = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) as? TSAttachmentStream else {
-                return nil
+                return
             }
-            return (interaction: message, attachmentStream: attachmentStream)
+
+            presentation = (message: message, attachmentStream: attachmentStream)
         }
+        return presentation
     }
 
     // MARK: - View Lifecycle
@@ -106,18 +119,39 @@ class PerMessageExpirationViewController: OWSViewController {
         _ = contentView.applyScaleAspectFitLayout(subview: mediaView, aspectRatio: mediaAspectRatio)
 
         let hMargin: CGFloat = 16
+        let vMargin: CGFloat = 20
+        let controlSize: CGFloat = 24
+        let controlSpacing: CGFloat = 20
+        let controlsWidth = controlSize * 2 + controlSpacing + hMargin * 2
+        let controlsHeight = controlSize + vMargin * 2
+        mediaView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
+        mediaView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
 
         let dismissButton = OWSButton(imageName: "x-24", tintColor: Theme.darkThemePrimaryColor)
         dismissButton.addTarget(self, action: #selector(dismissButtonPressed(sender:)), for: .touchUpInside)
-        dismissButton.contentEdgeInsets = UIEdgeInsets(top: 20, leading: hMargin, bottom: 20, trailing: hMargin)
+        dismissButton.contentEdgeInsets = UIEdgeInsets(top: vMargin, leading: hMargin, bottom: vMargin, trailing: hMargin)
         view.addSubview(dismissButton)
         dismissButton.autoPinEdge(.leading, to: .leading, of: mediaView)
         dismissButton.autoPinEdge(.top, to: .top, of: mediaView)
+        dismissButton.setShadow(opacity: 0.33)
+
+        let progressView = CircularProgressView(thickness: 0.15)
+        self.progressView = progressView
+        view.addSubview(progressView)
+        progressView.autoSetDimension(.width, toSize: controlSize)
+        progressView.autoSetDimension(.height, toSize: controlSize)
+        progressView.autoPinEdge(.trailing, to: .trailing, of: mediaView, withOffset: -hMargin)
+        progressView.autoPinEdge(.top, to: .top, of: mediaView, withOffset: vMargin)
+        progressView.setShadow(opacity: 0.33)
 
         view.addGestureRecognizer(UITapGestureRecognizer(target: self,
                                                          action: #selector(rootViewWasTapped)))
 
         setupDatabaseObservation()
+
+        updateProgress()
+
+        timer = Timer.weakScheduledTimer(withTimeInterval: 0.1, target: self, selector: #selector(progressTimerDidFire), userInfo: nil, repeats: true)
     }
 
     private func buildMediaView() -> (mediaView: UIView, aspectRatio: CGFloat)? {
@@ -202,6 +236,41 @@ class PerMessageExpirationViewController: OWSViewController {
                                                object: nil)
     }
 
+    private func updateProgress() {
+        AssertIsOnMainThread()
+
+        guard let progressView = progressView else {
+            owsFailDebug("Missing progressView.")
+            return
+        }
+
+        progressView.progress = currentProgress()
+    }
+
+    private func currentProgress() -> CGFloat {
+        AssertIsOnMainThread()
+
+        let perMessageExpirationDurationSeconds: UInt32 = message.perMessageExpirationDurationSeconds
+        guard perMessageExpirationDurationSeconds > 0 else {
+            owsFailDebug("InvalidperMessageExpirationDurationSeconds.")
+            return 1
+        }
+        let perMessageExpireStartedAtMs: UInt64 = message.perMessageExpireStartedAt
+        guard perMessageExpireStartedAtMs > 0 else {
+            owsFailDebug("Invalid perMessageExpireStartedAt.")
+            return 1
+        }
+        let nowMs: UInt64 = NSDate.ows_millisecondTimeStamp()
+        guard nowMs > perMessageExpireStartedAtMs else {
+            owsFailDebug("Invalid perMessageExpireStartedAt.")
+            return 1
+        }
+        let elapsedMs: UInt64 = nowMs - perMessageExpireStartedAtMs
+        let durationMs: UInt64 = UInt64(perMessageExpirationDurationSeconds) * 1000
+        let progress: CGFloat = (CGFloat(elapsedMs) / CGFloat(durationMs)).clamp01()
+        return progress
+    }
+
     public override var canBecomeFirstResponder: Bool {
         return true
     }
@@ -228,7 +297,7 @@ class PerMessageExpirationViewController: OWSViewController {
         AssertIsOnMainThread()
 
         let shouldDismiss: Bool = databaseStorage.uiReadReturningResult { transaction in
-            guard let uniqueId = self.interaction.uniqueId else {
+            guard let uniqueId = self.message.uniqueId else {
                 return true
             }
             guard let message = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
@@ -275,6 +344,12 @@ class PerMessageExpirationViewController: OWSViewController {
         dismiss(animated: true)
     }
 
+    @objc
+    private func progressTimerDidFire() {
+        AssertIsOnMainThread()
+
+        updateProgress()
+    }
 }
 
 // MARK: -
