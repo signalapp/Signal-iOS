@@ -115,12 +115,15 @@ NS_ASSUME_NONNULL_BEGIN
     CGRect beginningTextRect = [self firstRectForRange:beginningTextRange];
 
     CGFloat topInset = beginningTextRect.origin.y;
-    CGFloat leftInset = beginningTextRect.origin.x;
+    CGFloat leadingInset = beginningTextRect.origin.x;
 
-    // we use Left instead of Leading, since it's based on the prior CGRect offset
     self.placeholderConstraints = @[
-        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:leftInset],
-        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeRight],
+        [self.placeholderView autoMatchDimension:ALDimensionWidth
+                                     toDimension:ALDimensionWidth
+                                          ofView:self
+                                      withOffset:-leadingInset],
+        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
+        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:leadingInset],
         [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:topInset],
     ];
 }

@@ -607,12 +607,20 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
 
-    CGPoint translation = [sender translationInView:self];
-    BOOL mayReply = translation.x >= self.maxSwipeDistance;
+    CGFloat translationX = [sender translationInView:self].x;
+    CGFloat currentPosition = self.swipeToReplyPosition;
+
+    // Invert positions for RTL logic, since the user is swiping in the opposite direction.
+    if (CurrentAppContext().isRTL) {
+        translationX = -translationX;
+        currentPosition = -currentPosition;
+    }
+
+    BOOL mayReply = translationX >= self.maxSwipeDistance;
 
     if (mayReply && !hasFailed) {
         // When we transition into the reply range, play haptic feedback for the user
-        if (self.swipeToReplyPosition < self.maxSwipeDistance) {
+        if (currentPosition < self.maxSwipeDistance) {
             [[ImpactHapticFeedback new] impactOccurred];
         }
 
@@ -624,7 +632,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (hasFailed || hasFinished) {
         [self resetSwipePositionAnimated:YES];
     } else {
-        [self setSwipePosition:translation.x animated:hasFinished];
+        [self setSwipePosition:translationX animated:hasFinished];
     }
 }
 
@@ -640,10 +648,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (NSLayoutConstraint *constraint in self.swipeToReplyConstraints) {
-        constraint.constant = position;
+        // The position passed to this function is assumed to always be
+        // relative to a LTR swipe. If we're actually swiping RTL, we
+        // must invert the position before updating the constraints.
+        constraint.constant = CurrentAppContext().isRTL ? -position : position;
     }
 
     CGFloat alpha = CGFloatClamp01(CGFloatInverseLerp(position, 0, self.maxSwipeDistance));
+
     if (animated) {
         [UIView animateWithDuration:0.1
                          animations:^{
