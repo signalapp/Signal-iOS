@@ -31,9 +31,14 @@ import PromiseKit
     override private init() { }
     
     // MARK: Internal API
-    internal static func invoke(_ method: Target.Method, on target: Target, associatedWith hexEncodedPublicKey: String, parameters: [String:Any] = [:]) -> RawResponsePromise {
+    internal static func invoke(_ method: Target.Method, on target: Target, associatedWith hexEncodedPublicKey: String, parameters: [String:Any] = [:], headers: [String:String] = [:], timeout: TimeInterval? = nil) -> RawResponsePromise {
         let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
+        request.allHTTPHeaderFields = headers
+        if let timeout = timeout {
+            request.timeoutInterval = timeout
+        }
+        
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
             .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey).recoveringNetworkErrorsIfNeeded()
     }
@@ -42,15 +47,22 @@ import PromiseKit
     public static func getMessages() -> Promise<Set<MessageListPromise>> {
         let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
-            let lastHashValue = getLastMessageHashValue(for: targetSnode) ?? ""
-            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHashValue ]
-            return invoke(.getMessages, on: targetSnode, associatedWith: hexEncodedPublicKey, parameters: parameters).map { rawResponse in
-                guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
-                updateLastMessageHashValueIfPossible(for: targetSnode, from: rawMessages)
-                let newRawMessages = removeDuplicates(from: rawMessages)
-                return parseProtoEnvelopes(from: newRawMessages)
-            }
+            return getMessages(from: targetSnode, longPolling: false)
         }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+    }
+    
+    internal static func getMessages(from target: Target, longPolling: Bool = true) -> MessageListPromise {
+        let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let lastHashValue = getLastMessageHashValue(for: target) ?? ""
+        let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHashValue ]
+        let headers = longPolling ? ["X-Loki-Long-Poll" : "true"] : [:]
+        let timeout: TimeInterval? = longPolling ? 40 : nil // 40 second timeout
+        return invoke(.getMessages, on: target, associatedWith: hexEncodedPublicKey, parameters: parameters, headers: headers, timeout: timeout).map { rawResponse in
+            guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
+            updateLastMessageHashValueIfPossible(for: target, from: rawMessages)
+            let newRawMessages = removeDuplicates(from: rawMessages)
+            return parseProtoEnvelopes(from: newRawMessages)
+        }
     }
     
     public static func sendSignalMessage(_ signalMessage: SignalMessage, with timestamp: UInt64, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
@@ -103,7 +115,7 @@ import PromiseKit
     
     private static func updateLastMessageHashValueIfPossible(for target: Target, from rawMessages: [JSON]) {
         guard let lastMessage = rawMessages.last, let hashValue = lastMessage["hash"] as? String, let expiresAt = lastMessage["expiration"] as? Int else {
-            Logger.warn("[Loki] Failed to update last message hash value from: \(rawMessages).")
+            if rawMessages.count > 0 { Logger.warn("[Loki] Failed to update last message hash value from: \(rawMessages).") }
             return
         }
         setLastMessageHashValue(for: target, hashValue: hashValue, expiresAt: UInt64(expiresAt))

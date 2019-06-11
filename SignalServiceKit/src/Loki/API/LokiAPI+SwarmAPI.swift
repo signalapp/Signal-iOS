@@ -35,7 +35,16 @@ public extension LokiAPI {
         }
     }
     
-    private static func getSwarm(for hexEncodedPublicKey: String) -> Promise<[Target]> {
+    internal static func getCachedSnodes(for hexEncodedPublicKey: String) -> [Target] {
+        return swarmCache[hexEncodedPublicKey] ?? []
+    }
+    
+    internal static func removeCachedSnode(_ target: Target, for hexEncodedPublicKey: String) {
+        guard let cache = swarmCache[hexEncodedPublicKey] else { return }
+        swarmCache[hexEncodedPublicKey] = cache.filter { $0 != target }
+    }
+    
+    internal static func fetchSwarmIfNeeded(for hexEncodedPublicKey: String) -> Promise<[Target]> {
         if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= minimumSnodeCount {
             return Promise<[Target]> { $0.fulfill(cachedSwarm) }
         } else {
@@ -47,7 +56,7 @@ public extension LokiAPI {
     // MARK: Public API
     internal static func getTargetSnodes(for hexEncodedPublicKey: String) -> Promise<[Target]> {
         // shuffled() uses the system's default random generator, which is cryptographically secure
-        return getSwarm(for: hexEncodedPublicKey).map { Array($0.shuffled().prefix(targetSnodeCount)) }
+        return fetchSwarmIfNeeded(for: hexEncodedPublicKey).map { Array($0.shuffled().prefix(targetSnodeCount)) }
     }
     
     // MARK: Parsing

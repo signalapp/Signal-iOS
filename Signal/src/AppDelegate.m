@@ -171,6 +171,8 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"applicationDidEnterBackground.");
 
     [DDLog flushLog];
+
+    [LokiAPI stopLongPolling];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -189,6 +191,7 @@ static NSTimeInterval launchStartedAt;
 
     [DDLog flushLog];
     
+    [LokiAPI stopLongPolling];
     if (self.lokiP2PServer) { [self.lokiP2PServer stop]; }
 }
 
@@ -306,6 +309,9 @@ static NSTimeInterval launchStartedAt;
                                              selector:@selector(registrationLockDidChange:)
                                                  name:NSNotificationName_2FAStateDidChange
                                                object:nil];
+    
+    // Loki Message received
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receivedNewMessages:) name:NSNotification.receivedNewMessages object:nil];
 
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
 
@@ -751,11 +757,8 @@ static NSTimeInterval launchStartedAt;
             [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             
-            // Loki: Fetch immediately
-            [[AppEnvironment.shared.messageFetcherJob run] retainUntilComplete];
-            
-            // Loki: Start poller
-            [Poller.shared startIfNeeded];
+            // Loki: Start long polling
+            [LokiAPI startLongPollingIfNecessary];
            
             // Loki: Tell our friends that we are online
             [LokiP2PManager broadcastOnlineStatus];
@@ -1178,6 +1181,7 @@ static NSTimeInterval launchStartedAt;
 {
     OWSLogInfo(@"performing background fetch");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        // Loki: We don't want to spin up the long poller here as it is probably wasteful on resources
         __block AnyPromise *job = [AppEnvironment.shared.messageFetcherJob run].then(^{
             // HACK: Call completion handler after n seconds.
             //
@@ -1359,6 +1363,9 @@ static NSTimeInterval launchStartedAt;
 
         // For non-legacy users, read receipts are on by default.
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];
+        
+        // Start long polling
+        [LokiAPI startLongPollingIfNecessary];
     }
 }
 
@@ -1402,6 +1409,24 @@ static NSTimeInterval launchStartedAt;
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
 
     [UIViewController attemptRotationToDeviceOrientation];
+}
+
+#pragma mark - Long polling
+
+- (void)receivedNewMessages:(NSNotification *)notification
+{
+    NSArray *messages = (NSArray *)notification.userInfo[@"messages"];
+    for (SSKProtoEnvelope *envelope in messages) {
+        OWSLogInfo(@"[Loki] Received messages from long polling");
+        @try {
+            NSData *envelopeData = envelope.serializedDataIgnoringErrors;
+            if (envelopeData != nil) {
+                [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:envelopeData];
+            }
+        } @catch (NSException *exception) {
+            OWSFailDebug(@"Failed to serialize envelope");
+        }
+    }
 }
 
 #pragma mark - status bar touches
