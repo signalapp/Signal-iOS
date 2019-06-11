@@ -21,6 +21,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIStackView *vStackView;
 
+@property (nonatomic) UILabel *senderNameLabel;
+
+@property (nonatomic) UIView *senderNameContainer;
+
 @property (nonatomic) UIStackView *hStackView;
 
 @property (nonatomic) UIImageView *iconView;
@@ -73,6 +77,12 @@ NS_ASSUME_NONNULL_BEGIN
     self.bubbleView.layoutMargins = UIEdgeInsetsZero;
     [self addSubview:self.bubbleView];
     [self.bubbleView autoPinEdgesToSuperviewEdges];
+
+    self.senderNameLabel = [OWSLabel new];
+    self.senderNameContainer = [UIView new];
+    self.senderNameContainer.layoutMargins = UIEdgeInsetsMake(0, 0, self.senderNameBottomSpacing, 0);
+    [self.senderNameContainer addSubview:self.senderNameLabel];
+    [self.senderNameLabel ows_autoPinToSuperviewMargins];
 
     self.iconView = [UIImageView new];
     [self.iconView setContentHuggingHorizontalHigh];
@@ -137,6 +147,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.viewConstraints addObjectsFromArray:[self.vStackView autoPinEdgesToSuperviewEdges]];
     NSMutableArray<UIView *> *textViews = [NSMutableArray new];
 
+    if (self.shouldShowSenderName) {
+        [self configureSenderNameLabel];
+        [textViews addObject:self.senderNameContainer];
+    }
+
     UIView *_Nullable downloadView = [self createDownloadViewIfNecessary];
     if (downloadView) {
         [textViews addObject:downloadView];
@@ -166,6 +181,35 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateBubbleColor];
 
     [self configureBubbleRounding];
+}
+
+- (CGFloat)senderNameBottomSpacing
+{
+    return 2.f;
+}
+
+- (BOOL)shouldShowSenderName
+{
+    return self.viewItem.senderName.length > 0;
+}
+
+- (void)configureSenderNameLabel
+{
+    OWSAssertDebug(self.senderNameLabel);
+    OWSAssertDebug(self.shouldShowSenderName);
+    
+    self.senderNameLabel.textColor = self.bodyTextColor;
+    self.senderNameLabel.font = OWSMessageView.senderNameFont;
+    self.senderNameLabel.attributedText = self.viewItem.senderName;
+    self.senderNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+}
+
+- (UIColor *)bodyTextColor
+{
+    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
+    
+    TSMessage *message = (TSMessage *)self.viewItem.interaction;
+    return [self.conversationStyle bubbleTextColorWithMessage:message];
 }
 
 - (CGFloat)iconSize
@@ -326,7 +370,8 @@ NS_ASSUME_NONNULL_BEGIN
         return [UIView new];
     }
     if ([self.attachmentDownloads downloadProgressForAttachmentId:uniqueId] == nil) {
-        OWSFailDebug(@"Missing download progress.");
+        // Download probably hasn't started yet.
+        OWSLogWarn(@"Missing download progress.");
         return [UIView new];
     }
 
@@ -425,6 +470,24 @@ NS_ASSUME_NONNULL_BEGIN
     return result;
 }
 
+- (nullable NSValue *)senderNameSize
+{
+    OWSAssertDebug(self.conversationStyle);
+    OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
+    
+    if (!self.shouldShowSenderName) {
+        return nil;
+    }
+    
+    CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
+    const int maxTextWidth = (int)floor(self.conversationStyle.maxMessageWidth - hMargins);
+    [self configureSenderNameLabel];
+    CGSize result = CGSizeCeil([self.senderNameLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
+    result.width = MIN(result.width, maxTextWidth);
+    result.height += self.senderNameBottomSpacing;
+    return [NSValue valueWithCGSize:result];
+}
+
 - (CGSize)measureSize
 {
     OWSAssertDebug(self.conversationStyle);
@@ -437,6 +500,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self configureBubbleRounding];
 
     NSMutableArray<NSValue *> *textViewSizes = [NSMutableArray new];
+
+    NSValue *_Nullable senderNameSize = [self senderNameSize];
+    if (senderNameSize) {
+        [textViewSizes addObject:senderNameSize];
+    }
 
     CGSize contentSize = self.contentSize;
     [textViewSizes addObject:[NSValue valueWithCGSize:contentSize]];
