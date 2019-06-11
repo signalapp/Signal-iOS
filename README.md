@@ -3,10 +3,7 @@
 </p>
 <p align="center">Free, worldwide, encrypted text messages, phone calls, & video chat</p>
 <p align="center">
-  <a href="https://travis-ci.org/signalapp/signal-ios"><img src="https://img.shields.io/travis/signalapp/signal-ios.svg"></a>
-  <a href="https://github.com/signalapp/signal-ios/releases" title="Signal iOS releases"><img src="https://img.shields.io/github/release/signalapp/signal-ios.svg?colorB=55acee" alt="Signal iOS releases"></a>
   <a href="https://github.com/signalapp/signal-ios/blob/master/LICENSE" title="License"><img src="https://img.shields.io/badge/license-GPLv3-55acee.svg" alt="License"></a>
-  <br>
   <a href="https://twitter.com/signalapp" title="@signalapp on Twitter"><img src="https://img.shields.io/badge/twitter-@signalapp-55acee.svg" alt="@signalapp on Twitter"></a>
   <a href="https://community.signalusers.org/" title="Community Forum"><img src="https://img.shields.io/badge/community-forum-55acee.svg" alt="Signal Community Forum"></a>
   <a href="https://github.com/signalapp/signal-ios" title="Signal iOS stars on Github"><img src="https://img.shields.io/github/stars/signalapp/signal-ios.svg?style=social&label=Stars" alt="Github stars"></a>
