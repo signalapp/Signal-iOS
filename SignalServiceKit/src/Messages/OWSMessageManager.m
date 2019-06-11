@@ -984,6 +984,11 @@ NS_ASSUME_NONNULL_BEGIN
         for (SSKProtoSyncMessageStickerPackOperation *packOperationProto in syncMessage.stickerPackOperation) {
             [StickerManager processIncomingStickerPackOperation:packOperationProto transaction:transaction];
         }
+    } else if (syncMessage.messageTimerRead != nil) {
+        OWSLogInfo(@"Received per-message expiration sync message");
+        [PerMessageExpiration processIncomingSyncMessage:syncMessage.messageTimerRead
+                                                envelope:envelope
+                                             transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
@@ -1583,6 +1588,8 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         OWSLogWarn(@"GRDB TODO");
     }
+
+    [PerMessageExpiration applyEarlyReadReceiptsForIncomingMessage:incomingMessage transaction:transaction];
 
     [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
                                                                     inThread:thread
