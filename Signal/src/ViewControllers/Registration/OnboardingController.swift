@@ -312,6 +312,8 @@ public class OnboardingController: NSObject {
 
     public private(set) var twoFAPin: String?
 
+    public private(set) var verificationRequestCount: UInt = 0
+
     @objc
     public func update(countryState: OnboardingCountryState) {
         AssertIsOnMainThread()
@@ -417,6 +419,7 @@ public class OnboardingController: NSObject {
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: true) { (modal) in
 
+                                                        self.verificationRequestCount += 1
                                                         self.tsAccountManager.register(withPhoneNumber: phoneNumber.e164,
                                                                                        captchaToken: captchaToken,
                                                                                        success: {

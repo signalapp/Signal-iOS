@@ -7,7 +7,7 @@
 		<key>CarthageVersion</key>
 		<string>0.33.0</string>
 		<key>OSXVersion</key>
-		<string>10.14.4</string>
+		<string>10.14.5</string>
 		<key>WebRTCCommit</key>
 		<string>1cc2ecdc3c00c38a4765e17f01a886c6c1291378 M74</string>
 	</dict>

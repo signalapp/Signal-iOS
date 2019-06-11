@@ -365,35 +365,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }];
 }
 
-- (void)rerequestSMSWithCaptchaToken:(nullable NSString *)captchaToken
-                             success:(void (^)(void))successBlock
-                             failure:(void (^)(NSError *error))failureBlock
-{
-    // TODO: Can we remove phoneNumberAwaitingVerification?
-    NSString *number          = self.phoneNumberAwaitingVerification;
-    OWSAssertDebug(number);
-
-    [self registerWithPhoneNumber:number
-                     captchaToken:captchaToken
-                          success:successBlock
-                          failure:failureBlock
-                  smsVerification:YES];
-}
-
-- (void)rerequestVoiceWithCaptchaToken:(nullable NSString *)captchaToken
-                               success:(void (^)(void))successBlock
-                               failure:(void (^)(NSError *error))failureBlock
-{
-    NSString *number          = self.phoneNumberAwaitingVerification;
-    OWSAssertDebug(number);
-
-    [self registerWithPhoneNumber:number
-                     captchaToken:captchaToken
-                          success:successBlock
-                          failure:failureBlock
-                  smsVerification:NO];
-}
-
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin
                       success:(void (^)(void))successBlock
