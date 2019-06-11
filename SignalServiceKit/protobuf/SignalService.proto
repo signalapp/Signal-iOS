@@ -357,7 +357,7 @@ message SyncMessage {
   optional Configuration        configuration        =  9;
   optional bytes                padding              =  8;
   repeated StickerPackOperation stickerPackOperation = 10;
-  repeated MessageTimerRead     messageTimerRead     = 11;
+  optional MessageTimerRead messageTimerRead = 11;
 }
 
 message AttachmentPointer {

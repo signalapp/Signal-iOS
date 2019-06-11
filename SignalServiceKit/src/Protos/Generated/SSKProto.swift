@@ -5024,7 +5024,9 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
             builder.setPadding(_value)
         }
         builder.setStickerPackOperation(stickerPackOperation)
-        builder.setMessageTimerRead(messageTimerRead)
+        if let _value = messageTimerRead {
+            builder.setMessageTimerRead(_value)
+        }
         return builder
     }
 
@@ -5086,14 +5088,8 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
             proto.stickerPackOperation = wrappedItems.map { $0.proto }
         }
 
-        @objc public func addMessageTimerRead(_ valueParam: SSKProtoSyncMessageMessageTimerRead) {
-            var items = proto.messageTimerRead
-            items.append(valueParam.proto)
-            proto.messageTimerRead = items
-        }
-
-        @objc public func setMessageTimerRead(_ wrappedItems: [SSKProtoSyncMessageMessageTimerRead]) {
-            proto.messageTimerRead = wrappedItems.map { $0.proto }
+        @objc public func setMessageTimerRead(_ valueParam: SSKProtoSyncMessageMessageTimerRead) {
+            proto.messageTimerRead = valueParam.proto
         }
 
         @objc public func build() throws -> SSKProtoSyncMessage {
@@ -5125,7 +5121,7 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
 
     @objc public let stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation]
 
-    @objc public let messageTimerRead: [SSKProtoSyncMessageMessageTimerRead]
+    @objc public let messageTimerRead: SSKProtoSyncMessageMessageTimerRead?
 
     @objc public var padding: Data? {
         guard proto.hasPadding else {
@@ -5147,7 +5143,7 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
                  verified: SSKProtoVerified?,
                  configuration: SSKProtoSyncMessageConfiguration?,
                  stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation],
-                 messageTimerRead: [SSKProtoSyncMessageMessageTimerRead]) {
+                 messageTimerRead: SSKProtoSyncMessageMessageTimerRead?) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -5213,8 +5209,10 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
         var stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation] = []
         stickerPackOperation = try proto.stickerPackOperation.map { try SSKProtoSyncMessageStickerPackOperation.parseProto($0) }
 
-        var messageTimerRead: [SSKProtoSyncMessageMessageTimerRead] = []
-        messageTimerRead = try proto.messageTimerRead.map { try SSKProtoSyncMessageMessageTimerRead.parseProto($0) }
+        var messageTimerRead: SSKProtoSyncMessageMessageTimerRead? = nil
+        if proto.hasMessageTimerRead {
+            messageTimerRead = try SSKProtoSyncMessageMessageTimerRead.parseProto(proto.messageTimerRead)
+        }
 
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
 
