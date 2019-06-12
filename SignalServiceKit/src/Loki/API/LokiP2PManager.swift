@@ -174,7 +174,7 @@
         AssertIsOnMainThread()
         
         guard let message = onlineBroadcastMessage(forThread: thread) else {
-            owsFailDebug("P2P Address not set")
+            Logger.warn("[Loki] P2P Address not set")
             return
         }
         

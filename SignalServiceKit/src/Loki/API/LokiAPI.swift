@@ -43,15 +43,12 @@ import PromiseKit
             .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey).recoveringNetworkErrorsIfNeeded()
     }
     
-    // MARK: Public API
-    public static func getMessages() -> Promise<Set<MessageListPromise>> {
-        let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-        return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
-            return getMessages(from: targetSnode, longPolling: false)
-        }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
-    }
     
     internal static func getMessages(from target: Target, longPolling: Bool = true) -> MessageListPromise {
+        return getRawMessages(from: target, longPolling: longPolling).map { process(rawMessages: $0, from: target) }
+    }
+    
+    internal static func getRawMessages(from target: Target, longPolling: Bool = true) -> Promise<[JSON]> {
         let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         let lastHashValue = getLastMessageHashValue(for: target) ?? ""
         let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHashValue ]
@@ -59,10 +56,23 @@ import PromiseKit
         let timeout: TimeInterval? = longPolling ? 40 : nil // 40 second timeout
         return invoke(.getMessages, on: target, associatedWith: hexEncodedPublicKey, parameters: parameters, headers: headers, timeout: timeout).map { rawResponse in
             guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
-            updateLastMessageHashValueIfPossible(for: target, from: rawMessages)
-            let newRawMessages = removeDuplicates(from: rawMessages)
-            return parseProtoEnvelopes(from: newRawMessages)
+            return rawMessages
         }
+    }
+    
+    internal static func process(rawMessages: [JSON], from target: Target) -> [SSKProtoEnvelope] {
+        updateLastMessageHashValueIfPossible(for: target, from: rawMessages)
+        let newRawMessages = removeDuplicates(from: rawMessages)
+        return parseProtoEnvelopes(from: newRawMessages)
+    }
+    
+    // MARK: Public API
+
+    public static func getMessages() -> Promise<Set<MessageListPromise>> {
+        let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
+            return getMessages(from: targetSnode, longPolling: false)
+        }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
     public static func sendSignalMessage(_ signalMessage: SignalMessage, with timestamp: UInt64, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {

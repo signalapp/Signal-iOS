@@ -84,12 +84,15 @@ public extension LokiAPI {
             
             func getMessagesInfinitely(from target: Target) -> Promise<Void> {
                 // The only way to exit the infinite loop is to throw an error 3 times or cancel
-                return getMessages(from: target).then { messages -> Promise<Void> in
-                    // Send our messages as a notification
-                    NotificationCenter.default.post(name: .receivedNewMessages, object: nil, userInfo: ["messages": messages])
-                    
+                return getRawMessages(from: target).then { rawMessages -> Promise<Void> in
                     // Check if we need to abort
                     guard !isCancelled else { throw PMKError.cancelled }
+                    
+                    // Process the messages
+                    let messages = process(rawMessages: rawMessages, from: target)
+                    
+                    // Send our messages as a notification
+                    NotificationCenter.default.post(name: .receivedNewMessages, object: nil, userInfo: ["messages": messages])
                     
                     // Continue fetching if we haven't cancelled
                     return getMessagesInfinitely(from: target)
@@ -99,15 +102,13 @@ public extension LokiAPI {
             // Keep getting messages for this snode
             // If we errored out then connect to the next snode
             return getMessagesInfinitely(from: nextSnode).recover { _ -> Promise<Void> in
-                // Connect to the next snode if we haven't cancelled
-                if (!isCancelled) {
-                    // We also need to remove the cached snode so we don't contact it again
-                    removeCachedSnode(nextSnode, for: hexEncodedPublicKey)
-                    return connectToNextSnode()
-                }
-                
                 // Cancelled, so just return successfully
-                return Promise.value(())
+                guard !isCancelled else { return Promise.value(()) }
+                
+                // Connect to the next snode if we haven't cancelled
+                // We also need to remove the cached snode so we don't contact it again
+                removeCachedSnode(nextSnode, for: hexEncodedPublicKey)
+                return connectToNextSnode()
             }
         }
         
