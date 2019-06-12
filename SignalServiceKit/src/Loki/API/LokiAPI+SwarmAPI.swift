@@ -77,16 +77,14 @@ public extension LokiAPI {
     
     // MARK: Parsing
     private static func parseTargets(from rawResponse: Any) -> [LokiAPITarget] {
-        // TODO: For debugging purposes
-        // ========
-        let target = LokiAPITarget(address: "http://13.236.173.190", port: defaultSnodePort)
-        return Array(repeating: target, count: 3)
-        // ========
-//        guard let json = rawResponse as? JSON, let addresses = json["snodes"] as? [String] else {
-//            Logger.warn("[Loki] Failed to parse targets from: \(rawResponse).")
-//            return []
-//        }
-//        return addresses.map { Target(address: $0, port: defaultSnodePort) }
+        guard let json = rawResponse as? JSON, let rawSnodes = json["snodes"] as? [JSON] else {
+            Logger.warn("[Loki] Failed to parse targets from: \(rawResponse).")
+            return []
+        }
+        return rawSnodes.flatMap { rawSnode in
+            guard let address = rawSnode["ip"] as? String, let port = rawSnode["port"] as? Int else { return nil }
+            return LokiAPITarget(address: address, port: UInt16(port))
+        }
     }
 }
 
