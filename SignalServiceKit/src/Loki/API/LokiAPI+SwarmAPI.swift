@@ -11,7 +11,7 @@ public extension LokiAPI {
     private static let swarmCacheKey = "swarmCacheKey"
     private static let swarmCacheCollection = "swarmCacheCollection"
     
-    fileprivate static var swarmCache: [String:[LokiAPITarget]] {
+    internal static var swarmCache: [String:[LokiAPITarget]] {
         get {
             var result: [String:[LokiAPITarget]]? = nil
             storage.dbReadConnection.read { transaction in
@@ -26,6 +26,14 @@ public extension LokiAPI {
         }
     }
     
+    internal static func dropIfNeeded(_ target: LokiAPITarget, hexEncodedPublicKey: String) {
+        let swarm = LokiAPI.swarmCache[hexEncodedPublicKey]
+        if var swarm = swarm, let index = swarm.firstIndex(of: target) {
+            swarm.remove(at: index)
+            LokiAPI.swarmCache[hexEncodedPublicKey] = swarm
+        }
+    }
+    
     // MARK: Internal API
     private static func getRandomSnode() -> Promise<LokiAPITarget> {
         return Promise<LokiAPITarget> { seal in
@@ -33,7 +41,7 @@ public extension LokiAPI {
         }
     }
     
-    private static func getSwarm(for hexEncodedPublicKey: String) -> Promise<[LokiAPITarget]> {
+    internal static func getSwarm(for hexEncodedPublicKey: String) -> Promise<[LokiAPITarget]> {
         if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= minimumSnodeCount {
             return Promise<[LokiAPITarget]> { $0.fulfill(cachedSwarm) }
         } else {
@@ -76,11 +84,7 @@ internal extension Promise {
                 case 421:
                     // The snode isn't associated with the given public key anymore
                     Logger.warn("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
-                    let swarm = LokiAPI.swarmCache[hexEncodedPublicKey]
-                    if var swarm = swarm, let index = swarm.firstIndex(of: target) {
-                        swarm.remove(at: index)
-                        LokiAPI.swarmCache[hexEncodedPublicKey] = swarm
-                    }
+                    LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
                 default: break
                 }
             }

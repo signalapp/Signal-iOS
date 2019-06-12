@@ -174,12 +174,12 @@
         AssertIsOnMainThread()
         
         guard let message = onlineBroadcastMessage(forThread: thread) else {
-            owsFailDebug("P2P Address not set")
+            Logger.warn("[Loki] P2P address not set.")
             return
         }
         
         messageSender.sendPromise(message: message).catch { error in
-            Logger.warn("Failed to send online status to \(thread.contactIdentifier())")
+            Logger.warn("Failed to send online status to \(thread.contactIdentifier()).")
         }.retainUntilComplete()
     }
     
@@ -198,7 +198,7 @@
     
     private static func createLokiAddressMessage(for thread: TSThread, isPing: Bool) -> LokiAddressMessage? {
         guard let ourAddress = ourP2PAddress else {
-            Logger.error("P2P Address not set")
+            Logger.warn("[Loki] P2P address not set.")
             return nil
         }
         

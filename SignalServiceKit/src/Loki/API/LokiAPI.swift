@@ -6,7 +6,8 @@ import PromiseKit
     // MARK: Settings
     private static let version = "v1"
     private static let maxRetryCount: UInt = 3
-    public static let defaultMessageTTL: UInt64 = 1 * 24 * 60 * 60 * 1000
+    private static let longPollingTimeout: TimeInterval = 40
+    public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
     
     // MARK: Types
     public typealias RawResponse = Any
@@ -31,25 +32,30 @@ import PromiseKit
     override private init() { }
     
     // MARK: Internal API
-    internal static func invoke(_ method: LokiAPITarget.Method, on target: LokiAPITarget, associatedWith hexEncodedPublicKey: String, parameters: [String:Any] = [:]) -> RawResponsePromise {
+    internal static func invoke(_ method: LokiAPITarget.Method, on target: LokiAPITarget, associatedWith hexEncodedPublicKey: String,
+        parameters: [String:Any], headers: [String:String]? = nil, timeout: TimeInterval? = nil) -> RawResponsePromise {
         let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
+        if let headers = headers { request.allHTTPHeaderFields = headers }
+        if let timeout = timeout { request.timeoutInterval = timeout }
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
             .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey).recoveringNetworkErrorsIfNeeded()
+    }
+    
+    internal static func getRawMessages(from target: LokiAPITarget, useLongPolling: Bool) -> RawResponsePromise {
+        let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+        let lastHashValue = getLastMessageHashValue(for: target) ?? ""
+        let parameters = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHashValue ]
+        let headers: [String:String]? = useLongPolling ? [ "X-Loki-Long-Poll" : "true" ] : nil
+        let timeout: TimeInterval? = useLongPolling ? longPollingTimeout : nil
+        return invoke(.getMessages, on: target, associatedWith: hexEncodedPublicKey, parameters: parameters, headers: headers, timeout: timeout)
     }
     
     // MARK: Public API
     public static func getMessages() -> Promise<Set<MessageListPromise>> {
         let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
-            let lastHashValue = getLastMessageHashValue(for: targetSnode) ?? ""
-            let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHashValue ]
-            return invoke(.getMessages, on: targetSnode, associatedWith: hexEncodedPublicKey, parameters: parameters).map { rawResponse in
-                guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
-                updateLastMessageHashValueIfPossible(for: targetSnode, from: rawMessages)
-                let newRawMessages = removeDuplicates(from: rawMessages)
-                return parseProtoEnvelopes(from: newRawMessages)
-            }
+            return getRawMessages(from: targetSnode, useLongPolling: false).map { parseRawMessagesResponse($0, from: targetSnode) }
         }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
@@ -101,12 +107,19 @@ import PromiseKit
     
     // The parsing utilities below use a best attempt approach to parsing; they warn for parsing failures but don't throw exceptions.
     
+    internal static func parseRawMessagesResponse(_ rawResponse: Any, from target: LokiAPITarget) -> [SSKProtoEnvelope] {
+        guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
+        updateLastMessageHashValueIfPossible(for: target, from: rawMessages)
+        let newRawMessages = removeDuplicates(from: rawMessages)
+        return parseProtoEnvelopes(from: newRawMessages)
+    }
+    
     private static func updateLastMessageHashValueIfPossible(for target: LokiAPITarget, from rawMessages: [JSON]) {
-        guard let lastMessage = rawMessages.last, let hashValue = lastMessage["hash"] as? String, let expiresAt = lastMessage["expiration"] as? Int else {
+        if let lastMessage = rawMessages.last, let hashValue = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? Int {
+            setLastMessageHashValue(for: target, hashValue: hashValue, expiresAt: UInt64(expirationDate))
+        } else if (!rawMessages.isEmpty) {
             Logger.warn("[Loki] Failed to update last message hash value from: \(rawMessages).")
-            return
         }
-        setLastMessageHashValue(for: target, hashValue: hashValue, expiresAt: UInt64(expiresAt))
     }
     
     private static func removeDuplicates(from rawMessages: [JSON]) -> [JSON] {
