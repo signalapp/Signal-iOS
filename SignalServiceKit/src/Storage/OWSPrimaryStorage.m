@@ -183,6 +183,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 
 - (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion
 {
+    OWSAssertIsOnMainThread();
     OWSAssertDebug(completion);
     OWSAssertDebug(self.database);
 
@@ -193,47 +194,66 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
     // All sync registrations must be done before all async registrations,
     // or the sync registrations will block on the async registrations.
     [TSDatabaseView asyncRegisterLegacyThreadInteractionsDatabaseView:self];
+
     [TSDatabaseView asyncRegisterThreadInteractionsDatabaseView:self];
-    [TSDatabaseView asyncRegisterThreadDatabaseView:self];
-    [TSDatabaseView asyncRegisterUnreadDatabaseView:self];
-    [self asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex]
-                        withName:[TSDatabaseSecondaryIndexes registerTimeStampIndexExtensionName]];
-
-    [OWSMessageReceiver asyncRegisterDatabaseExtension:self];
-    [OWSBatchMessageProcessor asyncRegisterDatabaseExtension:self];
-
-    [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
-    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
-    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
-
-    [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
-    [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];
-    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:self];
-    [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
-    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
-    [OWSIncompleteCallsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
-    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
-    [YAPDBMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
-    [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
-    [YAPDBJobRecordFinder asyncRegisterDatabaseExtensionObjCWithStorage:self];
 
     [self.database
-        flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+        flushExtensionRequestsWithCompletionQueue:dispatch_get_main_queue()
                                   completionBlock:^{
-                                      OWSAssertDebug(!self.areAsyncRegistrationsComplete);
-                                      OWSLogVerbose(@"async registrations complete.");
+                                      OWSAssertIsOnMainThread();
 
-                                      // We verify that all database views registered successfully and are
-                                      // accessible on launch _before_ "database is ready".  This ensures
-                                      // that if a view becomes corrupted it, we detect that now and
-                                      // increment the view version, so that it will be rebuilt on next launch.
-                                      // Otherwise, the app might crash later in a place that won't increment
-                                      // the view version.
-                                      VerifyRegistrationsForPrimaryStorage(self, ^{
-                                          self.areAsyncRegistrationsComplete = YES;
+                                      // Building this view requires TSMessageDatabaseViewExtensionName which is
+                                      // registered above in asyncRegisterThreadInteractionsDatabaseView.
+                                      [TSDatabaseView asyncRegisterThreadDatabaseView:self];
 
-                                          completion();
-                                      });
+                                      [TSDatabaseView asyncRegisterUnreadDatabaseView:self];
+                                      [self asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex]
+                                                          withName:[TSDatabaseSecondaryIndexes
+                                                                       registerTimeStampIndexExtensionName]];
+
+                                      [OWSMessageReceiver asyncRegisterDatabaseExtension:self];
+                                      [OWSBatchMessageProcessor asyncRegisterDatabaseExtension:self];
+
+                                      [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
+                                      [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
+                                      [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
+
+                                      [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
+                                      [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];
+                                      [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:self];
+                                      [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
+                                      [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+                                      [OWSIncompleteCallsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+                                      [OWSFailedAttachmentDownloadsJob
+                                          asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+                                      [YAPDBMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+                                      [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
+                                      [YAPDBJobRecordFinder asyncRegisterDatabaseExtensionObjCWithStorage:self];
+
+                                      [self.database
+                                          flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(
+                                                                                        DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                                                        0)
+                                                                    completionBlock:^{
+                                                                        OWSAssertDebug(
+                                                                            !self.areAsyncRegistrationsComplete);
+                                                                        OWSLogVerbose(@"async registrations complete.");
+
+                                                                        // We verify that all database views registered
+                                                                        // successfully and are accessible on launch
+                                                                        // _before_ "database is ready".  This ensures
+                                                                        // that if a view becomes corrupted it, we
+                                                                        // detect that now and increment the view
+                                                                        // version, so that it will be rebuilt on next
+                                                                        // launch. Otherwise, the app might crash later
+                                                                        // in a place that won't increment the view
+                                                                        // version.
+                                                                        VerifyRegistrationsForPrimaryStorage(self, ^{
+                                                                            self.areAsyncRegistrationsComplete = YES;
+
+                                                                            completion();
+                                                                        });
+                                                                    }];
                                   }];
 }
 
