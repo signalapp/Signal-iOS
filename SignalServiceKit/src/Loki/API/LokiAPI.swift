@@ -31,16 +31,20 @@ import PromiseKit
     override private init() { }
     
     // MARK: Internal API
-    internal static func invoke(_ method: LokiAPITarget.Method, on target: LokiAPITarget, associatedWith hexEncodedPublicKey: String, parameters: [String:Any] = [:], headers: [String:String] = [:], timeout: TimeInterval? = nil) -> RawResponsePromise {
-        let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
-        let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
-        request.allHTTPHeaderFields = headers
-        if let timeout = timeout {
-            request.timeoutInterval = timeout
+    internal static func invoke(_ method: LokiAPITarget.Method, on target: LokiAPITarget, associatedWith hexEncodedPublicKey: String, parameters: [String:Any]) -> RawResponsePromise {
+       return invoke(request: Request(method: method, target: target, publicKey: hexEncodedPublicKey, parameters: parameters))
+    }
+    
+    internal static func invoke(request: Request) -> RawResponsePromise {
+        let url = URL(string: "\(request.target.address):\(request.target.port)/\(version)/storage_rpc")!
+        let networkRequest = TSRequest(url: url, method: "POST", parameters: [ "method" : request.method.rawValue, "params" : request.parameters ])
+        networkRequest.allHTTPHeaderFields = request.headers
+        if let timeout = request.timeout {
+            networkRequest.timeoutInterval = timeout
         }
         
-        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
-            .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey).recoveringNetworkErrorsIfNeeded()
+        return TSNetworkManager.shared().makePromise(request: networkRequest).map { $0.responseObject }
+            .handlingSwarmSpecificErrorsIfNeeded(for: request.target, associatedWith: request.publicKey).recoveringNetworkErrorsIfNeeded()
     }
     
     
@@ -51,10 +55,15 @@ import PromiseKit
     internal static func getRawMessages(from target: LokiAPITarget, longPolling: Bool = true) -> Promise<[JSON]> {
         let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         let lastHashValue = getLastMessageHashValue(for: target) ?? ""
-        let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHashValue ]
-        let headers = longPolling ? ["X-Loki-Long-Poll" : "true"] : [:]
-        let timeout: TimeInterval? = longPolling ? 40 : nil // 40 second timeout
-        return invoke(.getMessages, on: target, associatedWith: hexEncodedPublicKey, parameters: parameters, headers: headers, timeout: timeout).map { rawResponse in
+        let parameters = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHashValue ]
+        
+        var request = Request(method: .getMessages, target: target, publicKey: hexEncodedPublicKey, parameters: parameters)
+        if (longPolling) {
+            request.headers = ["X-Loki-Long-Poll" : "true"]
+            request.timeout = 40 // 40 second timeout
+        }
+        
+        return invoke(request: request).map { rawResponse in
             guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
             return rawMessages
         }
