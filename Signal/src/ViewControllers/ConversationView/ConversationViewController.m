@@ -3419,32 +3419,10 @@ typedef enum : NSUInteger {
     return lastVisibleIndexPath;
 }
 
-- (nullable id<ConversationViewItem>)lastVisibleViewItem
-{
-    NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
-    if (!lastVisibleIndexPath) {
-        return nil;
-    }
-    return [self viewItemForIndex:lastVisibleIndexPath.row];
-}
-
-// In the case where we explicitly scroll to bottom, we want to synchronously
-// update the UI to reflect that, since the "mark as read" logic is asynchronous
-// and won't update the UI state immediately.
 - (void)didScrollToBottom
 {
-
-    id<ConversationViewItem> _Nullable lastVisibleViewItem = [self.viewItems lastObject];
-    if (lastVisibleViewItem) {
-        uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
-        self.lastVisibleSortId = MAX(self.lastVisibleSortId, lastVisibleSortId);
-    }
-
     self.scrollDownButton.hidden = YES;
-
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self setHasUnreadMessages:NO transaction:transaction];
-    }];
+    [self updateLastVisibleSortIdWithSneakyTransaction];
 }
 
 - (void)updateLastVisibleSortIdWithSneakyTransaction
