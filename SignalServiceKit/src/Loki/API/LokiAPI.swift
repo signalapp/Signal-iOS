@@ -3,6 +3,8 @@ import PromiseKit
 @objc public final class LokiAPI : NSObject {
     internal static let storage = OWSPrimaryStorage.shared()
     
+    private static var userPublicKey: String { return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey }
+    
     // MARK: Settings
     private static let version = "v1"
     private static let maxRetryCount: UInt = 3
@@ -42,27 +44,25 @@ import PromiseKit
             .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey).recoveringNetworkErrorsIfNeeded()
     }
     
-    internal static func getRawMessages(from target: LokiAPITarget, useLongPolling: Bool) -> RawResponsePromise {
-        let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+    internal static func getRawMessages(from target: LokiAPITarget, usingLongPolling useLongPolling: Bool) -> RawResponsePromise {
         let lastHashValue = getLastMessageHashValue(for: target) ?? ""
-        let parameters = [ "pubKey" : hexEncodedPublicKey, "lastHash" : lastHashValue ]
+        let parameters = [ "pubKey" : userPublicKey, "lastHash" : lastHashValue ]
         let headers: [String:String]? = useLongPolling ? [ "X-Loki-Long-Poll" : "true" ] : nil
         let timeout: TimeInterval? = useLongPolling ? longPollingTimeout : nil
-        return invoke(.getMessages, on: target, associatedWith: hexEncodedPublicKey, parameters: parameters, headers: headers, timeout: timeout)
+        return invoke(.getMessages, on: target, associatedWith: userPublicKey, parameters: parameters, headers: headers, timeout: timeout)
     }
     
     // MARK: Public API
     public static func getMessages() -> Promise<Set<MessageListPromise>> {
-        let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-        return getTargetSnodes(for: hexEncodedPublicKey).mapValues { targetSnode in
-            return getRawMessages(from: targetSnode, useLongPolling: false).map { parseRawMessagesResponse($0, from: targetSnode) }
+        return getTargetSnodes(for: userPublicKey).mapValues { targetSnode in
+            return getRawMessages(from: targetSnode, usingLongPolling: false).map { parseRawMessagesResponse($0, from: targetSnode) }
         }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
     public static func sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
-        guard let lokiMessage = Message.from(signalMessage: signalMessage) else { return Promise(error: Error.messageConversionFailed) }
+        guard let lokiMessage = LokiMessage.from(signalMessage: signalMessage) else { return Promise(error: Error.messageConversionFailed) }
         let destination = lokiMessage.destination
-        func sendLokiMessage(_ lokiMessage: Message, to target: LokiAPITarget) -> RawResponsePromise {
+        func sendLokiMessage(_ lokiMessage: LokiMessage, to target: LokiAPITarget) -> RawResponsePromise {
             let parameters = lokiMessage.toJSON()
             return invoke(.sendMessage, on: target, associatedWith: destination, parameters: parameters)
         }
@@ -116,7 +116,7 @@ import PromiseKit
     
     private static func updateLastMessageHashValueIfPossible(for target: LokiAPITarget, from rawMessages: [JSON]) {
         if let lastMessage = rawMessages.last, let hashValue = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? Int {
-            setLastMessageHashValue(for: target, hashValue: hashValue, expiresAt: UInt64(expirationDate))
+            setLastMessageHashValue(for: target, hashValue: hashValue, expirationDate: UInt64(expirationDate))
         } else if (!rawMessages.isEmpty) {
             Logger.warn("[Loki] Failed to update last message hash value from: \(rawMessages).")
         }

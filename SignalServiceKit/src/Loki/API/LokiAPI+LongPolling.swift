@@ -84,7 +84,7 @@ public extension LokiAPI {
             
             func getMessagesInfinitely(from target: LokiAPITarget) -> Promise<Void> {
                 // The only way to exit the infinite loop is to throw an error 3 times or cancel
-                return getRawMessages(from: target, useLongPolling: true).then { rawResponse -> Promise<Void> in
+                return getRawMessages(from: target, usingLongPolling: true).then { rawResponse -> Promise<Void> in
                     // Check if we need to abort
                     guard !isCancelled else { throw PMKError.cancelled }
                     
