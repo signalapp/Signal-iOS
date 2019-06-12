@@ -1,6 +1,7 @@
 import PromiseKit
 
-@objc public final class LokiAPI : NSObject {
+@objc(LKAPI)
+public final class LokiAPI : NSObject {
     internal static let storage = OWSPrimaryStorage.shared()
     
     private static var userPublicKey: String { return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey }
@@ -73,13 +74,13 @@ import PromiseKit
                 return Set(swarm.map { sendLokiMessage(lokiMessageWithPoW, to: $0) })
             }.retryingIfNeeded(maxRetryCount: maxRetryCount)
         }
-        if let peer = LokiP2PManager.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {
+        if let peer = LokiP2PAPI.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {
             let target = LokiAPITarget(address: peer.address, port: peer.port)
             return Promise.value([ target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount).get { _ in
-                LokiP2PManager.markOnline(destination)
+                LokiP2PAPI.markOnline(destination)
                 onP2PSuccess()
             }.recover { error -> Promise<Set<RawResponsePromise>> in
-                LokiP2PManager.markOffline(destination)
+                LokiP2PAPI.markOffline(destination)
                 if lokiMessage.isPing {
                     Logger.warn("[Loki] Failed to ping \(destination); marking contact as offline.")
                     if let error = error as? NSError {

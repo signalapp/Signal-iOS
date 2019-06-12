@@ -1,7 +1,9 @@
 
-@objc public class LokiP2PManager : NSObject {
+@objc(LKP2PAPI)
+public class LokiP2PAPI : NSObject {
     private static let storage = OWSPrimaryStorage.shared()
     private static let messageSender = SSKEnvironment.shared.messageSender
+    private static let messageReceiver = SSKEnvironment.shared.messageReceiver
     private static let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
     
     /// The amount of time before pinging when a user is set to offline
@@ -68,6 +70,28 @@
             for thread in friendThreads {
                 sendOnlineBroadcastMessage(forThread: thread)
             }
+        }
+    }
+    
+    public static func handleReceivedMessage(base64EncodedData: String) {
+        guard let data = Data(base64Encoded: base64EncodedData) else {
+            Logger.warn("[Loki] Failed to decode data for P2P message.")
+            return
+        }
+        guard let envelope = try? LokiMessageWrapper.unwrap(data: data) else {
+            Logger.warn("[Loki] Failed to unwrap data for P2P message.")
+            return
+        }
+        // We need to set the P2P field on the envelope
+        let builder = envelope.asBuilder()
+        builder.setIsPtpMessage(true)
+        // Send it to the message receiver
+        do {
+            let newEnvelope = try builder.build()
+            let envelopeData = try newEnvelope.serializedData()
+            messageReceiver.handleReceivedEnvelopeData(envelopeData)
+        } catch let error {
+            Logger.warn("[Loki] Something went wrong during proto conversion: \(error).")
         }
     }
     

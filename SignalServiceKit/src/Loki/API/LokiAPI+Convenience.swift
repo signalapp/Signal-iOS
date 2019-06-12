@@ -17,7 +17,7 @@ internal extension LokiAPI {
 
     internal static func setLastMessageHashValue(for target: LokiAPITarget, hashValue: String, expirationDate: UInt64) {
         storage.dbReadWriteConnection.readWrite { transaction in
-            storage.setLastMessageHash(forServiceNode: target.address, hash: hashValue, expirationDate: expirationDate, transaction: transaction)
+            storage.setLastMessageHash(forServiceNode: target.address, hash: hashValue, expiresAt: expirationDate, transaction: transaction)
         }
     }
 

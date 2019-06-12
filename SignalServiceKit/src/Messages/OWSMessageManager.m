@@ -437,7 +437,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (contentProto.lokiAddressMessage) {
             NSString *address = contentProto.lokiAddressMessage.ptpAddress;
             uint32_t port = contentProto.lokiAddressMessage.ptpPort;
-            [LokiP2PManager didReceiveLokiAddressMessageForContact:envelope.source address:address port:port receivedThroughP2P:envelope.isPtpMessage];
+            [LKP2PAPI didReceiveLokiAddressMessageForContact:envelope.source address:address port:port receivedThroughP2P:envelope.isPtpMessage];
         }
 
         if (contentProto.syncMessage) {
@@ -1474,7 +1474,7 @@ NS_ASSUME_NONNULL_BEGIN
             uint64_t timestamp = envelope.timestamp;
             uint64_t now = NSDate.ows_millisecondTimeStamp;
             uint64_t ageInSeconds = (now - timestamp) / 1000;
-            if (ageInSeconds <= 120) { [LokiP2PManager pingContact:envelope.source]; }
+            if (ageInSeconds <= 120) { [LKP2PAPI pingContact:envelope.source]; }
         }
 
         [self finalizeIncomingMessage:incomingMessage
@@ -1526,7 +1526,7 @@ NS_ASSUME_NONNULL_BEGIN
             [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
         }
         // Send our P2P details
-        LKAddressMessage *_Nullable onlineMessage = [LokiP2PManager onlineBroadcastMessageForThread:thread];
+        LKAddressMessage *_Nullable onlineMessage = [LKP2PAPI onlineBroadcastMessageForThread:thread];
         if (onlineMessage != nil) {
             [self.messageSenderJobQueue addMessage:onlineMessage transaction:transaction];
         }

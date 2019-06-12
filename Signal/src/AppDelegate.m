@@ -172,7 +172,7 @@ static NSTimeInterval launchStartedAt;
 
     [DDLog flushLog];
 
-    [LokiAPI stopLongPolling];
+    [LKAPI stopLongPolling];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -191,7 +191,7 @@ static NSTimeInterval launchStartedAt;
 
     [DDLog flushLog];
     
-    [LokiAPI stopLongPolling];
+    [LKAPI stopLongPolling];
     if (self.lokiP2PServer) { [self.lokiP2PServer stop]; }
 }
 
@@ -327,7 +327,7 @@ static NSTimeInterval launchStartedAt;
         BOOL isStarted = [self.lokiP2PServer startOnPort:port.unsignedIntegerValue];
         if (isStarted) {
             NSURL *serverURL = self.lokiP2PServer.serverURL;
-            [LokiP2PManager setOurP2PAddressWithUrl:self.lokiP2PServer.serverURL];
+            [LKP2PAPI setOurP2PAddressWithUrl:self.lokiP2PServer.serverURL];
             NSString *serverURLDescription = serverURL.absoluteString;
             if ([serverURLDescription hasSuffix:@"/"]) {
                 serverURLDescription = [serverURLDescription substringToIndex:serverURLDescription.length - 1];
@@ -758,10 +758,10 @@ static NSTimeInterval launchStartedAt;
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             
             // Loki: Start long polling
-            [LokiAPI startLongPollingIfNecessary];
+            [LKAPI startLongPollingIfNecessary];
            
             // Loki: Tell our friends that we are online
-            [LokiP2PManager broadcastOnlineStatus];
+            [LKP2PAPI broadcastOnlineStatus];
             
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying to register for remote notifications since user hasn't registered yet.");
@@ -1365,7 +1365,7 @@ static NSTimeInterval launchStartedAt;
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];
         
         // Start long polling
-        [LokiAPI startLongPollingIfNecessary];
+        [LKAPI startLongPollingIfNecessary];
     }
 }
 
