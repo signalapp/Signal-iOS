@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
 
+@property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic) UIView *swipeableContentView;
 @property (nonatomic) UIImageView *swipeToReplyImageView;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *swipeToReplyConstraints;
@@ -77,11 +78,11 @@ NS_ASSUME_NONNULL_BEGIN
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.contentView addGestureRecognizer:longPress];
 
-    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self
+    self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self
                                                                           action:@selector(handlePanGesture:)];
-    pan.delegate = self;
-    [self.contentView addGestureRecognizer:pan];
-    [tap requireGestureRecognizerToFail:pan];
+    self.panGestureRecognizer.delegate = self;
+    [self.contentView addGestureRecognizer:self.panGestureRecognizer];
+    [tap requireGestureRecognizerToFail:self.panGestureRecognizer];
 
     [self setupSwipeContainer];
 }
@@ -517,11 +518,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
-        UIPanGestureRecognizer *_Nullable panGestureRecognizer = (UIPanGestureRecognizer *)gestureRecognizer;
+    if (gestureRecognizer == self.panGestureRecognizer) {
         // Only allow the pan gesture to recognize horizontal panning,
         // to avoid conflicts with the conversation view scroll view.
-        CGPoint velocity = [panGestureRecognizer velocityInView:self];
+        CGPoint velocity = [self.panGestureRecognizer velocityInView:self];
         return fabs(velocity.x) > fabs(velocity.y);
     }
 
