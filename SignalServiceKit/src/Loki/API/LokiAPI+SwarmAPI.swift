@@ -1,10 +1,12 @@
 import PromiseKit
 
+extension String : Error { }
+
 public extension LokiAPI {
     
     // MARK: Settings
-    private static let minimumSnodeCount = 2 // TODO: For debugging purposes
-    private static let targetSnodeCount = 3 // TODO: For debugging purposes
+    private static let minimumSnodeCount = 2
+    private static let targetSnodeCount = 3
     private static let defaultSnodePort: UInt16 = 8080
     
     // MARK: Caching
@@ -34,10 +36,27 @@ public extension LokiAPI {
         }
     }
     
+    // MARK: Clearnet Setup
+    private static var randomSnodePool: Set<LokiAPITarget> = []
+    
     // MARK: Internal API
     private static func getRandomSnode() -> Promise<LokiAPITarget> {
-        return Promise<LokiAPITarget> { seal in
-            seal.fulfill(LokiAPITarget(address: "http://13.236.173.190", port: defaultSnodePort)) // TODO: For debugging purposes
+        if randomSnodePool.isEmpty {
+            let url = URL(string: "http://3.104.19.14:22023/json_rpc")!
+            let request = TSRequest(url: url, method: "POST", parameters: [ "method" : "get_service_nodes" ])
+            return TSNetworkManager.shared().makePromise(request: request).map { intermediate in
+                let rawResponse = intermediate.responseObject
+                guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw "Failed to update random snode pool from: \(rawResponse)." }
+                randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
+                    guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int else { throw "Failed to update random snode pool from: \(rawTarget)." }
+                    return LokiAPITarget(address: "https://\(address)", port: UInt16(port))
+                })
+                return randomSnodePool.randomElement()!
+            }
+        } else {
+            return Promise<LokiAPITarget> { seal in
+                seal.fulfill(randomSnodePool.randomElement()!)
+            }
         }
     }
     
