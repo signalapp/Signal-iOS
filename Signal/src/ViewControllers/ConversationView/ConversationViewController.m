@@ -3419,32 +3419,10 @@ typedef enum : NSUInteger {
     return lastVisibleIndexPath;
 }
 
-- (nullable id<ConversationViewItem>)lastVisibleViewItem
-{
-    NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
-    if (!lastVisibleIndexPath) {
-        return nil;
-    }
-    return [self viewItemForIndex:lastVisibleIndexPath.row];
-}
-
-// In the case where we explicitly scroll to bottom, we want to synchronously
-// update the UI to reflect that, since the "mark as read" logic is asynchronous
-// and won't update the UI state immediately.
 - (void)didScrollToBottom
 {
-
-    id<ConversationViewItem> _Nullable lastVisibleViewItem = [self.viewItems lastObject];
-    if (lastVisibleViewItem) {
-        uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
-        self.lastVisibleSortId = MAX(self.lastVisibleSortId, lastVisibleSortId);
-    }
-
     self.scrollDownButton.hidden = YES;
-
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self setHasUnreadMessages:NO transaction:transaction];
-    }];
+    [self updateLastVisibleSortIdWithSneakyTransaction];
 }
 
 - (void)updateLastVisibleSortIdWithSneakyTransaction
@@ -3460,7 +3438,18 @@ typedef enum : NSUInteger {
         return;
     }
 
-    id<ConversationViewItem> _Nullable lastVisibleViewItem = [self lastVisibleViewItem];
+    NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
+    id<ConversationViewItem> _Nullable lastVisibleViewItem;
+    if (lastVisibleIndexPath) {
+        lastVisibleViewItem = [self viewItemForIndex:lastVisibleIndexPath.row];
+    }
+
+    // If the last item is currently a typing indicator, check the previous
+    // view item (if one exists), since typing indicators don't have sortIds
+    if ([lastVisibleViewItem.interaction isKindOfClass:[OWSTypingIndicatorInteraction class]] && lastVisibleIndexPath.row > 0) {
+        lastVisibleViewItem = [self viewItemForIndex:lastVisibleIndexPath.row - 1];
+    }
+
     if (lastVisibleViewItem) {
         uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
         self.lastVisibleSortId = MAX(self.lastVisibleSortId, lastVisibleSortId);
