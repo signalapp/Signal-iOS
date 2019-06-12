@@ -200,6 +200,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
             self.cachedImageHeight = nil;
         }
     }
+
+    if (attachmentSchemaVersion < 5) {
+        // Older audio attachments could have incorrect durations due
+        // to weirdness in AVAudioPlayer. Reset so we can recalculate.
+        self.cachedAudioDurationSeconds = nil;
+    }
 }
 
 - (void)ensureFilePath
@@ -650,6 +656,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         return 0.f;
     }
     if (!error) {
+        [audioPlayer prepareToPlay];
         return (CGFloat)[audioPlayer duration];
     } else {
         OWSLogError(@"Could not find audio duration: %@", self.originalMediaURL);
