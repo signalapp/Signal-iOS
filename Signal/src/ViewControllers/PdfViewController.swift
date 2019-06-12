@@ -13,6 +13,8 @@ public class PdfViewController: OWSViewController {
     // MARK: Properties
 
     private let attachmentStream: TSAttachmentStream
+    private var pdfView: UIView?
+    private var viewHasEverAppeared = false
 
     // MARK: Initializers
 
@@ -41,98 +43,93 @@ public class PdfViewController: OWSViewController {
 
     // MARK: - View Lifecycle
 
-    override public func loadView() {
-        super.loadView()
+    public override func viewDidLoad() {
+        super.viewDidLoad()
 
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = Theme.darkThemeBackgroundColor
 
-        self.navigationItem.title = NSLocalizedString("PDF_VIEW_TITLE", comment: "Navbar title for for PDF view.")
+        navigationItem.title = NSLocalizedString("PDF_VIEW_TITLE", comment: "Navbar title for for PDF view.")
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressCloseButton))
 
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didPressCloseButton))
+        let contentView: UIView
 
-        var contentView = UIView()
+        // Setup the PDFView as the contentView if supported
         if #available(iOS 11.0, *),
             let url = attachmentStream.originalMediaURL,
             let pdfDocument = PDFDocument(url: url) {
             let pdfView = PDFView()
             self.pdfView = pdfView
             pdfView.displayMode = .singlePageContinuous
-            pdfView.scaleFactor = pdfView.scaleFactorForSizeToFit
             pdfView.document = pdfDocument
             contentView = pdfView
 
             if let filename = attachmentStream.sourceFilename {
-                self.navigationItem.title = filename.filterForDisplay
+                navigationItem.title = filename.filterForDisplay
             }
+
+        // Otherwise, render an error
         } else {
             let label = UILabel()
+            contentView = label
             label.text = NSLocalizedString("PDF_VIEW_COULD_NOT_RENDER", comment: "Error indicating that a PDF could not be displayed.")
             label.font = UIFont.ows_dynamicTypeBody
-            label.textColor = Theme.primaryColor
+            label.textColor = Theme.darkThemePrimaryColor
+            label.textAlignment = .center
             label.numberOfLines = 0
-            contentView.addSubview(label)
-            label.autoPinEdge(toSuperviewMargin: .leading)
-            label.autoPinEdge(toSuperviewMargin: .trailing)
-            label.autoVCenterInSuperview()
         }
-        contentView.setCompressionResistanceLow()
-        contentView.setContentHuggingLow()
 
-        var arrangedSubviews: [UIView] = [
-            contentView
-        ]
+        view.addSubview(contentView)
+        contentView.ows_autoPinToSuperviewEdges()
 
-        if pdfView != nil {
-            let footer = UIToolbar()
-            footer.items = [
+        // Setup top + bottom bars
+
+        guard let navigationBar = navigationController?.navigationBar as? OWSNavigationBar else {
+            owsFailDebug("navigationBar was nil or unexpected class")
+            return
+        }
+
+        navigationBar.overrideTheme(type: .alwaysDark)
+
+        // Only setup the bottom bar if we have a PDF rendered
+        guard let toolbar = navigationController?.toolbar, pdfView != nil else {
+            return
+        }
+
+        navigationController?.isToolbarHidden = false
+
+        toolbar.barStyle = .black
+        toolbar.barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
+        toolbar.tintColor = Theme.darkThemePrimaryColor
+
+        setToolbarItems(
+            [
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),
                 UIBarButtonItem(barButtonSystemItem: .action, target: self, action: #selector(shareButtonPressed)),
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-            ]
-            arrangedSubviews.append(footer)
-        }
+            ],
+            animated: false
+        )
 
-        let stackView = UIStackView(arrangedSubviews: arrangedSubviews)
-        stackView.axis = .vertical
-        stackView.alignment = .fill
-        view.addSubview(stackView)
-        stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        // tap to toggle the bar visibility
+        let tapGestureRecognizer = UITapGestureRecognizer()
+        contentView.addGestureRecognizer(tapGestureRecognizer)
+        tapGestureRecognizer .addTarget(self, action: #selector(handleTap(_:)))
     }
-
-    private var pdfView: UIView?
-    private var viewHasAppeared = false
 
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        guard #available(iOS 11.0, *),
-            let pdfView = pdfView as? PDFView else {
-            return
-        }
-        if !viewHasAppeared {
+        if #available(iOS 11.0, *),
+            !viewHasEverAppeared,
+            let pdfView = pdfView as? PDFView {
             pdfView.scaleFactor = pdfView.scaleFactorForSizeToFit
-            pdfView.goToFirstPage(self)
+            pdfView.goToFirstPage(nil)
         }
-    }
-
-    override public func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-
-        self.becomeFirstResponder()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        self.becomeFirstResponder()
-
-        viewHasAppeared = true
-    }
-
-    override public var canBecomeFirstResponder: Bool {
-        return true
+        viewHasEverAppeared = true
     }
 
     // MARK: - Actions
@@ -145,5 +142,32 @@ public class PdfViewController: OWSViewController {
     @objc
     private func didPressCloseButton(sender: UIButton) {
         self.dismiss(animated: true)
+    }
+
+    // MARK: - Bar Management
+
+    @objc
+    func handleTap(_ sender: UITapGestureRecognizer) {
+        shouldHideToolbars = !shouldHideToolbars
+    }
+
+    private var shouldHideToolbars: Bool = false {
+        didSet {
+            if (oldValue == shouldHideToolbars) {
+                return
+            }
+
+            navigationController?.setNavigationBarHidden(shouldHideToolbars, animated: false)
+            navigationController?.setToolbarHidden(shouldHideToolbars, animated: false)
+            setNeedsStatusBarAppearanceUpdate()
+        }
+    }
+
+    public override var prefersStatusBarHidden: Bool {
+        return shouldHideToolbars
+    }
+
+    public override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation {
+        return .none
     }
 }
