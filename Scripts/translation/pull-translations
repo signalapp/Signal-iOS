@@ -4,8 +4,11 @@ set -x
 set -e
 
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+    
+REPO_ROOT=$BIN_DIR/../..
+LOCALIZATION_ROOT=$REPO_ROOT/Signal/translations
 
-cd $BIN_DIR/..
+cd $LOCALIZATION_ROOT
 
 # Pull all translations which are at least 80% complete
 tx pull -a --minimum-perc=80
@@ -33,7 +36,7 @@ done
 
 # Get and build iStringsCheck from https://github.com/FredericJacobs/iStringsCheck
 # This does some checks to make sure all strings are present and that interpolated strings have the right number of arguments
-LINT_CMD=../../../l10n_lint/target/debug/l10n_lint
+LINT_CMD=$REPO_ROOT/l10n_lint/target/debug/l10n_lint
 
 if [ -e $LINT_CMD ]
 then

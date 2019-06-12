@@ -4,7 +4,9 @@ set -e
 
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-cd $BIN_DIR/..
+REPO_ROOT=$BIN_DIR/../..
+LOCALIZATION_ROOT=$REPO_ROOT/Signal/translations
+cd $LOCALIZATION_ROOT
 
 cat <<EOS
 
@@ -13,7 +15,7 @@ Begin Pushing translation source
 
 EOS
 
-bin/push-translation-source
+$BIN_DIR/push-translation-source
 
 cat <<EOS
 
@@ -24,7 +26,7 @@ Begin Pulling translations
 EOS
 
 
-bin/pull-translations
+$BIN_DIR/pull-translations
 cat <<EOS
 
 Done Pulling translations
