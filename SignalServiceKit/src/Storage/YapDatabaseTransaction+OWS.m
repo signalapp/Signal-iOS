@@ -107,9 +107,9 @@ NS_ASSUME_NONNULL_BEGIN
                         clazz:(Class)clazz {
     id _Nullable result = [self extension:extensionName];
     
-    [OWSPrimaryStorage incrementVersionOfDatabaseExtension:extensionName];
-    
     if (![result isKindOfClass:clazz]) {
+        [OWSPrimaryStorage incrementVersionOfDatabaseExtension:extensionName];
+
         if (SSKFeatureFlags.strictYDBExtensions) {
             OWSFail(@"Couldn't load database extension: %@.", extensionName);
         } else {
