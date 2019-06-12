@@ -3460,7 +3460,18 @@ typedef enum : NSUInteger {
         return;
     }
 
-    id<ConversationViewItem> _Nullable lastVisibleViewItem = [self lastVisibleViewItem];
+    NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
+    id<ConversationViewItem> _Nullable lastVisibleViewItem;
+    if (lastVisibleIndexPath) {
+        lastVisibleViewItem = [self viewItemForIndex:lastVisibleIndexPath.row];
+    }
+
+    // If the last item is currently a typing indicator, check the previous
+    // view item (if one exists), since typing indicators don't have sortIds
+    if ([lastVisibleViewItem.interaction isKindOfClass:[OWSTypingIndicatorInteraction class]] && lastVisibleIndexPath.row > 0) {
+        lastVisibleViewItem = [self viewItemForIndex:lastVisibleIndexPath.row - 1];
+    }
+
     if (lastVisibleViewItem) {
         uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
         self.lastVisibleSortId = MAX(self.lastVisibleSortId, lastVisibleSortId);
