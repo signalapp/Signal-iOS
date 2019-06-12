@@ -30,15 +30,15 @@ public extension LokiAPI {
         /// Construct a `LokiMessage` from a `SignalMessage`.
         ///
         /// - Note: `timestamp` is the original message timestamp (i.e. `TSOutgoingMessage.timestamp`).
-        public static func from(signalMessage: SignalMessage, with timestamp: UInt64) -> Message? {
+        public static func from(signalMessage: SignalMessage) -> Message? {
             // To match the desktop application, we have to wrap the data in an envelope and then wrap that in a websocket object
             do {
-                let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage, timestamp: timestamp)
+                let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage)
                 let data = wrappedMessage.base64EncodedString()
-                let destination = signalMessage["destination"] as! String
+                let destination = signalMessage.recipientID
                 var ttl = LokiAPI.defaultMessageTTL
-                if let messageTTL = signalMessage["ttl"] as! UInt?, messageTTL > 0 { ttl = UInt64(messageTTL) }
-                let isPing = signalMessage["isPing"] as! Bool
+                if let messageTTL = signalMessage.ttl, messageTTL > 0 { ttl = UInt64(messageTTL) }
+                let isPing = signalMessage.isPing
                 return Message(destination: destination, data: data, ttl: ttl, isPing: isPing)
             } catch let error {
                 Logger.debug("[Loki] Failed to convert Signal message to Loki message: \(signalMessage).")

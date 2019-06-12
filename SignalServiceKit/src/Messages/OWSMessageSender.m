@@ -1104,14 +1104,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.failure(error);
     }
 
-    // Get the message parameters and type
-    NSDictionary *signalMessage = deviceMessages.firstObject;
-    TSWhisperMessageType messageType = ((NSNumber *)signalMessage[@"type"]).integerValue;
+    // Gather the message info
+    NSDictionary *signalMessageInfo = deviceMessages.firstObject;
+    SSKProtoEnvelopeType type = ((NSNumber *)signalMessageInfo[@"type"]).integerValue;
+    uint64_t timestamp = message.timestamp;
+    NSString *senderID = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    uint32_t senderDeviceID = OWSDevicePrimaryDeviceId;
+    NSString *content = signalMessageInfo[@"content"];
+    NSString *recipientID = signalMessageInfo[@"destination"];
+    uint64_t ttl = ((NSNumber *)signalMessageInfo[@"ttl"]).unsignedIntegerValue;
+    BOOL isPing = ((NSNumber *)signalMessageInfo[@"isPing"]).boolValue;
+    LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing];
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         // Update the PoW calculation status
         [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
         // Update the message and thread if needed
-        if (messageType == TSFriendRequestMessageType) {
+        if (signalMessage.type == TSFriendRequestMessageType) {
             [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSending withTransaction:transaction];
             [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
         }
@@ -1120,8 +1128,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     void (^onP2PSuccess)() = ^() { message.isP2P = YES; };
     void (^handleError)(NSError *error) = ^(NSError *error) {
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            // Update the thread if needed
-            if (messageType == TSFriendRequestMessageType) {
+            // Update the message and thread if needed
+            if (signalMessage.type == TSFriendRequestMessageType) {
                 [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:transaction];
                 [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
             }
@@ -1144,8 +1152,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
     };
-    // Convert the message to a Loki message and send it using the Loki API
-    [[LokiAPI sendSignalMessage:signalMessage with:message.timestamp onP2PSuccess:onP2PSuccess]
+    // Send the message using the Loki API
+    [[LokiAPI sendSignalMessage:signalMessage onP2PSuccess:onP2PSuccess]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             NSSet<AnyPromise *> *promises = (NSSet<AnyPromise *> *)result;
             __block BOOL isSuccess = NO;
@@ -1156,7 +1164,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 .thenOn(OWSDispatch.sendingQueue, ^(id result) {
                     if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
                     isSuccess = YES;
-                    if (messageType == TSFriendRequestMessageType) {
+                    if (signalMessage.type == TSFriendRequestMessageType) {
                         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                             // Update the thread
                             [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
