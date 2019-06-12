@@ -4,7 +4,7 @@ import PromiseKit
 public final class LokiAPI : NSObject {
     internal static let storage = OWSPrimaryStorage.shared()
     
-    private static var userPublicKey: String { return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey }
+    internal static var userPublicKey: String { return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey }
     
     // MARK: Settings
     private static let version = "v1"

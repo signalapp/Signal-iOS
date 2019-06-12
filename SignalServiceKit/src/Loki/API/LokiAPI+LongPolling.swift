@@ -8,8 +8,6 @@ public extension LokiAPI {
     private static var usedSnodes = [LokiAPITarget]()
     private static var cancels = [Callback]()
     
-    private static let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
-    
     /// Start long polling.
     /// This will send a notification if new messages were received
     @objc public static func startLongPollingIfNecessary() {
@@ -17,7 +15,7 @@ public extension LokiAPI {
         isLongPolling = true
         shouldStopPolling = false
         
-        Logger.info("[Loki] Started long polling")
+        Logger.info("[Loki] Started long polling.")
         
         longPoll()
     }
@@ -29,7 +27,7 @@ public extension LokiAPI {
         usedSnodes.removeAll()
         cancelAllPromises()
         
-        Logger.info("[Loki] Stopped long polling")
+        Logger.info("[Loki] Stopped long polling.")
     }
     
     /// The long polling loop
@@ -37,7 +35,7 @@ public extension LokiAPI {
         // This is here so we can stop the infinite loop
         guard !shouldStopPolling else { return }
         
-        getSwarm(for: hexEncodedPublicKey).then { _ -> Guarantee<[Result<Void>]> in
+        getSwarm(for: userPublicKey).then { _ -> Guarantee<[Result<Void>]> in
             var promises = [Promise<Void>]()
             let connections = 3
             for i in 0..<connections {
@@ -61,7 +59,7 @@ public extension LokiAPI {
     }
     
     private static func getUnusedSnodes() -> [LokiAPITarget] {
-        let snodes = LokiAPI.swarmCache[hexEncodedPublicKey] ?? []
+        let snodes = LokiAPI.swarmCache[userPublicKey] ?? []
         return snodes.filter { !usedSnodes.contains($0) }
     }
 
@@ -107,7 +105,7 @@ public extension LokiAPI {
                 
                 // Connect to the next snode if we haven't cancelled
                 // We also need to remove the cached snode so we don't contact it again
-                dropIfNeeded(nextSnode, hexEncodedPublicKey: hexEncodedPublicKey)
+                dropIfNeeded(nextSnode, hexEncodedPublicKey: userPublicKey)
                 return connectToNextSnode()
             }
         }
