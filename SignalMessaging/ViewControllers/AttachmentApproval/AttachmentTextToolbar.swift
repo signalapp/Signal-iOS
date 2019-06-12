@@ -198,6 +198,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     // MARK: - Actions
 
     @objc func didTapSend() {
+        textView.acceptAutocorrectSuggestion()
         attachmentTextToolbarDelegate?.attachmentTextToolbarDidTapSend(self)
     }
 
