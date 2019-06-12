@@ -3,7 +3,6 @@
 //
 
 import UIKit
-import SignalServiceKit
 
 @objc
 public class AvatarImageView: UIImageView {

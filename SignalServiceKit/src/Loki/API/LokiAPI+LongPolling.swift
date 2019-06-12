@@ -37,7 +37,7 @@ public extension LokiAPI {
         // This is here so we can stop the infinite loop
         guard !shouldStopPolling else { return }
         
-        fetchSwarmIfNeeded(for: hexEncodedPublicKey).then { _ -> Guarantee<[Result<Void>]> in
+        getSwarm(for: hexEncodedPublicKey).then { _ -> Guarantee<[Result<Void>]> in
             var promises = [Promise<Void>]()
             let connections = 3
             for i in 0..<connections {
@@ -61,7 +61,7 @@ public extension LokiAPI {
     }
     
     private static func getUnusedSnodes() -> [LokiAPITarget] {
-        let snodes = getCachedSnodes(for: hexEncodedPublicKey)
+        let snodes = LokiAPI.swarmCache[hexEncodedPublicKey] ?? []
         return snodes.filter { !usedSnodes.contains($0) }
     }
 
@@ -84,15 +84,15 @@ public extension LokiAPI {
             
             func getMessagesInfinitely(from target: LokiAPITarget) -> Promise<Void> {
                 // The only way to exit the infinite loop is to throw an error 3 times or cancel
-                return getRawMessages(from: target).then { rawMessages -> Promise<Void> in
+                return getRawMessages(from: target, useLongPolling: true).then { rawResponse -> Promise<Void> in
                     // Check if we need to abort
                     guard !isCancelled else { throw PMKError.cancelled }
                     
                     // Process the messages
-                    let messages = process(rawMessages: rawMessages, from: target)
+                    let messages = parseRawMessagesResponse(rawResponse, from: target)
                     
                     // Send our messages as a notification
-                    NotificationCenter.default.post(name: .receivedNewMessages, object: nil, userInfo: ["messages": messages])
+                    NotificationCenter.default.post(name: .newMessagesReceived, object: nil, userInfo: ["messages": messages])
                     
                     // Continue fetching if we haven't cancelled
                     return getMessagesInfinitely(from: target)
@@ -107,7 +107,7 @@ public extension LokiAPI {
                 
                 // Connect to the next snode if we haven't cancelled
                 // We also need to remove the cached snode so we don't contact it again
-                removeCachedSnode(nextSnode, for: hexEncodedPublicKey)
+                dropIfNeeded(nextSnode, hexEncodedPublicKey: hexEncodedPublicKey)
                 return connectToNextSnode()
             }
         }

@@ -310,8 +310,8 @@ static NSTimeInterval launchStartedAt;
                                                  name:NSNotificationName_2FAStateDidChange
                                                object:nil];
     
-    // Loki Message received
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receivedNewMessages:) name:NSNotification.receivedNewMessages object:nil];
+    // Loki - Observe messages received notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNewMessagesReceived:) name:NSNotification.newMessagesReceived object:nil];
 
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
 
@@ -1413,17 +1413,17 @@ static NSTimeInterval launchStartedAt;
 
 #pragma mark - Long polling
 
-- (void)receivedNewMessages:(NSNotification *)notification
+- (void)handleNewMessagesReceived:(NSNotification *)notification
 {
     NSArray *messages = (NSArray *)notification.userInfo[@"messages"];
-    OWSLogInfo(@"[Loki] Received %lu messages from long polling", messages.count);
+    OWSLogInfo(@"[Loki] Received %lu messages through long polling.", messages.count);
 
     for (SSKProtoEnvelope *envelope in messages) {
         NSData *envelopeData = envelope.serializedDataIgnoringErrors;
         if (envelopeData != nil) {
             [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:envelopeData];
         } else {
-            OWSFailDebug(@"Failed to serialize envelope");
+            OWSFailDebug(@"Failed to deserialize envelope.");
         }
     }
 }
