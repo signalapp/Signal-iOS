@@ -1416,8 +1416,9 @@ static NSTimeInterval launchStartedAt;
 - (void)receivedNewMessages:(NSNotification *)notification
 {
     NSArray *messages = (NSArray *)notification.userInfo[@"messages"];
+    OWSLogInfo(@"[Loki] Received %lu messages from long polling", messages.count);
+
     for (SSKProtoEnvelope *envelope in messages) {
-        OWSLogInfo(@"[Loki] Received messages from long polling");
         NSData *envelopeData = envelope.serializedDataIgnoringErrors;
         if (envelopeData != nil) {
             [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:envelopeData];
