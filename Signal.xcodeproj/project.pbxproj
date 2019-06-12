@@ -275,6 +275,7 @@
 		34BBC85D220D19D600857249 /* ImageEditorPanGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85C220D19D600857249 /* ImageEditorPanGestureRecognizer.swift */; };
 		34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC85F220E883200857249 /* ImageEditorModelTest.swift */; };
 		34BBC862220E883300857249 /* ImageEditorTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BBC860220E883200857249 /* ImageEditorTest.swift */; };
+		34BE2F5822A7371D002C94AC /* PdfViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BE2F5722A7371D002C94AC /* PdfViewController.swift */; };
 		34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2A1F74C12700D7438D /* DebugUIStress.m */; };
 		34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */; };
 		34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34BECE2F1F7ABCF800D7438D /* GifPickerLayout.swift */; };
@@ -1003,6 +1004,7 @@
 		34BBC85C220D19D600857249 /* ImageEditorPanGestureRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorPanGestureRecognizer.swift; sourceTree = "<group>"; };
 		34BBC85F220E883200857249 /* ImageEditorModelTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorModelTest.swift; sourceTree = "<group>"; };
 		34BBC860220E883200857249 /* ImageEditorTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorTest.swift; sourceTree = "<group>"; };
+		34BE2F5722A7371D002C94AC /* PdfViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PdfViewController.swift; sourceTree = "<group>"; };
 		34BECE291F74C12700D7438D /* DebugUIStress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIStress.h; sourceTree = "<group>"; };
 		34BECE2A1F74C12700D7438D /* DebugUIStress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIStress.m; sourceTree = "<group>"; };
 		34BECE2D1F7ABCE000D7438D /* GifPickerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GifPickerViewController.swift; sourceTree = "<group>"; };
@@ -1961,11 +1963,11 @@
 		34B3F8331E8DF1700035BE1A /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				4CFD151B22415A6C00F2450F /* Call */,
 				452B998F20A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift */,
 				340FC87A204DAC8C007AEB0F /* AppSettings */,
 				34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */,
 				34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */,
+				4CFD151B22415A6C00F2450F /* Call */,
 				4C13C9F520E57BA30089A98B /* ColorPickerViewController.swift */,
 				348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */,
 				34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */,
@@ -1990,6 +1992,7 @@
 				345BC30A2047030600257B7C /* OWS2FASettingsViewController.h */,
 				345BC30B2047030600257B7C /* OWS2FASettingsViewController.m */,
 				34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */,
+				34BE2F5722A7371D002C94AC /* PdfViewController.swift */,
 				34969558219B605E00DCFE74 /* Photos */,
 				34CE88E51F2FB9A10098030F /* ProfileViewController.h */,
 				34CE88E61F2FB9A10098030F /* ProfileViewController.m */,
@@ -3753,6 +3756,7 @@
 				340FC8B2204DAC8D007AEB0F /* AdvancedSettingsTableViewController.m in Sources */,
 				452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
+				34BE2F5822A7371D002C94AC /* PdfViewController.swift in Sources */,
 				3496957121A301A100DCFE74 /* OWSBackupImportJob.m in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,

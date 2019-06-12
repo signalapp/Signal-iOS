@@ -24,6 +24,7 @@ NSString *const OWSMimeTypeImageTiff2 = @"image/x-tiff";
 NSString *const OWSMimeTypeImageBmp1 = @"image/bmp";
 NSString *const OWSMimeTypeImageBmp2 = @"image/x-windows-bmp";
 NSString *const OWSMimeTypeImageWebp = @"image/webp";
+NSString *const OWSMimeTypeImagePdf = @"application/pdf";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 NSString *const OWSMimeTypeApplicationZip = @"application/zip";

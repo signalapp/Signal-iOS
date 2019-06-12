@@ -756,6 +756,14 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
         audioAttachmentPlayer?.setCurrentTime(time)
     }
 
+    func didTapPdf(for viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream) {
+        AssertIsOnMainThread()
+
+        let pdfView = PdfViewController(attachmentStream: attachmentStream)
+        let navigationController = OWSNavigationController(rootViewController: pdfView)
+        present(navigationController, animated: true)
+    }
+
     func didTapTruncatedTextMessage(_ conversationItem: ConversationViewItem) {
         guard let navigationController = self.navigationController else {
             owsFailDebug("navigationController was unexpectedly nil")
