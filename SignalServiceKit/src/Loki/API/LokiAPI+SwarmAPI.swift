@@ -11,42 +11,40 @@ public extension LokiAPI {
     private static let swarmCacheKey = "swarmCacheKey"
     private static let swarmCacheCollection = "swarmCacheCollection"
     
-    fileprivate static var swarmCache: [String:[Target]] {
+    fileprivate static var swarmCache: [String:[LokiAPITarget]] {
         get {
-            var result: [String:[Target]]? = nil
+            var result: [String:[LokiAPITarget]]? = nil
             storage.dbReadConnection.read { transaction in
-                let intermediate = transaction.object(forKey: swarmCacheKey, inCollection: swarmCacheCollection) as! [String:[TargetWrapper]]?
-                result = intermediate?.mapValues { $0.map { Target(from: $0) } }
+                result = transaction.object(forKey: swarmCacheKey, inCollection: swarmCacheCollection) as! [String:[LokiAPITarget]]?
             }
             return result ?? [:]
         }
         set {
-            let intermediate = newValue.mapValues { $0.map { TargetWrapper(from: $0) } }
             storage.dbReadWriteConnection.readWrite { transaction in
-                transaction.setObject(intermediate, forKey: swarmCacheKey, inCollection: swarmCacheCollection)
+                transaction.setObject(newValue, forKey: swarmCacheKey, inCollection: swarmCacheCollection)
             }
         }
     }
     
     // MARK: Internal API
-    private static func getRandomSnode() -> Promise<Target> {
-        return Promise<Target> { seal in
-            seal.fulfill(Target(address: "http://13.236.173.190", port: defaultSnodePort)) // TODO: For debugging purposes
+    private static func getRandomSnode() -> Promise<LokiAPITarget> {
+        return Promise<LokiAPITarget> { seal in
+            seal.fulfill(LokiAPITarget(address: "http://13.236.173.190", port: defaultSnodePort)) // TODO: For debugging purposes
         }
     }
     
-    internal static func getCachedSnodes(for hexEncodedPublicKey: String) -> [Target] {
+    internal static func getCachedSnodes(for hexEncodedPublicKey: String) -> [LokiAPITarget] {
         return swarmCache[hexEncodedPublicKey] ?? []
     }
     
-    internal static func removeCachedSnode(_ target: Target, for hexEncodedPublicKey: String) {
+    internal static func removeCachedSnode(_ target: LokiAPITarget, for hexEncodedPublicKey: String) {
         guard let cache = swarmCache[hexEncodedPublicKey] else { return }
         swarmCache[hexEncodedPublicKey] = cache.filter { $0 != target }
     }
     
-    internal static func fetchSwarmIfNeeded(for hexEncodedPublicKey: String) -> Promise<[Target]> {
+    internal static func fetchSwarmIfNeeded(for hexEncodedPublicKey: String) -> Promise<[LokiAPITarget]> {
         if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= minimumSnodeCount {
-            return Promise<[Target]> { $0.fulfill(cachedSwarm) }
+            return Promise<[LokiAPITarget]> { $0.fulfill(cachedSwarm) }
         } else {
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ]
             return getRandomSnode().then { invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { parseTargets(from: $0) }.get { swarmCache[hexEncodedPublicKey] = $0 }
@@ -54,16 +52,16 @@ public extension LokiAPI {
     }
 
     // MARK: Public API
-    internal static func getTargetSnodes(for hexEncodedPublicKey: String) -> Promise<[Target]> {
+    internal static func getTargetSnodes(for hexEncodedPublicKey: String) -> Promise<[LokiAPITarget]> {
         // shuffled() uses the system's default random generator, which is cryptographically secure
         return fetchSwarmIfNeeded(for: hexEncodedPublicKey).map { Array($0.shuffled().prefix(targetSnodeCount)) }
     }
     
     // MARK: Parsing
-    private static func parseTargets(from rawResponse: Any) -> [Target] {
+    private static func parseTargets(from rawResponse: Any) -> [LokiAPITarget] {
         // TODO: For debugging purposes
         // ========
-        let target = Target(address: "http://13.236.173.190", port: defaultSnodePort)
+        let target = LokiAPITarget(address: "http://13.236.173.190", port: defaultSnodePort)
         return Array(repeating: target, count: 3)
         // ========
 //        guard let json = rawResponse as? JSON, let addresses = json["snodes"] as? [String] else {
@@ -77,7 +75,7 @@ public extension LokiAPI {
 // MARK: Error Handling
 internal extension Promise {
     
-    internal func handlingSwarmSpecificErrorsIfNeeded(for target: LokiAPI.Target, associatedWith hexEncodedPublicKey: String) -> Promise<T> {
+    internal func handlingSwarmSpecificErrorsIfNeeded(for target: LokiAPITarget, associatedWith hexEncodedPublicKey: String) -> Promise<T> {
         return recover { error -> Promise<T> in
             if let error = error as? NetworkManagerError {
                 switch error.statusCode {

@@ -17,7 +17,7 @@
     }
     
     /// Our p2p address
-    private static var ourP2PAddress: LokiAPI.Target? = nil
+    private static var ourP2PAddress: LokiAPITarget? = nil
     
     /// This is where we store the p2p details of our contacts
     private static var peerInfo = [String:PeerInfo]()
@@ -29,7 +29,7 @@
     /// - Parameter url: The url to our local server
     @objc public static func setOurP2PAddress(url: URL) {
         guard let scheme = url.scheme, let host = url.host, let port = url.port else { return }
-        let target = LokiAPI.Target(address: "\(scheme)://\(host)", port: UInt16(port))
+        let target = LokiAPITarget(address: "\(scheme)://\(host)", port: UInt16(port))
         ourP2PAddress = target
     }
     

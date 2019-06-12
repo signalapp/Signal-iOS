@@ -5,7 +5,7 @@ private typealias Callback = () -> Void
 public extension LokiAPI {
     private static var isLongPolling = false
     private static var shouldStopPolling = false
-    private static var usedSnodes = [Target]()
+    private static var usedSnodes = [LokiAPITarget]()
     private static var cancels = [Callback]()
     
     private static let hexEncodedPublicKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
@@ -60,7 +60,7 @@ public extension LokiAPI {
         cancels.removeAll()
     }
     
-    private static func getUnusedSnodes() -> [Target] {
+    private static func getUnusedSnodes() -> [LokiAPITarget] {
         let snodes = getCachedSnodes(for: hexEncodedPublicKey)
         return snodes.filter { !usedSnodes.contains($0) }
     }
@@ -82,7 +82,7 @@ public extension LokiAPI {
             // Add the snode to the used array
             usedSnodes.append(nextSnode)
             
-            func getMessagesInfinitely(from target: Target) -> Promise<Void> {
+            func getMessagesInfinitely(from target: LokiAPITarget) -> Promise<Void> {
                 // The only way to exit the infinite loop is to throw an error 3 times or cancel
                 return getRawMessages(from: target).then { rawMessages -> Promise<Void> in
                     // Check if we need to abort
