@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic, readonly) OWSMessageStickerView *messageStickerView;
+@property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
 
 + (NSString *)cellReuseIdentifier;
 
