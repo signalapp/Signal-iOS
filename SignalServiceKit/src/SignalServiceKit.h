@@ -30,3 +30,4 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
+#import <SignalServiceKit/YapDatabaseTransaction+OWS.h>

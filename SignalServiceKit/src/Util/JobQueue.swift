@@ -382,8 +382,8 @@ public class YAPDBJobRecordFinder: NSObject {
         return "SecondaryIndexJobRecord"
     }
 
-    func ext(transaction: YapDatabaseReadTransaction) -> YapDatabaseSecondaryIndexTransaction {
-        return transaction.ext(type(of: self).dbExtensionName) as! YapDatabaseSecondaryIndexTransaction
+    func ext(transaction: YapDatabaseReadTransaction) -> YapDatabaseSecondaryIndexTransaction? {
+        return transaction.safeSecondaryIndexTransaction(type(of: self).dbExtensionName)
     }
 
     static func asyncRegisterDatabaseExtension(storage: OWSStorage) {
@@ -430,7 +430,10 @@ extension YAPDBJobRecordFinder: JobRecordFinder {
         let queryFormat = String(format: "WHERE %@ = ? AND %@ = ? ORDER BY %@", JobRecordField.status.rawValue, JobRecordField.label.rawValue, JobRecordField.sortId.rawValue)
         let query = YapDatabaseQuery(string: queryFormat, parameters: [status.rawValue, label])
 
-        self.ext(transaction: transaction).enumerateKeysAndObjects(matching: query) { _, _, object, stopPointer in
+        guard let ext = self.ext(transaction: transaction) else {
+            return
+        }
+        ext.enumerateKeysAndObjects(matching: query) { _, _, object, stopPointer in
             guard let jobRecord = object as? SSKJobRecord else {
                 owsFailDebug("expecting jobRecord but found: \(object)")
                 return

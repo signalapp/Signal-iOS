@@ -236,7 +236,7 @@ public class FullTextSearchFinder: NSObject {
     private static let dbExtensionName: String = "FullTextSearchFinderExtension"
 
     private func ext(transaction: YapDatabaseReadTransaction) -> YapDatabaseFullTextSearchTransaction? {
-        return transaction.ext(FullTextSearchFinder.dbExtensionName) as? YapDatabaseFullTextSearchTransaction
+        return transaction.safeFullTextSearchTransaction(FullTextSearchFinder.dbExtensionName)
     }
 
     @objc

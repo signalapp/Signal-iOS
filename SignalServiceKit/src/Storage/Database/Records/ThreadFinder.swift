@@ -43,18 +43,24 @@ struct YAPDBThreadFinder: ThreadFinder {
     typealias ReadTransaction = YapDatabaseReadTransaction
 
     func threadCount(isArchived: Bool, transaction: YapDatabaseReadTransaction) -> UInt {
-        return ext(transaction).numberOfItems(inGroup: group(isArchived: isArchived))
+        guard let view = ext(transaction) else {
+            return 0
+        }
+        return view.numberOfItems(inGroup: group(isArchived: isArchived))
     }
 
     func enumerateThreads(isArchived: Bool, transaction: YapDatabaseReadTransaction, block: @escaping (TSThread) -> Void) {
-        ext(transaction).safe_enumerateKeysAndObjects(inGroup: group(isArchived: isArchived),
-                                                      extensionName: type(of: self).extensionName,
-                                                      with: NSEnumerationOptions.reverse) { _, _, object, _, _ in
-                                                        guard let thread = object as? TSThread else {
-                                                            owsFailDebug("unexpected object: \(type(of: object))")
-                                                            return
-                                                        }
-                                                        block(thread)
+        guard let view = ext(transaction) else {
+            return
+        }
+        view.safe_enumerateKeysAndObjects(inGroup: group(isArchived: isArchived),
+                                          extensionName: type(of: self).extensionName,
+                                          with: NSEnumerationOptions.reverse) { _, _, object, _, _ in
+                                            guard let thread = object as? TSThread else {
+                                                owsFailDebug("unexpected object: \(type(of: object))")
+                                                return
+                                            }
+                                            block(thread)
         }
     }
 
@@ -66,13 +72,8 @@ struct YAPDBThreadFinder: ThreadFinder {
         return isArchived ? TSArchiveGroup : TSInboxGroup
     }
 
-    private func ext(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction {
-        guard let ext = transaction.ext(type(of: self).extensionName) as? YapDatabaseViewTransaction else {
-            OWSPrimaryStorage.incrementVersion(ofDatabaseExtension: type(of: self).extensionName)
-            owsFail("unable to load extension")
-        }
-
-        return ext
+    private func ext(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction? {
+        return transaction.safeViewTransaction(type(of: self).extensionName)
     }
 }
 

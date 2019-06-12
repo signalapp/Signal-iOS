@@ -71,4 +71,8 @@ public class FeatureFlags: NSObject {
     // Don't enable this flag until the Desktop changes have been in production for a while.
     @objc
     public static let strictSyncTranscriptTimestamps = false
+
+    // Don't enable this flag in production.
+    @objc
+    public static let strictYDBExtensions = false
 }
