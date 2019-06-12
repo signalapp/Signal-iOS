@@ -1418,12 +1418,10 @@ static NSTimeInterval launchStartedAt;
     NSArray *messages = (NSArray *)notification.userInfo[@"messages"];
     for (SSKProtoEnvelope *envelope in messages) {
         OWSLogInfo(@"[Loki] Received messages from long polling");
-        @try {
-            NSData *envelopeData = envelope.serializedDataIgnoringErrors;
-            if (envelopeData != nil) {
-                [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:envelopeData];
-            }
-        } @catch (NSException *exception) {
+        NSData *envelopeData = envelope.serializedDataIgnoringErrors;
+        if (envelopeData != nil) {
+            [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:envelopeData];
+        } else {
             OWSFailDebug(@"Failed to serialize envelope");
         }
     }
