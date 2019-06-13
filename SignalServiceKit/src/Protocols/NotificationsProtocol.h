@@ -19,15 +19,16 @@ NS_ASSUME_NONNULL_BEGIN
                             inThread:(TSThread *)thread
                          transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)notifyUserForErrorMessage:(TSErrorMessage *)error
+- (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage
                            thread:(TSThread *)thread
                       transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)notifyUserForInfoMessage:(TSInfoMessage *)error
+- (void)notifyUserForInfoMessage:(TSInfoMessage *)infoMessage
                           thread:(TSThread *)thread
+                      wantsSound:(BOOL)wantsSound
                      transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)notifyUserForThreadlessErrorMessage:(TSErrorMessage *)error
+- (void)notifyUserForThreadlessErrorMessage:(TSErrorMessage *)errorMessage
                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)clearAllNotifications;

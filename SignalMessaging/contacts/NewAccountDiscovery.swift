@@ -66,19 +66,12 @@ public class NewAccountDiscovery: NSObject {
                                             messageType: .userJoinedSignal)
                 message.anyInsert(transaction: transaction)
 
-                guard isReasonableTimeToNotify() else {
-                    Logger.info("Skipping notification due to time of day")
-                    return
-                }
-
-                self.notificationPresenter.notifyUser(for: message, thread: thread, transaction: transaction)
+                // Keep these notifications less obtrusive by making them silent.
+                self.notificationPresenter.notifyUser(for: message,
+                                                      thread: thread,
+                                                      wantsSound: false,
+                                                      transaction: transaction)
             }
-        }
-
-        func isReasonableTimeToNotify() -> Bool {
-            let hour = Calendar.current.component(.hour, from: Date())
-
-            return (9..<23).contains(hour)
         }
     }
 }
