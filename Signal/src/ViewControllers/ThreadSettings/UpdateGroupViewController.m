@@ -386,6 +386,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.conversationSettingsViewDelegate);
 
+    [self.groupNameTextField acceptAutocorrectSuggestion];
+
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                          memberIds:self.memberRecipientIds.allObjects

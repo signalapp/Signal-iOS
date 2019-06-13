@@ -512,3 +512,12 @@ public extension UITextView {
         inputDelegate?.selectionDidChange(self)
     }
 }
+
+@objc
+public extension UITextField {
+    @objc
+    func acceptAutocorrectSuggestion() {
+        inputDelegate?.selectionWillChange(self)
+        inputDelegate?.selectionDidChange(self)
+    }
+}
