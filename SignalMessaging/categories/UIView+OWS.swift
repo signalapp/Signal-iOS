@@ -500,3 +500,24 @@ public extension UISearchBar {
         return textField
     }
 }
+
+// MARK: -
+
+@objc
+public extension UITextView {
+    @objc
+    func acceptAutocorrectSuggestion() {
+        // https://stackoverflow.com/a/27865136/4509555
+        inputDelegate?.selectionWillChange(self)
+        inputDelegate?.selectionDidChange(self)
+    }
+}
+
+@objc
+public extension UITextField {
+    @objc
+    func acceptAutocorrectSuggestion() {
+        inputDelegate?.selectionWillChange(self)
+        inputDelegate?.selectionDidChange(self)
+    }
+}

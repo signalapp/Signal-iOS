@@ -463,6 +463,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
+    [self.groupNameTextField acceptAutocorrectSuggestion];
+
     TSGroupModel *model = [self makeGroup];
 
     __block TSGroupThread *thread;

@@ -387,6 +387,8 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     __weak ProfileViewController *weakSelf = self;
 
+    [self.nameTextField acceptAutocorrectSuggestion];
+
     NSString *normalizedProfileName = [self normalizedProfileName];
     if ([OWSProfileManager.sharedManager isProfileNameTooLong:normalizedProfileName]) {
         [OWSAlerts
