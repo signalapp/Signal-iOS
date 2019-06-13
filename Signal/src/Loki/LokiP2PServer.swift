@@ -25,7 +25,7 @@ private extension GCDWebServerDataRequest {
             let object = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
             return object as? JSON
         } catch let error {
-            Logger.debug("[Loki] Failed to serialize JSON: \(error).")
+            print("[Loki] Failed to serialize JSON: \(error).")
         }
         
         return nil

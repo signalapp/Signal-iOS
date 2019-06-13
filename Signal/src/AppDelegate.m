@@ -332,13 +332,13 @@ static NSTimeInterval launchStartedAt;
             if ([serverURLDescription hasSuffix:@"/"]) {
                 serverURLDescription = [serverURLDescription substringToIndex:serverURLDescription.length - 1];
             }
-            OWSLogInfo(@"[Loki] Started server at %@.", serverURLDescription);
+            NSLog(@"[Loki] Started server at %@.", serverURLDescription);
             break;
         }
     }
     
     if (!self.lokiP2PServer.isRunning) {
-        OWSLogWarn(@"[Loki] Failed to start P2P server.");
+        NSLog(@"[Loki] Failed to start P2P server.");
     }
   
     return YES;
@@ -1416,7 +1416,7 @@ static NSTimeInterval launchStartedAt;
 - (void)handleNewMessagesReceived:(NSNotification *)notification
 {
     NSArray *messages = (NSArray *)notification.userInfo[@"messages"];
-    OWSLogInfo(@"[Loki] Received %lu messages through long polling.", messages.count);
+    NSLog(@"[Loki] Received %lu messages through long polling.", messages.count);
 
     for (SSKProtoEnvelope *envelope in messages) {
         NSData *envelopeData = envelope.serializedDataIgnoringErrors;

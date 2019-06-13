@@ -39,7 +39,7 @@ public struct LokiMessage {
             let isPing = signalMessage.isPing
             return LokiMessage(destination: destination, data: data, ttl: ttl, isPing: isPing)
         } catch let error {
-            Logger.debug("[Loki] Failed to convert Signal message to Loki message: \(signalMessage).")
+            print("[Loki] Failed to convert Signal message to Loki message: \(signalMessage).")
             return nil
         }
     }

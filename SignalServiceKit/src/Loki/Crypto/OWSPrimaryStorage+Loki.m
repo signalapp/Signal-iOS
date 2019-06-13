@@ -62,7 +62,7 @@
     @try {
         return [self throws_loadPreKey:preKeyId];
     } @catch (NSException *exception) {
-        OWSLogWarn(@"[Loki] New prekey generated for %@.", pubKey);
+        NSLog(@"[Loki] New prekey generated for %@.", pubKey);
         return [self generateAndStorePreKeyForContact:pubKey];
     }
 }

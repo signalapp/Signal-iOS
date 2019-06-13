@@ -36,7 +36,7 @@ public class CreatePreKeysOperation: OWSOperation {
         self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
         self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
-        Logger.debug("[CreatePreKeysOperation] done")
+        print("[Loki] Create pre keys operation done.")
         self.reportSuccess()
         
         /* Loki: Original code

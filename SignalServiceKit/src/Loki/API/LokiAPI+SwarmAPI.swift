@@ -1,10 +1,12 @@
 import PromiseKit
 
+extension String : Error { }
+
 public extension LokiAPI {
     
     // MARK: Settings
-    private static let minimumSnodeCount = 2 // TODO: For debugging purposes
-    private static let targetSnodeCount = 3 // TODO: For debugging purposes
+    private static let minimumSnodeCount = 2
+    private static let targetSnodeCount = 3
     private static let defaultSnodePort: UInt16 = 8080
     
     // MARK: Caching
@@ -34,10 +36,28 @@ public extension LokiAPI {
         }
     }
     
+    // MARK: Clearnet Setup
+    private static var randomSnodePool: Set<LokiAPITarget> = []
+    
     // MARK: Internal API
     private static func getRandomSnode() -> Promise<LokiAPITarget> {
-        return Promise<LokiAPITarget> { seal in
-            seal.fulfill(LokiAPITarget(address: "http://13.236.173.190", port: defaultSnodePort)) // TODO: For debugging purposes
+        if randomSnodePool.isEmpty {
+            let url = URL(string: "http://3.104.19.14:22023/json_rpc")!
+            let request = TSRequest(url: url, method: "POST", parameters: [ "method" : "get_service_nodes" ])
+            print("[Loki] Invoking get_service_nodes on http://3.104.19.14:22023.")
+            return TSNetworkManager.shared().makePromise(request: request).map { intermediate in
+                let rawResponse = intermediate.responseObject
+                guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw "Failed to update random snode pool from: \(rawResponse)." }
+                randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
+                    guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int else { throw "Failed to update random snode pool from: \(rawTarget)." }
+                    return LokiAPITarget(address: "https://\(address)", port: UInt16(port))
+                })
+                return randomSnodePool.randomElement()!
+            }
+        } else {
+            return Promise<LokiAPITarget> { seal in
+                seal.fulfill(randomSnodePool.randomElement()!)
+            }
         }
     }
     
@@ -58,16 +78,17 @@ public extension LokiAPI {
     
     // MARK: Parsing
     private static func parseTargets(from rawResponse: Any) -> [LokiAPITarget] {
-        // TODO: For debugging purposes
-        // ========
-        let target = LokiAPITarget(address: "http://13.236.173.190", port: defaultSnodePort)
-        return Array(repeating: target, count: 3)
-        // ========
-//        guard let json = rawResponse as? JSON, let addresses = json["snodes"] as? [String] else {
-//            Logger.warn("[Loki] Failed to parse targets from: \(rawResponse).")
-//            return []
-//        }
-//        return addresses.map { Target(address: $0, port: defaultSnodePort) }
+        guard let json = rawResponse as? JSON, let rawSnodes = json["snodes"] as? [JSON] else {
+            print("[Loki] Failed to parse targets from: \(rawResponse).")
+            return []
+        }
+        return rawSnodes.flatMap { rawSnode in
+            guard let address = rawSnode["ip"] as? String, let portAsString = rawSnode["port"] as? String, let port = UInt16(portAsString) else {
+                print("[Loki] Failed to parse target from: \(rawSnode).")
+                return nil
+            }
+            return LokiAPITarget(address: "https://\(address)", port: port)
+        }
     }
 }
 
@@ -80,10 +101,10 @@ internal extension Promise {
                 switch error.statusCode {
                 case 0:
                     // The snode is unreachable; usually a problem with LokiNet
-                    Logger.warn("[Loki] Couldn't reach snode at: \(target.address):\(target.port).")
+                    print("[Loki] Couldn't reach snode at: \(target.address):\(target.port).")
                 case 421:
                     // The snode isn't associated with the given public key anymore
-                    Logger.warn("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
+                    print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
                     LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
                 default: break
                 }

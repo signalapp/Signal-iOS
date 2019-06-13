@@ -423,12 +423,12 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSLogInfo(@"handling content: <Content: %@>", [self descriptionForContent:contentProto]);
         
-        // Loki: Handle PreKeyBundle message
+        // Loki: Handle pre key bundle message
         if (contentProto.prekeyBundleMessage) {
-            OWSLogInfo(@"Received a prekey bundle message from: %@", envelope.source);
+            OWSLogInfo(@"Received a pre key bundle message from: %@.", envelope.source);
             PreKeyBundle *_Nullable bundle = [contentProto.prekeyBundleMessage createPreKeyBundleWithTransaction:transaction];
             if (!bundle) {
-                OWSFailDebug(@"Failed to create PreKeyBundle from message");
+                OWSFailDebug(@"Failed to create PreKeyBundle from message.");
             }
             [self.primaryStorage setPreKeyBundle:bundle forContact:envelope.source transaction:transaction];
         }
@@ -1020,7 +1020,7 @@ NS_ASSUME_NONNULL_BEGIN
      * ================
      */
 
-    // Loki: Archive all our session
+    // Loki: Archive all our sessions
     // Ref: SignalServiceKit/Loki/Docs/SessionReset.md
     [self.primaryStorage archiveAllSessionsForContact:envelope.source protocolContext:transaction];
     
@@ -1032,7 +1032,7 @@ NS_ASSUME_NONNULL_BEGIN
     LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
     [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
 
-    OWSLogDebug(@"[Loki] Session reset received from %@.", envelope.source);
+    NSLog(@"[Loki] Session reset received from %@.", envelope.source);
     
     /* Loki: Original code
      * ================
@@ -1737,7 +1737,7 @@ NS_ASSUME_NONNULL_BEGIN
         
         TSContactThread *_Nullable thread = [TSContactThread getThreadWithContactId:pubKey transaction:transaction];
         if (!thread) {
-            OWSLogDebug(@"[Loki] A new session was adopted but we failed to get the thread for %@.", pubKey);
+            NSLog(@"[Loki] A new session was adopted but we failed to get the thread for %@.", pubKey);
             return;
         }
         

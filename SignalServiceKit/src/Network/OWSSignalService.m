@@ -185,13 +185,15 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (AFHTTPSessionManager *)defaultSignalServiceSessionManager
 {
-    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureServerURL];
-    OWSAssertDebug(baseURL);
     NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-    AFHTTPSessionManager *sessionManager =
-        [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL sessionConfiguration:sessionConf];
+    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:sessionConf];
 
-    sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
+    AFSecurityPolicy *securityPolicy = AFSecurityPolicy.defaultPolicy;
+    securityPolicy.allowInvalidCertificates = YES;
+    securityPolicy.validatesDomainName = NO;
+    sessionManager.securityPolicy = securityPolicy;
+    // Loki: Original code
+    // sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
     sessionManager.responseSerializer = [AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments]; // LOKITODO: Disable this again?
     // Disable default cookie handling for all requests.

@@ -9,6 +9,7 @@ public final class LokiAPI : NSObject {
     // MARK: Settings
     private static let version = "v1"
     private static let maxRetryCount: UInt = 3
+    private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
     
@@ -40,7 +41,16 @@ public final class LokiAPI : NSObject {
         let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         if let headers = headers { request.allHTTPHeaderFields = headers }
-        if let timeout = timeout { request.timeoutInterval = timeout }
+        if let timeout = timeout { request.timeoutInterval = timeout ?? defaultTimeout }
+        let headers = request.allHTTPHeaderFields ?? [:]
+        let headersDescription = headers.isEmpty ? "no custom headers specified" : headers.description
+        let parametersDescription = "[ " + parameters.map { key, value in
+            let valueDescription = String(describing: value)
+            let maxLength = 20
+            let truncatedValueDescription = valueDescription.count > maxLength ? valueDescription.prefix(maxLength) + "..." : valueDescription
+            return key + " : " + truncatedValueDescription
+        }.joined(separator: ", ") + " ]"
+        print("[Loki] Invoking \(method.rawValue) on \(target) with \(parametersDescription) (\(headersDescription)).")
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
             .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey).recoveringNetworkErrorsIfNeeded()
     }
@@ -82,7 +92,7 @@ public final class LokiAPI : NSObject {
             }.recover { error -> Promise<Set<RawResponsePromise>> in
                 LokiP2PAPI.markOffline(destination)
                 if lokiMessage.isPing {
-                    Logger.warn("[Loki] Failed to ping \(destination); marking contact as offline.")
+                    print("[Loki] Failed to ping \(destination); marking contact as offline.")
                     if let error = error as? NSError {
                         error.isRetryable = false
                         throw error
@@ -119,7 +129,7 @@ public final class LokiAPI : NSObject {
         if let lastMessage = rawMessages.last, let hashValue = lastMessage["hash"] as? String, let expirationDate = lastMessage["expiration"] as? Int {
             setLastMessageHashValue(for: target, hashValue: hashValue, expirationDate: UInt64(expirationDate))
         } else if (!rawMessages.isEmpty) {
-            Logger.warn("[Loki] Failed to update last message hash value from: \(rawMessages).")
+            print("[Loki] Failed to update last message hash value from: \(rawMessages).")
         }
     }
     
@@ -127,7 +137,7 @@ public final class LokiAPI : NSObject {
         var receivedMessageHashValues = getReceivedMessageHashValues() ?? []
         return rawMessages.filter { rawMessage in
             guard let hashValue = rawMessage["hash"] as? String else {
-                Logger.warn("[Loki] Missing hash value for message: \(rawMessage).")
+                print("[Loki] Missing hash value for message: \(rawMessage).")
                 return false
             }
             let isDuplicate = receivedMessageHashValues.contains(hashValue)
@@ -140,11 +150,11 @@ public final class LokiAPI : NSObject {
     private static func parseProtoEnvelopes(from rawMessages: [JSON]) -> [SSKProtoEnvelope] {
         return rawMessages.compactMap { rawMessage in
             guard let base64EncodedData = rawMessage["data"] as? String, let data = Data(base64Encoded: base64EncodedData) else {
-                Logger.warn("[Loki] Failed to decode data for message: \(rawMessage).")
+                print("[Loki] Failed to decode data for message: \(rawMessage).")
                 return nil
             }
             guard let envelope = try? LokiMessageWrapper.unwrap(data: data) else {
-                Logger.warn("[Loki] Failed to unwrap data for message: \(rawMessage).")
+                print("[Loki] Failed to unwrap data for message: \(rawMessage).")
                 return nil
             }
             return envelope
