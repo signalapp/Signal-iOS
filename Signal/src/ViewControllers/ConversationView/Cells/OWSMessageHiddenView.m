@@ -147,9 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
         [textViews addObject:self.hStackView];
     }
 
-    if (self.viewItem.shouldHideFooter) {
-        // Do nothing.
-    } else {
+    if (!self.viewItem.shouldHideFooter) {
         [self.footerView configureWithConversationViewItem:self.viewItem
                                          conversationStyle:self.conversationStyle
                                                 isIncoming:self.isIncoming
