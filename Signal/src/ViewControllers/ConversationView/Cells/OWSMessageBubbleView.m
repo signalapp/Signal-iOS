@@ -557,11 +557,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     BOOL hasOnlyBodyMediaView = (self.hasBodyMediaWithThumbnail && self.stackView.subviews.count == 1);
     if (!hasOnlyBodyMediaView) {
-        self.bubbleView.bubbleColor = self.bubbleColor;
+        self.bubbleView.fillColor = self.bubbleColor;
     } else {
         // Media-only messages should have no background color; they will fill the bubble's bounds
         // and we don't want artifacts at the edges.
-        self.bubbleView.bubbleColor = nil;
+        self.bubbleView.fillColor = nil;
     }
 }
 
@@ -1369,7 +1369,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.bodyTextView.attributedText = nil;
     self.bodyTextView.hidden = YES;
 
-    self.bubbleView.bubbleColor = nil;
+    self.bubbleView.fillColor = nil;
     [self.bubbleView clearPartnerViews];
 
     for (UIView *subview in self.bubbleView.subviews) {

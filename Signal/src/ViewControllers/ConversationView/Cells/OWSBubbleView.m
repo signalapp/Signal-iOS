@@ -124,22 +124,36 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     [self updatePartnerViews];
 }
 
-- (void)setBubbleColor:(nullable UIColor *)bubbleColor
+- (void)setFillColor:(nullable UIColor *)fillColor
 {
     OWSAssertIsOnMainThread();
 
-    _bubbleColor = bubbleColor;
-    _bubbleGradientColors = nil;
+    _fillColor = fillColor;
+    _fillGradientColors = nil;
 
     [self updateLayers];
 }
 
-- (void)setBubbleGradientColors:(nullable NSArray<UIColor *> *)bubbleGradientColors
+- (void)setFillGradientColors:(nullable NSArray<UIColor *> *)fillGradientColors
 {
     OWSAssertIsOnMainThread();
 
-    _bubbleColor = nil;
-    _bubbleGradientColors = bubbleGradientColors;
+    _fillColor = nil;
+    _fillGradientColors = fillGradientColors;
+
+    [self updateLayers];
+}
+
+- (void)setStrokeColor:(nullable UIColor *)strokeColor
+{
+    _strokeColor = strokeColor;
+
+    [self updateLayers];
+}
+
+- (void)setStrokeThickness:(CGFloat)strokeThickness
+{
+    _strokeThickness = strokeThickness;
 
     [self updateLayers];
 }
@@ -169,13 +183,15 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
 
-    self.shapeLayer.fillColor = self.bubbleColor.CGColor;
-    self.shapeLayer.hidden = self.bubbleColor == nil;
+    self.shapeLayer.fillColor = self.fillColor.CGColor;
+    self.shapeLayer.strokeColor = self.strokeColor.CGColor;
+    self.shapeLayer.lineWidth = self.strokeThickness;
     self.shapeLayer.path = bezierPath.CGPath;
+    self.shapeLayer.hidden = (self.fillColor == nil) && (self.strokeColor == nil);
 
-    NSArray *bubbleGradientCGColors = self.bubbleGradientCGColors;
-    self.gradientLayer.colors = bubbleGradientCGColors;
-    self.gradientLayer.hidden = bubbleGradientCGColors.count < 1;
+    NSArray *_Nullable fillGradientCGColors = self.fillGradientCGColors;
+    self.gradientLayer.colors = fillGradientCGColors;
+    self.gradientLayer.hidden = fillGradientCGColors.count < 1;
     // Currently this view only supports linear (or axial) gradients
     // from the top-left to bottom-right.
     self.gradientLayer.startPoint = CGPointMake(0, 0);
@@ -187,10 +203,13 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     [CATransaction commit];
 }
 
-- (NSArray *)bubbleGradientCGColors
+- (nullable NSArray *)fillGradientCGColors
 {
+    if (self.fillGradientColors.count < 1) {
+        return nil;
+    }
     NSMutableArray *result = [NSMutableArray new];
-    for (UIColor *color in self.bubbleGradientColors) {
+    for (UIColor *color in self.fillGradientColors) {
         [result addObject:(id)color.CGColor];
     }
     return result;

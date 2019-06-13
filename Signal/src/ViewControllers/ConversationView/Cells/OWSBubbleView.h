@@ -37,8 +37,10 @@ typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
                                 wideCornerRadius:(CGFloat)wideCornerRadius
                                     sharpCorners:(OWSDirectionalRectCorner)sharpCorners;
 
-@property (nonatomic, nullable) UIColor *bubbleColor;
-@property (nonatomic, nullable) NSArray<UIColor *> *bubbleGradientColors;
+@property (nonatomic, nullable) UIColor *fillColor;
+@property (nonatomic, nullable) NSArray<UIColor *> *fillGradientColors;
+@property (nonatomic, nullable) UIColor *strokeColor;
+@property (nonatomic) CGFloat strokeThickness;
 
 @property (nonatomic) OWSDirectionalRectCorner sharpCorners;
 

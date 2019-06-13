@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -50,7 +50,7 @@ public class TypingIndicatorCell: ConversationViewCell {
             return
         }
 
-        bubbleView.bubbleColor = conversationStyle.bubbleColor(isIncoming: true)
+        bubbleView.fillColor = conversationStyle.bubbleColor(isIncoming: true)
         typingIndicatorView.startAnimation()
 
         viewConstraints.append(contentsOf: [
