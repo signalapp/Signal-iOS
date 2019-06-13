@@ -333,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isExpired) {
         self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_VIEWED",
             @"Label for messages with per-message expiration indicating that "
-            @"user has viewed the message's contents.");
+            @"the local user has viewed the message's contents.");
     } else if (self.isFailedDownload) {
         self.label.text = NSLocalizedString(
             @"ATTACHMENT_DOWNLOADING_STATUS_FAILED", @"Status label when an attachment download has failed.");
@@ -425,7 +425,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isAvailable
 {
-    if (self.viewItem.perMessageExpirationHasExpired) {
+    if (self.isExpired) {
         return NO;
     } else if (self.viewItem.attachmentStream) {
         return YES;
@@ -439,7 +439,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isFailedDownload
 {
-    if (self.viewItem.perMessageExpirationHasExpired) {
+    if (self.isExpired) {
         return NO;
     } else if (self.viewItem.attachmentStream) {
         return NO;
@@ -453,7 +453,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isOngoingDownload
 {
-    if (self.viewItem.perMessageExpirationHasExpired) {
+    if (self.isExpired) {
         return NO;
     } else if (self.viewItem.attachmentStream) {
         return NO;

@@ -194,8 +194,6 @@ const CGFloat kOWSMessageCellCornerRadius_Small = 4;
     self.gradientLayer.hidden = fillGradientCGColors.count < 1;
     // Currently this view only supports linear (or axial) gradients
     // from the top-left to bottom-right.
-    //    self.gradientLayer.startPoint = CGPointMake(0, 1);
-    //    self.gradientLayer.endPoint = CGPointMake(1, 0);
     self.gradientLayer.startPoint = CGPointMake(0, 0);
     self.gradientLayer.endPoint = CGPointMake(1, 1);
     self.gradientLayer.frame = self.bounds;
