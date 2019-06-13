@@ -19,6 +19,14 @@ public class PerMessageExpiration: NSObject {
         return SDSDatabaseStorage.shared
     }
 
+    private class var messageSenderJobQueue: MessageSenderJobQueue {
+        return SSKEnvironment.shared.messageSenderJobQueue
+    }
+
+    private class var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
     // MARK: -
 
     @objc
@@ -26,9 +34,33 @@ public class PerMessageExpiration: NSObject {
                                                 transaction: SDSAnyWriteTransaction) {
         AssertIsOnMainThread()
 
-        if message.perMessageExpireStartedAt < 1 {
+        // Start expiration using "now" as the read time.
+        startPerMessageExpiration(forMessage: message,
+                                  readTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                  sendSyncMessages: true,
+                                  transaction: transaction)
+    }
+
+    private class func startPerMessageExpiration(forMessage message: TSMessage,
+                                                 readTimestamp: UInt64,
+                                                 sendSyncMessages: Bool,
+                                                 transaction: SDSAnyWriteTransaction) {
+
+        // Make sure that timestamp is not later than now.
+        let timestamp = min(readTimestamp, NSDate.ows_millisecondTimeStamp())
+
+        if !message.hasPerMessageExpirationStarted {
             // Mark the countdown as begun.
-            message.updateWithPerMessageExpireStarted(at: NSDate.ows_millisecondTimeStamp(),
+            message.updateWithPerMessageExpireStarted(at: timestamp,
+                                                      transaction: transaction)
+
+            if sendSyncMessages {
+                sendSyncMessage(forMessage: message, transaction: transaction)
+            }
+        } else if message.perMessageExpireStartedAt > timestamp {
+            // Update the "countdown start" to reflect timestamp,
+            // which is earlier than the current value.
+            message.updateWithPerMessageExpireStarted(at: timestamp,
                                                       transaction: transaction)
         } else {
             owsFailDebug("Per-message expiration countdown already begun.")
@@ -68,7 +100,7 @@ public class PerMessageExpiration: NSObject {
         message.updateWithHasPerMessageExpiredAndRemoveRenderableContent(with: transaction)
     }
 
-    // MARK: -
+    // MARK: - Events
 
     @objc
     public class func appDidBecomeReady() {
@@ -82,6 +114,163 @@ public class PerMessageExpiration: NSObject {
                 schedulePerMessageExpiration(forMessage: message, transaction: transaction)
             }
         }
+    }
+
+    // MARK: - Sync Messages
+
+    private class func sendSyncMessage(forMessage message: TSMessage,
+                                       transaction: SDSAnyWriteTransaction) {
+        guard let senderId = senderId(forMessage: message) else {
+            owsFailDebug("Could not send sync message; no local number.")
+            return
+        }
+        let messageIdTimestamp: UInt64 = message.timestamp
+        let readTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()
+
+        let syncMessage = OWSPerMessageExpirationReadSyncMessage(senderId: senderId,
+                                                                 messageIdTimestamp: messageIdTimestamp,
+                                                                 readTimestamp: readTimestamp)
+        messageSenderJobQueue.add(message: syncMessage, transaction: transaction)
+    }
+
+    @objc
+    public class func processIncomingSyncMessage(_ message: SSKProtoSyncMessageMessageTimerRead,
+                                                 envelope: SSKProtoEnvelope,
+                                                 transaction: SDSAnyWriteTransaction) {
+
+        if tryToApplyIncomingSyncMessage(message,
+                                         envelope: envelope,
+                                         transaction: transaction) {
+            return
+        }
+
+        // Unpack and verify the proto & envelope contents.
+        let senderId: String = message.sender
+        guard senderId.count > 0 else {
+            owsFailDebug("Invalid senderId.")
+            return
+        }
+        let messageIdTimestamp: UInt64 = message.timestamp
+        guard messageIdTimestamp > 0 else {
+            owsFailDebug("Invalid messageIdTimestamp.")
+            return
+        }
+        let readTimestamp: UInt64 = envelope.timestamp
+        guard readTimestamp > 0 else {
+            owsFailDebug("Invalid readTimestamp.")
+            return
+        }
+
+        // Persist this "per-message expiration read receipt".
+        let key = readReceiptKey(senderId: senderId, messageIdTimestamp: messageIdTimestamp)
+        store.setUInt64(readTimestamp, key: key, transaction: transaction)
+    }
+
+    // Returns true IFF the read receipt is applied to an existing message.
+    private class func tryToApplyIncomingSyncMessage(_ message: SSKProtoSyncMessageMessageTimerRead,
+                                                     envelope: SSKProtoEnvelope,
+                                                     transaction: SDSAnyWriteTransaction) -> Bool {
+        let messageSenderId: String = message.sender
+        let messageIdTimestamp: UInt64 = message.timestamp
+        let readTimestamp: UInt64 = envelope.timestamp
+
+        let filter = { (interaction: TSInteraction) -> Bool in
+            guard interaction.timestamp == messageIdTimestamp else {
+                owsFailDebug("Timestamps don't match: \(interaction.timestamp) != \(messageIdTimestamp)")
+                return false
+            }
+            guard let message = interaction as? TSMessage else {
+                return false
+            }
+            guard let senderId = senderId(forMessage: message) else {
+                owsFailDebug("Could not process sync message; no local number.")
+                return false
+            }
+            guard senderId == messageSenderId else {
+                return false
+            }
+            guard message.hasPerMessageExpiration else {
+                return false
+            }
+            return true
+        }
+        let interactions: [TSInteraction]
+        do {
+            interactions = try InteractionFinder.interactions(withTimestamp: messageIdTimestamp, filter: filter, transaction: transaction)
+        } catch {
+            owsFailDebug("Couldn't find interactions: \(error)")
+            return false
+        }
+        guard interactions.count > 0 else {
+            return false
+        }
+        if interactions.count > 1 {
+            owsFailDebug("More than one message from the same sender with the same timestamp found.")
+        }
+        for interaction in interactions {
+            guard let message = interaction as? TSMessage else {
+                owsFailDebug("Invalid interaction: \(type(of: interaction))")
+                continue
+            }
+            // Start expiration using the received read time.
+            startPerMessageExpiration(forMessage: message,
+                                      readTimestamp: readTimestamp,
+                                      sendSyncMessages: false,
+                                      transaction: transaction)
+        }
+        return true
+    }
+
+    @objc
+    public class func applyEarlyReadReceipts(forIncomingMessage message: TSIncomingMessage,
+                                             transaction: SDSAnyWriteTransaction) {
+
+        guard let senderId = senderId(forMessage: message) else {
+            owsFailDebug("Could not apply early read receipts; no local number.")
+            return
+        }
+        let messageIdTimestamp: UInt64 = message.timestamp
+
+        // Check for persisted "per-message expiration read receipt".
+        let key = readReceiptKey(senderId: senderId, messageIdTimestamp: messageIdTimestamp)
+        guard let readTimestamp = store.getOptionalUInt64(key, transaction: transaction) else {
+            // No early read receipt applies, abort.
+            return
+        }
+
+        // Remove persisted "per-message expiration read receipt".
+        store.removeValue(forKey: key, transaction: transaction)
+
+        // Start expiration using the received read time.
+        startPerMessageExpiration(forMessage: message,
+                                  readTimestamp: readTimestamp,
+                                  sendSyncMessages: false,
+                                  transaction: transaction)
+    }
+
+    private class func senderId(forMessage message: TSMessage) -> String? {
+
+        if let incomingMessage = message as? TSIncomingMessage {
+            return incomingMessage.authorId
+        } else if message as? TSOutgoingMessage != nil {
+            guard let localNumber = tsAccountManager.localNumber() else {
+                owsFailDebug("Could not process sync message; no local number.")
+                return nil
+            }
+            // We also need to send and receive "per-message expiration read" sync
+            // messages for outgoing messages, unlike normal read receipts.
+            return localNumber
+        } else {
+            owsFailDebug("Unexpected message type.")
+            return nil
+        }
+    }
+
+    private static let store = SDSKeyValueStore(collection: "perMessageExpiration")
+
+    private class func readReceiptKey(senderId: String,
+                                      messageIdTimestamp: UInt64) -> String {
+        return "\(senderId).\(messageIdTimestamp)"
     }
 }
 

@@ -1632,10 +1632,14 @@ struct SignalServiceProtos_SyncMessage {
     set {_uniqueStorage()._stickerPackOperation = newValue}
   }
 
-  var messageTimerRead: [SignalServiceProtos_SyncMessage.MessageTimerRead] {
-    get {return _storage._messageTimerRead}
+  var messageTimerRead: SignalServiceProtos_SyncMessage.MessageTimerRead {
+    get {return _storage._messageTimerRead ?? SignalServiceProtos_SyncMessage.MessageTimerRead()}
     set {_uniqueStorage()._messageTimerRead = newValue}
   }
+  /// Returns true if `messageTimerRead` has been explicitly set.
+  var hasMessageTimerRead: Bool {return _storage._messageTimerRead != nil}
+  /// Clears the value of `messageTimerRead`. Subsequent reads from it will return its default value.
+  mutating func clearMessageTimerRead() {_uniqueStorage()._messageTimerRead = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -4157,7 +4161,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _configuration: SignalServiceProtos_SyncMessage.Configuration? = nil
     var _padding: Data? = nil
     var _stickerPackOperation: [SignalServiceProtos_SyncMessage.StickerPackOperation] = []
-    var _messageTimerRead: [SignalServiceProtos_SyncMessage.MessageTimerRead] = []
+    var _messageTimerRead: SignalServiceProtos_SyncMessage.MessageTimerRead? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -4200,7 +4204,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 8: try decoder.decodeSingularBytesField(value: &_storage._padding)
         case 9: try decoder.decodeSingularMessageField(value: &_storage._configuration)
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._stickerPackOperation)
-        case 11: try decoder.decodeRepeatedMessageField(value: &_storage._messageTimerRead)
+        case 11: try decoder.decodeSingularMessageField(value: &_storage._messageTimerRead)
         default: break
         }
       }
@@ -4239,8 +4243,8 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if !_storage._stickerPackOperation.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._stickerPackOperation, fieldNumber: 10)
       }
-      if !_storage._messageTimerRead.isEmpty {
-        try visitor.visitRepeatedMessageField(value: _storage._messageTimerRead, fieldNumber: 11)
+      if let v = _storage._messageTimerRead {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
       }
     }
     try unknownFields.traverse(visitor: &visitor)

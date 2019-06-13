@@ -23,6 +23,8 @@ protocol InteractionFinderAdapter {
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
 
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
+
+    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
 }
 
 @objc
@@ -147,6 +149,19 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return try grdbAdapter.interaction(at: index, transaction: grdbRead)
         }
     }
+
+    public class func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: SDSAnyReadTransaction) throws -> [TSInteraction] {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return try YAPDBInteractionFinderAdapter.interactions(withTimestamp: timestamp,
+                                                                  filter: filter,
+                                                                  transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return try GRDBInteractionFinderAdapter.interactions(withTimestamp: timestamp,
+                                                                 filter: filter,
+                                                                 transaction: grdbRead)
+        }
+    }
 }
 
 struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
@@ -253,6 +268,12 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
 
         return interaction
+    }
+
+    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
+        return TSInteraction.interactions(withTimestamp: timestamp,
+                                          filter: filter,
+                                          with: transaction)
     }
 
     // MARK: - private
@@ -433,6 +454,18 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         """
         let arguments: StatementArguments = [threadUniqueId, index]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
+    }
+
+    public static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .timestamp) = ?
+        """
+        let arguments: [DatabaseValueConvertible] = [timestamp]
+
+        let unfiltered = try TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction).all()
+        return unfiltered.filter(filter)
     }
 }
 
