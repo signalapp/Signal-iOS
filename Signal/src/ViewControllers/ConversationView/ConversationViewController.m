@@ -2669,7 +2669,7 @@ typedef enum : NSUInteger {
     OWSAssertDebug(viewItem);
     OWSAssertDebug(attachmentStream);
 
-    // TODO:
+    [PerMessageExpirationViewController tryToPresentWithInteraction:viewItem.interaction from:self];
 }
 
 #pragma mark - ContactEditingDelegate

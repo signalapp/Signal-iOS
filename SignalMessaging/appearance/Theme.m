@@ -86,10 +86,14 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? Theme.darkThemeBackgroundColor : UIColor.ows_whiteColor);
 }
 
++ (UIColor *)darkThemeOffBackgroundColor
+{
+    return [UIColor colorWithWhite:0.2f alpha:1.f];
+}
+
 + (UIColor *)offBackgroundColor
 {
-    return (
-        Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor colorWithWhite:0.94f alpha:1.f]);
+    return (Theme.isDarkThemeEnabled ? self.darkThemeOffBackgroundColor : [UIColor colorWithWhite:0.94f alpha:1.f]);
 }
 
 + (UIColor *)primaryColor
