@@ -663,6 +663,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     // block can be called twice, once on this instance and once
     // on the copy from the database.  We only want to remove
     // attachments once.
+    [self anyReloadWithTransaction:transaction ignoreMissing:YES];
     [self removeAllAttachmentsWithTransaction:transaction];
 
     [self anyUpdateWithTransaction:transaction
