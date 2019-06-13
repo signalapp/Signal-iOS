@@ -15,7 +15,7 @@ public extension LokiAPI {
         isLongPolling = true
         shouldStopPolling = false
         
-        Logger.info("[Loki] Started long polling.")
+        print("[Loki] Started long polling.")
         
         longPoll()
     }
@@ -27,7 +27,7 @@ public extension LokiAPI {
         usedSnodes.removeAll()
         cancelAllPromises()
         
-        Logger.info("[Loki] Stopped long polling.")
+        print("[Loki] Stopped long polling.")
     }
     
     /// The long polling loop

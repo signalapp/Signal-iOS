@@ -52,7 +52,7 @@ public class RefreshPreKeysOperation: OWSOperation {
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()
             
-            Logger.debug("[Loki] Pre key refresh operation done.")
+            print("[Loki] Pre key refresh operation done.")
             self.reportSuccess()
         }
         

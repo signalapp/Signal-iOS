@@ -48,12 +48,12 @@ public class LokiP2PAPI : NSObject {
             }
             
             guard let thread = contactThread else {
-                Logger.warn("[Loki] Failed to fetch thread when attempting to ping: \(pubKey).")
+                print("[Loki] Failed to fetch thread when attempting to ping: \(pubKey).")
                 return
             }
 
             guard let message = createLokiAddressMessage(for: thread, isPing: true) else {
-                Logger.warn("[Loki] Failed to build ping message for \(pubKey).")
+                print("[Loki] Failed to build ping message for \(pubKey).")
                 return
             }
             
@@ -75,11 +75,11 @@ public class LokiP2PAPI : NSObject {
     
     public static func handleReceivedMessage(base64EncodedData: String) {
         guard let data = Data(base64Encoded: base64EncodedData) else {
-            Logger.warn("[Loki] Failed to decode data for P2P message.")
+            print("[Loki] Failed to decode data for P2P message.")
             return
         }
         guard let envelope = try? LokiMessageWrapper.unwrap(data: data) else {
-            Logger.warn("[Loki] Failed to unwrap data for P2P message.")
+            print("[Loki] Failed to unwrap data for P2P message.")
             return
         }
         // We need to set the P2P field on the envelope
@@ -91,7 +91,7 @@ public class LokiP2PAPI : NSObject {
             let envelopeData = try newEnvelope.serializedData()
             messageReceiver.handleReceivedEnvelopeData(envelopeData)
         } catch let error {
-            Logger.warn("[Loki] Something went wrong during proto conversion: \(error).")
+            print("[Loki] Something went wrong during proto conversion: \(error).")
         }
     }
     
@@ -198,7 +198,7 @@ public class LokiP2PAPI : NSObject {
         AssertIsOnMainThread()
         
         guard let message = onlineBroadcastMessage(forThread: thread) else {
-            Logger.warn("[Loki] P2P address not set.")
+            print("[Loki] P2P address not set.")
             return
         }
         
@@ -222,7 +222,7 @@ public class LokiP2PAPI : NSObject {
     
     private static func createLokiAddressMessage(for thread: TSThread, isPing: Bool) -> LokiAddressMessage? {
         guard let ourAddress = ourP2PAddress else {
-            Logger.warn("[Loki] P2P address not set.")
+            print("[Loki] P2P address not set.")
             return nil
         }
         

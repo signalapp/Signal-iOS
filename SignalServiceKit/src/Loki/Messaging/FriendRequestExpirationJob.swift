@@ -140,7 +140,7 @@ public final class FriendRequestExpirationJob : NSObject {
     private func timerDidFire(isMainTimer: Bool) {
         guard CurrentAppContext().isMainAppAndActive else {
             let infoString = isMainTimer ? "Main timer fired while main app is inactive." : "Ignoring fallback timer for app which is not main and active."
-            Logger.info("[Loki] Friend request expiration job running: \(infoString).")
+            print("[Loki] Friend request expiration job running: \(infoString).")
             return
         }
         

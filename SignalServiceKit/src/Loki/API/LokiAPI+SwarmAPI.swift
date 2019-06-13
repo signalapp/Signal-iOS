@@ -78,7 +78,7 @@ public extension LokiAPI {
     // MARK: Parsing
     private static func parseTargets(from rawResponse: Any) -> [LokiAPITarget] {
         guard let json = rawResponse as? JSON, let rawSnodes = json["snodes"] as? [JSON] else {
-            Logger.warn("[Loki] Failed to parse targets from: \(rawResponse).")
+            print("[Loki] Failed to parse targets from: \(rawResponse).")
             return []
         }
         return rawSnodes.flatMap { rawSnode in
@@ -97,10 +97,10 @@ internal extension Promise {
                 switch error.statusCode {
                 case 0:
                     // The snode is unreachable; usually a problem with LokiNet
-                    Logger.warn("[Loki] Couldn't reach snode at: \(target.address):\(target.port).")
+                    print("[Loki] Couldn't reach snode at: \(target.address):\(target.port).")
                 case 421:
                     // The snode isn't associated with the given public key anymore
-                    Logger.warn("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
+                    print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
                     LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
                 default: break
                 }

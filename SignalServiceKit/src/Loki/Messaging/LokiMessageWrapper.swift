@@ -40,7 +40,7 @@ public enum LokiMessageWrapper {
             }
             return try builder.build()
         } catch let error {
-            Logger.warn("[Loki] Failed to wrap message in envelope: \(error).")
+            print("[Loki] Failed to wrap message in envelope: \(error).")
             throw WrappingError.failedToWrapMessageInEnvelope
         }
     }
@@ -53,7 +53,7 @@ public enum LokiMessageWrapper {
             messageBuilder.setRequest(try requestBuilder.build())
             return try messageBuilder.build()
         } catch let error {
-            Logger.warn("[Loki] Failed to wrap envelope in web socket message: \(error).")
+            print("[Loki] Failed to wrap envelope in web socket message: \(error).")
             throw WrappingError.failedToWrapEnvelopeInWebSocketMessage
         }
     }
@@ -65,7 +65,7 @@ public enum LokiMessageWrapper {
             let envelope = webSocketMessage.request!.body!
             return try SSKProtoEnvelope.parseData(envelope)
         } catch let error {
-            Logger.warn("[Loki] Failed to unwrap data: \(error).")
+            print("[Loki] Failed to unwrap data: \(error).")
             throw WrappingError.failedToUnwrapData
         }
     }

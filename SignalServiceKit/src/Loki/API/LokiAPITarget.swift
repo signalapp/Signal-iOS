@@ -29,4 +29,7 @@ internal final class LokiAPITarget : NSObject, NSCoding {
         coder.encode(address, forKey: "address")
         coder.encode(port, forKey: "port")
     }
+
+    // MARK: Description
+    override var description: String { return "\(address):\(port)" }
 }

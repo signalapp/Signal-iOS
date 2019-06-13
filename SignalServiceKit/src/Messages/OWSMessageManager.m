@@ -1032,7 +1032,7 @@ NS_ASSUME_NONNULL_BEGIN
     LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
     [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
 
-    OWSLogDebug(@"[Loki] Session reset received from %@.", envelope.source);
+    NSLog(@"[Loki] Session reset received from %@.", envelope.source);
     
     /* Loki: Original code
      * ================
@@ -1737,7 +1737,7 @@ NS_ASSUME_NONNULL_BEGIN
         
         TSContactThread *_Nullable thread = [TSContactThread getThreadWithContactId:pubKey transaction:transaction];
         if (!thread) {
-            OWSLogDebug(@"[Loki] A new session was adopted but we failed to get the thread for %@.", pubKey);
+            NSLog(@"[Loki] A new session was adopted but we failed to get the thread for %@.", pubKey);
             return;
         }
         
