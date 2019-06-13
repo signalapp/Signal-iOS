@@ -58,7 +58,8 @@ public class PerMessageExpiration: NSObject {
                 sendSyncMessage(forMessage: message, transaction: transaction)
             }
         } else if message.perMessageExpireStartedAt > timestamp {
-            // Update the "countdown start" to reflect now.
+            // Update the "countdown start" to reflect timestamp,
+            // which is earlier than the current value.
             message.updateWithPerMessageExpireStarted(at: timestamp,
                                                       transaction: transaction)
         } else {
