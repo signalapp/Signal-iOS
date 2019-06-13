@@ -131,7 +131,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSString *senderName = nil;
-    if (transaction.transitional_yapReadTransaction && self.senderId.length > 0) {
+    if (transaction.transitional_yapReadTransaction) {
         senderName = [self.contactsManager displayNameForPhoneIdentifier:self.senderId
                                                              transaction:transaction.transitional_yapReadTransaction];
     }
