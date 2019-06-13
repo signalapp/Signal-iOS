@@ -204,7 +204,22 @@ public class StickerKeyboard: UIStackView {
         Logger.verbose("")
 
         invalidateIntrinsicContentSize()
-        updatePageConstraints(ignoreScrollingState: true)
+    }
+
+    private var isLayingoutSubviews = false
+    public override func layoutSubviews() {
+        isLayingoutSubviews = true
+
+        let previousPageWidth = pageWidth
+        super.layoutSubviews()
+
+        // If the page width changed (probably an orientation change),
+        // make sure we stay centered on the current pack.
+        if previousPageWidth != pageWidth {
+            updatePageConstraints(ignoreScrollingState: true)
+        }
+
+        isLayingoutSubviews = false
     }
 
     private func searchButtonWasTapped() {
@@ -325,6 +340,10 @@ public class StickerKeyboard: UIStackView {
     }
 
     private func checkForPageChange() {
+        // Ignore any page changes while we're laying out, as the content
+        // offset will move about as the scrollView potentially resizes.
+        guard !isLayingoutSubviews else { return }
+
         let offsetX = stickerPagingScrollView.contentOffset.x
 
         // Scrolled left a page
