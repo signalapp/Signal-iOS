@@ -24,7 +24,7 @@ protocol InteractionFinderAdapter {
 
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 
-    func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
+    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
 }
 
 @objc
@@ -150,16 +150,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    public func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: SDSAnyReadTransaction) throws -> [TSInteraction] {
+    public class func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: SDSAnyReadTransaction) throws -> [TSInteraction] {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
-            return try yapAdapter.interactions(withTimestamp: timestamp,
-                                               filter: filter,
-                                               transaction: yapRead)
+            return try YAPDBInteractionFinderAdapter.interactions(withTimestamp: timestamp,
+                                                                  filter: filter,
+                                                                  transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.interactions(withTimestamp: timestamp,
-                                                filter: filter,
-                                                transaction: grdbRead)
+            return try GRDBInteractionFinderAdapter.interactions(withTimestamp: timestamp,
+                                                                 filter: filter,
+                                                                 transaction: grdbRead)
         }
     }
 }
@@ -270,7 +270,7 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return interaction
     }
 
-    public func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
+    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
         return TSInteraction.interactions(withTimestamp: timestamp,
                                           filter: filter,
                                           with: transaction)
@@ -456,7 +456,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 
-    public func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
+    public static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)

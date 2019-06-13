@@ -37,11 +37,13 @@ public class PerMessageExpiration: NSObject {
         // Start expiration using "now" as the read time.
         startPerMessageExpiration(forMessage: message,
                                   readTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                  sendSyncMessages: true,
                                   transaction: transaction)
     }
 
     private class func startPerMessageExpiration(forMessage message: TSMessage,
                                                  readTimestamp: UInt64,
+                                                 sendSyncMessages: Bool,
                                                  transaction: SDSAnyWriteTransaction) {
 
         // Make sure that timestamp is not later than now.
@@ -52,7 +54,13 @@ public class PerMessageExpiration: NSObject {
             message.updateWithPerMessageExpireStarted(at: timestamp,
                                                       transaction: transaction)
 
-            sendSyncMessage(forMessage: message, transaction: transaction)
+            if sendSyncMessages {
+                sendSyncMessage(forMessage: message, transaction: transaction)
+            }
+        } else if message.perMessageExpireStartedAt > timestamp {
+            // Update the "countdown start" to reflect now.
+            message.updateWithPerMessageExpireStarted(at: timestamp,
+                                                      transaction: transaction)
         } else {
             owsFailDebug("Per-message expiration countdown already begun.")
         }
@@ -185,17 +193,18 @@ public class PerMessageExpiration: NSObject {
             }
             return true
         }
-        let fakeThreadUniqueId = ""
-        let interactionFinder = InteractionFinder(threadUniqueId: fakeThreadUniqueId)
         let interactions: [TSInteraction]
         do {
-            interactions = try interactionFinder.interactions(withTimestamp: messageIdTimestamp, filter: filter, transaction: transaction)
+            interactions = try InteractionFinder.interactions(withTimestamp: messageIdTimestamp, filter: filter, transaction: transaction)
         } catch {
             owsFailDebug("Couldn't find interactions: \(error)")
             return false
         }
         guard interactions.count > 0 else {
             return false
+        }
+        if interactions.count > 1 {
+            owsFailDebug("More than one message from the same sender with the same timestamp found.")
         }
         for interaction in interactions {
             guard let message = interaction as? TSMessage else {
@@ -205,6 +214,7 @@ public class PerMessageExpiration: NSObject {
             // Start expiration using the received read time.
             startPerMessageExpiration(forMessage: message,
                                       readTimestamp: readTimestamp,
+                                      sendSyncMessages: false,
                                       transaction: transaction)
         }
         return true
@@ -233,6 +243,7 @@ public class PerMessageExpiration: NSObject {
         // Start expiration using the received read time.
         startPerMessageExpiration(forMessage: message,
                                   readTimestamp: readTimestamp,
+                                  sendSyncMessages: false,
                                   transaction: transaction)
     }
 
@@ -240,7 +251,7 @@ public class PerMessageExpiration: NSObject {
 
         if let incomingMessage = message as? TSIncomingMessage {
             return incomingMessage.authorId
-        } else {
+        } else if message as? TSOutgoingMessage != nil {
             guard let localNumber = tsAccountManager.localNumber() else {
                 owsFailDebug("Could not process sync message; no local number.")
                 return nil
@@ -248,6 +259,9 @@ public class PerMessageExpiration: NSObject {
             // We also need to send and receive "per-message expiration read" sync
             // messages for outgoing messages, unlike normal read receipts.
             return localNumber
+        } else {
+            owsFailDebug("Unexpected message type.")
+            return nil
         }
     }
 
