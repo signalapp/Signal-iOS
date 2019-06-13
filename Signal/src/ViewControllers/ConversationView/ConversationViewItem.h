@@ -16,6 +16,7 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_MediaMessage,
     OWSMessageCellType_OversizeTextDownloading,
     OWSMessageCellType_StickerMessage,
+    OWSMessageCellType_PerMessageExpiration,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
@@ -131,6 +132,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *stickerAttachment;
 @property (nonatomic, readonly) BOOL isFailedSticker;
+@property (nonatomic, readonly) BOOL perMessageExpirationHasExpired;
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
 

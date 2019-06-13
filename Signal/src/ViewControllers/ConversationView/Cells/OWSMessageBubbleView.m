@@ -292,6 +292,9 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             break;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+            break;
     }
 
     if (bodyMediaView) {
@@ -583,6 +586,9 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             return NO;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+            return NO;
     }
 }
 
@@ -599,6 +605,9 @@ NS_ASSUME_NONNULL_BEGIN
             return YES;
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
+            return NO;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
             return NO;
     }
 }
@@ -1129,6 +1138,10 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             result = CGSizeZero;
             break;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+            result = CGSizeZero;
+            break;
     }
 
     OWSAssertDebug(result.width <= maxMessageWidth);
@@ -1525,6 +1538,9 @@ NS_ASSUME_NONNULL_BEGIN
         }
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
+            break;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
             break;
     }
 }

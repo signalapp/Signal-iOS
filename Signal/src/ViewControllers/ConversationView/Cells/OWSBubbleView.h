@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -38,6 +38,7 @@ typedef NS_OPTIONS(NSUInteger, OWSDirectionalRectCorner) {
                                     sharpCorners:(OWSDirectionalRectCorner)sharpCorners;
 
 @property (nonatomic, nullable) UIColor *bubbleColor;
+@property (nonatomic, nullable) NSArray<UIColor *> *bubbleGradientColors;
 
 @property (nonatomic) OWSDirectionalRectCorner sharpCorners;
 

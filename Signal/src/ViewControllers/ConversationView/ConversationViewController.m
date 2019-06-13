@@ -27,6 +27,7 @@
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSMath.h"
 #import "OWSMessageCell.h"
+#import "OWSMessageHiddenView.h"
 #import "OWSMessageStickerView.h"
 #import "OWSSystemMessageCell.h"
 #import "Signal-Swift.h"
@@ -129,6 +130,7 @@ typedef enum : NSUInteger {
     MenuActionsViewControllerDelegate,
     OWSMessageBubbleViewDelegate,
     OWSMessageStickerViewDelegate,
+    OWSMessageHiddenViewDelegate,
     UICollectionViewDelegate,
     UICollectionViewDataSource,
     UIDocumentMenuDelegate,
@@ -2658,6 +2660,18 @@ typedef enum : NSUInteger {
     [self presentViewController:packView animated:YES completion:nil];
 }
 
+#pragma mark - OWSMessageHiddenViewDelegate
+
+- (void)didTapAttachmentWithPerMessageExpiration:(id<ConversationViewItem>)viewItem
+                                attachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(attachmentStream);
+
+    // TODO:
+}
+
 #pragma mark - ContactEditingDelegate
 
 - (void)didFinishEditingContact
@@ -4545,6 +4559,7 @@ typedef enum : NSUInteger {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         messageCell.messageBubbleView.delegate = self;
         messageCell.messageStickerView.delegate = self;
+        messageCell.messageHiddenView.delegate = self;
         [messageCell.panGestureRecognizer requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
     }
     cell.conversationStyle = self.conversationStyle;

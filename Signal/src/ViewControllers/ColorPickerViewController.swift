@@ -339,6 +339,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var stickerInfo: StickerInfo?
     var stickerAttachment: TSAttachmentStream?
     var isFailedSticker: Bool = false
+    var perMessageExpirationHasExpired: Bool = false
 
     override init() {
         super.init()
