@@ -96,6 +96,10 @@ public class PerMessageExpiration: NSObject {
 
     private class func completePerMessageExpiration(forMessage message: TSMessage,
                                                     transaction: SDSAnyWriteTransaction) {
+        guard message.perMessageExpirationHasExpired else {
+            // Already expired, no need to expire again.
+            return
+        }
         message.updateWithHasPerMessageExpiredAndRemoveRenderableContent(with: transaction)
     }
 
@@ -109,7 +113,9 @@ public class PerMessageExpiration: NSObject {
     public class func appDidBecomeReady() {
         AssertIsOnMainThread()
 
-        checkForExpiration(shouldResumeNormalExpiration: true)
+        DispatchQueue.global().async {
+            self.checkForExpiration(shouldResumeNormalExpiration: true)
+        }
     }
 
     // This does two things:
@@ -126,13 +132,13 @@ public class PerMessageExpiration: NSObject {
         databaseStorage.write { (transaction) in
             let messages = AnyPerMessageExpirationFinder().allMessagesWithPerMessageExpiration(transaction: transaction)
             for message in messages {
-                if message.hasPerMessageExpirationStarted {
+                if shouldMessageAutoExpire(message) {
+                    autoExpire(message: message, transaction: transaction)
+                } else if message.hasPerMessageExpirationStarted {
                     if shouldResumeNormalExpiration {
                         // If expiration is started, resume countdown.
                         schedulePerMessageExpiration(forMessage: message, transaction: transaction)
                     }
-                } else if shouldMessageAutoExpire(message) {
-                    autoExpire(message: message, transaction: transaction)
                 }
             }
         }
