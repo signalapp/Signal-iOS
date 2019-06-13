@@ -34,6 +34,11 @@ public class PerMessageExpiration: NSObject {
                                                 transaction: SDSAnyWriteTransaction) {
         AssertIsOnMainThread()
 
+        guard message.hasPerMessageExpiration else {
+            owsFailDebug("Message does not have per-message expiration.")
+            return
+        }
+
         // Start expiration using "now" as the read time.
         startPerMessageExpiration(forMessage: message,
                                   readTimestamp: nowMs(),
@@ -143,6 +148,11 @@ public class PerMessageExpiration: NSObject {
     @objc
     public class func expireIfNecessary(message: TSMessage,
                                         transaction: SDSAnyWriteTransaction) {
+        
+        guard message.hasPerMessageExpiration else {
+            return
+        }
+
         // If message should auto-expire, do so.
         guard !shouldMessageAutoExpire(message) else {
             completeExpiration(forMessage: message, transaction: transaction)
@@ -308,7 +318,9 @@ public class PerMessageExpiration: NSObject {
     @objc
     public class func applyEarlyReadReceipts(forIncomingMessage message: TSIncomingMessage,
                                              transaction: SDSAnyWriteTransaction) {
-
+        guard message.hasPerMessageExpiration else {
+            return
+        }
         guard let senderId = senderId(forMessage: message) else {
             owsFailDebug("Could not apply early read receipts; no local number.")
             return
