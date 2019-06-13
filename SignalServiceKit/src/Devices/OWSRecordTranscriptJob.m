@@ -235,7 +235,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                              thread:transcript.thread
                                                            senderId:nil
                                                     protocolVersion:transcript.requiredProtocolVersion.intValue];
-    [message anySaveWithTransaction:transaction];
+    [message anyInsertWithTransaction:transaction];
 }
 
 #pragma mark -
