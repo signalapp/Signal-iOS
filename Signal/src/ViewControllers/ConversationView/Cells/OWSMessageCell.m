@@ -30,8 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
 @property (nonatomic) UIView *swipeableContentView;
 @property (nonatomic) UIImageView *swipeToReplyImageView;
-@property (nonatomic) NSArray<NSLayoutConstraint *> *swipeToReplyConstraints;
-@property (nonatomic, readonly) CGFloat swipeToReplyPosition;
+@property (nonatomic) CGFloat swipeableContentViewInitialX;
+@property (nonatomic) CGFloat messageViewInitialX;
+@property (nonatomic) BOOL isReplyActive;
 
 @property (nonatomic) BOOL isPresentingMenuController;
 
@@ -170,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
     messageView.cellMediaCache = self.delegate.cellMediaCache;
     [messageView configureViews];
     [messageView loadContent];
-    [self.swipeableContentView addSubview:messageView];
+    [self.contentView addSubview:messageView];
     [messageView autoPinBottomToSuperviewMarginWithInset:0];
 
     if (self.viewItem.hasCellHeader) {
@@ -205,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
             self.sendFailureBadgeView.image =
                 [self.sendFailureBadge imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
             self.sendFailureBadgeView.tintColor = [UIColor ows_destructiveRedColor];
-            [self.swipeableContentView addSubview:self.sendFailureBadgeView];
+            [self.contentView addSubview:self.sendFailureBadgeView];
 
             CGFloat sendFailureBadgeBottomMargin
                 = round(self.conversationStyle.lastTextLineAxis - self.sendFailureBadgeSize * 0.5f);
@@ -244,12 +245,14 @@ NS_ASSUME_NONNULL_BEGIN
             // would be).
             [messageView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
             [messageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView],
-            [self.swipeToReplyImageView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.avatarView],
         ]];
-    } else {
-        [self.viewConstraints addObject:[self.swipeToReplyImageView autoAlignAxis:ALAxisHorizontal
-                                                                 toSameAxisOfView:messageView]];
     }
+
+    // Swipe-to-reply
+    [self.viewConstraints addObjectsFromArray:@[
+        [self.swipeToReplyImageView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:messageView withOffset:8],
+        [self.swipeToReplyImageView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:messageView],
+    ]];
 }
 
 - (UIImage *)sendFailureBadge
@@ -414,6 +417,7 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
     [self resetSwipePositionAnimated:NO];
+    self.swipeToReplyImageView.alpha = 0;
 }
 
 #pragma mark - Notifications
@@ -557,37 +561,65 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (CGFloat)maxSwipeDistance
+- (CGFloat)swipeToReplyThreshold
 {
-    return ScaleFromIPhone5(74.f);
+    return 55.f;
 }
 
-- (CGFloat)swipeToReplyPosition
+- (BOOL)useSwipeFadeTransition
 {
-    OWSAssertDebug(self.swipeToReplyConstraints.firstObject);
-    return self.swipeToReplyConstraints.firstObject.constant;
+    // Right now, only stickers need the reply button to fade in.
+    // If we add other message types that don't have bubbles,
+    // we should add them here.
+    return self.cellType == OWSMessageCellType_StickerMessage;
+}
+
+- (void)setIsReplyActive:(BOOL)isReplyActive
+{
+    if (isReplyActive == _isReplyActive) {
+        return;
+    }
+
+    _isReplyActive = isReplyActive;
+
+    // Update the reply image styling to reflect active state
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    UIColor *tintColor = [UIColor ows_gray45Color];
+
+    if (isReplyActive) {
+        transform = CGAffineTransformMakeScale(1.16, 1.16);
+        tintColor = Theme.isDarkThemeEnabled ? [UIColor ows_gray25Color] : [UIColor ows_gray75Color];
+
+        // If we're transitioning to the active state, play haptic feedback
+        [[ImpactHapticFeedback new] impactOccurred];
+    }
+
+    self.swipeToReplyImageView.tintColor = tintColor;
+
+    [UIView animateWithDuration:0.2
+                          delay:0
+         usingSpringWithDamping:0.06
+          initialSpringVelocity:0.8
+                        options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.swipeToReplyImageView.transform = transform;
+                     }
+                     completion:nil];
 }
 
 - (void)setupSwipeContainer
 {
     self.swipeableContentView = [UIView new];
     [self.contentView addSubview:self.swipeableContentView];
-    self.swipeToReplyConstraints = [self.swipeableContentView autoPinWidthToSuperview];
-    [self.swipeableContentView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [NSLayoutConstraint autoSetPriority:UILayoutPriorityDefaultLow forConstraints:^{
-        [self.swipeableContentView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    }];
+    [self.swipeableContentView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
 
     self.swipeToReplyImageView = [UIImageView new];
-    self.swipeToReplyImageView.image = [[UIImage imageNamed:@"ic_reply"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    self.swipeToReplyImageView.tintColor = Theme.isDarkThemeEnabled ? [UIColor ows_gray25Color] : [UIColor ows_blackColor];
+    [self.swipeToReplyImageView
+        setTemplateImage:[UIImage imageNamed:@"reply-outline-24"]
+               tintColor:Theme.isDarkThemeEnabled ? [UIColor ows_gray45Color] : [UIColor ows_gray45Color]];
     self.swipeToReplyImageView.contentMode = UIViewContentModeScaleAspectFit;
     self.swipeToReplyImageView.alpha = 0;
     [self.swipeableContentView addSubview:self.swipeToReplyImageView];
-    [self.swipeToReplyImageView autoPinEdge:ALEdgeTrailing
-                                     toEdge:ALEdgeLeading
-                                     ofView:self.swipeableContentView
-                                 withOffset:ScaleFromIPhone5(-25)];
 }
 
 - (void)handleSwipeToReplyGesture:(UIPanGestureRecognizer *)sender
@@ -605,6 +637,8 @@ NS_ASSUME_NONNULL_BEGIN
                 sender.enabled = YES;
                 return;
             }
+            self.messageViewInitialX = self.messageView.frame.origin.x;
+            self.swipeableContentViewInitialX = self.swipeableContentView.frame.origin.x;
             break;
         }
         case UIGestureRecognizerStateEnded:
@@ -620,25 +654,15 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CGFloat translationX = [sender translationInView:self].x;
-    CGFloat currentPosition = self.swipeToReplyPosition;
-
     // Invert positions for RTL logic, since the user is swiping in the opposite direction.
     if (CurrentAppContext().isRTL) {
         translationX = -translationX;
-        currentPosition = -currentPosition;
     }
 
-    BOOL mayReply = translationX >= self.maxSwipeDistance;
+    self.isReplyActive = translationX >= self.swipeToReplyThreshold;
 
-    if (mayReply && !hasFailed) {
-        // When we transition into the reply range, play haptic feedback for the user
-        if (currentPosition < self.maxSwipeDistance) {
-            [[ImpactHapticFeedback new] impactOccurred];
-        }
-
-        if (hasFinished) {
-            [self.delegate conversationCell:self didReplyToItem:self.viewItem];
-        }
+    if (self.isReplyActive && hasFinished) {
+        [self.delegate conversationCell:self didReplyToItem:self.viewItem];
     }
 
     if (hasFailed || hasFinished) {
@@ -654,34 +678,42 @@ NS_ASSUME_NONNULL_BEGIN
     // to produce an elastic feeling when you overscroll.
     if (position < 0) {
         position = position / 4;
-    } else if (position > self.maxSwipeDistance) {
-        CGFloat overflow = position - self.maxSwipeDistance;
-        position = self.maxSwipeDistance + overflow / 4;
+    } else if (position > self.swipeToReplyThreshold) {
+        CGFloat overflow = position - self.swipeToReplyThreshold;
+        position = self.swipeToReplyThreshold + overflow / 4;
     }
 
-    for (NSLayoutConstraint *constraint in self.swipeToReplyConstraints) {
-        // The position passed to this function is assumed to always be
-        // relative to a LTR swipe. If we're actually swiping RTL, we
-        // must invert the position before updating the constraints.
-        constraint.constant = CurrentAppContext().isRTL ? -position : position;
+    CGRect newMessageViewFrame = self.messageView.frame;
+    newMessageViewFrame.origin.x = self.messageViewInitialX + (CurrentAppContext().isRTL ? -position : position);
+
+    // The swipe content moves at 1/8th the speed of the message bubble,
+    // so that it reveals itself from underneath with an elastic feel.
+    CGRect newSwipeContentFrame = self.swipeableContentView.frame;
+    newSwipeContentFrame.origin.x
+        = self.swipeableContentViewInitialX + (CurrentAppContext().isRTL ? -position : position) / 8;
+
+    CGFloat alpha = 1;
+    if ([self useSwipeFadeTransition]) {
+        alpha = CGFloatClamp01(CGFloatInverseLerp(position, 0, self.swipeToReplyThreshold));
     }
 
-    CGFloat alpha = CGFloatClamp01(CGFloatInverseLerp(position, 0, self.maxSwipeDistance));
+    void (^viewUpdates)(void) = ^() {
+        self.swipeToReplyImageView.alpha = alpha;
+        self.messageView.frame = newMessageViewFrame;
+        self.swipeableContentView.frame = newSwipeContentFrame;
+    };
 
     if (animated) {
-        [UIView animateWithDuration:0.1
-                         animations:^{
-                             self.swipeToReplyImageView.alpha = alpha;
-                             [self layoutIfNeeded];
-                         }];
+        [UIView animateWithDuration:0.1 animations:viewUpdates];
     } else {
-        self.swipeToReplyImageView.alpha = alpha;
+        viewUpdates();
     }
 }
 
 - (void)resetSwipePositionAnimated:(BOOL)animated
 {
     [self setSwipePosition:0 animated:animated];
+    self.isReplyActive = NO;
 }
 
 @end

@@ -54,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) OWSContactShareButtonsView *contactShareButtonsView;
 
+@property (nonatomic) BOOL isHandlingPan;
+
 @end
 
 #pragma mark -
@@ -1548,7 +1550,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)handlePanGesture:(UIPanGestureRecognizer *)sender
 {
     CGPoint locationInMessageBubble = [sender locationInView:self];
-    if ([self gestureLocationForLocation:locationInMessageBubble] == OWSMessageGestureLocation_Media) {
+    if (self.isHandlingPan || [self gestureLocationForLocation:locationInMessageBubble] == OWSMessageGestureLocation_Media) {
         if (self.cellType == OWSMessageCellType_Audio && self.viewItem.attachmentStream) {
             return [self handleAudioPanGesture:sender];
         }
@@ -1570,13 +1572,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGPoint locationInAudioView = [sender locationInView:audioMessageView];
 
-    // If we're outside of the message bubble, don't handle the pan
-    if (locationInAudioView.x < 0 || locationInAudioView.y > audioMessageView.frame.size.width) {
+    // If the gesture has already began, and we're not scrubbing, don't handle the pan
+    if (sender.state != UIGestureRecognizerStateBegan && !audioMessageView.isScrubbing) {
         return NO;
     }
 
-    // If the gesture has already began, and we're not scrubbing, don't handle the pan
-    if (sender.state != UIGestureRecognizerStateBegan && !audioMessageView.isScrubbing) {
+    // If we're outside of the scrubbable region, don't handle the pan
+    if (!audioMessageView.isScrubbing && ![audioMessageView isPointInScrubbableRegion:locationInAudioView]) {
         return NO;
     }
 
@@ -1584,6 +1586,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (sender.state) {
         case UIGestureRecognizerStateBegan:
+            self.isHandlingPan = YES;
             audioMessageView.isScrubbing = YES;
             break;
         case UIGestureRecognizerStateEnded:
@@ -1596,6 +1599,7 @@ NS_ASSUME_NONNULL_BEGIN
             // fallthrough
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateCancelled:
+            self.isHandlingPan = NO;
             audioMessageView.isScrubbing = NO;
             break;
         case UIGestureRecognizerStateChanged:
