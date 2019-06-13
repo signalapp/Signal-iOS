@@ -133,7 +133,6 @@ extension NotificationPresenterAdaptee {
 
 @objc(OWSNotificationPresenter)
 public class NotificationPresenter: NSObject, NotificationsProtocol {
-
     private let adaptee: NotificationPresenterAdaptee
 
     @objc
@@ -485,14 +484,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        notifyUser(for: errorMessage as TSMessage, thread: thread, transaction: transaction)
+        notifyUser(for: errorMessage as TSMessage, thread: thread, wantsSound: true, transaction: transaction)
     }
 
-    public func notifyUser(for infoMessage: TSInfoMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        notifyUser(for: infoMessage as TSMessage, thread: thread, transaction: transaction)
+    public func notifyUser(for infoMessage: TSInfoMessage, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) {
+        notifyUser(for: infoMessage as TSMessage, thread: thread, wantsSound: wantsSound, transaction: transaction)
     }
 
-    private func notifyUser(for infoOrErrorMessage: TSMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
+    private func notifyUser(for infoOrErrorMessage: TSMessage, thread: TSThread, wantsSound: Bool, transaction: SDSAnyWriteTransaction) {
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -517,7 +516,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         ]
 
         transaction.addCompletion {
-            let sound = self.requestSound(thread: thread)
+            let sound = wantsSound ? self.requestSound(thread: thread) : nil
             self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
                                 body: notificationBody,
