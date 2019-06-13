@@ -594,12 +594,15 @@ NS_ASSUME_NONNULL_BEGIN
         [[ImpactHapticFeedback new] impactOccurred];
     }
 
+    self.swipeToReplyImageView.tintColor = tintColor;
+
     [UIView animateWithDuration:0.2
                           delay:0
+         usingSpringWithDamping:0.06
+          initialSpringVelocity:0.8
                         options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          self.swipeToReplyImageView.transform = transform;
-                         self.swipeToReplyImageView.tintColor = tintColor;
                      }
                      completion:nil];
 }
