@@ -4,7 +4,7 @@
 
 import XCTest
 
-import SignalServiceKit
+@testable import SignalServiceKit
 import SwiftProtobuf
 
 class SSKProtoEnvelopeTest: SignalBaseTest {
@@ -47,13 +47,13 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
 
     func testParse_invalidData() {
         // `encodedData` was derived thus:
-        //     let builder = SSKProtoEnvelopeBuilder()
-        //     builder.setTimestamp(NSDate.ows_millisecondTimeStamp())
-        //     builder.setSource("+15551231234")
-        //     builder.setSourceDevice(1)
-        //     // MISSING TYPE!
-        //     let encodedData = builder.build().data()!.base64EncodedString()
-        let encodedData = "EgwrMTU1NTEyMzEyMzQojdmOms0sOAE="
+        // var proto = SignalServiceKit.SignalServiceProtos_Envelope()
+        // proto.source = "+15551231234"
+        // proto.sourceDevice = 1
+        // // MISSING TIMESTAMP!
+        //
+        // let encodedData = try! proto.serializedData().base64EncodedString()
+        let encodedData = "EgwrMTU1NTEyMzEyMzQ4AQ=="
         let data = Data(base64Encoded: encodedData)!
 
         XCTAssertThrowsError(try SSKProtoEnvelope.parseData(data)) { (error) -> Void in
