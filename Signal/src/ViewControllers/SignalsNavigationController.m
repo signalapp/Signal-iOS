@@ -40,9 +40,11 @@ static double const STALLED_PROGRESS = 0.9;
     _socketStatusView.progress          = 0.0f;
     _socketStatusView.progressTintColor = [UIColor ows_fadedBlueColor];
 
+    /** Loki: Original code
     if (![_socketStatusView superview]) {
         [self.navigationBar addSubview:_socketStatusView];
     }
+     */
 }
 
 - (void)dealloc

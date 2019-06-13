@@ -220,11 +220,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                     [self decryptFriendRequestMessage:envelope
                          envelopeData:envelopeData
                          successBlock:^(OWSMessageDecryptResult *result) {
-                             OWSLogDebug(@"decrypted friend request message.");
+                             OWSLogDebug(@"Decrypted friend request message.");
                              successBlock(result, transaction);
                          }
                          failureBlock:^(NSError * _Nullable error) {
-                             OWSLogError(@"decrypting friend request message from address: %@ failed with error: %@",
+                             OWSLogError(@"Decrypting friend request message from address: %@ failed with error: %@.",
                                 envelopeAddress(envelope),
                                 error);
                              failureBlock();
@@ -333,7 +333,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     NSData *encryptedData = envelope.content;
     if (!encryptedData) {
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorMessageEnvelopeHasNoContent]);
-        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, @"Envelope has no content");
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, @"Envelope has no content.");
         return failureBlock(error);
     }
     
@@ -342,7 +342,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     
     NSData *_Nullable plaintextData = [[cipher decryptWithMessage:encryptedData] removePadding];
     if (!plaintextData) {
-        NSString *errorString = [NSString stringWithFormat:@"Failed to decrypt friend request message for %@", recipientId];
+        NSString *errorString = [NSString stringWithFormat:@"Failed to decrypt friend request message for: %@.", recipientId];
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorString);
         return failureBlock(error);
     }

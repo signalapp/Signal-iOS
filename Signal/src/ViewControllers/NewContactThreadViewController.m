@@ -451,6 +451,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             return sectionIndex;
         };
+        /** Loki: Original code
         contents.sectionIndexTitlesForTableViewBlock = ^NSArray<NSString *> *_Nonnull
         {
             typeof(self) strongSelf = weakSelf;
@@ -460,6 +461,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             return strongSelf.collation.sectionTitles;
         };
+         */
     }
 
     self.tableViewController.contents = contents;
