@@ -23,7 +23,7 @@ class PerMessageExpirationViewController: OWSViewController {
     private let message: TSMessage
     private let attachmentStream: TSAttachmentStream
 
-    private var progressView: CircularProgressView?
+    private let progressView = CircularProgressView(thickness: 0.15)
 
     private var timer: Timer?
 
@@ -49,18 +49,27 @@ class PerMessageExpirationViewController: OWSViewController {
                                    from fromViewController: UIViewController) {
         AssertIsOnMainThread()
 
-        guard let presentation = loadPresentation(interaction: interaction) else {
-            owsFailDebug("Could not present interaction")
-            return
-        }
+        ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
+                                                     canCancel: false) { (modal) in
+                                                        let presentation: Presentation? = loadPresentation(interaction: interaction)
 
-        let view = PerMessageExpirationViewController(message: presentation.message, attachmentStream: presentation.attachmentStream)
-        fromViewController.present(view, animated: true)
+                                                        DispatchQueue.main.async {
+                                                            modal.dismiss(completion: {
+                                                                guard let presentation = presentation else {
+                                                                    owsFailDebug("Could not present interaction")
+                                                                    // TODO: Show an alert.
+                                                                    return
+                                                                }
+
+                                                                let view = PerMessageExpirationViewController(message: presentation.message,
+                                                                                                              attachmentStream: presentation.attachmentStream)
+                                                                fromViewController.present(view, animated: true)
+                                                            })
+                                                        }
+        }
     }
 
     private class func loadPresentation(interaction: TSInteraction) -> Presentation? {
-        AssertIsOnMainThread()
-
         var presentation: Presentation?
         databaseStorage.write { transaction in
             guard let interactionId = interaction.uniqueId else {
@@ -108,8 +117,8 @@ class PerMessageExpirationViewController: OWSViewController {
         contentView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         contentView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
-        var mediaAspectRatio: CGFloat
-        var mediaView: UIView
+        let mediaAspectRatio: CGFloat
+        let mediaView: UIView
         if let mediaTuple = buildMediaView() {
             mediaAspectRatio = mediaTuple.aspectRatio
             mediaView = mediaTuple.mediaView
@@ -131,16 +140,15 @@ class PerMessageExpirationViewController: OWSViewController {
         mediaView.autoSetDimension(.width, toSize: controlsWidth, relation: .greaterThanOrEqual)
         mediaView.autoSetDimension(.height, toSize: controlsHeight, relation: .greaterThanOrEqual)
 
-        let dismissButton = OWSButton(imageName: "x-24", tintColor: Theme.darkThemePrimaryColor)
-        dismissButton.addTarget(self, action: #selector(dismissButtonPressed(sender:)), for: .touchUpInside)
+        let dismissButton = OWSButton(imageName: "x-24", tintColor: Theme.darkThemePrimaryColor) { [weak self] in
+            self?.dismissButtonPressed()
+        }
         dismissButton.contentEdgeInsets = UIEdgeInsets(top: vMargin, leading: hMargin, bottom: vMargin, trailing: hMargin)
         view.addSubview(dismissButton)
         dismissButton.autoPinEdge(.leading, to: .leading, of: mediaView)
         dismissButton.autoPinEdge(.top, to: .top, of: mediaView)
         dismissButton.setShadow(opacity: 0.33)
 
-        let progressView = CircularProgressView(thickness: 0.15)
-        self.progressView = progressView
         view.addSubview(progressView)
         progressView.autoSetDimension(.width, toSize: controlSize)
         progressView.autoSetDimension(.height, toSize: controlSize)
@@ -243,11 +251,6 @@ class PerMessageExpirationViewController: OWSViewController {
     private func updateProgress() {
         AssertIsOnMainThread()
 
-        guard let progressView = progressView else {
-            owsFailDebug("Missing progressView.")
-            return
-        }
-
         progressView.progress = currentProgress()
     }
 
@@ -256,7 +259,7 @@ class PerMessageExpirationViewController: OWSViewController {
 
         let perMessageExpirationDurationSeconds: UInt32 = message.perMessageExpirationDurationSeconds
         guard perMessageExpirationDurationSeconds > 0 else {
-            owsFailDebug("InvalidperMessageExpirationDurationSeconds.")
+            owsFailDebug("Invalid perMessageExpirationDurationSeconds.")
             return 1
         }
         let perMessageExpireStartedAtMs: UInt64 = message.perMessageExpireStartedAt
@@ -335,7 +338,7 @@ class PerMessageExpirationViewController: OWSViewController {
     }
 
     @objc
-    private func dismissButtonPressed(sender: UIButton) {
+    private func dismissButtonPressed() {
         AssertIsOnMainThread()
 
         dismiss(animated: true)
