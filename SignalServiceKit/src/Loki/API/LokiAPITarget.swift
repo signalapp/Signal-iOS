@@ -31,5 +31,5 @@ internal final class LokiAPITarget : NSObject, NSCoding {
     }
 
     // MARK: Description
-    override var description: String { return "\(address):\(port)" }
+    override var description: String { return "https://\(address):\(port)" }
 }

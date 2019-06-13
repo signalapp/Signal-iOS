@@ -44,6 +44,7 @@ public extension LokiAPI {
         if randomSnodePool.isEmpty {
             let url = URL(string: "http://3.104.19.14:22023/json_rpc")!
             let request = TSRequest(url: url, method: "POST", parameters: [ "method" : "get_service_nodes" ])
+            print("[Loki] Invoking get_service_nodes on http://3.104.19.14:22023.")
             return TSNetworkManager.shared().makePromise(request: request).map { intermediate in
                 let rawResponse = intermediate.responseObject
                 guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw "Failed to update random snode pool from: \(rawResponse)." }
@@ -82,8 +83,11 @@ public extension LokiAPI {
             return []
         }
         return rawSnodes.flatMap { rawSnode in
-            guard let address = rawSnode["ip"] as? String, let port = rawSnode["port"] as? Int else { return nil }
-            return LokiAPITarget(address: address, port: UInt16(port))
+            guard let address = rawSnode["ip"] as? String, let portAsString = rawSnode["port"] as? String, let port = UInt16(portAsString) else {
+                print("[Loki] Failed to parse target from: \(rawSnode).")
+                return nil
+            }
+            return LokiAPITarget(address: "https://\(address)", port: port)
         }
     }
 }
