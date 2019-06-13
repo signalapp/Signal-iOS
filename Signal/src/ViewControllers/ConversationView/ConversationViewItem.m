@@ -99,7 +99,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, nullable) TSAttachmentStream *stickerAttachment;
 @property (nonatomic) BOOL isFailedSticker;
-@property (nonatomic) BOOL perMessageExpirationHasExpired;
+@property (nonatomic) PerMessageExpirationState perMessageExpirationState;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
@@ -172,7 +172,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.stickerInfo = nil;
     self.stickerAttachment = nil;
     self.isFailedSticker = NO;
-    self.perMessageExpirationHasExpired = NO;
+    // This is a safe default value.
+    self.perMessageExpirationState = PerMessageExpirationState_IncomingExpired;
     self.contactShare = nil;
     self.systemMessageText = nil;
     self.authorConversationColorName = nil;
@@ -381,13 +382,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self clearCachedLayoutState];
 }
 
-- (void)setPerMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
+- (void)setPerMessageExpirationState:(PerMessageExpirationState)perMessageExpirationState
 {
-    if (_perMessageExpirationHasExpired == perMessageExpirationHasExpired) {
+    if (_perMessageExpirationState == perMessageExpirationState) {
         return;
     }
 
-    _perMessageExpirationHasExpired = perMessageExpirationHasExpired;
+    _perMessageExpirationState = perMessageExpirationState;
 
     [self clearCachedLayoutState];
 }
@@ -686,9 +687,22 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     TSMessage *message = (TSMessage *)self.interaction;
 
     if (message.hasPerMessageExpiration) {
+        if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
+            switch (outgoingMessage.messageState) {
+                case TSOutgoingMessageStateSending:
+                    self.perMessageExpirationState = PerMessageExpirationState_OutgoingSending;
+                case TSOutgoingMessageStateFailed:
+                    self.perMessageExpirationState = PerMessageExpirationState_OutgoingFailed;
+                default:
+                    self.perMessageExpirationState = PerMessageExpirationState_OutgoingSent;
+            }
+            self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+            return;
+        }
         if (message.perMessageExpirationHasExpired) {
             self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-            self.perMessageExpirationHasExpired = YES;
+            self.perMessageExpirationState = PerMessageExpirationState_IncomingExpired;
             return;
         }
 
@@ -700,14 +714,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
             if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
                 self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-                self.perMessageExpirationHasExpired = NO;
                 self.attachmentPointer = (TSAttachmentPointer *)mediaAttachment;
+                self.perMessageExpirationState = (self.attachmentPointer.state == TSAttachmentPointerStateFailed
+                        ? PerMessageExpirationState_IncomingFailed
+                        : PerMessageExpirationState_IncomingDownloading);
                 return;
             } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
                 TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
                 if (attachmentStream.isValidVisualMedia) {
                     self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-                    self.perMessageExpirationHasExpired = NO;
+                    self.perMessageExpirationState = PerMessageExpirationState_IncomingAvailable;
                     self.attachmentStream = attachmentStream;
                     return;
                 }

@@ -23,6 +23,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 #pragma mark -
 
+typedef NS_ENUM(NSUInteger, PerMessageExpirationState) {
+    PerMessageExpirationState_IncomingExpired = 0,
+    PerMessageExpirationState_IncomingDownloading,
+    PerMessageExpirationState_IncomingFailed,
+    PerMessageExpirationState_IncomingAvailable,
+    PerMessageExpirationState_OutgoingSending,
+    PerMessageExpirationState_OutgoingFailed,
+    PerMessageExpirationState_OutgoingSent,
+};
+
 @class ContactShareViewModel;
 @class ConversationViewCell;
 @class DisplayableText;
@@ -132,7 +142,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *stickerAttachment;
 @property (nonatomic, readonly) BOOL isFailedSticker;
-@property (nonatomic, readonly) BOOL perMessageExpirationHasExpired;
+@property (nonatomic, readonly) PerMessageExpirationState perMessageExpirationState;
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
 
