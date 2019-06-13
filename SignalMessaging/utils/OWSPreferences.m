@@ -8,6 +8,7 @@
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSSyncManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSStorageHeaders.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <SignalServiceKit/YapDatabaseTransaction+OWS.h>
@@ -43,6 +44,7 @@ NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoCont
 NSString *const OWSPreferencesKeyHasGeneratedThumbnails = @"OWSPreferencesKeyHasGeneratedThumbnails";
 NSString *const OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators
     = @"OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators";
+NSString *const OWSPreferencesKeyShouldNotifyOfNewAccountKey = @"OWSPreferencesKeyShouldNotifyOfNewAccountKey";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
@@ -55,6 +57,8 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     if (!self) {
         return self;
     }
+
+    _keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSPreferencesSignalDatabaseCollection];
 
     OWSSingletonAssert();
 
@@ -215,6 +219,18 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     [self setValueForKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators toValue:@(value)];
 
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+}
+
+- (BOOL)shouldNotifyOfNewAccountsWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.keyValueStore getBool:OWSPreferencesKeyShouldNotifyOfNewAccountKey
+                          defaultValue:YES
+                           transaction:transaction];
+}
+
+- (void)setShouldNotifyOfNewAccounts:(BOOL)newValue transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.keyValueStore setBool:newValue key:OWSPreferencesKeyShouldNotifyOfNewAccountKey transaction:transaction];
 }
 
 #pragma mark - Calling

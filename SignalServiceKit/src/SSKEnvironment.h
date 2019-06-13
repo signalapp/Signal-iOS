@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;
 // This property is configured after Environment is created.
-@property (atomic, nullable) id<NotificationsProtocol> notificationsManager;
+@property (atomic) id<NotificationsProtocol> notificationsManager;
 
 @property (atomic, readonly) YapDatabaseConnection *objectReadWriteConnection;
 @property (atomic, readonly) YapDatabaseConnection *migrationDBConnection;

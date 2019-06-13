@@ -313,6 +313,9 @@ typedef void (^SystemMessageActionBlock)(void);
                 }
                 result = [UIImage imageNamed:@"check-circle-outline-28"];
                 break;
+            case TSInfoMessageUserJoinedSignal:
+                result = [UIImage imageNamed:@"emoji-heart-filled-28"];
+                break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
         result = [UIImage imageNamed:@"system_message_call"];

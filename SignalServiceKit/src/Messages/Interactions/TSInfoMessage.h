@@ -22,6 +22,7 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageAddUserToProfileWhitelistOffer,
     TSInfoMessageAddGroupToProfileWhitelistOffer,
     TSInfoMessageUnknownProtocolVersion,
+    TSInfoMessageUserJoinedSignal
 };
 
 + (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId;

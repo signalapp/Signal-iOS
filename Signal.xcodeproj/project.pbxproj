@@ -510,6 +510,7 @@
 		4C618199219DF03A009BD6B5 /* OWSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C618198219DF03A009BD6B5 /* OWSButton.swift */; };
 		4C61819F219E1796009BD6B5 /* typing-animation-dark.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4C61819E219E1795009BD6B5 /* typing-animation-dark.gif */; };
 		4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C63CBFF210A620B003AE45C /* SignalTSan.supp */; };
+		4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */; };
 		4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */ = {isa = PBXBuildFile; fileRef = 4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */; };
 		4C7537892193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C7537882193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift */; };
 		4C858A52212DC5E1001B45D3 /* UIImage+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */; };
@@ -1285,6 +1286,7 @@
 		4C618198219DF03A009BD6B5 /* OWSButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSButton.swift; sourceTree = "<group>"; };
 		4C61819E219E1795009BD6B5 /* typing-animation-dark.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "typing-animation-dark.gif"; sourceTree = "<group>"; };
 		4C63CBFF210A620B003AE45C /* SignalTSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalTSan.supp; sourceTree = "<group>"; };
+		4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAccountDiscovery.swift; sourceTree = "<group>"; };
 		4C6F527B20FFE8400097DEEE /* SignalUBSan.supp */ = {isa = PBXFileReference; lastKnownFileType = text; path = SignalUBSan.supp; sourceTree = "<group>"; };
 		4C7537882193779700DF5E37 /* OWS113MultiAttachmentMediaMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWS113MultiAttachmentMediaMessages.swift; sourceTree = "<group>"; };
 		4C858A51212DC5E1001B45D3 /* UIImage+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+OWS.swift"; sourceTree = "<group>"; };
@@ -1853,6 +1855,7 @@
 				34612A041FD7238500532771 /* OWSSyncManager.h */,
 				34612A051FD7238500532771 /* OWSSyncManager.m */,
 				346129AE1FD1F5D900532771 /* SystemContactsFetcher.swift */,
+				4C6E446822AEDDEE007982E6 /* NewAccountDiscovery.swift */,
 			);
 			path = contacts;
 			sourceTree = "<group>";
@@ -3517,6 +3520,7 @@
 				340872C92239563500CB25B0 /* AttachmentItemCollection.swift in Sources */,
 				34080EFE2225F96D0087E99F /* ImageEditorPaletteView.swift in Sources */,
 				34B6A909218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift in Sources */,
+				4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */,
 				4C3E245D21F2B395000AE092 /* DirectionalPanGestureRecognizer.swift in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				4CBBCA6321714B4500EEB37D /* OWS110SortIdMigration.swift in Sources */,

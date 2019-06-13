@@ -195,7 +195,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             return true
         }
 
-        guard category == .incomingMessage || category == .errorMessage else {
+        guard category == .incomingMessage || category == .infoOrErrorMessage else {
             return true
         }
 

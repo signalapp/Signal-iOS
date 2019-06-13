@@ -23,7 +23,7 @@ import PromiseKit
 enum AppNotificationCategory: CaseIterable {
     case incomingMessage
     case incomingMessageFromNoLongerVerifiedIdentity
-    case errorMessage
+    case infoOrErrorMessage
     case threadlessErrorMessage
     case incomingCall
     case missedCall
@@ -52,8 +52,8 @@ extension AppNotificationCategory {
             return "Signal.AppNotificationCategory.incomingMessage"
         case .incomingMessageFromNoLongerVerifiedIdentity:
             return "Signal.AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity"
-        case .errorMessage:
-            return "Signal.AppNotificationCategory.errorMessage"
+        case .infoOrErrorMessage:
+            return "Signal.AppNotificationCategory.infoOrErrorMessage"
         case .threadlessErrorMessage:
             return "Signal.AppNotificationCategory.threadlessErrorMessage"
         case .incomingCall:
@@ -71,7 +71,7 @@ extension AppNotificationCategory {
             return [.markAsRead, .reply]
         case .incomingMessageFromNoLongerVerifiedIdentity:
             return [.markAsRead, .showThread]
-        case .errorMessage:
+        case .infoOrErrorMessage:
             return [.showThread]
         case .threadlessErrorMessage:
             return []
@@ -475,7 +475,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         DispatchQueue.main.async {
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .errorMessage,
+            self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: nil, // show ungrouped
@@ -485,6 +485,14 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        notifyUser(for: errorMessage as TSMessage, thread: thread, transaction: transaction)
+    }
+
+    public func notifyUser(for infoMessage: TSInfoMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        notifyUser(for: infoMessage as TSMessage, thread: thread, transaction: transaction)
+    }
+
+    private func notifyUser(for infoOrErrorMessage: TSMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -497,7 +505,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
 
-        let notificationBody = errorMessage.previewText(with: transaction)
+        let notificationBody = infoOrErrorMessage.previewText(with: transaction)
 
         guard let threadId = thread.uniqueId else {
             owsFailDebug("threadId was unexpectedly nil")
@@ -510,7 +518,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         transaction.addCompletion {
             let sound = self.requestSound(thread: thread)
-            self.adaptee.notify(category: .errorMessage,
+            self.adaptee.notify(category: .infoOrErrorMessage,
                                 title: notificationTitle,
                                 body: notificationBody,
                                 threadIdentifier: threadIdentifier,
