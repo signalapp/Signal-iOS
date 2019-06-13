@@ -3,7 +3,7 @@
 set -e
 
 BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-REPO_ROOT=$BIN_DIR/../../..
+REPO_ROOT=$BIN_DIR/../..
 cd $REPO_ROOT
 
 SSK_DIR="./SignalServiceKit/src"
