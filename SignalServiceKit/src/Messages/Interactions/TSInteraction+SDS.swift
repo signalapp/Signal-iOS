@@ -436,7 +436,7 @@ extension TSInteraction {
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
             let unregisteredRecipientId: String? = record.unregisteredRecipientId
             let protocolVersion: UInt = try SDSDeserialization.required(record.protocolVersion, name: "protocolVersion")
-            let senderId: String = try SDSDeserialization.required(record.senderId, name: "senderId")
+            let senderId: String? = record.senderId
 
             return OWSUnknownProtocolVersionMessage(uniqueId: uniqueId,
                                                     receivedAtTimestamp: receivedAtTimestamp,
@@ -1479,7 +1479,7 @@ extension TSInteractionSerializer {
             let read = try deserializer.bool(at: readColumn.columnIndex)
             let unregisteredRecipientId = try deserializer.optionalString(at: unregisteredRecipientIdColumn.columnIndex)
             let protocolVersion = UInt(try deserializer.int64(at: protocolVersionColumn.columnIndex))
-            let senderId = try deserializer.string(at: senderIdColumn.columnIndex)
+            let senderId = try deserializer.optionalString(at: senderIdColumn.columnIndex)
 
             return OWSUnknownProtocolVersionMessage(uniqueId: uniqueId,
                                                     receivedAtTimestamp: receivedAtTimestamp,

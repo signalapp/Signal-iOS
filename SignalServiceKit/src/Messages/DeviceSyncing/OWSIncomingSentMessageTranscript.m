@@ -47,6 +47,10 @@ NS_ASSUME_NONNULL_BEGIN
     _isEndSessionMessage = (_dataMessage.flags & SSKProtoDataMessageFlagsEndSession) != 0;
     _isRecipientUpdate = sentProto.isRecipientUpdate;
 
+    if (self.dataMessage.hasRequiredProtocolVersion) {
+        _requiredProtocolVersion = @(self.dataMessage.requiredProtocolVersion);
+    }
+
     if (self.isRecipientUpdate) {
         // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.
         if (self.dataMessage.group) {

@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSUnknownProtocolVersionMessage ()
 
 @property (nonatomic) NSUInteger protocolVersion;
-@property (nonatomic) NSString *senderId;
+// If nil, the invalid message was sent by a linked device.
+@property (nonatomic, nullable) NSString *senderId;
 
 @end
 
@@ -27,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
-                         senderId:(NSString *)senderId
+                         senderId:(nullable NSString *)senderId
                   protocolVersion:(NSUInteger)protocolVersion
 {
     self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageUnknownProtocolVersion];
@@ -70,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                  protocolVersion:(NSUInteger)protocolVersion
-                        senderId:(NSString *)senderId
+                        senderId:(nullable NSString *)senderId
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -114,6 +115,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)messageTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    if (self.senderId.length < 1) {
+        // This was sent from a linked device.
+        if (self.isProtocolVersionUnknown) {
+            return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE",
+                @"Info message recorded in conversation history when local user receives an "
+                @"unknown message from a linked device and needs to "
+                @"upgrade.");
+        } else {
+            return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE",
+                @"Info message recorded in conversation history when local user has "
+                @"received an unknown unknown message from a linked device and "
+                @"has upgraded.");
+        }
+    }
+
     NSString *senderName = nil;
     if (transaction.transitional_yapReadTransaction && self.senderId.length > 0) {
         senderName = [self.contactsManager displayNameForPhoneIdentifier:self.senderId
@@ -149,8 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME",
                 @"Info message recorded in conversation history when local user has received an unknown message and "
-                @"has "
-                @"upgraded.");
+                @"has upgraded.");
         }
     }
 }

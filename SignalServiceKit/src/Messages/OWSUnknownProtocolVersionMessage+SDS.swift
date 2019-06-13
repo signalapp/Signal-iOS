@@ -95,7 +95,7 @@ class OWSUnknownProtocolVersionMessageSerializer: SDSSerializer {
             self.model.wasRead,
             self.model.unregisteredRecipientId ?? DatabaseValue.null,
             self.model.protocolVersion,
-            self.model.senderId
+            self.model.senderId ?? DatabaseValue.null
 
         ]
         if OWSIsDebugBuild() {
