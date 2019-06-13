@@ -611,10 +611,9 @@ NS_ASSUME_NONNULL_BEGIN
     [self.swipeableContentView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
 
     self.swipeToReplyImageView = [UIImageView new];
-    self.swipeToReplyImageView.image =
-        [[UIImage imageNamed:@"reply-outline-24"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    self.swipeToReplyImageView.tintColor
-        = Theme.isDarkThemeEnabled ? [UIColor ows_gray45Color] : [UIColor ows_gray45Color];
+    [self.swipeToReplyImageView
+        setTemplateImage:[UIImage imageNamed:@"reply-outline-24"]
+               tintColor:Theme.isDarkThemeEnabled ? [UIColor ows_gray45Color] : [UIColor ows_gray45Color]];
     self.swipeToReplyImageView.contentMode = UIViewContentModeScaleAspectFit;
     self.swipeToReplyImageView.alpha = 0;
     [self.swipeableContentView addSubview:self.swipeToReplyImageView];

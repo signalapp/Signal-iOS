@@ -329,7 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isPointInScrubbableRegion:(CGPoint)location
 {
     CGPoint locationInSlider = [self convertPoint:location toView:self.audioProgressSlider];
-    return locationInSlider.x >= 0 && locationInSlider.x <= self.audioProgressSlider.frame.size.width;
+    return locationInSlider.x >= 0 && locationInSlider.x <= self.audioProgressSlider.width;
 }
 
 - (NSTimeInterval)scrubToLocation:(CGPoint)location
