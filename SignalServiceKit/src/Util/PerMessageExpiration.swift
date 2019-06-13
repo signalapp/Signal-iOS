@@ -82,7 +82,7 @@ public class PerMessageExpiration: NSObject {
         }
 
         let delaySeconds: TimeInterval = Double(perMessageExpiresAtMS - nowMs) / 1000
-        DispatchQueue.global().asyncAfter(deadline: .now() + delaySeconds) {
+        DispatchQueue.global().asyncAfter(wallDeadline: .now() + delaySeconds) {
             self.completePerMessageExpiration(forMessage: message)
         }
     }
@@ -144,7 +144,7 @@ public class PerMessageExpiration: NSObject {
         }
 
         // We need to "check for auto-expiration" once per day.
-        DispatchQueue.global().asyncAfter(deadline: .now() + kDayInterval) {
+        DispatchQueue.global().asyncAfter(wallDeadline: .now() + kDayInterval) {
             self.checkForExpiration(shouldResumeNormalExpiration: false)
         }
     }
