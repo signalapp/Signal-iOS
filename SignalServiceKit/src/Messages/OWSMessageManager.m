@@ -1392,6 +1392,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSFailDebug(@"Unknown protocol version: %lu", (unsigned long)protocolVersion);
 
+    if (senderId.length < 1) {
+        OWSFailDebug(@"Missing sender.");
+        return;
+    }
+
     // We convert protocolVersion to a numeric value here.
     TSInteraction *message =
         [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]

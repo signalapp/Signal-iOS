@@ -17,6 +17,7 @@
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
+#import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -112,6 +113,12 @@ NS_ASSUME_NONNULL_BEGIN
             @"Transcript timestamps do not match: %llu != %llu", transcript.timestamp, transcript.dataMessageTimestamp);
         OWSFailDebug(@"Transcript timestamps do not match, discarding message.");
         // This transcript is invalid, discard it.
+        return;
+    }
+
+    if (transcript.requiredProtocolVersion != nil
+        && transcript.requiredProtocolVersion.integerValue > SSKProtos.currentProtocolVersion) {
+        [self insertUnknownProtocolVersionErrorForTranscript:transcript transaction:transaction.asAnyWrite];
         return;
     }
 
@@ -212,6 +219,23 @@ NS_ASSUME_NONNULL_BEGIN
     if (outgoingMessage.messageSticker != nil) {
         [StickerManager.shared setHasUsedStickersWithTransaction:transaction.asAnyWrite];
     }
+}
+
++ (void)insertUnknownProtocolVersionErrorForTranscript:(OWSIncomingSentMessageTranscript *)transcript
+                                           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transcript.thread);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(transcript.requiredProtocolVersion != nil);
+
+    OWSFailDebug(@"Unknown protocol version: %@", transcript.requiredProtocolVersion);
+
+    TSInteraction *message =
+        [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:transcript.timestamp
+                                                             thread:transcript.thread
+                                                           senderId:nil
+                                                    protocolVersion:transcript.requiredProtocolVersion.intValue];
+    [message anySaveWithTransaction:transaction];
 }
 
 #pragma mark -

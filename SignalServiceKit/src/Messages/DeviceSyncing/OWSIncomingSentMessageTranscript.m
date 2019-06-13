@@ -49,6 +49,10 @@ NS_ASSUME_NONNULL_BEGIN
     _isRecipientUpdate = sentProto.isRecipientUpdate;
     _perMessageExpirationDurationSeconds = _dataMessage.messageTimer;
 
+    if (self.dataMessage.hasRequiredProtocolVersion) {
+        _requiredProtocolVersion = @(self.dataMessage.requiredProtocolVersion);
+    }
+
     if (self.isRecipientUpdate) {
         // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.
         if (self.dataMessage.group) {

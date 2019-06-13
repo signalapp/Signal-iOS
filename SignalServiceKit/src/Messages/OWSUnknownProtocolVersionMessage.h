@@ -10,11 +10,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSUInteger protocolVersion;
 
-@property (nonatomic, readonly) NSString *senderId;
+// If nil, the invalid message was sent by a linked device.
+@property (nonatomic, nullable, readonly) NSString *senderId;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
-                         senderId:(NSString *)senderId
+                         senderId:(nullable NSString *)senderId
                   protocolVersion:(NSUInteger)protocolVersion NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
@@ -48,7 +49,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                  protocolVersion:(NSUInteger)protocolVersion
-                        senderId:(NSString *)senderId
+                        senderId:(nullable NSString *)senderId
 NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:protocolVersion:senderId:));
 
 // clang-format on
