@@ -39,7 +39,7 @@ public extension LokiAPI {
     }
     
     // MARK: Clearnet Setup
-    private static var randomSnodePool: Set<LokiAPITarget> = []
+    fileprivate static var randomSnodePool: Set<LokiAPITarget> = []
     
     // MARK: Internal API
     private static func getRandomSnode() -> Promise<LokiAPITarget> {
@@ -108,8 +108,9 @@ internal extension Promise {
                     LokiAPI.failureCount[target] = newFailureCount
                     print("[Loki] Couldn't reach snode at: \(target.address):\(target.port); setting failure count to: \(newFailureCount).")
                     if oldFailureCount >= LokiAPI.failureThreshold {
-                        print("[Loki] Failure threshold reached for: \(target); removing it from the swarm cache for: \(hexEncodedPublicKey).")
-                        LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
+                        print("[Loki] Failure threshold reached for: \(target); dropping it.")
+                        LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
+                        LokiAPI.randomSnodePool.remove(target) // Remove it from the random snode pool
                     }
                 case 421:
                     // The snode isn't associated with the given public key anymore
