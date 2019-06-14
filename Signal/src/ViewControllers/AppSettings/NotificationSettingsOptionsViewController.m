@@ -25,7 +25,7 @@
     __weak NotificationSettingsOptionsViewController *weakSelf = self;
 
     OWSTableSection *section = [OWSTableSection new];
-    section.footerTitle = NSLocalizedString(@"NOTIFICATIONS_FOOTER_WARNING", nil);
+    // section.footerTitle = NSLocalizedString(@"NOTIFICATIONS_FOOTER_WARNING", nil);
 
     OWSPreferences *prefs = Environment.shared.preferences;
     NotificationType selectedNotifType = [prefs notificationPreviewType];

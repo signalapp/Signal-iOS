@@ -84,7 +84,7 @@
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self
                                                       action:@selector(dismissWasPressed:)];
-    [self updateRightBarButtonForTheme];
+    // [self updateRightBarButtonForTheme];
     [self observeNotifications];
 
     self.title = NSLocalizedString(@"SETTINGS_NAV_BAR_TITLE", @"Title for settings activity");
@@ -174,12 +174,15 @@
         // ========
     }
 
-    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
-                                                              @"Settings table view cell label")
-                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"invite")
-                                              actionBlock:^{
-                                                  [weakSelf showInviteFlow];
-                                              }]];
+    // Loki: Original code
+    // ========
+//    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
+//                                                              @"Settings table view cell label")
+//                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"invite")
+//                                              actionBlock:^{
+//                                                  [weakSelf showInviteFlow];
+//                                              }]];
+    // ========
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",
                                                               @"Settings table view cell label")
                                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"privacy")
@@ -191,17 +194,20 @@
                                               actionBlock:^{
                                                   [weakSelf showNotifications];
                                               }]];
-    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"LINKED_DEVICES_TITLE",
-                                                              @"Menu item and navbar title for the device manager")
-                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"linked_devices")
-                                              actionBlock:^{
-                                                  [weakSelf showLinkedDevices];
-                                              }]];
-    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"")
-                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"advanced")
-                                              actionBlock:^{
-                                                  [weakSelf showAdvanced];
-                                              }]];
+    // Loki: Original code
+    // ========
+//    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"LINKED_DEVICES_TITLE",
+//                                                              @"Menu item and navbar title for the device manager")
+//                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"linked_devices")
+//                                              actionBlock:^{
+//                                                  [weakSelf showLinkedDevices];
+//                                              }]];
+//    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"")
+//                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"advanced")
+//                                              actionBlock:^{
+//                                                  [weakSelf showAdvanced];
+//                                              }]];
+    // ========
     BOOL isBackupEnabled = [OWSBackup.sharedManager isBackupEnabled];
     BOOL showBackup = (OWSBackup.isFeatureEnabled && isBackupEnabled);
     if (showBackup) {
@@ -212,18 +218,24 @@
                                                       [weakSelf showBackup];
                                                   }]];
     }
-    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ABOUT", @"")
-                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"about")
-                                              actionBlock:^{
-                                                  [weakSelf showAbout];
-                                              }]];
+    // Loki: Original code
+    // ========
+//    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ABOUT", @"")
+//                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"about")
+//                                              actionBlock:^{
+//                                                  [weakSelf showAbout];
+//                                              }]];
+    // ========
 
 #ifdef USE_DEBUG_UI
-    [section addItem:[OWSTableItem disclosureItemWithText:@"Debug UI"
-                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"debugui")
-                                              actionBlock:^{
-                                                  [weakSelf showDebugUI];
-                                              }]];
+    // Loki: Original code
+    // ========
+//    [section addItem:[OWSTableItem disclosureItemWithText:@"Debug UI"
+//                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"debugui")
+//                                              actionBlock:^{
+//                                                  [weakSelf showDebugUI];
+//                                              }]];
+    // ========
 #endif
 
     [section

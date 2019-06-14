@@ -51,6 +51,15 @@ NS_ASSUME_NONNULL_BEGIN
 // TODO: Remove
 @property (class, readonly, nonatomic) UIColor *ows_darkSkyBlueColor;
 
+#pragma mark - Loki
+
++ (UIColor *)lokiGreen;
++ (UIColor *)lokiDarkGreen;
++ (UIColor *)lokiDarkestGray;
++ (UIColor *)lokiDarkerGray;
++ (UIColor *)lokiDarkGray;
++ (UIColor *)lokiLightGray;
+
 @end
 
 NS_ASSUME_NONNULL_END

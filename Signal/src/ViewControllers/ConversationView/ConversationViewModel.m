@@ -1256,10 +1256,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             [interactionIds addObject:interaction.uniqueId];
         }
 
-        OWSContactOffersInteraction *_Nullable offers =
-            [self tryToBuildContactOffersInteractionWithTransaction:transaction
-                                                 loadedInteractions:interactions
-                                                   canLoadMoreItems:canLoadMoreItems];
+        OWSContactOffersInteraction *_Nullable offers = nil;
         if (offers && [interactionIds containsObject:offers.beforeInteractionId]) {
             id<ConversationViewItem> offersItem = tryToAddViewItem(offers, transaction);
             if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {

@@ -2564,7 +2564,7 @@
 "You seem to be missing the last word of your mnemonic. Please check what you entered and try again." = "You seem to be missing the last word of your mnemonic. Please check what you entered and try again.";
 "There appears to be an invalid word in your mnemonic. Please check what you entered and try again." = "There appears to be an invalid word in your mnemonic. Please check what you entered and try again.";
 "Your mnemonic couldn't be verified. Please check what you entered and try again." = "Your mnemonic couldn't be verified. Please check what you entered and try again.";
-"Search by name or public key" = "Search by name or public key";
+"Search by public key" = "Search by public key";
 "Start a Conversation" = "Start a Conversation";
 "Invalid public key" = "Invalid public key";
 "No search results" = "No search results";
@@ -2587,3 +2587,7 @@
 "Your friend request to %@ has expired" = "Your friend request to %@ has expired";
 "Show Seed" = "Show Seed";
 "Your Seed" = "Your Seed";
+"Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed." = "Unlock Loki Messenger's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive message notifications while Screen Lock is enabled. Loki Messenger's notification settings allow you to customize the information that is displayed.";
+"Prevent Loki Messenger previews from appearing in the app switcher." = "Prevent Loki Messenger previews from appearing in the app switcher.";
+"Display Name" = "Display Name";
+"Loki Messenger" = "Loki Messenger";

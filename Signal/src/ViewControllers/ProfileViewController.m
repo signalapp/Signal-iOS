@@ -95,7 +95,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (void)createViews
 {
-    self.view.backgroundColor = Theme.offBackgroundColor;
+    self.view.backgroundColor = Theme.backgroundColor;
 
     UIView *contentView = [UIView containerView];
     contentView.backgroundColor = Theme.backgroundColor;
@@ -116,8 +116,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [rows addObject:nameRow];
 
     UILabel *nameLabel = [UILabel new];
-    nameLabel.text = NSLocalizedString(
-        @"PROFILE_VIEW_PROFILE_NAME_FIELD", @"Label for the profile name field of the profile view.");
+    nameLabel.text = NSLocalizedString(@"Display Name", @"");
     nameLabel.textColor = Theme.primaryColor;
     nameLabel.font = [UIFont ows_mediumFontWithSize:fontSizePoints];
     [nameRow addSubview:nameLabel];
@@ -187,39 +186,42 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     // Information
 
-    UIView *infoRow = [UIView containerView];
-    infoRow.userInteractionEnabled = YES;
-    [infoRow
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(infoRowTapped:)]];
-    infoRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"infoRow");
-    [rows addObject:infoRow];
-
-    UILabel *infoLabel = [UILabel new];
-    infoLabel.textColor = Theme.secondaryColor;
-    infoLabel.font = [UIFont ows_regularFontWithSize:11.f];
-    infoLabel.textAlignment = NSTextAlignmentCenter;
-    NSMutableAttributedString *text = [NSMutableAttributedString new];
-    [text appendAttributedString:[[NSAttributedString alloc]
-                                     initWithString:NSLocalizedString(@"PROFILE_VIEW_PROFILE_DESCRIPTION",
-                                                        @"Description of the user profile.")
-                                         attributes:@{}]];
-    [text appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:@{}]];
-    [text appendAttributedString:[[NSAttributedString alloc]
-                                     initWithString:NSLocalizedString(@"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK",
-                                                        @"Link to more information about the user profile.")
-                                         attributes:@{
-                                             NSUnderlineStyleAttributeName :
-                                                 @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
-                                             NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
-                                         }]];
-    infoLabel.attributedText = text;
-    infoLabel.numberOfLines = 0;
-    infoLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    [infoRow addSubview:infoLabel];
-    [infoLabel autoPinLeadingToSuperviewMargin];
-    [infoLabel autoPinTrailingToSuperviewMargin];
-    [infoLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:10.f];
-    [infoLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f];
+// Loki: Original code
+// ========
+//    UIView *infoRow = [UIView containerView];
+//    infoRow.userInteractionEnabled = YES;
+//    [infoRow
+//        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(infoRowTapped:)]];
+//    infoRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"infoRow");
+//    [rows addObject:infoRow];
+//
+//    UILabel *infoLabel = [UILabel new];
+//    infoLabel.textColor = Theme.secondaryColor;
+//    infoLabel.font = [UIFont ows_regularFontWithSize:11.f];
+//    infoLabel.textAlignment = NSTextAlignmentCenter;
+//    NSMutableAttributedString *text = [NSMutableAttributedString new];
+//    [text appendAttributedString:[[NSAttributedString alloc]
+//                                     initWithString:NSLocalizedString(@"PROFILE_VIEW_PROFILE_DESCRIPTION",
+//                                                        @"Description of the user profile.")
+//                                         attributes:@{}]];
+//    [text appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:@{}]];
+//    [text appendAttributedString:[[NSAttributedString alloc]
+//                                     initWithString:NSLocalizedString(@"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK",
+//                                                        @"Link to more information about the user profile.")
+//                                         attributes:@{
+//                                             NSUnderlineStyleAttributeName :
+//                                                 @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
+//                                             NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
+//                                         }]];
+//    infoLabel.attributedText = text;
+//    infoLabel.numberOfLines = 0;
+//    infoLabel.lineBreakMode = NSLineBreakByWordWrapping;
+//    [infoRow addSubview:infoLabel];
+//    [infoLabel autoPinLeadingToSuperviewMargin];
+//    [infoLabel autoPinTrailingToSuperviewMargin];
+//    [infoLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:10.f];
+//    [infoLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f];
+// ========
 
     // Big Button
 

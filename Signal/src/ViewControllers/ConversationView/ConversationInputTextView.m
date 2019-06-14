@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.font = [UIFont ows_dynamicTypeBodyFont];
         self.textColor = Theme.primaryColor;
         self.textAlignment = NSTextAlignmentNatural;
+        self.tintColor = UIColor.lokiGreen;
 
         self.contentMode = UIViewContentModeRedraw;
         self.dataDetectorTypes = UIDataDetectorTypeNone;

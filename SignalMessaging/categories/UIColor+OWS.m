@@ -14,28 +14,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIColor *)ows_signalBrandBlueColor
 {
-    return [UIColor colorWithRed:0.1135657504f green:0.4787300229f blue:0.89595204589999999f alpha:1.];
+    return UIColor.lokiGreen;
 }
 
 + (UIColor *)ows_materialBlueColor
 {
-    // blue: #2090EA
-    return [UIColor colorWithRed:32.f / 255.f green:144.f / 255.f blue:234.f / 255.f alpha:1.f];
+    return UIColor.lokiGreen;
 }
 
 + (UIColor *)ows_darkIconColor
 {
-    return [UIColor colorWithRGBHex:0x505050];
+    return UIColor.lokiGreen;
 }
 
 + (UIColor *)ows_darkGrayColor
 {
-    return [UIColor colorWithRed:81.f / 255.f green:81.f / 255.f blue:81.f / 255.f alpha:1.f];
+    return UIColor.lokiDarkGray;
 }
 
 + (UIColor *)ows_darkThemeBackgroundColor
 {
-    return [UIColor colorWithRed:35.f / 255.f green:31.f / 255.f blue:32.f / 255.f alpha:1.f];
+    return UIColor.lokiDarkestGray;
 }
 
 + (UIColor *)ows_fadedBlueColor
@@ -201,6 +200,15 @@ NS_ASSUME_NONNULL_BEGIN
     // HEX 0xc2090EA
     return [UIColor colorWithRed:32.f / 255.f green:144.f / 255.f blue:234.f / 255.f alpha:1.f];
 }
+
+#pragma mark - Loki
+
++ (UIColor *)lokiGreen { return [UIColor colorWithRGBHex:0x5BCA5B]; }
++ (UIColor *)lokiDarkGreen { return [UIColor colorWithRGBHex:0x419B41]; }
++ (UIColor *)lokiDarkestGray { return [UIColor colorWithRGBHex:0x0A0A0A]; }
++ (UIColor *)lokiDarkerGray { return [UIColor colorWithRGBHex:0x252525]; }
++ (UIColor *)lokiDarkGray { return [UIColor colorWithRGBHex:0x313131]; }
++ (UIColor *)lokiLightGray { return [UIColor colorWithRGBHex:0x414141]; }
 
 @end
 

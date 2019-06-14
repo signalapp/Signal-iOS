@@ -1518,9 +1518,12 @@ typedef enum : NSUInteger {
             0,
             round(image.size.width + imageEdgeInsets.left + imageEdgeInsets.right),
             round(image.size.height + imageEdgeInsets.top + imageEdgeInsets.bottom));
-        [barButtons
-            addObject:[[UIBarButtonItem alloc] initWithCustomView:callButton
-                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")]];
+        // Loki: Original code
+        // ========
+//        [barButtons
+//            addObject:[[UIBarButtonItem alloc] initWithCustomView:callButton
+//                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")]];
+        // ========
     }
 
     if (self.disappearingMessagesConfiguration.isEnabled) {

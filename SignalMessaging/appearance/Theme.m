@@ -38,7 +38,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (BOOL)isDarkThemeEnabled
 {
-    return [self.sharedInstance isDarkThemeEnabled];
+    return YES;
 }
 
 - (BOOL)isDarkThemeEnabled
@@ -83,18 +83,17 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)backgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? Theme.darkThemeBackgroundColor : UIColor.ows_whiteColor);
+    return UIColor.lokiDarkestGray;
 }
 
 + (UIColor *)offBackgroundColor
 {
-    return (
-        Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor colorWithWhite:0.94f alpha:1.f]);
+    return UIColor.lokiDarkGray;
 }
 
 + (UIColor *)primaryColor
 {
-    return (Theme.isDarkThemeEnabled ? Theme.darkThemePrimaryColor : UIColor.ows_gray90Color);
+    return UIColor.whiteColor;
 }
 
 + (UIColor *)secondaryColor
@@ -114,19 +113,19 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)placeholderColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray45Color : UIColor.ows_gray45Color);
+    return UIColor.lokiLightGray;
 }
 
 + (UIColor *)hairlineColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray25Color);
+    return UIColor.lokiDarkGray;
 }
 
 #pragma mark - Global App Colors
 
 + (UIColor *)navbarBackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? self.darkThemeNavbarBackgroundColor : UIColor.ows_whiteColor);
+    return UIColor.lokiDarkestGray;
 }
 
 + (UIColor *)darkThemeNavbarBackgroundColor
@@ -136,7 +135,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)navbarIconColor
 {
-    return (Theme.isDarkThemeEnabled ? self.darkThemeNavbarIconColor : UIColor.ows_gray60Color);
+    return UIColor.lokiGreen;
 }
 
 + (UIColor *)darkThemeNavbarIconColor;
@@ -156,7 +155,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)cellSelectedColor
 {
-    return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.2 alpha:1] : [UIColor colorWithWhite:0.92 alpha:1]);
+    return UIColor.lokiDarkGray;
 }
 
 + (UIColor *)cellSeparatorColor

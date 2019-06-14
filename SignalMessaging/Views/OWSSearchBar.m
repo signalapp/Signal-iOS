@@ -65,6 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
     UIColor *foregroundColor = Theme.placeholderColor;
     searchBar.barTintColor = Theme.backgroundColor;
     searchBar.barStyle = Theme.barStyle;
+    searchBar.tintColor = UIColor.lokiGreen;
 
     // Hide searchBar border.
     // Alternatively we could hide the border by using `UISearchBarStyleMinimal`, but that causes an issue when toggling

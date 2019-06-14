@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     UISearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
     searchBar.delegate = self;
-    searchBar.placeholder = NSLocalizedString(@"Search by name or public key", @"");
+    searchBar.placeholder = NSLocalizedString(@"Search by public key", @"");
     searchBar.autocapitalizationType = UITextAutocapitalizationTypeNone;
     [searchBar sizeToFit];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
@@ -479,11 +479,16 @@ NS_ASSUME_NONNULL_BEGIN
         // ========
             if (self.contactsViewHelper.hasUpdatedContactsAtLeastOnce) {
 
+                /**
+                 * Loki: Original code
+                 * ========
                 [contactsSection
                     addItem:[OWSTableItem softCenterLabelItemWithText:
                                               NSLocalizedString(@"SETTINGS_BLOCK_LIST_NO_CONTACTS",
                                                   @"A label that indicates the user has no Signal contacts.")
                                                       customRowHeight:UITableViewAutomaticDimension]];
+                 * ========
+                 */
             } else {
                 UITableViewCell *loadingCell = [OWSTableItem newCell];
                 OWSAssertDebug(loadingCell.contentView);
@@ -736,12 +741,9 @@ NS_ASSUME_NONNULL_BEGIN
         [sections addObject:inviteeSection];
     }
 
-    // Loki:
-    // ========
-    NSString *publicKey = self.searchBar.text;
-    BOOL isValidPublicKey = [ECKeyPair isValidHexEncodedPublicKeyWithCandidate:publicKey];
-    // ========
-
+    /**
+     * Loki: Original code
+     * ========
     if (isValidPublicKey && !hasSearchResults) {
         // No Search Results
         OWSTableSection *noResultsSection = [OWSTableSection new];
@@ -753,6 +755,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         [sections addObject:noResultsSection];
     }
+     * ========
+     */
 
     return [sections copy];
 }
@@ -812,17 +816,17 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    _isNoContactsModeActive = isNoContactsModeActive;
+    _isNoContactsModeActive = NO;
 
-    if (isNoContactsModeActive) {
-        self.tableViewController.tableView.hidden = YES;
-        self.searchBar.hidden = YES;
-        self.noSignalContactsView.hidden = NO;
-    } else {
+//    if (isNoContactsModeActive) {
+//        self.tableViewController.tableView.hidden = YES;
+//        self.searchBar.hidden = YES;
+//        self.noSignalContactsView.hidden = NO;
+//    } else {
         self.tableViewController.tableView.hidden = NO;
         self.searchBar.hidden = NO;
         self.noSignalContactsView.hidden = YES;
-    }
+//    }
 
     [self updateTableContents];
 }

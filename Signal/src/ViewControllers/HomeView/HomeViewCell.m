@@ -536,7 +536,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (hasCheckmark) {
                 NSMutableAttributedString *checkmark = [[NSMutableAttributedString alloc] initWithString:@"✓"];
                 [checkmark beginEditing];
-                [checkmark addAttribute:NSForegroundColorAttributeName value:UIColor.ows_greenColor range:NSMakeRange(0, 1)];
+                [checkmark addAttribute:NSForegroundColorAttributeName value:UIColor.lokiGreen range:NSMakeRange(0, 1)];
                 [checkmark endEditing];
                 NSMutableAttributedString *mutableName = [name mutableCopy];
                 [mutableName appendAttributedString:[[NSAttributedString alloc] initWithString:@" "]];

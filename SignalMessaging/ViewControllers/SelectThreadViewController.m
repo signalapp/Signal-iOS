@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
     UISearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
     searchBar.delegate = self;
-    searchBar.placeholder = NSLocalizedString(@"Search by name or public key", @"");
+    searchBar.placeholder = NSLocalizedString(@"Search by public key", @"");
     [searchBar sizeToFit];
 
     UIView *header = [self.selectThreadViewDelegate createHeaderWithSearchBar:searchBar];

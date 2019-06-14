@@ -142,17 +142,17 @@ public class ConversationStyle: NSObject {
 
     @objc
     private static var defaultBubbleColorIncoming: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_messageBubbleLightGray
+        return UIColor.lokiDarkGray()
     }
 
     @objc
-    public let bubbleColorOutgoingFailed = UIColor.ows_darkSkyBlue
+    public let bubbleColorOutgoingFailed = UIColor.lokiGreen()
 
     @objc
-    public let bubbleColorOutgoingSending = UIColor.ows_darkSkyBlue
+    public let bubbleColorOutgoingSending = UIColor.lokiGreen()
 
     @objc
-    public let bubbleColorOutgoingSent = UIColor.ows_darkSkyBlue
+    public let bubbleColorOutgoingSent = UIColor.lokiGreen()
 
     @objc
     public let dateBreakTextColor = UIColor.ows_gray60

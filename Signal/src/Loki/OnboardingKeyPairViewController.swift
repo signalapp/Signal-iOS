@@ -36,12 +36,14 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     private lazy var copyButton: OWSFlatButton = {
         let result = createLinkButton(title: NSLocalizedString("Copy", comment: ""), selector: #selector(copyMnemonic))
         result.accessibilityIdentifier = "onboarding.keyPairStep.copyButton"
+        result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
     
     private lazy var restoreButton: OWSFlatButton = {
         let result = createLinkButton(title: NSLocalizedString("Restore Using Mnemonic", comment: ""), selector: #selector(switchMode))
         result.accessibilityIdentifier = "onboarding.keyPairStep.restoreButton"
+        result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
     
@@ -64,15 +66,22 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     
     private lazy var mnemonicTextField: UITextField = {
         let result = UITextField(frame: CGRect.zero)
-        result.accessibilityIdentifier = "onboarding.keyPairStep.mnemonicTextField"
+        result.textColor = Theme.primaryColor
+        result.font = UIFont.ows_dynamicTypeBodyClamped
         result.textAlignment = .center
-        result.placeholder = NSLocalizedString("Enter Your Mnemonic", comment: "")
+        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter Your Mnemonic", comment: ""))
+        placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
+        result.attributedPlaceholder = placeholder
+        result.tintColor = UIColor.lokiGreen()
+        result.accessibilityIdentifier = "onboarding.keyPairStep.mnemonicTextField"
+        result.keyboardAppearance = .dark
         return result
     }()
     
     private lazy var registerButton: OWSFlatButton = {
         let result = createLinkButton(title: NSLocalizedString("Register a New Account", comment: ""), selector: #selector(switchMode))
         result.accessibilityIdentifier = "onboarding.keyPairStep.registerButton"
+        result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
     
@@ -147,6 +156,7 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
         UIView.transition(with: registerOrRestoreButton, duration: 0.25, options: .transitionCrossDissolve, animations: {
             self.registerOrRestoreButton.setTitle(registerOrRestoreButtonTitle)
         }, completion: nil)
+        if mode == .register { mnemonicTextField.resignFirstResponder() }
     }
     
     private func updateKeyPair() {

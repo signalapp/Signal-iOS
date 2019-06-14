@@ -6,8 +6,12 @@ final class OnboardingAccountDetailsViewController : OnboardingBaseViewControlle
         result.textColor = Theme.primaryColor
         result.font = UIFont.ows_dynamicTypeBodyClamped
         result.textAlignment = .center
-        result.placeholder = NSLocalizedString("Display Name (Optional)", comment: "")
+        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Display Name (Optional)", comment: ""))
+        placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
+        result.attributedPlaceholder = placeholder
+        result.tintColor = UIColor.lokiGreen()
         result.accessibilityIdentifier = "onboarding.accountDetailsStep.userNameTextField"
+        result.keyboardAppearance = .dark
         return result
     }()
 

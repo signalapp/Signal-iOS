@@ -324,6 +324,9 @@ const CGFloat kIconViewLength = 24;
     mainSection.customHeaderView = [self mainSectionHeader];
     mainSection.customHeaderHeight = @(100.f);
 
+    /**
+     * Loki: Original code
+     * ========
     if ([self.thread isKindOfClass:[TSContactThread class]] && self.contactsManager.supportsContactEditing
         && !self.hasExistingContact) {
         [mainSection
@@ -455,6 +458,8 @@ const CGFloat kIconViewLength = 24;
                             [weakSelf showShareProfileAlert];
                         }]];
     }
+     * =======
+     */
 
     [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
@@ -770,6 +775,9 @@ const CGFloat kIconViewLength = 24;
     }
     // Block Conversation section.
 
+    /**
+     * Loki: Original code
+     * ========
     if (!isNoteToSelf) {
         OWSTableSection *section = [OWSTableSection new];
         if (self.thread.isGroupThread) {
@@ -816,6 +824,8 @@ const CGFloat kIconViewLength = 24;
                                          actionBlock:nil]];
         [contents addSection:section];
     }
+     * ========
+     */
 
     self.contents = contents;
 }

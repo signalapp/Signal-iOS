@@ -120,7 +120,7 @@ const CGFloat kMaxTextViewHeight = 98;
         self.backgroundColor = Theme.toolbarBackgroundColor;
     } else {
         CGFloat alpha = OWSNavigationBar.backgroundBlurMutingFactor;
-        self.backgroundColor = [Theme.toolbarBackgroundColor colorWithAlphaComponent:alpha];
+        self.backgroundColor = UIColor.lokiDarkerGray;
 
         UIVisualEffectView *blurEffectView = [[UIVisualEffectView alloc] initWithEffect:Theme.barBlurEffect];
         blurEffectView.layer.zPosition = -1;
@@ -157,7 +157,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.sendButton setTitle:MessageStrings.sendButton forState:UIControlStateNormal];
-    [self.sendButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
+    [self.sendButton setTitleColor:UIColor.lokiGreen forState:UIControlStateNormal];
     self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:17.f];
     self.sendButton.contentEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 4);
@@ -220,7 +220,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     // H Stack
     _hStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ self.attachmentButton, vStackWrapper, self.voiceMemoButton, self.sendButton ]];
+        initWithArrangedSubviews:@[ /*self.attachmentButton,*/ vStackWrapper, /*self.voiceMemoButton,*/ self.sendButton ]];
     self.hStack.axis = UILayoutConstraintAxisHorizontal;
     self.hStack.layoutMarginsRelativeArrangement = YES;
     self.hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);

@@ -83,7 +83,7 @@ public class OWSNavigationBar: UINavigationBar {
         } else {
             // Make navbar more translucent than default. Navbars remove alpha from any assigned backgroundColor, so
             // to achieve transparency, we have to assign a transparent image.
-            let color = Theme.navbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
+            let color = Theme.navbarBackgroundColor
             let backgroundImage = UIImage(color: color)
             self.setBackgroundImage(backgroundImage, for: .default)
 
