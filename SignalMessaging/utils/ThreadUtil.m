@@ -148,15 +148,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     if ([fullMessageText lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
         truncatedText = fullMessageText;
     } else {
-        if (SSKFeatureFlags.sendingMediaWithOversizeText) {
-            truncatedText = [fullMessageText ows_truncatedToByteCount:kOversizeTextMessageSizeThreshold];
-        } else {
-            // Legacy iOS clients already support receiving long text, but they assume _any_ body
-            // text is the _full_ body text. So until we consider "rollout" complete, we maintain
-            // the legacy sending behavior, which does not include the truncated text in the
-            // websocket proto.
-            truncatedText = nil;
-        }
+        truncatedText = [fullMessageText ows_truncatedToByteCount:kOversizeTextMessageSizeThreshold];
+
         DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithOversizeText:fullMessageText];
         if (dataSource) {
             SignalAttachment *oversizeTextAttachment =
