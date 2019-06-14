@@ -179,6 +179,14 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     BOOL isVoiceMessage = (attachments.count == 1 && attachments.lastObject.isVoiceMessage);
 
+    uint32_t perMessageExpirationDurationSeconds = 0;
+    for (SignalAttachment *attachment in mediaAttachments) {
+        if (attachment.hasPerMessageExpiration) {
+            perMessageExpirationDurationSeconds = PerMessageExpiration.kExpirationDurationSeconds;
+            break;
+        }
+    }
+
     TSOutgoingMessage *message =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                            inThread:thread
@@ -192,7 +200,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
-                                perMessageExpirationDurationSeconds:0];
+                                perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds];
 
     [BenchManager
         benchAsyncWithTitle:@"Saving outgoing message"

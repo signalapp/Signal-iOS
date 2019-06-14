@@ -231,17 +231,14 @@ class SendMediaNavigationController: OWSNavigationController {
     }()
 
     private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem],
-                                            canAddMore: Bool) {
+                                            options: AttachmentApprovalViewControllerOptions) {
         guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
             owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
             return
         }
 
-        var options: AttachmentApprovalViewControllerOptions = []
-        if canAddMore {
-            options = [.canAddMore]
-        }
-        let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
+        let approvalViewController = AttachmentApprovalViewController(options: options,
+                                                                      attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
@@ -359,7 +356,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             updateButtons(topViewController: photoCaptureViewController)
         } else {
             pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem],
-                                       canAddMore: false)
+                                       options: [.cameraMode])
         }
     }
 
@@ -402,7 +399,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
                 Logger.debug("built all attachments")
                 modal.dismiss {
                     self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems,
-                                                    canAddMore: true)
+                                                    options: [.canAddMore])
                 }
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")

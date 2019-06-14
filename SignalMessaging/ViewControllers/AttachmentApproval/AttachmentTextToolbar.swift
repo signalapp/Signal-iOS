@@ -19,10 +19,26 @@ protocol AttachmentTextToolbarDelegate: class {
 
 class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
+    // MARK: - Dependencies
+
+    private var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
+
+    // MARK: - Properties
+
+    private let options: AttachmentApprovalViewControllerOptions
+
     weak var attachmentTextToolbarDelegate: AttachmentTextToolbarDelegate?
 
     var messageText: String? {
-        get { return textView.text }
+        get {
+            // Ignore caption if "per-message expiration" is enabled.
+            guard !preferences.isPerMessageExpirationEnabled() else {
+                return nil
+            }
+            return textView.text
+        }
 
         set {
             textView.text = newValue
@@ -43,8 +59,9 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     // MARK: - Initializers
 
-    init() {
-        self.sendButton = UIButton(type: .system)
+    init(options: AttachmentApprovalViewControllerOptions) {
+        self.options = options
+
         self.textViewHeight = kMinTextViewHeight
 
         super.init(frame: CGRect.zero)
@@ -57,36 +74,66 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         textView.delegate = self
 
+        let sendButton = UIButton(type: .system)
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
         sendButton.setTitle(sendTitle, for: .normal)
         sendButton.addTarget(self, action: #selector(didTapSend), for: .touchUpInside)
-
         sendButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: 16)
         sendButton.titleLabel?.textAlignment = .center
         sendButton.tintColor = Theme.galleryHighlightColor
-
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
 
-        let contentView = UIView()
-        contentView.addSubview(sendButton)
-        contentView.addSubview(textContainer)
-        contentView.addSubview(lengthLimitLabel)
-        addSubview(contentView)
-        contentView.autoPinEdgesToSuperviewEdges()
+        perMessageExpirationButton.block = { [weak self] in
+            self?.didTapPerMessageExpirationButton()
+        }
+        // Increase hit area of button
+        perMessageExpirationButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
+
+        // TODO: Revisit this copy.
+        perMessageExpirationLabel.text = NSLocalizedString("PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR", comment: "Label that indicates that 'per-message expiration' is active.")
+        perMessageExpirationLabel.font = UIFont.ows_dynamicTypeSubheadline
+        perMessageExpirationLabel.textColor = Theme.darkThemePrimaryColor
+        perMessageExpirationLabel.lineBreakMode = .byTruncatingTail
+        perMessageExpirationLabel.textAlignment = .center
 
         // Layout
+
         let kToolbarMargin: CGFloat = 8
 
         // We have to wrap the toolbar items in a content view because iOS (at least on iOS10.3) assigns the inputAccessoryView.layoutMargins
         // when resigning first responder (verified by auditing with `layoutMarginsDidChange`).
         // The effect of this is that if we were to assign these margins to self.layoutMargins, they'd be blown away if the
         // user dismisses the keyboard, giving the input accessory view a wonky layout.
-        contentView.layoutMargins = UIEdgeInsets(top: kToolbarMargin, left: kToolbarMargin, bottom: kToolbarMargin, right: kToolbarMargin)
+        self.layoutMargins = UIEdgeInsets(top: kToolbarMargin, left: kToolbarMargin, bottom: kToolbarMargin, right: kToolbarMargin)
+
+        self.addSubview(lengthLimitLabel)
+
+        let sendWrapper = UIView()
+        sendWrapper.addSubview(sendButton)
+        let perMessageExpirationWrapper = UIView()
+        perMessageExpirationWrapper.addSubview(perMessageExpirationButton)
+
+        let hStackView = UIStackView()
+        hStackView.axis = .horizontal
+        hStackView.alignment = .fill
+        hStackView.spacing = kToolbarMargin
+        self.addSubview(hStackView)
+        hStackView.autoPinEdgesToSuperviewMargins()
+
+        var views = [ perMessageExpirationWrapper, perMessageExpirationLabel, textContainer, sendWrapper ]
+        // UIStackView's horizontal layout is leading-to-trailing.
+        // We want left-to-right ordering, so reverse if RTL.
+        if CurrentAppContext().isRTL {
+            views.reverse()
+        }
+        for view in views {
+            hStackView.addArrangedSubview(view)
+        }
 
         self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
 
-        // We pin all three edges explicitly rather than doing something like:
+        // We pin edges explicitly rather than doing something like:
         //  textView.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
         // because that method uses `leading` / `trailing` rather than `left` vs. `right`.
         // So it doesn't work as expected with RTL layouts when we explicitly want something
@@ -94,20 +141,25 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         // I believe this is a bug in PureLayout. Filed here: https://github.com/PureLayout/PureLayout/issues/209
         textContainer.autoPinEdge(toSuperviewMargin: .top)
         textContainer.autoPinEdge(toSuperviewMargin: .bottom)
-        textContainer.autoPinEdge(toSuperviewMargin: .left)
 
-        sendButton.autoPinEdge(.left, to: .right, of: textContainer, withOffset: kToolbarMargin)
-        sendButton.autoPinEdge(.bottom, to: .bottom, of: textContainer, withOffset: -3)
+        let layoutButtonWithinWrapper = { (button: UIView) in
+            button.autoPinWidthToSuperview()
+            button.autoPinEdge(.bottom, to: .bottom, of: self.textContainer, withOffset: -3)
+            button.setContentHuggingHigh()
+            button.setCompressionResistanceHigh()
+        }
+        layoutButtonWithinWrapper(sendButton)
+        layoutButtonWithinWrapper(perMessageExpirationButton)
 
-        sendButton.autoPinEdge(toSuperviewMargin: .right)
-        sendButton.setContentHuggingHigh()
-        sendButton.setCompressionResistanceHigh()
+        perMessageExpirationWrapper.isHidden = !options.contains(.cameraMode)
 
         lengthLimitLabel.autoPinEdge(toSuperviewMargin: .left)
         lengthLimitLabel.autoPinEdge(toSuperviewMargin: .right)
         lengthLimitLabel.autoPinEdge(.bottom, to: .top, of: textContainer, withOffset: -6)
         lengthLimitLabel.setContentHuggingHigh()
         lengthLimitLabel.setCompressionResistanceHigh()
+
+        updateContent()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -126,7 +178,16 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     // MARK: - Subviews
 
-    private let sendButton: UIButton
+    private func updateContent() {
+        AssertIsOnMainThread()
+
+        let isPerMessageExpirationEnabled = preferences.isPerMessageExpirationEnabled()
+        let imageName = isPerMessageExpirationEnabled ? "timer-24" : "timer-disabled-24"
+        perMessageExpirationButton.setTemplateImageName(imageName, tintColor: Theme.darkThemePrimaryColor)
+
+        perMessageExpirationLabel.isHidden = !isPerMessageExpirationEnabled
+        textContainer.isHidden = isPerMessageExpirationEnabled
+    }
 
     private lazy var lengthLimitLabel: UILabel = {
         let lengthLimitLabel = UILabel()
@@ -195,11 +256,29 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         return textView
     }
 
+    private let perMessageExpirationButton = OWSButton()
+
+    private let perMessageExpirationLabel = UILabel()
+
     // MARK: - Actions
 
-    @objc func didTapSend() {
+    @objc
+    func didTapSend() {
+        assert(attachmentTextToolbarDelegate != nil)
+
         textView.acceptAutocorrectSuggestion()
         attachmentTextToolbarDelegate?.attachmentTextToolbarDidTapSend(self)
+    }
+
+    @objc
+    func didTapPerMessageExpirationButton() {
+        AssertIsOnMainThread()
+
+        // Toggle value.
+        let isPerMessageExpirationEnabled = !preferences.isPerMessageExpirationEnabled()
+        preferences.setIsPerMessageExpirationEnabled(isPerMessageExpirationEnabled)
+
+        updateContent()
     }
 
     // MARK: - UITextViewDelegate

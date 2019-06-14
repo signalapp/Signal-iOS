@@ -47,12 +47,19 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
 
     public static let canAddMore = AttachmentApprovalViewControllerOptions(rawValue: 1 << 0)
     public static let hasCancel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 1)
+    public static let cameraMode = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
 }
 
 // MARK: -
 
 @objc
 public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
+
+    // MARK: - Dependencies
+
+    private var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
 
     // MARK: - Properties
 
@@ -79,6 +86,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                          attachmentApprovalItems: [AttachmentApprovalItem]) {
         assert(attachmentApprovalItems.count > 0)
         self.options = options
+        self.bottomToolView = AttachmentApprovalInputAccessoryView(options: options)
 
         self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(attachmentApprovalItems: attachmentApprovalItems, isAddMoreVisible: options.contains(.canAddMore))
 
@@ -88,6 +96,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                    options: options)
         self.dataSource = self
         self.delegate = self
+        bottomToolView.delegate = self
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -102,7 +111,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     @objc
     public class func wrappedInNavController(attachments: [SignalAttachment], approvalDelegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
         let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0) }
-        let vc = AttachmentApprovalViewController(options: [.hasCancel], attachmentApprovalItems: attachmentApprovalItems)
+        let vc = AttachmentApprovalViewController(options: [.hasCancel],
+                                                  attachmentApprovalItems: attachmentApprovalItems)
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
         navController.ows_prefersStatusBarHidden = true
@@ -134,12 +144,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return bottomToolView.attachmentTextToolbar
     }
 
-    lazy var bottomToolView: AttachmentApprovalInputAccessoryView = {
-        let bottomToolView = AttachmentApprovalInputAccessoryView()
-        bottomToolView.delegate = self
-
-        return bottomToolView
-    }()
+    let bottomToolView: AttachmentApprovalInputAccessoryView
 
     lazy var touchInterceptorView = UIView()
 
@@ -729,6 +734,13 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         currentPageViewController.shouldAllowAttachmentViewResizing = false
         attachmentTextToolbar.isUserInteractionEnabled = false
         attachmentTextToolbar.isHidden = true
+
+        if options.contains(.cameraMode),
+            preferences.isPerMessageExpirationEnabled() {
+            for attachment in attachments {
+                attachment.hasPerMessageExpiration = true
+            }
+        }
 
         approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: attachmentTextToolbar.messageText)
     }

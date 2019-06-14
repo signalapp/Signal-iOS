@@ -73,6 +73,9 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
                          transaction:(SDSAnyWriteTransaction *)transactio
     NS_SWIFT_NAME(shouldNotifyOfNewAccounts(_:transaction:));
 
+- (BOOL)isPerMessageExpirationEnabled;
+- (void)setIsPerMessageExpirationEnabled:(BOOL)value;
+
 #pragma mark Callkit
 
 - (BOOL)isSystemCallLogEnabled;

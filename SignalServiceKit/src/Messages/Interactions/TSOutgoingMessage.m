@@ -1015,10 +1015,6 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         [builder setMessageTimer:self.perMessageExpirationDurationSeconds];
     }
 
-    if (self.perMessageExpirationDurationSeconds > 0) {
-        [builder setMessageTimer:self.perMessageExpirationDurationSeconds];
-    }
-
     if ([self.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
         [builder setBody:self.body];
     } else {
