@@ -77,9 +77,7 @@ public class PerMessageExpiration: NSObject {
 
     private class func schedulePerMessageExpiration(forMessage message: TSMessage,
                                                     transaction: SDSAnyWriteTransaction) {
-        let perMessageExpiresAtMS = message.perMessageExpiresAt
-
-        guard perMessageExpiresAtMS > nowMs() else {
+        guard !hasExpirationCountdownCompleted(message: message) else {
             Logger.verbose("Expiring immediately.")
             // Message has expired; remove it immediately.
             completeExpiration(forMessage: message,
@@ -88,7 +86,7 @@ public class PerMessageExpiration: NSObject {
         }
 
         Logger.verbose("Scheduling expiration.")
-        let delaySeconds: TimeInterval = Double(perMessageExpiresAtMS - nowMs()) / 1000
+        let delaySeconds: TimeInterval = Double(message.perMessageExpiresAt - nowMs()) / 1000
         DispatchQueue.global().asyncAfter(wallDeadline: .now() + delaySeconds) {
             databaseStorage.write { (transaction) in
                 self.completeExpiration(forMessage: message,
@@ -148,7 +146,7 @@ public class PerMessageExpiration: NSObject {
     @objc
     public class func expireIfNecessary(message: TSMessage,
                                         transaction: SDSAnyWriteTransaction) {
-        
+
         guard message.hasPerMessageExpiration else {
             return
         }
@@ -164,6 +162,15 @@ public class PerMessageExpiration: NSObject {
             completeExpiration(forMessage: message, transaction: transaction)
             return
         }
+
+        guard !hasExpirationCountdownCompleted(message: message) else {
+            completeExpiration(forMessage: message, transaction: transaction)
+            return
+        }
+    }
+
+    private class func hasExpirationCountdownCompleted(message: TSMessage) -> Bool {
+        return message.perMessageExpiresAt <= nowMs()
     }
 
     private class func isOutgoingSent(message: TSMessage) -> Bool {
@@ -186,28 +193,18 @@ public class PerMessageExpiration: NSObject {
     private class func completeExpiration(forMessage message: TSMessage,
                                           transaction: SDSAnyWriteTransaction) {
 
-        guard let uniqueId = message.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            return
-        }
-        guard let latestCopy = TSMessage.anyFetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
-            // Message has been deleted.
-            Logger.warn("Couldn't expire message; not in database.")
-            return
-        }
-
         // Start countdown if necessary...
-        if !latestCopy.hasPerMessageExpirationStarted {
+        if !message.hasPerMessageExpirationStarted {
             message.updateWithPerMessageExpireStarted(at: nowMs(),
                                                       transaction: transaction)
         }
 
         // ...and immediately complete countdown.
-        guard !latestCopy.perMessageExpirationHasExpired else {
+        guard !message.perMessageExpirationHasExpired else {
             // Already expired, no need to expire again.
             return
         }
-        latestCopy.updateWithHasPerMessageExpiredAndRemoveRenderableContent(with: transaction)
+        message.updateWithHasPerMessageExpiredAndRemoveRenderableContent(with: transaction)
     }
 
     // MARK: - Sync Messages
