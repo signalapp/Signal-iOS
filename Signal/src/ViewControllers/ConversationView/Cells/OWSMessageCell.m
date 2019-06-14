@@ -631,14 +631,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     switch (sender.state) {
         case UIGestureRecognizerStateBegan: {
+            self.messageViewInitialX = self.messageView.frame.origin.x;
+            self.swipeableContentViewInitialX = self.swipeableContentView.frame.origin.x;
+
             // If this message doesn't allow reply, end the gesture
             if (![self shouldAllowReply]) {
                 sender.enabled = NO;
                 sender.enabled = YES;
                 return;
             }
-            self.messageViewInitialX = self.messageView.frame.origin.x;
-            self.swipeableContentViewInitialX = self.swipeableContentView.frame.origin.x;
             break;
         }
         case UIGestureRecognizerStateEnded:
