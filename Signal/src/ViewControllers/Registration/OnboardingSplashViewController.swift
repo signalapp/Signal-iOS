@@ -23,14 +23,13 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         heroImageView.setContentHuggingVerticalLow()
         heroImageView.accessibilityIdentifier = "onboarding.splash." + "heroImageView"
 
-        let titleLabel = self.createTitleLabel(text: NSLocalizedString("ONBOARDING_SPLASH_TITLE", comment: "Title of the 'onboarding splash' view."))
+        let titleLabel = self.createTitleLabel(text: NSLocalizedString("Loki Messenger", comment: ""))
         view.addSubview(titleLabel)
         titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
         let explanationLabel = UILabel()
-        explanationLabel.text = NSLocalizedString("ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
-                                                  comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view.")
+        explanationLabel.text = NSLocalizedString("Privacy Policy", comment: "")
         explanationLabel.textColor = .ows_materialBlue
         explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
@@ -47,14 +46,12 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         continueButton.accessibilityIdentifier = "onboarding.splash." + "continueButton"
 
         let stackView = UIStackView(arrangedSubviews: [
-            heroImageView,
-            UIView.spacer(withHeight: 22),
             titleLabel,
-            UIView.spacer(withHeight: 92),
+            UIView.vStretchingSpacer(),
             explanationLabel,
             UIView.spacer(withHeight: 24),
             continueButton
-            ])
+        ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: 32, left: 32, bottom: 32, right: 32)

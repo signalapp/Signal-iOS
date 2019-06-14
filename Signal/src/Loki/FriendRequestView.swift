@@ -59,9 +59,11 @@
         case .incoming:
             mainStackView.addArrangedSubview(buttonStackView)
             let acceptButton = OWSFlatButton.button(title: NSLocalizedString("Accept", comment: ""), font: buttonFont, titleColor: .ows_materialBlue, backgroundColor: .white, target: self, selector: #selector(accept))
+            acceptButton.setBackgroundColors(upColor: .clear, downColor: .clear)
             acceptButton.autoSetDimension(.height, toSize: buttonHeight)
             buttonStackView.addArrangedSubview(acceptButton)
             let declineButton = OWSFlatButton.button(title: NSLocalizedString("Decline", comment: ""), font: buttonFont, titleColor: .ows_destructiveRed, backgroundColor: .white, target: self, selector: #selector(decline))
+            declineButton.setBackgroundColors(upColor: .clear, downColor: .clear)
             declineButton.autoSetDimension(.height, toSize: buttonHeight)
             buttonStackView.addArrangedSubview(declineButton)
         case .outgoing: break
@@ -100,7 +102,9 @@
                 default: preconditionFailure()
                 }
             }()
-            label.text = String(format: format, message.authorId)
+            let contactID = message.authorId
+            let displayName = Environment.shared.contactsManager.profileName(forRecipientId: contactID) ?? contactID
+            label.text = String(format: format, displayName)
         case .outgoing:
             guard let message = message as? TSOutgoingMessage else { preconditionFailure() }
             let format: String? = {
@@ -115,7 +119,9 @@
                 }
             }()
             if let format = format {
-                label.text = String(format: format, message.thread.contactIdentifier()!)
+                let contactID = message.thread.contactIdentifier()!
+                let displayName = Environment.shared.contactsManager.profileName(forRecipientId: contactID) ?? contactID
+                label.text = String(format: format, displayName)
             }
             label.isHidden = (format == nil)
             topSpacer.isHidden = (label.isHidden)
