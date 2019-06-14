@@ -47,13 +47,6 @@ public enum ProofOfWork {
     
     // If this changes then we also have to use something other than UInt64 to support the new length
     private static let nonceLength = 8
-
-    private static let nonceTrialCount: Int = {
-        switch BuildConfiguration.current {
-        case .debug: return 10
-        case .production: return 100
-        }
-    }()
     
     /// Calculate a proof of work with the given configuration
     ///
@@ -67,7 +60,7 @@ public enum ProofOfWork {
     /// - Returns: A nonce string or `nil` if it failed
     public static func calculate(data: String, pubKey: String, timestamp: UInt64, ttl: UInt64) -> String? {
         let payload = createPayload(pubKey: pubKey, data: data, timestamp: timestamp, ttl: ttl)
-        let target = calcTarget(ttl: ttl, payloadLength: payload.count, nonceTrials: nonceTrialCount)
+        let target = calcTarget(ttl: ttl, payloadLength: payload.count, nonceTrials: Int(LokiAPI.powDifficulty))
         
         // Start with the max value
         var trialValue = UInt64.max

@@ -12,6 +12,7 @@ public final class LokiAPI : NSObject {
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
+    internal static var powDifficulty: UInt = 100
     
     // MARK: Types
     public typealias RawResponse = Any
@@ -81,7 +82,16 @@ public final class LokiAPI : NSObject {
             let powPromise = lokiMessage.calculatePoW()
             let swarmPromise = getTargetSnodes(for: destination)
             return when(fulfilled: powPromise, swarmPromise).map { lokiMessageWithPoW, swarm in
-                return Set(swarm.map { sendLokiMessage(lokiMessageWithPoW, to: $0) })
+                return Set(swarm.map {
+                    sendLokiMessage(lokiMessageWithPoW, to: $0).map { rawResponse in
+                        if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
+                            LokiAPI.powDifficulty = UInt(powDifficulty)
+                        } else {
+                            print("[Loki] Failed to update PoW difficulty from: \(rawResponse).")
+                        }
+                        return rawResponse
+                    }
+                })
             }.retryingIfNeeded(maxRetryCount: maxRetryCount)
         }
         if let peer = LokiP2PAPI.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {
