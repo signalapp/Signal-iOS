@@ -53,6 +53,11 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 // A variant of localNumber that never opens a "sneaky" transaction.
 - (nullable NSString *)storedOrCachedLocalNumber:(SDSAnyReadTransaction *)transaction;
 
+#ifdef DEBUG
+// This method is exposed for testing purposes only.
+- (void)storeLocalNumber:(NSString *)localNumber;
+#endif
+
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,
  *

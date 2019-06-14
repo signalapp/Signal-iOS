@@ -2,11 +2,11 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMessageSender.h"
 #import "NSError+MessageSending.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSError.h"
 #import "OWSFakeNetworkManager.h"
+#import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSUploadOperation.h"
 #import "SSKBaseTestObjC.h"
@@ -192,14 +192,6 @@ NS_ASSUME_NONNULL_BEGIN
         [super makeRequest:request success:success failure:failure];
     }
 }
-
-@end
-
-#pragma mark -
-
-@interface TSAccountManager (Testing)
-
-- (void)storeLocalNumber:(NSString *)localNumber;
 
 @end
 

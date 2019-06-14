@@ -10,17 +10,13 @@
 #import "TestAppContext.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-@interface TSAccountManager (Testing)
-
-- (void)storeLocalNumber:(NSString *)localNumber;
-
-@end
-
 @interface SignalRecipientTest : SSKBaseTestObjC
 
 @property (nonatomic) NSString *localNumber;
 
 @end
+
+#pragma mark -
 
 @implementation SignalRecipientTest
 

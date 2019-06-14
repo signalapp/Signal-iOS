@@ -9,15 +9,23 @@ import XCTest
 
 class PerMessageExpirationTest: SSKBaseTestSwift {
 
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
+    // MARK: -
+
     override func setUp() {
         super.setUp()
+
+        tsAccountManager.storeLocalNumber("+13334445555")
     }
 
     override func tearDown() {
         super.tearDown()
     }
 
-    // MARK: 
+    // MARK: -
 
     func test_expiration() {
 

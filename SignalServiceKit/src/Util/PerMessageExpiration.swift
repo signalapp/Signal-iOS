@@ -36,7 +36,7 @@ public class PerMessageExpiration: NSObject {
 
         // Start expiration using "now" as the read time.
         startPerMessageExpiration(forMessage: message,
-                                  readTimestamp: nowMs,
+                                  readTimestamp: nowMs(),
                                   sendSyncMessages: true,
                                   transaction: transaction)
     }
@@ -47,7 +47,7 @@ public class PerMessageExpiration: NSObject {
                                                  transaction: SDSAnyWriteTransaction) {
 
         // Make sure that timestamp is not later than now.
-        let timestamp = min(readTimestamp, nowMs)
+        let timestamp = min(readTimestamp, nowMs())
 
         if !message.hasPerMessageExpirationStarted {
             // Mark the countdown as begun.
@@ -74,7 +74,7 @@ public class PerMessageExpiration: NSObject {
                                                     transaction: SDSAnyWriteTransaction) {
         let perMessageExpiresAtMS = message.perMessageExpiresAt
 
-        guard perMessageExpiresAtMS > nowMs else {
+        guard perMessageExpiresAtMS > nowMs() else {
             Logger.verbose("Expiring immediately.")
             // Message has expired; remove it immediately.
             completePerMessageExpiration(forMessage: message,
@@ -83,7 +83,7 @@ public class PerMessageExpiration: NSObject {
         }
 
         Logger.verbose("Scheduling expiration.")
-        let delaySeconds: TimeInterval = Double(perMessageExpiresAtMS - nowMs) / 1000
+        let delaySeconds: TimeInterval = Double(perMessageExpiresAtMS - nowMs()) / 1000
         DispatchQueue.global().asyncAfter(wallDeadline: .now() + delaySeconds) {
             databaseStorage.write { (transaction) in
                 self.completePerMessageExpiration(forMessage: message,
@@ -104,7 +104,7 @@ public class PerMessageExpiration: NSObject {
             Logger.warn("Couldn't expire message; not in database.")
             return
         }
-        guard latestCopy.perMessageExpirationHasExpired else {
+        guard !latestCopy.perMessageExpirationHasExpired else {
             // Already expired, no need to expire again.
             return
         }
@@ -113,7 +113,7 @@ public class PerMessageExpiration: NSObject {
 
     // MARK: - Events
 
-    private class var nowMs: UInt64 {
+    private class func nowMs() -> UInt64 {
         return NSDate.ows_millisecondTimeStamp()
     }
 
@@ -160,16 +160,15 @@ public class PerMessageExpiration: NSObject {
     // We auto-expire messages after 30 days, even if the user hasn't seen them.
     @objc
     public class func shouldMessageAutoExpire(_ message: TSMessage) -> Bool {
-        let autoExpireDeadlineMs = nowMs + 30 * kDayInMs
-        let autoExpireTimeMs = min(message.timestamp, message.receivedAtTimestamp, nowMs)
-        return autoExpireTimeMs >= autoExpireDeadlineMs
+        let autoExpireDeadlineMs = min(message.timestamp, message.receivedAtTimestamp) + 30 * kDayInMs
+        return nowMs() >= autoExpireDeadlineMs
     }
 
     @objc
     public class func autoExpire(message: TSMessage,
-                                  transaction: SDSAnyWriteTransaction) {
+                                 transaction: SDSAnyWriteTransaction) {
         // Start countdown...
-        message.updateWithPerMessageExpireStarted(at: nowMs,
+        message.updateWithPerMessageExpireStarted(at: nowMs(),
                                                   transaction: transaction)
 
         // ...and immediately complete countdown.
@@ -188,7 +187,7 @@ public class PerMessageExpiration: NSObject {
             return
         }
         let messageIdTimestamp: UInt64 = message.timestamp
-        let readTimestamp: UInt64 = nowMs
+        let readTimestamp: UInt64 = nowMs()
 
         let syncMessage = OWSPerMessageExpirationReadSyncMessage(senderId: senderId,
                                                                  messageIdTimestamp: messageIdTimestamp,
@@ -406,8 +405,8 @@ class GRDBPerMessageExpirationFinder: PerMessageExpirationFinder {
             }
             guard message.hasPerMessageExpiration,
                 !message.perMessageExpirationHasExpired else {
-                owsFailDebug("expecting message with per message expiration but found: \(next)")
-                return
+                    owsFailDebug("expecting message with per message expiration but found: \(next)")
+                    return
             }
             block(message, &stop)
             if stop.boolValue {
