@@ -42,6 +42,15 @@ public class SDSKeyValueStore: NSObject {
         return NSNumber(value: int).stringValue
     }
 
+    @objc
+    public func hasValue(forKey key: String, transaction: SDSAnyReadTransaction) -> Bool {
+        if let _: AnyObject = read(key, transaction: transaction) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     // MARK: - String
 
     @objc

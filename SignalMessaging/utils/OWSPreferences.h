@@ -31,9 +31,7 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 
 #pragma mark - Helpers
 
-- (nullable id)tryGetValueForKey:(NSString *)key;
-- (void)setValueForKey:(NSString *)key toValue:(nullable id)value;
-- (void)clear;
+- (void)removeAllValues;
 
 #pragma mark - Specific Preferences
 
@@ -41,20 +39,20 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 + (void)setIsReadyForAppExtensions;
 
 - (BOOL)hasSentAMessage;
-- (void)setHasSentAMessage:(BOOL)enabled;
+- (void)setHasSentAMessage:(BOOL)value;
 
 + (BOOL)isLoggingEnabled;
-+ (void)setIsLoggingEnabled:(BOOL)flag;
++ (void)setIsLoggingEnabled:(BOOL)value;
 
 - (BOOL)screenSecurityIsEnabled;
-- (void)setScreenSecurity:(BOOL)flag;
+- (void)setScreenSecurity:(BOOL)value;
 
 - (NotificationType)notificationPreviewType;
 - (void)setNotificationPreviewType:(NotificationType)type;
 - (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType;
 
 - (BOOL)soundInForeground;
-- (void)setSoundInForeground:(BOOL)enabled;
+- (void)setSoundInForeground:(BOOL)value;
 
 - (BOOL)hasDeclinedNoContactsView;
 - (void)setHasDeclinedNoContactsView:(BOOL)value;
@@ -78,27 +76,27 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 #pragma mark Callkit
 
 - (BOOL)isSystemCallLogEnabled;
-- (void)setIsSystemCallLogEnabled:(BOOL)flag;
+- (void)setIsSystemCallLogEnabled:(BOOL)value;
 
 #pragma mark - Legacy CallKit settings
 
 - (void)applyCallLoggingSettingsForLegacyUsersWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (BOOL)isCallKitEnabled;
-- (void)setIsCallKitEnabled:(BOOL)flag;
+- (void)setIsCallKitEnabled:(BOOL)value;
 
 // Returns YES IFF isCallKitEnabled has been set by user.
 - (BOOL)isCallKitEnabledSet;
 
 - (BOOL)isCallKitPrivacyEnabled;
-- (void)setIsCallKitPrivacyEnabled:(BOOL)flag;
+- (void)setIsCallKitPrivacyEnabled:(BOOL)value;
 // Returns YES IFF isCallKitPrivacyEnabled has been set by user.
 - (BOOL)isCallKitPrivacySet;
 
 #pragma mark direct call connectivity (non-TURN)
 
 - (BOOL)doCallsHideIPAddress;
-- (void)setDoCallsHideIPAddress:(BOOL)flag;
+- (void)setDoCallsHideIPAddress:(BOOL)value;
 
 #pragma mark - Push Tokens
 
