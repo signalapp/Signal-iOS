@@ -53,7 +53,7 @@ public class LokiP2PAPI : NSObject {
             }
 
             guard let message = createLokiAddressMessage(for: thread, isPing: true) else {
-                print("[Loki] Failed to build ping message for \(pubKey).")
+                print("[Loki] Failed to build ping message for: \(pubKey).")
                 return
             }
             
