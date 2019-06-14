@@ -441,6 +441,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          style:UIBarButtonItemStylePlain
                                         target:fromViewController
                                         action:@selector(didFinishEditingContact)];
+    contactViewController.edgesForExtendedLayout = UIRectEdgeNone;
 
     OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:contactViewController];
 
