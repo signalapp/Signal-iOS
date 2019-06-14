@@ -170,7 +170,7 @@ public class PerMessageExpiration: NSObject {
     }
 
     private class func hasExpirationCountdownCompleted(message: TSMessage) -> Bool {
-        return message.perMessageExpiresAt > nowMs()
+        return message.perMessageExpiresAt <= nowMs()
     }
 
     private class func isOutgoingSent(message: TSMessage) -> Bool {
