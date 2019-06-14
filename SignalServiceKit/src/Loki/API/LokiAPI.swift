@@ -79,6 +79,8 @@ public final class LokiAPI : NSObject {
                 return Set(swarm.map {
                     sendLokiMessage(lokiMessageWithPoW, to: $0).map { rawResponse in
                         if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
+                            guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }
+                            print("[Loki] Setting PoW difficulty to \(powDifficulty).")
                             LokiAPI.powDifficulty = UInt(powDifficulty)
                         } else {
                             print("[Loki] Failed to update PoW difficulty from: \(rawResponse).")

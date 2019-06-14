@@ -106,8 +106,8 @@ internal extension Promise {
                     let oldFailureCount = LokiAPI.failureCount[target] ?? 0
                     let newFailureCount = oldFailureCount + 1
                     LokiAPI.failureCount[target] = newFailureCount
-                    print("[Loki] Couldn't reach snode at: \(target.address):\(target.port); setting failure count to: \(newFailureCount).")
-                    if oldFailureCount >= LokiAPI.failureThreshold {
+                    print("[Loki] Couldn't reach snode at: \(target.address):\(target.port); setting failure count to \(newFailureCount).")
+                    if newFailureCount >= LokiAPI.failureThreshold {
                         print("[Loki] Failure threshold reached for: \(target); dropping it.")
                         LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
                         LokiAPI.randomSnodePool.remove(target) // Remove it from the random snode pool
@@ -116,6 +116,16 @@ internal extension Promise {
                     // The snode isn't associated with the given public key anymore
                     print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
                     LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
+                case 432:
+                    if case NetworkManagerError.taskError(_, let underlyingError) = error, let nsError = underlyingError as? NSError,
+                        let data = nsError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data, let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON,
+                        let powDifficulty = json["difficulty"] as? Int {
+                        print("[Loki] Setting PoW difficulty to \(powDifficulty).")
+                        LokiAPI.powDifficulty = UInt(powDifficulty)
+                    } else {
+                        print("[Loki] Failed to update PoW difficulty.")
+                    }
+                    break
                 default: break
                 }
             }
