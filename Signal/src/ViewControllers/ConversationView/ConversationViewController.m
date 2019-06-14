@@ -1350,6 +1350,25 @@ typedef enum : NSUInteger {
 
 #pragma mark - Initiliazers
 
+- (void)updateHeaderViewFrame
+{
+    // As of iOS 13 Beta, the titleView no longer respects the headerView's intrinsicContentSize
+    // and always tries to center the headerView
+    BOOL iOS11and12 = NO;
+    if (@available(iOS 13, *)) iOS11and12 = NO;
+    else if (@available(iOS 11, *)) iOS11and12 = YES;
+
+    if (iOS11and12) {
+        // Do nothing, we use autolayout/intrinsic content size to grow
+    } else {
+        // Request "full width" title; the navigation bar will truncate this
+        // to fit between the left and right buttons.
+        CGSize screenSize = [UIScreen mainScreen].bounds.size;
+        CGRect headerFrame = CGRectMake(0, 0, screenSize.width, 44);
+        self.headerView.frame = headerFrame;
+    }
+}
+
 - (void)updateNavigationTitle
 {
     NSAttributedString *name;
@@ -1406,15 +1425,7 @@ typedef enum : NSUInteger {
     headerView.delegate = self;
     self.navigationItem.titleView = headerView;
 
-    if (@available(iOS 11, *)) {
-        // Do nothing, we use autolayout/intrinsic content size to grow
-    } else {
-        // Request "full width" title; the navigation bar will truncate this
-        // to fit between the left and right buttons.
-        CGSize screenSize = [UIScreen mainScreen].bounds.size;
-        CGRect headerFrame = CGRectMake(0, 0, screenSize.width, 44);
-        headerView.frame = headerFrame;
-    }
+    [self updateHeaderViewFrame];
 
 #ifdef USE_DEBUG_UI
     [headerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
@@ -5163,6 +5174,7 @@ typedef enum : NSUInteger {
         [self updateLastKnownDistanceFromBottom];
     }
     [self updateInputToolbarLayout];
+    [self updateHeaderViewFrame];
 }
 
 - (void)viewSafeAreaInsetsDidChange
