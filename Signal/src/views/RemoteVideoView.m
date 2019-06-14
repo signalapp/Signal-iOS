@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     // On 64-bit, iOS9+: uses the MetalKit backed view for improved battery/rendering performance.
     if (@available(iOS 13, *)) {
         // Currently, the metal backed view doesn't render remote video on iOS 13.
-        // TODO: Check if this is resolved in later iOS13 betas / a WebRTC update
+        // TODO: iOS 13 – Check if this is resolved in later iOS13 betas / a WebRTC update
     } else if (_videoRenderer == nil) {
 
         // It is insufficient to check the RTC_SUPPORTS_METAL macro to determine Metal support.
