@@ -4,10 +4,12 @@ extension String : Error { }
 
 public extension LokiAPI {
     
+    fileprivate static var failureCount: [LokiAPITarget:UInt] = [:]
+    
     // MARK: Settings
     private static let minimumSnodeCount = 2
     private static let targetSnodeCount = 3
-    private static let defaultSnodePort: UInt16 = 8080
+    fileprivate static let failureThreshold = 3
     
     // MARK: Caching
     private static let swarmCacheKey = "swarmCacheKey"
@@ -100,8 +102,15 @@ internal extension Promise {
             if let error = error as? NetworkManagerError {
                 switch error.statusCode {
                 case 0:
-                    // The snode is unreachable; usually a problem with LokiNet
-                    print("[Loki] Couldn't reach snode at: \(target.address):\(target.port).")
+                    // The snode is unreachable
+                    let oldFailureCount = LokiAPI.failureCount[target] ?? 0
+                    let newFailureCount = oldFailureCount + 1
+                    LokiAPI.failureCount[target] = newFailureCount
+                    print("[Loki] Couldn't reach snode at: \(target.address):\(target.port); setting failure count to: \(newFailureCount).")
+                    if oldFailureCount >= LokiAPI.failureThreshold {
+                        print("[Loki] Failure threshold reached for: \(target); removing it from the swarm cache for: \(hexEncodedPublicKey).")
+                        LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
+                    }
                 case 421:
                     // The snode isn't associated with the given public key anymore
                     print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")

@@ -1186,7 +1186,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }) retainUntilComplete];
             }
         })
-        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // Unreachable snode; usually a problem with LokiNet
+        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable
             handleError(error);
         }) retainUntilComplete];
     

@@ -44,14 +44,8 @@ public final class LokiAPI : NSObject {
         if let headers = headers { request.allHTTPHeaderFields = headers }
         if let timeout = timeout { request.timeoutInterval = timeout ?? defaultTimeout }
         let headers = request.allHTTPHeaderFields ?? [:]
-        let headersDescription = headers.isEmpty ? "no custom headers specified" : headers.description
-        let parametersDescription = "[ " + parameters.map { key, value in
-            let valueDescription = String(describing: value)
-            let maxLength = 20
-            let truncatedValueDescription = valueDescription.count > maxLength ? valueDescription.prefix(maxLength) + "..." : valueDescription
-            return key + " : " + truncatedValueDescription
-        }.joined(separator: ", ") + " ]"
-        print("[Loki] Invoking \(method.rawValue) on \(target) with \(parametersDescription) (\(headersDescription)).")
+        let headersDescription = headers.isEmpty ? "no custom headers specified" : headers.prettifiedDescription
+        print("[Loki] Invoking \(method.rawValue) on \(target) with \(parameters.prettifiedDescription) (\(headersDescription)).")
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }
             .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey).recoveringNetworkErrorsIfNeeded()
     }
