@@ -175,6 +175,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     uint32_t perMessageExpirationDurationSeconds = 0;
     for (SignalAttachment *attachment in mediaAttachments) {
         if (attachment.hasPerMessageExpiration) {
+            OWSAssertDebug(mediaAttachments.count == 1);
             perMessageExpirationDurationSeconds = PerMessageExpiration.kExpirationDurationSeconds;
             break;
         }
