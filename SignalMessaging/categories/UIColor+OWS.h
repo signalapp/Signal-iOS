@@ -58,6 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIColor *)lokiDarkestGray;
 + (UIColor *)lokiDarkerGray;
 + (UIColor *)lokiDarkGray;
++ (UIColor *)lokiGray;
 + (UIColor *)lokiLightGray;
 
 @end

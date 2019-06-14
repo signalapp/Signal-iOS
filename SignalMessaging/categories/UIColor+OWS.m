@@ -208,6 +208,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIColor *)lokiDarkestGray { return [UIColor colorWithRGBHex:0x0A0A0A]; }
 + (UIColor *)lokiDarkerGray { return [UIColor colorWithRGBHex:0x252525]; }
 + (UIColor *)lokiDarkGray { return [UIColor colorWithRGBHex:0x313131]; }
++ (UIColor *)lokiGray { return [UIColor colorWithRGBHex:0x363636]; }
 + (UIColor *)lokiLightGray { return [UIColor colorWithRGBHex:0x414141]; }
 
 @end

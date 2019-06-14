@@ -31,7 +31,7 @@ public class AvatarImageView: UIImageView {
 
     func initialize() {
         // Loki: Used to indicate a contact's online status
-        layer.borderWidth = 4
+        layer.borderWidth = 2
         
         // Loki: Observe online status changes
         NotificationCenter.default.addObserver(self, selector: #selector(handleContactOnlineStatusChangedNotification), name: .contactOnlineStatusChanged, object: nil)
@@ -87,7 +87,7 @@ public class AvatarImageView: UIImageView {
     @objc func updateOnlineStatusIndicator() {
         let peerInfo = LokiP2PAPI.getInfo(for: contactID)
         let isOnline = peerInfo?.isOnline ?? false
-        let color: UIColor = isOnline ? .lokiGreen() : .lokiDarkGray()
+        let color: UIColor = isOnline ? .lokiGreen() : .lokiGray()
         let currentUserID = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
         let isCurrentUser = (contactID == currentUserID)
         layer.borderColor = isCurrentUser ? UIColor.clear.cgColor : color.cgColor
