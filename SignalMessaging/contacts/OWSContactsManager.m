@@ -345,9 +345,22 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 if (isRegularlyScheduledRun) {
                     NSMutableSet<SignalRecipient *> *newSignalRecipients = [registeredRecipients mutableCopy];
                     [newSignalRecipients minusSet:existingRegisteredRecipients];
-                    // Not for first time users
-                    if (existingRegisteredRecipients.count > 0 && newSignalRecipients.count > 0) {
-                        [OWSNewAccountDiscovery.shared discoveredNewRecipients:newSignalRecipients];
+
+                    if (newSignalRecipients.count == 0) {
+                        OWSLogInfo(@"No new recipients.");
+                    } else {
+                        __block NSSet<NSString *> *_Nullable lastKnownContactPhoneNumbers;
+                        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                            lastKnownContactPhoneNumbers =
+                                [transaction objectForKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
+                                             inCollection:OWSContactsManagerCollection];
+                        }];
+
+                        if (lastKnownContactPhoneNumbers != nil && lastKnownContactPhoneNumbers.count > 0) {
+                            [OWSNewAccountDiscovery.shared discoveredNewRecipients:newSignalRecipients];
+                        } else {
+                            OWSLogInfo(@"skipping new recipient notification for first successful contact sync.");
+                        }
                     }
                 }
 
