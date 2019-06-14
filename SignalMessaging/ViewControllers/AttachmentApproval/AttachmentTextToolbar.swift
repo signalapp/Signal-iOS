@@ -54,15 +54,13 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         // Otherwise we risk obscuring too much of the content.
         return UIDevice.current.orientation.isPortrait ? 160 : 100
     }
-    var textViewHeightConstraint: NSLayoutConstraint!
-    var textViewHeight: CGFloat
+    var textViewHeightConstraint: NSLayoutConstraint?
+    let kToolbarMargin: CGFloat = 8
 
     // MARK: - Initializers
 
     init(options: AttachmentApprovalViewControllerOptions) {
         self.options = options
-
-        self.textViewHeight = kMinTextViewHeight
 
         super.init(frame: CGRect.zero)
 
@@ -99,8 +97,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         // Layout
 
-        let kToolbarMargin: CGFloat = 8
-
         // We have to wrap the toolbar items in a content view because iOS (at least on iOS10.3) assigns the inputAccessoryView.layoutMargins
         // when resigning first responder (verified by auditing with `layoutMarginsDidChange`).
         // The effect of this is that if we were to assign these margins to self.layoutMargins, they'd be blown away if the
@@ -129,7 +125,8 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
             hStackView.addArrangedSubview(view)
         }
 
-        self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
+        textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
+        perMessageExpirationLabel.autoSetDimension(.height, toSize: kMinTextViewHeight, relation: .greaterThanOrEqual)
 
         // We pin edges explicitly rather than doing something like:
         //  textView.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
@@ -142,7 +139,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         let layoutButtonWithinWrapper = { (button: UIView) in
             button.autoPinWidthToSuperview()
-            button.autoPinEdge(.bottom, to: .bottom, of: self.textContainer, withOffset: -3)
+            button.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
             button.setContentHuggingHigh()
             button.setCompressionResistanceHigh()
         }
@@ -179,6 +176,8 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         perMessageExpirationLabel.isHidden = !isPerMessageExpirationEnabled
         textContainer.isHidden = isPerMessageExpirationEnabled
+
+        updateHeight(textView: textView)
     }
 
     lazy var textView: UITextView = {
@@ -306,16 +305,21 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     }
 
     private func updateHeight(textView: UITextView) {
+        guard let textViewHeightConstraint = textViewHeightConstraint else {
+            owsFailDebug("Missing constraint.")
+            return
+        }
+
         // compute new height assuming width is unchanged
         let currentSize = textView.frame.size
-        let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
+        let textViewHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
 
-        if newHeight != textViewHeight {
-            Logger.debug("TextView height changed: \(textViewHeight) -> \(newHeight)")
-            textViewHeight = newHeight
-            textViewHeightConstraint?.constant = textViewHeight
+        if textViewHeightConstraint.constant != textViewHeight {
+            Logger.debug("TextView height changed: \(textViewHeightConstraint.constant) -> \(textViewHeight)")
+            textViewHeightConstraint.constant = textViewHeight
             invalidateIntrinsicContentSize()
         }
+        textViewHeightConstraint.isActive = !preferences.isPerMessageExpirationEnabled()
     }
 
     private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
