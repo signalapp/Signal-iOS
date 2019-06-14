@@ -429,6 +429,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         // an incoming message.  We could use something different.
         return NSLocalizedString(@"APN_Message", @"notification body");
     }
+
     NSString *_Nullable bodyDescription = nil;
     if (self.body.length > 0) {
         bodyDescription = self.body;

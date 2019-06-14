@@ -60,6 +60,16 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     }
 }
 
+#pragma mark -
+
+@interface TSMessage (Private)
+
+- (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction;
+
+@end
+
+#pragma mark -
+
 @interface TSOutgoingMessageRecipientState ()
 
 @property (atomic) OWSOutgoingMessageRecipientState state;
@@ -1262,6 +1272,15 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     }
     [result appendString:@"]"];
     return [result copy];
+}
+
+- (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    [super removeAllAttachmentsWithTransaction:transaction];
+
+    _attachmentFilenameMap = [NSMutableDictionary new];
 }
 
 @end
