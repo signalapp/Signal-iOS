@@ -613,7 +613,6 @@ typedef enum : NSUInteger {
     self.collectionView.showsVerticalScrollIndicator = YES;
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
-    [self.collectionView.panGestureRecognizer requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
     if (@available(iOS 10, *)) {
         // To minimize time to initial apearance, we initially disable prefetching, but then
         // re-enable it once the view has appeared.
@@ -777,6 +776,14 @@ typedef enum : NSUInteger {
         OWSLogVerbose(@"First viewWillAppear took: %.2fms", appearenceDuration * 1000);
     }
     [self updateInputToolbarLayout];
+
+    // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.
+    // Make sure we only register the gesture interaction if it actually exists. This helps the swipe back
+    // gesture work reliably without conflict with scrolling.
+    if (self.navigationController) {
+        [self.collectionView.panGestureRecognizer
+            requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
+    }
 }
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
@@ -4560,7 +4567,14 @@ typedef enum : NSUInteger {
         messageCell.messageBubbleView.delegate = self;
         messageCell.messageStickerView.delegate = self;
         messageCell.messageHiddenView.delegate = self;
-        [messageCell.panGestureRecognizer requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
+
+        // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.
+        // Make sure we only register the gesture interaction if it actually exists. This helps the swipe back
+        // gesture work reliably without conflict with audio scrubbing or swipe-to-repy.
+        if (self.navigationController) {
+            [messageCell.panGestureRecognizer
+                requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
+        }
     }
     cell.conversationStyle = self.conversationStyle;
 
