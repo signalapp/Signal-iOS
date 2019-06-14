@@ -318,28 +318,28 @@ static NSTimeInterval launchStartedAt;
     [OWSAnalytics appLaunchDidBegin];
     
     // Loki
-    self.lokiP2PServer = [LKP2PServer new];
+//    self.lokiP2PServer = [LKP2PServer new];
     
     // We try to bind to 8081, if we can't then we just fallback to any random port
-    NSArray *ports = @[ @8081, @0 ];
-    for (NSNumber *port in ports) {
-        if (self.lokiP2PServer.isRunning) { break; }
-        BOOL isStarted = [self.lokiP2PServer startOnPort:port.unsignedIntegerValue];
-        if (isStarted) {
-            NSURL *serverURL = self.lokiP2PServer.serverURL;
-            [LKP2PAPI setOurP2PAddressWithUrl:self.lokiP2PServer.serverURL];
-            NSString *serverURLDescription = serverURL.absoluteString;
-            if ([serverURLDescription hasSuffix:@"/"]) {
-                serverURLDescription = [serverURLDescription substringToIndex:serverURLDescription.length - 1];
-            }
-            NSLog(@"[Loki] Started server at %@.", serverURLDescription);
-            break;
-        }
-    }
+//    NSArray *ports = @[ @8081, @0 ];
+//    for (NSNumber *port in ports) {
+//        if (self.lokiP2PServer.isRunning) { break; }
+//        BOOL isStarted = [self.lokiP2PServer startOnPort:port.unsignedIntegerValue];
+//        if (isStarted) {
+//            NSURL *serverURL = self.lokiP2PServer.serverURL;
+//            [LKP2PAPI setOurP2PAddressWithUrl:self.lokiP2PServer.serverURL];
+//            NSString *serverURLDescription = serverURL.absoluteString;
+//            if ([serverURLDescription hasSuffix:@"/"]) {
+//                serverURLDescription = [serverURLDescription substringToIndex:serverURLDescription.length - 1];
+//            }
+//            NSLog(@"[Loki] Started server at %@.", serverURLDescription);
+//            break;
+//        }
+//    }
     
-    if (!self.lokiP2PServer.isRunning) {
-        NSLog(@"[Loki] Failed to start P2P server.");
-    }
+//    if (!self.lokiP2PServer.isRunning) {
+//        NSLog(@"[Loki] Failed to start P2P server.");
+//    }
   
     return YES;
 }
