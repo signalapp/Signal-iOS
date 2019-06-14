@@ -24,7 +24,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 #pragma mark -
 
 typedef NS_ENUM(NSUInteger, PerMessageExpirationState) {
-    PerMessageExpirationState_IncomingExpired = 0,
+    PerMessageExpirationState_Unknown = 0,
+    PerMessageExpirationState_IncomingExpired,
     PerMessageExpirationState_IncomingDownloading,
     PerMessageExpirationState_IncomingFailed,
     PerMessageExpirationState_IncomingAvailable,

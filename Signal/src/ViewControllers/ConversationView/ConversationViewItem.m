@@ -172,8 +172,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.stickerInfo = nil;
     self.stickerAttachment = nil;
     self.isFailedSticker = NO;
-    // This is a safe default value.
-    self.perMessageExpirationState = PerMessageExpirationState_IncomingExpired;
+    self.perMessageExpirationState = PerMessageExpirationState_Unknown;
     self.contactShare = nil;
     self.systemMessageText = nil;
     self.authorConversationColorName = nil;
