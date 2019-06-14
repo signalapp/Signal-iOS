@@ -43,8 +43,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 @interface TSAccountManager ()
 
-@property (atomic, readonly) BOOL isRegistered;
-
 @property (nonatomic, nullable) NSString *cachedLocalNumber;
 
 @property (nonatomic, nullable) NSNumber *cachedIsDeregistered;

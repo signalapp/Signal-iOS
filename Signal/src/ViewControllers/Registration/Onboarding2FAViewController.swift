@@ -137,7 +137,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
         onboardingController.update(twoFAPin: pin)
 
-        onboardingController.tryToVerify(fromViewController: self, completion: { (outcome) in
+        onboardingController.submitVerification(fromViewController: self, completion: { (outcome) in
             if outcome == .invalid2FAPin {
                 self.isPinInvalid = true
             } else if outcome == .invalidVerificationCode {

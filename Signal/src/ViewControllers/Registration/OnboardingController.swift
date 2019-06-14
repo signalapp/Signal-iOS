@@ -129,7 +129,7 @@ public class OnboardingController: NSObject {
         viewController.navigationController?.pushViewController(view, animated: true)
     }
 
-    public func onboardingRegistrationSucceeded(viewController: UIViewController) {
+    public func requestingVerificationSucceeded(viewController: UIViewController) {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -403,8 +403,7 @@ public class OnboardingController: NSObject {
 
     // MARK: - Registration
 
-    public func tryToRegister(fromViewController: UIViewController,
-                              smsVerification: Bool) {
+    public func requestVerification(fromViewController: UIViewController, isSMS: Bool) {
         guard let phoneNumber = phoneNumber else {
             owsFailDebug("Missing phoneNumber.")
             return
@@ -425,7 +424,7 @@ public class OnboardingController: NSObject {
                                                                                        success: {
                                                                                         DispatchQueue.main.async {
                                                                                             modal.dismiss(completion: {
-                                                                                                self.registrationSucceeded(viewController: fromViewController)
+                                                                                                self.requestingVerificationSucceeded(viewController: fromViewController)
                                                                                             })
                                                                                         }
                                                         }, failure: { (error) in
@@ -433,18 +432,14 @@ public class OnboardingController: NSObject {
 
                                                             DispatchQueue.main.async {
                                                                 modal.dismiss(completion: {
-                                                                    self.registrationFailed(viewController: fromViewController, error: error as NSError)
+                                                                    self.requestingVerificationFailed(viewController: fromViewController, error: error as NSError)
                                                                 })
                                                             }
-                                                        }, smsVerification: smsVerification)
+                                                        }, smsVerification: isSMS)
         }
     }
 
-    private func registrationSucceeded(viewController: UIViewController) {
-        onboardingRegistrationSucceeded(viewController: viewController)
-    }
-
-    private func registrationFailed(viewController: UIViewController, error: NSError) {
+    private func requestingVerificationFailed(viewController: UIViewController, error: NSError) {
         if error.code == 402 {
             Logger.info("Captcha requested.")
 
@@ -467,8 +462,8 @@ public class OnboardingController: NSObject {
         case invalid2FAPin
     }
 
-    public func tryToVerify(fromViewController: UIViewController,
-                            completion : @escaping (VerificationOutcome) -> Void) {
+    public func submitVerification(fromViewController: UIViewController,
+                                   completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
         guard let phoneNumber = phoneNumber else {

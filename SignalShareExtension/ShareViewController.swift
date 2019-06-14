@@ -179,7 +179,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use RTCInitializeSSL() in the SAE.
 
-        if tsAccountManager.isRegistered() {
+        if tsAccountManager.isRegistered {
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             DispatchQueue.global().async { [weak self] in
@@ -200,7 +200,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // We don't need to prod the TSSocketManager in the SAE.
         }
 
-        if tsAccountManager.isRegistered() {
+        if tsAccountManager.isRegistered {
             DispatchQueue.main.async { [weak self] in
                 guard let _ = self else { return }
                 Logger.info("running post launch block for registered user: \(String(describing: TSAccountManager.localNumber))")
@@ -261,7 +261,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
 
-        if tsAccountManager.isRegistered() {
+        if tsAccountManager.isRegistered {
             Logger.info("localNumber: \(String(describing: TSAccountManager.localNumber))")
 
             // We don't need to use messageFetcherJob in the SAE.
@@ -293,7 +293,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.debug("")
 
-        if tsAccountManager.isRegistered() {
+        if tsAccountManager.isRegistered {
             Logger.info("localNumber: \(String(describing: TSAccountManager.localNumber))")
 
             // We don't need to use ExperienceUpgradeFinder in the SAE.
@@ -333,7 +333,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("Presenting content view")
 
-        if !tsAccountManager.isRegistered() {
+        if !tsAccountManager.isRegistered {
             showNotRegisteredView()
         } else if !OWSProfileManager.shared().localProfileExists() {
             // This is a rare edge case, but we want to ensure that the user
@@ -459,7 +459,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // If a user unregisters in the main app, the SAE should shut down
         // immediately.
-        guard !tsAccountManager.isRegistered() else {
+        guard !tsAccountManager.isRegistered else {
             // If user is registered, do nothing.
             return
         }

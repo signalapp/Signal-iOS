@@ -39,8 +39,8 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
  *
  *  @return registered or not
  */
-- (BOOL)isRegistered;
-- (BOOL)isRegisteredAndReady;
+@property (atomic, readonly) BOOL isRegistered;
+@property (atomic, readonly) BOOL isRegisteredAndReady;
 
 /**
  *  Returns current phone number for this device, which may not yet have been registered.

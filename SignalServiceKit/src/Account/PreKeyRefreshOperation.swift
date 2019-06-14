@@ -35,7 +35,7 @@ public class RefreshPreKeysOperation: OWSOperation {
     public override func run() {
         Logger.debug("")
 
-        guard tsAccountManager.isRegistered() else {
+        guard tsAccountManager.isRegistered else {
             Logger.debug("skipping - not registered")
             return
         }
