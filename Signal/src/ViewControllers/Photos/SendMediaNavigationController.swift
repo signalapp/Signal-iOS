@@ -230,13 +230,18 @@ class SendMediaNavigationController: OWSNavigationController {
         return vc
     }()
 
-    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem]) {
+    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem],
+                                            canAddMore: Bool) {
         guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
             owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(options: [.canAddMore], attachmentApprovalItems: attachmentApprovalItems)
+        var options: AttachmentApprovalViewControllerOptions = []
+        if canAddMore {
+            options = [.canAddMore]
+        }
+        let approvalViewController = AttachmentApprovalViewController(options: options, attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
@@ -353,7 +358,8 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         if isInBatchSelectMode {
             updateButtons(topViewController: photoCaptureViewController)
         } else {
-            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem])
+            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem],
+                                       canAddMore: false)
         }
     }
 
@@ -395,7 +401,8 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
             when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises).map { attachmentApprovalItems in
                 Logger.debug("built all attachments")
                 modal.dismiss {
-                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems)
+                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems,
+                                                    canAddMore: true)
                 }
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")
