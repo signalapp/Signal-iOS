@@ -124,7 +124,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 #pragma mark - Per-message expiration
 
-// This method can be used to start expiration of per-message expiration.
+// This method is used when we start expiration of per-message expiration.
 //
 // NOTE: To start "count down", use PerMessageExpiration.  Don't call this method directly.
 - (void)updateWithPerMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt

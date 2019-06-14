@@ -181,7 +181,6 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         }
         TSMessage *message = (TSMessage *)object;
         if (message.hasPerMessageExpiration &&
-            message.hasPerMessageExpirationStarted &&
             !message.perMessageExpirationHasExpired) {
             return TSPerMessageExpirationMessagesGroup;
         } else {
@@ -191,7 +190,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
     [self registerMessageDatabaseViewWithName:TSPerMessageExpirationMessagesDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
-                                      version:@"1"
+                                      version:@"2"
                                       storage:storage];
 }
 

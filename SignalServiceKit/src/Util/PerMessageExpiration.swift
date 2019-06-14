@@ -36,7 +36,7 @@ public class PerMessageExpiration: NSObject {
 
         // Start expiration using "now" as the read time.
         startPerMessageExpiration(forMessage: message,
-                                  readTimestamp: NSDate.ows_millisecondTimeStamp(),
+                                  readTimestamp: nowMs(),
                                   sendSyncMessages: true,
                                   transaction: transaction)
     }
@@ -47,7 +47,7 @@ public class PerMessageExpiration: NSObject {
                                                  transaction: SDSAnyWriteTransaction) {
 
         // Make sure that timestamp is not later than now.
-        let timestamp = min(readTimestamp, NSDate.ows_millisecondTimeStamp())
+        let timestamp = min(readTimestamp, nowMs())
 
         if !message.hasPerMessageExpirationStarted {
             // Mark the countdown as begun.
@@ -73,47 +73,109 @@ public class PerMessageExpiration: NSObject {
     private class func schedulePerMessageExpiration(forMessage message: TSMessage,
                                                     transaction: SDSAnyWriteTransaction) {
         let perMessageExpiresAtMS = message.perMessageExpiresAt
-        let nowMs = NSDate.ows_millisecondTimeStamp()
 
-        guard perMessageExpiresAtMS > nowMs else {
+        guard perMessageExpiresAtMS > nowMs() else {
+            Logger.verbose("Expiring immediately.")
             // Message has expired; remove it immediately.
             completePerMessageExpiration(forMessage: message,
                                          transaction: transaction)
             return
         }
 
-        let delaySeconds: TimeInterval = Double(perMessageExpiresAtMS - nowMs) / 1000
-        DispatchQueue.global().asyncAfter(deadline: .now() + delaySeconds) {
-            self.completePerMessageExpiration(forMessage: message)
-        }
-    }
-
-    private class func completePerMessageExpiration(forMessage message: TSMessage) {
-        databaseStorage.write { (transaction) in
-            self.completePerMessageExpiration(forMessage: message,
-                                              transaction: transaction)
+        Logger.verbose("Scheduling expiration.")
+        let delaySeconds: TimeInterval = Double(perMessageExpiresAtMS - nowMs()) / 1000
+        DispatchQueue.global().asyncAfter(wallDeadline: .now() + delaySeconds) {
+            databaseStorage.write { (transaction) in
+                self.completePerMessageExpiration(forMessage: message,
+                                                  transaction: transaction)
+            }
         }
     }
 
     private class func completePerMessageExpiration(forMessage message: TSMessage,
                                                     transaction: SDSAnyWriteTransaction) {
-        message.updateWithHasPerMessageExpiredAndRemoveRenderableContent(with: transaction)
+        Logger.verbose("Expiring message per schedule.")
+        guard let uniqueId = message.uniqueId else {
+            owsFailDebug("Missing uniqueId.")
+            return
+        }
+        guard let latestCopy = TSMessage.anyFetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
+            // Message has been deleted.
+            Logger.warn("Couldn't expire message; not in database.")
+            return
+        }
+        guard !latestCopy.perMessageExpirationHasExpired else {
+            // Already expired, no need to expire again.
+            return
+        }
+        latestCopy.updateWithHasPerMessageExpiredAndRemoveRenderableContent(with: transaction)
     }
 
     // MARK: - Events
+
+    private class func nowMs() -> UInt64 {
+        return NSDate.ows_millisecondTimeStamp()
+    }
 
     @objc
     public class func appDidBecomeReady() {
         AssertIsOnMainThread()
 
+        DispatchQueue.global().async {
+            self.checkForExpiration(shouldResumeNormalExpiration: true)
+        }
+    }
+
+    // This does two things:
+    //
+    // * "Resume normal expiration", e.g. expire or schedule expiration
+    //   for messages whose "per-message expiration" countdown has begun.
+    //   We only need to do this on startup.
+    // * "Check for auto-expiration", e.g. expire messages whether or
+    //   not they have been read after N days.  We need to repeat this
+    //   check periodically while the app is running.
+    private class func checkForExpiration(shouldResumeNormalExpiration: Bool) {
         // Find all messages with per-message expiration whose countdown has begun.
         // Cull expired messages & resume countdown for others.
         databaseStorage.write { (transaction) in
             let messages = AnyPerMessageExpirationFinder().allMessagesWithPerMessageExpiration(transaction: transaction)
             for message in messages {
-                schedulePerMessageExpiration(forMessage: message, transaction: transaction)
+                if shouldMessageAutoExpire(message) {
+                    autoExpire(message: message, transaction: transaction)
+                } else if message.hasPerMessageExpirationStarted {
+                    if shouldResumeNormalExpiration {
+                        // If expiration is started, resume countdown.
+                        schedulePerMessageExpiration(forMessage: message, transaction: transaction)
+                    }
+                }
             }
         }
+
+        // We need to "check for auto-expiration" once per day.
+        DispatchQueue.global().asyncAfter(wallDeadline: .now() + kDayInterval) {
+            self.checkForExpiration(shouldResumeNormalExpiration: false)
+        }
+    }
+
+    // We auto-expire messages after 30 days, even if the user hasn't seen them.
+    @objc
+    public class func shouldMessageAutoExpire(_ message: TSMessage) -> Bool {
+        let autoExpireDeadlineMs = min(message.timestamp, message.receivedAtTimestamp) + 30 * kDayInMs
+        return nowMs() >= autoExpireDeadlineMs
+    }
+
+    @objc
+    public class func autoExpire(message: TSMessage,
+                                 transaction: SDSAnyWriteTransaction) {
+        // Start countdown...
+        message.updateWithPerMessageExpireStarted(at: nowMs(),
+                                                  transaction: transaction)
+
+        // ...and immediately complete countdown.
+        completePerMessageExpiration(forMessage: message,
+                                     transaction: transaction)
+
+        sendSyncMessage(forMessage: message, transaction: transaction)
     }
 
     // MARK: - Sync Messages
@@ -125,7 +187,7 @@ public class PerMessageExpiration: NSObject {
             return
         }
         let messageIdTimestamp: UInt64 = message.timestamp
-        let readTimestamp: UInt64 = NSDate.ows_millisecondTimeStamp()
+        let readTimestamp: UInt64 = nowMs()
 
         let syncMessage = OWSPerMessageExpirationReadSyncMessage(senderId: senderId,
                                                                  messageIdTimestamp: messageIdTimestamp,
@@ -279,13 +341,16 @@ public class PerMessageExpiration: NSObject {
 public protocol PerMessageExpirationFinder {
     associatedtype ReadTransaction
 
+    typealias EnumerateTSMessageBlock = (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void
+
     func allMessagesWithPerMessageExpiration(transaction: ReadTransaction) -> [TSMessage]
-    func enumerateAllMessagesWithPerMessageExpiration(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
+    func enumerateAllMessagesWithPerMessageExpiration(transaction: ReadTransaction, block: @escaping EnumerateTSMessageBlock)
 }
 
 // MARK: -
 
 extension PerMessageExpirationFinder {
+
     public func allMessagesWithPerMessageExpiration(transaction: ReadTransaction) -> [TSMessage] {
         var result: [TSMessage] = []
         self.enumerateAllMessagesWithPerMessageExpiration(transaction: transaction) { message, _ in
@@ -305,7 +370,7 @@ public class AnyPerMessageExpirationFinder {
 // MARK: -
 
 extension AnyPerMessageExpirationFinder: PerMessageExpirationFinder {
-    public func enumerateAllMessagesWithPerMessageExpiration(transaction: SDSAnyReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    public func enumerateAllMessagesWithPerMessageExpiration(transaction: SDSAnyReadTransaction, block: @escaping EnumerateTSMessageBlock) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
             grdbAdapter.enumerateAllMessagesWithPerMessageExpiration(transaction: grdbRead, block: block)
@@ -318,13 +383,14 @@ extension AnyPerMessageExpirationFinder: PerMessageExpirationFinder {
 // MARK: -
 
 class GRDBPerMessageExpirationFinder: PerMessageExpirationFinder {
-    func enumerateAllMessagesWithPerMessageExpiration(transaction: GRDBReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+    func enumerateAllMessagesWithPerMessageExpiration(transaction: GRDBReadTransaction, block: @escaping EnumerateTSMessageBlock) {
 
         let sql = """
         SELECT * FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .perMessageExpirationDurationSeconds) IS NOT NULL
         AND \(interactionColumn: .perMessageExpirationDurationSeconds) > 0
-        ORDER BY \(interactionColumn: .id)
+        AND \(interactionColumn: .perMessageExpirationHasExpired) IS NOT NULL
+        AND \(interactionColumn: .perMessageExpirationHasExpired) == FALSE
         """
 
         let cursor = TSInteraction.grdbFetchCursor(sql: sql,
@@ -338,10 +404,9 @@ class GRDBPerMessageExpirationFinder: PerMessageExpirationFinder {
                 return
             }
             guard message.hasPerMessageExpiration,
-                message.hasPerMessageExpirationStarted,
                 !message.perMessageExpirationHasExpired else {
-                owsFailDebug("expecting message with per message expiration but found: \(next)")
-                return
+                    owsFailDebug("expecting message with per message expiration but found: \(next)")
+                    return
             }
             block(message, &stop)
             if stop.boolValue {
@@ -354,8 +419,7 @@ class GRDBPerMessageExpirationFinder: PerMessageExpirationFinder {
 // MARK: -
 
 class YAPDBPerMessageExpirationFinder: PerMessageExpirationFinder {
-    public func enumerateAllMessagesWithPerMessageExpiration(transaction: YapDatabaseReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
-
+    public func enumerateAllMessagesWithPerMessageExpiration(transaction: YapDatabaseReadTransaction, block: @escaping EnumerateTSMessageBlock) {
         guard let dbView = TSDatabaseView.perMessageExpirationMessagesDatabaseView(transaction) as? YapDatabaseViewTransaction else {
             owsFailDebug("Couldn't load db view.")
             return
@@ -367,8 +431,8 @@ class YAPDBPerMessageExpirationFinder: PerMessageExpirationFinder {
                 return
             }
             guard message.hasPerMessageExpiration,
-                message.hasPerMessageExpirationStarted,
                 !message.perMessageExpirationHasExpired else {
+                    owsFailDebug("expecting message with per message expiration but found: \(message)")
                 return
             }
             block(message, stopPointer)

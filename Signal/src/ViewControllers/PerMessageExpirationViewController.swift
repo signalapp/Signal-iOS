@@ -79,6 +79,11 @@ class PerMessageExpirationViewController: OWSViewController {
                 return
             }
 
+            if PerMessageExpiration.shouldMessageAutoExpire(message) {
+                PerMessageExpiration.autoExpire(message: message, transaction: transaction)
+                return
+            }
+
             // Kick off expiration now if necessary.
             if !message.hasPerMessageExpirationStarted {
                 PerMessageExpiration.startPerMessageExpiration(forMessage: message, transaction: transaction)
