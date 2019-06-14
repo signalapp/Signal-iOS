@@ -31,10 +31,15 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     weak var attachmentTextToolbarDelegate: AttachmentTextToolbarDelegate?
 
+    var hasPerMessageExpiration: Bool {
+        return (options.contains(.cameraMode) &&
+                preferences.isPerMessageExpirationEnabled())
+    }
+
     var messageText: String? {
         get {
             // Ignore caption if "per-message expiration" is enabled.
-            guard !preferences.isPerMessageExpirationEnabled() else {
+            guard !hasPerMessageExpiration else {
                 return nil
             }
             return textView.text
@@ -174,8 +179,9 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         let imageName = isPerMessageExpirationEnabled ? "timer-24" : "timer-disabled-24"
         perMessageExpirationButton.setTemplateImageName(imageName, tintColor: Theme.darkThemePrimaryColor)
 
-        perMessageExpirationLabel.isHidden = !isPerMessageExpirationEnabled
-        textContainer.isHidden = isPerMessageExpirationEnabled
+        perMessageExpirationLabel.isHidden = !options.contains(.cameraMode)
+        perMessageExpirationLabel.isHidden = !hasPerMessageExpiration
+        textContainer.isHidden = hasPerMessageExpiration
 
         updateHeight(textView: textView)
     }
@@ -319,7 +325,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
             textViewHeightConstraint.constant = textViewHeight
             invalidateIntrinsicContentSize()
         }
-        textViewHeightConstraint.isActive = !preferences.isPerMessageExpirationEnabled()
+        textViewHeightConstraint.isActive = !hasPerMessageExpiration
     }
 
     private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {
