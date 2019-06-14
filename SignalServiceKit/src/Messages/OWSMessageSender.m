@@ -1418,6 +1418,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:message
                                                          expirationStartedAt:[NSDate ows_millisecondTimeStamp]
                                                                  transaction:transaction];
+        
+        [PerMessageExpiration expireIfNecessaryWithMessage:message
+                                               transaction:transaction.asAnyWrite];
     }];
 
     if (!message.shouldSyncTranscript) {

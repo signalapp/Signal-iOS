@@ -204,6 +204,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                              transaction:transaction];
     [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
                                                                           transaction:transaction];
+    [PerMessageExpiration expireIfNecessaryWithMessage:outgoingMessage
+                                           transaction:transaction.asAnyWrite];
 
     if (outgoingMessage.hasAttachments) {
         [self.attachmentDownloads

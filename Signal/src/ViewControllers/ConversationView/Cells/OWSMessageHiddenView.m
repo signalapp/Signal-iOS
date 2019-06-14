@@ -330,14 +330,15 @@ NS_ASSUME_NONNULL_BEGIN
     self.label.textColor = self.contentForegroundColor;
     self.label.font = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
 
+    // TODO: Rework when design arrives.
     if (self.isExpired) {
         self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_VIEWED",
             @"Label for messages with per-message expiration indicating that "
             @"the local user has viewed the message's contents.");
-    } else if (self.isFailedDownload) {
+    } else if (self.isIncomingFailed) {
         self.label.text = NSLocalizedString(
             @"ATTACHMENT_DOWNLOADING_STATUS_FAILED", @"Status label when an attachment download has failed.");
-    } else if (self.isAvailable) {
+    } else if (self.isIncomingAvailable) {
         self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW",
             @"Label for messages with per-message expiration indicating that "
             @"user can tap to view the message's contents.");
@@ -359,9 +360,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (self.isExpired) {
         return @"play-outline-24";
-    } else if (self.isAvailable) {
+    } else if (self.isIncomingAvailable) {
         return @"play-filled-24";
-    } else if (self.isFailedDownload) {
+    } else if (self.isIncomingFailed) {
         // TODO: Waiting on design.
         return @"play-outline-24";
     } else {
@@ -371,7 +372,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIView *)createDownloadViewIfNecessary
 {
-    if (!self.isOngoingDownload) {
+    if (!self.isIncomingDownloading) {
         return nil;
     }
 
@@ -418,51 +419,44 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (BOOL)isIncomingDownloading
+{
+    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_IncomingDownloading;
+}
+
+- (BOOL)isIncomingFailed
+{
+    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_IncomingFailed;
+}
+
+- (BOOL)isIncomingAvailable
+{
+    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_IncomingAvailable;
+}
+
+- (BOOL)isIncomingExpired
+{
+    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_IncomingExpired;
+}
+
+- (BOOL)isOutgoingSent
+{
+    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_OutgoingSent;
+}
+
+- (BOOL)isOutgoingFailed
+{
+    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_OutgoingFailed;
+}
+
+- (BOOL)isOutgoingSending
+{
+    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_OutgoingSending;
+}
+
 - (BOOL)isExpired
 {
-    return self.viewItem.perMessageExpirationHasExpired;
-}
-
-- (BOOL)isAvailable
-{
-    if (self.isExpired) {
-        return NO;
-    } else if (self.viewItem.attachmentStream) {
-        return YES;
-    } else if (self.viewItem.attachmentPointer) {
-        return NO;
-    } else {
-        OWSFailDebug(@"Unexpected view state.");
-        return NO;
-    }
-}
-
-- (BOOL)isFailedDownload
-{
-    if (self.isExpired) {
-        return NO;
-    } else if (self.viewItem.attachmentStream) {
-        return NO;
-    } else if (self.viewItem.attachmentPointer) {
-        return self.viewItem.attachmentPointer.state == TSAttachmentPointerStateFailed;
-    } else {
-        OWSFailDebug(@"Unexpected view state.");
-        return NO;
-    }
-}
-
-- (BOOL)isOngoingDownload
-{
-    if (self.isExpired) {
-        return NO;
-    } else if (self.viewItem.attachmentStream) {
-        return NO;
-    } else if (self.viewItem.attachmentPointer) {
-        return self.viewItem.attachmentPointer.state != TSAttachmentPointerStateFailed;
-    } else {
-        OWSFailDebug(@"Unexpected view state.");
-        return NO;
-    }
+    return self.isIncomingFailed || self.isOutgoingSent;
 }
 
 #pragma mark - Measurement
@@ -472,7 +466,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
-    if (self.isOngoingDownload) {
+    // TODO:
+    if (self.isIncomingDownloading) {
         return CGSizeMake(self.downloadProgressMinWidth, self.downloadProgressHeight);
     }
 
@@ -622,9 +617,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (self.isFailedDownload) {
+    // TODO:
+    if (self.isIncomingFailed) {
         [self.delegate didTapFailedIncomingAttachment:self.viewItem];
-    } else if (self.isAvailable) {
+    } else if (self.isIncomingAvailable) {
         [self.delegate didTapAttachmentWithPerMessageExpiration:self.viewItem
                                                attachmentStream:self.viewItem.attachmentStream];
     }
