@@ -39,6 +39,8 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *cellSelectedColor;
 @property (class, readonly, nonatomic) UIColor *cellSeparatorColor;
 
+@property (class, readonly, nonatomic) UIColor *cursorColor;
+
 // In some contexts, e.g. media viewing/sending, we always use "dark theme" UI regardless of the
 // users chosen theme.
 @property (class, readonly, nonatomic) UIColor *darkThemeNavbarIconColor;

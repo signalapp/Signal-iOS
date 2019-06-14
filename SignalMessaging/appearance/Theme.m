@@ -168,6 +168,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return Theme.hairlineColor;
 }
 
++ (UIColor *)cursorColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_materialBlueColor;
+}
+
 + (UIColor *)darkThemeBackgroundColor
 {
     return UIColor.ows_gray95Color;

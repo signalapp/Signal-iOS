@@ -317,7 +317,7 @@ const CGFloat kMaxTextViewHeight = 98;
     _suggestedStickerView = [[StickerHorizontalListView alloc] initWithCellSize:suggestedStickerSize
                                                                       cellInset:0
                                                                         spacing:suggestedStickerSpacing];
-    self.suggestedStickerView.backgroundColor = UIColor.clearColor;
+    self.suggestedStickerView.backgroundColor = Theme.conversationButtonBackgroundColor;
     self.suggestedStickerView.contentInset = UIEdgeInsetsMake(
         suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing, suggestedStickerSpacing);
     self.suggestedStickerView.hidden = YES;
