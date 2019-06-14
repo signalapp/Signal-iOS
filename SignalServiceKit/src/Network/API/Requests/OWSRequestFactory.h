@@ -53,7 +53,12 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)unregisterAccountRequest;
 
++ (TSRequest *)requestPreauthChallengeRequestWithRecipientId:(NSString *)recipientId
+                                                   pushToken:(NSString *)pushToken
+    NS_SWIFT_NAME(requestPreauthChallengeRequest(recipientId:pushToken:));
+
 + (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
+                                            preauthChallenge:(nullable NSString *)preauthChallenge
                                                 captchaToken:(nullable NSString *)captchaToken
                                                    transport:(TSVerificationTransport)transport;
 

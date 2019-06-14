@@ -39,8 +39,8 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
  *
  *  @return registered or not
  */
-@property (atomic, readonly) BOOL isRegistered;
-@property (atomic, readonly) BOOL isRegisteredAndReady;
+@property (readonly) BOOL isRegistered;
+@property (readonly) BOOL isRegisteredAndReady;
 
 /**
  *  Returns current phone number for this device, which may not yet have been registered.
@@ -81,12 +81,6 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (uint32_t)getOrGenerateRegistrationIdWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Register with phone number
-
-- (void)registerWithPhoneNumber:(NSString *)phoneNumber
-                   captchaToken:(nullable NSString *)captchaToken
-                        success:(void (^)(void))successBlock
-                        failure:(void (^)(NSError *error))failureBlock
-                smsVerification:(BOOL)isSMS;
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin

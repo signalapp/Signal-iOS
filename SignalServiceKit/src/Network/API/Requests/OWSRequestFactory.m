@@ -233,23 +233,42 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"DELETE" parameters:@{}];
 }
 
++ (TSRequest *)requestPreauthChallengeRequestWithRecipientId:(NSString *)recipientId pushToken:(NSString *)pushToken
+{
+    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(pushToken.length > 0);
+
+    NSString *path = [NSString stringWithFormat:@"v1/accounts/apn/preauth/%@/%@", pushToken, recipientId];
+    NSURL *url = [NSURL URLWithString:path];
+
+    return [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];
+}
+
 + (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
+                                            preauthChallenge:(nullable NSString *)preauthChallenge
                                                 captchaToken:(nullable NSString *)captchaToken
                                                    transport:(TSVerificationTransport)transport
 {
     OWSAssertDebug(phoneNumber.length > 0);
 
-    NSString *querystring = @"client=ios";
+    NSMutableArray<NSURLQueryItem *> *queryItems = [NSMutableArray new];
+    [queryItems addObject:[NSURLQueryItem queryItemWithName:@"client" value:@"ios"]];
+
     if (captchaToken.length > 0) {
-        querystring = [NSString stringWithFormat:@"%@&captcha=%@", querystring, captchaToken];
+        [queryItems addObject:[NSURLQueryItem queryItemWithName:@"captcha" value:captchaToken]];
     }
 
-    NSString *path = [NSString stringWithFormat:@"%@/%@/code/%@?%@",
-                               textSecureAccountsAPI,
-                               [self stringForTransport:transport],
-                               phoneNumber,
-                               querystring];
-    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+    if (preauthChallenge.length > 0) {
+        [queryItems addObject:[NSURLQueryItem queryItemWithName:@"challenge" value:preauthChallenge]];
+    }
+
+    NSString *path = [NSString
+        stringWithFormat:@"%@/%@/code/%@", textSecureAccountsAPI, [self stringForTransport:transport], phoneNumber];
+
+    NSURLComponents *components = [[NSURLComponents alloc] initWithString:path];
+    components.queryItems = queryItems;
+
+    TSRequest *request = [TSRequest requestWithUrl:components.URL method:@"GET" parameters:@{}];
     request.shouldHaveAuthorizationHeaders = NO;
 
     if (transport == TSVerificationTransportVoice) {

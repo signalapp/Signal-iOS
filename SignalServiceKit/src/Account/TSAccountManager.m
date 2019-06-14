@@ -325,44 +325,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }];
 }
 
-- (void)registerWithPhoneNumber:(NSString *)phoneNumber
-                   captchaToken:(nullable NSString *)captchaToken
-                        success:(void (^)(void))successBlock
-                        failure:(void (^)(NSError *error))failureBlock
-                smsVerification:(BOOL)isSMS
-
-{
-    if ([self isRegistered]) {
-        failureBlock([NSError errorWithDomain:@"tsaccountmanager.verify" code:4000 userInfo:nil]);
-        return;
-    }
-
-    // The country code of TSAccountManager.phoneNumberAwaitingVerification is used to
-    // determine whether or not to use domain fronting, so it needs to be set _before_
-    // we make our verification code request.
-    self.phoneNumberAwaitingVerification = phoneNumber;
-
-    TSRequest *request =
-        [OWSRequestFactory requestVerificationCodeRequestWithPhoneNumber:phoneNumber
-                                                            captchaToken:captchaToken
-                                                               transport:(isSMS ? TSVerificationTransportSMS
-                                                                                : TSVerificationTransportVoice)];
-    [[TSNetworkManager sharedManager] makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            OWSLogInfo(@"Successfully requested verification code request for number: %@ method:%@",
-                phoneNumber,
-                isSMS ? @"SMS" : @"Voice");
-            successBlock();
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents accountsErrorVerificationCodeRequestFailed]);
-            }
-            OWSLogError(@"Failed to request verification code request with error:%@", error);
-            failureBlock(error);
-        }];
-}
-
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin
                       success:(void (^)(void))successBlock

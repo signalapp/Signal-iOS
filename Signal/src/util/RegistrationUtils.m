@@ -5,6 +5,7 @@
 #import "RegistrationUtils.h"
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
+#import <PromiseKit/PromiseKit.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -21,6 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
     
     return SSKEnvironment.shared.tsAccountManager;
+}
+
++ (AccountManager *)accountManager
+{
+    return AppEnvironment.shared.accountManager;
 }
 
 #pragma mark -
@@ -60,12 +66,12 @@ NS_ASSUME_NONNULL_BEGIN
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       NSString *phoneNumber = self.tsAccountManager.reregistrationPhoneNumber;
-                      [self.tsAccountManager registerWithPhoneNumber:phoneNumber
-                          captchaToken:nil
-                          success:^{
-                              OWSLogInfo(@"re-registering: send verification code succeeded.");
+                      [[self.accountManager requestAccountVerificationObjCWithRecipientId:phoneNumber
+                                                                             captchaToken:nil
+                                                                                    isSMS:true]
+                              .then(^{
+                                  OWSLogInfo(@"re-registering: send verification code succeeded.");
 
-                              dispatch_async(dispatch_get_main_queue(), ^{
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       OnboardingController *onboardingController = [OnboardingController new];
                                       OnboardingPhoneNumber *onboardingPhoneNumber =
@@ -83,12 +89,9 @@ NS_ASSUME_NONNULL_BEGIN
                                       [UIApplication sharedApplication].delegate.window.rootViewController
                                           = navigationController;
                                   }];
-                              });
-                          }
-                          failure:^(NSError *error) {
-                              OWSLogError(@"re-registering: send verification code failed.");
-
-                              dispatch_async(dispatch_get_main_queue(), ^{
+                              })
+                              .catch(^(NSError *error) {
+                                  OWSLogError(@"re-registering: send verification code failed.");
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       if (error.code == 400) {
                                           [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", nil)
@@ -99,9 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 message:error.localizedRecoverySuggestion];
                                       }
                                   }];
-                              });
-                          }
-                          smsVerification:YES];
+                              }) retainUntilComplete];
                   }];
 }
 
