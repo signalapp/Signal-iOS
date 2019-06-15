@@ -6,6 +6,7 @@
 #import "OWS2FAManager.h"
 #import "OWSDevice.h"
 #import "ProfileManagerProtocol.h"
+#import "RemoteAttestation.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
@@ -444,10 +445,13 @@ NS_ASSUME_NONNULL_BEGIN
     };
 }
 
-+ (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
-                              enclaveId:(NSString *)enclaveId
-                           authUsername:(NSString *)authUsername
-                           authPassword:(NSString *)authPassword
+#pragma mark - Remote Attestation
+
++ (TSRequest *)remoteAttestationRequestForService:(RemoteAttestationService)service
+                                      withKeyPair:(ECKeyPair *)keyPair
+                                        enclaveId:(NSString *)enclaveId
+                                     authUsername:(NSString *)authUsername
+                                     authPassword:(NSString *)authPassword
 {
     OWSAssertDebug(keyPair);
     OWSAssertDebug(enclaveId.length > 0);
@@ -463,8 +467,17 @@ NS_ASSUME_NONNULL_BEGIN
                                         }];
     request.authUsername = authUsername;
     request.authPassword = authPassword;
-    request.customHost = contactDiscoveryURL;
-    request.customCensorshipCircumventionPrefix = contactDiscoveryCensorshipPrefix;
+
+    switch (service) {
+        case RemoteAttestationServiceContactDiscovery:
+            request.customHost = contactDiscoveryURL;
+            request.customCensorshipCircumventionPrefix = contactDiscoveryCensorshipPrefix;
+            break;
+        case RemoteAttestationServiceKeyBackup:
+            request.customHost = keyBackupURL;
+            request.customCensorshipCircumventionPrefix = keyBackupCensorshipPrefix;
+            break;
+    }
 
     // Don't bother with the default cookie store;
     // these cookies are ephemeral.
@@ -475,15 +488,31 @@ NS_ASSUME_NONNULL_BEGIN
     return request;
 }
 
-+ (TSRequest *)enclaveContactDiscoveryRequestWithId:(NSData *)requestId
-                                       addressCount:(NSUInteger)addressCount
-                               encryptedAddressData:(NSData *)encryptedAddressData
-                                            cryptIv:(NSData *)cryptIv
-                                           cryptMac:(NSData *)cryptMac
-                                          enclaveId:(NSString *)enclaveId
-                                       authUsername:(NSString *)authUsername
-                                       authPassword:(NSString *)authPassword
-                                            cookies:(NSArray<NSHTTPCookie *> *)cookies
++ (TSRequest *)remoteAttestationAuthRequestForService:(RemoteAttestationService)service
+{
+    NSString *path;
+    switch (service) {
+        case RemoteAttestationServiceContactDiscovery:
+            path = @"v1/directory/auth";
+            break;
+        case RemoteAttestationServiceKeyBackup:
+            path = @"v1/backup/auth";
+            break;
+    }
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
+#pragma mark - CDS
+
++ (TSRequest *)cdsEnclaveRequestWithRequestId:(NSData *)requestId
+                                 addressCount:(NSUInteger)addressCount
+                         encryptedAddressData:(NSData *)encryptedAddressData
+                                      cryptIv:(NSData *)cryptIv
+                                     cryptMac:(NSData *)cryptMac
+                                    enclaveId:(NSString *)enclaveId
+                                 authUsername:(NSString *)authUsername
+                                 authPassword:(NSString *)authPassword
+                                      cookies:(NSArray<NSHTTPCookie *> *)cookies
 {
     NSString *path = [NSString stringWithFormat:@"v1/discovery/%@", enclaveId];
 
@@ -514,12 +543,6 @@ NS_ASSUME_NONNULL_BEGIN
     return request;
 }
 
-+ (TSRequest *)remoteAttestationAuthRequest
-{
-    NSString *path = @"v1/directory/auth";
-    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
-}
-
 + (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status
                                      reason:(nullable NSString *)reason
 {
@@ -540,6 +563,71 @@ NS_ASSUME_NONNULL_BEGIN
     }
     NSString *path = [NSString stringWithFormat:@"v1/directory/feedback-v3/%@", status];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:parameters];
+}
+
+#pragma mark - KBS
+
++ (TSRequest *)kbsEnclaveNonceRequestWithEnclaveId:(NSString *)enclaveId
+                                      authUsername:(NSString *)authUsername
+                                      authPassword:(NSString *)authPassword
+                                           cookies:(NSArray<NSHTTPCookie *> *)cookies
+{
+    NSString *path = [NSString stringWithFormat:@"v1/nonce/%@", enclaveId];
+
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+
+    request.authUsername = authUsername;
+    request.authPassword = authPassword;
+    request.customHost = keyBackupURL;
+    request.customCensorshipCircumventionPrefix = keyBackupCensorshipPrefix;
+
+    // Don't bother with the default cookie store;
+    // these cookies are ephemeral.
+    //
+    // NOTE: TSNetworkManager now separately disables default cookie handling for all requests.
+    [request setHTTPShouldHandleCookies:NO];
+    // Set the cookie header.
+    OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
+    [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
+
+    return request;
+}
+
++ (TSRequest *)kbsEnclaveRequestWithRequestId:(NSData *)requestId
+                                         data:(NSData *)data
+                                      cryptIv:(NSData *)cryptIv
+                                     cryptMac:(NSData *)cryptMac
+                                    enclaveId:(NSString *)enclaveId
+                                 authUsername:(NSString *)authUsername
+                                 authPassword:(NSString *)authPassword
+                                      cookies:(NSArray<NSHTTPCookie *> *)cookies
+{
+    NSString *path = [NSString stringWithFormat:@"v1/backup/%@", enclaveId];
+
+    TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path]
+                                            method:@"PUT"
+                                        parameters:@{
+                                            @"requestId" : requestId.base64EncodedString,
+                                            @"data" : data.base64EncodedString,
+                                            @"iv" : cryptIv.base64EncodedString,
+                                            @"mac" : cryptMac.base64EncodedString,
+                                        }];
+
+    request.authUsername = authUsername;
+    request.authPassword = authPassword;
+    request.customHost = keyBackupURL;
+    request.customCensorshipCircumventionPrefix = keyBackupCensorshipPrefix;
+
+    // Don't bother with the default cookie store;
+    // these cookies are ephemeral.
+    //
+    // NOTE: TSNetworkManager now separately disables default cookie handling for all requests.
+    [request setHTTPShouldHandleCookies:NO];
+    // Set the cookie header.
+    OWSAssertDebug(request.allHTTPHeaderFields.count == 0);
+    [request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
+
+    return request;
 }
 
 #pragma mark - UD

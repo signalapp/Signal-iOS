@@ -2,12 +2,20 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSErrorUserInfoKey const ContactDiscoveryServiceErrorKey_Reason;
-extern NSErrorDomain const ContactDiscoveryServiceErrorDomain;
-typedef NS_ERROR_ENUM(ContactDiscoveryServiceErrorDomain, ContactDiscoveryServiceError){
-    ContactDiscoveryServiceErrorAttestationFailed = 100, ContactDiscoveryServiceErrorAssertionError = 101
+typedef NS_ENUM(NSUInteger, RemoteAttestationService) {
+    RemoteAttestationServiceContactDiscovery = 1,
+    RemoteAttestationServiceKeyBackup,
+};
+
+extern NSErrorUserInfoKey const RemoteAttestationErrorKey_Reason;
+extern NSErrorDomain const RemoteAttestationErrorDomain;
+typedef NS_ERROR_ENUM(RemoteAttestationErrorDomain, RemoteAttestationError){
+    RemoteAttestationFailed = 100,
+    RemoteAttestationAssertionError = 101,
 };
 
 @class ECKeyPair;
@@ -43,21 +51,10 @@ typedef NS_ERROR_ENUM(ContactDiscoveryServiceErrorDomain, ContactDiscoveryServic
 @property (nonatomic, readonly) NSString *enclaveId;
 @property (nonatomic, readonly) RemoteAttestationAuth *auth;
 
-@end
++ (void)performRemoteAttestationForService:(RemoteAttestationService)service
+                                   success:(void (^)(RemoteAttestation *_Nonnull remoteAttestation))successHandler
+                                   failure:(void (^)(NSError *_Nonnull error))failureHandler;
 
-#pragma mark -
-
-@interface ContactDiscoveryService : NSObject
-
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initDefault NS_DESIGNATED_INITIALIZER;
-
-+ (instancetype)shared;
-
-- (void)testService;
-- (void)performRemoteAttestationWithSuccess:(void (^)(RemoteAttestation *_Nonnull remoteAttestation))successHandler
-                                    failure:(void (^)(NSError *_Nonnull error))failureHandler;
 @end
 
 NS_ASSUME_NONNULL_END

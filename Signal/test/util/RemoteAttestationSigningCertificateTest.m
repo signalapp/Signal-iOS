@@ -1,24 +1,24 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalBaseTest.h"
 #import <SignalCoreKit/NSData+OWS.h>
-#import <SignalServiceKit/CDSSigningCertificate.h>
+#import <SignalServiceKit/RemoteAttestationSigningCertificate.h>
 
-@interface CDSSigningCertificateTest : SignalBaseTest
+@interface RemoteAttestationSigningCertificateTest : SignalBaseTest
 
 @end
 
 #pragma mark -
 
-@implementation CDSSigningCertificateTest
+@implementation RemoteAttestationSigningCertificateTest
 
 - (void)testParsing_good
 {
     NSString *pem = [self certificatesPem_good];
     NSError *error;
-    CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:pem error:&error];
+    RemoteAttestationSigningCertificate *_Nullable certificate = [RemoteAttestationSigningCertificate parseCertificateFromPem:pem error:&error];
     XCTAssertNotNil(certificate);
     XCTAssertNil(error);
 }
@@ -27,10 +27,10 @@
 {
     NSString *pem = [self certificatesPem_bad];
     NSError *error;
-    CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:pem error:&error];
+    RemoteAttestationSigningCertificate *_Nullable certificate = [RemoteAttestationSigningCertificate parseCertificateFromPem:pem error:&error];
     XCTAssertNil(certificate);
     XCTAssertNotNil(error);
-    XCTAssertEqual(error.code, CDSSigningCertificateError_InvalidDistinguishedName);
+    XCTAssertEqual(error.code, RemoteAttestationSigningCertificateError_InvalidDistinguishedName);
 }
 
 - (void)testVerification_good
@@ -40,7 +40,7 @@
     NSString *bodyString = [self bodyString_good];
 
     NSError *error;
-    CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:pem error:&error];
+    RemoteAttestationSigningCertificate *_Nullable certificate = [RemoteAttestationSigningCertificate parseCertificateFromPem:pem error:&error];
     XCTAssertNotNil(certificate);
     XCTAssertNil(error);
 
@@ -55,7 +55,7 @@
     NSString *bodyString = [self bodyString_bad];
 
     NSError *error;
-    CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:pem error:&error];
+    RemoteAttestationSigningCertificate *_Nullable certificate = [RemoteAttestationSigningCertificate parseCertificateFromPem:pem error:&error];
     XCTAssertNotNil(certificate);
     XCTAssertNil(error);
 
@@ -69,7 +69,7 @@
     NSString *bodyString = [self bodyString_good];
 
     NSError *error;
-    CDSSigningCertificate *_Nullable certificate = [CDSSigningCertificate parseCertificateFromPem:pem error:&error];
+    RemoteAttestationSigningCertificate *_Nullable certificate = [RemoteAttestationSigningCertificate parseCertificateFromPem:pem error:&error];
     XCTAssertNotNil(certificate);
     XCTAssertNil(error);
 

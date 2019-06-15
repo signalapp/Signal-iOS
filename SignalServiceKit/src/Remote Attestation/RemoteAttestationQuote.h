@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CDSQuote : NSObject
+@interface RemoteAttestationQuote : NSObject
 
 @property (nonatomic, readonly) uint16_t version;
 @property (nonatomic, readonly) uint16_t signType;
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *reportData;
 @property (nonatomic, readonly) NSData *signature;
 
-+ (nullable CDSQuote *)parseQuoteFromData:(NSData *)quoteData;
++ (nullable RemoteAttestationQuote *)parseQuoteFromData:(NSData *)quoteData;
 
 - (BOOL)isDebugQuote;
 

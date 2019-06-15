@@ -3,7 +3,6 @@
 //
 
 #import "MockSSKEnvironment.h"
-#import "ContactDiscoveryService.h"
 #import "OWS2FAManager.h"
 #import "OWSAttachmentDownloads.h"
 #import "OWSBatchMessageProcessor.h"
@@ -77,7 +76,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
     OWSDisappearingMessagesJob *disappearingMessagesJob =
         [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
-    ContactDiscoveryService *contactDiscoveryService = [[ContactDiscoveryService alloc] initDefault];
     OWSReadReceiptManager *readReceiptManager = [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
     OWSOutgoingReceiptManager *outgoingReceiptManager =
         [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
@@ -109,7 +107,6 @@ NS_ASSUME_NONNULL_BEGIN
                          tsAccountManager:tsAccountManager
                             ows2FAManager:ows2FAManager
                   disappearingMessagesJob:disappearingMessagesJob
-                  contactDiscoveryService:contactDiscoveryService
                        readReceiptManager:readReceiptManager
                    outgoingReceiptManager:outgoingReceiptManager
                       reachabilityManager:reachabilityManager
