@@ -8,6 +8,10 @@ import PromiseKit
 // TODO define actual type, and validate length
 public typealias IdentityKey = Data
 
+public enum AccountServiceClientError: Error {
+    case captchaRequired
+}
+
 /// based on libsignal-service-java's AccountManager class
 @objc(SSKAccountServiceClient)
 public class AccountServiceClient: NSObject {
@@ -30,7 +34,17 @@ public class AccountServiceClient: NSObject {
         return serviceClient.requestVerificationCode(recipientId: recipientId,
                                                      preauthChallenge: preauthChallenge,
                                                      captchaToken: captchaToken,
-                                                     transport: transport)
+                                                     transport: transport).recover { error in
+            switch error {
+            case let networkingError as NetworkManagerError:
+                if networkingError.statusCode == 402 {
+                    throw AccountServiceClientError.captchaRequired
+                }
+            default:
+                break
+            }
+            throw error
+        }
     }
 
     public func getPreKeysCount() -> Promise<Int> {
