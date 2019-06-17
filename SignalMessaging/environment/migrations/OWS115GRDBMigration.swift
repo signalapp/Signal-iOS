@@ -73,6 +73,10 @@ extension OWS115GRDBMigration {
         return Environment.shared
     }
 
+    var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
     // MARK: -
 
     func run() throws {
@@ -90,14 +94,36 @@ extension OWS115GRDBMigration {
         let dbReadConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
         dbReadConnection.beginLongLivedReadTransaction()
 
+        // Migrate the key-value and unordered records first;
+        // The later migrations may use these values in
+        // "sneaky" transactions.
+        try storage.write { grdbTransaction in
+            // KeyValue Finders
+            var migrators = [GRDBMigrator]()
+
+            // TODO: OWSMessageDecryptJob
+            // TODO: SSKMessageDecryptJobRecord
+            // TODO: SSKMessageSenderJobRecord
+            // TODO: OWSSessionResetJobRecord
+            // TODO: OWSDatabaseMigration
+
+            dbReadConnection.read { yapTransaction in
+                migrators += self.allKeyValueMigrators(yapTransaction: yapTransaction)
+
+                migrators += self.allUnorderedRecordMigrators(yapTransaction: yapTransaction)
+            }
+
+            // Migrate migrators
+            for migrator in migrators {
+                try! migrator.migrate(grdbTransaction: grdbTransaction)
+            }
+        }
+
         try storage.write { grdbTransaction in
             // Custom Finders - For more complex cases
             var jobRecordFinder: LegacyJobRecordFinder!
             var interactionFinder: LegacyInteractionFinder!
             var decryptJobFinder: LegacyUnorderedFinder<OWSMessageDecryptJob>!
-
-            // KeyValue Finders
-            var migrators = [GRDBMigrator]()
 
             // TODO: OWSMessageDecryptJob
             // TODO: SSKMessageDecryptJobRecord
@@ -109,10 +135,6 @@ extension OWS115GRDBMigration {
                 jobRecordFinder = LegacyJobRecordFinder(transaction: yapTransaction)
                 interactionFinder = LegacyInteractionFinder(transaction: yapTransaction)
                 decryptJobFinder = LegacyUnorderedFinder(transaction: yapTransaction)
-
-                migrators += self.allKeyValueMigrators(yapTransaction: yapTransaction)
-
-                migrators += self.allUnorderedRecordMigrators(yapTransaction: yapTransaction)
             }
 
             // custom migrations
@@ -122,11 +144,6 @@ extension OWS115GRDBMigration {
 
                 // migrate any job records from the one-off decrypt job queue to a record for the new generic durable job queue
                 return SSKMessageDecryptJobRecord(envelopeData: legacyJob.envelopeData, label: SSKMessageDecryptJobQueue.jobRecordLabel)
-            }
-
-            // Migrate migrators
-            for migrator in migrators {
-                try! migrator.migrate(grdbTransaction: grdbTransaction)
             }
 
             // Logging queries is helpful for normal debugging, but expensive during a migration
@@ -156,7 +173,8 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.emojiMapStore", keyStore: StickerManager.emojiMapStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
             GRDBKeyValueStoreMigrator<Any>(label: "preferences", keyStore: environment.preferences.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
 
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSOrphanDataCleaner", keyStore: OWSOrphanDataCleaner.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 1.0)
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSOrphanDataCleaner", keyStore: OWSOrphanDataCleaner.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
+            GRDBKeyValueStoreMigrator<Any>(label: "contactsManager", keyStore: contactsManager.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0)
         ]
     }
 

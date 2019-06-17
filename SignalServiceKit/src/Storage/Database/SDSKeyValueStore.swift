@@ -17,9 +17,9 @@ public class SDSKeyValueStore: NSObject {
     // By default, all reads/writes use this collection.
     public let collection: String
 
-    private static let collectionColumn = SDSColumnMetadata(columnName: "collection", columnType: .unicodeString, isOptional: false)
-    private static let keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
-    private static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
+    static let collectionColumn = SDSColumnMetadata(columnName: "collection", columnType: .unicodeString, isOptional: false)
+    static let keyColumn = SDSColumnMetadata(columnName: "key", columnType: .unicodeString, isOptional: false)
+    static let valueColumn = SDSColumnMetadata(columnName: "value", columnType: .blob, isOptional: false)
     // TODO: For now, store all key-value in a single table.
     public static let table = SDSTableMetadata(tableName: "keyvalue", columns: [
         collectionColumn,

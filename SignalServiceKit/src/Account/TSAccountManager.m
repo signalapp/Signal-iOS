@@ -48,8 +48,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 @property (nonatomic) Reachability *reachability;
 
-@property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
-
 @end
 
 #pragma mark -

@@ -10,12 +10,15 @@ NS_ASSUME_NONNULL_BEGIN
 NSErrorDomain const SSKJobRecordErrorDomain = @"SignalServiceKit.JobRecord";
 
 #pragma mark -
+
 @interface SSKJobRecord ()
 
 @property (nonatomic) SSKJobRecordStatus status;
 @property (nonatomic) UInt64 sortId;
 
 @end
+
+#pragma mark -
 
 @implementation SSKJobRecord
 
