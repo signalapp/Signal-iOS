@@ -113,6 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (SSKFeatureFlags.strictYDBExtensions) {
             OWSFail(@"Couldn't load database extension: %@.", extensionName);
         } else {
+            LogStackTrace();
             OWSFailDebug(@"Couldn't load database extension: %@.", extensionName);
         }
         return nil;
