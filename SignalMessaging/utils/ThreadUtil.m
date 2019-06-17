@@ -716,6 +716,13 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
             [self removeAllObjectsInCollection:[TSAttachment collection]
                                          class:[TSAttachment class]
                                    transaction:transaction];
+            @try {
+                [self removeAllObjectsInCollection:[SignalRecipient collection]
+                                             class:[SignalRecipient class]
+                                       transaction:transaction];
+            } @catch (NSException *exception) {
+                // Do nothing
+            }
         }];
     [TSAttachmentStream deleteAttachments];
 }

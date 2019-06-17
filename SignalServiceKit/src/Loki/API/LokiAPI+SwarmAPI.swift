@@ -117,6 +117,7 @@ internal extension Promise {
                     print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
                     LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
                 case 432:
+                    // The PoW difficulty is too low
                     if case NetworkManagerError.taskError(_, let underlyingError) = error, let nsError = underlyingError as? NSError,
                         let data = nsError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data, let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON,
                         let powDifficulty = json["difficulty"] as? Int {

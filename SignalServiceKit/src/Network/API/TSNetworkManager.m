@@ -108,6 +108,8 @@ dispatch_queue_t NetworkManagerQueue()
         NSString *headerValue = request.allHTTPHeaderFields[headerField];
         [self.sessionManager.requestSerializer setValue:headerValue forHTTPHeaderField:headerField];
     }
+    
+    self.sessionManager.requestSerializer.timeoutInterval = request.timeoutInterval;
 
     if ([request.HTTPMethod isEqualToString:@"GET"]) {
         [self.sessionManager GET:request.URL.absoluteString
