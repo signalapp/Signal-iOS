@@ -41,7 +41,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define keyBackupCensorshipPrefix @"backup"
 
 #define contactDiscoveryEnclaveId @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
-#define keyBackupEnclaveId @"test" // TODO: Actual id
+#define keyBackupEnclaveId @"test" // TODO: Real enclave Id
 
 #define USING_PRODUCTION_SERVICE
 
@@ -63,7 +63,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define keyBackupCensorshipPrefix @"backup-staging"
 //
 //#define contactDiscoveryEnclaveId @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
-//#define keyBackupEnclaveId @"test" // TODO: Actual id
+//#define keyBackupEnclaveId @"test" // TODO: Real enclave Id
 
 //#endif
 

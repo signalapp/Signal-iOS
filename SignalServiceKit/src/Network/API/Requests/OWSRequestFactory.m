@@ -496,7 +496,7 @@ NS_ASSUME_NONNULL_BEGIN
             path = @"v1/directory/auth";
             break;
         case RemoteAttestationServiceKeyBackup:
-            path = @"v1/backup/auth";
+            path = @"v1/storage/auth";
             break;
     }
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];

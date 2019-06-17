@@ -459,7 +459,7 @@ class CDSFeedbackOperation: OWSOperation {
                 case .failed:
                     self.makeRequest(result: .attestationError(reason: "Remote Attestation failed: \(reason ?? "unknown")"))
                 @unknown default:
-                    self.makeRequest(result: .unexpectedError(reason: "Remote Attestation assertionError: unknown cdsError.code"))
+                    self.makeRequest(result: .unexpectedError(reason: "Remote Attestation assertionError: unknown raError.code"))
                 }
             case ContactDiscoveryError.assertionError(let assertionDescription):
                 self.makeRequest(result: .unexpectedError(reason: "assertionError: \(assertionDescription)"))
