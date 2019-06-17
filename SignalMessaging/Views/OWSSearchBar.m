@@ -62,11 +62,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    UIColor *foregroundColor = Theme.placeholderColor;
+    UIColor *foregroundColor = UIColor.lokiLightestGray;
     searchBar.barTintColor = Theme.backgroundColor;
     searchBar.barStyle = Theme.barStyle;
     searchBar.tintColor = UIColor.lokiGreen;
-
+    
     // Hide searchBar border.
     // Alternatively we could hide the border by using `UISearchBarStyleMinimal`, but that causes an issue when toggling
     // from light -> dark -> light theme wherein the textField background color appears darker than it should
@@ -94,6 +94,12 @@ NS_ASSUME_NONNULL_BEGIN
             UITextField *textField = (UITextField *)view;
             textField.backgroundColor = Theme.searchFieldBackgroundColor;
             textField.textColor = Theme.primaryColor;
+            NSString *placeholder = textField.placeholder;
+            if (placeholder != nil) {
+                NSMutableAttributedString *attributedPlaceholder = [[NSMutableAttributedString alloc] initWithString:placeholder];
+                [attributedPlaceholder addAttribute:NSForegroundColorAttributeName value:foregroundColor range:NSMakeRange(0, placeholder.length)];
+                textField.attributedPlaceholder = attributedPlaceholder;
+            }
             textField.keyboardAppearance = Theme.keyboardAppearance;
         }
     }];

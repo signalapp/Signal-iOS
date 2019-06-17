@@ -807,6 +807,11 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (void)showNewConversationView
 {
+    LKNewConversationViewController *viewController = [LKNewConversationViewController new];
+    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:viewController];
+    [self.navigationController presentViewController:navigationController animated:YES completion:nil];
+    
+    /**
     OWSAssertIsOnMainThread();
 
     OWSLogInfo(@"");
@@ -825,6 +830,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:viewController];
         [self.navigationController presentViewController:modal animated:YES completion:nil];
     }];
+     */
 }
 
 - (void)viewWillAppear:(BOOL)animated

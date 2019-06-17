@@ -2592,3 +2592,8 @@
 "Display Name" = "Display Name";
 "Loki Messenger" = "Loki Messenger";
 "Privacy Policy" = "Privacy Policy";
+"New Conversation" = "New Conversation";
+"Enter a Public Key" = "Enter a Public Key";
+"For example: 059abcf223aa8c10e3dc2d623688b75dd25896794717e4a9c486772664fc95e41e." = "For example: 059abcf223aa8c10e3dc2d623688b75dd25896794717e4a9c486772664fc95e41e.";
+"Invalid Public Key" = "Invalid Public Key";
+"Please check the public key you entered and try again." = "Please check the public key you entered and try again.";

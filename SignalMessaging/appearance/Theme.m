@@ -113,7 +113,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)placeholderColor
 {
-    return UIColor.lokiLightGray;
+    return UIColor.lokiGray;
 }
 
 + (UIColor *)hairlineColor
