@@ -1208,6 +1208,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
                                                      [self tableViewCellTappedDelete:swipedIndexPath];
                                                  }];
 
+            /**
             UITableViewRowAction *archiveAction;
             if (self.homeViewMode == HomeViewMode_Inbox) {
                 archiveAction = [UITableViewRowAction
@@ -1228,10 +1229,11 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
                                    [self archiveIndexPath:tappedIndexPath];
                                }];
             }
+             */
 
             // The first action will be auto-performed for "very long swipes".
             return @[
-                archiveAction,
+                /*archiveAction,*/
                 deleteAction,
             ];
         }
