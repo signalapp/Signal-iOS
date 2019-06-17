@@ -5,14 +5,14 @@
 #import "ConversationViewCell.h"
 
 @class OWSMessageBubbleView;
-@protocol FriendRequestViewDelegate;
+@protocol LKFriendRequestViewDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSMessageCell : ConversationViewCell
 
 @property (nonatomic, readonly) OWSMessageBubbleView *messageBubbleView;
-@property (nonatomic, nullable, weak) id<FriendRequestViewDelegate> friendRequestViewDelegate;
+@property (nonatomic, nullable, weak) id<LKFriendRequestViewDelegate> friendRequestViewDelegate;
 
 + (NSString *)cellReuseIdentifier;
 

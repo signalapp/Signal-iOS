@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic) NSLayoutConstraint *messageBubbleViewBottomConstraint;
 @property (nonatomic) AvatarImageView *avatarView;
-@property (nonatomic, nullable) FriendRequestView *friendRequestView;
+@property (nonatomic, nullable) LKFriendRequestView *friendRequestView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
@@ -207,7 +207,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     if (self.message.isFriendRequest) {
-        self.friendRequestView = [[FriendRequestView alloc] initWithMessage:self.message];
+        self.friendRequestView = [[LKFriendRequestView alloc] initWithMessage:self.message];
         self.friendRequestView.delegate = self.friendRequestViewDelegate;
         [self.contentView addSubview:self.friendRequestView];
         [self.messageBubbleViewBottomConstraint setActive:NO];
@@ -357,7 +357,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (self.message.isFriendRequest) {
-        cellSize.height += [FriendRequestView calculateHeightWithMessage:self.message conversationStyle:self.conversationStyle];
+        cellSize.height += [LKFriendRequestView calculateHeightWithMessage:self.message conversationStyle:self.conversationStyle];
     }
     
     cellSize = CGSizeCeil(cellSize);

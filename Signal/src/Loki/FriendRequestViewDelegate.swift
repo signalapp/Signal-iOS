@@ -1,5 +1,6 @@
 
-@objc protocol FriendRequestViewDelegate {
+@objc(LKFriendRequestViewDelegate)
+protocol FriendRequestViewDelegate {
     /// Implementations of this method should update the thread's friend request status
     /// and send a friend request accepted message.
     @objc func acceptFriendRequest(_ friendRequest: TSIncomingMessage)

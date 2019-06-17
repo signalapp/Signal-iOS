@@ -124,7 +124,7 @@ typedef enum : NSUInteger {
     ConversationViewCellDelegate,
     ConversationInputTextViewDelegate,
     ConversationSearchControllerDelegate,
-    FriendRequestViewDelegate,
+    LKFriendRequestViewDelegate,
     LongTextViewDelegate,
     MessageActionsDelegate,
     MessageDetailViewDelegate,

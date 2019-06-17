@@ -1,5 +1,6 @@
 
-@objc final class FriendRequestView : UIView {
+@objc(LKFriendRequestView)
+final class FriendRequestView : UIView {
     private let message: TSMessage
     @objc weak var delegate: FriendRequestViewDelegate?
 
