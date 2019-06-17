@@ -68,6 +68,10 @@ extension OWS115GRDBMigration {
         return SSKEnvironment.shared.signedPreKeyStore
     }
 
+    var environment: Environment {
+        return Environment.shared
+    }
+
     // MARK: -
 
     func run() throws {
@@ -148,7 +152,8 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "AppPreferences", keyStore: AppPreferences.store, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
             GRDBKeyValueStoreMigrator<Any>(label: "SSKPreferences", keyStore: SSKPreferences.store, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
             GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.store", keyStore: StickerManager.store, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
-            GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.emojiMapStore", keyStore: StickerManager.emojiMapStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0)
+            GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.emojiMapStore", keyStore: StickerManager.emojiMapStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
+            GRDBKeyValueStoreMigrator<Any>(label: "preferences", keyStore: environment.preferences.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0)
         ]
     }
 

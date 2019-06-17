@@ -168,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSStorage resetAllStorage];
     [OWSUserProfile resetProfileStorage];
-    [Environment.shared.preferences clear];
+    [Environment.shared.preferences removeAllValues];
     [AppEnvironment.shared.notificationPresenter clearAllNotifications];
     [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appSharedDataDirectoryPath]];
     [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appDocumentDirectoryPath]];

@@ -107,4 +107,54 @@ class SDSKeyValueStoreTest: SSKBaseTestSwift {
             XCTAssertEqual("valueC".data(using: .utf8)!, store.getData("dataB", transaction: transaction))
         }
     }
+
+    func test_misc() {
+        let store = SDSKeyValueStore(collection: "test")
+
+        self.write { transaction in
+            let key = "string"
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+            store.setString("value", key: key, transaction: transaction)
+            XCTAssertTrue(store.hasValue(forKey: key, transaction: transaction))
+            store.removeValue(forKey: key, transaction: transaction)
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+        }
+
+        self.write { transaction in
+            let key = "date"
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+            store.setDate(Date(), key: key, transaction: transaction)
+            XCTAssertTrue(store.hasValue(forKey: key, transaction: transaction))
+            store.removeValue(forKey: key, transaction: transaction)
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+        }
+
+        let bytes = Randomness.generateRandomBytes(32)!
+        self.write { transaction in
+            let key = "data"
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+            store.setData(bytes, key: key, transaction: transaction)
+            XCTAssertTrue(store.hasValue(forKey: key, transaction: transaction))
+            store.removeValue(forKey: key, transaction: transaction)
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+        }
+
+        self.write { transaction in
+            let key = "bool"
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+            store.setBool(true, key: key, transaction: transaction)
+            XCTAssertTrue(store.hasValue(forKey: key, transaction: transaction))
+            store.removeValue(forKey: key, transaction: transaction)
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+        }
+
+        self.write { transaction in
+            let key = "uint"
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+            store.setUInt(0, key: key, transaction: transaction)
+            XCTAssertTrue(store.hasValue(forKey: key, transaction: transaction))
+            store.removeValue(forKey: key, transaction: transaction)
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+        }
+    }
 }
