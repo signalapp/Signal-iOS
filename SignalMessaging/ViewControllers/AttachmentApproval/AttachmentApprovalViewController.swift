@@ -47,7 +47,7 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
 
     public static let canAddMore = AttachmentApprovalViewControllerOptions(rawValue: 1 << 0)
     public static let hasCancel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 1)
-    public static let cameraMode = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
+    public static let canToggleExpiration = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
 }
 
 // MARK: -
@@ -735,7 +735,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         attachmentTextToolbar.isUserInteractionEnabled = false
         attachmentTextToolbar.isHidden = true
 
-        if options.contains(.cameraMode),
+        if options.contains(.canToggleExpiration),
             preferences.isPerMessageExpirationEnabled() {
             for attachment in attachments {
                 attachment.hasPerMessageExpiration = true

@@ -32,13 +32,13 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     weak var attachmentTextToolbarDelegate: AttachmentTextToolbarDelegate?
 
     var hasPerMessageExpiration: Bool {
-        return (options.contains(.cameraMode) &&
+        return (options.contains(.canToggleExpiration) &&
                 preferences.isPerMessageExpirationEnabled())
     }
 
     var messageText: String? {
         get {
-            // Ignore caption if "per-message expiration" is enabled.
+            // Ignore message text if "per-message expiration" is enabled.
             guard !hasPerMessageExpiration else {
                 return nil
             }
@@ -151,7 +151,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         layoutButtonWithinWrapper(sendButton)
         layoutButtonWithinWrapper(perMessageExpirationButton)
 
-        perMessageExpirationWrapper.isHidden = !options.contains(.cameraMode)
+        perMessageExpirationWrapper.isHidden = !options.contains(.canToggleExpiration)
 
         updateContent()
     }
@@ -179,7 +179,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         let imageName = isPerMessageExpirationEnabled ? "timer-24" : "timer-disabled-24"
         perMessageExpirationButton.setTemplateImageName(imageName, tintColor: Theme.darkThemePrimaryColor)
 
-        perMessageExpirationLabel.isHidden = !options.contains(.cameraMode)
         perMessageExpirationLabel.isHidden = !hasPerMessageExpiration
         textContainer.isHidden = hasPerMessageExpiration
 

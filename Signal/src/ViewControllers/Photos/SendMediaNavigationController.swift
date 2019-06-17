@@ -356,7 +356,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
             updateButtons(topViewController: photoCaptureViewController)
         } else {
             pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem],
-                                       options: [.cameraMode])
+                                       options: [.canToggleExpiration])
         }
     }
 
