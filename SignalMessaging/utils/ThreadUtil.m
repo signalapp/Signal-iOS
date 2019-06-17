@@ -707,15 +707,14 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     [OWSPrimaryStorage.sharedManager.newDatabaseConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self removeAllObjectsInCollection:[TSThread collection] class:[TSThread class] transaction:transaction];
+            [self removeAllObjectsInCollection:[TSThread collection]
+                                         class:[TSThread class]
+                                   transaction:transaction];
             [self removeAllObjectsInCollection:[TSInteraction collection]
                                          class:[TSInteraction class]
                                    transaction:transaction];
             [self removeAllObjectsInCollection:[TSAttachment collection]
                                          class:[TSAttachment class]
-                                   transaction:transaction];
-            [self removeAllObjectsInCollection:[SignalRecipient collection]
-                                         class:[SignalRecipient class]
                                    transaction:transaction];
         }];
     [TSAttachmentStream deleteAttachments];
