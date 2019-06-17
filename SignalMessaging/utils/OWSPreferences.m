@@ -46,6 +46,7 @@ NSString *const OWSPreferencesKeyShouldNotifyOfNewAccountKey = @"OWSPreferencesK
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
+NSString *const OWSPreferencesKeyIsPerMessageExpirationEnabled = @"OWSPreferencesKeyIsPerMessageExpirationEnabled";
 
 @implementation OWSPreferences
 
@@ -413,6 +414,16 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     }
 
     return [self hasValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
+}
+
+- (BOOL)isPerMessageExpirationEnabled
+{
+    return [self boolForKey:OWSPreferencesKeyIsPerMessageExpirationEnabled defaultValue:NO];
+}
+
+- (void)setIsPerMessageExpirationEnabled:(BOOL)value
+{
+    [self setBool:value forKey:OWSPreferencesKeyIsPerMessageExpirationEnabled];
 }
 
 #pragma mark direct call connectivity (non-TURN)

@@ -27,6 +27,11 @@ public class PerMessageExpiration: NSObject {
         return TSAccountManager.sharedInstance()
     }
 
+    // MARK: - Constants
+
+    @objc
+    public static let kExpirationDurationSeconds: UInt32 = 10
+
     // MARK: -
 
     @objc

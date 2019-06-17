@@ -15,6 +15,8 @@ protocol AttachmentApprovalInputAccessoryViewDelegate: class {
 
 class AttachmentApprovalInputAccessoryView: UIView {
 
+    private let options: AttachmentApprovalViewControllerOptions
+
     weak var delegate: AttachmentApprovalInputAccessoryViewDelegate?
 
     let attachmentTextToolbar: AttachmentTextToolbar
@@ -32,8 +34,10 @@ class AttachmentApprovalInputAccessoryView: UIView {
 
     let kGalleryRailViewHeight: CGFloat = 72
 
-    required init() {
-        attachmentTextToolbar = AttachmentTextToolbar()
+    required init(options: AttachmentApprovalViewControllerOptions) {
+        self.options = options
+
+        attachmentTextToolbar = AttachmentTextToolbar(options: options)
         attachmentCaptionToolbar = AttachmentCaptionToolbar()
 
         galleryRailView = GalleryRailView()

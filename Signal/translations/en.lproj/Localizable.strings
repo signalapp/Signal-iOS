@@ -1637,6 +1637,9 @@
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
 
+/* Label that indicates that 'per-message expiration' is active. */
+"PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Disappearing Message";
+
 /* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "Tap to view";
 

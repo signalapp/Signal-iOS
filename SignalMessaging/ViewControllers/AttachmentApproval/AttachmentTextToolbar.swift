@@ -19,10 +19,31 @@ protocol AttachmentTextToolbarDelegate: class {
 
 class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
+    // MARK: - Dependencies
+
+    private var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
+
+    // MARK: - Properties
+
+    private let options: AttachmentApprovalViewControllerOptions
+
     weak var attachmentTextToolbarDelegate: AttachmentTextToolbarDelegate?
 
+    var hasPerMessageExpiration: Bool {
+        return (options.contains(.canToggleExpiration) &&
+                preferences.isPerMessageExpirationEnabled())
+    }
+
     var messageText: String? {
-        get { return textView.text }
+        get {
+            // Ignore message text if "per-message expiration" is enabled.
+            guard !hasPerMessageExpiration else {
+                return nil
+            }
+            return textView.text
+        }
 
         set {
             textView.text = newValue
@@ -38,14 +59,13 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         // Otherwise we risk obscuring too much of the content.
         return UIDevice.current.orientation.isPortrait ? 160 : 100
     }
-    var textViewHeightConstraint: NSLayoutConstraint!
-    var textViewHeight: CGFloat
+    var textViewHeightConstraint: NSLayoutConstraint?
+    let kToolbarMargin: CGFloat = 8
 
     // MARK: - Initializers
 
-    init() {
-        self.sendButton = UIButton(type: .system)
-        self.textViewHeight = kMinTextViewHeight
+    init(options: AttachmentApprovalViewControllerOptions) {
+        self.options = options
 
         super.init(frame: CGRect.zero)
 
@@ -57,36 +77,63 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         textView.delegate = self
 
+        let sendButton = UIButton(type: .system)
         let sendTitle = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
         sendButton.setTitle(sendTitle, for: .normal)
         sendButton.addTarget(self, action: #selector(didTapSend), for: .touchUpInside)
-
         sendButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: 16)
         sendButton.titleLabel?.textAlignment = .center
         sendButton.tintColor = Theme.galleryHighlightColor
-
         // Increase hit area of send button
         sendButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
 
-        let contentView = UIView()
-        contentView.addSubview(sendButton)
-        contentView.addSubview(textContainer)
-        contentView.addSubview(lengthLimitLabel)
-        addSubview(contentView)
-        contentView.autoPinEdgesToSuperviewEdges()
+        perMessageExpirationButton.block = { [weak self] in
+            self?.didTapPerMessageExpirationButton()
+        }
+        // Increase hit area of button
+        perMessageExpirationButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
+
+        // TODO: Revisit this copy.
+        perMessageExpirationLabel.text = NSLocalizedString("PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR", comment: "Label that indicates that 'per-message expiration' is active.")
+        perMessageExpirationLabel.font = UIFont.ows_dynamicTypeSubheadline
+        perMessageExpirationLabel.textColor = Theme.darkThemePrimaryColor
+        perMessageExpirationLabel.lineBreakMode = .byTruncatingTail
+        perMessageExpirationLabel.textAlignment = .center
 
         // Layout
-        let kToolbarMargin: CGFloat = 8
 
         // We have to wrap the toolbar items in a content view because iOS (at least on iOS10.3) assigns the inputAccessoryView.layoutMargins
         // when resigning first responder (verified by auditing with `layoutMarginsDidChange`).
         // The effect of this is that if we were to assign these margins to self.layoutMargins, they'd be blown away if the
         // user dismisses the keyboard, giving the input accessory view a wonky layout.
-        contentView.layoutMargins = UIEdgeInsets(top: kToolbarMargin, left: kToolbarMargin, bottom: kToolbarMargin, right: kToolbarMargin)
+        self.layoutMargins = UIEdgeInsets(top: kToolbarMargin, left: kToolbarMargin, bottom: kToolbarMargin, right: kToolbarMargin)
 
-        self.textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
+        let sendWrapper = UIView()
+        sendWrapper.addSubview(sendButton)
+        let perMessageExpirationWrapper = UIView()
+        perMessageExpirationWrapper.addSubview(perMessageExpirationButton)
 
-        // We pin all three edges explicitly rather than doing something like:
+        let hStackView = UIStackView()
+        hStackView.axis = .horizontal
+        hStackView.alignment = .fill
+        hStackView.spacing = kToolbarMargin
+        self.addSubview(hStackView)
+        hStackView.autoPinEdgesToSuperviewMargins()
+
+        var views = [ perMessageExpirationWrapper, perMessageExpirationLabel, textContainer, sendWrapper ]
+        // UIStackView's horizontal layout is leading-to-trailing.
+        // We want left-to-right ordering, so reverse if RTL.
+        if CurrentAppContext().isRTL {
+            views.reverse()
+        }
+        for view in views {
+            hStackView.addArrangedSubview(view)
+        }
+
+        textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
+        perMessageExpirationLabel.autoSetDimension(.height, toSize: kMinTextViewHeight, relation: .greaterThanOrEqual)
+
+        // We pin edges explicitly rather than doing something like:
         //  textView.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
         // because that method uses `leading` / `trailing` rather than `left` vs. `right`.
         // So it doesn't work as expected with RTL layouts when we explicitly want something
@@ -94,20 +141,19 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         // I believe this is a bug in PureLayout. Filed here: https://github.com/PureLayout/PureLayout/issues/209
         textContainer.autoPinEdge(toSuperviewMargin: .top)
         textContainer.autoPinEdge(toSuperviewMargin: .bottom)
-        textContainer.autoPinEdge(toSuperviewMargin: .left)
 
-        sendButton.autoPinEdge(.left, to: .right, of: textContainer, withOffset: kToolbarMargin)
-        sendButton.autoPinEdge(.bottom, to: .bottom, of: textContainer, withOffset: -3)
+        let layoutButtonWithinWrapper = { (button: UIView) in
+            button.autoPinWidthToSuperview()
+            button.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
+            button.setContentHuggingHigh()
+            button.setCompressionResistanceHigh()
+        }
+        layoutButtonWithinWrapper(sendButton)
+        layoutButtonWithinWrapper(perMessageExpirationButton)
 
-        sendButton.autoPinEdge(toSuperviewMargin: .right)
-        sendButton.setContentHuggingHigh()
-        sendButton.setCompressionResistanceHigh()
+        perMessageExpirationWrapper.isHidden = !options.contains(.canToggleExpiration)
 
-        lengthLimitLabel.autoPinEdge(toSuperviewMargin: .left)
-        lengthLimitLabel.autoPinEdge(toSuperviewMargin: .right)
-        lengthLimitLabel.autoPinEdge(.bottom, to: .top, of: textContainer, withOffset: -6)
-        lengthLimitLabel.setContentHuggingHigh()
-        lengthLimitLabel.setCompressionResistanceHigh()
+        updateContent()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -126,25 +172,18 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     // MARK: - Subviews
 
-    private let sendButton: UIButton
+    private func updateContent() {
+        AssertIsOnMainThread()
 
-    private lazy var lengthLimitLabel: UILabel = {
-        let lengthLimitLabel = UILabel()
+        let isPerMessageExpirationEnabled = preferences.isPerMessageExpirationEnabled()
+        let imageName = isPerMessageExpirationEnabled ? "timer-24" : "timer-disabled-24"
+        perMessageExpirationButton.setTemplateImageName(imageName, tintColor: Theme.darkThemePrimaryColor)
 
-        // Length Limit Label shown when the user inputs too long of a message
-        lengthLimitLabel.textColor = .white
-        lengthLimitLabel.text = NSLocalizedString("ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED", comment: "One-line label indicating the user can add no more text to the media message field.")
-        lengthLimitLabel.textAlignment = .center
+        perMessageExpirationLabel.isHidden = !hasPerMessageExpiration
+        textContainer.isHidden = hasPerMessageExpiration
 
-        // Add shadow in case overlayed on white content
-        lengthLimitLabel.layer.shadowColor = UIColor.black.cgColor
-        lengthLimitLabel.layer.shadowOffset = .zero
-        lengthLimitLabel.layer.shadowOpacity = 0.8
-        lengthLimitLabel.layer.shadowRadius = 2.0
-        lengthLimitLabel.isHidden = true
-
-        return lengthLimitLabel
-    }()
+        updateHeight(textView: textView)
+    }
 
     lazy var textView: UITextView = {
         let textView = buildTextView()
@@ -195,11 +234,29 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         return textView
     }
 
+    private let perMessageExpirationButton = OWSButton()
+
+    private let perMessageExpirationLabel = UILabel()
+
     // MARK: - Actions
 
-    @objc func didTapSend() {
+    @objc
+    func didTapSend() {
+        assert(attachmentTextToolbarDelegate != nil)
+
         textView.acceptAutocorrectSuggestion()
         attachmentTextToolbarDelegate?.attachmentTextToolbarDidTapSend(self)
+    }
+
+    @objc
+    func didTapPerMessageExpirationButton() {
+        AssertIsOnMainThread()
+
+        // Toggle value.
+        let isPerMessageExpirationEnabled = !preferences.isPerMessageExpirationEnabled()
+        preferences.setIsPerMessageExpirationEnabled(isPerMessageExpirationEnabled)
+
+        updateContent()
     }
 
     // MARK: - UITextViewDelegate
@@ -210,52 +267,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     }
 
     public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-
-        if !FeatureFlags.sendingMediaWithOversizeText {
-            let existingText: String = textView.text ?? ""
-            let proposedText: String = (existingText as NSString).replacingCharacters(in: range, with: text)
-
-            // Don't complicate things by mixing media attachments with oversize text attachments
-            guard proposedText.utf8.count < kOversizeTextMessageSizeThreshold else {
-                Logger.debug("long text was truncated")
-                self.lengthLimitLabel.isHidden = false
-
-                // `range` represents the section of the existing text we will replace. We can re-use that space.
-                // Range is in units of NSStrings's standard UTF-16 characters. Since some of those chars could be
-                // represented as single bytes in utf-8, while others may be 8 or more, the only way to be sure is
-                // to just measure the utf8 encoded bytes of the replaced substring.
-                let bytesAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").utf8.count
-
-                // Accept as much of the input as we can
-                let byteBudget: Int = Int(kOversizeTextMessageSizeThreshold) - bytesAfterDelete
-                if byteBudget >= 0, let acceptableNewText = text.truncated(toByteCount: UInt(byteBudget)) {
-                    textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
-                }
-
-                return false
-            }
-            self.lengthLimitLabel.isHidden = true
-
-            // After verifying the byte-length is sufficiently small, verify the character count is within bounds.
-            guard proposedText.count < kMaxMessageBodyCharacterCount else {
-                Logger.debug("hit attachment message body character count limit")
-
-                self.lengthLimitLabel.isHidden = false
-
-                // `range` represents the section of the existing text we will replace. We can re-use that space.
-                let charsAfterDelete: Int = (existingText as NSString).replacingCharacters(in: range, with: "").count
-
-                // Accept as much of the input as we can
-                let charBudget: Int = Int(kMaxMessageBodyCharacterCount) - charsAfterDelete
-                if charBudget >= 0 {
-                    let acceptableNewText = String(text.prefix(charBudget))
-                    textView.text = (existingText as NSString).replacingCharacters(in: range, with: acceptableNewText)
-                }
-
-                return false
-            }
-        }
-
         // Though we can wrap the text, we don't want to encourage multline captions, plus a "done" button
         // allows the user to get the keyboard out of the way while in the attachment approval view.
         if text == "\n" {
@@ -299,16 +310,21 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     }
 
     private func updateHeight(textView: UITextView) {
+        guard let textViewHeightConstraint = textViewHeightConstraint else {
+            owsFailDebug("Missing constraint.")
+            return
+        }
+
         // compute new height assuming width is unchanged
         let currentSize = textView.frame.size
-        let newHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
+        let textViewHeight = clampedTextViewHeight(fixedWidth: currentSize.width)
 
-        if newHeight != textViewHeight {
-            Logger.debug("TextView height changed: \(textViewHeight) -> \(newHeight)")
-            textViewHeight = newHeight
-            textViewHeightConstraint?.constant = textViewHeight
+        if textViewHeightConstraint.constant != textViewHeight {
+            Logger.debug("TextView height changed: \(textViewHeightConstraint.constant) -> \(textViewHeight)")
+            textViewHeightConstraint.constant = textViewHeight
             invalidateIntrinsicContentSize()
         }
+        textViewHeightConstraint.isActive = !hasPerMessageExpiration
     }
 
     private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {

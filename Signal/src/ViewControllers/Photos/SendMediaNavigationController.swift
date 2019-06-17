@@ -53,11 +53,6 @@ class SendMediaNavigationController: OWSNavigationController {
         doneButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
         doneButton.autoPinEdge(toSuperviewMargin: .trailing)
 
-        view.addSubview(cameraModeButton)
-        cameraModeButton.setCompressionResistanceHigh()
-        cameraModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        cameraModeButton.autoPinEdge(toSuperviewMargin: .leading)
-
         view.addSubview(mediaLibraryModeButton)
         mediaLibraryModeButton.setCompressionResistanceHigh()
         mediaLibraryModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
@@ -135,7 +130,6 @@ class SendMediaNavigationController: OWSNavigationController {
         case is AttachmentApprovalViewController:
             batchModeButton.isHidden = true
             doneButton.isHidden = true
-            cameraModeButton.isHidden = true
             mediaLibraryModeButton.isHidden = true
         case is ImagePickerGridController:
             let showDoneButton = isInBatchSelectMode && attachmentCount > 0
@@ -143,9 +137,6 @@ class SendMediaNavigationController: OWSNavigationController {
 
             batchModeButton.isHidden = showDoneButton
             batchModeButton.isBeingPresentedOverPhotoCapture = false
-
-            cameraModeButton.isHidden = false
-            cameraModeButton.isBeingPresentedOverPhotoCapture = false
 
             mediaLibraryModeButton.isHidden = true
             mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
@@ -155,9 +146,6 @@ class SendMediaNavigationController: OWSNavigationController {
 
             batchModeButton.isHidden = showDoneButton
             batchModeButton.isBeingPresentedOverPhotoCapture = true
-
-            cameraModeButton.isHidden = true
-            cameraModeButton.isBeingPresentedOverPhotoCapture = true
 
             mediaLibraryModeButton.isHidden = false
             mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = true
@@ -182,15 +170,6 @@ class SendMediaNavigationController: OWSNavigationController {
     private func didTapBatchModeButton() {
         isInBatchSelectMode = !isInBatchSelectMode
         assert(isInBatchSelectMode || attachmentCount <= 1)
-    }
-
-    private func didTapCameraModeButton() {
-        self.ows_askForCameraPermissions { isGranted in
-            guard isGranted else { return }
-
-            BenchEventStart(title: "Show-Camera", eventId: "Show-Camera")
-            self.fadeTo(viewControllers: [self.captureViewController])
-        }
     }
 
     private func didTapMediaLibraryModeButton() {
@@ -218,13 +197,6 @@ class SendMediaNavigationController: OWSNavigationController {
                                      tintColor: .ows_white,
                                      diameter: type(of: self).bottomButtonWidth,
                                      block: { [weak self] in self?.didTapBatchModeButton() })
-    }()
-
-    private lazy var cameraModeButton: SendMediaBottomButton = {
-        return SendMediaBottomButton(imageName: "camera-filled-28",
-                                     tintColor: .ows_white,
-                                     diameter: type(of: self).bottomButtonWidth,
-                                     block: { [weak self] in self?.didTapCameraModeButton() })
     }()
 
     private lazy var mediaLibraryModeButton: SendMediaBottomButton = {
@@ -258,13 +230,15 @@ class SendMediaNavigationController: OWSNavigationController {
         return vc
     }()
 
-    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem]) {
+    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem],
+                                            options: AttachmentApprovalViewControllerOptions) {
         guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
             owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(options: [.canAddMore], attachmentApprovalItems: attachmentApprovalItems)
+        let approvalViewController = AttachmentApprovalViewController(options: options,
+                                                                      attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
@@ -381,7 +355,8 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         if isInBatchSelectMode {
             updateButtons(topViewController: photoCaptureViewController)
         } else {
-            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem])
+            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem],
+                                       options: [.canToggleExpiration])
         }
     }
 
@@ -423,7 +398,8 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
             when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises).map { attachmentApprovalItems in
                 Logger.debug("built all attachments")
                 modal.dismiss {
-                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems)
+                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems,
+                                                    options: [.canAddMore])
                 }
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")

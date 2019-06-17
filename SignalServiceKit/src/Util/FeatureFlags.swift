@@ -14,17 +14,6 @@ public class FeatureFlags: NSObject {
         return false
     }
 
-    /// iOS has long supported sending oversized text as a sidecar attachment. The other clients
-    /// simply displayed it as a text attachment. As part of the new cross-client long-text feature,
-    /// we want to be able to display long text with attachments as well. Existing iOS clients
-    /// won't properly display this, so we'll need to wait a while for rollout.
-    /// The stakes aren't __too__ high, because legacy clients won't lose data - they just won't
-    /// see the media attached to a long text message until they update their client.
-    @objc
-    public static var sendingMediaWithOversizeText: Bool {
-        return true
-    }
-
     @objc
     public static var useGRDB: Bool {
         if OWSIsDebugBuild() {

@@ -34,7 +34,8 @@ public class GifPickerNavigationViewController: OWSNavigationController {
 extension GifPickerNavigationViewController: GifPickerViewControllerDelegate {
     func gifPickerDidSelect(attachment: SignalAttachment) {
         let attachmentApprovalItem = AttachmentApprovalItem(attachment: attachment)
-        let attachmentApproval = AttachmentApprovalViewController(options: [], attachmentApprovalItems: [attachmentApprovalItem])
+        let attachmentApproval = AttachmentApprovalViewController(options: [],
+                                                                  attachmentApprovalItems: [attachmentApprovalItem])
         attachmentApproval.approvalDelegate = self
         pushViewController(attachmentApproval, animated: true) {
             // Remove any selected state in case the user returns "back" to the gif picker.
