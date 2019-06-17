@@ -12,7 +12,6 @@
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -55,6 +54,7 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
     }
 }
 
+// TODO: Revisit after GRDB migration.
 NSArray<NSString *> *MiscCollectionsToBackup(void)
 {
     return @[
@@ -103,6 +103,23 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 @implementation OWSBackup
 
 @synthesize dbConnection = _dbConnection;
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+- (SDSKeyValueStore *)keyValueStore
+{
+    static SDSKeyValueStore *keyValueStore = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSPrimaryStorage_OWSBackupCollection];
+    });
+    return keyValueStore;
+}
+
+#pragma mark -
 
 + (instancetype)sharedManager
 {
@@ -246,52 +263,46 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 {
     OWSAssertDebug(value);
 
-    [self.dbConnection setDate:value
-                        forKey:OWSBackup_LastExportSuccessDateKey
-                  inCollection:OWSPrimaryStorage_OWSBackupCollection];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setDate:value key:OWSBackup_LastExportSuccessDateKey transaction:transaction];
+    }];
 }
 
 - (nullable NSDate *)lastExportSuccessDate
 {
-    return [self.dbConnection dateForKey:OWSBackup_LastExportSuccessDateKey
-                            inCollection:OWSPrimaryStorage_OWSBackupCollection];
+    return [self.keyValueStore getDate:OWSBackup_LastExportSuccessDateKey];
 }
 
 - (void)setLastExportFailureDate:(NSDate *)value
 {
     OWSAssertDebug(value);
 
-    [self.dbConnection setDate:value
-                        forKey:OWSBackup_LastExportFailureDateKey
-                  inCollection:OWSPrimaryStorage_OWSBackupCollection];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setDate:value key:OWSBackup_LastExportFailureDateKey transaction:transaction];
+    }];
 }
 
 
 - (nullable NSDate *)lastExportFailureDate
 {
-    return [self.dbConnection dateForKey:OWSBackup_LastExportFailureDateKey
-                            inCollection:OWSPrimaryStorage_OWSBackupCollection];
+    return [self.keyValueStore getDate:OWSBackup_LastExportFailureDateKey];
 }
 
 - (BOOL)isBackupEnabled
 {
-    return [self.dbConnection boolForKey:OWSBackup_IsBackupEnabledKey
-                            inCollection:OWSPrimaryStorage_OWSBackupCollection
-                            defaultValue:NO];
+    return [self.keyValueStore getBool:OWSBackup_IsBackupEnabledKey defaultValue:NO];
 }
 
 - (void)setIsBackupEnabled:(BOOL)value
 {
-    [self.dbConnection setBool:value
-                        forKey:OWSBackup_IsBackupEnabledKey
-                  inCollection:OWSPrimaryStorage_OWSBackupCollection];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setBool:value key:OWSBackup_IsBackupEnabledKey transaction:transaction];
 
-    if (!value) {
-        [self.dbConnection removeObjectForKey:OWSBackup_LastExportSuccessDateKey
-                                 inCollection:OWSPrimaryStorage_OWSBackupCollection];
-        [self.dbConnection removeObjectForKey:OWSBackup_LastExportFailureDateKey
-                                 inCollection:OWSPrimaryStorage_OWSBackupCollection];
-    }
+        if (!value) {
+            [self.keyValueStore removeValueForKey:OWSBackup_LastExportSuccessDateKey transaction:transaction];
+            [self.keyValueStore removeValueForKey:OWSBackup_LastExportFailureDateKey transaction:transaction];
+        }
+    }];
 
     [self postDidChangeNotification];
 
@@ -867,9 +878,20 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         return [AnyPromise promiseWithValue:error];
     }
 
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         // This should overwrite the attachment pointer with an attachment stream.
-        [stream saveWithTransaction:transaction];
+        //
+        // Since our "any" methods are strict about "insert vs. update", we need to
+        // explicitly remove the existing pointer before inserting the stream.
+        TSAttachment *_Nullable oldValue = [TSAttachment anyFetchWithUniqueId:stream.uniqueId transaction:transaction];
+        if (oldValue != nil) {
+            if ([oldValue isKindOfClass:[TSAttachmentStream class]]) {
+                OWSFailDebug(@"Unexpected stream found.");
+                return;
+            }
+            [oldValue anyRemoveWithTransaction:transaction];
+        }
+        [stream anyInsertWithTransaction:transaction];
     }];
 
     return [AnyPromise promiseWithValue:@(1)];

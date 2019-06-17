@@ -160,4 +160,11 @@ public extension SDSKeyValueStore {
             return self.setObject(value, key: key, transaction: transaction)
         }
     }
+
+    @objc
+    public func removeValue(forKey: String) {
+        return databaseStorage.write { (transaction) in
+            return self.removeValue(forKey: key, transaction: transaction)
+        }
+    }
 }

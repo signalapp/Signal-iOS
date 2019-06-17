@@ -26,6 +26,8 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 @end
 
+#pragma mark -
+
 @implementation OWSSystemSound
 
 - (instancetype)initWithURL:(NSURL *)url
