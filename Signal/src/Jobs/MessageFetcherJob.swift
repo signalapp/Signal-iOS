@@ -32,11 +32,20 @@ public class MessageFetcherJob: NSObject {
         return OWSSignalService.sharedInstance()
     }
 
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
     // MARK: 
 
     @discardableResult
     public func run() -> Promise<Void> {
         Logger.debug("")
+
+        guard tsAccountManager.isRegisteredAndReady else {
+            owsFailDebug("isRegisteredAndReady was unexpectedly false")
+            return Promise.value(())
+        }
 
         guard signalService.isCensorshipCircumventionActive else {
             Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")

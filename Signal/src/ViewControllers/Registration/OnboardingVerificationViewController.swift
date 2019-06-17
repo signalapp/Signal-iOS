@@ -489,12 +489,12 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON",
                                                                      comment: "Label for the 'resend code by SMS' button in the 'onboarding verification' view."),
                                             style: .default) { _ in
-                                                self.onboardingController.tryToRegister(fromViewController: self, smsVerification: true)
+                                                self.onboardingController.requestVerification(fromViewController: self, isSMS: true)
         })
         actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON",
                                                                      comment: "Label for the 'resend code by voice' button in the 'onboarding verification' view."),
                                             style: .default) { _ in
-                                                self.onboardingController.tryToRegister(fromViewController: self, smsVerification: false)
+                                                self.onboardingController.requestVerification(fromViewController: self, isSMS: false)
         })
         actionSheet.addAction(OWSAlerts.cancelAction)
 
@@ -516,7 +516,7 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
         // Temporarily hide the "resend link" button during the verification attempt.
         codeStateLink?.layer.opacity = 0.05
 
-        onboardingController.tryToVerify(fromViewController: self, completion: { (outcome) in
+        onboardingController.submitVerification(fromViewController: self, completion: { (outcome) in
             self.codeStateLink?.layer.opacity = 1
 
             if outcome == .invalidVerificationCode {

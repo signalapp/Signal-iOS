@@ -111,7 +111,7 @@ public class StickerManager: NSObject {
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             StickerManager.cleanupOrphans()
 
-            if TSAccountManager.sharedInstance().isRegisteredAndReady() {
+            if TSAccountManager.sharedInstance().isRegisteredAndReady {
                 StickerManager.refreshContents()
             }
         }
@@ -1055,7 +1055,7 @@ public class StickerManager: NSObject {
     private class func enqueueStickerSyncMessage(operationType: StickerPackOperationType,
                                                  packs: [StickerPackInfo],
                                                  transaction: SDSAnyWriteTransaction) {
-        guard tsAccountManager.isRegisteredAndReady() else {
+        guard tsAccountManager.isRegisteredAndReady else {
             return
         }
 
@@ -1065,7 +1065,7 @@ public class StickerManager: NSObject {
 
     @objc
     public class func syncAllInstalledPacks(transaction: SDSAnyWriteTransaction) {
-        guard tsAccountManager.isRegisteredAndReady() else {
+        guard tsAccountManager.isRegisteredAndReady else {
             return
         }
 
@@ -1082,7 +1082,7 @@ public class StickerManager: NSObject {
     @objc
     public class func processIncomingStickerPackOperation(_ proto: SSKProtoSyncMessageStickerPackOperation,
                                                            transaction: SDSAnyWriteTransaction) {
-        guard tsAccountManager.isRegisteredAndReady() else {
+        guard tsAccountManager.isRegisteredAndReady else {
             return
         }
 

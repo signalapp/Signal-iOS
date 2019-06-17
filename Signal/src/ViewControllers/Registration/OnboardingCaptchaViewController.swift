@@ -108,7 +108,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
 
     // MARK: -
 
-    private func parseCaptchaAndTryToRegister(url: URL) {
+    private func parseCaptchaAndRequestVerification(url: URL) {
         Logger.info("")
 
         guard let captchaToken = parseCaptcha(url: url) else {
@@ -121,7 +121,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         }
         onboardingController.update(captchaToken: captchaToken)
 
-        onboardingController.tryToRegister(fromViewController: self, smsVerification: true)
+        onboardingController.requestVerification(fromViewController: self, isSMS: true)
     }
 
     private func parseCaptcha(url: URL) -> String? {
@@ -153,7 +153,7 @@ extension OnboardingCaptchaViewController: WKNavigationDelegate {
         if url.scheme == "signalcaptcha" {
             decisionHandler(.cancel)
             DispatchQueue.main.async {
-                self.parseCaptchaAndTryToRegister(url: url)
+                self.parseCaptchaAndRequestVerification(url: url)
             }
             return
         }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,12 +12,25 @@ public typealias IdentityKey = Data
 @objc(SSKAccountServiceClient)
 public class AccountServiceClient: NSObject {
 
-    static var shared = AccountServiceClient()
+    public static var shared = AccountServiceClient()
 
     private let serviceClient: SignalServiceClient
 
     override init() {
         self.serviceClient = SignalServiceRestClient()
+    }
+
+    // MARK: - Public
+
+    public func requestPreauthChallenge(recipientId: String, pushToken: String) -> Promise<Void> {
+        return serviceClient.requestPreauthChallenge(recipientId: recipientId, pushToken: pushToken)
+    }
+
+    public func requestVerificationCode(recipientId: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void> {
+        return serviceClient.requestVerificationCode(recipientId: recipientId,
+                                                     preauthChallenge: preauthChallenge,
+                                                     captchaToken: captchaToken,
+                                                     transport: transport)
     }
 
     public func getPreKeysCount() -> Promise<Int> {

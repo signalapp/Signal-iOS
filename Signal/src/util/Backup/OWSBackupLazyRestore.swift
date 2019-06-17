@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -86,7 +86,7 @@ public class BackupLazyRestore: NSObject {
         guard CurrentAppContext().isMainAppAndActive else {
             return
         }
-        guard tsAccountManager.isRegisteredAndReady() else {
+        guard tsAccountManager.isRegisteredAndReady else {
             return
         }
         guard !isBackupImportInProgress() else {

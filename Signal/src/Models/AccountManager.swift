@@ -31,6 +31,14 @@ public class AccountManager: NSObject {
         return TSAccountManager.sharedInstance()
     }
 
+    private var accountServiceClient: AccountServiceClient {
+        return AccountServiceClient.shared
+    }
+
+    var pushRegistrationManager: PushRegistrationManager {
+        return AppEnvironment.shared.pushRegistrationManager
+    }
+
     // MARK: -
 
     @objc
@@ -42,13 +50,60 @@ public class AccountManager: NSObject {
 
     // MARK: registration
 
-    @objc func registerObjc(verificationCode: String,
-                            pin: String?) -> AnyPromise {
-        return AnyPromise(register(verificationCode: verificationCode, pin: pin))
+    @objc
+    func requestAccountVerificationObjC(recipientId: String, captchaToken: String?, isSMS: Bool) -> AnyPromise {
+        return AnyPromise(requestAccountVerification(recipientId: recipientId, captchaToken: captchaToken, isSMS: isSMS))
     }
 
-    func register(verificationCode: String,
-                  pin: String?) -> Promise<Void> {
+    func requestAccountVerification(recipientId: String, captchaToken: String?, isSMS: Bool) -> Promise<Void> {
+        let transport: TSVerificationTransport = isSMS ? .SMS : .voice
+
+        return firstly { () -> Promise<String?> in
+            guard !self.tsAccountManager.isRegistered else {
+                throw OWSErrorMakeAssertionError("requesting account verification when already registered")
+            }
+
+            self.tsAccountManager.phoneNumberAwaitingVerification = recipientId
+
+            return self.getPreauthChallenge(recipientId: recipientId)
+        }.then { (preauthChallenge: String?) -> Promise<Void> in
+            self.accountServiceClient.requestVerificationCode(recipientId: recipientId,
+                                                              preauthChallenge: preauthChallenge,
+                                                              captchaToken: captchaToken,
+                                                              transport: transport)
+        }
+    }
+
+    func getPreauthChallenge(recipientId: String) -> Promise<String?> {
+        return firstly {
+            return self.pushRegistrationManager.requestPushTokens()
+        }.then { (_: String, voipToken: String) -> Promise<String?> in
+            let (pushPromise, pushResolver) = Promise<String>.pending()
+            self.pushRegistrationManager.preauthChallengeResolver = pushResolver
+
+            return self.accountServiceClient.requestPreauthChallenge(recipientId: recipientId, pushToken: voipToken).then { () -> Promise<String?> in
+                let timeout: TimeInterval
+                if OWSIsDebugBuild() && IsUsingProductionService() {
+                    // won't receive production voip in debug build, don't wait for long
+                    timeout = 0.5
+                } else {
+                    timeout = 5
+                }
+
+                return pushPromise.nilTimeout(seconds: timeout)
+            }
+        }.recover { (error: Error) -> Promise<String?> in
+            switch error {
+            case PushRegistrationError.pushNotSupported(description: let description):
+                Logger.warn("Push not supported: \(description)")
+            default:
+                owsFailDebug("error while requesting preauthChallenge: \(error)")
+            }
+            return Promise.value(nil)
+        }
+    }
+
+    func register(verificationCode: String, pin: String?) -> Promise<Void> {
         guard verificationCode.count > 0 else {
             let error = OWSErrorWithCodeDescription(.userError,
                                                     NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
@@ -141,5 +196,15 @@ public class AccountManager: NSObject {
                                                     return resolver.reject(error)
             })
         }
+    }
+}
+
+extension Promise {
+    func nilTimeout(seconds: TimeInterval) -> Promise<T?> {
+        let timeout: Promise<T?> = after(seconds: seconds).map {
+            return nil
+        }
+
+        return race(self.map { $0 }, timeout)
     }
 }

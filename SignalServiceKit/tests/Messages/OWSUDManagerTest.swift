@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -70,7 +70,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     func testMode_self() {
 
         XCTAssert(udManager.hasSenderCertificate())
-        XCTAssert(tsAccountManager.isRegistered())
+        XCTAssert(tsAccountManager.isRegistered)
         XCTAssertNotNil(tsAccountManager.localNumber())
         XCTAssert(tsAccountManager.localNumber()!.count > 0)
 
@@ -103,7 +103,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     func testMode_noProfileKey() {
 
         XCTAssert(udManager.hasSenderCertificate())
-        XCTAssert(tsAccountManager.isRegistered())
+        XCTAssert(tsAccountManager.isRegistered)
         XCTAssertNotNil(tsAccountManager.localNumber())
         XCTAssert(tsAccountManager.localNumber()!.count > 0)
 
@@ -141,7 +141,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
     func testMode_withProfileKey() {
         XCTAssert(udManager.hasSenderCertificate())
-        XCTAssert(tsAccountManager.isRegistered())
+        XCTAssert(tsAccountManager.isRegistered)
         XCTAssertNotNil(tsAccountManager.localNumber())
         XCTAssert(tsAccountManager.localNumber()!.count > 0)
 

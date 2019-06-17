@@ -134,7 +134,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc public func setup() {
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            guard self.tsAccountManager.isRegistered() else {
+            guard self.tsAccountManager.isRegistered else {
                 return
             }
 
@@ -155,7 +155,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     func registrationStateDidChange() {
         AssertIsOnMainThread()
 
-        guard tsAccountManager.isRegisteredAndReady() else {
+        guard tsAccountManager.isRegisteredAndReady else {
             return
         }
 
@@ -167,7 +167,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         AssertIsOnMainThread()
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            guard self.tsAccountManager.isRegistered() else {
+            guard self.tsAccountManager.isRegistered else {
                 return
             }
 
