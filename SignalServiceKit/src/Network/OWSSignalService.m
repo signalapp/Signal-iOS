@@ -185,23 +185,15 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
 - (AFHTTPSessionManager *)defaultSignalServiceSessionManager
 {
-    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
-    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:sessionConf];
-
+    NSURLSessionConfiguration *configuration = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
     AFSecurityPolicy *securityPolicy = AFSecurityPolicy.defaultPolicy;
     securityPolicy.allowInvalidCertificates = YES;
     securityPolicy.validatesDomainName = NO;
     sessionManager.securityPolicy = securityPolicy;
-    // Loki: Original code
-    // sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     sessionManager.requestSerializer = [AFJSONRequestSerializer serializer];
-    sessionManager.responseSerializer = [AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments]; // LOKITODO: Disable this again?
-    // Disable default cookie handling for all requests.
     sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
-    
-    // Loki: We need to accept text/plain for now as the storage server returns this to us
-    sessionManager.responseSerializer.acceptableContentTypes = [sessionManager.responseSerializer.acceptableContentTypes setByAddingObject:@"text/plain"]; // LOKITODO: Remove this again?
-
+    sessionManager.responseSerializer = [AFJSONResponseSerializer serializerWithReadingOptions:NSJSONReadingAllowFragments];
     return sessionManager;
 }
 

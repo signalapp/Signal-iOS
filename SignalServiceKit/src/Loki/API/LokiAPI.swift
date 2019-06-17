@@ -9,10 +9,10 @@ public final class LokiAPI : NSObject {
     // MARK: Settings
     private static let version = "v1"
     private static let maxRetryCount: UInt = 3
-    private static let defaultTimeout: TimeInterval = 20
+    private static let defaultTimeout: TimeInterval = 40
     private static let longPollingTimeout: TimeInterval = 40
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
-    internal static var powDifficulty: UInt = 10
+    internal static var powDifficulty: UInt = 100
     
     // MARK: Types
     public typealias RawResponse = Any
