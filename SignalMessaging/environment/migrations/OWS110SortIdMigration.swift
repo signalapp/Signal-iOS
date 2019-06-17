@@ -41,7 +41,7 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
                 }
             }
 
-            guard let legacySorting: YapDatabaseAutoViewTransaction = transaction.extension(TSMessageDatabaseViewExtensionName_Legacy) as? YapDatabaseAutoViewTransaction else {
+            guard let legacySorting = transaction.safeAutoViewTransaction(TSMessageDatabaseViewExtensionName_Legacy) else {
                 owsFailDebug("legacySorting was unexpectedly nil")
                 return
             }

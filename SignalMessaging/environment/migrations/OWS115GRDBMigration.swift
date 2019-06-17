@@ -4,6 +4,7 @@
 
 import Foundation
 import GRDBCipher
+import SignalServiceKit
 
 @objc
 public class OWS115GRDBMigration: OWSDatabaseMigration {
@@ -152,13 +153,14 @@ private class LegacyInteractionFinder {
     // closure. This is a work around since YapDB transactions want to be on their own sync queue
     // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
     // one DB inside a GRDB transaction on another DB is currently not possible.
-    var ext: YapDatabaseAutoViewTransaction
+    var ext: YapDatabaseAutoViewTransaction?
+
     init(transaction: YapDatabaseReadTransaction) {
-        self.ext = transaction.extension(extensionName) as! YapDatabaseAutoViewTransaction
+        self.ext = transaction.safeAutoViewTransaction(extensionName)
     }
 
-    func ext(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseAutoViewTransaction {
-        return transaction.extension(extensionName) as! YapDatabaseAutoViewTransaction
+    func ext(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseAutoViewTransaction? {
+        return transaction.safeAutoViewTransaction(extensionName)
     }
 
     public func enumerateInteractions(transaction: YapDatabaseReadTransaction, block: @escaping (TSInteraction) throws -> Void ) throws {
@@ -169,7 +171,11 @@ private class LegacyInteractionFinder {
         try enumerateInteractions(transaction: ext, block: block)
     }
 
-    func enumerateInteractions(transaction: YapDatabaseAutoViewTransaction, block: @escaping (TSInteraction) throws -> Void) throws {
+    func enumerateInteractions(transaction: YapDatabaseAutoViewTransaction?, block: @escaping (TSInteraction) throws -> Void) throws {
+        guard let transaction = transaction else {
+            owsFailDebug("Missing transaction.")
+            return
+        }
         var errorToRaise: Error?
         transaction.enumerateGroups { groupId, stopPtr in
             autoreleasepool {
@@ -204,16 +210,22 @@ private class LegacyJobRecordFinder {
     // closure. This is a work around since YapDB transactions want to be on their own sync queue
     // while GRDB also wants to be on their own sync queue, so nesting a YapDB transaction from
     // one DB inside a GRDB transaction on another DB is currently not possible.
-    var ext: YapDatabaseSecondaryIndexTransaction
+    var ext: YapDatabaseSecondaryIndexTransaction?
+
     init(transaction: YapDatabaseReadTransaction) {
-        self.ext = transaction.extension(extensionName) as! YapDatabaseSecondaryIndexTransaction
+        self.ext = transaction.safeSecondaryIndexTransaction(extensionName)
     }
 
     public func enumerateJobRecords(block: @escaping (SSKJobRecord) throws -> Void) throws {
         try enumerateJobRecords(ext: ext, block: block)
     }
 
-    func enumerateJobRecords(ext: YapDatabaseSecondaryIndexTransaction, block: @escaping (SSKJobRecord) throws -> Void) throws {
+    func enumerateJobRecords(ext: YapDatabaseSecondaryIndexTransaction?, block: @escaping (SSKJobRecord) throws -> Void) throws {
+        guard let ext = ext else {
+            owsFailDebug("Missing ext.")
+            return
+        }
+
         let queryFormat = String(format: "ORDER BY %@", "sortId")
         let query = YapDatabaseQuery(string: queryFormat, parameters: [])
 
