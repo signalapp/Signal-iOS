@@ -154,7 +154,9 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "SSKPreferences", keyStore: SSKPreferences.store, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
             GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.store", keyStore: StickerManager.store, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
             GRDBKeyValueStoreMigrator<Any>(label: "StickerManager.emojiMapStore", keyStore: StickerManager.emojiMapStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
-            GRDBKeyValueStoreMigrator<Any>(label: "preferences", keyStore: environment.preferences.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0)
+            GRDBKeyValueStoreMigrator<Any>(label: "preferences", keyStore: environment.preferences.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
+
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSOrphanDataCleaner", keyStore: OWSOrphanDataCleaner.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 1.0)
         ]
     }
 

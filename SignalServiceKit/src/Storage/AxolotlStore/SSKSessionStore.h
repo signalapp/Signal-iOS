@@ -40,11 +40,6 @@ extern NSString *const OWSPrimaryStorageSessionStoreCollection;
 
 - (void)resetSessionStore:(SDSAnyWriteTransaction *)transaction;
 
-#if DEBUG
-- (void)snapshotSessionStore:(SDSAnyWriteTransaction *)transaction;
-- (void)restoreSessionStore:(SDSAnyWriteTransaction *)transaction;
-#endif
-
 - (void)printAllSessionsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 // MARK: - SessionStore methods. Prefer to use the strongly typed `transaction:` flavors above instead.

@@ -13,7 +13,8 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 @implementation DateUtil
 
-+ (NSDateFormatter *)dateFormatter {
++ (NSDateFormatter *)dateFormatter
+{
     static NSDateFormatter *formatter;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -83,7 +84,8 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return formatter;
 }
 
-+ (NSDateFormatter *)weekdayFormatter {
++ (NSDateFormatter *)weekdayFormatter
+{
     static NSDateFormatter *formatter;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -94,7 +96,8 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     return formatter;
 }
 
-+ (NSDateFormatter *)timeFormatter {
++ (NSDateFormatter *)timeFormatter
+{
     static NSDateFormatter *formatter;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

@@ -18,7 +18,6 @@
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/YapDatabaseTransaction+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -52,6 +51,16 @@ NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleane
 typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 @implementation OWSOrphanDataCleaner
+
++ (SDSKeyValueStore *)keyValueStore
+{
+    static SDSKeyValueStore *keyValueStore = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSOrphanDataCleaner_Collection];
+    });
+    return keyValueStore;
+}
 
 // Unlike CurrentAppContext().isMainAppAndActive, this method can be safely
 // invoked off the main thread.
@@ -309,31 +318,31 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     // Stickers
     NSMutableSet<NSString *> *activeStickerFilePaths = [NSMutableSet new];
     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [transaction
-            enumerateKeysAndObjectsInCollection:TSAttachmentStream.collection
-                                     usingBlock:^(NSString *key, TSAttachment *attachment, BOOL *stop) {
-                                         if (!self.isMainAppAndActive) {
-                                             shouldAbort = YES;
-                                             *stop = YES;
-                                             return;
-                                         }
-                                         if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                                             return;
-                                         }
-                                         [allAttachmentIds addObject:attachment.uniqueId];
+        [transaction enumerateKeysAndObjectsInCollection:TSAttachmentStream.collection
+                                              usingBlock:^(NSString *key, TSAttachment *attachment, BOOL *stop) {
+                                                  if (!self.isMainAppAndActive) {
+                                                      shouldAbort = YES;
+                                                      *stop = YES;
+                                                      return;
+                                                  }
+                                                  if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                                                      return;
+                                                  }
+                                                  [allAttachmentIds addObject:attachment.uniqueId];
 
-                                         TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-                                         attachmentStreamCount++;
-                                         NSString *_Nullable filePath = [attachmentStream originalFilePath];
-                                         if (filePath) {
-                                             [allAttachmentFilePaths addObject:filePath];
-                                         } else {
-                                             OWSFailDebug(@"attachment has no file path.");
-                                         }
+                                                  TSAttachmentStream *attachmentStream
+                                                      = (TSAttachmentStream *)attachment;
+                                                  attachmentStreamCount++;
+                                                  NSString *_Nullable filePath = [attachmentStream originalFilePath];
+                                                  if (filePath) {
+                                                      [allAttachmentFilePaths addObject:filePath];
+                                                  } else {
+                                                      OWSFailDebug(@"attachment has no file path.");
+                                                  }
 
-                                         [allAttachmentFilePaths
-                                             addObjectsFromArray:attachmentStream.allThumbnailPaths];
-                                     }];
+                                                  [allAttachmentFilePaths
+                                                      addObjectsFromArray:attachmentStream.allThumbnailPaths];
+                                              }];
 
         if (shouldAbort) {
             return;
@@ -410,7 +419,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     return result;
 }
 
-+ (BOOL)shouldAuditOnLaunch:(YapDatabaseConnection *)databaseConnection {
++ (BOOL)shouldAuditOnLaunch:(YapDatabaseConnection *)databaseConnection
+{
     OWSAssertIsOnMainThread();
 
 #ifndef ENABLE_ORPHAN_DATA_CLEANER
@@ -420,10 +430,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     __block NSString *_Nullable lastCleaningVersion;
     __block NSDate *_Nullable lastCleaningDate;
     [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        lastCleaningVersion = [transaction stringForKey:OWSOrphanDataCleaner_LastCleaningVersionKey
-                                           inCollection:OWSOrphanDataCleaner_Collection];
-        lastCleaningDate = [transaction dateForKey:OWSOrphanDataCleaner_LastCleaningDateKey
-                                      inCollection:OWSOrphanDataCleaner_Collection];
+        lastCleaningVersion = [self.keyValueStore getString:OWSOrphanDataCleaner_LastCleaningVersionKey
+                                                transaction:transaction.asAnyRead];
+        lastCleaningDate =
+            [self.keyValueStore getDate:OWSOrphanDataCleaner_LastCleaningDateKey transaction:transaction.asAnyRead];
     }];
 
     // Clean up once per app version.
@@ -451,7 +461,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     return NO;
 }
 
-+ (void)auditOnLaunchIfNecessary {
++ (void)auditOnLaunchIfNecessary
+{
     OWSAssertIsOnMainThread();
 
     OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
@@ -470,7 +481,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans
 {
     [self auditAndCleanup:shouldRemoveOrphans
-               completion:^ {
+               completion:^{
                }];
 }
 
@@ -547,9 +558,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                         [transaction setObject:AppVersion.sharedInstance.currentAppVersion
                                         forKey:OWSOrphanDataCleaner_LastCleaningVersionKey
                                   inCollection:OWSOrphanDataCleaner_Collection];
-                        [transaction setDate:[NSDate new]
-                                      forKey:OWSOrphanDataCleaner_LastCleaningDateKey
-                                inCollection:OWSOrphanDataCleaner_Collection];
+
+                        [self.keyValueStore setDate:[NSDate new]
+                                                key:OWSOrphanDataCleaner_LastCleaningDateKey
+                                        transaction:transaction.asAnyWrite];
                     }];
 
                     if (completion) {

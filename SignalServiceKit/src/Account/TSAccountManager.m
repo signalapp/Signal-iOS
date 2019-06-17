@@ -14,7 +14,6 @@
 #import "SSKSessionStore.h"
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
-#import "YapDatabaseTransaction+OWS.h"
 #import <PromiseKit/AnyPromise.h>
 #import <Reachability/Reachability.h>
 #import <SignalCoreKit/NSData+OWS.h>
