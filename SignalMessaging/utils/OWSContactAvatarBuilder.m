@@ -127,6 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
         return cachedAvatar;
     }
 
+    /**
     NSMutableString *initials = [NSMutableString string];
 
     NSRange rangeOfLetters = [self.contactName rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet]];
@@ -178,7 +179,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Could not generate avatar.");
         return nil;
     }
-
+    */
+    
+    UIImage *image = [LKIdenticon generateIconWithString:self.signalId size:CGSizeMake(self.diameter, self.diameter)];
     [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image forKey:self.cacheKey diameter:self.diameter];
     return image;
 }

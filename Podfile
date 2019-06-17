@@ -39,7 +39,7 @@ def shared_pods
   pod 'SQLCipher', ">= 4.0.1"
 
   # Forked for performance optimizations that are not likely to be upstreamed as they are specific
-  # to our limited use of Mantle 
+  # to our limited use of Mantle
   pod 'Mantle', git: 'https://github.com/signalapp/Mantle', branch: 'signal-master'
   # pod 'Mantle', path: '../Mantle'
 
@@ -63,13 +63,14 @@ def shared_pods
   pod 'Reachability', :inhibit_warnings => true
   pod 'YYImage', :inhibit_warnings => true
   pod 'CryptoSwift', :inhibit_warnings => true
+  pod 'IGIdenticon', :inhibit_warnings => true
 end
 
 target 'Signal' do
   project 'Signal'
   shared_pods
   pod 'SSZipArchive', :inhibit_warnings => true
-  
+
   # Loki
   pod 'GCDWebServer', '~> 3.0'
 
@@ -104,4 +105,3 @@ def enable_extension_support_for_purelayout(installer)
     end
   end
 end
-
