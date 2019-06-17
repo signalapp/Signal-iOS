@@ -418,13 +418,12 @@ NSString *const OWSPreferencesKeyIsPerMessageExpirationEnabled = @"OWSPreference
 
 - (BOOL)isPerMessageExpirationEnabled
 {
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyIsPerMessageExpirationEnabled];
-    return preference ? [preference boolValue] : NO;
+    return [self boolForKey:OWSPreferencesKeyIsPerMessageExpirationEnabled defaultValue:NO];
 }
 
 - (void)setIsPerMessageExpirationEnabled:(BOOL)value
 {
-    [self setValueForKey:OWSPreferencesKeyIsPerMessageExpirationEnabled toValue:@(value)];
+    [self setBool:value forKey:OWSPreferencesKeyIsPerMessageExpirationEnabled];
 }
 
 #pragma mark direct call connectivity (non-TURN)
