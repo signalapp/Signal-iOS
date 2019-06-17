@@ -5,7 +5,6 @@
 #import "VersionMigrations.h"
 #import "Environment.h"
 #import "OWSDatabaseMigrationRunner.h"
-#import "SignalKeyingStorage.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppVersion.h>
@@ -20,13 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define NEEDS_TO_REGISTER_PUSH_KEY @"Register For Push"
 #define NEEDS_TO_REGISTER_ATTRIBUTES @"Register Attributes"
-
-@interface SignalKeyingStorage (VersionMigrations)
-
-+ (void)storeString:(NSString *)string forKey:(NSString *)key;
-+ (void)storeData:(NSData *)data forKey:(NSString *)key;
-
-@end
 
 @implementation VersionMigrations
 

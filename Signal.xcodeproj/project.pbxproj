@@ -115,8 +115,6 @@
 		3461293E1FD1D72B00532771 /* ExperienceUpgradeFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461293D1FD1D72B00532771 /* ExperienceUpgradeFinder.swift */; };
 		3461295A1FD1D74C00532771 /* Environment.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129401FD1D74B00532771 /* Environment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3461295B1FD1D74C00532771 /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129411FD1D74B00532771 /* Environment.m */; };
-		346129711FD1D74C00532771 /* SignalKeyingStorage.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129581FD1D74B00532771 /* SignalKeyingStorage.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		346129721FD1D74C00532771 /* SignalKeyingStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129591FD1D74B00532771 /* SignalKeyingStorage.m */; };
 		346129951FD1E30000532771 /* OWSDatabaseMigration.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129931FD1E30000532771 /* OWSDatabaseMigration.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		346129961FD1E30000532771 /* OWSDatabaseMigration.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129941FD1E30000532771 /* OWSDatabaseMigration.m */; };
 		346129991FD1E4DA00532771 /* SignalApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129971FD1E4D900532771 /* SignalApp.m */; };
@@ -827,8 +825,6 @@
 		3461293D1FD1D72B00532771 /* ExperienceUpgradeFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExperienceUpgradeFinder.swift; path = ExperienceUpgrades/ExperienceUpgradeFinder.swift; sourceTree = "<group>"; };
 		346129401FD1D74B00532771 /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
 		346129411FD1D74B00532771 /* Environment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Environment.m; sourceTree = "<group>"; };
-		346129581FD1D74B00532771 /* SignalKeyingStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalKeyingStorage.h; sourceTree = "<group>"; };
-		346129591FD1D74B00532771 /* SignalKeyingStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalKeyingStorage.m; sourceTree = "<group>"; };
 		346129931FD1E30000532771 /* OWSDatabaseMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDatabaseMigration.h; sourceTree = "<group>"; };
 		346129941FD1E30000532771 /* OWSDatabaseMigration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSDatabaseMigration.m; sourceTree = "<group>"; };
 		346129971FD1E4D900532771 /* SignalApp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalApp.m; sourceTree = "<group>"; };
@@ -1802,8 +1798,6 @@
 				45F170AB1E2F0351003FC1F2 /* OWSAudioSession.swift */,
 				34074F60203D0CBE004596AE /* OWSSounds.h */,
 				34074F5F203D0CBD004596AE /* OWSSounds.m */,
-				346129581FD1D74B00532771 /* SignalKeyingStorage.h */,
-				346129591FD1D74B00532771 /* SignalKeyingStorage.m */,
 				346129E01FD5C0BE00532771 /* VersionMigrations.h */,
 				346129E11FD5C0BE00532771 /* VersionMigrations.m */,
 			);
@@ -2815,7 +2809,6 @@
 				4C3A556F228C7937000E4935 /* PrivateMethodsForMigration.h in Headers */,
 				34480B551FD0A7A400BC14EF /* DebugLogger.h in Headers */,
 				4503F1C4204711D300CEE724 /* OWS107LegacySounds.h in Headers */,
-				346129711FD1D74C00532771 /* SignalKeyingStorage.h in Headers */,
 				34AC0A20211B39EA00997B47 /* ThreadViewHelper.h in Headers */,
 				34AC09DE211B39B100997B47 /* OWSNavigationController.h in Headers */,
 				34612A011FD5F31400532771 /* OWS104CreateRecipientIdentities.h in Headers */,
@@ -3666,7 +3659,6 @@
 				34BBC85A220C7ADA00857249 /* ImageEditorTextItem.swift in Sources */,
 				34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */,
 				344DC9AF226E483D004E7322 /* ManageStickersViewController.swift in Sources */,
-				346129721FD1D74C00532771 /* SignalKeyingStorage.m in Sources */,
 				349EA07C2162AEA800F7B17F /* OWS111UDAttributesMigration.swift in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,

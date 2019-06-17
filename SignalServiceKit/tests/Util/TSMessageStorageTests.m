@@ -12,6 +12,7 @@
 #import "TSThread.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface TSMessageStorageTests : SSKBaseTestObjC
 

@@ -31,7 +31,6 @@
 #import "OWSMessageStickerView.h"
 #import "OWSSystemMessageCell.h"
 #import "Signal-Swift.h"
-#import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
 #import "TSContactThread.h"
