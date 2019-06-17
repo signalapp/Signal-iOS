@@ -376,6 +376,8 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (UIView *)createEmptyInboxView
 {
+    return [UIView new];
+    /**
     NSArray<NSString *> *emptyInboxImageNames = @[
                                                   @"home_empty_splash_1",
                                                   @"home_empty_splash_2",
@@ -412,6 +414,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     emptyInboxStack.layoutMargins = UIEdgeInsetsMake(50, 50, 50, 50);
     emptyInboxStack.layoutMarginsRelativeArrangement = YES;
     return emptyInboxStack;
+     */
 }
 
 - (void)createFirstConversationCueView
