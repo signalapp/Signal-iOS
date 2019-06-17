@@ -350,10 +350,13 @@ NS_ASSUME_NONNULL_BEGIN
                                 fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
                                    editImmediately:(BOOL)shouldEditImmediately
 {
+    return;
+    /**
     [self presentContactViewControllerForRecipientId:recipientId
                                   fromViewController:fromViewController
                                      editImmediately:shouldEditImmediately
                               addToExistingCnContact:nil];
+     */
 }
 
 - (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
