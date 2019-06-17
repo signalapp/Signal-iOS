@@ -74,5 +74,5 @@ public class FeatureFlags: NSObject {
 
     // Don't enable this flag in production.
     @objc
-    public static let strictYDBExtensions = false
+    public static let strictYDBExtensions = true
 }
