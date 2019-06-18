@@ -1012,7 +1012,11 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     [builder setRequiredProtocolVersion:(uint32_t) requiredProtocolVersion];
 
     if (self.perMessageExpirationDurationSeconds > 0) {
-        [builder setMessageTimer:self.perMessageExpirationDurationSeconds];
+        if (SSKFeatureFlags.perMessageExpiration) {
+            [builder setMessageTimer:self.perMessageExpirationDurationSeconds];
+        } else {
+            OWSFailDebug(@"Feature flag not set.");
+        }
     }
 
     if ([self.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
