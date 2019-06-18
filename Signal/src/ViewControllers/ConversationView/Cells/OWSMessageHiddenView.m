@@ -92,10 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.label = [OWSLabel new];
 
-    self.hStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.iconView,
-        self.label,
-    ]];
+    self.hStackView = [UIStackView new];
     self.hStackView.axis = UILayoutConstraintAxisHorizontal;
     self.hStackView.spacing = self.contentHSpacing;
     self.hStackView.alignment = UIStackViewAlignmentCenter;
@@ -149,19 +146,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView *_Nullable downloadView = [self createDownloadViewIfNecessary];
     if (downloadView) {
-        [textViews addObject:downloadView];
-    } else {
-        [self configureLabel];
-
-        if (self.shouldShowIcon) {
-            [self configureIconView];
-            self.iconView.hidden = NO;
-        } else {
-            self.iconView.hidden = YES;
-        }
-
-        [textViews addObject:self.hStackView];
+        [self.hStackView addArrangedSubview:downloadView];
     }
+    if (self.shouldShowIcon) {
+        [self configureIconView];
+        [self.hStackView addArrangedSubview:self.iconView];
+    }
+    [self configureLabel];
+    [self.hStackView addArrangedSubview:self.label];
+    [textViews addObject:self.hStackView];
 
     if (!self.viewItem.shouldHideFooter) {
         [self.footerView configureWithConversationViewItem:self.viewItem
@@ -521,27 +514,26 @@ NS_ASSUME_NONNULL_BEGIN
     MediaDownloadView *downloadView =
         [[MediaDownloadView alloc] initWithAttachmentId:uniqueId radius:self.downloadProgressRadius];
     [downloadView autoSetDimension:ALDimensionHeight toSize:self.downloadProgressHeight];
-    [downloadView setContentHuggingLow];
-    [downloadView setCompressionResistanceLow];
+    [downloadView setContentHuggingHigh];
+    [downloadView setCompressionResistanceHigh];
     return downloadView;
 }
 
-- (CGFloat)downloadProgressMinWidth
+// We use this "min width" to reduce/avoid "flutter"
+// in the bubble's size as the message changes states.
+- (CGFloat)minContentWidth
 {
-    return MIN(self.conversationStyle.maxMessageWidth, ceil(self.downloadProgressRadius * 7));
+    return round(self.conversationStyle.maxMessageWidth * 0.4f);
 }
 
 - (CGFloat)downloadProgressHeight
 {
-    return ceil(self.downloadProgressRadius * 2);
+    return self.iconSize;
 }
 
 - (CGFloat)downloadProgressRadius
 {
-    OWSAssertDebug(self.conversationStyle);
-    OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
-
-    return self.conversationStyle.maxMessageWidth * 0.1f;
+    return self.iconSize * 0.5f;
 }
 
 - (BOOL)shouldShowIcon
@@ -603,11 +595,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
-    // TODO:
-    if (self.isIncomingDownloading) {
-        return CGSizeMake(self.downloadProgressMinWidth, self.downloadProgressHeight);
-    }
-
     CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
     CGFloat maxTextWidth = self.conversationStyle.maxMessageWidth - hMargins;
     if (self.shouldShowIconOrProgress) {
@@ -616,11 +603,12 @@ NS_ASSUME_NONNULL_BEGIN
     maxTextWidth = floor(maxTextWidth);
     [self configureLabel];
     CGSize result = CGSizeCeil([self.label sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
-    result.width = MIN(result.width, self.conversationStyle.maxMessageWidth);
     if (self.shouldShowIconOrProgress) {
         result.width += self.contentHSpacing + self.iconSize;
         result.height = MAX(result.height, self.iconSize);
     }
+    result.width = MAX(result.width, self.minContentWidth);
+    result.width = MIN(result.width, self.conversationStyle.maxMessageWidth);
 
     return result;
 }
@@ -719,13 +707,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.label.text = nil;
     self.iconView.image = nil;
-    self.iconView.hidden = NO;
 
     self.bubbleView.fillColor = nil;
     self.bubbleView.strokeColor = nil;
     self.bubbleView.strokeThickness = 0.f;
     [self.bubbleView clearPartnerViews];
 
+    for (UIView *subview in self.hStackView.subviews) {
+        [subview removeFromSuperview];
+    }
     for (UIView *subview in self.bubbleView.subviews) {
         [subview removeFromSuperview];
     }
