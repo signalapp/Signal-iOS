@@ -93,7 +93,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)offBackgroundColor
 {
-    return (Theme.isDarkThemeEnabled ? self.darkThemeOffBackgroundColor : [UIColor colorWithWhite:0.94f alpha:1.f]);
+    return (Theme.isDarkThemeEnabled ? self.darkThemeOffBackgroundColor : UIColor.ows_gray05Color);
 }
 
 + (UIColor *)primaryColor
@@ -214,7 +214,6 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return UIKeyboardAppearanceDark;
 }
 
-
 #pragma mark - Search Bar
 
 + (UIBarStyle)barStyle
@@ -224,7 +223,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)searchFieldBackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? Theme.offBackgroundColor : UIColor.ows_gray05Color;
+    return Theme.offBackgroundColor;
 }
 
 #pragma mark -

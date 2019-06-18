@@ -686,51 +686,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     TSMessage *message = (TSMessage *)self.interaction;
 
     if (message.hasPerMessageExpiration) {
-        if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-            TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
-            switch (outgoingMessage.messageState) {
-                case TSOutgoingMessageStateSending:
-                    self.perMessageExpirationState = PerMessageExpirationState_OutgoingSending;
-                case TSOutgoingMessageStateFailed:
-                    self.perMessageExpirationState = PerMessageExpirationState_OutgoingFailed;
-                default:
-                    self.perMessageExpirationState = PerMessageExpirationState_OutgoingSent;
-            }
-            self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-            return;
-        }
-        if (message.perMessageExpirationHasExpired) {
-            self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-            self.perMessageExpirationState = PerMessageExpirationState_IncomingExpired;
-            return;
-        }
-
-        if (transaction.transitional_yapReadTransaction) {
-            NSArray<TSAttachment *> *mediaAttachments =
-                [message mediaAttachmentsWithTransaction:transaction.transitional_yapReadTransaction];
-            // TODO: We currently only support single attachments for messages
-            //       with per-message expiration.
-            TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
-            if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
-                self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-                self.attachmentPointer = (TSAttachmentPointer *)mediaAttachment;
-                self.perMessageExpirationState = (self.attachmentPointer.state == TSAttachmentPointerStateFailed
-                        ? PerMessageExpirationState_IncomingFailed
-                        : PerMessageExpirationState_IncomingDownloading);
-                return;
-            } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
-                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
-                if (attachmentStream.isValidVisualMedia) {
-                    self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-                    self.perMessageExpirationState = PerMessageExpirationState_IncomingAvailable;
-                    self.attachmentStream = attachmentStream;
-                    return;
-                }
-            }
-        }
-
-        OWSFailDebug(@"Invalid media for message with per-message expiration.");
-        self.messageCellType = OWSMessageCellType_Unknown;
+        [self configurePerMessageExpiration:message transaction:transaction];
         return;
     }
 
@@ -905,6 +861,62 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         self.messageCellType = OWSMessageCellType_TextOnlyMessage;
         self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
+}
+
+- (void)configurePerMessageExpiration:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(message != nil);
+    OWSAssertDebug(transaction != nil);
+    OWSAssertDebug(message.hasPerMessageExpiration);
+
+    if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
+        switch (outgoingMessage.messageState) {
+            case TSOutgoingMessageStateSending:
+                self.perMessageExpirationState = PerMessageExpirationState_OutgoingSending;
+            case TSOutgoingMessageStateFailed:
+                self.perMessageExpirationState = PerMessageExpirationState_OutgoingFailed;
+            default:
+                self.perMessageExpirationState = PerMessageExpirationState_OutgoingSent;
+        }
+        self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+        return;
+    }
+    if (message.perMessageExpirationHasExpired) {
+        self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+        self.perMessageExpirationState = PerMessageExpirationState_IncomingExpired;
+        return;
+    }
+
+    if (transaction.transitional_yapReadTransaction) {
+        NSArray<TSAttachment *> *mediaAttachments =
+            [message mediaAttachmentsWithTransaction:transaction.transitional_yapReadTransaction];
+        // TODO: We currently only support single attachments for messages
+        //       with per-message expiration.
+        TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
+        if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
+            self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+            self.attachmentPointer = (TSAttachmentPointer *)mediaAttachment;
+            self.perMessageExpirationState = (self.attachmentPointer.state == TSAttachmentPointerStateFailed
+                    ? PerMessageExpirationState_IncomingFailed
+                    : PerMessageExpirationState_IncomingDownloading);
+            return;
+        } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
+            TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
+            if (attachmentStream.isValidVisualMedia) {
+                self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+                self.perMessageExpirationState = PerMessageExpirationState_IncomingAvailable;
+                self.attachmentStream = attachmentStream;
+            } else {
+                self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+                self.perMessageExpirationState = PerMessageExpirationState_IncomingInvalidContent;
+            }
+            return;
+        }
+    }
+
+    OWSFailDebug(@"Invalid media for message with per-message expiration.");
+    self.messageCellType = OWSMessageCellType_Unknown;
 }
 
 - (NSArray<ConversationMediaAlbumItem *> *)albumItemsForMediaAttachments:(NSArray<TSAttachment *> *)attachments

@@ -51,9 +51,9 @@ class PerMessageExpirationViewController: OWSViewController {
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { (modal) in
-                                                        let presentation: Presentation? = loadPresentation(interaction: interaction)
-
                                                         DispatchQueue.main.async {
+                                                            let presentation: Presentation? = loadPresentation(interaction: interaction)
+
                                                             modal.dismiss(completion: {
                                                                 guard let presentation = presentation else {
                                                                     owsFailDebug("Could not present interaction")
