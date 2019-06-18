@@ -355,8 +355,11 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         if isInBatchSelectMode {
             updateButtons(topViewController: photoCaptureViewController)
         } else {
+            let options: AttachmentApprovalViewControllerOptions = (FeatureFlags.perMessageExpiration
+                ? [.canToggleExpiration]
+                : [])
             pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem],
-                                       options: [.canToggleExpiration])
+                                       options: options)
         }
     }
 

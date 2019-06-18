@@ -58,4 +58,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let ephemeralMessageSend = true
+
+    @objc
+    public static let perMessageExpiration = true
 }
