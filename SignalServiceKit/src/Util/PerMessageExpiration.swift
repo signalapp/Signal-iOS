@@ -156,7 +156,7 @@ public class PerMessageExpiration: NSObject {
             return
         }
 
-        // If message should auto-expire, do so.
+        // If message should auto-expire, expire.
         guard !shouldMessageAutoExpire(message) else {
             completeExpiration(forMessage: message, transaction: transaction)
             return
@@ -168,6 +168,7 @@ public class PerMessageExpiration: NSObject {
             return
         }
 
+        // If countdown has completed, expire.
         guard !hasExpirationCountdownCompleted(message: message) else {
             completeExpiration(forMessage: message, transaction: transaction)
             return
@@ -175,7 +176,8 @@ public class PerMessageExpiration: NSObject {
     }
 
     private class func hasExpirationCountdownCompleted(message: TSMessage) -> Bool {
-        return message.perMessageExpiresAt <= nowMs()
+        return (message.hasPerMessageExpirationStarted &&
+                message.perMessageExpiresAt <= nowMs())
     }
 
     private class func isOutgoingSent(message: TSMessage) -> Bool {

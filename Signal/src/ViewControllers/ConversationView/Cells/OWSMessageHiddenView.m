@@ -85,8 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.senderNameLabel ows_autoPinToSuperviewMargins];
 
     self.iconView = [UIImageView new];
-    [self.iconView setContentHuggingHorizontalHigh];
-    [self.iconView setCompressionResistanceHorizontalHigh];
+    [self.iconView setContentHuggingHigh];
+    [self.iconView setCompressionResistanceHigh];
     [self.iconView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [self.iconView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
 
@@ -151,9 +151,15 @@ NS_ASSUME_NONNULL_BEGIN
     if (downloadView) {
         [textViews addObject:downloadView];
     } else {
-        [self configureIconView];
         [self configureLabel];
-        self.iconView.hidden = !self.shouldShowIcon;
+
+        if (self.shouldShowIcon) {
+            [self configureIconView];
+            self.iconView.hidden = NO;
+        } else {
+            self.iconView.hidden = YES;
+        }
+
         [textViews addObject:self.hStackView];
     }
 
@@ -177,8 +183,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self configureBubbleRounding];
 
-    if (self.isExpired) {
-        self.bubbleView.strokeColor = self.contentForegroundColor;
+    UIColor *_Nullable bubbleStrokeColor = self.bubbleStrokeColor;
+    if (bubbleStrokeColor != nil) {
+        self.bubbleView.strokeColor = bubbleStrokeColor;
         self.bubbleView.strokeThickness = 1.f;
     }
 }
@@ -250,24 +257,62 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateBubbleColor
 {
-    if (self.isExpired) {
-        self.bubbleView.fillColor = Theme.backgroundColor;
-    } else if (self.isIncoming) {
-        self.bubbleView.fillGradientColors = @[
-            [UIColor.ows_gray05Color blendWithColor:UIColor.ows_blackColor alpha:0.15],
-            UIColor.ows_gray05Color,
-        ];
-    } else {
-        self.bubbleView.fillGradientColors = @[
-            [UIColor.ows_signalBlueColor blendWithColor:UIColor.ows_blackColor alpha:0.15],
-            UIColor.ows_signalBlueColor,
-        ];
+    self.bubbleView.fillColor = self.bubbleColor;
+}
+
+- (UIColor *)bubbleColor
+{
+    UIColor *pendingColor = (Theme.isDarkThemeEnabled ? UIColor.ows_gray85Color : UIColor.ows_gray15Color);
+
+    switch (self.viewItem.perMessageExpirationState) {
+        case PerMessageExpirationState_Unknown:
+            OWSFailDebug(@"Invalid value.");
+            // Fall through.
+        case PerMessageExpirationState_IncomingExpired:
+            return Theme.backgroundColor;
+        case PerMessageExpirationState_IncomingDownloading:
+            return pendingColor;
+        case PerMessageExpirationState_IncomingFailed:
+            return pendingColor;
+        case PerMessageExpirationState_IncomingAvailable:
+            return Theme.offBackgroundColor;
+        case PerMessageExpirationState_OutgoingFailed:
+            return pendingColor;
+        case PerMessageExpirationState_OutgoingSending:
+        case PerMessageExpirationState_OutgoingSent:
+            return ConversationStyle.bubbleTextColorOutgoing;
+        case PerMessageExpirationState_IncomingInvalidContent:
+            return Theme.backgroundColor;
+    }
+}
+
+- (nullable UIColor *)bubbleStrokeColor
+{
+    switch (self.viewItem.perMessageExpirationState) {
+        case PerMessageExpirationState_Unknown:
+            OWSFailDebug(@"Invalid value.");
+            // Fall through.
+        case PerMessageExpirationState_IncomingExpired:
+            return Theme.offBackgroundColor;
+        case PerMessageExpirationState_IncomingDownloading:
+            return nil;
+        case PerMessageExpirationState_IncomingFailed:
+            return nil;
+        case PerMessageExpirationState_IncomingAvailable:
+            return nil;
+        case PerMessageExpirationState_OutgoingFailed:
+            return nil;
+        case PerMessageExpirationState_OutgoingSending:
+        case PerMessageExpirationState_OutgoingSent:
+            return nil;
+        case PerMessageExpirationState_IncomingInvalidContent:
+            return UIColor.ows_destructiveRedColor;
     }
 }
 
 - (CGFloat)contentHSpacing
 {
-    return 6.f;
+    return 10.f;
 }
 
 - (UIColor *)contentForegroundColor
@@ -330,20 +375,40 @@ NS_ASSUME_NONNULL_BEGIN
     self.label.textColor = self.contentForegroundColor;
     self.label.font = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
 
-    // TODO: Rework when design arrives.
-    if (self.isExpired) {
-        self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_VIEWED",
-            @"Label for messages with per-message expiration indicating that "
-            @"the local user has viewed the message's contents.");
-    } else if (self.isIncomingFailed) {
-        self.label.text = NSLocalizedString(
-            @"ATTACHMENT_DOWNLOADING_STATUS_FAILED", @"Status label when an attachment download has failed.");
-    } else if (self.isIncomingAvailable) {
-        self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW",
-            @"Label for messages with per-message expiration indicating that "
-            @"user can tap to view the message's contents.");
-    } else {
-        OWSFailDebug(@"Unexpected view state.");
+    switch (self.viewItem.perMessageExpirationState) {
+        case PerMessageExpirationState_Unknown:
+            OWSFailDebug(@"Invalid value.");
+            // Fall through.
+        case PerMessageExpirationState_IncomingExpired:
+            self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_VIEWED",
+                @"Label for messages with per-message expiration indicating that "
+                @"the local user has viewed the message's contents.");
+            break;
+        case PerMessageExpirationState_IncomingDownloading:
+            self.label.text = @"";
+            break;
+        case PerMessageExpirationState_IncomingFailed:
+            self.label.text = CommonStrings.retryButton;
+            break;
+        case PerMessageExpirationState_IncomingAvailable:
+            self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW",
+                @"Label for messages with per-message expiration indicating that "
+                @"user can tap to view the message's contents.");
+            break;
+        case PerMessageExpirationState_OutgoingFailed:
+            self.label.text = CommonStrings.retryButton;
+            break;
+        case PerMessageExpirationState_OutgoingSending:
+        case PerMessageExpirationState_OutgoingSent:
+            self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE",
+                @"Label for outgoing messages with per-message expiration.");
+            break;
+        case PerMessageExpirationState_IncomingInvalidContent:
+            self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_INVALID_CONTENT",
+                @"Label for messages with per-message expiration that have invalid content.");
+            self.label.font = UIFont.ows_dynamicTypeSubheadlineFont;
+            self.label.textColor = Theme.secondaryColor;
+            break;
     }
 
     self.label.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -353,20 +418,36 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.iconView);
 
-    [self.iconView setTemplateImageName:self.iconName tintColor:self.contentForegroundColor];
+    NSString *_Nullable iconName = self.iconName;
+    if (iconName != nil) {
+        [self.iconView setTemplateImageName:iconName tintColor:self.contentForegroundColor];
+    }
 }
 
-- (NSString *)iconName
+- (nullable NSString *)iconName
 {
-    if (self.isExpired) {
-        return @"play-outline-24";
-    } else if (self.isIncomingAvailable) {
-        return @"play-filled-24";
-    } else if (self.isIncomingFailed) {
-        // TODO: Waiting on design.
-        return @"play-outline-24";
-    } else {
-        return @"play-filled-24";
+    switch (self.viewItem.perMessageExpirationState) {
+        case PerMessageExpirationState_Unknown:
+            OWSFailDebug(@"Invalid value.");
+            // Fall through.
+        case PerMessageExpirationState_IncomingExpired:
+            return @"play-outline-24";
+        case PerMessageExpirationState_IncomingDownloading:
+            OWSFailDebug(@"Unexpected state.");
+            return nil;
+        case PerMessageExpirationState_IncomingFailed:
+            // TODO: This will change.
+            return @"arrow-down-circle-outline-24";
+        case PerMessageExpirationState_IncomingAvailable:
+            return @"play-filled-24";
+        case PerMessageExpirationState_OutgoingFailed:
+            return @"arrow-down-circle-outline-24";
+        case PerMessageExpirationState_OutgoingSending:
+        case PerMessageExpirationState_OutgoingSent:
+            return @"play-outline-24";
+        case PerMessageExpirationState_IncomingInvalidContent:
+            OWSFailDebug(@"Unexpected state.");
+            return nil;
     }
 }
 
@@ -415,10 +496,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldShowIcon
 {
-    // TODO: Pending design.
-    return YES;
+    return (self.viewItem.perMessageExpirationState != PerMessageExpirationState_IncomingInvalidContent
+        && self.viewItem.perMessageExpirationState != PerMessageExpirationState_IncomingDownloading);
 }
 
+- (BOOL)shouldShowIconOrProgress
+{
+    return (self.viewItem.perMessageExpirationState != PerMessageExpirationState_IncomingInvalidContent);
+}
+
+// TODO: Remove?
 - (BOOL)isIncomingDownloading
 {
     return self.viewItem.perMessageExpirationState == PerMessageExpirationState_IncomingDownloading;
@@ -473,14 +560,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
     CGFloat maxTextWidth = self.conversationStyle.maxMessageWidth - hMargins;
-    if (self.shouldShowIcon) {
+    if (self.shouldShowIconOrProgress) {
         maxTextWidth -= self.contentHSpacing + self.iconSize;
     }
     maxTextWidth = floor(maxTextWidth);
     [self configureLabel];
     CGSize result = CGSizeCeil([self.label sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
     result.width = MIN(result.width, self.conversationStyle.maxMessageWidth);
-    if (self.shouldShowIcon) {
+    if (self.shouldShowIconOrProgress) {
         result.width += self.contentHSpacing + self.iconSize;
         result.height = MAX(result.height, self.iconSize);
     }
@@ -582,9 +669,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.label.text = nil;
     self.iconView.image = nil;
+    self.iconView.hidden = NO;
 
     self.bubbleView.fillColor = nil;
-    self.bubbleView.fillGradientColors = nil;
     self.bubbleView.strokeColor = nil;
     self.bubbleView.strokeThickness = 0.f;
     [self.bubbleView clearPartnerViews];
