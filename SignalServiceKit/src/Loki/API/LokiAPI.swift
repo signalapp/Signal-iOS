@@ -42,7 +42,7 @@ public final class LokiAPI : NSObject {
         let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         if let headers = headers { request.allHTTPHeaderFields = headers }
-        if let timeout = timeout { request.timeoutInterval = timeout ?? defaultTimeout }
+        request.timeoutInterval = timeout ?? defaultTimeout
         let headers = request.allHTTPHeaderFields ?? [:]
         let headersDescription = headers.isEmpty ? "no custom headers specified" : headers.prettifiedDescription
         print("[Loki] Invoking \(method.rawValue) on \(target) with \(parameters.prettifiedDescription) (\(headersDescription)).")
