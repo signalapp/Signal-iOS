@@ -109,7 +109,7 @@ internal extension Promise {
                     let oldFailureCount = LokiAPI.failureCount[target] ?? 0
                     let newFailureCount = oldFailureCount + 1
                     LokiAPI.failureCount[target] = newFailureCount
-                    print("[Loki] Couldn't reach snode at: \(target.address):\(target.port); setting failure count to \(newFailureCount).")
+                    print("[Loki] Couldn't reach snode at: \(target); setting failure count to \(newFailureCount).")
                     if newFailureCount >= LokiAPI.failureThreshold {
                         print("[Loki] Failure threshold reached for: \(target); dropping it.")
                         LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
