@@ -901,20 +901,21 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 {
     OWSLogInfo(@"");
 
-    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [transaction enumerateKeysAndObjectsInCollection:[OWSBackupFragment collection]
-                                              usingBlock:^(NSString *key, OWSBackupFragment *fragment, BOOL *stop) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [OWSBackupFragment anyVisitAllWithTransaction:transaction
+                                              visitor:^BOOL(OWSBackupFragment *fragment) {
                                                   OWSLogVerbose(@"fragment: %@, %@, %lu, %@, %@, %@, %@",
-                                                      key,
+                                                      fragment.uniqueId,
                                                       fragment.recordName,
                                                       (unsigned long)fragment.encryptionKey.length,
                                                       fragment.relativeFilePath,
                                                       fragment.attachmentId,
                                                       fragment.downloadFilePath,
                                                       fragment.uncompressedDataLength);
+                                                  return YES;
                                               }];
-        OWSLogVerbose(@"Number of fragments: %lu",
-            (unsigned long)[transaction numberOfKeysInCollection:[OWSBackupFragment collection]]);
+        OWSLogVerbose(
+            @"Number of fragments: %lu", (unsigned long)[OWSBackupFragment anyCountWithTransaction:transaction]);
     }];
 }
 

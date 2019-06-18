@@ -43,7 +43,7 @@ $REPO_ROOT/Scripts/sds_codegen/sds_parse_objc.py --src-path Signal --swift-bridg
 # We generate Swift extensions to handle serialization, etc. for models.
 RECORD_TYPE_SWIFT="SignalServiceKit/src/Storage/Database/SDSRecordType.swift"
 RECORD_TYPE_JSON="$REPO_ROOT/Scripts/sds_codegen/sds_config/sds_record_type_map.json"
-CONFIG_JSON="$REPO_ROOT/Scripts/sds_codegen/sds-config/sds-config.json"
+CONFIG_JSON="$REPO_ROOT/Scripts/sds_codegen/sds_config/sds-config.json"
 $REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalServiceKit/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
 $REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalShareExtension/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
 $REPO_ROOT/Scripts/sds_codegen/sds_generate.py  --src-path SignalMessaging/  --search-path . --record-type-swift-path $RECORD_TYPE_SWIFT  --record-type-json-path $RECORD_TYPE_JSON --config-json-path $CONFIG_JSON
