@@ -189,15 +189,21 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
     // MARK: - instance methods
 
     func mostRecentInteraction(transaction: YapDatabaseReadTransaction) -> TSInteraction? {
-        return interactionExt(transaction).lastObject(inGroup: threadUniqueId) as? TSInteraction
+        guard let view = interactionExt(transaction) else {
+            return nil
+        }
+        return view.lastObject(inGroup: threadUniqueId) as? TSInteraction
     }
 
     func mostRecentInteractionForInbox(transaction: YapDatabaseReadTransaction) -> TSInteraction? {
         var last: TSInteraction?
         var missedCount: UInt = 0
-        interactionExt(transaction).safe_enumerateKeysAndObjects(inGroup: threadUniqueId,
-                                                                 extensionName: TSMessageDatabaseViewExtensionName,
-                                                                 with: NSEnumerationOptions.reverse) { (_, _, object, _, stopPtr) in
+        guard let view = interactionExt(transaction) else {
+            return nil
+        }
+        view.safe_enumerateKeysAndObjects(inGroup: threadUniqueId,
+                                          extensionName: TSMessageDatabaseViewExtensionName,
+                                          with: NSEnumerationOptions.reverse) { (_, _, object, _, stopPtr) in
             guard let interaction = object as? TSInteraction else {
                 owsFailDebug("unexpected interaction: \(type(of: object))")
                 return
@@ -221,16 +227,25 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
     }
 
     func count(transaction: YapDatabaseReadTransaction) -> UInt {
-        return interactionExt(transaction).numberOfItems(inGroup: threadUniqueId)
+        guard let view = interactionExt(transaction) else {
+            return 0
+        }
+        return view.numberOfItems(inGroup: threadUniqueId)
     }
 
     func unreadCount(transaction: YapDatabaseReadTransaction) -> UInt {
-        return unreadExt(transaction).numberOfItems(inGroup: threadUniqueId)
+        guard let view = unreadExt(transaction) else {
+            return 0
+        }
+        return view.numberOfItems(inGroup: threadUniqueId)
     }
 
     func sortIndex(interactionUniqueId: String, transaction: YapDatabaseReadTransaction) -> UInt? {
         var index: UInt = 0
-        let wasFound = interactionExt(transaction).getGroup(nil, index: &index, forKey: interactionUniqueId, inCollection: collection)
+        guard let view = interactionExt(transaction) else {
+            return nil
+        }
+        let wasFound = view.getGroup(nil, index: &index, forKey: interactionUniqueId, inCollection: collection)
 
         guard wasFound else {
             return nil
@@ -241,7 +256,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     func enumerateInteractionIds(transaction: YapDatabaseReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
         var errorToRaise: Error?
-        interactionExt(transaction).enumerateKeys(inGroup: threadUniqueId, with: NSEnumerationOptions.reverse) { (_, key, _, stopPtr) in
+        guard let view = interactionExt(transaction) else {
+            return
+        }
+        view.enumerateKeys(inGroup: threadUniqueId, with: NSEnumerationOptions.reverse) { (_, key, _, stopPtr) in
             do {
                 try block(key, stopPtr)
             } catch {
@@ -258,7 +276,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
     }
 
     func interaction(at index: UInt, transaction: YapDatabaseReadTransaction) -> TSInteraction? {
-        guard let obj = interactionExt(transaction).object(at: index, inGroup: threadUniqueId) else {
+        guard let view = interactionExt(transaction) else {
+            return nil
+        }
+        guard let obj = view.object(at: index, inGroup: threadUniqueId) else {
             return nil
         }
 
@@ -282,22 +303,12 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return TSInteraction.collection()
     }
 
-    private func unreadExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction {
-        guard let ext = transaction.ext(TSUnreadDatabaseViewExtensionName) as? YapDatabaseViewTransaction else {
-            OWSPrimaryStorage.incrementVersion(ofDatabaseExtension: TSUnreadDatabaseViewExtensionName)
-            owsFail("unable to load extension")
-        }
-
-        return ext
+    private func unreadExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction? {
+        return transaction.safeViewTransaction(TSUnreadDatabaseViewExtensionName)
     }
 
-    private func interactionExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction {
-        guard let ext = transaction.ext(TSMessageDatabaseViewExtensionName) as? YapDatabaseViewTransaction else {
-            OWSPrimaryStorage.incrementVersion(ofDatabaseExtension: TSMessageDatabaseViewExtensionName)
-            owsFail("unable to load extension")
-        }
-
-        return ext
+    private func interactionExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction? {
+        return transaction.safeViewTransaction(TSMessageDatabaseViewExtensionName)
     }
 }
 

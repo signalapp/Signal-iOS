@@ -3791,12 +3791,15 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             NSUInteger remainder = counter;
             while (remainder > 0) {
-                NSUInteger batchSize = MIN(kMaxBatchSize, remainder);
-                [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-                    [self sendFakeMessages:batchSize thread:thread isTextOnly:isTextOnly transaction:transaction];
-                }];
-                remainder -= batchSize;
-                OWSLogInfo(@"sendFakeMessages %lu / %lu", (unsigned long)(counter - remainder), (unsigned long)counter);
+                @autoreleasepool {
+                    NSUInteger batchSize = MIN(kMaxBatchSize, remainder);
+                    [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+                        [self sendFakeMessages:batchSize thread:thread isTextOnly:isTextOnly transaction:transaction];
+                    }];
+                    remainder -= batchSize;
+                    OWSLogInfo(
+                        @"sendFakeMessages %lu / %lu", (unsigned long)(counter - remainder), (unsigned long)counter);
+                }
             }
         });
     }

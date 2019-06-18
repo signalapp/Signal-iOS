@@ -34,3 +34,4 @@
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/TSYapDatabaseObject.h>
 #import <SignalServiceKit/YAPDBMessageContentJobFinder.h>
+#import <SignalServiceKit/YapDatabaseTransaction+OWS.h>

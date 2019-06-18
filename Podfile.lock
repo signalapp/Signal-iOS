@@ -308,7 +308,7 @@ CHECKOUT OPTIONS:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 947cf18a1dafab10fab1a91803d89c3937f34f2c
+    :commit: b9dd2f85c4746b41bb9c9e6993e886aa3b1cf728
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: b2de463ac55fb2aee385ccece8becb1eb6df25b0
