@@ -416,6 +416,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.label.font = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
     self.label.numberOfLines = 1;
     self.label.lineBreakMode = NSLineBreakByTruncatingTail;
+    [self.label setContentHuggingHorizontalLow];
+    [self.label setCompressionResistanceHorizontalLow];
 
     switch (self.viewItem.perMessageExpirationState) {
         case PerMessageExpirationState_Unknown:
@@ -502,17 +504,13 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *_Nullable uniqueId = self.viewItem.attachmentPointer.uniqueId;
     if (uniqueId.length < 1) {
         OWSFailDebug(@"Missing uniqueId.");
-        return [UIView new];
-    }
-    if ([self.attachmentDownloads downloadProgressForAttachmentId:uniqueId] == nil) {
-        // Download probably hasn't started yet.
-        OWSLogWarn(@"Missing download progress.");
-        return [UIView new];
+        return nil;
     }
 
     MediaDownloadView *downloadView =
         [[MediaDownloadView alloc] initWithAttachmentId:uniqueId radius:self.downloadProgressRadius];
-    [downloadView autoSetDimension:ALDimensionHeight toSize:self.downloadProgressHeight];
+    [downloadView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
+    [downloadView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
     [downloadView setContentHuggingHigh];
     [downloadView setCompressionResistanceHigh];
     return downloadView;
@@ -523,11 +521,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGFloat)minContentWidth
 {
     return round(self.conversationStyle.maxMessageWidth * 0.4f);
-}
-
-- (CGFloat)downloadProgressHeight
-{
-    return self.iconSize;
 }
 
 - (CGFloat)downloadProgressRadius
