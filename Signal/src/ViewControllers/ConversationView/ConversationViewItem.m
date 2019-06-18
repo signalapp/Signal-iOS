@@ -903,7 +903,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return;
         } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
             TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
-            if (attachmentStream.isValidVisualMedia) {
+            if (attachmentStream.isValidVisualMedia && (attachmentStream.isImage || attachmentStream.isAnimated)) {
                 self.messageCellType = OWSMessageCellType_PerMessageExpiration;
                 self.perMessageExpirationState = PerMessageExpirationState_IncomingAvailable;
                 self.attachmentStream = attachmentStream;
