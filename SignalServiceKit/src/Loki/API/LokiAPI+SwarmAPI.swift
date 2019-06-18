@@ -9,7 +9,7 @@ public extension LokiAPI {
     // MARK: Settings
     private static let minimumSnodeCount = 2
     private static let targetSnodeCount = 3
-    fileprivate static let failureThreshold = 3
+    fileprivate static let failureThreshold = 2
     
     // MARK: Caching
     private static let swarmCacheKey = "swarmCacheKey"
@@ -51,7 +51,7 @@ public extension LokiAPI {
                 let rawResponse = intermediate.responseObject
                 guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw "Failed to update random snode pool from: \(rawResponse)." }
                 randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
-                    guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int else {
+                    guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int, address != "0.0.0.0" else {
                         print("Failed to update random snode pool from: \(rawTarget).")
                         return nil
                     }
@@ -88,7 +88,7 @@ public extension LokiAPI {
             return []
         }
         return rawSnodes.flatMap { rawSnode in
-            guard let address = rawSnode["ip"] as? String, let portAsString = rawSnode["port"] as? String, let port = UInt16(portAsString) else {
+            guard let address = rawSnode["ip"] as? String, let portAsString = rawSnode["port"] as? String, let port = UInt16(portAsString), address != "0.0.0.0" else {
                 print("[Loki] Failed to parse target from: \(rawSnode).")
                 return nil
             }
