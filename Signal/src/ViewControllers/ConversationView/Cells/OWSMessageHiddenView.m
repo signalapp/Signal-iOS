@@ -168,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          conversationStyle:self.conversationStyle
                                                 isIncoming:self.isIncoming
                                          isOverlayingMedia:NO
-                                           isOutsideBubble:self.isExpired];
+                                           isOutsideBubble:self.isBubbleTransparent];
         [textViews addObject:self.footerView];
     }
 
@@ -204,19 +204,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.senderNameLabel);
     OWSAssertDebug(self.shouldShowSenderName);
-    
-    self.senderNameLabel.textColor = self.bodyTextColor;
+
+    self.senderNameLabel.textColor = self.textColor;
     self.senderNameLabel.font = OWSMessageView.senderNameFont;
     self.senderNameLabel.attributedText = self.viewItem.senderName;
     self.senderNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-}
-
-- (UIColor *)bodyTextColor
-{
-    OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-    
-    TSMessage *message = (TSMessage *)self.viewItem.interaction;
-    return [self.conversationStyle bubbleTextColorWithMessage:message];
 }
 
 - (CGFloat)iconSize
@@ -279,10 +271,31 @@ NS_ASSUME_NONNULL_BEGIN
         case PerMessageExpirationState_OutgoingFailed:
             return pendingColor;
         case PerMessageExpirationState_OutgoingSending:
+            return self.conversationStyle.bubbleColorOutgoingSending;
         case PerMessageExpirationState_OutgoingSent:
-            return ConversationStyle.bubbleTextColorOutgoing;
+            return self.conversationStyle.bubbleColorOutgoingSent;
         case PerMessageExpirationState_IncomingInvalidContent:
             return Theme.backgroundColor;
+    }
+}
+
+- (BOOL)isBubbleTransparent
+{
+    switch (self.viewItem.perMessageExpirationState) {
+        case PerMessageExpirationState_Unknown:
+            OWSFailDebug(@"Invalid value.");
+            // Fall through.
+        case PerMessageExpirationState_IncomingExpired:
+            return YES;
+        case PerMessageExpirationState_IncomingDownloading:
+        case PerMessageExpirationState_IncomingFailed:
+        case PerMessageExpirationState_IncomingAvailable:
+        case PerMessageExpirationState_OutgoingFailed:
+        case PerMessageExpirationState_OutgoingSending:
+        case PerMessageExpirationState_OutgoingSent:
+            return NO;
+        case PerMessageExpirationState_IncomingInvalidContent:
+            return YES;
     }
 }
 
@@ -312,17 +325,51 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)contentHSpacing
 {
-    return 10.f;
+    return 8.f;
 }
 
-- (UIColor *)contentForegroundColor
+- (UIColor *)textColor
 {
-    if (self.isExpired) {
-        return UIColor.ows_gray60Color;
-    } else if (self.isIncoming) {
-        return UIColor.ows_gray90Color;
-    } else {
-        return UIColor.ows_whiteColor;
+    switch (self.viewItem.perMessageExpirationState) {
+        case PerMessageExpirationState_Unknown:
+            OWSFailDebug(@"Invalid value.");
+            // Fall through.
+        case PerMessageExpirationState_IncomingExpired:
+        case PerMessageExpirationState_IncomingDownloading:
+        case PerMessageExpirationState_IncomingFailed:
+        case PerMessageExpirationState_IncomingAvailable:
+            return ConversationStyle.bubbleTextColorIncoming;
+        case PerMessageExpirationState_OutgoingFailed:
+        case PerMessageExpirationState_OutgoingSending:
+        case PerMessageExpirationState_OutgoingSent:
+            return ConversationStyle.bubbleTextColorOutgoing;
+        case PerMessageExpirationState_IncomingInvalidContent:
+            return Theme.secondaryColor;
+    }
+}
+
+- (UIColor *)iconColor
+{
+    UIColor *pendingColor = (Theme.isDarkThemeEnabled ? UIColor.ows_gray15Color : UIColor.ows_gray75Color);
+
+    switch (self.viewItem.perMessageExpirationState) {
+        case PerMessageExpirationState_Unknown:
+            OWSFailDebug(@"Invalid value.");
+            // Fall through.
+        case PerMessageExpirationState_IncomingExpired:
+            return ConversationStyle.bubbleTextColorIncoming;
+        case PerMessageExpirationState_IncomingDownloading:
+        case PerMessageExpirationState_IncomingFailed:
+            return pendingColor;
+        case PerMessageExpirationState_IncomingAvailable:
+            return ConversationStyle.bubbleTextColorIncoming;
+        case PerMessageExpirationState_OutgoingFailed:
+            return pendingColor;
+        case PerMessageExpirationState_OutgoingSending:
+        case PerMessageExpirationState_OutgoingSent:
+            return ConversationStyle.bubbleTextColorOutgoing;
+        case PerMessageExpirationState_IncomingInvalidContent:
+            return Theme.secondaryColor;
     }
 }
 
@@ -372,8 +419,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.label);
 
-    self.label.textColor = self.contentForegroundColor;
+    self.label.textColor = self.textColor;
     self.label.font = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+    self.label.numberOfLines = 1;
+    self.label.lineBreakMode = NSLineBreakByTruncatingTail;
 
     switch (self.viewItem.perMessageExpirationState) {
         case PerMessageExpirationState_Unknown:
@@ -406,12 +455,13 @@ NS_ASSUME_NONNULL_BEGIN
         case PerMessageExpirationState_IncomingInvalidContent:
             self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_INVALID_CONTENT",
                 @"Label for messages with per-message expiration that have invalid content.");
+            // Reconfigure label for this state only.
             self.label.font = UIFont.ows_dynamicTypeSubheadlineFont;
             self.label.textColor = Theme.secondaryColor;
+            self.label.numberOfLines = 0;
+            self.label.lineBreakMode = NSLineBreakByWordWrapping;
             break;
     }
-
-    self.label.lineBreakMode = NSLineBreakByTruncatingTail;
 }
 
 - (void)configureIconView
@@ -420,7 +470,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *_Nullable iconName = self.iconName;
     if (iconName != nil) {
-        [self.iconView setTemplateImageName:iconName tintColor:self.contentForegroundColor];
+        [self.iconView setTemplateImageName:iconName tintColor:self.iconColor];
     }
 }
 
