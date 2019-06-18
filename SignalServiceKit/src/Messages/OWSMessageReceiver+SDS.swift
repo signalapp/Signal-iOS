@@ -129,19 +129,20 @@ extension OWSMessageDecryptJobSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension OWSMessageDecryptJob {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension OWSMessageDecryptJob {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
     // This method is private; we should never use it directly.
     // Instead, use anyUpdate(transaction:block:), so that we
     // use the "update with" pattern.
-    private func anyUpdate(transaction: SDSAnyWriteTransaction) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -169,7 +170,7 @@ extension OWSMessageDecryptJob {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSMessageDecryptJob) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSMessageDecryptJob) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -192,7 +193,7 @@ extension OWSMessageDecryptJob {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -206,11 +207,11 @@ extension OWSMessageDecryptJob {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -270,8 +271,8 @@ public class OWSMessageDecryptJobCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension OWSMessageDecryptJob {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSMessageDecryptJobCursor {
+public extension OWSMessageDecryptJob {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSMessageDecryptJobCursor {
         let database = transaction.database
         do {
             let cursor = try MessageDecryptJobRecord.fetchCursor(database)
@@ -283,8 +284,8 @@ extension OWSMessageDecryptJob {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> OWSMessageDecryptJob? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> OWSMessageDecryptJob? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -299,7 +300,7 @@ extension OWSMessageDecryptJob {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSMessageDecryptJob) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSMessageDecryptJob) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             OWSMessageDecryptJob.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -327,7 +328,7 @@ extension OWSMessageDecryptJob {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSMessageDecryptJob] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSMessageDecryptJob] {
         var result = [OWSMessageDecryptJob]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -335,14 +336,24 @@ extension OWSMessageDecryptJob {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: OWSMessageDecryptJob.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT COUNT(*) FROM \(MessageDecryptJobRecord.databaseTableName)"
+            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension OWSMessageDecryptJob {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> OWSMessageDecryptJobCursor {
+public extension OWSMessageDecryptJob {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> OWSMessageDecryptJobCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -363,9 +374,9 @@ extension OWSMessageDecryptJob {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> OWSMessageDecryptJob? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> OWSMessageDecryptJob? {
         assert(sql.count > 0)
 
         do {

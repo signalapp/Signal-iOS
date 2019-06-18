@@ -148,19 +148,20 @@ extension OWSUserProfileSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension OWSUserProfile {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension OWSUserProfile {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
     // This method is private; we should never use it directly.
     // Instead, use anyUpdate(transaction:block:), so that we
     // use the "update with" pattern.
-    private func anyUpdate(transaction: SDSAnyWriteTransaction) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -188,7 +189,7 @@ extension OWSUserProfile {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSUserProfile) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSUserProfile) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -211,7 +212,7 @@ extension OWSUserProfile {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -225,11 +226,11 @@ extension OWSUserProfile {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -289,8 +290,8 @@ public class OWSUserProfileCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension OWSUserProfile {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSUserProfileCursor {
+public extension OWSUserProfile {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSUserProfileCursor {
         let database = transaction.database
         do {
             let cursor = try UserProfileRecord.fetchCursor(database)
@@ -302,8 +303,8 @@ extension OWSUserProfile {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -318,7 +319,7 @@ extension OWSUserProfile {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSUserProfile) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSUserProfile) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             OWSUserProfile.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -346,7 +347,7 @@ extension OWSUserProfile {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSUserProfile] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSUserProfile] {
         var result = [OWSUserProfile]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -354,14 +355,24 @@ extension OWSUserProfile {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: OWSUserProfile.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT COUNT(*) FROM \(UserProfileRecord.databaseTableName)"
+            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension OWSUserProfile {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> OWSUserProfileCursor {
+public extension OWSUserProfile {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> OWSUserProfileCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -382,9 +393,9 @@ extension OWSUserProfile {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> OWSUserProfile? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> OWSUserProfile? {
         assert(sql.count > 0)
 
         do {

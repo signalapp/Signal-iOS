@@ -334,19 +334,20 @@ extension TSAttachmentSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension TSAttachment {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension TSAttachment {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
     // This method is private; we should never use it directly.
     // Instead, use anyUpdate(transaction:block:), so that we
     // use the "update with" pattern.
-    private func anyUpdate(transaction: SDSAnyWriteTransaction) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -374,7 +375,7 @@ extension TSAttachment {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSAttachment) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSAttachment) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -397,7 +398,7 @@ extension TSAttachment {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -411,11 +412,11 @@ extension TSAttachment {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -475,8 +476,8 @@ public class TSAttachmentCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension TSAttachment {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSAttachmentCursor {
+public extension TSAttachment {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSAttachmentCursor {
         let database = transaction.database
         do {
             let cursor = try AttachmentRecord.fetchCursor(database)
@@ -488,8 +489,8 @@ extension TSAttachment {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> TSAttachment? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> TSAttachment? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -504,7 +505,7 @@ extension TSAttachment {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (TSAttachment) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (TSAttachment) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             TSAttachment.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -532,7 +533,7 @@ extension TSAttachment {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSAttachment] {
         var result = [TSAttachment]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -540,14 +541,24 @@ extension TSAttachment {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: TSAttachment.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT COUNT(*) FROM \(AttachmentRecord.databaseTableName)"
+            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension TSAttachment {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> TSAttachmentCursor {
+public extension TSAttachment {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> TSAttachmentCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -568,9 +579,9 @@ extension TSAttachment {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> TSAttachment? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> TSAttachment? {
         assert(sql.count > 0)
 
         do {

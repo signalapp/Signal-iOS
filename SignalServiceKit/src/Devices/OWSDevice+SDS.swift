@@ -141,19 +141,20 @@ extension OWSDeviceSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension OWSDevice {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension OWSDevice {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
     // This method is private; we should never use it directly.
     // Instead, use anyUpdate(transaction:block:), so that we
     // use the "update with" pattern.
-    private func anyUpdate(transaction: SDSAnyWriteTransaction) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -181,7 +182,7 @@ extension OWSDevice {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSDevice) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSDevice) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -204,7 +205,7 @@ extension OWSDevice {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -218,11 +219,11 @@ extension OWSDevice {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -282,8 +283,8 @@ public class OWSDeviceCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension OWSDevice {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSDeviceCursor {
+public extension OWSDevice {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSDeviceCursor {
         let database = transaction.database
         do {
             let cursor = try DeviceRecord.fetchCursor(database)
@@ -295,8 +296,8 @@ extension OWSDevice {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> OWSDevice? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> OWSDevice? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -311,7 +312,7 @@ extension OWSDevice {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSDevice) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSDevice) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             OWSDevice.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -339,7 +340,7 @@ extension OWSDevice {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSDevice] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSDevice] {
         var result = [OWSDevice]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -347,14 +348,24 @@ extension OWSDevice {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: OWSDevice.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT COUNT(*) FROM \(DeviceRecord.databaseTableName)"
+            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension OWSDevice {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> OWSDeviceCursor {
+public extension OWSDevice {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> OWSDeviceCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -375,9 +386,9 @@ extension OWSDevice {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> OWSDevice? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> OWSDevice? {
         assert(sql.count > 0)
 
         do {

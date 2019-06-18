@@ -153,19 +153,20 @@ extension OWSBackupFragmentSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension OWSBackupFragment {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension OWSBackupFragment {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
     // This method is private; we should never use it directly.
     // Instead, use anyUpdate(transaction:block:), so that we
     // use the "update with" pattern.
-    private func anyUpdate(transaction: SDSAnyWriteTransaction) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -193,7 +194,7 @@ extension OWSBackupFragment {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSBackupFragment) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSBackupFragment) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -216,7 +217,7 @@ extension OWSBackupFragment {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -230,11 +231,11 @@ extension OWSBackupFragment {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -294,8 +295,8 @@ public class OWSBackupFragmentCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension OWSBackupFragment {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSBackupFragmentCursor {
+public extension OWSBackupFragment {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSBackupFragmentCursor {
         let database = transaction.database
         do {
             let cursor = try BackupFragmentRecord.fetchCursor(database)
@@ -307,8 +308,8 @@ extension OWSBackupFragment {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> OWSBackupFragment? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> OWSBackupFragment? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -323,7 +324,7 @@ extension OWSBackupFragment {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSBackupFragment) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSBackupFragment) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             OWSBackupFragment.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -351,7 +352,7 @@ extension OWSBackupFragment {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSBackupFragment] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSBackupFragment] {
         var result = [OWSBackupFragment]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -359,14 +360,24 @@ extension OWSBackupFragment {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: OWSBackupFragment.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT COUNT(*) FROM \(BackupFragmentRecord.databaseTableName)"
+            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension OWSBackupFragment {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> OWSBackupFragmentCursor {
+public extension OWSBackupFragment {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> OWSBackupFragmentCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -387,9 +398,9 @@ extension OWSBackupFragment {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> OWSBackupFragment? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> OWSBackupFragment? {
         assert(sql.count > 0)
 
         do {

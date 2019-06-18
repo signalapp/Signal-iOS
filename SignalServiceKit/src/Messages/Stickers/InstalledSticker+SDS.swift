@@ -130,19 +130,20 @@ extension InstalledStickerSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension InstalledSticker {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension InstalledSticker {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
     // This method is private; we should never use it directly.
     // Instead, use anyUpdate(transaction:block:), so that we
     // use the "update with" pattern.
-    private func anyUpdate(transaction: SDSAnyWriteTransaction) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -170,7 +171,7 @@ extension InstalledSticker {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (InstalledSticker) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (InstalledSticker) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -193,7 +194,7 @@ extension InstalledSticker {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -207,11 +208,11 @@ extension InstalledSticker {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -271,8 +272,8 @@ public class InstalledStickerCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension InstalledSticker {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> InstalledStickerCursor {
+public extension InstalledSticker {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> InstalledStickerCursor {
         let database = transaction.database
         do {
             let cursor = try InstalledStickerRecord.fetchCursor(database)
@@ -284,8 +285,8 @@ extension InstalledSticker {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> InstalledSticker? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> InstalledSticker? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -300,7 +301,7 @@ extension InstalledSticker {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (InstalledSticker) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (InstalledSticker) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             InstalledSticker.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -328,7 +329,7 @@ extension InstalledSticker {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [InstalledSticker] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [InstalledSticker] {
         var result = [InstalledSticker]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -336,14 +337,24 @@ extension InstalledSticker {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: InstalledSticker.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT COUNT(*) FROM \(InstalledStickerRecord.databaseTableName)"
+            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension InstalledSticker {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> InstalledStickerCursor {
+public extension InstalledSticker {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> InstalledStickerCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -364,9 +375,9 @@ extension InstalledSticker {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> InstalledSticker? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> InstalledSticker? {
         assert(sql.count > 0)
 
         do {

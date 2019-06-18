@@ -162,19 +162,20 @@ extension StickerPackSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension StickerPack {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension StickerPack {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
     // This method is private; we should never use it directly.
     // Instead, use anyUpdate(transaction:block:), so that we
     // use the "update with" pattern.
-    private func anyUpdate(transaction: SDSAnyWriteTransaction) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -202,7 +203,7 @@ extension StickerPack {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (StickerPack) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (StickerPack) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -225,7 +226,7 @@ extension StickerPack {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -239,11 +240,11 @@ extension StickerPack {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -303,8 +304,8 @@ public class StickerPackCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension StickerPack {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> StickerPackCursor {
+public extension StickerPack {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> StickerPackCursor {
         let database = transaction.database
         do {
             let cursor = try StickerPackRecord.fetchCursor(database)
@@ -316,8 +317,8 @@ extension StickerPack {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> StickerPack? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> StickerPack? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -332,7 +333,7 @@ extension StickerPack {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (StickerPack) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (StickerPack) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             StickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -360,7 +361,7 @@ extension StickerPack {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [StickerPack] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [StickerPack] {
         var result = [StickerPack]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -368,14 +369,24 @@ extension StickerPack {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: StickerPack.collection())
+        case .grdbRead(let grdbTransaction):
+            let sql = "SELECT COUNT(*) FROM \(StickerPackRecord.databaseTableName)"
+            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension StickerPack {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> StickerPackCursor {
+public extension StickerPack {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> StickerPackCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -396,9 +407,9 @@ extension StickerPack {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> StickerPack? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> StickerPack? {
         assert(sql.count > 0)
 
         do {
