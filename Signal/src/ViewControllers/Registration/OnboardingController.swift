@@ -432,25 +432,36 @@ public class OnboardingController: NSObject {
             }.catch { error in
                 Logger.error("Error: \(error)")
                 modal.dismiss {
-                    self.requestingVerificationDidFail(viewController: fromViewController, error: error as NSError)
+                    self.requestingVerificationDidFail(viewController: fromViewController, error: error)
                 }
             }.retainUntilComplete()
         }
     }
 
-    private func requestingVerificationDidFail(viewController: UIViewController, error: NSError) {
-        if error.code == 402 {
-            Logger.info("Captcha requested.")
-
+    private func requestingVerificationDidFail(viewController: UIViewController, error: Error) {
+        switch error {
+        case AccountServiceClientError.captchaRequired:
             onboardingDidRequireCaptcha(viewController: viewController)
-        } else if error.code == 400 {
-            OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
-                                message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
+            return
 
-        } else {
-            OWSAlerts.showAlert(title: error.localizedDescription,
-                                message: error.localizedRecoverySuggestion)
+        case let networkManagerError as NetworkManagerError:
+            switch networkManagerError.statusCode {
+            case 400:
+                OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
+                                    message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
+                return
+            default:
+                break
+            }
+
+        default:
+            break
         }
+
+        let nsError = error as NSError
+        owsFailDebug("unexpected error: \(nsError)")
+        OWSAlerts.showAlert(title: nsError.localizedDescription,
+                            message: nsError.localizedRecoverySuggestion)
     }
 
     // MARK: - Verification

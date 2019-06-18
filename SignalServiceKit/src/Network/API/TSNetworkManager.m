@@ -449,6 +449,11 @@ dispatch_queue_t NetworkManagerQueue()
             failureBlock(task, error);
             break;
         }
+        case 402: {
+            error.isRetryable = NO;
+            failureBlock(task, error);
+            break;
+        }
         case 403: {
             OWSLogError(
                 @"The server returned an authentication failure: %@, %@", networkError.debugDescription, request);
