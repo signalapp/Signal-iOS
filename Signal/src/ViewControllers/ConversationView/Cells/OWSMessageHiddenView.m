@@ -479,8 +479,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Unexpected state.");
             return nil;
         case PerMessageExpirationState_IncomingFailed:
-            // TODO: This will change.
-            return @"arrow-down-circle-outline-24";
+            return @"retry-24";
         case PerMessageExpirationState_IncomingAvailable:
             return @"play-filled-24";
         case PerMessageExpirationState_OutgoingFailed:
@@ -547,7 +546,6 @@ NS_ASSUME_NONNULL_BEGIN
     return (self.viewItem.perMessageExpirationState != PerMessageExpirationState_IncomingInvalidContent);
 }
 
-// TODO: Remove?
 - (BOOL)isIncomingDownloading
 {
     return self.viewItem.perMessageExpirationState == PerMessageExpirationState_IncomingDownloading;
@@ -561,31 +559,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isIncomingAvailable
 {
     return self.viewItem.perMessageExpirationState == PerMessageExpirationState_IncomingAvailable;
-}
-
-- (BOOL)isIncomingExpired
-{
-    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_IncomingExpired;
-}
-
-- (BOOL)isOutgoingSent
-{
-    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_OutgoingSent;
-}
-
-- (BOOL)isOutgoingFailed
-{
-    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_OutgoingFailed;
-}
-
-- (BOOL)isOutgoingSending
-{
-    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_OutgoingSending;
-}
-
-- (BOOL)isExpired
-{
-    return self.isIncomingFailed || self.isOutgoingSent;
 }
 
 #pragma mark - Measurement
@@ -744,7 +717,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // TODO:
     if (self.isIncomingFailed) {
         [self.delegate didTapFailedIncomingAttachment:self.viewItem];
     } else if (self.isIncomingAvailable) {
