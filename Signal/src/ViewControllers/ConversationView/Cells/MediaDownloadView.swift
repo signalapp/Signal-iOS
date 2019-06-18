@@ -57,7 +57,7 @@ public class MediaDownloadView: UIView {
         guard let progress = attachmentDownloads.downloadProgress(forAttachmentId: attachmentId) else {
             Logger.warn("No progress for attachment.")
 
-            progressView.progress = nil
+            progressView.progress = 0
             return
         }
         progressView.progress = CGFloat(progress.floatValue)
