@@ -59,6 +59,8 @@ public class FeatureFlags: NSObject {
     @objc
     public static let ephemeralMessageSend = true
 
+    // This shouldn't be enabled in production until the receive side has been
+    // in production for "long enough".
     @objc
     public static let perMessageExpiration = true
 }
