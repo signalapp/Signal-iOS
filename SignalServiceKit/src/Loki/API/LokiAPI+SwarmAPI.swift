@@ -51,7 +51,10 @@ public extension LokiAPI {
                 let rawResponse = intermediate.responseObject
                 guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw "Failed to update random snode pool from: \(rawResponse)." }
                 randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
-                    guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int else { throw "Failed to update random snode pool from: \(rawTarget)." }
+                    guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int else {
+                        print("Failed to update random snode pool from: \(rawTarget).")
+                        return nil
+                    }
                     return LokiAPITarget(address: "https://\(address)", port: UInt16(port))
                 })
                 return randomSnodePool.randomElement()!
