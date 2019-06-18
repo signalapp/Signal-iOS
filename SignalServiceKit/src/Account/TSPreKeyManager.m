@@ -72,8 +72,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
     // PERF TODO use a single transaction / take in a transaction
 
     // Record a prekey update failure.
-    int failureCount = [self.signedPreKeyStore incrementPrekeyUpdateFailureCount];
-    OWSLogInfo(@"new failureCount: %d", failureCount);
+    NSInteger failureCount = [self.signedPreKeyStore incrementPrekeyUpdateFailureCount];
+    OWSLogInfo(@"new failureCount: %ld", (unsigned long)failureCount);
 
     if (failureCount == 1 || ![self.signedPreKeyStore firstPrekeyUpdateFailureDate]) {
         // If this is the "first" failure, record the timestamp of that

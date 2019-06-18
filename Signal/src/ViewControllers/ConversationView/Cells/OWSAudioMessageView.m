@@ -113,8 +113,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateAudioProgressSlider
 {
-    [self.audioProgressSlider
-        setValue:(float)self.audioDurationSeconds > 0 ? self.audioProgressSeconds / self.audioDurationSeconds : 0.0];
+    float progressRatio = 0;
+    if (self.audioDurationSeconds > 0) {
+        progressRatio = (float)(self.audioProgressSeconds / self.audioDurationSeconds);
+    }
+    [self.audioProgressSlider setValue:progressRatio];
+
 
     UIColor *minimumTrackColor = nil;
     UIColor *maximumTrackColor = nil;

@@ -497,7 +497,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                               lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
                                                    focusMessageId:(nullable NSString *)focusMessageId
-                                                     maxRangeSize:(int)maxRangeSize
+                                                     maxRangeSize:(NSUInteger)maxRangeSize
                                                       transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
@@ -570,13 +570,13 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 }
 
 + (void)ensureUnreadIndicator:(ThreadDynamicInteractions *)dynamicInteractions
-                             thread:(TSThread *)thread
-                        transaction:(YapDatabaseReadTransaction *)transaction
-                       maxRangeSize:(int)maxRangeSize
-        blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
-     nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
-        hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
-    firstUnseenSortId:(nullable NSNumber *)firstUnseenSortId
+                            thread:(TSThread *)thread
+                       transaction:(YapDatabaseReadTransaction *)transaction
+                      maxRangeSize:(NSUInteger)maxRangeSize
+       blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
+    nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
+       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
+                 firstUnseenSortId:(nullable NSNumber *)firstUnseenSortId
 {
     OWSAssertDebug(dynamicInteractions);
     OWSAssertDebug(thread);
