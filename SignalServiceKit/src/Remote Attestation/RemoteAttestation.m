@@ -242,7 +242,7 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
 @property (nonatomic) RemoteAttestationKeys *keys;
 @property (nonatomic) NSArray<NSHTTPCookie *> *cookies;
 @property (nonatomic) NSData *requestId;
-@property (nonatomic) NSString *enclaveId;
+@property (nonatomic) NSString *enclaveName;
 @property (nonatomic) RemoteAttestationAuth *auth;
 
 @end
@@ -273,19 +273,22 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
 
     ECKeyPair *keyPair = [Curve25519 generateKeyPair];
 
-    NSString *enclaveId;
+    NSString *enclaveName;
+    NSString *mrenclave;
     switch (service) {
         case RemoteAttestationServiceContactDiscovery:
-            enclaveId = contactDiscoveryEnclaveId;
+            enclaveName = contactDiscoveryEnclaveName;
+            mrenclave = contactDiscoveryMrenclave;
             break;
         case RemoteAttestationServiceKeyBackup:
-            enclaveId = keyBackupEnclaveId;
+            enclaveName = keyBackupEnclaveName;
+            mrenclave = keyBackupMrenclave;
             break;
     }
 
     TSRequest *request = [OWSRequestFactory remoteAttestationRequestForService:service
                                                                    withKeyPair:keyPair
-                                                                     enclaveId:enclaveId
+                                                                     enclaveName:enclaveName
                                                                   authUsername:auth.username
                                                                   authPassword:auth.password];
 
@@ -296,12 +299,13 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
                                                   RemoteAttestation *_Nullable attestation = [self parseAttestationResponseJson:responseJson
                                                                                                                        response:task.response
                                                                                                                         keyPair:keyPair
-                                                                                                                      enclaveId:enclaveId
+                                                                                                                      enclaveName:enclaveName
+                                                                                                                      mrenclave:mrenclave
                                                                                                                            auth:auth
                                                                                                                           error:&error];
 
-                                                  if (!attestation) {
-                                                      if (!error) {
+                                                  if (attestation == nil || error != nil) {
+                                                      if (error == nil) {
                                                           OWSFailDebug(@"error was unexpectedly nil");
                                                           error = RemoteAttestationErrorMakeWithReason(
                                                                                                        RemoteAttestationAssertionError, @"failure when parsing attestation - no reason given");
@@ -375,14 +379,15 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
 + (nullable RemoteAttestation *)parseAttestationResponseJson:(id)responseJson
                                                     response:(NSURLResponse *)response
                                                      keyPair:(ECKeyPair *)keyPair
-                                                   enclaveId:(NSString *)enclaveId
+                                                   enclaveName:(NSString *)enclaveName
+                                                   mrenclave:(NSString *)mrenclave
                                                         auth:(RemoteAttestationAuth *)auth
                                                        error:(NSError **)error
 {
     OWSAssertDebug(responseJson);
     OWSAssertDebug(response);
     OWSAssertDebug(keyPair);
-    OWSAssertDebug(enclaveId.length > 0);
+    OWSAssertDebug(enclaveName.length > 0);
 
     if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
         *error = RemoteAttestationErrorMakeWithReason(RemoteAttestationAssertionError, @"unexpected response type.");
@@ -487,7 +492,7 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
         return nil;
     }
 
-    if (![self verifyServerQuote:quote keys:keys enclaveId:enclaveId]) {
+    if (![self verifyServerQuote:quote keys:keys mrenclave:mrenclave]) {
         *error = RemoteAttestationErrorMakeWithReason(
             RemoteAttestationAssertionError, @"couldn't verify quote.");
         return nil;
@@ -511,7 +516,7 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
     result.cookies = cookies;
     result.keys = keys;
     result.requestId = requestId;
-    result.enclaveId = enclaveId;
+    result.enclaveName = enclaveName;
     result.auth = auth;
 
     OWSLogVerbose(@"remote attestation complete.");
@@ -673,11 +678,11 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
     return result;
 }
 
-+ (BOOL)verifyServerQuote:(RemoteAttestationQuote *)quote keys:(RemoteAttestationKeys *)keys enclaveId:(NSString *)enclaveId
++ (BOOL)verifyServerQuote:(RemoteAttestationQuote *)quote keys:(RemoteAttestationKeys *)keys mrenclave:(NSString *)mrenclave
 {
     OWSAssertDebug(quote);
     OWSAssertDebug(keys);
-    OWSAssertDebug(enclaveId.length > 0);
+    OWSAssertDebug(mrenclave.length > 0);
 
     if (quote.reportData.length < keys.serverStaticPublic.length) {
         OWSFailDebug(@"reportData has unexpected length: %lu != %lu.",
@@ -697,12 +702,12 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
         return NO;
     }
     // It's easier to compare as hex data than parsing hexadecimal.
-    NSData *_Nullable ourEnclaveIdHexData = [enclaveId dataUsingEncoding:NSUTF8StringEncoding];
-    NSData *_Nullable theirEnclaveIdHexData =
+    NSData *_Nullable ourMrenclaveHexData = [mrenclave dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *_Nullable theirMrenclaveHexData =
         [quote.mrenclave.hexadecimalString dataUsingEncoding:NSUTF8StringEncoding];
-    if (!ourEnclaveIdHexData || !theirEnclaveIdHexData
-        || ![ourEnclaveIdHexData ows_constantTimeIsEqualToData:theirEnclaveIdHexData]) {
-        OWSFailDebug(@"enclave ids do not match.");
+    if (!ourMrenclaveHexData || !theirMrenclaveHexData
+        || ![ourMrenclaveHexData ows_constantTimeIsEqualToData:theirMrenclaveHexData]) {
+        OWSFailDebug(@"mrenclave does not match.");
         return NO;
     }
     if (quote.isDebugQuote) {

@@ -253,7 +253,7 @@ class CDSBatchOperation: OWSOperation {
                                                           encryptedAddressData: encryptionResult.ciphertext,
                                                           cryptIv: encryptionResult.initializationVector,
                                                           cryptMac: encryptionResult.authTag,
-                                                          enclaveId: remoteAttestation.enclaveId,
+                                                          enclaveName: remoteAttestation.enclaveName,
                                                           authUsername: remoteAttestation.auth.username,
                                                           authPassword: remoteAttestation.auth.password,
                                                           cookies: remoteAttestation.cookies)
