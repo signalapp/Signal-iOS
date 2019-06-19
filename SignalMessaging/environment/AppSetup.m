@@ -9,7 +9,6 @@
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/ContactDiscoveryService.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
@@ -83,7 +82,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSDisappearingMessagesJob *disappearingMessagesJob =
             [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
-        ContactDiscoveryService *contactDiscoveryService = [[ContactDiscoveryService alloc] initDefault];
         OWSReadReceiptManager *readReceiptManager =
             [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSOutgoingReceiptManager *outgoingReceiptManager =
@@ -127,7 +125,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  tsAccountManager:tsAccountManager
                                                                     ows2FAManager:ows2FAManager
                                                           disappearingMessagesJob:disappearingMessagesJob
-                                                          contactDiscoveryService:contactDiscoveryService
                                                                readReceiptManager:readReceiptManager
                                                            outgoingReceiptManager:outgoingReceiptManager
                                                               reachabilityManager:reachabilityManager

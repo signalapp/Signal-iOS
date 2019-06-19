@@ -5,7 +5,7 @@ PROTOC=protoc \
 WRAPPER_SCRIPT=../../Scripts/ProtoWrappers.py \
 		--proto-dir='./' --verbose
 
-all: signal_service_protos provisioning_protos fingerprint_protos websocket_protos signal_ios_protos
+all: signal_service_protos provisioning_protos fingerprint_protos websocket_protos signal_ios_protos key_backup_protos
 
 signal_service_protos: SignalService.proto
 	$(PROTOC) --swift_out=../src/Protos/Generated \
@@ -36,3 +36,9 @@ signal_ios_protos: SignalIOS.proto
 		SignalIOS.proto
 	$(WRAPPER_SCRIPT) --dst-dir=../src/Protos/Generated \
 		--wrapper-prefix=SignalIOSProto --proto-prefix=IOSProtos --proto-file=SignalIOS.proto
+
+key_backup_protos: KeyBackup.proto
+	$(PROTOC) --swift_out=../src/Protos/Generated \
+		KeyBackup.proto
+	$(WRAPPER_SCRIPT) --dst-dir=../src/Protos/Generated \
+		--wrapper-prefix=KeyBackupProto --proto-prefix=KeyBackupProtos --proto-file=KeyBackup.proto

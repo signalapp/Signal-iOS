@@ -1,8 +1,8 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "CDSQuote.h"
+#import "RemoteAttestationQuote.h"
 #import "ByteParser.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -19,7 +19,7 @@ static const long SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8L;
 
 #pragma mark -
 
-@interface CDSQuote ()
+@interface RemoteAttestationQuote ()
 
 @property (nonatomic) uint16_t version;
 @property (nonatomic) uint16_t signType;
@@ -42,9 +42,9 @@ static const long SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8L;
 
 #pragma mark -
 
-@implementation CDSQuote
+@implementation RemoteAttestationQuote
 
-+ (nullable CDSQuote *)parseQuoteFromData:(NSData *)quoteData
++ (nullable RemoteAttestationQuote *)parseQuoteFromData:(NSData *)quoteData
 {
     ByteParser *_Nullable parser = [[ByteParser alloc] initWithData:quoteData littleEndian:YES];
 
@@ -160,7 +160,7 @@ static const long SGX_XFRM_RESERVED = 0xFFFFFFFFFFFFFFF8L;
         return nil;
     }
 
-    CDSQuote *quote = [CDSQuote new];
+    RemoteAttestationQuote *quote = [RemoteAttestationQuote new];
     quote.version = version;
     quote.signType = signType;
     quote.isSigLinkable = isSigLinkable;

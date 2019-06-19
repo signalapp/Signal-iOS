@@ -12,17 +12,25 @@ import re
 
 git_repo_path = os.path.abspath(subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).strip())
 
-        
-def lowerCamlCaseForUnderscoredText(name):
-    splits = name.split('_')
-    splits = [split.title() for split in splits]
-    splits[0] = splits[0].lower()
-    return ''.join(splits)
-        
+def lowerCamelCase(name):
+    result = name
+
+    # We have at least two segments, we'll have to split them up
+    if '_' in name:
+        splits = name.split('_')
+        splits = [split.title() for split in splits]
+        splits[0] = splits[0].lower()
+        result = ''.join(splits)
+
+    # This name is all caps, lowercase it
+    elif name.isupper():
+        result = name.lower()
+
+    return supressAdjacentCapitalLetters(result)
 
 # The generated code for "Apple Swift Protos" suppresses
-# adjacent capital letters in lowerCamlCase.
-def lowerCamlCaseForUnderscoredText_wrapped(name):
+# adjacent capital letters in lowerCamelCase.
+def supressAdjacentCapitalLetters(name):
     chars = []
     lastWasUpper = False
     for char in name:
@@ -421,7 +429,7 @@ class MessageContext(BaseContext):
         for field in self.fields():
             field.type_swift = self.swift_type_for_field(field)
             field.type_swift_not_optional = self.swift_type_for_field(field, suppress_optional=True)
-            field.name_swift = lowerCamlCaseForUnderscoredText_wrapped(field.name)
+            field.name_swift = lowerCamelCase(field.name)
             
             is_explicit = False
             if field.is_required:
@@ -902,7 +910,7 @@ class EnumContext(BaseContext):
         for index in indices:
             index_str = str(index)
             item_name = self.item_map[index_str]
-            case_name = lowerCamlCaseForUnderscoredText(item_name)
+            case_name = lowerCamelCase(item_name)
             result.append( (case_name, index_str,) )
         return result
         

@@ -32,11 +32,16 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureServiceReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net"
 #define textSecureCDNReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net"
 #define contactDiscoveryURL @"https://api.directory.signal.org"
+#define keyBackupURL @"https://api.backup.signal.org"
 #define kUDTrustRoot @"BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
 
 #define serviceCensorshipPrefix @"service"
 #define cdnCensorshipPrefix @"cdn"
 #define contactDiscoveryCensorshipPrefix @"directory"
+#define keyBackupCensorshipPrefix @"backup"
+
+#define contactDiscoveryEnclaveId @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
+#define keyBackupEnclaveId @"test" // TODO: Real enclave Id
 
 #define USING_PRODUCTION_SERVICE
 
@@ -49,11 +54,16 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define textSecureServiceReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net";
 //#define textSecureCDNReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net";
 //#define contactDiscoveryURL @"https://api-staging.directory.signal.org"
+//#define keyBackupURL @"https://api-staging.backup.signal.org"
 //#define kUDTrustRoot @"BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
 //
 //#define serviceCensorshipPrefix @"service-staging"
 //#define cdnCensorshipPrefix @"cdn-staging"
 //#define contactDiscoveryCensorshipPrefix @"directory-staging"
+//#define keyBackupCensorshipPrefix @"backup-staging"
+//
+//#define contactDiscoveryEnclaveId @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
+//#define keyBackupEnclaveId @"test" // TODO: Real enclave Id
 
 //#endif
 

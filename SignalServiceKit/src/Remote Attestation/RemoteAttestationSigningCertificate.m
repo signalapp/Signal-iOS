@@ -1,8 +1,8 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "CDSSigningCertificate.h"
+#import "RemoteAttestationSigningCertificate.h"
 #import <CommonCrypto/CommonCrypto.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
@@ -10,14 +10,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSString *localizedDescription)
+NSError *RemoteAttestationSigningCertificateErrorMake(RemoteAttestationSigningCertificateErrorCode code, NSString *localizedDescription)
 {
-    return [NSError errorWithDomain:@"CDSSigningCertificate"
+    return [NSError errorWithDomain:@"RemoteAttestationSigningCertificate"
                                code:code
                            userInfo:@{ NSLocalizedDescriptionKey : localizedDescription }];
 }
 
-@interface CDSSigningCertificate ()
+@interface RemoteAttestationSigningCertificate ()
 
 @property (nonatomic) SecPolicyRef policy;
 @property (nonatomic) SecTrustRef trust;
@@ -27,7 +27,7 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
 
 #pragma mark -
 
-@implementation CDSSigningCertificate
+@implementation RemoteAttestationSigningCertificate
 
 - (instancetype)init
 {
@@ -56,18 +56,18 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
     }
 }
 
-+ (nullable CDSSigningCertificate *)parseCertificateFromPem:(NSString *)certificatePem error:(NSError **)error
++ (nullable RemoteAttestationSigningCertificate *)parseCertificateFromPem:(NSString *)certificatePem error:(NSError **)error
 {
     OWSAssertDebug(certificatePem);
     *error = nil;
 
-    CDSSigningCertificate *signingCertificate = [CDSSigningCertificate new];
+    RemoteAttestationSigningCertificate *signingCertificate = [RemoteAttestationSigningCertificate new];
 
     NSArray<NSData *> *_Nullable anchorCertificates = [self anchorCertificates];
     if (anchorCertificates.count < 1) {
         OWSFailDebug(@"Could not load anchor certificates.");
-        *error = CDSSigningCertificateErrorMake(
-            CDSSigningCertificateError_AssertionError, @"Could not load anchor certificates.");
+        *error = RemoteAttestationSigningCertificateErrorMake(
+            RemoteAttestationSigningCertificateError_AssertionError, @"Could not load anchor certificates.");
         return nil;
     }
 
@@ -75,7 +75,7 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
 
     if (certificateDerDatas.count < 1) {
         OWSFailDebug(@"Could not parse PEM.");
-        *error = CDSSigningCertificateErrorMake(CDSSigningCertificateError_InvalidPEMSupplied, @"Could not parse PEM.");
+        *error = RemoteAttestationSigningCertificateErrorMake(RemoteAttestationSigningCertificateError_InvalidPEMSupplied, @"Could not parse PEM.");
         return nil;
     }
 
@@ -83,14 +83,14 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
     NSData *_Nullable leafCertificateData = [certificateDerDatas firstObject];
     if (!leafCertificateData) {
         OWSFailDebug(@"Could not extract leaf certificate data.");
-        *error = CDSSigningCertificateErrorMake(
-            CDSSigningCertificateError_CouldNotExtractLeafCertificate, @"Could not extract leaf certificate data.");
+        *error = RemoteAttestationSigningCertificateErrorMake(
+            RemoteAttestationSigningCertificateError_CouldNotExtractLeafCertificate, @"Could not extract leaf certificate data.");
         return nil;
     }
     if (![self verifyDistinguishedNameOfCertificate:leafCertificateData]) {
         OWSFailDebugUnlessRunningTests(@"Leaf certificate has invalid name.");
-        *error = CDSSigningCertificateErrorMake(
-            CDSSigningCertificateError_InvalidDistinguishedName, @"Could not extract leaf certificate data.");
+        *error = RemoteAttestationSigningCertificateErrorMake(
+            RemoteAttestationSigningCertificateError_InvalidDistinguishedName, @"Could not extract leaf certificate data.");
         return nil;
     }
 
@@ -99,8 +99,8 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
         SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateDerData));
         if (!certificate) {
             OWSFailDebug(@"Could not create SecCertificate.");
-            *error = CDSSigningCertificateErrorMake(
-                CDSSigningCertificateError_AssertionError, @"Could not create SecCertificate.");
+            *error = RemoteAttestationSigningCertificateErrorMake(
+                RemoteAttestationSigningCertificateError_AssertionError, @"Could not create SecCertificate.");
             return nil;
         }
         [certificates addObject:(__bridge_transfer id)certificate];
@@ -110,7 +110,7 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
     signingCertificate.policy = policy;
     if (!policy) {
         OWSFailDebug(@"Could not create policy.");
-        *error = CDSSigningCertificateErrorMake(CDSSigningCertificateError_AssertionError, @"Could not create policy.");
+        *error = RemoteAttestationSigningCertificateErrorMake(RemoteAttestationSigningCertificateError_AssertionError, @"Could not create policy.");
         return nil;
     }
 
@@ -119,29 +119,29 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
     signingCertificate.trust = trust;
     if (status != errSecSuccess) {
         OWSFailDebug(@"Creating trust did not succeed.");
-        *error = CDSSigningCertificateErrorMake(
-            CDSSigningCertificateError_AssertionError, @"Creating trust did not succeed.");
+        *error = RemoteAttestationSigningCertificateErrorMake(
+            RemoteAttestationSigningCertificateError_AssertionError, @"Creating trust did not succeed.");
         return nil;
     }
     if (!trust) {
         OWSFailDebug(@"Could not create trust.");
-        *error = CDSSigningCertificateErrorMake(CDSSigningCertificateError_AssertionError, @"Could not create trust.");
+        *error = RemoteAttestationSigningCertificateErrorMake(RemoteAttestationSigningCertificateError_AssertionError, @"Could not create trust.");
         return nil;
     }
 
     status = SecTrustSetNetworkFetchAllowed(trust, NO);
     if (status != errSecSuccess) {
         OWSFailDebug(@"trust fetch could not be configured.");
-        *error = CDSSigningCertificateErrorMake(
-            CDSSigningCertificateError_AssertionError, @"trust fetch could not be configured.");
+        *error = RemoteAttestationSigningCertificateErrorMake(
+            RemoteAttestationSigningCertificateError_AssertionError, @"trust fetch could not be configured.");
         return nil;
     }
 
     status = SecTrustSetAnchorCertificatesOnly(trust, YES);
     if (status != errSecSuccess) {
         OWSFailDebug(@"trust anchor certs could not be configured.");
-        *error = CDSSigningCertificateErrorMake(
-            CDSSigningCertificateError_AssertionError, @"trust anchor certs could not be configured.");
+        *error = RemoteAttestationSigningCertificateErrorMake(
+            RemoteAttestationSigningCertificateError_AssertionError, @"trust anchor certs could not be configured.");
         return nil;
     }
 
@@ -150,8 +150,8 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
         SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateData));
         if (!certificate) {
             OWSFailDebug(@"Could not create pinned SecCertificate.");
-            *error = CDSSigningCertificateErrorMake(
-                CDSSigningCertificateError_AssertionError, @"Could not create pinned SecCertificate.");
+            *error = RemoteAttestationSigningCertificateErrorMake(
+                RemoteAttestationSigningCertificateError_AssertionError, @"Could not create pinned SecCertificate.");
             return nil;
         }
 
@@ -160,8 +160,8 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
     status = SecTrustSetAnchorCertificates(trust, (__bridge CFArrayRef)pinnedCertificates);
     if (status != errSecSuccess) {
         OWSFailDebug(@"The anchor certificates couldn't be set.");
-        *error = CDSSigningCertificateErrorMake(
-            CDSSigningCertificateError_AssertionError, @"The anchor certificates couldn't be set.");
+        *error = RemoteAttestationSigningCertificateErrorMake(
+            RemoteAttestationSigningCertificateError_AssertionError, @"The anchor certificates couldn't be set.");
         return nil;
     }
 
@@ -169,8 +169,8 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
     status = SecTrustEvaluate(trust, &result);
     if (status != errSecSuccess) {
         OWSFailDebug(@"Could not evaluate certificates.");
-        *error = CDSSigningCertificateErrorMake(
-            CDSSigningCertificateError_AssertionError, @"Could not evaluate certificates.");
+        *error = RemoteAttestationSigningCertificateErrorMake(
+            RemoteAttestationSigningCertificateError_AssertionError, @"Could not evaluate certificates.");
         return nil;
     }
 
@@ -179,8 +179,8 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
     BOOL isValid = (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed);
     if (!isValid) {
         OWSFailDebug(@"Certificate was not trusted.");
-        *error = CDSSigningCertificateErrorMake(
-            CDSSigningCertificateError_UntrustedCertificate, @"Certificate was not trusted.");
+        *error = RemoteAttestationSigningCertificateErrorMake(
+            RemoteAttestationSigningCertificateError_UntrustedCertificate, @"Certificate was not trusted.");
         return nil;
     }
 
@@ -188,8 +188,8 @@ NSError *CDSSigningCertificateErrorMake(CDSSigningCertificateErrorCode code, NSS
     signingCertificate.publicKey = publicKey;
     if (!publicKey) {
         OWSFailDebug(@"Could not extract public key.");
-        *error = CDSSigningCertificateErrorMake(
-            CDSSigningCertificateError_AssertionError, @"Could not extract public key.");
+        *error = RemoteAttestationSigningCertificateErrorMake(
+            RemoteAttestationSigningCertificateError_AssertionError, @"Could not extract public key.");
         return nil;
     }
 

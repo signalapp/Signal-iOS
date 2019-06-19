@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignedPreKeyRecord;
 @class TSRequest;
 
+typedef NS_ENUM(NSUInteger, RemoteAttestationService);
 typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVoice = 1, TSVerificationTransportSMS };
 
 @interface OWSRequestFactory : NSObject
@@ -88,26 +89,45 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                          identityKey:(NSData *)identityKeyPublic
                                         signedPreKey:(SignedPreKeyRecord *)signedPreKey;
 
+#pragma mark - Remote Attestation
+
++ (TSRequest *)remoteAttestationRequestForService:(RemoteAttestationService)service
+                                      withKeyPair:(ECKeyPair *)keyPair
+                                        enclaveId:(NSString *)enclaveId
+                                     authUsername:(NSString *)authUsername
+                                     authPassword:(NSString *)authPassword;
+
++ (TSRequest *)remoteAttestationAuthRequestForService:(RemoteAttestationService)service;
+
 #pragma mark - CDS
 
-+ (TSRequest *)remoteAttestationRequest:(ECKeyPair *)keyPair
-                              enclaveId:(NSString *)enclaveId
-                           authUsername:(NSString *)authUsername
-                           authPassword:(NSString *)authPassword;
-
-+ (TSRequest *)enclaveContactDiscoveryRequestWithId:(NSData *)requestId
-                                       addressCount:(NSUInteger)addressCount
-                               encryptedAddressData:(NSData *)encryptedAddressData
-                                            cryptIv:(NSData *)cryptIv
-                                           cryptMac:(NSData *)cryptMac
-                                          enclaveId:(NSString *)enclaveId
-                                       authUsername:(NSString *)authUsername
-                                       authPassword:(NSString *)authPassword
-                                            cookies:(NSArray<NSHTTPCookie *> *)cookies;
-
-+ (TSRequest *)remoteAttestationAuthRequest;
++ (TSRequest *)cdsEnclaveRequestWithRequestId:(NSData *)requestId
+                                 addressCount:(NSUInteger)addressCount
+                         encryptedAddressData:(NSData *)encryptedAddressData
+                                      cryptIv:(NSData *)cryptIv
+                                     cryptMac:(NSData *)cryptMac
+                                    enclaveId:(NSString *)enclaveId
+                                 authUsername:(NSString *)authUsername
+                                 authPassword:(NSString *)authPassword
+                                      cookies:(NSArray<NSHTTPCookie *> *)cookies;
 + (TSRequest *)cdsFeedbackRequestWithStatus:(NSString *)status
                                      reason:(nullable NSString *)reason NS_SWIFT_NAME(cdsFeedbackRequest(status:reason:));
+
+#pragma mark - KBS
+
++ (TSRequest *)kbsEnclaveNonceRequestWithEnclaveId:(NSString *)enclaveId
+                                      authUsername:(NSString *)authUsername
+                                      authPassword:(NSString *)authPassword
+                                           cookies:(NSArray<NSHTTPCookie *> *)cookies;
+
++ (TSRequest *)kbsEnclaveRequestWithRequestId:(NSData *)requestId
+                                         data:(NSData *)data
+                                      cryptIv:(NSData *)cryptIv
+                                     cryptMac:(NSData *)cryptMac
+                                    enclaveId:(NSString *)enclaveId
+                                 authUsername:(NSString *)authUsername
+                                 authPassword:(NSString *)authPassword
+                                      cookies:(NSArray<NSHTTPCookie *> *)cookies;
 
 #pragma mark - UD
 

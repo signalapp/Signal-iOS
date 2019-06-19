@@ -203,10 +203,6 @@ class CDSBatchOperation: OWSOperation {
         return TSNetworkManager.shared()
     }
 
-    private var contactDiscoveryService: ContactDiscoveryService {
-        return ContactDiscoveryService.shared()
-    }
-
     // MARK: Initializers
 
     public required init(recipientIdsToLookup: [String]) {
@@ -230,7 +226,7 @@ class CDSBatchOperation: OWSOperation {
             return
         }
 
-        contactDiscoveryService.performRemoteAttestation(success: { (remoteAttestation: RemoteAttestation) in
+        RemoteAttestation.perform(for: .contactDiscovery, success: { (remoteAttestation: RemoteAttestation) in
             self.makeContactDiscoveryRequest(remoteAttestation: remoteAttestation)
         },
                                                          failure: self.reportError)
@@ -252,15 +248,15 @@ class CDSBatchOperation: OWSOperation {
             return
         }
 
-        let request = OWSRequestFactory.enclaveContactDiscoveryRequest(withId: remoteAttestation.requestId,
-                                                                       addressCount: UInt(recipientIdsToLookup.count),
-                                                                       encryptedAddressData: encryptionResult.ciphertext,
-                                                                       cryptIv: encryptionResult.initializationVector,
-                                                                       cryptMac: encryptionResult.authTag,
-                                                                       enclaveId: remoteAttestation.enclaveId,
-                                                                       authUsername: remoteAttestation.auth.username,
-                                                                       authPassword: remoteAttestation.auth.password,
-                                                                       cookies: remoteAttestation.cookies)
+        let request = OWSRequestFactory.cdsEnclaveRequest(withRequestId: remoteAttestation.requestId,
+                                                          addressCount: UInt(recipientIdsToLookup.count),
+                                                          encryptedAddressData: encryptionResult.ciphertext,
+                                                          cryptIv: encryptionResult.initializationVector,
+                                                          cryptMac: encryptionResult.authTag,
+                                                          enclaveId: remoteAttestation.enclaveId,
+                                                          authUsername: remoteAttestation.auth.username,
+                                                          authPassword: remoteAttestation.auth.password,
+                                                          cookies: remoteAttestation.cookies)
 
         self.networkManager.makeRequest(request,
                                         success: { (task, responseDict) in
@@ -455,15 +451,15 @@ class CDSFeedbackOperation: OWSOperation {
             case ContactDiscoveryError.serverError, ContactDiscoveryError.clientError:
                 // Server already has this information, no need submit feedback
                 self.reportSuccess()
-            case let cdsError as ContactDiscoveryServiceError:
-                let reason = cdsError.reason
-                switch cdsError.code {
+            case let raError as RemoteAttestationError:
+                let reason = raError.reason
+                switch raError.code {
                 case .assertionError:
-                    self.makeRequest(result: .unexpectedError(reason: "CDS assertionError: \(reason ?? "unknown")"))
-                case .attestationFailed:
-                    self.makeRequest(result: .attestationError(reason: "CDS attestationFailed: \(reason ?? "unknown")"))
+                    self.makeRequest(result: .unexpectedError(reason: "Remote Attestation assertionError: \(reason ?? "unknown")"))
+                case .failed:
+                    self.makeRequest(result: .attestationError(reason: "Remote Attestation failed: \(reason ?? "unknown")"))
                 @unknown default:
-                    self.makeRequest(result: .unexpectedError(reason: "CDS assertionError: unknown cdsError.code"))
+                    self.makeRequest(result: .unexpectedError(reason: "Remote Attestation assertionError: unknown raError.code"))
                 }
             case ContactDiscoveryError.assertionError(let assertionDescription):
                 self.makeRequest(result: .unexpectedError(reason: "assertionError: \(assertionDescription)"))
@@ -529,8 +525,8 @@ extension CDSFeedbackOperation.FeedbackResult {
     }
 }
 
-extension ContactDiscoveryServiceError {
+extension RemoteAttestationError {
     var reason: String? {
-        return userInfo[ContactDiscoveryServiceErrorKey_Reason] as? String
+        return userInfo[RemoteAttestationErrorKey_Reason] as? String
     }
 }

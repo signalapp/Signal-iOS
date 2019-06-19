@@ -6,7 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class ContactDiscoveryService;
 @class ContactsUpdater;
 @class MessageSenderJobQueue;
 @class OWS2FAManager;
@@ -66,7 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
                        tsAccountManager:(TSAccountManager *)tsAccountManager
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
-                contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService
                      readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
@@ -109,7 +107,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSAccountManager *tsAccountManager;
 @property (nonatomic, readonly) OWS2FAManager *ows2FAManager;
 @property (nonatomic, readonly) OWSDisappearingMessagesJob *disappearingMessagesJob;
-@property (nonatomic, readonly) ContactDiscoveryService *contactDiscoveryService;
 @property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
 @property (nonatomic, readonly) OWSOutgoingReceiptManager *outgoingReceiptManager;
 @property (nonatomic, readonly) id<OWSSyncManagerProtocol> syncManager;
