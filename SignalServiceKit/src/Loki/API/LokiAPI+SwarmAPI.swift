@@ -114,6 +114,7 @@ internal extension Promise {
                         print("[Loki] Failure threshold reached for: \(target); dropping it.")
                         LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
                         LokiAPI.randomSnodePool.remove(target) // Remove it from the random snode pool
+                        LokiAPI.failureCount[target] = 0
                     }
                 case 421:
                     // The snode isn't associated with the given public key anymore
