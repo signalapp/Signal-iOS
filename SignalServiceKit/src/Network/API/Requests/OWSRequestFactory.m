@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:textSecure2FAAPI] method:@"DELETE" parameters:@{}];
 }
 
-+ (TSRequest *)enableRegistrationLockRequestWithToken:(NSString *)token
++ (TSRequest *)enableRegistrationLockV2RequestWithToken:(NSString *)token
 {
     OWSAssertDebug(token.length > 0);
 
@@ -390,6 +390,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *registrationLockToken = [OWSKeyBackupService deriveRegistrationLockToken];
         if (registrationLockToken.length > 0) {
             accountAttributes[@"registrationLock"] = registrationLockToken;
+            [accountAttributes removeObjectForKey:@"pin"];
         }
     }
 

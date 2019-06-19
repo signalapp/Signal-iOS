@@ -59,7 +59,7 @@ typedef NS_ERROR_ENUM(RemoteAttestationErrorDomain, RemoteAttestationError){
 
 
 + (void)performRemoteAttestationForService:(RemoteAttestationService)service
-                                      auth:(RemoteAttestationAuth *)auth
+                                      auth:(nullable RemoteAttestationAuth *)auth
                                    success:(void (^)(RemoteAttestation *_Nonnull remoteAttestation))successHandler
                                    failure:(void (^)(NSError *_Nonnull error))failureHandler;
 

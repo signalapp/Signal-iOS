@@ -255,9 +255,70 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
                                    success:(void (^)(RemoteAttestation *remoteAttestation))successHandler
                                    failure:(void (^)(NSError *error))failureHandler
 {
-    [self getRemoteAttestationAuthForService:service success:^(RemoteAttestationAuth *auth) {
-         [self performRemoteAttestationForService:service auth:auth success:successHandler failure:failureHandler];
-     } failure:failureHandler];
+    [self performRemoteAttestationForService:service auth:nil success:successHandler failure:failureHandler];
+}
+
++ (void)performRemoteAttestationForService:(RemoteAttestationService)service
+                                      auth:(nullable RemoteAttestationAuth *)auth
+                                   success:(void (^)(RemoteAttestation *remoteAttestation))successHandler
+                                   failure:(void (^)(NSError *error))failureHandler
+{
+    // If auth wasn't provided, fetch it before continuing
+    if (auth == nil) {
+        [self getRemoteAttestationAuthForService:service success:^(RemoteAttestationAuth *auth) {
+            [self performRemoteAttestationForService:service auth:auth success:successHandler failure:failureHandler];
+        } failure:failureHandler];
+        return;
+    }
+
+    ECKeyPair *keyPair = [Curve25519 generateKeyPair];
+
+    NSString *enclaveId;
+    switch (service) {
+        case RemoteAttestationServiceContactDiscovery:
+            enclaveId = contactDiscoveryEnclaveId;
+            break;
+        case RemoteAttestationServiceKeyBackup:
+            enclaveId = keyBackupEnclaveId;
+            break;
+    }
+
+    TSRequest *request = [OWSRequestFactory remoteAttestationRequestForService:service
+                                                                   withKeyPair:keyPair
+                                                                     enclaveId:enclaveId
+                                                                  authUsername:auth.username
+                                                                  authPassword:auth.password];
+
+    [[TSNetworkManager sharedManager] makeRequest:request
+                                          success:^(NSURLSessionDataTask *task, id responseJson) {
+                                              dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                                  NSError *_Nullable error;
+                                                  RemoteAttestation *_Nullable attestation = [self parseAttestationResponseJson:responseJson
+                                                                                                                       response:task.response
+                                                                                                                        keyPair:keyPair
+                                                                                                                      enclaveId:enclaveId
+                                                                                                                           auth:auth
+                                                                                                                          error:&error];
+
+                                                  if (!attestation) {
+                                                      if (!error) {
+                                                          OWSFailDebug(@"error was unexpectedly nil");
+                                                          error = RemoteAttestationErrorMakeWithReason(
+                                                                                                       RemoteAttestationAssertionError, @"failure when parsing attestation - no reason given");
+                                                      } else {
+                                                          OWSFailDebug(@"error with attestation: %@", error);
+                                                      }
+                                                      error.isRetryable = NO;
+                                                      failureHandler(error);
+                                                      return;
+                                                  }
+
+                                                  successHandler(attestation);
+                                              });
+                                          }
+                                          failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                              failureHandler(error);
+                                          }];
 }
 
 + (void)getRemoteAttestationAuthForService:(RemoteAttestationService)service
@@ -309,61 +370,6 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
     result.username = username;
     result.password = password;
     return result;
-}
-
-+ (void)performRemoteAttestationForService:(RemoteAttestationService)service
-                                      auth:(RemoteAttestationAuth *)auth
-                                   success:(void (^)(RemoteAttestation *remoteAttestation))successHandler
-                                   failure:(void (^)(NSError *error))failureHandler
-{
-    ECKeyPair *keyPair = [Curve25519 generateKeyPair];
-
-    NSString *enclaveId;
-    switch (service) {
-        case RemoteAttestationServiceContactDiscovery:
-            enclaveId = contactDiscoveryEnclaveId;
-            break;
-        case RemoteAttestationServiceKeyBackup:
-            enclaveId = keyBackupEnclaveId;
-            break;
-    }
-
-    TSRequest *request = [OWSRequestFactory remoteAttestationRequestForService:service
-                                                                   withKeyPair:keyPair
-                                                                     enclaveId:enclaveId
-                                                                  authUsername:auth.username
-                                                                  authPassword:auth.password];
-
-    [[TSNetworkManager sharedManager] makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseJson) {
-          dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-              NSError *_Nullable error;
-              RemoteAttestation *_Nullable attestation = [self parseAttestationResponseJson:responseJson
-                                                                                   response:task.response
-                                                                                    keyPair:keyPair
-                                                                                  enclaveId:enclaveId
-                                                                                       auth:auth
-                                                                                      error:&error];
-
-              if (!attestation) {
-                  if (!error) {
-                      OWSFailDebug(@"error was unexpectedly nil");
-                      error = RemoteAttestationErrorMakeWithReason(
-                        RemoteAttestationAssertionError, @"failure when parsing attestation - no reason given");
-                  } else {
-                      OWSFailDebug(@"error with attestation: %@", error);
-                  }
-                  error.isRetryable = NO;
-                  failureHandler(error);
-                  return;
-              }
-
-              successHandler(attestation);
-          });
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-          failureHandler(error);
-        }];
 }
 
 + (nullable RemoteAttestation *)parseAttestationResponseJson:(id)responseJson

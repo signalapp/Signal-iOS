@@ -126,7 +126,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     if (SSKFeatureFlags.registrationLockV2) {
         [[OWSKeyBackupService generateAndBackupKeysWithPin:pin].then(^{
             NSString *token = [OWSKeyBackupService deriveRegistrationLockToken];
-            TSRequest *request = [OWSRequestFactory enableRegistrationLockRequestWithToken:token];
+            TSRequest *request = [OWSRequestFactory enableRegistrationLockV2RequestWithToken:token];
             [self.networkManager makeRequest:request
                                      success:^(NSURLSessionDataTask *task, id responseObject) {
                                          OWSAssertIsOnMainThread();

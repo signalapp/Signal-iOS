@@ -30,43 +30,45 @@ public class KeyBackupService: NSObject {
 
     /// Indicates whether or not we have a local copy of your keys to verify your pin
     @objc
-    static var hasLocalKeys: Bool {
+    public static var hasLocalKeys: Bool {
         return storedMasterKey != nil && storedPinKey2 != nil
-    }
-
-    @objc(verifyPin:)
-    static func objc_verifyPin(_ pin: String) -> AnyPromise {
-        return AnyPromise(verifyPin(pin).map { $0 as NSValue })
     }
 
     /// Indicates whether your pin is valid when compared to your stored keys.
     /// This is a local verification and does not make any requests to the KBS.
-    public static func verifyPin(_ pin: String) -> Promise<Bool> {
-        return cryptoQueue.async(.promise) {
+    public static func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void) {
+        cryptoQueue.async {
+            var isValid = false
+            defer {
+                DispatchQueue.main.async { resultHandler(isValid) }
+            }
+
             guard hasLocalKeys else {
-                return false
+                owsFailDebug("Attempted to verify pin locally when we don't have KBS keys")
+                return
             }
 
             guard let masterKey = storedMasterKey else {
-                return false
+                owsFailDebug("unexpectedly missing master key")
+                return
             }
 
             guard let pinKey2 = storedPinKey2 else {
-                return false
+                owsFailDebug("unexpectedly missing pinKey2")
+                return
             }
 
             guard let stretchedPin = deriveStretchedPin(from: pin) else {
-                return false
+                owsFailDebug("failed to derive stretched pin")
+                return
             }
 
             guard let pinKey1 = derivePinKey1(from: stretchedPin) else {
-                return false
+                owsFailDebug("failed to derive pinKey1")
+                return
             }
 
-            let derivedMasterKey = deriveMasterKey(from: pinKey1, and: pinKey2)
-
-            // from key chain
-            return masterKey == derivedMasterKey
+            isValid = masterKey == deriveMasterKey(from: pinKey1, and: pinKey2)
         }
     }
 
@@ -76,7 +78,7 @@ public class KeyBackupService: NSObject {
     }
 
     /// Loads the users key, if any, from the KBS into the keychain.
-    static func restoreKeys(with pin: String) -> Promise<Void> {
+    public static func restoreKeys(with pin: String, and auth: RemoteAttestationAuth? = nil) -> Promise<Void> {
         return cryptoQueue.async(.promise) { () -> (Data, Data) in
             guard let stretchedPin = self.deriveStretchedPin(from: pin) else {
                 owsFailDebug("failed to derive stretched pin")
@@ -90,7 +92,7 @@ public class KeyBackupService: NSObject {
 
             return (stretchedPin, pinKey1)
         }.then { stretchedPin, pinKey1 in
-            restoreKeyRequest(stretchedPin: stretchedPin).map { ($0, stretchedPin, pinKey1) }
+            restoreKeyRequest(stretchedPin: stretchedPin, with: auth).map { ($0, stretchedPin, pinKey1) }
         }.then { response, stretchedPin, pinKey1 in
             cryptoQueue.async(.promise) { () -> (Data, Data, Data) in
                 guard let status = response.status else {
@@ -127,7 +129,7 @@ public class KeyBackupService: NSObject {
         }.then { masterKey, stretchedPin, pinKey2 in
             // Backup our keys again, even though we just fetched them.
             // This resets the number of remaining attempts.
-            backupKeyRequest(stretchedPin: stretchedPin, keyData: pinKey2).map { ($0, masterKey, pinKey2) }
+            backupKeyRequest(stretchedPin: stretchedPin, keyData: pinKey2, and: auth).map { ($0, masterKey, pinKey2) }
         }.done { response, masterKey, pinKey2 in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
@@ -144,12 +146,10 @@ public class KeyBackupService: NSObject {
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw KBSError.assertion
             case .ok:
-                break
+                // We successfully stored the new keys in KBS, save them in the keychain
+                storePinKey2(pinKey2)
+                storeMasterKey(masterKey)
             }
-
-            // We successfully stored the new keys in KBS, save them in the keychain
-            storePinKey2(pinKey2)
-            storeMasterKey(masterKey)
         }
     }
 
@@ -160,7 +160,7 @@ public class KeyBackupService: NSObject {
 
     /// Generates a new master key for the given pin, backs it up to the KBS,
     /// and stores it locally in the keychain.
-    static func generateAndBackupKeys(with pin: String) -> Promise<Void> {
+    public static func generateAndBackupKeys(with pin: String) -> Promise<Void> {
         return cryptoQueue.async(.promise) { () -> (Data, Data, Data) in
             guard let stretchedPin = deriveStretchedPin(from: pin) else {
                 owsFailDebug("failed to derive stretched pin")
@@ -198,12 +198,10 @@ public class KeyBackupService: NSObject {
                 owsFailDebug("the server thinks we provided a `validFrom` in the future")
                 throw KBSError.assertion
             case .ok:
-                break
+                // We successfully stored the new keys in KBS, save them in the keychain
+                storePinKey2(pinKey2)
+                storeMasterKey(masterKey)
             }
-
-            // We successfully stored the new keys in KBS, save them in the keychain
-            storePinKey2(pinKey2)
-            storeMasterKey(masterKey)
         }
     }
 
@@ -212,12 +210,14 @@ public class KeyBackupService: NSObject {
         return AnyPromise(deleteKeys())
     }
 
-    /// Delete any key stored with the KBS
-    static func deleteKeys() -> Promise<Void> {
-        return deleteKeyRequest().done { _ in
-            clearMasterKey()
-            clearPinKey2()
-        }
+    /// Remove the keys locally from the device and from the KBS,
+    /// they will not be able to be restored.
+    public static func deleteKeys() -> Promise<Void> {
+        return deleteKeyRequest().ensure {
+            // Even if the request to delete our keys from KBS failed,
+            // purge them from the keychain.
+            clearKeychain()
+        }.asVoid()
     }
 
     // PRAGMA MARK: - Crypto
@@ -289,6 +289,14 @@ public class KeyBackupService: NSObject {
     // backup restoration.
     private static let keychainAccessType = kSecAttrAccessibleAfterFirstUnlock
 
+    /// Removes the KBS keys locally from the device, they can still be
+    /// restored from the server if you know the pin.
+    @objc
+    public static func clearKeychain() {
+        clearMasterKey()
+        clearPinKey2()
+    }
+
     private static var storedMasterKey: Data? {
         return try? CurrentAppContext().keychainStorage().data(
             forService: keychainService,
@@ -319,82 +327,77 @@ public class KeyBackupService: NSObject {
     // PRAGMA MARK: - Requests
 
     private static func enclaveRequest<RequestType: KBSRequestBody>(
-        with kbRequestBuilder: @escaping (NonceResponse) throws -> RequestType
+        with auth: RemoteAttestationAuth? = nil,
+        and kbRequestBuilder: @escaping (NonceResponse) throws -> RequestType
     ) -> Promise<RequestType.ResponseType> {
-        return Promise { resolve in
-            RemoteAttestation.perform(for: .keyBackup, success: { remoteAttestation in
-                fetchNonce(for: remoteAttestation).map { nonce in
-                    let kbRequest = try kbRequestBuilder(nonce)
-                    let requestBuilder = KeyBackupProtoRequest.builder()
-                    kbRequest.setRequest(on: requestBuilder)
-                    let kbRequestData = try requestBuilder.buildSerializedData()
+        return RemoteAttestation.makePromise(for: .keyBackup, with: auth).then { remoteAttestation in
+            fetchNonce(for: remoteAttestation).map { ($0, remoteAttestation) }
+        }.map { nonce, remoteAttestation -> (TSRequest, RemoteAttestation) in
+            let kbRequest = try kbRequestBuilder(nonce)
+            let requestBuilder = KeyBackupProtoRequest.builder()
+            kbRequest.setRequest(on: requestBuilder)
+            let kbRequestData = try requestBuilder.buildSerializedData()
 
-                    guard let encryptionResult = Cryptography.encryptAESGCM(
-                        plainTextData: kbRequestData,
-                        additionalAuthenticatedData: remoteAttestation.requestId,
-                        key: remoteAttestation.keys.clientKey
-                    ) else {
-                        owsFailDebug("Failed to encrypt request data")
-                        throw KBSError.assertion
-                    }
-
-                    return OWSRequestFactory.kbsEnclaveRequest(
-                        withRequestId: remoteAttestation.requestId,
-                        data: encryptionResult.ciphertext,
-                        cryptIv: encryptionResult.initializationVector,
-                        cryptMac: encryptionResult.authTag,
-                        enclaveId: remoteAttestation.enclaveId,
-                        authUsername: remoteAttestation.auth.username,
-                        authPassword: remoteAttestation.auth.password,
-                        cookies: remoteAttestation.cookies
-                    )
-                }.then { request in
-                    return networkManager.makePromise(request: request)
-                }.map { _, responseObject in
-                    guard let parser = ParamParser(responseObject: responseObject) else {
-                        owsFailDebug("Failed to parse response object")
-                        throw KBSError.assertion
-                    }
-
-                    let data = try parser.requiredBase64EncodedData(key: "data")
-                    let iv = try parser.requiredBase64EncodedData(key: "iv")
-                    let mac = try parser.requiredBase64EncodedData(key: "mac")
-
-                    guard let encryptionResult = Cryptography.decryptAESGCM(
-                        withInitializationVector: iv,
-                        ciphertext: data,
-                        additionalAuthenticatedData: nil,
-                        authTag: mac,
-                        key: remoteAttestation.keys.serverKey
-                    ) else {
-                        owsFailDebug("failed to decrypt KBS response")
-                        throw KBSError.assertion
-                    }
-
-                    guard let kbResponse = try? KeyBackupProtoResponse.parseData(encryptionResult) else {
-                        owsFailDebug("failed to parse KBS response data")
-                        throw KBSError.assertion
-                    }
-
-                    guard let typedResponse = RequestType.response(from: kbResponse) else {
-                        owsFailDebug("missing KBS response object")
-                        throw KBSError.assertion
-                    }
-
-                    return typedResponse
-                }.done { response in
-                    resolve.fulfill(response)
-                }.catch { error in
-                    resolve.reject(error)
-                }
-            }) { error in
-                resolve.reject(error)
+            guard let encryptionResult = Cryptography.encryptAESGCM(
+                plainTextData: kbRequestData,
+                additionalAuthenticatedData: remoteAttestation.requestId,
+                key: remoteAttestation.keys.clientKey
+            ) else {
+                owsFailDebug("Failed to encrypt request data")
+                throw KBSError.assertion
             }
+
+            let request = OWSRequestFactory.kbsEnclaveRequest(
+                withRequestId: remoteAttestation.requestId,
+                data: encryptionResult.ciphertext,
+                cryptIv: encryptionResult.initializationVector,
+                cryptMac: encryptionResult.authTag,
+                enclaveId: remoteAttestation.enclaveId,
+                authUsername: remoteAttestation.auth.username,
+                authPassword: remoteAttestation.auth.password,
+                cookies: remoteAttestation.cookies
+            )
+
+            return (request, remoteAttestation)
+        }.then { request, remoteAttestation in
+            networkManager.makePromise(request: request).map { ($0.responseObject, remoteAttestation) }
+        }.map { responseObject, remoteAttestation in
+            guard let parser = ParamParser(responseObject: responseObject) else {
+                owsFailDebug("Failed to parse response object")
+                throw KBSError.assertion
+            }
+
+            let data = try parser.requiredBase64EncodedData(key: "data")
+            let iv = try parser.requiredBase64EncodedData(key: "iv")
+            let mac = try parser.requiredBase64EncodedData(key: "mac")
+
+            guard let encryptionResult = Cryptography.decryptAESGCM(
+                withInitializationVector: iv,
+                ciphertext: data,
+                additionalAuthenticatedData: nil,
+                authTag: mac,
+                key: remoteAttestation.keys.serverKey
+            ) else {
+                owsFailDebug("failed to decrypt KBS response")
+                throw KBSError.assertion
+            }
+
+            guard let kbResponse = try? KeyBackupProtoResponse.parseData(encryptionResult) else {
+                owsFailDebug("failed to parse KBS response data")
+                throw KBSError.assertion
+            }
+
+            guard let typedResponse = RequestType.response(from: kbResponse) else {
+                owsFailDebug("missing KBS response object")
+                throw KBSError.assertion
+            }
+
+            return typedResponse
         }
     }
 
-    private static func backupKeyRequest(stretchedPin: Data, keyData: Data) -> Promise<KeyBackupProtoBackupResponse> {
-        return enclaveRequest { nonce -> KeyBackupProtoBackupRequest in
+    private static func backupKeyRequest(stretchedPin: Data, keyData: Data, and auth: RemoteAttestationAuth? = nil) -> Promise<KeyBackupProtoBackupResponse> {
+        return enclaveRequest(with: auth) { nonce -> KeyBackupProtoBackupRequest in
             let backupRequestBuilder = KeyBackupProtoBackupRequest.builder()
             backupRequestBuilder.setData(keyData)
             backupRequestBuilder.setPin(stretchedPin)
@@ -410,8 +413,8 @@ public class KeyBackupService: NSObject {
         }
     }
 
-    private static func restoreKeyRequest(stretchedPin: Data) -> Promise<KeyBackupProtoRestoreResponse> {
-        return enclaveRequest { nonce -> KeyBackupProtoRestoreRequest in
+    private static func restoreKeyRequest(stretchedPin: Data, with auth: RemoteAttestationAuth? = nil) -> Promise<KeyBackupProtoRestoreResponse> {
+        return enclaveRequest(with: auth) { nonce -> KeyBackupProtoRestoreRequest in
             let restoreRequestBuilder = KeyBackupProtoRestoreRequest.builder()
             restoreRequestBuilder.setPin(stretchedPin)
             restoreRequestBuilder.setNonce(nonce.nonce)
@@ -456,28 +459,40 @@ public class KeyBackupService: NSObject {
     }
 
     private static func fetchNonce(for remoteAttestation: RemoteAttestation) -> Promise<NonceResponse> {
-        return Promise { resolve in
-            let request = OWSRequestFactory.kbsEnclaveNonceRequest(
-                withEnclaveId: remoteAttestation.enclaveId,
-                authUsername: remoteAttestation.auth.username,
-                authPassword: remoteAttestation.auth.password,
-                cookies: remoteAttestation.cookies
-            )
+        let request = OWSRequestFactory.kbsEnclaveNonceRequest(
+            withEnclaveId: remoteAttestation.enclaveId,
+            authUsername: remoteAttestation.auth.username,
+            authPassword: remoteAttestation.auth.password,
+            cookies: remoteAttestation.cookies
+        )
 
-            networkManager.makeRequest(request, success: { _, response in
-                guard let response = response as? [String: Any],
-                    let nonceResponse = NonceResponse.parse(json: response) else {
-                        owsFailDebug("failed to parse KBS nonce response json")
-                        return resolve.reject(KBSError.assertion)
-                }
-
-                resolve.fulfill(nonceResponse)
-            }) { _, error in
-                resolve.reject(error)
+        return networkManager.makePromise(request: request).map { _, responseObject in
+            guard let response = responseObject as? [String: Any],
+                let nonceResponse = NonceResponse.parse(json: response) else {
+                    owsFailDebug("failed to parse KBS nonce response json")
+                    throw KBSError.assertion
             }
+
+            return nonceResponse
         }
     }
 }
+
+// PRAGMA MARK: -
+
+extension RemoteAttestation {
+    static func makePromise(for service: RemoteAttestationService, with auth: RemoteAttestationAuth? = nil) -> Promise<RemoteAttestation> {
+        return Promise { resolver in
+            perform(for: service, auth: auth, success: {
+                resolver.fulfill($0)
+            }, failure: {
+                resolver.reject($0)
+            })
+        }
+    }
+}
+
+// PRAGMA MARK: -
 
 private protocol KBSRequestBody {
     associatedtype ResponseType

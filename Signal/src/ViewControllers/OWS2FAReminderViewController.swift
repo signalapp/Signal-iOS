@@ -62,7 +62,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         Logger.info("")
 
         if FeatureFlags.registrationLockV2 {
-            KeyBackupService.verifyPin(pinCode).done { success in
+            KeyBackupService.verifyPin(pinCode) { success in
                 if success {
                     self.didSubmitCorrectPin()
                 } else {
@@ -82,7 +82,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     public func pinEntryView(_ entryView: PinEntryView, pinCodeDidChange pinCode: String) {
         // optimistically match, without having to press "done"
         if FeatureFlags.registrationLockV2 {
-            KeyBackupService.verifyPin(pinCode).done { success in
+            KeyBackupService.verifyPin(pinCode) { success in
                 if success {
                     self.didSubmitCorrectPin()
                 }
