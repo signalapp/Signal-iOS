@@ -130,8 +130,8 @@ extension TSRecipientReadReceiptSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension TSRecipientReadReceipt {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension TSRecipientReadReceipt {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
@@ -142,7 +142,8 @@ extension TSRecipientReadReceipt {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -170,7 +171,7 @@ extension TSRecipientReadReceipt {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSRecipientReadReceipt) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSRecipientReadReceipt) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -193,7 +194,7 @@ extension TSRecipientReadReceipt {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -207,11 +208,11 @@ extension TSRecipientReadReceipt {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -271,8 +272,8 @@ public class TSRecipientReadReceiptCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension TSRecipientReadReceipt {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSRecipientReadReceiptCursor {
+public extension TSRecipientReadReceipt {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSRecipientReadReceiptCursor {
         let database = transaction.database
         do {
             let cursor = try RecipientReadReceiptRecord.fetchCursor(database)
@@ -284,8 +285,8 @@ extension TSRecipientReadReceipt {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> TSRecipientReadReceipt? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> TSRecipientReadReceipt? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -300,7 +301,7 @@ extension TSRecipientReadReceipt {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (TSRecipientReadReceipt) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (TSRecipientReadReceipt) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             TSRecipientReadReceipt.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -328,7 +329,7 @@ extension TSRecipientReadReceipt {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSRecipientReadReceipt] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSRecipientReadReceipt] {
         var result = [TSRecipientReadReceipt]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -336,14 +337,23 @@ extension TSRecipientReadReceipt {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: TSRecipientReadReceipt.collection())
+        case .grdbRead(let grdbTransaction):
+            return RecipientReadReceiptRecord.ows_fetchCount(grdbTransaction.database)
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension TSRecipientReadReceipt {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> TSRecipientReadReceiptCursor {
+public extension TSRecipientReadReceipt {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> TSRecipientReadReceiptCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -364,9 +374,9 @@ extension TSRecipientReadReceipt {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> TSRecipientReadReceipt? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> TSRecipientReadReceipt? {
         assert(sql.count > 0)
 
         do {

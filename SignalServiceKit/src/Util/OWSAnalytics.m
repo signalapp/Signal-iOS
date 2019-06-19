@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAnalytics.h"
@@ -8,7 +8,6 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"
 #import "SSKEnvironment.h"
-#import "YapDatabaseConnection+OWS.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
 #import <SignalCoreKit/Cryptography.h>

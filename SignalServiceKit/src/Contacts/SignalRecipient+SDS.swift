@@ -124,8 +124,8 @@ extension SignalRecipientSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension SignalRecipient {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension SignalRecipient {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
@@ -136,7 +136,8 @@ extension SignalRecipient {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -164,7 +165,7 @@ extension SignalRecipient {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (SignalRecipient) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (SignalRecipient) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -187,7 +188,7 @@ extension SignalRecipient {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -201,11 +202,11 @@ extension SignalRecipient {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -265,8 +266,8 @@ public class SignalRecipientCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension SignalRecipient {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> SignalRecipientCursor {
+public extension SignalRecipient {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> SignalRecipientCursor {
         let database = transaction.database
         do {
             let cursor = try SignalRecipientRecord.fetchCursor(database)
@@ -278,8 +279,8 @@ extension SignalRecipient {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> SignalRecipient? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> SignalRecipient? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -294,7 +295,7 @@ extension SignalRecipient {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (SignalRecipient) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (SignalRecipient) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             SignalRecipient.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -322,7 +323,7 @@ extension SignalRecipient {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [SignalRecipient] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [SignalRecipient] {
         var result = [SignalRecipient]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -330,14 +331,23 @@ extension SignalRecipient {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: SignalRecipient.collection())
+        case .grdbRead(let grdbTransaction):
+            return SignalRecipientRecord.ows_fetchCount(grdbTransaction.database)
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension SignalRecipient {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> SignalRecipientCursor {
+public extension SignalRecipient {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> SignalRecipientCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -358,9 +368,9 @@ extension SignalRecipient {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> SignalRecipient? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> SignalRecipient? {
         assert(sql.count > 0)
 
         do {

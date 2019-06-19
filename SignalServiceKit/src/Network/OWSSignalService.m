@@ -12,6 +12,7 @@
 #import "TSConstants.h"
 #import "YapDatabaseConnection+OWS.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -1045,8 +1045,8 @@ extension %sSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension %s {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension %s {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
     
@@ -1057,7 +1057,8 @@ extension %s {
         sdsSave(saveMode: .update, transaction: transaction)
     }
     
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
     
@@ -1085,7 +1086,7 @@ extension %s {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -1108,7 +1109,7 @@ extension %s {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -1122,11 +1123,11 @@ extension %s {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -1196,8 +1197,8 @@ public class %sCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension %s {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %sCursor {
+public extension %s {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %sCursor {
         let database = transaction.database
         do {
             let cursor = try %s.fetchCursor(database)
@@ -1211,8 +1212,8 @@ extension %s {
 
         swift_body += '''
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> %(class_name)s? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> %(class_name)s? {
         assert(uniqueId.count > 0)
         
         switch transaction.readTransaction {
@@ -1229,7 +1230,7 @@ extension %s {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (%s) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (%s) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             %s.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -1257,7 +1258,7 @@ extension %s {
     }
     
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [%s] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [%s] {
         var result = [%s]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -1265,18 +1266,31 @@ extension %s {
         }
         return result
     }
-}
 ''' % ( ( str(clazz.name), ) * 6 )
+
+        # ---- Fetch ----
+
+        swift_body += '''
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: %s.collection())
+        case .grdbRead(let grdbTransaction):
+            return %s.ows_fetchCount(grdbTransaction.database)
+        }
+    }
+}
+''' % ( str(clazz.name),  record_name, )
 
         # ---- Fetch ----
 
         swift_body += '''
 // MARK: - Swift Fetch
 
-extension %s {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> %sCursor {
+public extension %s {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> %sCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -1302,9 +1316,9 @@ extension %s {
 
         string_interpolation_name = remove_prefix_from_class_name(clazz.name)
         swift_body += '''
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> %s? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> %s? {
         assert(sql.count > 0)
         
         do {

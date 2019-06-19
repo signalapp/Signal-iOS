@@ -114,8 +114,8 @@ extension ExperienceUpgradeSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension ExperienceUpgrade {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension ExperienceUpgrade {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
@@ -126,7 +126,8 @@ extension ExperienceUpgrade {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -154,7 +155,7 @@ extension ExperienceUpgrade {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (ExperienceUpgrade) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (ExperienceUpgrade) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -177,7 +178,7 @@ extension ExperienceUpgrade {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -191,11 +192,11 @@ extension ExperienceUpgrade {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -255,8 +256,8 @@ public class ExperienceUpgradeCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension ExperienceUpgrade {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> ExperienceUpgradeCursor {
+public extension ExperienceUpgrade {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> ExperienceUpgradeCursor {
         let database = transaction.database
         do {
             let cursor = try ExperienceUpgradeRecord.fetchCursor(database)
@@ -268,8 +269,8 @@ extension ExperienceUpgrade {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> ExperienceUpgrade? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> ExperienceUpgrade? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -284,7 +285,7 @@ extension ExperienceUpgrade {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (ExperienceUpgrade) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (ExperienceUpgrade) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             ExperienceUpgrade.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -312,7 +313,7 @@ extension ExperienceUpgrade {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [ExperienceUpgrade] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [ExperienceUpgrade] {
         var result = [ExperienceUpgrade]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -320,14 +321,23 @@ extension ExperienceUpgrade {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: ExperienceUpgrade.collection())
+        case .grdbRead(let grdbTransaction):
+            return ExperienceUpgradeRecord.ows_fetchCount(grdbTransaction.database)
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension ExperienceUpgrade {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> ExperienceUpgradeCursor {
+public extension ExperienceUpgrade {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> ExperienceUpgradeCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -348,9 +358,9 @@ extension ExperienceUpgrade {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> ExperienceUpgrade? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> ExperienceUpgrade? {
         assert(sql.count > 0)
 
         do {

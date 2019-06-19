@@ -136,8 +136,8 @@ extension KnownStickerPackSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension KnownStickerPack {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension KnownStickerPack {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
@@ -148,7 +148,8 @@ extension KnownStickerPack {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -176,7 +177,7 @@ extension KnownStickerPack {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (KnownStickerPack) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (KnownStickerPack) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -199,7 +200,7 @@ extension KnownStickerPack {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -213,11 +214,11 @@ extension KnownStickerPack {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -277,8 +278,8 @@ public class KnownStickerPackCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension KnownStickerPack {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> KnownStickerPackCursor {
+public extension KnownStickerPack {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> KnownStickerPackCursor {
         let database = transaction.database
         do {
             let cursor = try KnownStickerPackRecord.fetchCursor(database)
@@ -290,8 +291,8 @@ extension KnownStickerPack {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> KnownStickerPack? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> KnownStickerPack? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -306,7 +307,7 @@ extension KnownStickerPack {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (KnownStickerPack) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (KnownStickerPack) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             KnownStickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -334,7 +335,7 @@ extension KnownStickerPack {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [KnownStickerPack] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [KnownStickerPack] {
         var result = [KnownStickerPack]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -342,14 +343,23 @@ extension KnownStickerPack {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: KnownStickerPack.collection())
+        case .grdbRead(let grdbTransaction):
+            return KnownStickerPackRecord.ows_fetchCount(grdbTransaction.database)
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension KnownStickerPack {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> KnownStickerPackCursor {
+public extension KnownStickerPack {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> KnownStickerPackCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -370,9 +380,9 @@ extension KnownStickerPack {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> KnownStickerPack? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> KnownStickerPack? {
         assert(sql.count > 0)
 
         do {

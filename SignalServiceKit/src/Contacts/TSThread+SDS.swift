@@ -241,8 +241,8 @@ extension TSThreadSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension TSThread {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension TSThread {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
@@ -253,7 +253,8 @@ extension TSThread {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -281,7 +282,7 @@ extension TSThread {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSThread) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (TSThread) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -304,7 +305,7 @@ extension TSThread {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -318,11 +319,11 @@ extension TSThread {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -382,8 +383,8 @@ public class TSThreadCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension TSThread {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSThreadCursor {
+public extension TSThread {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> TSThreadCursor {
         let database = transaction.database
         do {
             let cursor = try ThreadRecord.fetchCursor(database)
@@ -395,8 +396,8 @@ extension TSThread {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> TSThread? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> TSThread? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -411,7 +412,7 @@ extension TSThread {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (TSThread) -> Bool) {
+    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (TSThread) -> Bool) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             TSThread.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -439,7 +440,7 @@ extension TSThread {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSThread] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSThread] {
         var result = [TSThread]()
         anyVisitAll(transaction: transaction) { (model) in
             result.append(model)
@@ -447,14 +448,23 @@ extension TSThread {
         }
         return result
     }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: TSThread.collection())
+        case .grdbRead(let grdbTransaction):
+            return ThreadRecord.ows_fetchCount(grdbTransaction.database)
+        }
+    }
 }
 
 // MARK: - Swift Fetch
 
-extension TSThread {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> TSThreadCursor {
+public extension TSThread {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> TSThreadCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -475,9 +485,9 @@ extension TSThread {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> TSThread? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> TSThread? {
         assert(sql.count > 0)
 
         do {
