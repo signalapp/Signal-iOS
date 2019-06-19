@@ -82,6 +82,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 {
     // Identify what version of 2FA we're using
     if (OWSKeyBackupService.hasLocalKeys) {
+        OWSAssertDebug(SSKFeatureFlags.registrationLockV2);
         return OWS2FAMode_V2;
     } else if (self.pinCode != nil) {
         return OWS2FAMode_V1;
@@ -112,6 +113,9 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
     if (!SSKFeatureFlags.registrationLockV2) {
         [self.dbConnection setObject:pin forKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
+    } else {
+        // Remove any old pin when we're migrating
+        [self.dbConnection removeObjectForKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
     }
 
     // Schedule next reminder relative to now
@@ -234,6 +238,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
             break;
         }
         case OWS2FAMode_Disabled:
+            OWSFailDebug(@"Unexpectedly attempting to disable 2fa for disabled mode");
             break;
     }
 }
@@ -274,7 +279,8 @@ const NSUInteger kDaySecs = kHourSecs * 24;
         result(self.pinCode == pin);
         break;
     case OWS2FAMode_Disabled:
-        result(false);
+        OWSFailDebug(@"unexpectedly attempting to verify pin when 2fa is disabled");
+        result(NO);
         break;
     }
 }

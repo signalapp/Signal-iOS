@@ -382,14 +382,11 @@ NS_ASSUME_NONNULL_BEGIN
         @"unrestrictedUnidentifiedAccess" : @(allowUnrestrictedUD),
     } mutableCopy];
 
-    if (pin.length > 0) {
-        accountAttributes[@"pin"] = pin;
-    }
-
-    NSString *registrationLockToken = [OWSKeyBackupService deriveRegistrationLockToken];
+    NSString *_Nullable registrationLockToken = [OWSKeyBackupService deriveRegistrationLockToken];
     if (registrationLockToken.length > 0) {
         accountAttributes[@"registrationLock"] = registrationLockToken;
-        [accountAttributes removeObjectForKey:@"pin"];
+    } else if (pin.length > 0) {
+        accountAttributes[@"pin"] = pin;
     }
 
     return [accountAttributes copy];

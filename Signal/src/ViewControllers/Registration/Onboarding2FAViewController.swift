@@ -72,7 +72,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         let validationWarningRow = UIView()
         validationWarningRow.addSubview(validationWarningLabel)
         validationWarningLabel.ows_autoPinToSuperviewEdges()
-        validationWarningRow.autoSetDimension(.height, toSize: validationWarningLabel.font.lineHeight)
+        validationWarningRow.setContentHuggingVerticalHigh()
 
         let forgotPinLink = self.linkButton(title: NSLocalizedString("ONBOARDING_2FA_FORGOT_PIN_LINK",
                                                                      comment: "Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view."),
