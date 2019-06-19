@@ -290,10 +290,10 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   AxolotlKit:
-    :commit: 9bdcbaade2d98af9196a8526cb9042fead1d3ced
+    :commit: 8d4451262de7dc26887f25051ee26659c3512907
     :git: https://github.com/signalapp/SignalProtocolKit.git
   Curve25519Kit:
-    :commit: 9e5663baf4c2c7cb68ac4c0beb0423383c19a7fe
+    :commit: 9b5981d7e366e1cd514be483e199d6fc1dd872af
     :git: https://github.com/signalapp/Curve25519Kit
   GRDBCipher:
     :commit: 8f39e07da7be7c440aa7297439fbbc566492bf68

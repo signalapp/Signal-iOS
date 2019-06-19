@@ -538,6 +538,8 @@ typedef void (^SystemMessageActionBlock)(void);
                                                                              .recipientId];
                                   }
                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")];
+        case TSInfoMessageUserJoinedSignal:
+            return nil;
     }
 
     OWSLogInfo(@"Unhandled tap for info message: %@", infoMessage);

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -60,10 +60,7 @@ public class DeviceNames: NSObject {
             throw DeviceNameError.assertionFailure
         }
 
-        guard let keyData = (ephemeralKeyPair.publicKey as NSData).prependKeyType() else {
-            owsFailDebug("Could not prepend key type.")
-            throw DeviceNameError.assertionFailure
-        }
+        let keyData = (ephemeralKeyPair.publicKey as NSData).prependKeyType()
         let protoBuilder = SignalIOSProtoDeviceName.builder(ephemeralPublic: keyData as Data,
                                                             syntheticIv: syntheticIV,
                                                             ciphertext: ciphertext.ciphertext)
