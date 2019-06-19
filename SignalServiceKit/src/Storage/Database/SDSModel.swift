@@ -28,3 +28,23 @@ public extension SDSModel {
         }
     }
 }
+
+public extension TableRecord {
+    static func ows_fetchCount(_ db: Database) -> UInt {
+        do {
+            let result = try fetchCount(db)
+            guard result >= 0 else {
+                owsFailDebug("Invalid result: \(result)")
+                return 0
+            }
+            guard result <= UInt.max else {
+                owsFailDebug("Invalid result: \(result)")
+                return UInt.max
+            }
+            return UInt(result)
+        } catch {
+            owsFailDebug("Read failed: \(error)")
+            return 0
+        }
+    }
+}

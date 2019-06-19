@@ -343,8 +343,7 @@ public extension InstalledSticker {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: InstalledSticker.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(InstalledStickerRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return InstalledStickerRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

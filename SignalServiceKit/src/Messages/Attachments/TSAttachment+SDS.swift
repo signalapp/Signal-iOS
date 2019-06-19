@@ -547,8 +547,7 @@ public extension TSAttachment {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: TSAttachment.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(AttachmentRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return AttachmentRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

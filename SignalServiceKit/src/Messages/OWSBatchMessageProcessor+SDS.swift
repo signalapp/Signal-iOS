@@ -354,8 +354,7 @@ public extension OWSMessageContentJob {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: OWSMessageContentJob.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(MessageContentJobRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return MessageContentJobRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

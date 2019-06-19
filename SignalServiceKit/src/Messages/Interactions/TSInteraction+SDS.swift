@@ -1501,8 +1501,7 @@ public extension TSInteraction {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: TSInteraction.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(InteractionRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return InteractionRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

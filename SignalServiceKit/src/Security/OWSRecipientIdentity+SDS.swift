@@ -360,8 +360,7 @@ public extension OWSRecipientIdentity {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: OWSRecipientIdentity.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(RecipientIdentityRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return RecipientIdentityRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

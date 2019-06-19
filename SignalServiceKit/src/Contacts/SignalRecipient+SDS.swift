@@ -337,8 +337,7 @@ public extension SignalRecipient {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: SignalRecipient.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(SignalRecipientRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return SignalRecipientRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

@@ -342,8 +342,7 @@ public extension OWSMessageDecryptJob {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: OWSMessageDecryptJob.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(MessageDecryptJobRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return MessageDecryptJobRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

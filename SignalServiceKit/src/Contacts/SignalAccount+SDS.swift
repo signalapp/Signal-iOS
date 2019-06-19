@@ -355,8 +355,7 @@ public extension SignalAccount {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: SignalAccount.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(SignalAccountRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return SignalAccountRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

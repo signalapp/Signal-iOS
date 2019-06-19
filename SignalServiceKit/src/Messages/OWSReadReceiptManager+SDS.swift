@@ -343,8 +343,7 @@ public extension TSRecipientReadReceipt {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: TSRecipientReadReceipt.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(RecipientReadReceiptRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return RecipientReadReceiptRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

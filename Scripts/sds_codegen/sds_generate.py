@@ -1276,8 +1276,7 @@ public extension %s {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: %s.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(%s.databaseTableName)"            
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return %s.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

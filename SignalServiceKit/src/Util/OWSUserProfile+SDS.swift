@@ -361,8 +361,7 @@ public extension OWSUserProfile {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: OWSUserProfile.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(UserProfileRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return UserProfileRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

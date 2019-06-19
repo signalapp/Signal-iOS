@@ -354,8 +354,7 @@ public extension OWSDevice {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: OWSDevice.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(DeviceRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return DeviceRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }

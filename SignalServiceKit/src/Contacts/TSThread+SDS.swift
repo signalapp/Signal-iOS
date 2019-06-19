@@ -454,8 +454,7 @@ public extension TSThread {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: TSThread.collection())
         case .grdbRead(let grdbTransaction):
-            let sql = "SELECT COUNT(*) FROM \(ThreadRecord.databaseTableName)"
-            return try! UInt.fetchOne(grdbTransaction.database, sql: sql) ?? 0
+            return ThreadRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
 }
