@@ -90,9 +90,9 @@ public class KeyBackupService: NSObject {
 
             return (stretchedPin, pinKey1)
         }.then { stretchedPin, pinKey1 in
-            restoreKeyRequest(stretchedPin: stretchedPin).map { ($0, pinKey1) }
-        }.then { response, pinKey1 in
-            cryptoQueue.async(.promise) { () -> (Data, Data) in
+            restoreKeyRequest(stretchedPin: stretchedPin).map { ($0, stretchedPin, pinKey1) }
+        }.then { response, stretchedPin, pinKey1 in
+            cryptoQueue.async(.promise) { () -> (Data, Data, Data) in
                 guard let status = response.status else {
                     owsFailDebug("KBS restore is missing status")
                     throw KBSError.assertion
@@ -121,10 +121,33 @@ public class KeyBackupService: NSObject {
                         throw KBSError.assertion
                     }
 
-                    return (masterKey, pinKey2)
+                    return (masterKey, stretchedPin, pinKey2)
                 }
             }
-        }.done { masterKey, pinKey2 in
+        }.then { masterKey, stretchedPin, pinKey2 in
+            // Backup our keys again, even though we just fetched them.
+            // This resets the number of remaining attempts.
+            backupKeyRequest(stretchedPin: stretchedPin, keyData: pinKey2).map { ($0, masterKey, pinKey2) }
+        }.done { response, masterKey, pinKey2 in
+            guard let status = response.status else {
+                owsFailDebug("KBS backup is missing status")
+                throw KBSError.assertion
+            }
+
+            switch status {
+            case .nonceMismatch:
+                // the given nonce is outdated;
+                // TODO: the request should be retried with new nonce value
+                owsFailDebug("attempted backup with expired nonce")
+                throw KBSError.assertion
+            case .notYetValid:
+                owsFailDebug("the server thinks we provided a `validFrom` in the future")
+                throw KBSError.assertion
+            case .ok:
+                break
+            }
+
+            // We successfully stored the new keys in KBS, save them in the keychain
             storePinKey2(pinKey2)
             storeMasterKey(masterKey)
         }
