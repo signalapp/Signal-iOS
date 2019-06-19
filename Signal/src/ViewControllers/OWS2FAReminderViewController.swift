@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import PromiseKit
 
 @objc
 public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegate {
@@ -61,19 +62,11 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     public func pinEntryView(_ entryView: PinEntryView, submittedPinCode pinCode: String) {
         Logger.info("")
 
-        if FeatureFlags.registrationLockV2 {
-            KeyBackupService.verifyPin(pinCode) { success in
-                if success {
-                    self.didSubmitCorrectPin()
-                } else {
-                    self.didSubmitWrongPin()
-                }
-            }
-        } else {
-            if checkResult(pinCode: pinCode) {
-                didSubmitCorrectPin()
+        ows2FAManager.verifyPin(pinCode) { success in
+            if success {
+                self.didSubmitCorrectPin()
             } else {
-                didSubmitWrongPin()
+                self.didSubmitWrongPin()
             }
         }
     }
@@ -81,14 +74,10 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     //textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
     public func pinEntryView(_ entryView: PinEntryView, pinCodeDidChange pinCode: String) {
         // optimistically match, without having to press "done"
-        if FeatureFlags.registrationLockV2 {
-            KeyBackupService.verifyPin(pinCode) { success in
-                if success {
-                    self.didSubmitCorrectPin()
-                }
+        ows2FAManager.verifyPin(pinCode) { success in
+            if success {
+                self.didSubmitCorrectPin()
             }
-        } else if checkResult(pinCode: pinCode) {
-            didSubmitCorrectPin()
         }
     }
 
@@ -108,14 +97,26 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         self.dismiss(animated: true)
     }
 
-    private func checkResult(pinCode: String) -> Bool {
-        return pinCode == ows2FAManager.pinCode
-    }
-
     private func didSubmitCorrectPin() {
         Logger.info("noWrongGuesses: \(noWrongGuesses)")
 
-        self.dismiss(animated: true)
+        // Migrate to 2FA v2 if they've proved they know their pin
+        if let pinCode = ows2FAManager.pinCode, FeatureFlags.registrationLockV2, ows2FAManager.mode == .V1 {
+            ows2FAManager.disable2FAPromise().then {
+                self.ows2FAManager.enable2FAPromise(with: pinCode).recover { error in
+                    // TODO: What should we do if this fails? They will have
+                    // registration lock disabled but not know about it. Maybe
+                    // we can try again or bubble up to the user?
+                    owsFailDebug("Unexpected error \(error) while migrating to reg lock v2")
+                }
+            }.done {
+                self.dismiss(animated: true)
+            }.catch { error in
+                owsFailDebug("Unexpected error \(error) while migrating to reg lock v2")
+            }.retainUntilComplete()
+        } else {
+            self.dismiss(animated: true)
+        }
 
         OWS2FAManager.shared().updateRepetitionInterval(withWasSuccessful: noWrongGuesses)
     }
@@ -130,5 +131,27 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
                                           comment: "Alert body after wrong guess for 'two-factor auth pin' reminder activity")
         OWSAlerts.showAlert(title: alertTitle, message: alertBody)
         self.pinEntryView.clearText()
+    }
+}
+
+extension OWS2FAManager {
+    func disable2FAPromise() -> Promise<Void> {
+        return Promise { resolver in
+            disable2FA(success: {
+                resolver.fulfill(())
+            }, failure: { error in
+                resolver.reject(error)
+            })
+        }
+    }
+
+    func enable2FAPromise(with pin: String) -> Promise<Void> {
+        return Promise { resolver in
+            requestEnable2FA(withPin: pin, success: {
+                resolver.fulfill(())
+            }, failure: { error in
+                resolver.reject(error)
+            })
+        }
     }
 }

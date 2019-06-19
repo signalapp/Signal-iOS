@@ -36,6 +36,7 @@ public class KeyBackupService: NSObject {
 
     /// Indicates whether your pin is valid when compared to your stored keys.
     /// This is a local verification and does not make any requests to the KBS.
+    @objc
     public static func verifyPin(_ pin: String, resultHandler: @escaping (Bool) -> Void) {
         DispatchQueue.global().async {
             var isValid = false

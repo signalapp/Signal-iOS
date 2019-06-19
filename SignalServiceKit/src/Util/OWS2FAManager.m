@@ -27,6 +27,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 @interface OWS2FAManager ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nonatomic) OWS2FAMode mode;
 
 @end
 
@@ -77,13 +78,21 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     return [self.dbConnection objectForKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
 }
 
+- (OWS2FAMode)mode
+{
+    // Identify what version of 2FA we're using
+    if (OWSKeyBackupService.hasLocalKeys) {
+        return OWS2FAMode_V2;
+    } else if (self.pinCode != nil) {
+        return OWS2FAMode_V1;
+    } else {
+        return OWS2FAMode_Disabled;
+    }
+}
+
 - (BOOL)is2FAEnabled
 {
-    if (SSKFeatureFlags.registrationLockV2) {
-        return OWSKeyBackupService.hasLocalKeys;
-    } else {
-        return self.pinCode != nil;
-    }
+    return self.mode != OWS2FAMode_Disabled;
 }
 
 - (void)set2FANotEnabled
@@ -173,9 +182,38 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
 - (void)disable2FAWithSuccess:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure
 {
-    if (SSKFeatureFlags.registrationLockV2) {
-        [[OWSKeyBackupService deleteKeys].then(^{
-            TSRequest *request = [OWSRequestFactory disableRegistrationLockV2Request];
+    switch (self.mode) {
+        case OWS2FAMode_V2:
+        {
+            [[OWSKeyBackupService deleteKeys].then(^{
+                TSRequest *request = [OWSRequestFactory disableRegistrationLockV2Request];
+                [self.networkManager makeRequest:request
+                                         success:^(NSURLSessionDataTask *task, id responseObject) {
+                                             OWSAssertIsOnMainThread();
+
+                                             [self set2FANotEnabled];
+
+                                             if (success) {
+                                                 success();
+                                             }
+                                         }
+                                         failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                             OWSAssertIsOnMainThread();
+
+                                             if (failure) {
+                                                 failure(error);
+                                             }
+                                         }];
+            }).catch(^(NSError *error){
+                if (failure) {
+                    failure(error);
+                }
+            }) retainUntilComplete];
+            break;
+        }
+        case OWS2FAMode_V1:
+        {
+            TSRequest *request = [OWSRequestFactory disable2FARequest];
             [self.networkManager makeRequest:request
                                      success:^(NSURLSessionDataTask *task, id responseObject) {
                                          OWSAssertIsOnMainThread();
@@ -193,30 +231,10 @@ const NSUInteger kDaySecs = kHourSecs * 24;
                                              failure(error);
                                          }
                                      }];
-        }).catch(^(NSError *error){
-            if (failure) {
-                failure(error);
-            }
-        }) retainUntilComplete];
-    } else {
-        TSRequest *request = [OWSRequestFactory disable2FARequest];
-        [self.networkManager makeRequest:request
-                                 success:^(NSURLSessionDataTask *task, id responseObject) {
-                                     OWSAssertIsOnMainThread();
-
-                                     [self set2FANotEnabled];
-
-                                     if (success) {
-                                         success();
-                                     }
-                                 }
-                                 failure:^(NSURLSessionDataTask *task, NSError *error) {
-                                     OWSAssertIsOnMainThread();
-
-                                     if (failure) {
-                                         failure(error);
-                                     }
-                                 }];
+            break;
+        }
+        case OWS2FAMode_Disabled:
+            break;
     }
 }
 
@@ -244,6 +262,21 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     }
 
     return self.nextReminderDate.timeIntervalSinceNow < 0;
+}
+
+- (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result
+{
+    switch (self.mode) {
+    case OWS2FAMode_V2:
+        [OWSKeyBackupService verifyPin:pin resultHandler:result];
+        break;
+    case OWS2FAMode_V1:
+        result(self.pinCode == pin);
+        break;
+    case OWS2FAMode_Disabled:
+        result(false);
+        break;
+    }
 }
 
 - (NSDate *)nextReminderDate
