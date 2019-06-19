@@ -307,7 +307,7 @@ public extension KnownStickerPack {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (KnownStickerPack) -> Bool) {
+    class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (KnownStickerPack, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             KnownStickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -315,17 +315,18 @@ public extension KnownStickerPack {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
                 }
-                guard visitor(value) else {
-                    stop.pointee = true
-                    return
-                }
+                block(value, stop)
             }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = KnownStickerPack.grdbFetchCursor(transaction: grdbTransaction)
+                var stop: ObjCBool = false
                 while let value = try cursor.next() {
-                    guard visitor(value) else {
-                        return
+                    withUnsafeMutablePointer(to: &stop) {
+                        block(value, $0)
+                    }
+                    guard !stop.boolValue else {
+                        break
                     }
                 }
             } catch let error as NSError {
@@ -337,9 +338,8 @@ public extension KnownStickerPack {
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [KnownStickerPack] {
         var result = [KnownStickerPack]()
-        anyVisitAll(transaction: transaction) { (model) in
+        anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
-            return true
         }
         return result
     }

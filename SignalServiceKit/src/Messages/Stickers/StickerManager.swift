@@ -760,9 +760,8 @@ public class StickerManager: NSObject {
     @objc
     public class func allKnownStickerPacks(transaction: SDSAnyReadTransaction) -> [KnownStickerPack] {
         var result = [KnownStickerPack]()
-        KnownStickerPack.anyVisitAll(transaction: transaction) { (knownStickerPack) in
+        KnownStickerPack.anyEnumerate(transaction: transaction) { (knownStickerPack, _) in
             result.append(knownStickerPack)
-            return true
         }
         return result
     }
@@ -1026,19 +1025,19 @@ public class StickerManager: NSObject {
                 }
 
                 var stickersToUninstall = [InstalledSticker]()
-                InstalledSticker.anyVisitAll(transaction: transaction) { (sticker) in
+                InstalledSticker.anyEnumerate(transaction: transaction) { (sticker, _) in
                     guard let pack = stickerPackMap[sticker.info.packInfo.asKey()] else {
                         stickersToUninstall.append(sticker)
-                        return true
+                        return
                     }
                     if pack.isInstalled {
-                        return true
+                        return
                     }
                     if pack.coverInfo == sticker.info {
-                        return true
+                        return
                     }
                     stickersToUninstall.append(sticker)
-                    return true
+                    return
                 }
                 if stickersToUninstall.count > 0 {
                     owsFailDebug("Removing \(stickersToUninstall.count) orphan stickers.")

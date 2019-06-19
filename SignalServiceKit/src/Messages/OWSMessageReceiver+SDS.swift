@@ -300,7 +300,7 @@ public extension OWSMessageDecryptJob {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSMessageDecryptJob) -> Bool) {
+    class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSMessageDecryptJob, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             OWSMessageDecryptJob.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -308,17 +308,18 @@ public extension OWSMessageDecryptJob {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
                 }
-                guard visitor(value) else {
-                    stop.pointee = true
-                    return
-                }
+                block(value, stop)
             }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = OWSMessageDecryptJob.grdbFetchCursor(transaction: grdbTransaction)
+                var stop: ObjCBool = false
                 while let value = try cursor.next() {
-                    guard visitor(value) else {
-                        return
+                    withUnsafeMutablePointer(to: &stop) {
+                        block(value, $0)
+                    }
+                    guard !stop.boolValue else {
+                        break
                     }
                 }
             } catch let error as NSError {
@@ -330,9 +331,8 @@ public extension OWSMessageDecryptJob {
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSMessageDecryptJob] {
         var result = [OWSMessageDecryptJob]()
-        anyVisitAll(transaction: transaction) { (model) in
+        anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
-            return true
         }
         return result
     }

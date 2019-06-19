@@ -324,7 +324,7 @@ public extension OWSBackupFragment {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSBackupFragment) -> Bool) {
+    class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSBackupFragment, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             OWSBackupFragment.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -332,17 +332,18 @@ public extension OWSBackupFragment {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
                 }
-                guard visitor(value) else {
-                    stop.pointee = true
-                    return
-                }
+                block(value, stop)
             }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = OWSBackupFragment.grdbFetchCursor(transaction: grdbTransaction)
+                var stop: ObjCBool = false
                 while let value = try cursor.next() {
-                    guard visitor(value) else {
-                        return
+                    withUnsafeMutablePointer(to: &stop) {
+                        block(value, $0)
+                    }
+                    guard !stop.boolValue else {
+                        break
                     }
                 }
             } catch let error as NSError {
@@ -354,9 +355,8 @@ public extension OWSBackupFragment {
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSBackupFragment] {
         var result = [OWSBackupFragment]()
-        anyVisitAll(transaction: transaction) { (model) in
+        anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
-            return true
         }
         return result
     }

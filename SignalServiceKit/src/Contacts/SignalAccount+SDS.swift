@@ -313,7 +313,7 @@ public extension SignalAccount {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (SignalAccount) -> Bool) {
+    class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (SignalAccount, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             SignalAccount.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -321,17 +321,18 @@ public extension SignalAccount {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
                 }
-                guard visitor(value) else {
-                    stop.pointee = true
-                    return
-                }
+                block(value, stop)
             }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = SignalAccount.grdbFetchCursor(transaction: grdbTransaction)
+                var stop: ObjCBool = false
                 while let value = try cursor.next() {
-                    guard visitor(value) else {
-                        return
+                    withUnsafeMutablePointer(to: &stop) {
+                        block(value, $0)
+                    }
+                    guard !stop.boolValue else {
+                        break
                     }
                 }
             } catch let error as NSError {
@@ -343,9 +344,8 @@ public extension SignalAccount {
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [SignalAccount] {
         var result = [SignalAccount]()
-        anyVisitAll(transaction: transaction) { (model) in
+        anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
-            return true
         }
         return result
     }

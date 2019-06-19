@@ -312,7 +312,7 @@ public extension OWSDevice {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSDevice) -> Bool) {
+    class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSDevice, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             OWSDevice.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -320,17 +320,18 @@ public extension OWSDevice {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
                 }
-                guard visitor(value) else {
-                    stop.pointee = true
-                    return
-                }
+                block(value, stop)
             }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = OWSDevice.grdbFetchCursor(transaction: grdbTransaction)
+                var stop: ObjCBool = false
                 while let value = try cursor.next() {
-                    guard visitor(value) else {
-                        return
+                    withUnsafeMutablePointer(to: &stop) {
+                        block(value, $0)
+                    }
+                    guard !stop.boolValue else {
+                        break
                     }
                 }
             } catch let error as NSError {
@@ -342,9 +343,8 @@ public extension OWSDevice {
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSDevice] {
         var result = [OWSDevice]()
-        anyVisitAll(transaction: transaction) { (model) in
+        anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
-            return true
         }
         return result
     }
