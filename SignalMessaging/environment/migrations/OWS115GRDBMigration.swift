@@ -101,12 +101,6 @@ extension OWS115GRDBMigration {
             // KeyValue Finders
             var migrators = [GRDBMigrator]()
 
-            // TODO: OWSMessageDecryptJob
-            // TODO: SSKMessageDecryptJobRecord
-            // TODO: SSKMessageSenderJobRecord
-            // TODO: OWSSessionResetJobRecord
-            // TODO: OWSDatabaseMigration
-
             dbReadConnection.read { yapTransaction in
                 migrators += self.allKeyValueMigrators(yapTransaction: yapTransaction)
 
@@ -174,7 +168,7 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "preferences", keyStore: environment.preferences.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
 
             GRDBKeyValueStoreMigrator<Any>(label: "OWSOrphanDataCleaner", keyStore: OWSOrphanDataCleaner.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
-            GRDBKeyValueStoreMigrator<Any>(label: "contactsManager", keyStore: contactsManager.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 1.0)
+            GRDBKeyValueStoreMigrator<Any>(label: "contactsManager", keyStore: contactsManager.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1)
         ]
     }
 
