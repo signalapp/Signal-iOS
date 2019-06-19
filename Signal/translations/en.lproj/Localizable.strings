@@ -104,9 +104,6 @@
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Size: %@";
 
-/* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Message limit reached.";
-
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
 
@@ -1640,8 +1637,14 @@
 /* Label that indicates that 'per-message expiration' is active. */
 "PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Disappearing Message";
 
+/* Label for messages with per-message expiration that have invalid content. */
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Error handling incoming message";
+
+/* Label for outgoing messages with per-message expiration. */
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Photo";
+
 /* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "Tap to view";
+"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "View Photo";
 
 /* Label for messages with per-message expiration indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Viewed";

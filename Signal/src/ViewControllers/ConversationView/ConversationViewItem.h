@@ -29,6 +29,7 @@ typedef NS_ENUM(NSUInteger, PerMessageExpirationState) {
     PerMessageExpirationState_IncomingDownloading,
     PerMessageExpirationState_IncomingFailed,
     PerMessageExpirationState_IncomingAvailable,
+    PerMessageExpirationState_IncomingInvalidContent,
     PerMessageExpirationState_OutgoingSending,
     PerMessageExpirationState_OutgoingFailed,
     PerMessageExpirationState_OutgoingSent,
