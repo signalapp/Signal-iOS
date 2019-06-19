@@ -51,7 +51,15 @@ typedef NS_ERROR_ENUM(RemoteAttestationErrorDomain, RemoteAttestationError){
 @property (nonatomic, readonly) NSString *enclaveId;
 @property (nonatomic, readonly) RemoteAttestationAuth *auth;
 
++ (nullable RemoteAttestationAuth *)parseAuthParams:(id)response;
+
 + (void)performRemoteAttestationForService:(RemoteAttestationService)service
+                                   success:(void (^)(RemoteAttestation *_Nonnull remoteAttestation))successHandler
+                                   failure:(void (^)(NSError *_Nonnull error))failureHandler;
+
+
++ (void)performRemoteAttestationForService:(RemoteAttestationService)service
+                                      auth:(RemoteAttestationAuth *)auth
                                    success:(void (^)(RemoteAttestation *_Nonnull remoteAttestation))successHandler
                                    failure:(void (^)(NSError *_Nonnull error))failureHandler;
 

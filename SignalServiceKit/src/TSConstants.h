@@ -84,6 +84,7 @@ BOOL IsUsingProductionService(void);
 #define textSecureSetProfileNameAPIFormat @"v1/profile/name/%@"
 #define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
 #define textSecure2FAAPI @"v1/accounts/pin"
+#define textSecureRegistrationLockV2API @"v1/accounts/registration_lock"
 
 #define SignalApplicationGroup @"group.org.whispersystems.signal.group"
 

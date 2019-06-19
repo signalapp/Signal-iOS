@@ -63,6 +63,22 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:textSecure2FAAPI] method:@"DELETE" parameters:@{}];
 }
 
++ (TSRequest *)enableRegistrationLockRequestWithToken:(NSString *)token
+{
+    OWSAssertDebug(token.length > 0);
+
+    return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureRegistrationLockV2API]
+                              method:@"PUT"
+                          parameters:@{
+                                       @"registrationLock" : token,
+                                       }];
+}
+
++ (TSRequest *)disableRegistrationLockV2Request
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureRegistrationLockV2API] method:@"DELETE" parameters:@{}];
+}
+
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithSource:(NSString *)source timestamp:(UInt64)timestamp
 {
     OWSAssertDebug(source.length > 0);
@@ -368,6 +384,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (pin.length > 0) {
         accountAttributes[@"pin"] = pin;
+    }
+
+    if (SSKFeatureFlags.registrationLockV2) {
+        NSString *registrationLockToken = [OWSKeyBackupService deriveRegistrationLockToken];
+        if (registrationLockToken.length > 0) {
+            accountAttributes[@"registrationLock"] = registrationLockToken;
+        }
     }
 
     return [accountAttributes copy];

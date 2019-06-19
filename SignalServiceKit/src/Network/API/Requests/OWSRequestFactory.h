@@ -22,6 +22,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)disable2FARequest;
 
++ (TSRequest *)enableRegistrationLockRequestWithToken:(NSString *)token;
+
++ (TSRequest *)disableRegistrationLockV2Request;
+
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithSource:(NSString *)source timestamp:(UInt64)timestamp;
 
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithServerGuid:(NSString *)serverGuid;

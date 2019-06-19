@@ -27,7 +27,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     }
 
     override public func loadView() {
-        assert(ows2FAManager.pinCode != nil)
+        assert(ows2FAManager.is2FAEnabled())
 
         self.navigationItem.title = NSLocalizedString("REMINDER_2FA_NAV_TITLE", comment: "Navbar title for when user is periodically prompted to enter their registration lock PIN")
 
@@ -60,17 +60,34 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     // MARK: PinEntryViewDelegate
     public func pinEntryView(_ entryView: PinEntryView, submittedPinCode pinCode: String) {
         Logger.info("")
-        if checkResult(pinCode: pinCode) {
-            didSubmitCorrectPin()
+
+        if FeatureFlags.registrationLockV2 {
+            KeyBackupService.verifyPin(pinCode).done { success in
+                if success {
+                    self.didSubmitCorrectPin()
+                } else {
+                    self.didSubmitWrongPin()
+                }
+            }
         } else {
-            didSubmitWrongPin()
+            if checkResult(pinCode: pinCode) {
+                didSubmitCorrectPin()
+            } else {
+                didSubmitWrongPin()
+            }
         }
     }
 
     //textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
     public func pinEntryView(_ entryView: PinEntryView, pinCodeDidChange pinCode: String) {
         // optimistically match, without having to press "done"
-        if checkResult(pinCode: pinCode) {
+        if FeatureFlags.registrationLockV2 {
+            KeyBackupService.verifyPin(pinCode).done { success in
+                if success {
+                    self.didSubmitCorrectPin()
+                }
+            }
+        } else if checkResult(pinCode: pinCode) {
             didSubmitCorrectPin()
         }
     }

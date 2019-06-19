@@ -30,7 +30,7 @@ public class KeyBackupService: NSObject {
 
     /// Indicates whether or not we have a local copy of your keys to verify your pin
     @objc
-    static var canVerifyPin: Bool {
+    static var hasLocalKeys: Bool {
         return storedMasterKey != nil && storedPinKey2 != nil
     }
 
@@ -41,9 +41,9 @@ public class KeyBackupService: NSObject {
 
     /// Indicates whether your pin is valid when compared to your stored keys.
     /// This is a local verification and does not make any requests to the KBS.
-    static func verifyPin(_ pin: String) -> Promise<Bool> {
+    public static func verifyPin(_ pin: String) -> Promise<Bool> {
         return cryptoQueue.async(.promise) {
-            guard canVerifyPin else {
+            guard hasLocalKeys else {
                 return false
             }
 
@@ -241,6 +241,19 @@ public class KeyBackupService: NSObject {
         assertIsOnCryptoQueue()
 
         return Cryptography.computeSHA256HMAC(pinKey2, withHMACKey: pinKey1)
+    }
+
+    @objc
+    static func deriveRegistrationLockToken() -> String? {
+        guard let masterKey = storedMasterKey else {
+            return nil
+        }
+
+        guard let data = "Registration Lock".data(using: .utf8) else {
+            return nil
+        }
+
+        return Cryptography.computeSHA256HMAC(data, withHMACKey: masterKey)?.hexadecimalString
     }
 
     // PRAGMA MARK: - Keychain
