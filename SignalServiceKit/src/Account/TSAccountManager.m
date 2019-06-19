@@ -14,7 +14,6 @@
 #import "SSKSessionStore.h"
 #import "TSNetworkManager.h"
 #import "TSPreKeyManager.h"
-#import "YapDatabaseTransaction+OWS.h"
 #import <PromiseKit/AnyPromise.h>
 #import <Reachability/Reachability.h>
 #import <SignalCoreKit/NSData+OWS.h>
@@ -48,8 +47,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 @property (nonatomic, nullable) NSNumber *cachedIsDeregistered;
 
 @property (nonatomic) Reachability *reachability;
-
-@property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 @end
 

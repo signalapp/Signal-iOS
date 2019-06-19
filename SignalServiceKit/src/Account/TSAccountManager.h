@@ -14,6 +14,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 @class AnyPromise;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
 @class TSNetworkManager;
 
 typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
@@ -25,6 +26,8 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 };
 
 @interface TSAccountManager : NSObject
+
+@property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
 

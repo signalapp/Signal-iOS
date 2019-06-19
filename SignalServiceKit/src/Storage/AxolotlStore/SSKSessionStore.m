@@ -5,7 +5,6 @@
 #import "SSKSessionStore.h"
 #import "OWSFileSystem.h"
 #import "SSKEnvironment.h"
-#import "YapDatabaseTransaction+OWS.h"
 #import <AxolotlKit/SessionRecord.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -18,6 +17,8 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 @end
+
+#pragma mark -
 
 @implementation SSKSessionStore
 
@@ -283,38 +284,6 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
                                      }];
                                  }];
 }
-
-#if DEBUG
-- (NSString *)snapshotFilePath
-{
-    // Prefix name with period "." so that backups will ignore these snapshots.
-    NSString *dirPath = [OWSFileSystem appDocumentDirectoryPath];
-    return [dirPath stringByAppendingPathComponent:@".session-snapshot"];
-}
-
-- (void)snapshotSessionStore:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    if (!transaction.transitional_yapWriteTransaction) {
-        OWSFailDebug(@"GRDB TODO");
-        return;
-    }
-    [transaction.transitional_yapWriteTransaction snapshotCollection:OWSPrimaryStorageSessionStoreCollection
-                                                    snapshotFilePath:self.snapshotFilePath];
-}
-
-- (void)restoreSessionStore:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-    if (!transaction.transitional_yapWriteTransaction) {
-        OWSFailDebug(@"GRDB TODO");
-        return;
-    }
-    [transaction.transitional_yapWriteTransaction restoreSnapshotOfCollection:OWSPrimaryStorageSessionStoreCollection
-                                                             snapshotFilePath:self.snapshotFilePath];
-}
-#endif
 
 @end
 

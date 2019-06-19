@@ -1,13 +1,17 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class SDSKeyValueStore;
 
 // Notes:
 //
 // * On disk, we only bother cleaning up files, not directories.
 @interface OWSOrphanDataCleaner : NSObject
+
++ (SDSKeyValueStore *)keyValueStore;
 
 - (instancetype)init NS_UNAVAILABLE;
 

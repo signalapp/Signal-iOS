@@ -469,6 +469,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             InteractionRecord.columnName(.perMessageExpirationDurationSeconds),
                             InteractionRecord.columnName(.perMessageExpirationHasExpired)
                 ])
+            try db.create(index: "index_key_value_store_on_collection_and_key",
+                          on: SDSKeyValueStore.table.tableName,
+                          columns: [
+                            SDSKeyValueStore.collectionColumn.columnName,
+                            SDSKeyValueStore.keyColumn.columnName
+                ])
 
             // Media Gallery Indices
             try db.create(index: "index_attachments_on_albumMessageId",

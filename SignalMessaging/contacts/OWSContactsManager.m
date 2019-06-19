@@ -62,6 +62,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return self;
     }
 
+    _keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSContactsManagerCollection];
+
     // TODO: We need to configure the limits of this cache.
     _avatarCache = [ImageCache new];
 
@@ -281,8 +283,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             // Contact updates initiated by the user should always do a full intersection.
             if (!isUserRequested) {
                 NSDate *_Nullable nextFullIntersectionDate =
-                    [transaction dateForKey:OWSContactsManagerKeyNextFullIntersectionDate
-                               inCollection:OWSContactsManagerCollection];
+                    [self.keyValueStore getDate:OWSContactsManagerKeyNextFullIntersectionDate
+                                    transaction:transaction.asAnyRead];
                 if (nextFullIntersectionDate && [nextFullIntersectionDate isAfterNow]) {
                     isFullIntersection = NO;
                 } else {
@@ -311,8 +313,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 // only intersect new contacts which were not in the last successful
                 // "full" intersection.
                 NSSet<NSString *> *_Nullable lastKnownContactPhoneNumbers =
-                    [transaction objectForKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                                 inCollection:OWSContactsManagerCollection];
+                    [self.keyValueStore getObject:OWSContactsManagerKeyLastKnownContactPhoneNumbers
+                                      transaction:transaction.asAnyRead];
                 if (lastKnownContactPhoneNumbers) {
                     // Do a "delta" sync which only intersects recipient ids not included
                     // in the last full intersection.
@@ -352,8 +354,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                         __block NSSet<NSString *> *_Nullable lastKnownContactPhoneNumbers;
                         [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                             lastKnownContactPhoneNumbers =
-                                [transaction objectForKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                                             inCollection:OWSContactsManagerCollection];
+                                [self.keyValueStore getObject:OWSContactsManagerKeyLastKnownContactPhoneNumbers
+                                                  transaction:transaction.asAnyRead];
                         }];
 
                         if (lastKnownContactPhoneNumbers != nil && lastKnownContactPhoneNumbers.count > 0) {
@@ -381,18 +383,18 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     dispatch_async(self.serialQueue, ^{
         [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [transaction setObject:recipientIdsForIntersection
-                            forKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
-                      inCollection:OWSContactsManagerCollection];
+            [self.keyValueStore setObject:recipientIdsForIntersection
+                                      key:OWSContactsManagerKeyLastKnownContactPhoneNumbers
+                              transaction:transaction.asAnyWrite];
 
             if (isFullIntersection) {
                 // Don't do a full intersection more often than once every 6 hours.
                 const NSTimeInterval kMinFullIntersectionInterval = 6 * kHourInterval;
                 NSDate *nextFullIntersectionDate = [NSDate
                     dateWithTimeIntervalSince1970:[NSDate new].timeIntervalSince1970 + kMinFullIntersectionInterval];
-                [transaction setDate:nextFullIntersectionDate
-                              forKey:OWSContactsManagerKeyNextFullIntersectionDate
-                        inCollection:OWSContactsManagerCollection];
+                [self.keyValueStore setDate:nextFullIntersectionDate
+                                        key:OWSContactsManagerKeyNextFullIntersectionDate
+                                transaction:transaction.asAnyWrite];
             }
         }];
     });
