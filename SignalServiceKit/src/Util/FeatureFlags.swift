@@ -69,5 +69,5 @@ public class FeatureFlags: NSObject {
     public static let strictYDBExtensions = true
 
     @objc
-    public static let registrationLockV2 = true
+    public static let registrationLockV2 = false
 }
