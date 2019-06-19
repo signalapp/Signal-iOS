@@ -12,7 +12,23 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     private var pinStrokeNormal: UIView?
     private var pinStrokeError: UIView?
     private let validationWarningLabel = UILabel()
-    private var isPinInvalid = false {
+
+    enum PinAttemptState {
+        case unattempted
+        case invalid(remainingAttempts: UInt32?)
+        case exhausted
+        case valid
+
+        var isInvalid: Bool {
+            switch self {
+            case .unattempted, .valid:
+                return false
+            case .invalid, .exhausted:
+                return true
+            }
+        }
+    }
+    private var attemptState: PinAttemptState = .unattempted {
         didSet {
             updateValidationWarnings()
         }
@@ -48,8 +64,6 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         pinStrokeNormal = pinTextField.addBottomStroke()
         pinStrokeError = pinTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
 
-        validationWarningLabel.text = NSLocalizedString("ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING",
-                                                        comment: "Label indicating that the phone number is invalid in the 'onboarding phone number' view.")
         validationWarningLabel.textColor = .ows_destructiveRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         validationWarningLabel.textAlignment = .center
@@ -127,20 +141,26 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     private func tryToVerify() {
         Logger.info("")
 
-        guard let pin = pinTextField.text?.ows_stripped(),
-            pin.count > 0 else {
-                isPinInvalid = true
+        guard let pin = pinTextField.text?.ows_stripped(), pin.count > 0 else {
+            // Check if we're already in an invalid state, if so we can do nothing
+            guard !attemptState.isInvalid else { return }
+            attemptState = .invalid(remainingAttempts: nil)
             return
         }
-
-        isPinInvalid = false
 
         onboardingController.update(twoFAPin: pin)
 
         onboardingController.submitVerification(fromViewController: self, completion: { (outcome) in
-            if outcome == .invalid2FAPin {
-                self.isPinInvalid = true
-            } else if outcome == .invalidVerificationCode {
+            switch outcome {
+            case .invalid2FAPin:
+                self.attemptState = .invalid(remainingAttempts: nil)
+            case .invalidV2RegistrationLockPin(let remainingAttempts):
+                self.attemptState = .invalid(remainingAttempts: remainingAttempts)
+            case .exhaustedV2RegistrationLockAttempts:
+                self.attemptState = .exhausted
+            case .success:
+                self.attemptState = .valid
+            case .invalidVerificationCode:
                 owsFailDebug("Invalid verification code in 2FA view.")
             }
         })
@@ -149,9 +169,27 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     private func updateValidationWarnings() {
         AssertIsOnMainThread()
 
-        pinStrokeNormal?.isHidden = isPinInvalid
-        pinStrokeError?.isHidden = !isPinInvalid
-        validationWarningLabel.isHidden = !isPinInvalid
+        pinStrokeNormal?.isHidden = attemptState.isInvalid
+        pinStrokeError?.isHidden = !attemptState.isInvalid
+        validationWarningLabel.isHidden = !attemptState.isInvalid
+
+        switch attemptState {
+        case .exhausted:
+            validationWarningLabel.text = NSLocalizedString("ONBOARDING_2FA_ATTEMPTS_EXHAUSTED",
+                                                            comment: "Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view.")
+        case .invalid(let remainingAttempts):
+            guard let remaining = remainingAttempts else {
+                validationWarningLabel.text = NSLocalizedString("ONBOARDING_2FA_INVALID_PIN",
+                                                                comment: "Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view.")
+                break
+            }
+            let localizedString = NSLocalizedString("ONBOARDING_2FA_INVALID_PIN_FORMAT",
+                                                    comment: "Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view.")
+            validationWarningLabel.text = String(format: localizedString, remaining)
+
+        default:
+            break
+        }
     }
 }
 
@@ -168,7 +206,8 @@ extension Onboarding2FAViewController: UITextFieldDelegate {
         let right = oldText.substring(from: range.location + range.length)
         textField.text = left + newString + right
 
-        isPinInvalid = false
+        // Reset the attempt state to clear errors, since the user is trying again
+        attemptState = .unattempted
 
         // Inform our caller that we took care of performing the change.
         return false

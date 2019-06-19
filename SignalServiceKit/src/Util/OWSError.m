@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSError.h"
@@ -11,9 +11,14 @@ NSString *const OWSErrorRecipientIdentifierKey = @"OWSErrorKeyRecipientIdentifie
 
 NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description)
 {
+    return OWSErrorWithUserInfo(code, @{ NSLocalizedDescriptionKey: description });
+}
+
+NSError *OWSErrorWithUserInfo(OWSErrorCode code, NSDictionary *userInfo)
+{
     return [NSError errorWithDomain:OWSSignalServiceKitErrorDomain
                                code:code
-                           userInfo:@{ NSLocalizedDescriptionKey: description }];
+                           userInfo:userInfo];
 }
 
 NSError *OWSErrorMakeUnableToProcessServerResponseError()

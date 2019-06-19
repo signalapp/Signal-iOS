@@ -259,6 +259,11 @@ public class OnboardingController: NSObject {
             return
         }
 
+        guard !(navigationController.topViewController is Onboarding2FAViewController) else {
+            // 2fa view is already presented, we don't need to push it again.
+            return
+        }
+
         let view = Onboarding2FAViewController(onboardingController: self)
         navigationController.pushViewController(view, animated: true)
     }
@@ -312,6 +317,8 @@ public class OnboardingController: NSObject {
     public private(set) var verificationCode: String?
 
     public private(set) var twoFAPin: String?
+
+    private var kbsAuth: RemoteAttestationAuth?
 
     public private(set) var verificationRequestCount: UInt = 0
 
@@ -466,15 +473,54 @@ public class OnboardingController: NSObject {
 
     // MARK: - Verification
 
-    public enum VerificationOutcome {
+    public enum VerificationOutcome: Equatable {
         case success
         case invalidVerificationCode
         case invalid2FAPin
+        case invalidV2RegistrationLockPin(remainingAttempts: UInt32)
+        case exhaustedV2RegistrationLockAttempts
     }
 
     public func submitVerification(fromViewController: UIViewController,
                                    completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
+
+        // If we have credentials for KBS auth, we need to restore our keys.
+        if let kbsAuth = kbsAuth {
+            guard let twoFAPin = twoFAPin else {
+                owsFailDebug("We expected a 2fa attempt, but we don't have a code to try")
+                return completion(.invalid2FAPin)
+            }
+
+            KeyBackupService.restoreKeys(with: twoFAPin, and: kbsAuth).done {
+                // If we restored successfully clear out KBS auth, the server will give it
+                // to us again if we still need to do KBS operations.
+                self.kbsAuth = nil
+
+                // We've restored our keys, we can now re-run this method to post our registration token
+                self.submitVerification(fromViewController: fromViewController, completion: completion)
+            }.catch { error in
+                guard let error = error as? KeyBackupService.KBSError else {
+                    owsFailDebug("unexpected response from KBS")
+                    return completion(.invalid2FAPin)
+                }
+
+                switch error {
+                case .assertion:
+                    owsFailDebug("unexpected response from KBS")
+                    completion(.invalid2FAPin)
+                case .invalidPin(let remainingAttempts):
+                    completion(.invalidV2RegistrationLockPin(remainingAttempts: remainingAttempts))
+                case .backupMissing:
+                    // We don't have a backup for this person, it probably
+                    // was deleted due to too many failed attempts. They'll
+                    // have to retry after the registration lock window expires.
+                    completion(.exhaustedV2RegistrationLockAttempts)
+                }
+            }.retainUntilComplete()
+
+            return
+        }
 
         guard let phoneNumber = phoneNumber else {
             owsFailDebug("Missing phoneNumber.")
@@ -523,6 +569,14 @@ public class OnboardingController: NSObject {
             error.code == OWSErrorCode.registrationMissing2FAPIN.rawValue {
 
             Logger.info("Missing 2FA PIN.")
+
+            // If we were provided KBS auth, we'll need to re-register using reg lock v2,
+            // store this for that path.
+            kbsAuth = error.userInfo[TSRemoteAttestationAuthErrorKey] as? RemoteAttestationAuth
+
+            // Since we were told we need 2fa, clear out any stored KBS keys so we can
+            // do a fresh verification.
+            KeyBackupService.clearKeychain()
 
             completion(.invalid2FAPin)
 

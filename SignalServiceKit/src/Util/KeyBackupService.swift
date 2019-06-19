@@ -8,7 +8,7 @@ import CommonCrypto
 
 @objc(OWSKeyBackupService)
 public class KeyBackupService: NSObject {
-    enum KBSError: Error {
+    public enum KBSError: Error {
         case assertion
         case invalidPin(triesRemaining: UInt32)
         case backupMissing

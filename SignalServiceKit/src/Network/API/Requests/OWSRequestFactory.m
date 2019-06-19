@@ -386,12 +386,10 @@ NS_ASSUME_NONNULL_BEGIN
         accountAttributes[@"pin"] = pin;
     }
 
-    if (SSKFeatureFlags.registrationLockV2) {
-        NSString *registrationLockToken = [OWSKeyBackupService deriveRegistrationLockToken];
-        if (registrationLockToken.length > 0) {
-            accountAttributes[@"registrationLock"] = registrationLockToken;
-            [accountAttributes removeObjectForKey:@"pin"];
-        }
+    NSString *registrationLockToken = [OWSKeyBackupService deriveRegistrationLockToken];
+    if (registrationLockToken.length > 0) {
+        accountAttributes[@"registrationLock"] = registrationLockToken;
+        [accountAttributes removeObjectForKey:@"pin"];
     }
 
     return [accountAttributes copy];
