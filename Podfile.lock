@@ -311,7 +311,7 @@ CHECKOUT OPTIONS:
     :commit: 96017121f0e4cb819e6c6f83916d04369e4a457b
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: b2de463ac55fb2aee385ccece8becb1eb6df25b0
+    :commit: 7f75e5eac08d80510c33dd830afa390412374b63
     :git: https://github.com/signalapp/SignalMetadataKit
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
