@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -50,11 +50,6 @@ public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
     @objc public func remove(service: String, key: String) throws {
         let key = self.key(forService: service, key: key)
         dataMap.removeValue(forKey: key)
-    }
-
-    @objc public func hasValue(forService service: String, key: String) -> Bool {
-        let key = self.key(forService: service, key: key)
-        return dataMap[key] != nil
     }
 }
 

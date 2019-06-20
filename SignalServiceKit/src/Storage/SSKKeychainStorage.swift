@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,6 +7,7 @@ import SAMKeychain
 
 public enum KeychainStorageError: Error {
     case failure(description: String)
+    case missing(description: String)
 }
 
 // MARK: -
@@ -22,8 +23,28 @@ public enum KeychainStorageError: Error {
     @objc func set(data: Data, service: String, key: String) throws
 
     @objc func remove(service: String, key: String) throws
+}
 
-    @objc func hasValue(forService service: String, key: String) -> Bool
+public extension SSKKeychainStorage {
+    func optionalString(forService service: String, key: String) throws -> String? {
+        do {
+            return try self.string(forService: service, key: key)
+        } catch KeychainStorageError.missing {
+            return nil
+        } catch let error {
+            throw error
+        }
+    }
+
+    func optionalData(forService service: String, key: String) throws -> Data? {
+        do {
+            return try self.data(forService: service, key: key)
+        } catch KeychainStorageError.missing {
+            return nil
+        } catch let error {
+            throw error
+        }
+    }
 }
 
 // MARK: -
@@ -44,6 +65,10 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         var error: NSError?
         let result = SAMKeychain.password(forService: service, account: key, error: &error)
         if let error = error {
+            if error.code == errSecItemNotFound {
+                throw KeychainStorageError.missing(description: "\(logTag) item not found")
+            }
+
             throw KeychainStorageError.failure(description: "\(logTag) error retrieving string: \(error)")
         }
         guard let string = result else {
@@ -70,6 +95,10 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         var error: NSError?
         let result = SAMKeychain.passwordData(forService: service, account: key, error: &error)
         if let error = error {
+            if error.code == errSecItemNotFound {
+                throw KeychainStorageError.missing(description: "\(logTag) item not found")
+            }
+
             throw KeychainStorageError.failure(description: "\(logTag) error retrieving data: \(error)")
         }
         guard let data = result else {
@@ -106,9 +135,5 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         guard result else {
             throw KeychainStorageError.failure(description: "\(logTag) could not remove data")
         }
-    }
-
-    @objc public func hasValue(forService service: String, key: String) -> Bool {
-        return SAMKeychain.password(forService: service, account: key) != nil
     }
 }

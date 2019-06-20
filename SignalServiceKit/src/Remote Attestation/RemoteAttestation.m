@@ -278,11 +278,11 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
     switch (service) {
         case RemoteAttestationServiceContactDiscovery:
             enclaveName = contactDiscoveryEnclaveName;
-            mrenclave = contactDiscoveryMrenclave;
+            mrenclave = contactDiscoveryMrEnclave;
             break;
         case RemoteAttestationServiceKeyBackup:
             enclaveName = keyBackupEnclaveName;
-            mrenclave = keyBackupMrenclave;
+            mrenclave = keyBackupMrEnclave;
             break;
     }
 
@@ -702,11 +702,11 @@ NSError *RemoteAttestationErrorMakeWithReason(NSInteger code, NSString *reason)
         return NO;
     }
     // It's easier to compare as hex data than parsing hexadecimal.
-    NSData *_Nullable ourMrenclaveHexData = [mrenclave dataUsingEncoding:NSUTF8StringEncoding];
-    NSData *_Nullable theirMrenclaveHexData =
+    NSData *_Nullable ourMrEnclaveHexData = [mrenclave dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *_Nullable theirMrEnclaveHexData =
         [quote.mrenclave.hexadecimalString dataUsingEncoding:NSUTF8StringEncoding];
-    if (!ourMrenclaveHexData || !theirMrenclaveHexData
-        || ![ourMrenclaveHexData ows_constantTimeIsEqualToData:theirMrenclaveHexData]) {
+    if (!ourMrEnclaveHexData || !theirMrEnclaveHexData
+        || ![ourMrEnclaveHexData ows_constantTimeIsEqualToData:theirMrEnclaveHexData]) {
         OWSFailDebug(@"mrenclave does not match.");
         return NO;
     }

@@ -153,7 +153,7 @@ public class KeyBackupService: NSObject {
             }
         }.recover { error in
             guard let kbsError = error as? KBSError else {
-                owsFailDebug("Unexpectedly surfacing a non KBS error")
+                owsFailDebug("Unexpectedly surfacing a non KBS error \(error)")
                 throw error
             }
 
@@ -270,7 +270,7 @@ public class KeyBackupService: NSObject {
     private static func generatePinKey2() -> OWSAES256Key {
         assertIsOnBackgroundQueue()
 
-        return OWSAES256Key.generateRandom().keyData
+        return OWSAES256Key.generateRandom()
     }
 
     private static func deriveMasterKey(from pinKey1: Data, and pinKey2: Data) -> Data? {
@@ -307,15 +307,10 @@ public class KeyBackupService: NSObject {
     }
 
     private static var storedMasterKey: Data? {
-        guard keychainStorage.hasValue(forService: keychainService, key: masterKeyKeychainIdentifer) else {
-            return nil
-        }
-
         do {
-            return try keychainStorage.data(forService: keychainService, key: masterKeyKeychainIdentifer)
+            return try keychainStorage.optionalData(forService: keychainService, key: masterKeyKeychainIdentifer)
         } catch {
-            owsFailDebug("Failed to fetch master key from keychain")
-            return nil
+            owsFail("Failed to fetch master key from keychain")
         }
     }
 
@@ -323,7 +318,7 @@ public class KeyBackupService: NSObject {
         do {
             try keychainStorage.set(data: masterKey, service: keychainService, key: masterKeyKeychainIdentifer)
         } catch {
-            owsFailDebug("Failed to store master key in keychain")
+            owsFail("Failed to store master key in keychain")
         }
     }
 
@@ -331,20 +326,15 @@ public class KeyBackupService: NSObject {
         do {
             try keychainStorage.remove(service: keychainService, key: masterKeyKeychainIdentifer)
         } catch {
-            owsFailDebug("Failed to clear master key in keychain")
+            owsFail("Failed to clear master key in keychain")
         }
     }
 
     private static var storedPinKey2: Data? {
-        guard keychainStorage.hasValue(forService: keychainService, key: pinKey2KeychainIdentifer) else {
-            return nil
-        }
-
         do {
-            return try keychainStorage.data(forService: keychainService, key: pinKey2KeychainIdentifer)
+            return try keychainStorage.optionalData(forService: keychainService, key: pinKey2KeychainIdentifer)
         } catch {
-            owsFailDebug("Failed to fetch pinKey2 from keychain")
-            return nil
+            owsFail("Failed to fetch pinKey2 from keychain")
         }
     }
 
@@ -352,7 +342,7 @@ public class KeyBackupService: NSObject {
         do {
             try keychainStorage.set(data: pinKey2, service: keychainService, key: pinKey2KeychainIdentifer)
         } catch {
-            owsFailDebug("Failed to store pinKey2 in keychain")
+            owsFail("Failed to store pinKey2 in keychain")
         }
     }
 
@@ -360,7 +350,7 @@ public class KeyBackupService: NSObject {
         do {
             try keychainStorage.remove(service: keychainService, key: pinKey2KeychainIdentifer)
         } catch {
-            owsFailDebug("Failed to clear pinKey2 from keychain")
+            owsFail("Failed to clear pinKey2 from keychain")
         }
     }
 
@@ -368,14 +358,14 @@ public class KeyBackupService: NSObject {
 
     private static func enclaveRequest<RequestType: KBSRequestOption>(
         with auth: RemoteAttestationAuth? = nil,
-        and kbRequestBuilder: @escaping (NonceResponse) throws -> RequestType
+        and requestOptionBuilder: @escaping (NonceResponse) throws -> RequestType
     ) -> Promise<RequestType.ResponseOptionType> {
         return RemoteAttestation.makePromise(for: .keyBackup, with: auth).then { remoteAttestation in
             fetchNonce(for: remoteAttestation).map { ($0, remoteAttestation) }
         }.map(on: DispatchQueue.global()) { nonce, remoteAttestation -> (TSRequest, RemoteAttestation) in
-            let kbRequest = try kbRequestBuilder(nonce)
+            let requestOption = try requestOptionBuilder(nonce)
             let requestBuilder = KeyBackupProtoRequest.builder()
-            kbRequest.setOption(on: requestBuilder)
+            requestOption.set(on: requestBuilder)
             let kbRequestData = try requestBuilder.buildSerializedData()
 
             guard let encryptionResult = Cryptography.encryptAESGCM(
@@ -407,31 +397,19 @@ public class KeyBackupService: NSObject {
                 throw KBSError.assertion
             }
 
-            guard let data = try? parser.requiredBase64EncodedData(key: "data") else {
-                owsFailDebug("failed to decode data")
-                throw KBSError.assertion
-            }
-
+            let data = try parser.requiredBase64EncodedData(key: "data")
             guard data.count > 0 else {
                 owsFailDebug("data is invalid")
                 throw KBSError.assertion
             }
 
-            guard let iv = try? parser.requiredBase64EncodedData(key: "iv") else {
-                owsFailDebug("failed to decode iv")
-                throw KBSError.assertion
-            }
-
+            let iv = try parser.requiredBase64EncodedData(key: "iv")
             guard iv.count == 12 else {
                 owsFailDebug("iv is invalid")
                 throw KBSError.assertion
             }
 
-            guard let mac = try? parser.requiredBase64EncodedData(key: "mac") else {
-                owsFailDebug("failed to decode mac")
-                throw KBSError.assertion
-            }
-
+            let mac = try parser.requiredBase64EncodedData(key: "mac")
             guard mac.count == 16 else {
                 owsFailDebug("mac is invalid")
                 throw KBSError.assertion
@@ -448,10 +426,7 @@ public class KeyBackupService: NSObject {
                 throw KBSError.assertion
             }
 
-            guard let kbResponse = try? KeyBackupProtoResponse.parseData(encryptionResult) else {
-                owsFailDebug("failed to parse KBS response data")
-                throw KBSError.assertion
-            }
+            let kbResponse = try KeyBackupProtoResponse.parseData(encryptionResult)
 
             guard let typedResponse = RequestType.responseOption(from: kbResponse) else {
                 owsFailDebug("missing KBS response object")
@@ -550,31 +525,19 @@ public class KeyBackupService: NSObject {
                 throw KBSError.assertion
             }
 
-            guard let backupId = try? paramParser.requiredBase64EncodedData(key: "backupId") else {
-                owsFailDebug("failed to decode backupId")
-                throw KBSError.assertion
-            }
-
+            let backupId = try paramParser.requiredBase64EncodedData(key: "backupId")
             guard backupId.count == 32 else {
                 owsFailDebug("Received invalid backupId")
                 throw KBSError.assertion
             }
 
-            guard let nonce = try? paramParser.requiredBase64EncodedData(key: "nonce") else {
-                owsFailDebug("failed to decode nonce")
-                throw KBSError.assertion
-            }
-
+            let nonce = try paramParser.requiredBase64EncodedData(key: "nonce")
             guard nonce.count == 32 else {
                 owsFailDebug("Received invalid nonce")
                 throw KBSError.assertion
             }
 
-            guard let tries: Int = try? paramParser.required(key: "tries") else {
-                owsFailDebug("failed to decode tries")
-                throw KBSError.assertion
-            }
-
+            let tries: Int = try paramParser.required(key: "tries")
             guard tries >= 0 else {
                 owsFailDebug("Received invalid tries")
                 throw KBSError.assertion
@@ -621,7 +584,7 @@ extension RemoteAttestation {
 private protocol KBSRequestOption {
     associatedtype ResponseOptionType
     static func responseOption(from response: KeyBackupProtoResponse) -> ResponseOptionType?
-    func setOption(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder)
+    func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder)
 }
 
 extension KeyBackupProtoBackupRequest: KBSRequestOption {
@@ -629,7 +592,7 @@ extension KeyBackupProtoBackupRequest: KBSRequestOption {
     static func responseOption(from response: KeyBackupProtoResponse) -> ResponseOptionType? {
         return response.backup
     }
-    func setOption(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
+    func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
         builder.setBackup(self)
     }
 }
@@ -638,7 +601,7 @@ extension KeyBackupProtoRestoreRequest: KBSRequestOption {
     static func responseOption(from response: KeyBackupProtoResponse) -> ResponseOptionType? {
         return response.restore
     }
-    func setOption(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
+    func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
         builder.setRestore(self)
     }
 }
@@ -647,7 +610,7 @@ extension KeyBackupProtoDeleteRequest: KBSRequestOption {
     static func responseOption(from response: KeyBackupProtoResponse) -> ResponseOptionType? {
         return response.delete
     }
-    func setOption(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
+    func set(on builder: KeyBackupProtoRequest.KeyBackupProtoRequestBuilder) {
         builder.setDelete(self)
     }
 }
