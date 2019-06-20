@@ -37,7 +37,7 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 {
     [super loadView];
 
-    self.view.backgroundColor = UIColor.ows_materialBlueColor;
+    self.view.backgroundColor = UIColor.lokiDarkestGray;
 
     UIView *edgesView = [UIView containerView];
     [self.view addSubview:edgesView];
@@ -45,17 +45,15 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [edgesView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [edgesView autoPinWidthToSuperview];
 
-    UIImage *image = [UIImage imageNamed:@"logoSignal"];
+    UIImage *image = [UIImage imageNamed:@"LokiLogo"];
     UIImageView *imageView = [UIImageView new];
     imageView.image = image;
     [edgesView addSubview:imageView];
     [imageView autoHCenterInSuperview];
 
     const CGSize screenSize = UIScreen.mainScreen.bounds.size;
-    const CGFloat shortScreenDimension = MIN(screenSize.width, screenSize.height);
-    const CGFloat imageSize = (CGFloat)round(shortScreenDimension / 3.f);
-    [imageView autoSetDimension:ALDimensionWidth toSize:imageSize];
-    [imageView autoSetDimension:ALDimensionHeight toSize:imageSize];
+    [imageView autoSetDimension:ALDimensionWidth toSize:75];
+    [imageView autoSetDimension:ALDimensionHeight toSize:71];
 
     const CGFloat kButtonHeight = 40.f;
     OWSFlatButton *button =
