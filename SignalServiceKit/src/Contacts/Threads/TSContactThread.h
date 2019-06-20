@@ -8,6 +8,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const TSContactThreadPrefix;
 
+@class SignalServiceAddress;
+
 @interface TSContactThread : TSThread
 
 // --- CODE GENERATION MARKER
@@ -53,6 +55,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
                                  anyTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSString *)contactIdentifier;
+- (SignalServiceAddress *)contactAddress;
 
 + (NSString *)contactIdFromThreadId:(NSString *)threadId;
 

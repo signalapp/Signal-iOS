@@ -1681,7 +1681,11 @@ typedef enum : NSUInteger {
 
 - (void)callWithVideo:(BOOL)isVideo
 {
-    OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        OWSFailDebug(@"unexpected thread: %@", self.thread);
+        return;
+    }
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
 
     if (![self canCall]) {
         OWSLogWarn(@"Tried to initiate a call but thread is not callable.");
@@ -1709,7 +1713,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier isVideo:isVideo];
+    [self.outboundCallInitiator initiateCallWithAddress:contactThread.contactAddress isVideo:isVideo];
 }
 
 - (BOOL)canCall
