@@ -179,7 +179,7 @@ public class KeyBackupService: NSObject {
                 throw KBSError.assertion
             }
 
-            let pinKey2 = generatePinKey2()
+            let pinKey2 = generatePinKey2().keyData
 
             guard let masterKey = deriveMasterKey(from: pinKey1, and: pinKey2) else {
                 owsFailDebug("failed to derive master key")
@@ -266,7 +266,7 @@ public class KeyBackupService: NSObject {
         return Cryptography.computeSHA256HMAC(data, withHMACKey: stretchedPin)
     }
 
-    private static func generatePinKey2() -> Data {
+    private static func generatePinKey2() -> OWSAES256Key {
         assertIsOnBackgroundQueue()
 
         return OWSAES256Key.generateRandom().keyData
@@ -306,10 +306,16 @@ public class KeyBackupService: NSObject {
     }
 
     private static var storedMasterKey: Data? {
-        return try? CurrentAppContext().keychainStorage().data(
-            forService: keychainService,
-            key: masterKeyKeychainIdentifer
-        )
+        guard keychainStorage.hasValue(forService: keychainService, key: masterKeyKeychainIdentifer) else {
+            return nil
+        }
+
+        do {
+            return try keychainStorage.data(forService: keychainService, key: masterKeyKeychainIdentifer)
+        } catch {
+            owsFailDebug("Failed to fetch master key from keychain")
+            return nil
+        }
     }
 
     private static func storeMasterKey(_ masterKey: Data) {
@@ -329,7 +335,16 @@ public class KeyBackupService: NSObject {
     }
 
     private static var storedPinKey2: Data? {
-        return try? keychainStorage.data(forService: keychainService, key: pinKey2KeychainIdentifer)
+        guard keychainStorage.hasValue(forService: keychainService, key: pinKey2KeychainIdentifer) else {
+            return nil
+        }
+
+        do {
+            return try keychainStorage.data(forService: keychainService, key: pinKey2KeychainIdentifer)
+        } catch {
+            owsFailDebug("Failed to fetch pinKey2 from keychain")
+            return nil
+        }
     }
 
     private static func storePinKey2(_ pinKey2: Data) {

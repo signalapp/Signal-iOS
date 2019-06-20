@@ -51,6 +51,11 @@ public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
         let key = self.key(forService: service, key: key)
         dataMap.removeValue(forKey: key)
     }
+
+    @objc public func hasValue(forService service: String, key: String) -> Bool {
+        let key = self.key(forService: service, key: key)
+        return dataMap[key] != nil
+    }
 }
 
 #endif

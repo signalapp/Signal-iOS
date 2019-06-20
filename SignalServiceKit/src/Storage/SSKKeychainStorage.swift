@@ -22,6 +22,8 @@ public enum KeychainStorageError: Error {
     @objc func set(data: Data, service: String, key: String) throws
 
     @objc func remove(service: String, key: String) throws
+
+    @objc func hasValue(forService service: String, key: String) -> Bool
 }
 
 // MARK: -
@@ -104,5 +106,9 @@ public class SSKDefaultKeychainStorage: NSObject, SSKKeychainStorage {
         guard result else {
             throw KeychainStorageError.failure(description: "\(logTag) could not remove data")
         }
+    }
+
+    @objc public func hasValue(forService service: String, key: String) -> Bool {
+        return SAMKeychain.password(forService: service, account: key) != nil
     }
 }
