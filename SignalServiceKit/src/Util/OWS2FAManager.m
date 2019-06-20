@@ -189,30 +189,26 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     switch (self.mode) {
         case OWS2FAMode_V2:
         {
-            [[OWSKeyBackupService deleteKeys].then(^{
-                TSRequest *request = [OWSRequestFactory disableRegistrationLockV2Request];
-                [self.networkManager makeRequest:request
-                                         success:^(NSURLSessionDataTask *task, id responseObject) {
-                                             OWSAssertIsOnMainThread();
+            TSRequest *request = [OWSRequestFactory disableRegistrationLockV2Request];
+            [self.networkManager makeRequest:request
+                success:^(NSURLSessionDataTask *task, id responseObject) {
+                    OWSAssertIsOnMainThread();
 
-                                             [self set2FANotEnabled];
+                    [OWSKeyBackupService clearKeychain];
 
-                                             if (success) {
-                                                 success();
-                                             }
-                                         }
-                                         failure:^(NSURLSessionDataTask *task, NSError *error) {
-                                             OWSAssertIsOnMainThread();
+                    [self set2FANotEnabled];
 
-                                             if (failure) {
-                                                 failure(error);
-                                             }
-                                         }];
-            }).catch(^(NSError *error){
-                if (failure) {
-                    failure(error);
+                    if (success) {
+                        success();
+                    }
                 }
-            }) retainUntilComplete];
+                failure:^(NSURLSessionDataTask *task, NSError *error) {
+                    OWSAssertIsOnMainThread();
+
+                    if (failure) {
+                        failure(error);
+                    }
+                }];
             break;
         }
         case OWS2FAMode_V1:
