@@ -67,4 +67,7 @@ public class FeatureFlags: NSObject {
     // This shouldn't be enabled _in production_ but it should be enabled in beta and developer builds.
     @objc
     public static let strictYDBExtensions = true
+
+    @objc
+    public static let registrationLockV2 = false
 }

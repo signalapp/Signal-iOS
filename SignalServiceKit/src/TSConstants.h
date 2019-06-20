@@ -40,8 +40,12 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define contactDiscoveryCensorshipPrefix @"directory"
 #define keyBackupCensorshipPrefix @"backup"
 
-#define contactDiscoveryEnclaveId @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
-#define keyBackupEnclaveId @"test" // TODO: Real enclave Id
+#define contactDiscoveryEnclaveName @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
+#define contactDiscoveryMrEnclave contactDiscoveryEnclaveName
+
+#define keyBackupEnclaveName @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
+#define keyBackupMrEnclave @"94029382f0a8947a72df682e6972f58bbb6dda2f5ec51ab0974bd40c781b719b"
+#define keyBackupServiceId @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
 
 #define USING_PRODUCTION_SERVICE
 
@@ -62,8 +66,12 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define contactDiscoveryCensorshipPrefix @"directory-staging"
 //#define keyBackupCensorshipPrefix @"backup-staging"
 //
-//#define contactDiscoveryEnclaveId @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
-//#define keyBackupEnclaveId @"test" // TODO: Real enclave Id
+//#define contactDiscoveryEnclaveName @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
+//#define contactDiscoveryMrEnclave contactDiscoveryEnclaveName
+//
+//#define keyBackupEnclaveName @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
+//#define keyBackupMrEnclave @"94029382f0a8947a72df682e6972f58bbb6dda2f5ec51ab0974bd40c781b719b"
+//#define keyBackupServiceId @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
 
 //#endif
 
@@ -84,6 +92,7 @@ BOOL IsUsingProductionService(void);
 #define textSecureSetProfileNameAPIFormat @"v1/profile/name/%@"
 #define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
 #define textSecure2FAAPI @"v1/accounts/pin"
+#define textSecureRegistrationLockV2API @"v1/accounts/registration_lock"
 
 #define SignalApplicationGroup @"group.org.whispersystems.signal.group"
 

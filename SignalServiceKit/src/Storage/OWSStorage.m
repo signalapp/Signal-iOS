@@ -704,6 +704,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
     [self deleteDBKeys];
 
+    [OWSKeyBackupService clearKeychain];
+
     if (CurrentAppContext().isMainApp) {
         [TSAttachmentStream deleteAttachments];
     }

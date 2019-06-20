@@ -10,6 +10,7 @@
 #import "OWSError.h"
 #import "OWSRequestFactory.h"
 #import "ProfileManagerProtocol.h"
+#import "RemoteAttestation.h"
 #import "SSKEnvironment.h"
 #import "SSKSessionStore.h"
 #import "TSNetworkManager.h"
@@ -26,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const TSRegistrationErrorDomain = @"TSRegistrationErrorDomain";
 NSString *const TSRegistrationErrorUserInfoHTTPStatus = @"TSHTTPStatus";
 NSString *const RegistrationStateDidChangeNotification = @"RegistrationStateDidChangeNotification";
+NSString *const TSRemoteAttestationAuthErrorKey = @"TSRemoteAttestationAuth";
 NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
 
 NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumberKey";
@@ -412,9 +414,41 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                     NSString *localizedMessage = NSLocalizedString(@"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN",
                         "Error message indicating that registration failed due to a missing or incorrect 2FA PIN.");
                     OWSLogError(@"2FA PIN required: %ld", (long)error.code);
-                    NSError *error
-                        = OWSErrorWithCodeDescription(OWSErrorCodeRegistrationMissing2FAPIN, localizedMessage);
-                    failureBlock(error);
+
+                    NSError *userError = OWSErrorWithCodeDescription(OWSErrorCodeRegistrationMissing2FAPIN, localizedMessage);
+
+                    NSData *responseData = error.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
+                    if (responseData == nil) {
+                        OWSFailDebug(@"Response data is unexpectedly nil");
+                        return failureBlock(OWSErrorMakeUnableToProcessServerResponseError());
+                    }
+
+                    NSError *error;
+                    NSDictionary<NSString *, id> *_Nullable responseDict =
+                        [NSJSONSerialization JSONObjectWithData:responseData options:0 error:&error];
+                    if (![responseDict isKindOfClass:[NSDictionary class]] || error != nil) {
+                        OWSFailDebug(@"Failed to parse 2fa required json");
+                        return failureBlock(OWSErrorMakeUnableToProcessServerResponseError());
+                    }
+
+                    // Check if we received KBS credentials, if so pass them on.
+                    // This should only ever be returned if the user was using registration lock v2
+                    NSDictionary *_Nullable storageCredentials = responseDict[@"storageCredentials"];
+                    if ([storageCredentials isKindOfClass:[NSDictionary class]]) {
+                        RemoteAttestationAuth *_Nullable auth = [RemoteAttestation parseAuthParams:storageCredentials];
+                        if (!auth) {
+                            OWSFailDebug(@"remote attestation auth could not be parsed: %@", responseDict);
+                            return failureBlock(OWSErrorMakeUnableToProcessServerResponseError());
+                        }
+
+                        userError = OWSErrorWithUserInfo(OWSErrorCodeRegistrationMissing2FAPIN,
+                                                         @{
+                                                           NSLocalizedDescriptionKey: localizedMessage,
+                                                           TSRemoteAttestationAuthErrorKey: auth
+                                                         });
+                    }
+
+                    failureBlock(userError);
                     break;
                 }
                 default: {

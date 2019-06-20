@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -8,6 +8,12 @@ extern NSString *const NSNotificationName_2FAStateDidChange;
 
 typedef void (^OWS2FASuccess)(void);
 typedef void (^OWS2FAFailure)(NSError *error);
+
+typedef NS_ENUM(NSUInteger, OWS2FAMode) {
+    OWS2FAMode_Disabled = 0,
+    OWS2FAMode_V1,
+    OWS2FAMode_V2,
+};
 
 @class OWSPrimaryStorage;
 
@@ -21,9 +27,11 @@ typedef void (^OWS2FAFailure)(NSError *error);
 + (instancetype)sharedManager;
 
 @property (nullable, nonatomic, readonly) NSString *pinCode;
+@property (nonatomic, readonly) OWS2FAMode mode;
 
 - (BOOL)is2FAEnabled;
 - (BOOL)isDueForReminder;
+- (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result;
 
 // Request with service
 - (void)requestEnable2FAWithPin:(NSString *)pin

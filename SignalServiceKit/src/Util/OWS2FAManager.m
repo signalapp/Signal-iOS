@@ -27,6 +27,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 @interface OWS2FAManager ()
 
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+@property (nonatomic) OWS2FAMode mode;
 
 @end
 
@@ -77,9 +78,22 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     return [self.dbConnection objectForKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
 }
 
+- (OWS2FAMode)mode
+{
+    // Identify what version of 2FA we're using
+    if (OWSKeyBackupService.hasLocalKeys) {
+        OWSAssertDebug(SSKFeatureFlags.registrationLockV2);
+        return OWS2FAMode_V2;
+    } else if (self.pinCode != nil) {
+        return OWS2FAMode_V1;
+    } else {
+        return OWS2FAMode_Disabled;
+    }
+}
+
 - (BOOL)is2FAEnabled
 {
-    return self.pinCode != nil;
+    return self.mode != OWS2FAMode_Disabled;
 }
 
 - (void)set2FANotEnabled
@@ -97,7 +111,12 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 {
     OWSAssertDebug(pin.length > 0);
 
-    [self.dbConnection setObject:pin forKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
+    if (!SSKFeatureFlags.registrationLockV2) {
+        [self.dbConnection setObject:pin forKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
+    } else {
+        // Remove any old pin when we're migrating
+        [self.dbConnection removeObjectForKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
+    }
 
     // Schedule next reminder relative to now
     self.lastSuccessfulReminderDate = [NSDate new];
@@ -117,46 +136,111 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     OWSAssertDebug(success);
     OWSAssertDebug(failure);
 
-    TSRequest *request = [OWSRequestFactory enable2FARequestWithPin:pin];
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            OWSAssertIsOnMainThread();
+    if (SSKFeatureFlags.registrationLockV2) {
+        [[OWSKeyBackupService generateAndBackupKeysWithPin:pin].then(^{
+            NSString *token = [OWSKeyBackupService deriveRegistrationLockToken];
+            TSRequest *request = [OWSRequestFactory enableRegistrationLockV2RequestWithToken:token];
+            [self.networkManager makeRequest:request
+                                     success:^(NSURLSessionDataTask *task, id responseObject) {
+                                         OWSAssertIsOnMainThread();
 
-            [self mark2FAAsEnabledWithPin:pin];
+                                         [self mark2FAAsEnabledWithPin:pin];
 
-            if (success) {
-                success();
-            }
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            OWSAssertIsOnMainThread();
+                                         if (success) {
+                                             success();
+                                         }
+                                     }
+                                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                         OWSAssertIsOnMainThread();
 
+                                         if (failure) {
+                                             failure(error);
+                                         }
+                                     }];
+        }).catch(^(NSError *error){
             if (failure) {
                 failure(error);
             }
-        }];
+        }) retainUntilComplete];
+    } else {
+        TSRequest *request = [OWSRequestFactory enable2FARequestWithPin:pin];
+        [self.networkManager makeRequest:request
+                                 success:^(NSURLSessionDataTask *task, id responseObject) {
+                                     OWSAssertIsOnMainThread();
+
+                                     [self mark2FAAsEnabledWithPin:pin];
+
+                                     if (success) {
+                                         success();
+                                     }
+                                 }
+                                 failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                     OWSAssertIsOnMainThread();
+
+                                     if (failure) {
+                                         failure(error);
+                                     }
+                                 }];
+    }
 }
 
 - (void)disable2FAWithSuccess:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure
 {
-    TSRequest *request = [OWSRequestFactory disable2FARequest];
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            OWSAssertIsOnMainThread();
+    switch (self.mode) {
+        case OWS2FAMode_V2:
+        {
+            [[OWSKeyBackupService deleteKeys].then(^{
+                TSRequest *request = [OWSRequestFactory disableRegistrationLockV2Request];
+                [self.networkManager makeRequest:request
+                                         success:^(NSURLSessionDataTask *task, id responseObject) {
+                                             OWSAssertIsOnMainThread();
 
-            [self set2FANotEnabled];
+                                             [self set2FANotEnabled];
 
-            if (success) {
-                success();
-            }
+                                             if (success) {
+                                                 success();
+                                             }
+                                         }
+                                         failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                             OWSAssertIsOnMainThread();
+
+                                             if (failure) {
+                                                 failure(error);
+                                             }
+                                         }];
+            }).catch(^(NSError *error){
+                if (failure) {
+                    failure(error);
+                }
+            }) retainUntilComplete];
+            break;
         }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            OWSAssertIsOnMainThread();
+        case OWS2FAMode_V1:
+        {
+            TSRequest *request = [OWSRequestFactory disable2FARequest];
+            [self.networkManager makeRequest:request
+                                     success:^(NSURLSessionDataTask *task, id responseObject) {
+                                         OWSAssertIsOnMainThread();
 
-            if (failure) {
-                failure(error);
-            }
-        }];
+                                         [self set2FANotEnabled];
+
+                                         if (success) {
+                                             success();
+                                         }
+                                     }
+                                     failure:^(NSURLSessionDataTask *task, NSError *error) {
+                                         OWSAssertIsOnMainThread();
+
+                                         if (failure) {
+                                             failure(error);
+                                         }
+                                     }];
+            break;
+        }
+        case OWS2FAMode_Disabled:
+            OWSFailDebug(@"Unexpectedly attempting to disable 2fa for disabled mode");
+            break;
+    }
 }
 
 
@@ -183,6 +267,22 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     }
 
     return self.nextReminderDate.timeIntervalSinceNow < 0;
+}
+
+- (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result
+{
+    switch (self.mode) {
+    case OWS2FAMode_V2:
+        [OWSKeyBackupService verifyPin:pin resultHandler:result];
+        break;
+    case OWS2FAMode_V1:
+        result(self.pinCode == pin);
+        break;
+    case OWS2FAMode_Disabled:
+        OWSFailDebug(@"unexpectedly attempting to verify pin when 2fa is disabled");
+        result(NO);
+        break;
+    }
 }
 
 - (NSDate *)nextReminderDate

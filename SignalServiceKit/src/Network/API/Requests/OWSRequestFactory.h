@@ -22,6 +22,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)disable2FARequest;
 
++ (TSRequest *)enableRegistrationLockV2RequestWithToken:(NSString *)token;
+
++ (TSRequest *)disableRegistrationLockV2Request;
+
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithSource:(NSString *)source timestamp:(UInt64)timestamp;
 
 + (TSRequest *)acknowledgeMessageDeliveryRequestWithServerGuid:(NSString *)serverGuid;
@@ -93,7 +97,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)remoteAttestationRequestForService:(RemoteAttestationService)service
                                       withKeyPair:(ECKeyPair *)keyPair
-                                        enclaveId:(NSString *)enclaveId
+                                      enclaveName:(NSString *)enclaveName
                                      authUsername:(NSString *)authUsername
                                      authPassword:(NSString *)authPassword;
 
@@ -106,7 +110,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                          encryptedAddressData:(NSData *)encryptedAddressData
                                       cryptIv:(NSData *)cryptIv
                                      cryptMac:(NSData *)cryptMac
-                                    enclaveId:(NSString *)enclaveId
+                                  enclaveName:(NSString *)enclaveName
                                  authUsername:(NSString *)authUsername
                                  authPassword:(NSString *)authPassword
                                       cookies:(NSArray<NSHTTPCookie *> *)cookies;
@@ -115,16 +119,16 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 #pragma mark - KBS
 
-+ (TSRequest *)kbsEnclaveNonceRequestWithEnclaveId:(NSString *)enclaveId
-                                      authUsername:(NSString *)authUsername
-                                      authPassword:(NSString *)authPassword
-                                           cookies:(NSArray<NSHTTPCookie *> *)cookies;
++ (TSRequest *)kbsEnclaveNonceRequestWithEnclaveName:(NSString *)enclaveName
+                                        authUsername:(NSString *)authUsername
+                                        authPassword:(NSString *)authPassword
+                                             cookies:(NSArray<NSHTTPCookie *> *)cookies;
 
 + (TSRequest *)kbsEnclaveRequestWithRequestId:(NSData *)requestId
                                          data:(NSData *)data
                                       cryptIv:(NSData *)cryptIv
                                      cryptMac:(NSData *)cryptMac
-                                    enclaveId:(NSString *)enclaveId
+                                  enclaveName:(NSString *)enclaveName
                                  authUsername:(NSString *)authUsername
                                  authPassword:(NSString *)authPassword
                                       cookies:(NSArray<NSHTTPCookie *> *)cookies;

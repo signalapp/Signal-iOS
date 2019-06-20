@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const TSRegistrationErrorDomain;
 extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
 extern NSString *const RegistrationStateDidChangeNotification;
+extern NSString *const TSRemoteAttestationAuthErrorKey;
 extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 @class AnyPromise;
