@@ -183,7 +183,7 @@ public extension ExperienceUpgrade {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -279,7 +279,7 @@ public extension ExperienceUpgrade {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return ExperienceUpgrade.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return ExperienceUpgrade.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(ExperienceUpgradeRecord.databaseTableName) WHERE \(experienceUpgradeColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -292,7 +292,7 @@ public extension ExperienceUpgrade {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (ExperienceUpgrade, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            ExperienceUpgrade.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            ExperienceUpgrade.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? ExperienceUpgrade else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

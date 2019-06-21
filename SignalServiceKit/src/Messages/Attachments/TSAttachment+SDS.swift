@@ -403,7 +403,7 @@ public extension TSAttachment {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -499,7 +499,7 @@ public extension TSAttachment {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return TSAttachment.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return TSAttachment.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(AttachmentRecord.databaseTableName) WHERE \(attachmentColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -512,7 +512,7 @@ public extension TSAttachment {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (TSAttachment, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            TSAttachment.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            TSAttachment.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? TSAttachment else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

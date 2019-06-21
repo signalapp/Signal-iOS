@@ -297,7 +297,7 @@ public extension SSKJobRecord {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -393,7 +393,7 @@ public extension SSKJobRecord {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return SSKJobRecord.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return SSKJobRecord.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(JobRecordRecord.databaseTableName) WHERE \(jobRecordColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -406,7 +406,7 @@ public extension SSKJobRecord {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (SSKJobRecord, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            SSKJobRecord.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            SSKJobRecord.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? SSKJobRecord else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

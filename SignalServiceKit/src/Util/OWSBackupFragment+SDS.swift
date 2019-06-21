@@ -222,7 +222,7 @@ public extension OWSBackupFragment {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -318,7 +318,7 @@ public extension OWSBackupFragment {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return OWSBackupFragment.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return OWSBackupFragment.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(BackupFragmentRecord.databaseTableName) WHERE \(backupFragmentColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -331,7 +331,7 @@ public extension OWSBackupFragment {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSBackupFragment, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            OWSBackupFragment.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            OWSBackupFragment.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? OWSBackupFragment else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

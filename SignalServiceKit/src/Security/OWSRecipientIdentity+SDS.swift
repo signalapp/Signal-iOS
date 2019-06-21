@@ -216,7 +216,7 @@ public extension OWSRecipientIdentity {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -312,7 +312,7 @@ public extension OWSRecipientIdentity {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return OWSRecipientIdentity.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return OWSRecipientIdentity.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(RecipientIdentityRecord.databaseTableName) WHERE \(recipientIdentityColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -325,7 +325,7 @@ public extension OWSRecipientIdentity {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSRecipientIdentity, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            OWSRecipientIdentity.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            OWSRecipientIdentity.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? OWSRecipientIdentity else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

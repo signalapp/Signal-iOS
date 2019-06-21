@@ -273,7 +273,7 @@ public extension OWSDatabaseMigration {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -369,7 +369,7 @@ public extension OWSDatabaseMigration {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return OWSDatabaseMigration.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return OWSDatabaseMigration.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(DatabaseMigrationRecord.databaseTableName) WHERE \(databaseMigrationColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -382,7 +382,7 @@ public extension OWSDatabaseMigration {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSDatabaseMigration, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            OWSDatabaseMigration.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            OWSDatabaseMigration.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? OWSDatabaseMigration else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
