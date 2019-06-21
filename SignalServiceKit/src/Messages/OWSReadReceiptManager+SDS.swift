@@ -301,7 +301,7 @@ public extension TSRecipientReadReceipt {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (TSRecipientReadReceipt) -> Bool) {
+    class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (TSRecipientReadReceipt, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             TSRecipientReadReceipt.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -309,17 +309,16 @@ public extension TSRecipientReadReceipt {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
                 }
-                guard visitor(value) else {
-                    stop.pointee = true
-                    return
-                }
+                block(value, stop)
             }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = TSRecipientReadReceipt.grdbFetchCursor(transaction: grdbTransaction)
+                var stop: ObjCBool = false
                 while let value = try cursor.next() {
-                    guard visitor(value) else {
-                        return
+                    block(value, &stop)
+                    guard !stop.boolValue else {
+                        break
                     }
                 }
             } catch let error as NSError {
@@ -331,9 +330,8 @@ public extension TSRecipientReadReceipt {
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [TSRecipientReadReceipt] {
         var result = [TSRecipientReadReceipt]()
-        anyVisitAll(transaction: transaction) { (model) in
+        anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
-            return true
         }
         return result
     }

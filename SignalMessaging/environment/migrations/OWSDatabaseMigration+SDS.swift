@@ -204,8 +204,8 @@ extension OWSDatabaseMigrationSerializer {
 // MARK: - Save/Remove/Update
 
 @objc
-extension OWSDatabaseMigration {
-    public func anyInsert(transaction: SDSAnyWriteTransaction) {
+public extension OWSDatabaseMigration {
+    func anyInsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .insert, transaction: transaction)
     }
 
@@ -216,7 +216,8 @@ extension OWSDatabaseMigration {
         sdsSave(saveMode: .update, transaction: transaction)
     }
 
-    public func anyUpsert(transaction: SDSAnyWriteTransaction) {
+    @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
+    func anyUpsert(transaction: SDSAnyWriteTransaction) {
         sdsSave(saveMode: .upsert, transaction: transaction)
     }
 
@@ -244,7 +245,7 @@ extension OWSDatabaseMigration {
     //
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
-    public func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSDatabaseMigration) -> Void) {
+    func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSDatabaseMigration) -> Void) {
         guard let uniqueId = uniqueId else {
             owsFailDebug("Missing uniqueId.")
             return
@@ -267,7 +268,7 @@ extension OWSDatabaseMigration {
         dbCopy.anyUpdate(transaction: transaction)
     }
 
-    public func anyRemove(transaction: SDSAnyWriteTransaction) {
+    func anyRemove(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -281,11 +282,11 @@ extension OWSDatabaseMigration {
         }
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction) {
+    func anyReload(transaction: SDSAnyReadTransaction) {
         anyReload(transaction: transaction, ignoreMissing: false)
     }
 
-    public func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
+    func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
         guard let uniqueId = self.uniqueId else {
             owsFailDebug("uniqueId was unexpectedly nil")
             return
@@ -345,8 +346,8 @@ public class OWSDatabaseMigrationCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-extension OWSDatabaseMigration {
-    public class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSDatabaseMigrationCursor {
+public extension OWSDatabaseMigration {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> OWSDatabaseMigrationCursor {
         let database = transaction.database
         do {
             let cursor = try DatabaseMigrationRecord.fetchCursor(database)
@@ -358,8 +359,8 @@ extension OWSDatabaseMigration {
     }
 
     // Fetches a single model by "unique id".
-    public class func anyFetch(uniqueId: String,
-                               transaction: SDSAnyReadTransaction) -> OWSDatabaseMigration? {
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction) -> OWSDatabaseMigration? {
         assert(uniqueId.count > 0)
 
         switch transaction.readTransaction {
@@ -374,7 +375,7 @@ extension OWSDatabaseMigration {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    public class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSDatabaseMigration) -> Bool) {
+    class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSDatabaseMigration, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             OWSDatabaseMigration.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -382,17 +383,16 @@ extension OWSDatabaseMigration {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
                 }
-                guard visitor(value) else {
-                    stop.pointee = true
-                    return
-                }
+                block(value, stop)
             }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = OWSDatabaseMigration.grdbFetchCursor(transaction: grdbTransaction)
+                var stop: ObjCBool = false
                 while let value = try cursor.next() {
-                    guard visitor(value) else {
-                        return
+                    block(value, &stop)
+                    guard !stop.boolValue else {
+                        break
                     }
                 }
             } catch let error as NSError {
@@ -402,22 +402,30 @@ extension OWSDatabaseMigration {
     }
 
     // Does not order the results.
-    public class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSDatabaseMigration] {
+    class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSDatabaseMigration] {
         var result = [OWSDatabaseMigration]()
-        anyVisitAll(transaction: transaction) { (model) in
+        anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
-            return true
         }
         return result
+    }
+
+    class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.numberOfKeys(inCollection: OWSDatabaseMigration.collection())
+        case .grdbRead(let grdbTransaction):
+            return DatabaseMigrationRecord.ows_fetchCount(grdbTransaction.database)
+        }
     }
 }
 
 // MARK: - Swift Fetch
 
-extension OWSDatabaseMigration {
-    public class func grdbFetchCursor(sql: String,
-                                      arguments: [DatabaseValueConvertible]?,
-                                      transaction: GRDBReadTransaction) -> OWSDatabaseMigrationCursor {
+public extension OWSDatabaseMigration {
+    class func grdbFetchCursor(sql: String,
+                               arguments: [DatabaseValueConvertible]?,
+                               transaction: GRDBReadTransaction) -> OWSDatabaseMigrationCursor {
         var statementArguments: StatementArguments?
         if let arguments = arguments {
             guard let statementArgs = StatementArguments(arguments) else {
@@ -438,9 +446,9 @@ extension OWSDatabaseMigration {
         }
     }
 
-    public class func grdbFetchOne(sql: String,
-                                   arguments: StatementArguments,
-                                   transaction: GRDBReadTransaction) -> OWSDatabaseMigration? {
+    class func grdbFetchOne(sql: String,
+                            arguments: StatementArguments,
+                            transaction: GRDBReadTransaction) -> OWSDatabaseMigration? {
         assert(sql.count > 0)
 
         do {

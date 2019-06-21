@@ -312,7 +312,7 @@ public extension OWSMessageContentJob {
     // Traverses all records.
     // Records are not visited in any particular order.
     // Traversal aborts if the visitor returns false.
-    class func anyVisitAll(transaction: SDSAnyReadTransaction, visitor: @escaping (OWSMessageContentJob) -> Bool) {
+    class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSMessageContentJob, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             OWSMessageContentJob.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
@@ -320,17 +320,16 @@ public extension OWSMessageContentJob {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
                 }
-                guard visitor(value) else {
-                    stop.pointee = true
-                    return
-                }
+                block(value, stop)
             }
         case .grdbRead(let grdbTransaction):
             do {
                 let cursor = OWSMessageContentJob.grdbFetchCursor(transaction: grdbTransaction)
+                var stop: ObjCBool = false
                 while let value = try cursor.next() {
-                    guard visitor(value) else {
-                        return
+                    block(value, &stop)
+                    guard !stop.boolValue else {
+                        break
                     }
                 }
             } catch let error as NSError {
@@ -342,9 +341,8 @@ public extension OWSMessageContentJob {
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [OWSMessageContentJob] {
         var result = [OWSMessageContentJob]()
-        anyVisitAll(transaction: transaction) { (model) in
+        anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
-            return true
         }
         return result
     }
