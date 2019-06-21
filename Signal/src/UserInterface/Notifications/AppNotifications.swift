@@ -372,12 +372,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // While batch processing, some of the necessary changes have not been commited.
         let rawMessageText = incomingMessage.previewText(with: transaction)
 
-        // iOS strips anything that looks like a printf formatting character from
-        // the notification body, so if we want to dispay a literal "%" in a notification
-        // it must be escaped.
-        // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
-        // for more details.
-        let messageText = DisplayableText.filterNotificationText(rawMessageText)
+        let messageText = rawMessageText.filterStringForDisplay()
 
         let senderName = contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
 
