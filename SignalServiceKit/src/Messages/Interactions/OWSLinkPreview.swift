@@ -119,7 +119,7 @@ public class OWSLinkPreview: MTLModel {
     @objc
     public class func buildValidatedLinkPreview(dataMessage: SSKProtoDataMessage,
                                                 body: String?,
-                                                transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
+                                                transaction: SDSAnyWriteTransaction) throws -> OWSLinkPreview {
         guard let previewProto = dataMessage.preview.first else {
             throw LinkPreviewError.noPreview
         }
@@ -161,7 +161,7 @@ public class OWSLinkPreview: MTLModel {
         var imageAttachmentId: String?
         if let imageProto = previewProto.image {
             if let imageAttachmentPointer = TSAttachmentPointer(fromProto: imageProto, albumMessage: nil) {
-                imageAttachmentPointer.save(with: transaction)
+                imageAttachmentPointer.anyInsert(transaction: transaction)
                 imageAttachmentId = imageAttachmentPointer.uniqueId
             } else {
                 Logger.error("Could not parse image proto.")
@@ -181,8 +181,8 @@ public class OWSLinkPreview: MTLModel {
 
     @objc
     public class func buildValidatedLinkPreview(fromInfo info: OWSLinkPreviewDraft,
-                                                transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
-        guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction.asAnyRead) else {
+                                                transaction: SDSAnyWriteTransaction) throws -> OWSLinkPreview {
+        guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction) else {
             throw LinkPreviewError.noPreview
         }
         let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(imageData: info.imageData,
@@ -201,7 +201,7 @@ public class OWSLinkPreview: MTLModel {
 
     private class func saveAttachmentIfPossible(imageData: Data?,
                                                 imageMimeType: String?,
-                                                transaction: YapDatabaseReadWriteTransaction) -> String? {
+                                                transaction: SDSAnyWriteTransaction) -> String? {
         guard let imageData = imageData else {
             return nil
         }
@@ -235,7 +235,7 @@ public class OWSLinkPreview: MTLModel {
             owsFailDebug("Could not write data source for path: \(filePath)")
             return nil
         }
-        attachment.save(with: transaction)
+        attachment.anyInsert(transaction: transaction)
 
         return attachment.uniqueId
     }

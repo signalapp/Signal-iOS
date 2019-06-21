@@ -293,31 +293,32 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     return [NSSet setWithArray:result].allObjects;
 }
 
-- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [TSMessage attachmentsWithIds:self.attachmentIds transaction:transaction];
 }
 
-- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [TSMessage attachmentsWithIds:self.allAttachmentIds transaction:transaction];
 }
 
 + (NSArray<TSAttachment *> *)attachmentsWithIds:(NSArray<NSString *> *)attachmentIds
-                                    transaction:(YapDatabaseReadTransaction *)transaction
+                                    transaction:(SDSAnyReadTransaction *)transaction
 {
     NSMutableArray<TSAttachment *> *attachments = [NSMutableArray new];
     for (NSString *attachmentId in attachmentIds) {
-        TSAttachment *_Nullable attachment =
-            [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
         if (attachment) {
             [attachments addObject:attachment];
+        } else {
+            OWSFailDebug(@"Missing attachment: %@", attachmentId);
         }
     }
     return [attachments copy];
 }
 
-- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
                                                 contentType:(NSString *)contentType
 {
     NSArray<TSAttachment *> *attachments = [self bodyAttachmentsWithTransaction:transaction];
@@ -327,7 +328,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     }]];
 }
 
-- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
                                           exceptContentType:(NSString *)contentType
 {
     NSArray<TSAttachment *> *attachments = [self bodyAttachmentsWithTransaction:transaction];
@@ -367,17 +368,17 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     }
 }
 
-- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self bodyAttachmentsWithTransaction:transaction contentType:OWSMimeTypeOversizeTextMessage].firstObject;
 }
 
-- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [self bodyAttachmentsWithTransaction:transaction exceptContentType:OWSMimeTypeOversizeTextMessage];
 }
 
-- (nullable NSString *)oversizeTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSString *)oversizeTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     TSAttachment *_Nullable attachment = [self oversizeTextAttachmentWithTransaction:transaction];
     if (!attachment) {
@@ -405,10 +406,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 
 - (nullable NSString *)bodyTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSString *_Nullable oversizeText;
-    if (transaction.transitional_yapReadTransaction != nil) {
-        oversizeText = [self oversizeTextWithTransaction:transaction.transitional_yapReadTransaction];
-    }
+    NSString *_Nullable oversizeText = [self oversizeTextWithTransaction:transaction];
     if (oversizeText) {
         return oversizeText;
     }
@@ -436,11 +434,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     }
 
     if (bodyDescription == nil) {
-        TSAttachment *_Nullable oversizeTextAttachment;
-        if (transaction.transitional_yapReadTransaction) {
-            oversizeTextAttachment =
-                [self oversizeTextAttachmentWithTransaction:transaction.transitional_yapReadTransaction];
-        }
+        TSAttachment *_Nullable oversizeTextAttachment = [self oversizeTextAttachmentWithTransaction:transaction];
         if ([oversizeTextAttachment isKindOfClass:[TSAttachmentStream class]]) {
             TSAttachmentStream *oversizeTextAttachmentStream = (TSAttachmentStream *)oversizeTextAttachment;
             NSData *_Nullable data = [NSData dataWithContentsOfFile:oversizeTextAttachmentStream.originalFilePath];
@@ -455,11 +449,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 
     NSString *_Nullable attachmentDescription = nil;
 
-    TSAttachment *_Nullable mediaAttachment;
-    if (transaction.transitional_yapReadTransaction) {
-        mediaAttachment =
-            [self mediaAttachmentsWithTransaction:transaction.transitional_yapReadTransaction].firstObject;
-    }
+    TSAttachment *_Nullable mediaAttachment = [self mediaAttachmentsWithTransaction:transaction].firstObject;
     if (mediaAttachment != nil) {
         attachmentDescription = mediaAttachment.description;
     }
@@ -486,6 +476,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     }
 }
 
+// TODO: Convert to Any.
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // StickerManager does reference counting of "known" sticker packs.
@@ -501,6 +492,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     [super saveWithTransaction:transaction];
 }
 
+// TODO: Convert to Any.
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // StickerManager does reference counting of "known" sticker packs.

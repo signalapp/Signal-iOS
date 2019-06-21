@@ -376,7 +376,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         [self.dbReadWriteConnection
             asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 if (contactShare.avatarImage) {
-                    [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
+                    [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction.asAnyWrite];
                 }
             }
             completionBlock:^{

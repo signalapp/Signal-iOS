@@ -221,13 +221,4 @@ public class MessageSticker: MTLModel {
         }
         return attachmentId
     }
-
-    @objc
-    public func removeAttachment(transaction: YapDatabaseReadWriteTransaction) {
-        guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {
-            owsFailDebug("Could not load attachment.")
-            return
-        }
-        attachment.remove(with: transaction)
-    }
 }

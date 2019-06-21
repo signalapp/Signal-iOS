@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel.h>
@@ -9,12 +9,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
 @class OWSAttachmentInfo;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
 @class SSKProtoDataMessageContact;
 @class TSAttachment;
 @class TSAttachmentStream;
-@class YapDatabaseReadTransaction;
-@class YapDatabaseReadWriteTransaction;
 
 extern BOOL kIsSendingContactSharesEnabled;
 
@@ -128,10 +128,11 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 @property (nonatomic, readonly) NSArray<OWSContactAddress *> *addresses;
 
 @property (nonatomic, readonly, nullable) NSString *avatarAttachmentId;
-- (nullable TSAttachment *)avatarAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction;
-- (void)removeAvatarAttachmentWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)saveAvatarImage:(UIImage *)image transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (nullable TSAttachment *)avatarAttachmentWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (void)removeAvatarAttachmentWithTransaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)saveAvatarImage:(UIImage *)image transaction:(SDSAnyWriteTransaction *)transaction;
 // "Profile" avatars should _not_ be saved to device contacts.
 @property (nonatomic, readonly) BOOL isProfileAvatar;
 
@@ -176,7 +177,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 + (nullable SSKProtoDataMessageContact *)protoForContact:(OWSContact *)contact;
 
 + (nullable OWSContact *)contactForDataMessage:(SSKProtoDataMessage *)dataMessage
-                                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                   transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

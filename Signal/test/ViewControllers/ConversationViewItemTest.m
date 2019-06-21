@@ -13,12 +13,73 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <YapDatabase/YapDatabase.h>
 
+@interface TSMessage (ConversationViewItemTest)
+
+@end
+
+#pragma mark -
+
+@implementation TSMessage (ConversationViewItemTest)
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
++ (nullable TSMessage *)anyFetchWithUniqueId:(NSString *)uniqueId
+{
+    __block TSInteraction *_Nullable instance;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        instance = [TSInteraction anyFetchWithUniqueId:uniqueId transaction:transaction];
+    }];
+    if (!instance) {
+        return nil;
+    }
+    if (![instance isKindOfClass:[TSMessage class]]) {
+        OWSFailDebug(@"Unexpected object type: %@", [instance class]);
+        return nil;
+    }
+    return (TSMessage *)instance;
+}
+
+@end
+
+#pragma mark -
+
+@interface TSAttachment (ConversationViewItemTest)
+
+@end
+
+#pragma mark -
+
+@implementation TSAttachment (ConversationViewItemTest)
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
++ (nullable TSAttachment *)anyFetchWithUniqueId:(NSString *)uniqueId
+{
+    __block TSAttachment *_Nullable instance;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        instance = [TSAttachment anyFetchWithUniqueId:uniqueId transaction:transaction];
+    }];
+    return instance;
+}
+
+@end
+
+#pragma mark -
+
 @interface ConversationViewItemTest : SignalBaseTest
 
 @property TSThread *thread;
 @property ConversationStyle *conversationStyle;
 
 @end
+
+#pragma mark -
 
 @implementation ConversationViewItemTest
 
@@ -112,9 +173,9 @@
 {
     ConversationInteractionViewItem *viewItem = self.textViewItem;
 
-    XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
+    XCTAssertNotNil([TSMessage anyFetchWithUniqueId:viewItem.interaction.uniqueId]);
     [viewItem deleteAction];
-    XCTAssertNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
+    XCTAssertNil([TSMessage anyFetchWithUniqueId:viewItem.interaction.uniqueId]);
 }
 
 - (void)testPerformDeleteActionWithPhotoMessage
@@ -124,18 +185,18 @@
     XCTAssertEqual((NSUInteger)1, ((TSMessage *)viewItem.interaction).attachmentIds.count);
     NSString *_Nullable attachmentId = ((TSMessage *)viewItem.interaction).attachmentIds.firstObject;
     XCTAssertNotNil(attachmentId);
-    TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
+    TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId];
     XCTAssertTrue([attachment isKindOfClass:[TSAttachmentStream class]]);
     TSAttachmentStream *_Nullable attachmentStream = (TSAttachmentStream *)attachment;
     NSString *_Nullable filePath = attachmentStream.originalFilePath;
     XCTAssertNotNil(filePath);
 
-    XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
-    XCTAssertNotNil([TSAttachment fetchObjectWithUniqueID:attachmentId]);
+    XCTAssertNotNil([TSMessage anyFetchWithUniqueId:viewItem.interaction.uniqueId]);
+    XCTAssertNotNil([TSAttachment anyFetchWithUniqueId:attachmentId]);
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
-    XCTAssertNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
-    XCTAssertNil([TSAttachment fetchObjectWithUniqueID:attachmentId]);
+    XCTAssertNil([TSMessage anyFetchWithUniqueId:viewItem.interaction.uniqueId]);
+    XCTAssertNil([TSAttachment anyFetchWithUniqueId:attachmentId]);
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 }
 
@@ -146,18 +207,18 @@
     XCTAssertEqual((NSUInteger)1, ((TSMessage *)viewItem.interaction).attachmentIds.count);
     NSString *_Nullable attachmentId = ((TSMessage *)viewItem.interaction).attachmentIds.firstObject;
     XCTAssertNotNil(attachmentId);
-    TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
+    TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId];
     XCTAssertTrue([attachment isKindOfClass:[TSAttachmentStream class]]);
     TSAttachmentStream *_Nullable attachmentStream = (TSAttachmentStream *)attachment;
     NSString *_Nullable filePath = attachmentStream.originalFilePath;
     XCTAssertNotNil(filePath);
 
-    XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
-    XCTAssertNotNil([TSAttachment fetchObjectWithUniqueID:attachmentId]);
+    XCTAssertNotNil([TSMessage anyFetchWithUniqueId:viewItem.interaction.uniqueId]);
+    XCTAssertNotNil([TSAttachment anyFetchWithUniqueId:attachmentId]);
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
-    XCTAssertNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
-    XCTAssertNil([TSAttachment fetchObjectWithUniqueID:attachmentId]);
+    XCTAssertNil([TSMessage anyFetchWithUniqueId:viewItem.interaction.uniqueId]);
+    XCTAssertNil([TSAttachment anyFetchWithUniqueId:attachmentId]);
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 }
 
@@ -168,18 +229,18 @@
     XCTAssertEqual((NSUInteger)1, ((TSMessage *)viewItem.interaction).attachmentIds.count);
     NSString *_Nullable attachmentId = ((TSMessage *)viewItem.interaction).attachmentIds.firstObject;
     XCTAssertNotNil(attachmentId);
-    TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
+    TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId];
     XCTAssertTrue([attachment isKindOfClass:[TSAttachmentStream class]]);
     TSAttachmentStream *_Nullable attachmentStream = (TSAttachmentStream *)attachment;
     NSString *_Nullable filePath = attachmentStream.originalFilePath;
     XCTAssertNotNil(filePath);
 
-    XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
-    XCTAssertNotNil([TSAttachment fetchObjectWithUniqueID:attachmentId]);
+    XCTAssertNotNil([TSMessage anyFetchWithUniqueId:viewItem.interaction.uniqueId]);
+    XCTAssertNotNil([TSAttachment anyFetchWithUniqueId:attachmentId]);
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
-    XCTAssertNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
-    XCTAssertNil([TSAttachment fetchObjectWithUniqueID:attachmentId]);
+    XCTAssertNil([TSMessage anyFetchWithUniqueId:viewItem.interaction.uniqueId]);
+    XCTAssertNil([TSAttachment anyFetchWithUniqueId:attachmentId]);
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 }
 
@@ -190,18 +251,18 @@
     XCTAssertEqual((NSUInteger)1, ((TSMessage *)viewItem.interaction).attachmentIds.count);
     NSString *_Nullable attachmentId = ((TSMessage *)viewItem.interaction).attachmentIds.firstObject;
     XCTAssertNotNil(attachmentId);
-    TSAttachment *_Nullable attachment = [TSAttachment fetchObjectWithUniqueID:attachmentId];
+    TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId];
     XCTAssertTrue([attachment isKindOfClass:[TSAttachmentStream class]]);
     TSAttachmentStream *_Nullable attachmentStream = (TSAttachmentStream *)attachment;
     NSString *_Nullable filePath = attachmentStream.originalFilePath;
     XCTAssertNotNil(filePath);
 
-    XCTAssertNotNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
-    XCTAssertNotNil([TSAttachment fetchObjectWithUniqueID:attachmentId]);
+    XCTAssertNotNil([TSMessage anyFetchWithUniqueId:viewItem.interaction.uniqueId]);
+    XCTAssertNotNil([TSAttachment anyFetchWithUniqueId:attachmentId]);
     XCTAssertTrue([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
     [viewItem deleteAction];
-    XCTAssertNil([TSMessage fetchObjectWithUniqueID:viewItem.interaction.uniqueId]);
-    XCTAssertNil([TSAttachment fetchObjectWithUniqueID:attachmentId]);
+    XCTAssertNil([TSMessage anyFetchWithUniqueId:viewItem.interaction.uniqueId]);
+    XCTAssertNil([TSAttachment anyFetchWithUniqueId:attachmentId]);
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 }
 

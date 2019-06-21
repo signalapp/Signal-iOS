@@ -3135,9 +3135,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                   UIImage *avatarImage =
                                                       [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
                                                   if (transaction.transitional_yapWriteTransaction) {
-                                                      [contact
-                                                          saveAvatarImage:avatarImage
-                                                              transaction:transaction.transitional_yapWriteTransaction];
+                                                      [contact saveAvatarImage:avatarImage transaction:transaction];
                                                   } else {
                                                       OWSFailDebug(@"failure: not yet implemented for GRDB");
                                                   }
@@ -3324,9 +3322,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                   UIImage *avatarImage =
                                                       [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
                                                   if (transaction.transitional_yapWriteTransaction) {
-                                                      [contact
-                                                          saveAvatarImage:avatarImage
-                                                              transaction:transaction.transitional_yapWriteTransaction];
+                                                      [contact saveAvatarImage:avatarImage transaction:transaction];
                                                   } else {
                                                       OWSFailDebug(@"failure: not yet implemented for GRDB");
                                                   }

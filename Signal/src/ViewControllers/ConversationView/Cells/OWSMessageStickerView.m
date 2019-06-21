@@ -497,7 +497,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self.primaryStorage.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             [self.attachmentDownloads
                 downloadAllAttachmentsForMessage:message
-                                     transaction:transaction
+                                     transaction:transaction.asAnyRead
                                          success:^(NSArray<TSAttachmentStream *> *_Nonnull attachmentStreams) {
                                              // Do nothing.
                                          }

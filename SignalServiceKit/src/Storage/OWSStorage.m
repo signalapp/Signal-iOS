@@ -648,7 +648,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                               if (!ready) {
                                   OWSFailDebug(@"asyncRegisterExtension failed: %@", extensionName);
                               } else {
-                                  OWSLogVerbose(@"asyncRegisterExtension succeeded: %@", extensionName);
+                                  if (!CurrentAppContext().isRunningTests) {
+                                      OWSLogVerbose(@"asyncRegisterExtension succeeded: %@", extensionName);
+                                  }
                               }
 
                               dispatch_async(dispatch_get_main_queue(), ^{

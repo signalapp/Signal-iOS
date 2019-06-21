@@ -23,6 +23,10 @@ public class BackupLazyRestore: NSObject {
         return TSAccountManager.sharedInstance()
     }
 
+    var databaseStorage: SDSDatabaseStorage {
+        return SSKEnvironment.shared.databaseStorage
+    }
+
     // MARK: -
 
     private var isRunning = false
@@ -139,7 +143,11 @@ public class BackupLazyRestore: NSObject {
             complete(errorCount: errorCount)
             return
         }
-        guard let attachmentPointer = TSAttachment.fetch(uniqueId: attachmentId) as? TSAttachmentPointer else {
+        var attachment: TSAttachment?
+        databaseStorage.read { (transaction) in
+            attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
+        }
+        guard let attachmentPointer = attachment as? TSAttachmentPointer else {
             Logger.warn("could not load attachment.")
             // Not necessarily an error.
             // The attachment might have been deleted since the job began.

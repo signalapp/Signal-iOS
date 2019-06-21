@@ -153,6 +153,15 @@ void AssertIsOnSendingQueue()
 
 @implementation OWSSendMessageOperation
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 - (instancetype)initWithMessage:(TSOutgoingMessage *)message
                   messageSender:(OWSMessageSender *)messageSender
                    dbConnection:(YapDatabaseConnection *)dbConnection
@@ -184,7 +193,7 @@ void AssertIsOnSendingQueue()
 
     // Sanity check preconditions
     if (self.message.hasAttachments) {
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             for (TSAttachment *attachment in [self.message allAttachmentsWithTransaction:transaction]) {
                 if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
                     error = OWSErrorMakeFailedToSendOutgoingMessageError();
@@ -1863,14 +1872,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // suggests this could change. The logic is intended to work with multiple, but
         // if we ever actually want to send multiple, we should do more testing.
         NSArray<TSAttachmentStream *> *quotedThumbnailAttachments =
-            [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction];
+            [message.quotedMessage createThumbnailAttachmentsIfNecessaryWithTransaction:transaction.asAnyWrite];
         for (TSAttachmentStream *attachment in quotedThumbnailAttachments) {
             [attachmentIds addObject:attachment.uniqueId];
         }
     }
 
     if (message.contactShare.avatarAttachmentId != nil) {
-        TSAttachment *attachment = [message.contactShare avatarAttachmentWithTransaction:transaction];
+        TSAttachment *attachment = [message.contactShare avatarAttachmentWithTransaction:transaction.asAnyWrite];
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
             [attachmentIds addObject:attachment.uniqueId];
         } else {
@@ -1880,7 +1889,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     if (message.linkPreview.imageAttachmentId != nil) {
         TSAttachment *attachment =
-            [TSAttachment fetchObjectWithUniqueID:message.linkPreview.imageAttachmentId transaction:transaction];
+            [TSAttachment anyFetchWithUniqueId:message.linkPreview.imageAttachmentId transaction:transaction.asAnyRead];
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
             [attachmentIds addObject:attachment.uniqueId];
         } else {
@@ -1890,7 +1899,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     if (message.messageSticker.attachmentId != nil) {
         TSAttachment *attachment =
-            [TSAttachment fetchObjectWithUniqueID:message.messageSticker.attachmentId transaction:transaction];
+            [TSAttachment anyFetchWithUniqueId:message.messageSticker.attachmentId transaction:transaction.asAnyRead];
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
             [attachmentIds addObject:attachment.uniqueId];
         } else {
@@ -1947,17 +1956,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [attachmentStreams addObject:attachmentStream];
         }
 
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (TSAttachmentStream *attachmentStream in attachmentStreams) {
                 [outgoingMessage.attachmentIds addObject:attachmentStream.uniqueId];
                 if (attachmentStream.sourceFilename) {
                     outgoingMessage.attachmentFilenameMap[attachmentStream.uniqueId] = attachmentStream.sourceFilename;
                 }
             }
-            [outgoingMessage saveWithTransaction:transaction];
             for (TSAttachmentStream *attachmentStream in attachmentStreams) {
-                [attachmentStream saveWithTransaction:transaction];
+                [attachmentStream anyInsertWithTransaction:transaction.asAnyWrite];
             }
+            [outgoingMessage saveWithTransaction:transaction];
         }];
 
         completionHandler(nil);

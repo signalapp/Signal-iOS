@@ -7,12 +7,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
 @class TSThread;
-@class YapDatabaseReadWriteTransaction;
 
 @interface OWSAttachmentInfo : MTLModel
 
@@ -87,7 +87,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 
 // Before sending, persist a thumbnail attachment derived from the quoted attachment
 - (NSArray<TSAttachmentStream *> *)createThumbnailAttachmentsIfNecessaryWithTransaction:
-    (YapDatabaseReadWriteTransaction *)transaction;
+    (SDSAnyWriteTransaction *)transaction;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -107,7 +107,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 
 + (nullable instancetype)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage
                                               thread:(TSThread *)thread
-                                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                         transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

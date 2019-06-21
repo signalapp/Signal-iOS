@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSBackupFragment;
+@class SDSAnyWriteTransaction;
 @class SSKProtoAttachmentPointer;
 @class TSAttachmentStream;
 @class TSMessage;
@@ -96,7 +97,7 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 
 // Marks attachment as needing "lazy backup restore."
 - (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
-                           transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                           transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

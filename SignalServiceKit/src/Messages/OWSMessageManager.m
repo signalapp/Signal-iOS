@@ -855,7 +855,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogDebug(@"incoming attachment message: %@", message.debugDescription);
 
     [self.attachmentDownloads downloadBodyAttachmentsForMessage:message
-        transaction:transaction.transitional_yapWriteTransaction
+        transaction:transaction
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSLogDebug(@"successfully fetched attachments: %lu for message: %@",
                 (unsigned long)attachmentStreams.count,
@@ -1459,8 +1459,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *body = dataMessage.body;
     NSNumber *_Nullable serverTimestamp = (envelope.hasServerTimestamp ? @(envelope.serverTimestamp) : nil);
 
+    TSQuotedMessage *_Nullable quotedMessage =
+        [TSQuotedMessage quotedMessageForDataMessage:dataMessage thread:thread transaction:transaction];
+
     OWSContact *_Nullable contact;
-    TSQuotedMessage *_Nullable quotedMessage;
     OWSLinkPreview *_Nullable linkPreview;
     if (transaction.transitional_yapWriteTransaction) {
         [[OWSDisappearingMessagesJob sharedJob]
@@ -1470,19 +1472,13 @@ NS_ASSUME_NONNULL_BEGIN
                               createdInExistingGroup:NO
                                          transaction:transaction.transitional_yapWriteTransaction];
 
-        contact =
-            [OWSContacts contactForDataMessage:dataMessage transaction:transaction.transitional_yapWriteTransaction];
-
-        quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:dataMessage
-                                                              thread:thread
-                                                         transaction:transaction.transitional_yapWriteTransaction];
+        contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
 
         NSError *linkPreviewError;
-        linkPreview =
-            [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage
-                                                                body:body
-                                                         transaction:transaction.transitional_yapWriteTransaction
-                                                               error:&linkPreviewError];
+        linkPreview = [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage
+                                                                          body:body
+                                                                   transaction:transaction
+                                                                         error:&linkPreviewError];
         if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
             OWSLogError(@"linkPreviewError: %@", linkPreviewError);
         }

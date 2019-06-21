@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIDiskUsage.h"
@@ -14,6 +14,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIDiskUsage
+
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
 
 #pragma mark - Factory Methods
 
@@ -47,18 +54,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)saveAllAttachments
 {
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    [primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
-        [transaction enumerateKeysAndObjectsInCollection:TSAttachmentStream.collection
-                                              usingBlock:^(NSString *key, TSAttachment *attachment, BOOL *stop) {
-                                                  if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                                                      return;
-                                                  }
-                                                  TSAttachmentStream *attachmentStream
-                                                      = (TSAttachmentStream *)attachment;
-                                                  [attachmentStreams addObject:attachmentStream];
-                                              }];
+        [TSAttachment anyEnumerateWithTransaction:transaction
+                                            block:^(TSAttachment *attachment, BOOL *stop) {
+                                                if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                                                    return;
+                                                }
+                                                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+                                                [attachmentStreams addObject:attachmentStream];
+                                            }];
 
         OWSLogInfo(@"Saving %zd attachment streams.", attachmentStreams.count);
 
@@ -66,7 +71,10 @@ NS_ASSUME_NONNULL_BEGIN
         // For performance, we want to upgrade all existing attachment streams in
         // a single transaction.
         for (TSAttachmentStream *attachmentStream in attachmentStreams) {
-            [attachmentStream saveWithTransaction:transaction];
+            [attachmentStream anyUpdateWithTransaction:transaction
+                                                 block:^(TSAttachment *attachment){
+                                                     // Do nothing, rewriting is sufficient.
+                                                 }];
         }
     }];
 }

@@ -483,12 +483,12 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 #pragma mark - Avatar
 
-- (nullable TSAttachment *)avatarAttachmentWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable TSAttachment *)avatarAttachmentWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return [TSAttachment fetchObjectWithUniqueID:self.avatarAttachmentId transaction:transaction];
+    return [TSAttachment anyFetchWithUniqueId:self.avatarAttachmentId transaction:transaction];
 }
 
-- (void)saveAvatarImage:(UIImage *)image transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)saveAvatarImage:(UIImage *)image transaction:(SDSAnyWriteTransaction *)transaction
 {
     NSData *imageData = UIImageJPEGRepresentation(image, (CGFloat)0.9);
 
@@ -503,15 +503,15 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
     BOOL success = [attachmentStream writeData:imageData error:&error];
     OWSAssertDebug(success && !error);
 
-    [attachmentStream saveWithTransaction:transaction];
+    [attachmentStream anyInsertWithTransaction:transaction];
     self.avatarAttachmentId = attachmentStream.uniqueId;
 }
 
-- (void)removeAvatarAttachmentWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeAvatarAttachmentWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     TSAttachment *_Nullable attachment =
-        [TSAttachment fetchObjectWithUniqueID:self.avatarAttachmentId transaction:transaction];
-    [attachment removeWithTransaction:transaction];
+        [TSAttachment anyFetchWithUniqueId:self.avatarAttachmentId transaction:transaction];
+    [attachment anyRemoveWithTransaction:transaction];
 }
 
 #pragma mark - Phone Numbers and Recipient IDs
@@ -925,7 +925,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 }
 
 + (nullable OWSContact *)contactForDataMessage:(SSKProtoDataMessage *)dataMessage
-                                   transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(dataMessage);
 
@@ -1002,7 +1002,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
             TSAttachmentPointer *_Nullable attachmentPointer =
                 [TSAttachmentPointer attachmentPointerFromProto:avatarAttachment albumMessage:nil];
             if (attachmentPointer) {
-                [attachmentPointer saveWithTransaction:transaction];
+                [attachmentPointer anyInsertWithTransaction:transaction];
                 contact.avatarAttachmentId = attachmentPointer.uniqueId;
                 contact.isProfileAvatar = avatarInfo.isProfile;
             } else {
