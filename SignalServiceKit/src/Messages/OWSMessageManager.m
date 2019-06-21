@@ -848,7 +848,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [message anyInsertWithTransaction:transaction];
+    OWSAssertDebug([TSMessage anyFetchWithUniqueId:message.uniqueId transaction:transaction] != nil);
 
     OWSLogDebug(@"incoming attachment message: %@", message.debugDescription);
 
