@@ -98,6 +98,8 @@ import SignalMessaging
         super.init()
 
         SwiftSingletons.register(self)
+
+        OWS115GRDBMigration.add(keyStore: backup.keyValueStore, label: "backup")
     }
 
     @objc

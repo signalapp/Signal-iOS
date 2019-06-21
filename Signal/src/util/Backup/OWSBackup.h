@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -30,6 +30,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 
 @class AnyPromise;
 @class OWSBackupIO;
+@class SDSKeyValueStore;
 @class TSAttachmentPointer;
 @class TSThread;
 @class YapDatabaseConnection;
@@ -39,6 +40,8 @@ NSError *OWSBackupErrorWithDescription(NSString *description);
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager NS_SWIFT_NAME(shared());
+
+@property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 #pragma mark - Backup Export
 

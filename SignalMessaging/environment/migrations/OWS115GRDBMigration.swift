@@ -37,6 +37,22 @@ public class OWS115GRDBMigration: OWSDatabaseMigration {
             super.save(with: transaction)
         }
     }
+
+    // MARK: - Other key stores
+
+    private static var otherKeyStores = [String: SDSKeyValueStore]()
+
+    @objc
+    public class func add(keyStore: SDSKeyValueStore,
+                          label: String) {
+        AssertIsOnMainThread()
+
+        guard otherKeyStores[label] == nil else {
+            owsFailDebug("Keystore added twice.")
+            return
+        }
+        otherKeyStores[label] = keyStore
+    }
 }
 
 // MARK: -
@@ -146,7 +162,7 @@ extension OWS115GRDBMigration {
     }
 
     private func allKeyValueMigrators(yapTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
-        return [
+        var result: [GRDBMigrator] = [
             GRDBKeyValueStoreMigrator<PreKeyRecord>(label: "preKey Store", keyStore: preKeyStore.keyStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.3),
             GRDBKeyValueStoreMigrator<Any>(label: "preKey Metadata", keyStore: preKeyStore.metadataStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.3),
 
@@ -170,6 +186,12 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "OWSOrphanDataCleaner", keyStore: OWSOrphanDataCleaner.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 1.0),
             GRDBKeyValueStoreMigrator<Any>(label: "contactsManager", keyStore: contactsManager.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1)
         ]
+
+        for (label, keyStore) in OWS115GRDBMigration.otherKeyStores {
+            result.append(GRDBKeyValueStoreMigrator<Any>(label: label, keyStore: keyStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1))
+        }
+
+        return result
     }
 
     private func allUnorderedRecordMigrators(yapTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
