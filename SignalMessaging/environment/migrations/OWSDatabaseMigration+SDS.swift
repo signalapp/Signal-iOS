@@ -390,9 +390,7 @@ public extension OWSDatabaseMigration {
                 let cursor = OWSDatabaseMigration.grdbFetchCursor(transaction: grdbTransaction)
                 var stop: ObjCBool = false
                 while let value = try cursor.next() {
-                    withUnsafeMutablePointer(to: &stop) {
-                        block(value, $0)
-                    }
+                    block(value, &stop)
                     guard !stop.boolValue else {
                         break
                     }
