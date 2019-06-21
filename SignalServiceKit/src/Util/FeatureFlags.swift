@@ -72,13 +72,13 @@ public class FeatureFlags: NSObject {
     @objc
     public static let strictSyncTranscriptTimestamps = false
 
-    private static let isPrivateBeta = false
+    private static let isBetaBuild = false
 
     // Don't enable this flag in production.
     @objc
-    public static let strictYDBExtensions = isPrivateBeta
+    public static let strictYDBExtensions = isBetaBuild
 
     // Don't enable this flag in production.
     @objc
-    public static let onlyModernNotificationClearance = isPrivateBeta
+    public static let onlyModernNotificationClearance = isBetaBuild
 }
