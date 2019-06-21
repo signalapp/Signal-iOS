@@ -72,7 +72,7 @@ public class FeatureFlags: NSObject {
     @objc
     public static let strictSyncTranscriptTimestamps = false
 
-    private static let isBetaBuild = false
+    private static let isBetaBuild = true
 
     // Don't enable this flag in production.
     @objc
