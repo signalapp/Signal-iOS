@@ -2,8 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSPrimaryStorage.h"
 #import "YapDatabaseViewTransaction+OWS.h"
+#import "OWSPrimaryStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,13 +28,15 @@ NS_ASSUME_NONNULL_BEGIN
                            withOptions:options
                             usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
                                 if (collection.length < 1) {
+                                    // Apparently, when YDB extensions are corrupt,
+                                    // they can return nil collection.
                                     [OWSPrimaryStorage incrementVersionOfDatabaseExtension:extensionName];
-                                    OWSFail(@"Invalid collection.");
+                                    OWSFailDebug(@"Invalid collection.");
                                     return;
                                 }
                                 if (key.length < 1) {
                                     [OWSPrimaryStorage incrementVersionOfDatabaseExtension:extensionName];
-                                    OWSFail(@"Invalid key.");
+                                    OWSFailDebug(@"Invalid key.");
                                     return;
                                 }
                                 if (object == nil) {
