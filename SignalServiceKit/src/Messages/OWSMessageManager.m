@@ -773,6 +773,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogWarn(@"received unsupported group avatar envelope");
         return;
     }
+
+    // GRDB TODO change this to anyInsert
+    [avatarPointer saveWithTransaction:transaction];
     [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
         message:nil
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
