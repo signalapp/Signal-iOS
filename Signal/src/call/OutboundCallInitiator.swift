@@ -32,15 +32,18 @@ import SignalMessaging
     /**
      * |handle| is a user formatted phone number, e.g. from a system contacts entry
      */
-    @discardableResult @objc public func initiateCall(handle: String) -> Bool {
+    @discardableResult
+    @objc
+    public func initiateCall(handle: String) -> Bool {
         Logger.info("with handle: \(handle)")
 
-        guard let recipientId = PhoneNumber(fromE164: handle)?.toE164() else {
+        guard let e164Number = PhoneNumber(fromE164: handle)?.toE164() else {
             Logger.warn("unable to parse signalId from phone number: \(handle)")
             return false
         }
-
-        return initiateCall(recipientId: recipientId, isVideo: false)
+        // TODO UUID: map phone number from contacts to UUID, maybe requires lookup?
+        let address = SignalServiceAddress(phoneNumber: e164Number)
+        return initiateCall(address: address, isVideo: false)
     }
 
     /**
@@ -48,8 +51,7 @@ import SignalMessaging
      */
     @discardableResult
     @objc
-    public func initiateCall(recipientId: String,
-        isVideo: Bool) -> Bool {
+    public func initiateCall(address: SignalServiceAddress, isVideo: Bool) -> Bool {
         guard let callUIAdapter = AppEnvironment.shared.callService.callUIAdapter else {
             owsFailDebug("missing callUIAdapter")
             return false
@@ -59,12 +61,12 @@ import SignalMessaging
             return false
         }
 
-        let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(recipientId: recipientId,
+        let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(recipientId: address.transitional_phoneNumber,
                                                                                 confirmationText: CallStrings.confirmAndCallButtonTitle,
                                                                                 contactsManager: self.contactsManager,
                                                                                 completion: { didConfirmIdentity in
                                                                                     if didConfirmIdentity {
-                                                                                        _ = self.initiateCall(recipientId: recipientId, isVideo: isVideo)
+                                                                                        _ = self.initiateCall(address: address, isVideo: isVideo)
                                                                                     }
         })
         guard !showedAlert else {
@@ -77,7 +79,7 @@ import SignalMessaging
                 OWSAlerts.showNoMicrophonePermissionAlert()
                 return
             }
-            callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: isVideo)
+            callUIAdapter.startAndShowOutgoingCall(recipientId: address.transitional_phoneNumber, hasLocalVideo: isVideo)
         }
 
         return true

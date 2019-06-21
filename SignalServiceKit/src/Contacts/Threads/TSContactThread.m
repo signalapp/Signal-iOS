@@ -130,6 +130,11 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return [[self class] contactIdFromThreadId:self.uniqueId];
 }
 
+- (SignalServiceAddress *)contactAddress
+{
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:self.contactIdentifier];
+}
+
 - (NSArray<NSString *> *)recipientIdentifiers
 {
     return @[self.contactIdentifier];
