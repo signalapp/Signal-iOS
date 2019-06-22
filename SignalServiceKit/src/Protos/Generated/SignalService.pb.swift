@@ -41,14 +41,14 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `type`. Subsequent reads from it will return its default value.
   mutating func clearType() {self._type = nil}
 
-  var source: String {
-    get {return _source ?? String()}
-    set {_source = newValue}
+  var sourceE164: String {
+    get {return _sourceE164 ?? String()}
+    set {_sourceE164 = newValue}
   }
-  /// Returns true if `source` has been explicitly set.
-  var hasSource: Bool {return self._source != nil}
-  /// Clears the value of `source`. Subsequent reads from it will return its default value.
-  mutating func clearSource() {self._source = nil}
+  /// Returns true if `sourceE164` has been explicitly set.
+  var hasSourceE164: Bool {return self._sourceE164 != nil}
+  /// Clears the value of `sourceE164`. Subsequent reads from it will return its default value.
+  mutating func clearSourceE164() {self._sourceE164 = nil}
 
   var sourceDevice: UInt32 {
     get {return _sourceDevice ?? 0}
@@ -161,7 +161,7 @@ struct SignalServiceProtos_Envelope {
   init() {}
 
   fileprivate var _type: SignalServiceProtos_Envelope.TypeEnum? = nil
-  fileprivate var _source: String? = nil
+  fileprivate var _sourceE164: String? = nil
   fileprivate var _sourceDevice: UInt32? = nil
   fileprivate var _relay: String? = nil
   fileprivate var _timestamp: UInt64? = nil
@@ -2613,7 +2613,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
   static let protoMessageName: String = _protobuf_package + ".Envelope"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "type"),
-    2: .same(proto: "source"),
+    2: .same(proto: "sourceE164"),
     7: .same(proto: "sourceDevice"),
     3: .same(proto: "relay"),
     5: .same(proto: "timestamp"),
@@ -2627,7 +2627,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularEnumField(value: &self._type)
-      case 2: try decoder.decodeSingularStringField(value: &self._source)
+      case 2: try decoder.decodeSingularStringField(value: &self._sourceE164)
       case 3: try decoder.decodeSingularStringField(value: &self._relay)
       case 5: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
       case 6: try decoder.decodeSingularBytesField(value: &self._legacyMessage)
@@ -2644,7 +2644,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if let v = self._type {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
     }
-    if let v = self._source {
+    if let v = self._sourceE164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
     if let v = self._relay {
@@ -2673,7 +2673,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
 
   static func ==(lhs: SignalServiceProtos_Envelope, rhs: SignalServiceProtos_Envelope) -> Bool {
     if lhs._type != rhs._type {return false}
-    if lhs._source != rhs._source {return false}
+    if lhs._sourceE164 != rhs._sourceE164 {return false}
     if lhs._sourceDevice != rhs._sourceDevice {return false}
     if lhs._relay != rhs._relay {return false}
     if lhs._timestamp != rhs._timestamp {return false}
