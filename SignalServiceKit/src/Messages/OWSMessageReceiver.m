@@ -383,7 +383,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return NO;
     }
     return (envelope.unwrappedType == SSKProtoEnvelopeTypeUnidentifiedSender
-        && (!envelope.hasSource || envelope.source.length < 1));
+        && (!envelope.hasSourceE164 || envelope.sourceE164.length < 1));
 }
 
 - (void)processJob:(OWSMessageDecryptJob *)job completion:(void (^)(BOOL))completion

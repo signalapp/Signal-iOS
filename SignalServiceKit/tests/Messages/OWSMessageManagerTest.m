@@ -97,7 +97,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
     SSKProtoEnvelopeBuilder *envelopeBuilder =
         [SSKProtoEnvelope builderWithTimestamp:12345];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
-    [envelopeBuilder setSource:kAliceRecipientId];
+    [envelopeBuilder setSourceE164:kAliceRecipientId];
     [envelopeBuilder setSourceDevice:1];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {

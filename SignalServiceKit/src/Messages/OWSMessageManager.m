@@ -194,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(envelope);
 
-    return [self.blockingManager isRecipientIdBlocked:envelope.source];
+    return [self.blockingManager isRecipientIdBlocked:envelope.sourceE164];
 }
 
 - (BOOL)isDataMessageBlocked:(SSKProtoDataMessage *)dataMessage envelope:(SSKProtoEnvelope *)envelope
@@ -240,7 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"handling decrypted envelope: %@", [self descriptionForEnvelope:envelope]);
 
-    if (!envelope.hasSource || envelope.source.length < 1 || !envelope.source.isValidE164) {
+    if (!envelope.hasSourceE164 || envelope.sourceE164.length < 1 || !envelope.sourceE164.isValidE164) {
         OWSFailDebug(@"incoming envelope has invalid source");
         return;
     }
@@ -299,7 +299,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Old-style delivery notices don't include a "delivery timestamp".
-    [self processDeliveryReceiptsFromRecipientId:envelope.source
+    [self processDeliveryReceiptsFromRecipientId:envelope.sourceE164
                                   sentTimestamps:@[
                                       @(envelope.timestamp),
                                   ]
@@ -378,7 +378,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
-    if (envelope.source.length < 1) {
+    if (envelope.sourceE164.length < 1) {
         OWSFailDebug(@"Missing source.");
         return;
     }
@@ -388,7 +388,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     BOOL duplicateEnvelope = [InteractionFinder existsIncomingMessageWithTimestamp:envelope.timestamp
-                                                                          sourceId:envelope.source
+                                                                          sourceId:envelope.sourceE164
                                                                     sourceDeviceId:envelope.sourceDevice
                                                                        transaction:transaction];
 
@@ -469,7 +469,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
-        NSString *logMessage = [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.source];
+        NSString *logMessage =
+            [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceE164];
         if (dataMessage.group) {
             logMessage = [logMessage stringByAppendingFormat:@" in group: %@", dataMessage.group.id];
         }
@@ -479,13 +480,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (dataMessage.hasTimestamp) {
         if (dataMessage.timestamp <= 0) {
-            OWSFailDebug(@"Ignoring message with invalid data message timestamp: %@", envelope.source);
+            OWSFailDebug(@"Ignoring message with invalid data message timestamp: %@", envelope.sourceE164);
             // TODO: Add analytics.
             return;
         }
         // This prevents replay attacks by the service.
         if (dataMessage.timestamp != envelope.timestamp) {
-            OWSFailDebug(@"Ignoring message with non-matching data message timestamp: %@", envelope.source);
+            OWSFailDebug(@"Ignoring message with non-matching data message timestamp: %@", envelope.sourceE164);
             // TODO: Add analytics.
             return;
         }
@@ -493,7 +494,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([dataMessage hasProfileKey]) {
         NSData *profileKey = [dataMessage profileKey];
-        NSString *recipientId = envelope.source;
+        NSString *recipientId = envelope.sourceE164;
         if (profileKey.length == kAES256_KeyByteLength) {
             [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
         } else {
@@ -525,7 +526,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
                 return;
             } else {
-                OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.source);
+                OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.sourceE164);
                 return;
             }
         }
@@ -580,7 +581,7 @@ NS_ASSUME_NONNULL_BEGIN
     // FIXME: https://github.com/signalapp/Signal-iOS/issues/1340
     OWSLogInfo(@"Sending group info request: %@", envelopeAddress(envelope));
 
-    NSString *recipientId = envelope.source;
+    NSString *recipientId = envelope.sourceE164;
 
     TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId anyTransaction:transaction];
 
@@ -616,14 +617,14 @@ NS_ASSUME_NONNULL_BEGIN
     switch (receiptMessage.unwrappedType) {
         case SSKProtoReceiptMessageTypeDelivery:
             OWSLogVerbose(@"Processing receipt message with delivery receipts.");
-            [self processDeliveryReceiptsFromRecipientId:envelope.source
+            [self processDeliveryReceiptsFromRecipientId:envelope.sourceE164
                                           sentTimestamps:sentTimestamps
                                        deliveryTimestamp:@(envelope.timestamp)
                                              transaction:transaction];
             return;
         case SSKProtoReceiptMessageTypeRead:
             OWSLogVerbose(@"Processing receipt message with read receipts.");
-            [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipientId:envelope.source
+            [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipientId:envelope.sourceE164
                                                                      sentTimestamps:sentTimestamps
                                                                       readTimestamp:envelope.timestamp];
             break;
@@ -647,7 +648,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([callMessage hasProfileKey]) {
         NSData *profileKey = [callMessage profileKey];
-        NSString *recipientId = envelope.source;
+        NSString *recipientId = envelope.sourceE164;
         [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
     }
 
@@ -656,18 +657,18 @@ NS_ASSUME_NONNULL_BEGIN
     // definition will end if the app exits.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (callMessage.offer) {
-            [self.callMessageHandler receivedOffer:callMessage.offer fromCallerId:envelope.source];
+            [self.callMessageHandler receivedOffer:callMessage.offer fromCallerId:envelope.sourceE164];
         } else if (callMessage.answer) {
-            [self.callMessageHandler receivedAnswer:callMessage.answer fromCallerId:envelope.source];
+            [self.callMessageHandler receivedAnswer:callMessage.answer fromCallerId:envelope.sourceE164];
         } else if (callMessage.iceUpdate.count > 0) {
             for (SSKProtoCallMessageIceUpdate *iceUpdate in callMessage.iceUpdate) {
-                [self.callMessageHandler receivedIceUpdate:iceUpdate fromCallerId:envelope.source];
+                [self.callMessageHandler receivedIceUpdate:iceUpdate fromCallerId:envelope.sourceE164];
             }
         } else if (callMessage.hangup) {
             OWSLogVerbose(@"Received CallMessage with Hangup.");
-            [self.callMessageHandler receivedHangup:callMessage.hangup fromCallerId:envelope.source];
+            [self.callMessageHandler receivedHangup:callMessage.hangup fromCallerId:envelope.sourceE164];
         } else if (callMessage.busy) {
-            [self.callMessageHandler receivedBusy:callMessage.busy fromCallerId:envelope.source];
+            [self.callMessageHandler receivedBusy:callMessage.busy fromCallerId:envelope.sourceE164];
         } else {
             OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
         }
@@ -693,12 +694,13 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     NSString *localNumber = self.tsAccountManager.localNumber;
-    if ([localNumber isEqualToString:envelope.source]) {
+    if ([localNumber isEqualToString:envelope.sourceE164]) {
         OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
         return;
-    } else if ([self.blockingManager isRecipientIdBlocked:envelope.source]
+    } else if ([self.blockingManager isRecipientIdBlocked:envelope.sourceE164]
         || (typingMessage.hasGroupID && [self.blockingManager isGroupIdBlocked:typingMessage.groupID])) {
-        NSString *logMessage = [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.source];
+        NSString *logMessage =
+            [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceE164];
         if (typingMessage.hasGroupID) {
             logMessage = [logMessage stringByAppendingFormat:@" in group: %@", typingMessage.groupID];
         }
@@ -717,7 +719,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         thread = groupThread;
     } else {
-        thread = [TSContactThread getThreadWithContactId:envelope.source anyTransaction:transaction];
+        thread = [TSContactThread getThreadWithContactId:envelope.sourceE164 anyTransaction:transaction];
     }
 
     if (!thread) {
@@ -735,12 +737,12 @@ NS_ASSUME_NONNULL_BEGIN
         switch (typingMessage.unwrappedAction) {
             case SSKProtoTypingMessageActionStarted:
                 [self.typingIndicators didReceiveTypingStartedMessageInThread:thread
-                                                                  recipientId:envelope.source
+                                                                  recipientId:envelope.sourceE164
                                                                      deviceId:envelope.sourceDevice];
                 break;
             case SSKProtoTypingMessageActionStopped:
                 [self.typingIndicators didReceiveTypingStoppedMessageInThread:thread
-                                                                  recipientId:envelope.source
+                                                                  recipientId:envelope.sourceE164
                                                                      deviceId:envelope.sourceDevice];
                 break;
             default:
@@ -882,7 +884,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSString *localNumber = self.tsAccountManager.localNumber;
-    if (![localNumber isEqualToString:envelope.source]) {
+    if (![localNumber isEqualToString:envelope.sourceE164]) {
         // Sync messages should only come from linked devices.
         OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
         return;
@@ -1026,15 +1028,15 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSContactThread *thread =
-        [TSContactThread getOrCreateThreadWithContactId:envelope.source anyTransaction:transaction];
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.sourceE164
+                                                               anyTransaction:transaction];
 
     // MJK TODO - safe to remove senderTimestamp
     [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                      inThread:thread
                                   messageType:TSInfoMessageTypeSessionDidEnd] anyInsertWithTransaction:transaction];
 
-    [self.sessionStore deleteAllSessionsForContact:envelope.source transaction:transaction];
+    [self.sessionStore deleteAllSessionsForContact:envelope.sourceE164 transaction:transaction];
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope
@@ -1077,7 +1079,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration anyInsertWithTransaction:transaction];
-    NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.source
+    NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.sourceE164
                                                              transaction:transaction.transitional_yapWriteTransaction];
 
     // MJK TODO - safe to remove senderTimestamp
@@ -1102,7 +1104,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *recipientId = envelope.source;
+    NSString *recipientId = envelope.sourceE164;
     if (!dataMessage.hasProfileKey) {
         OWSFailDebug(@"received profile key message without profile key from: %@", envelopeAddress(envelope));
         return;
@@ -1174,7 +1176,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSLogInfo(@"Received 'Request Group Info' message for group: %@ from: %@", groupId, envelope.source);
+    OWSLogInfo(@"Received 'Request Group Info' message for group: %@ from: %@", groupId, envelope.sourceE164);
 
     TSGroupThread *_Nullable gThread =
         [TSGroupThread threadWithGroupId:dataMessage.group.id anyTransaction:transaction];
@@ -1184,9 +1186,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Ensure sender is in the group.
-    if (![gThread.groupModel.groupMemberIds containsObject:envelope.source]) {
+    if (![gThread.groupModel.groupMemberIds containsObject:envelope.sourceE164]) {
         OWSLogWarn(@"Ignoring 'Request Group Info' message for non-member of group. %@ not in %@",
-            envelope.source,
+            envelope.sourceE164,
             gThread.groupModel.groupMemberIds);
         return;
     }
@@ -1208,7 +1210,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [message updateWithCustomMessage:updateGroupInfo transaction:transaction.transitional_yapWriteTransaction];
     // Only send this group update to the requester.
-    [message updateWithSendingToSingleGroupRecipient:envelope.source
+    [message updateWithSendingToSingleGroupRecipient:envelope.sourceE164
                                          transaction:transaction.transitional_yapWriteTransaction];
 
     if (gThread.groupModel.groupImage) {
@@ -1284,7 +1286,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (dataMessage.hasRequiredProtocolVersion
             && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
-            NSString *senderId = envelope.source;
+            NSString *senderId = envelope.sourceE164;
             [self insertUnknownProtocolVersionErrorInThread:oldGroupThread
                                             protocolVersion:dataMessage.requiredProtocolVersion
                                                    senderId:senderId
@@ -1333,7 +1335,7 @@ NS_ASSUME_NONNULL_BEGIN
                     OWSLogWarn(@"ignoring quit group message from unknown group.");
                     return nil;
                 }
-                [newMemberIds removeObject:envelope.source];
+                [newMemberIds removeObject:envelope.sourceE164];
                 [oldGroupThread anyUpdateWithTransaction:transaction
                                                    block:^(TSThread *thread) {
                                                        TSGroupThread *groupThread = (TSGroupThread *)thread;
@@ -1342,7 +1344,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    }];
 
                 NSString *nameString =
-                    [self.contactsManager displayNameForPhoneIdentifier:envelope.source
+                    [self.contactsManager displayNameForPhoneIdentifier:envelope.sourceE164
                                                             transaction:transaction.transitional_yapWriteTransaction];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
@@ -1377,12 +1379,12 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     } else {
-        TSContactThread *thread =
-            [TSContactThread getOrCreateThreadWithContactId:envelope.source anyTransaction:transaction];
-        
+        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.sourceE164
+                                                                   anyTransaction:transaction];
+
         if (dataMessage.hasRequiredProtocolVersion
             && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
-            NSString *senderId = envelope.source;
+            NSString *senderId = envelope.sourceE164;
             [self insertUnknownProtocolVersionErrorInThread:thread
                                             protocolVersion:dataMessage.requiredProtocolVersion
                                                    senderId:senderId
@@ -1441,7 +1443,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Missing thread.");
         return nil;
     }
-    NSString *authorId = envelope.source;
+    NSString *authorId = envelope.sourceE164;
     if (authorId.length < 1) {
         OWSFailDebug(@"Missing authorId.");
         return nil;
@@ -1533,7 +1535,7 @@ NS_ASSUME_NONNULL_BEGIN
     [incomingMessage anyInsertWithTransaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
-    if ([envelope.source isEqualToString:self.tsAccountManager.localNumber]) {
+    if ([envelope.sourceE164 isEqualToString:self.tsAccountManager.localNumber]) {
         // Don't send a read receipt for messages sent by ourselves.
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp
                                sendReadReceipt:NO
@@ -1616,7 +1618,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.typingIndicators didReceiveIncomingMessageInThread:thread
-                                                     recipientId:envelope.source
+                                                     recipientId:envelope.sourceE164
                                                         deviceId:envelope.sourceDevice];
     });
 
@@ -1667,7 +1669,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssertDebug(groupThread);
         return groupThread;
     } else {
-        return [TSContactThread getOrCreateThreadWithContactId:envelope.source anyTransaction:transaction];
+        return [TSContactThread getOrCreateThreadWithContactId:envelope.sourceE164 anyTransaction:transaction];
     }
 }
 
@@ -1679,7 +1681,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(transaction);
 
     NSString *localNumber = self.tsAccountManager.localNumber;
-    if (![localNumber isEqualToString:envelope.source]) {
+    if (![localNumber isEqualToString:envelope.sourceE164]) {
         return;
     }
 
