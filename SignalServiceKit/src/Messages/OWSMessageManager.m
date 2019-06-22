@@ -773,17 +773,38 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogWarn(@"received unsupported group avatar envelope");
         return;
     }
+
+    // GRDB TODO change this to anyInsert
+    [avatarPointer saveWithTransaction:transaction];
+
     [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
         message:nil
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-            [groupThread updateAvatarWithAttachmentStream:attachmentStream];
+
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [groupThread updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
+
+                // Eagerly clean up the attachment.
+                [attachmentStream removeWithTransaction:transaction];
+            }];
         }
         failure:^(NSError *error) {
             OWSLogError(@"failed to fetch attachments for group avatar sent at: %llu. with error: %@",
                 envelope.timestamp,
                 error);
+
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                // Eagerly clean up the attachment.
+                TSAttachment *_Nullable attachment =
+                    [TSAttachment fetchObjectWithUniqueID:avatarPointer.uniqueId transaction:transaction];
+                if (attachment == nil) {
+                    OWSFailDebug(@"Could not load attachment.");
+                    return;
+                }
+                [attachment removeWithTransaction:transaction];
+            }];
         }];
 }
 
