@@ -81,6 +81,9 @@ public enum SSKProtoError: Error {
         if hasServerTimestamp {
             builder.setServerTimestamp(serverTimestamp)
         }
+        if let _value = sourceUuid {
+            builder.setSourceUuid(_value)
+        }
         return builder
     }
 
@@ -130,6 +133,10 @@ public enum SSKProtoError: Error {
 
         @objc public func setServerTimestamp(_ valueParam: UInt64) {
             proto.serverTimestamp = valueParam
+        }
+
+        @objc public func setSourceUuid(_ valueParam: String) {
+            proto.sourceUuid = valueParam
         }
 
         @objc public func build() throws -> SSKProtoEnvelope {
@@ -225,6 +232,16 @@ public enum SSKProtoError: Error {
     }
     @objc public var hasServerTimestamp: Bool {
         return proto.hasServerTimestamp
+    }
+
+    @objc public var sourceUuid: String? {
+        guard proto.hasSourceUuid else {
+            return nil
+        }
+        return proto.sourceUuid
+    }
+    @objc public var hasSourceUuid: Bool {
+        return proto.hasSourceUuid
     }
 
     private init(proto: SignalServiceProtos_Envelope,

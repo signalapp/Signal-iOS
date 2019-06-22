@@ -118,6 +118,15 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `serverTimestamp`. Subsequent reads from it will return its default value.
   mutating func clearServerTimestamp() {self._serverTimestamp = nil}
 
+  var sourceUuid: String {
+    get {return _sourceUuid ?? String()}
+    set {_sourceUuid = newValue}
+  }
+  /// Returns true if `sourceUuid` has been explicitly set.
+  var hasSourceUuid: Bool {return self._sourceUuid != nil}
+  /// Clears the value of `sourceUuid`. Subsequent reads from it will return its default value.
+  mutating func clearSourceUuid() {self._sourceUuid = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum TypeEnum: SwiftProtobuf.Enum {
@@ -169,6 +178,7 @@ struct SignalServiceProtos_Envelope {
   fileprivate var _content: Data? = nil
   fileprivate var _serverGuid: String? = nil
   fileprivate var _serverTimestamp: UInt64? = nil
+  fileprivate var _sourceUuid: String? = nil
 }
 
 #if swift(>=4.2)
@@ -2621,6 +2631,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     8: .same(proto: "content"),
     9: .same(proto: "serverGuid"),
     10: .same(proto: "serverTimestamp"),
+    11: .same(proto: "sourceUuid"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -2635,6 +2646,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 8: try decoder.decodeSingularBytesField(value: &self._content)
       case 9: try decoder.decodeSingularStringField(value: &self._serverGuid)
       case 10: try decoder.decodeSingularUInt64Field(value: &self._serverTimestamp)
+      case 11: try decoder.decodeSingularStringField(value: &self._sourceUuid)
       default: break
       }
     }
@@ -2668,6 +2680,9 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if let v = self._serverTimestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 10)
     }
+    if let v = self._sourceUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 11)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -2681,6 +2696,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._content != rhs._content {return false}
     if lhs._serverGuid != rhs._serverGuid {return false}
     if lhs._serverTimestamp != rhs._serverTimestamp {return false}
+    if lhs._sourceUuid != rhs._sourceUuid {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
