@@ -54,11 +54,13 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+            accountSchemaVersion:(NSUInteger)accountSchemaVersion
                          contact:(nullable Contact *)contact
        hasMultipleAccountContact:(BOOL)hasMultipleAccountContact
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
-                     recipientId:(NSString *)recipientId
-NS_SWIFT_NAME(init(uniqueId:contact:hasMultipleAccountContact:multipleAccountLabelText:recipientId:));
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+                   recipientUUID:(nullable NSString *)recipientUUID
+NS_SWIFT_NAME(init(uniqueId:accountSchemaVersion:contact:hasMultipleAccountContact:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
 
 // clang-format on
 

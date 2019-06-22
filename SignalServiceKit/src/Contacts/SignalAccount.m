@@ -70,10 +70,12 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+            accountSchemaVersion:(NSUInteger)accountSchemaVersion
                          contact:(nullable Contact *)contact
        hasMultipleAccountContact:(BOOL)hasMultipleAccountContact
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
-                     recipientId:(NSString *)recipientId
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+                   recipientUUID:(nullable NSString *)recipientUUID
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -81,10 +83,12 @@ NSUInteger const SignalAccountSchemaVersion = 1;
         return self;
     }
 
+    _accountSchemaVersion = accountSchemaVersion;
     _contact = contact;
     _hasMultipleAccountContact = hasMultipleAccountContact;
     _multipleAccountLabelText = multipleAccountLabelText;
-    _recipientId = recipientId;
+    _recipientPhoneNumber = recipientPhoneNumber;
+    _recipientUUID = recipientUUID;
 
     return self;
 }
