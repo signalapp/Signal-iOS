@@ -7,13 +7,14 @@
 #import "NSString+SSK.h"
 #import "OWSPrimaryStorage.h"
 #import "SignalRecipient.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSUInteger const SignalAccountSchemaVersion = 1;
+
 @interface SignalAccount ()
-
-@property (nonatomic) NSString *recipientId;
-
+@property (nonatomic, readonly) NSUInteger accountSchemaVersion;
 @end
 
 #pragma mark -
@@ -26,13 +27,38 @@ NS_ASSUME_NONNULL_BEGIN
     return [self initWithRecipientId:signalRecipient.recipientId];
 }
 
-- (instancetype)initWithRecipientId:(NSString *)recipientId
+- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress
 {
     if (self = [super init]) {
-        OWSAssertDebug(recipientId.length > 0);
+        if (serviceAddress.isUUID) {
+            _recipientUUID = serviceAddress.stringIdentifier;
+        } else {
+            _recipientPhoneNumber = serviceAddress.stringIdentifier;
+        }
 
-        _recipientId = recipientId;
+        _accountSchemaVersion = SignalAccountSchemaVersion;
     }
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    // Migrating from an everyone has a phone number world to a
+    // world in which we have UUIDs
+    if (_accountSchemaVersion == 0) {
+        // Rename recipientId to recipientPhoneNumber
+        _recipientPhoneNumber = [coder decodeObjectForKey:@"recipientId"];
+
+        OWSAssert(_recipientPhoneNumber != nil);
+    }
+
+    _accountSchemaVersion = SignalAccountSchemaVersion;
+
     return self;
 }
 
@@ -67,11 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
-- (nullable NSString *)uniqueId
-{
-    return _recipientId;
-}
-
 - (nullable NSString *)contactFullName
 {
     return self.contact.fullName.filterStringForDisplay;
@@ -80,6 +101,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)multipleAccountLabelText
 {
     return _multipleAccountLabelText.filterStringForDisplay;
+}
+
+- (SignalServiceAddress *)recipientAddress
+{
+    if (self.recipientUUID != nil) {
+        return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID];
+    } else if (self.recipientPhoneNumber != nil) {
+        return [[SignalServiceAddress alloc] initWithPhoneNumber:self.recipientPhoneNumber];
+    } else {
+        OWSFail(@"unexpectedly have no address for SignalAccount, this should never happen.");
+    }
 }
 
 @end

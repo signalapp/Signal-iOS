@@ -229,7 +229,7 @@ public class FullTextSearchFinder: NSObject {
             }
             return self.messageIndexer.index(message, transaction: transaction)
         } else if let signalAccount = object as? SignalAccount {
-            return self.recipientIndexer.index(signalAccount.recipientId, transaction: transaction)
+            return self.recipientIndexer.index(signalAccount.recipientAddress.transitional_phoneNumber, transaction: transaction)
         } else {
             return nil
         }
