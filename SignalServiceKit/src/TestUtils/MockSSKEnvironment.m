@@ -69,6 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
     id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
+    SSKMessageDecryptJobQueue *messageDecryptJobQueue = [SSKMessageDecryptJobQueue new];
     OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
     OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
     TSSocketManager *socketManager = [[TSSocketManager alloc] init];
@@ -101,6 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
                               preKeyStore:preKeyStore
                                 udManager:udManager
                          messageDecrypter:messageDecrypter
+                   messageDecryptJobQueue:messageDecryptJobQueue
                     batchMessageProcessor:batchMessageProcessor
                           messageReceiver:messageReceiver
                             socketManager:socketManager

@@ -120,7 +120,8 @@ public class UIDatabaseObserver: NSObject {
         self.observer = try observation.start(in: pool) { [weak self] (database: Database) in
             guard let self = self else { return }
 
-            UIDatabaseObserver.serializedSync {
+            UIDatabaseObserver.serializedSync { [weak self] in
+                guard let self = self else { return }
                 for delegate in self.snapshotDelegates {
                     delegate.databaseSnapshotSourceDidCommit(db: database)
                 }
@@ -128,7 +129,8 @@ public class UIDatabaseObserver: NSObject {
 
             let newSnapshot = try! pool.makeSnapshot()
 
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 Logger.verbose("databaseSnapshotWillUpdate")
                 for delegate in self.snapshotDelegates {
                     delegate.databaseSnapshotWillUpdate()
