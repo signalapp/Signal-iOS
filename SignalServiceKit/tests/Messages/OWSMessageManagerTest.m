@@ -70,7 +70,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
 - (void)setUp
 {
     [super setUp];
-    [self.tsAccountManager registerForTestsWithLocalNumber:kAliceRecipientId];
+    [self.tsAccountManager registerForTestsWithLocalNumber:kAliceRecipientId uuid:[NSUUID new]];
     [self.messageSenderJobQueue setup];
 }
 

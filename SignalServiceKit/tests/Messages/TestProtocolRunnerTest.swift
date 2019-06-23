@@ -106,7 +106,8 @@ class TestProtocolRunnerTest: SSKBaseTestSwift {
 
     func test_localClient() {
         SSKEnvironment.shared.identityManager.generateNewIdentityKey()
-        SSKEnvironment.shared.tsAccountManager.registerForTests(withLocalNumber: "+13235551234")
+        SSKEnvironment.shared.tsAccountManager.registerForTests(withLocalNumber: "+13235551234",
+                                                                uuid: UUID())
         let localClient = LocalSignalClient()
 
         write { transaction in

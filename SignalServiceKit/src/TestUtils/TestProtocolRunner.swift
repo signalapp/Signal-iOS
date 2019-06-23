@@ -34,6 +34,7 @@ public struct TestProtocolRunner {
 }
 
 public typealias SignalE164Identifier = String
+public typealias SignalUUIDIdentifier = String
 
 /// Represents a Signal installation, it can represent the local client or
 /// a remote client.
@@ -41,11 +42,14 @@ public protocol SignalClient {
     var identityKeyPair: ECKeyPair { get }
     var identityKey: IdentityKey { get }
     var e164Identifier: SignalE164Identifier { get }
+    var uuidIdentifier: SignalUUIDIdentifier { get }
+    var uuid: UUID { get }
+    var deviceId: UInt32 { get }
+
     var sessionStore: SessionStore { get }
     var preKeyStore: PreKeyStore { get }
     var signedPreKeyStore: SignedPreKeyStore { get }
     var identityKeyStore: IdentityKeyStore { get }
-    var deviceId: UInt32 { get }
 
     func sessionCipher(for e164Identifier: SignalE164Identifier) throws -> SessionCipher
 }
@@ -53,6 +57,10 @@ public protocol SignalClient {
 public extension SignalClient {
     var identityKey: IdentityKey {
         return identityKeyPair.publicKey
+    }
+
+    var uuidIdentifier: SignalUUIDIdentifier {
+        return uuid.uuidString
     }
 
     func sessionCipher(for e164Identifier: SignalE164Identifier) throws -> SessionCipher {
@@ -75,12 +83,14 @@ public struct FakeSignalClient: SignalClient {
     public var identityKeyStore: IdentityKeyStore { return protocolStore }
 
     public let e164Identifier: SignalE164Identifier
+    public let uuid: UUID
     public let deviceId: UInt32
     public let identityKeyPair: ECKeyPair
     public let protocolStore: AxolotlStore
 
     public static func generate(e164Identifier: SignalE164Identifier) -> FakeSignalClient {
         return FakeSignalClient(e164Identifier: e164Identifier,
+                                uuid: UUID(),
                                 deviceId: 1,
                                 identityKeyPair: Curve25519.generateKeyPair(),
                                 protocolStore: SPKMockProtocolStore())
@@ -103,6 +113,10 @@ public struct LocalSignalClient: SignalClient {
 
     public var e164Identifier: SignalE164Identifier {
         return TSAccountManager.localNumber()!
+    }
+
+    public var uuid: UUID {
+        return TSAccountManager.sharedInstance().uuid!
     }
 
     public let deviceId: UInt32 = 1

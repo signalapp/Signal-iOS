@@ -38,11 +38,12 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
     // MARK: registration
     let aliceRecipientId = "+13213214321"
+    let aliceUUID = UUID()
 
     override func setUp() {
         super.setUp()
 
-        tsAccountManager.registerForTests(withLocalNumber: aliceRecipientId)
+        tsAccountManager.registerForTests(withLocalNumber: aliceRecipientId, uuid: aliceUUID)
 
         // Configure UDManager
         profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, forRecipientId: aliceRecipientId)
