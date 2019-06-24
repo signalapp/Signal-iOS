@@ -200,6 +200,8 @@ public extension OWSLinkedDeviceReadReceipt {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
+        anyWillRemove(transaction)
+
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -211,6 +213,8 @@ public extension OWSLinkedDeviceReadReceipt {
                 owsFail("Remove failed: \(error)")
             }
         }
+
+        anyDidRemove(transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {

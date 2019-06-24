@@ -399,10 +399,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 }
 
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)anyDidRemove:(SDSAnyWriteTransaction *)transaction
 {
-    [super removeWithTransaction:transaction];
-    [self removeFileWithTransaction:transaction];
+    [super anyDidRemove:transaction];
+
+    [self removeFile];
 }
 
 - (BOOL)isValidVisualMedia

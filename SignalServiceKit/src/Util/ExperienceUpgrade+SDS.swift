@@ -179,6 +179,8 @@ public extension ExperienceUpgrade {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
+        anyWillRemove(transaction)
+
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -190,6 +192,8 @@ public extension ExperienceUpgrade {
                 owsFail("Remove failed: \(error)")
             }
         }
+
+        anyDidRemove(transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {

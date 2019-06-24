@@ -250,6 +250,28 @@ NS_ASSUME_NONNULL_BEGIN
     [self setValuesForKeysWithDictionary:latest.dictionaryValue];
 }
 
+#pragma mark - Write Hooks
+
+- (void)anyWillInsert:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
+- (void)anyDidInsert:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
+- (void)anyWillRemove:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
+- (void)anyDidRemove:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -306,6 +306,8 @@ public extension TSThread {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
+        anyWillRemove(transaction)
+
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -317,6 +319,8 @@ public extension TSThread {
                 owsFail("Remove failed: \(error)")
             }
         }
+
+        anyDidRemove(transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {

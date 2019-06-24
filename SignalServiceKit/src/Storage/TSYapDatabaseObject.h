@@ -7,6 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSPrimaryStorage;
+@class SDSAnyWriteTransaction;
 @class YapDatabaseConnection;
 @class YapDatabaseReadTransaction;
 @class YapDatabaseReadWriteTransaction;
@@ -160,6 +161,17 @@ NS_ASSUME_NONNULL_BEGIN
 // data loss and will resolve all known issues.
 - (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
                            changeBlock:(void (^)(id))changeBlock;
+
+#pragma mark - Write Hooks
+
+// GRDB TODO: As a perf optimization, we could only call these
+//            methods for certain kinds of models which we could
+//            detect at compile time.
+- (void)anyWillInsert:(SDSAnyWriteTransaction *)transaction;
+- (void)anyDidInsert:(SDSAnyWriteTransaction *)transaction;
+- (void)anyWillRemove:(SDSAnyWriteTransaction *)transaction;
+- (void)anyDidRemove:(SDSAnyWriteTransaction *)transaction;
+// GRDB TODO: didUpdate?
 
 @end
 

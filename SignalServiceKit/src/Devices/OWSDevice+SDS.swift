@@ -206,6 +206,8 @@ public extension OWSDevice {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
+        anyWillRemove(transaction)
+
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -217,6 +219,8 @@ public extension OWSDevice {
                 owsFail("Remove failed: \(error)")
             }
         }
+
+        anyDidRemove(transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
