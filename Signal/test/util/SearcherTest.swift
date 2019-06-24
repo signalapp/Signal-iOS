@@ -9,14 +9,14 @@ import XCTest
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
 class FullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
-    func displayName(forPhoneIdentifier recipientId: String?, transaction: YapDatabaseReadTransaction) -> String {
-        return self.displayName(forPhoneIdentifier: recipientId)
+    func displayName(for address: SignalServiceAddress?, transaction: YapDatabaseReadTransaction) -> String {
+        return self.displayName(for: address)
     }
 
-    func displayName(forPhoneIdentifier phoneNumber: String?) -> String {
-        if phoneNumber == aliceRecipientId {
+    func displayName(for address: SignalServiceAddress?) -> String {
+        if address?.transitional_phoneNumber == aliceRecipientId {
             return "Alice"
-        } else if phoneNumber == bobRecipientId {
+        } else if address?.transitional_phoneNumber == bobRecipientId {
             return "Bob Barker"
         } else {
             return ""
