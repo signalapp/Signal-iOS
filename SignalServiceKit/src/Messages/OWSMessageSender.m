@@ -1963,10 +1963,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     outgoingMessage.attachmentFilenameMap[attachmentStream.uniqueId] = attachmentStream.sourceFilename;
                 }
             }
+
+            [outgoingMessage saveWithTransaction:transaction];
+
             for (TSAttachmentStream *attachmentStream in attachmentStreams) {
                 [attachmentStream anyInsertWithTransaction:transaction.asAnyWrite];
             }
-            [outgoingMessage saveWithTransaction:transaction];
         }];
 
         completionHandler(nil);

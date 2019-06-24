@@ -143,9 +143,8 @@ public class BackupLazyRestore: NSObject {
             complete(errorCount: errorCount)
             return
         }
-        var attachment: TSAttachment?
-        databaseStorage.read { (transaction) in
-            attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
+        let attachment = databaseStorage.readReturningResult { (transaction) in
+            return TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction)
         }
         guard let attachmentPointer = attachment as? TSAttachmentPointer else {
             Logger.warn("could not load attachment.")

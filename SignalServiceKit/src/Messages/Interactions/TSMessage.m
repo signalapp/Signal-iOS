@@ -311,8 +311,6 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
         if (attachment) {
             [attachments addObject:attachment];
-        } else {
-            OWSFailDebug(@"Missing attachment: %@", attachmentId);
         }
     }
     return [attachments copy];

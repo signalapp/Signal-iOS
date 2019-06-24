@@ -413,6 +413,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
     [super anyDidRemoveWithTransaction:transaction];
 
     [self removeFile];
