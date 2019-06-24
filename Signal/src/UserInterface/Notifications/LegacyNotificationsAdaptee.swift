@@ -158,7 +158,7 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         // formatting character from the notification body, so if we want to
         // display a literal "%" in a notification it must be escaped.
         // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
-        // for more details.
+        // for more details. UNUserNotifications do not require this.
         let escapedBody = body.replacingOccurrences(of: "%", with: "%%")
 
         let alertBody: String
