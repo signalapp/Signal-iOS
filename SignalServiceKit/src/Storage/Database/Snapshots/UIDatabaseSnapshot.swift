@@ -30,8 +30,35 @@ enum DatabaseObserverError: Error {
     case changeTooLarge
 }
 
+@objc
+public class AtomicBool: NSObject {
+    private var value: Bool
+
+    @objc
+    public required init(_ value: Bool) {
+        self.value = value
+    }
+
+    // All instances can share a single queue.
+    private static let serialQueue = DispatchQueue(label: "AtomicBool")
+
+    @objc
+    public func get() -> Bool {
+        return AtomicBool.serialQueue.sync {
+            return self.value
+        }
+    }
+
+    @objc
+    public func set(_ value: Bool) {
+        return AtomicBool.serialQueue.sync {
+            self.value = value
+        }
+    }
+}
+
 func AssertIsOnUIDatabaseObserverSerialQueue() {
-    assert(UIDatabaseObserver._isOnUIDatabaseObserverSerialQueue)
+    assert(UIDatabaseObserver.isOnUIDatabaseObserverSerialQueue)
 }
 
 @objc
@@ -48,12 +75,18 @@ public class UIDatabaseObserver: NSObject {
     //
     // Some of our snapshot observers read from the database *while* accessing this
     // state. Note that reading from the db must be done on GRDB's DispatchQueue.
-    static var _isOnUIDatabaseObserverSerialQueue = false
+    private static var _isOnUIDatabaseObserverSerialQueue = AtomicBool(false)
+
+    static var isOnUIDatabaseObserverSerialQueue: Bool {
+        return _isOnUIDatabaseObserverSerialQueue.get()
+    }
+
     public class func serializedSync(block: () -> Void) {
         objc_sync_enter(self)
-        _isOnUIDatabaseObserverSerialQueue = true
+        assert(!_isOnUIDatabaseObserverSerialQueue.get())
+        _isOnUIDatabaseObserverSerialQueue.set(true)
         block()
-        _isOnUIDatabaseObserverSerialQueue = false
+        _isOnUIDatabaseObserverSerialQueue.set(false)
         objc_sync_exit(self)
     }
 
