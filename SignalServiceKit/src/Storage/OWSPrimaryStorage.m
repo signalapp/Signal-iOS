@@ -15,6 +15,7 @@
 #import "OWSMessageReceiver.h"
 #import "OWSStorage+Subclass.h"
 #import "SSKEnvironment.h"
+#import "SignalAccountFinder.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
 #import "YAPDBMediaGalleryFinder.h"
@@ -230,6 +231,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [YAPDBMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
                                       [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
                                       [YAPDBJobRecordFinderSetup asyncRegisterDatabaseExtensionObjCWithStorage:self];
+                                      [SignalAccountFinder asyncRegisterDatabaseExtensions:self];
 
                                       [self.database
                                           flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(

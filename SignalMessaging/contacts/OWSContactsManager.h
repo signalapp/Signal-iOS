@@ -13,6 +13,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @class OWSPrimaryStorage;
 @class SDSKeyValueStore;
 @class SignalAccount;
+@class SignalServiceAddress;
 @class UIFont;
 
 /**
@@ -40,10 +41,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
 // This will return an instance of SignalAccount for _known_ signal accounts.
-- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId;
+- (nullable SignalAccount *)fetchSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address;
 // This will always return an instance of SignalAccount.
-- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId;
-- (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId;
+- (SignalAccount *)fetchOrBuildSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address;
+- (BOOL)hasSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address;
 
 #pragma mark - System Contact Fetching
 
@@ -72,9 +73,9 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 #pragma mark - Util
 
-- (BOOL)isSystemContact:(NSString *)recipientId;
-- (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId;
-- (BOOL)hasNameInSystemContactsForRecipientId:(NSString *)recipientId;
+- (BOOL)isSystemContact:(NSString *)phoneNumber;
+- (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
+- (BOOL)hasNameInSystemContactsForSignalServiceAddress:(SignalServiceAddress *)address;
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 
 /**
@@ -85,26 +86,25 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // Generally we prefer the formattedProfileName over the raw profileName so as to
 // distinguish a profile name apart from a name pulled from the system's contacts.
 // This helps clarify when the remote person chooses a potentially confusing profile name.
-- (nullable NSString *)formattedProfileNameForRecipientId:(NSString *)recipientId;
-- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
-- (nullable NSString *)nameFromSystemContactsForRecipientId:(NSString *)recipientId;
-- (NSString *)stringForConversationTitleWithPhoneIdentifier:(NSString *)recipientId;
+- (nullable NSString *)formattedProfileNameForSignalServiceAddress:(SignalServiceAddress *)address;
+- (nullable NSString *)profileNameForSignalServiceAddress:(SignalServiceAddress *)address;
+- (nullable NSString *)nameFromSystemContactsForSignalServiceAddress:(SignalServiceAddress *)address;
 
-- (nullable UIImage *)systemContactImageForPhoneIdentifier:(nullable NSString *)identifier;
-- (nullable UIImage *)profileImageForPhoneIdentifier:(nullable NSString *)identifier;
-- (nullable NSData *)profileImageDataForPhoneIdentifier:(nullable NSString *)identifier;
+- (nullable UIImage *)systemContactImageForSignalServiceAddress:(nullable SignalServiceAddress *)address;
+- (nullable UIImage *)profileImageForSignalServiceAddress:(nullable SignalServiceAddress *)address;
+- (nullable NSData *)profileImageDataForSignalServiceAddress:(nullable SignalServiceAddress *)address;
 
-- (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
+- (nullable UIImage *)imageForSignalServiceAddress:(nullable SignalServiceAddress *)address;
 - (NSAttributedString *)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *)font;
-- (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;
-- (NSString *)contactOrProfileNameForPhoneIdentifier:(NSString *)recipientId;
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId;
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
-                                                             primaryFont:(UIFont *)primaryFont
-                                                           secondaryFont:(UIFont *)secondaryFont;
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
-                                                       primaryAttributes:(NSDictionary *)primaryAttributes
-                                                     secondaryAttributes:(NSDictionary *)secondaryAttributes;
+- (NSAttributedString *)formattedFullNameForSignalServiceAddress:(SignalServiceAddress *)address font:(UIFont *)font;
+- (NSString *)contactOrProfileNameForSignalServiceAddress:(SignalServiceAddress *)address;
+- (NSAttributedString *)attributedContactOrProfileNameForSignalServiceAddress:(SignalServiceAddress *)address;
+- (NSAttributedString *)attributedContactOrProfileNameForSignalServiceAddress:(SignalServiceAddress *)address
+                                                                  primaryFont:(UIFont *)primaryFont
+                                                                secondaryFont:(UIFont *)secondaryFont;
+- (NSAttributedString *)attributedContactOrProfileNameForSignalServiceAddress:(SignalServiceAddress *)address
+                                                            primaryAttributes:(NSDictionary *)primaryAttributes
+                                                          secondaryAttributes:(NSDictionary *)secondaryAttributes;
 @end
 
 NS_ASSUME_NONNULL_END

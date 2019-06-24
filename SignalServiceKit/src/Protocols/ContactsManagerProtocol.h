@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -8,18 +8,19 @@ NS_ASSUME_NONNULL_BEGIN
 @class Contact;
 @class PhoneNumber;
 @class SignalAccount;
+@class SignalServiceAddress;
 @class UIImage;
 @class YapDatabaseReadTransaction;
 
 @protocol ContactsManagerProtocol <NSObject>
 
-- (NSString *)displayNameForPhoneIdentifier:(nullable NSString *)recipientId;
-- (NSString *)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
-                                transaction:(YapDatabaseReadTransaction *)transaction;
+- (NSString *)displayNameForSignalServiceAddress:(nullable SignalServiceAddress *)address;
+- (NSString *)displayNameForSignalServiceAddress:(nullable SignalServiceAddress *)address
+                                     transaction:(YapDatabaseReadTransaction *)transaction;
 - (NSArray<SignalAccount *> *)signalAccounts;
 
-- (BOOL)isSystemContact:(NSString *)recipientId;
-- (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId;
+- (BOOL)isSystemContact:(NSString *)phoneNumber;
+- (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
 
 - (NSComparisonResult)compareSignalAccount:(SignalAccount *)left
                          withSignalAccount:(SignalAccount *)right NS_SWIFT_NAME(compare(signalAccount:with:));

@@ -22,6 +22,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalAccountFinder.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,6 +46,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbWriteConnection;
+@property (nonatomic, readonly) SignalAccountFinder *accountFinder;
 @property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
 @property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
 @property (atomic) BOOL isSetup;
@@ -69,6 +71,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     _dbReadConnection = primaryStorage.newDatabaseConnection;
     _dbWriteConnection = primaryStorage.newDatabaseConnection;
+    _accountFinder = [SignalAccountFinder new];
 
     _allContacts = @[];
     _allContactsMap = @{};
@@ -249,19 +252,19 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 #pragma mark - Intersection
 
-- (NSSet<NSString *> *)recipientIdsForIntersectionWithContacts:(NSArray<Contact *> *)contacts
+- (NSSet<NSString *> *)phoneNumbersForIntersectionWithContacts:(NSArray<Contact *> *)contacts
 {
     OWSAssertDebug(contacts);
 
-    NSMutableSet<NSString *> *recipientIds = [NSMutableSet set];
+    NSMutableSet<NSString *> *phoneNumbers = [NSMutableSet set];
 
     for (Contact *contact in contacts) {
         for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
-            [recipientIds addObject:phoneNumber.toE164];
+            [phoneNumbers addObject:phoneNumber.toE164];
         }
     }
 
-    return recipientIds;
+    return phoneNumbers;
 }
 
 - (void)intersectContacts:(NSArray<Contact *> *)contacts
@@ -276,8 +279,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     dispatch_async(self.serialQueue, ^{
         __block BOOL isFullIntersection = YES;
         __block BOOL isRegularlyScheduledRun = NO;
-        __block NSSet<NSString *> *allContactRecipientIds;
-        __block NSSet<NSString *> *recipientIdsForIntersection;
+        __block NSSet<NSString *> *allContactPhoneNumbers;
+        __block NSSet<NSString *> *phoneNumbersForIntersection;
         __block NSMutableSet<SignalRecipient *> *existingRegisteredRecipients = [NSMutableSet new];
         [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             // Contact updates initiated by the user should always do a full intersection.
@@ -305,8 +308,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                                                    }
                                                }];
 
-            allContactRecipientIds = [self recipientIdsForIntersectionWithContacts:contacts];
-            recipientIdsForIntersection = allContactRecipientIds;
+            allContactPhoneNumbers = [self phoneNumbersForIntersectionWithContacts:contacts];
+            phoneNumbersForIntersection = allContactPhoneNumbers;
 
             if (!isFullIntersection) {
                 // Do a "delta" intersection instead of a "full" intersection:
@@ -316,32 +319,32 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                     [self.keyValueStore getObject:OWSContactsManagerKeyLastKnownContactPhoneNumbers
                                       transaction:transaction.asAnyRead];
                 if (lastKnownContactPhoneNumbers) {
-                    // Do a "delta" sync which only intersects recipient ids not included
+                    // Do a "delta" sync which only intersects phone numbers not included
                     // in the last full intersection.
-                    NSMutableSet<NSString *> *newRecipientIds = [allContactRecipientIds mutableCopy];
-                    [newRecipientIds minusSet:lastKnownContactPhoneNumbers];
-                    recipientIdsForIntersection = newRecipientIds;
+                    NSMutableSet<NSString *> *newPhoneNumbers = [allContactPhoneNumbers mutableCopy];
+                    [newPhoneNumbers minusSet:lastKnownContactPhoneNumbers];
+                    phoneNumbersForIntersection = newPhoneNumbers;
                 } else {
                     // Without a list of "last known" contact phone numbers, we'll have to do a full intersection.
                     isFullIntersection = YES;
                 }
             }
         }];
-        OWSAssertDebug(recipientIdsForIntersection);
+        OWSAssertDebug(phoneNumbersForIntersection);
 
-        if (recipientIdsForIntersection.count < 1) {
+        if (phoneNumbersForIntersection.count < 1) {
             OWSLogInfo(@"Skipping intersection; no contacts to intersect.");
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 completion(nil);
             });
             return;
         } else if (isFullIntersection) {
-            OWSLogInfo(@"Doing full intersection with %zu contacts.", recipientIdsForIntersection.count);
+            OWSLogInfo(@"Doing full intersection with %zu contacts.", phoneNumbersForIntersection.count);
         } else {
-            OWSLogInfo(@"Doing delta intersection with %zu contacts.", recipientIdsForIntersection.count);
+            OWSLogInfo(@"Doing delta intersection with %zu contacts.", phoneNumbersForIntersection.count);
         }
 
-        [self intersectContacts:recipientIdsForIntersection
+        [self intersectContacts:phoneNumbersForIntersection
             retryDelaySeconds:1.0
             success:^(NSSet<SignalRecipient *> *registeredRecipients) {
                 if (isRegularlyScheduledRun) {
@@ -366,7 +369,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                     }
                 }
 
-                [self markIntersectionAsComplete:allContactRecipientIds isFullIntersection:isFullIntersection];
+                [self markIntersectionAsComplete:allContactPhoneNumbers isFullIntersection:isFullIntersection];
 
                 completion(nil);
             }
@@ -376,14 +379,14 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     });
 }
 
-- (void)markIntersectionAsComplete:(NSSet<NSString *> *)recipientIdsForIntersection
+- (void)markIntersectionAsComplete:(NSSet<NSString *> *)phoneNumbersForIntersection
                 isFullIntersection:(BOOL)isFullIntersection
 {
-    OWSAssertDebug(recipientIdsForIntersection.count > 0);
+    OWSAssertDebug(phoneNumbersForIntersection.count > 0);
 
     dispatch_async(self.serialQueue, ^{
         [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self.keyValueStore setObject:recipientIdsForIntersection
+            [self.keyValueStore setObject:phoneNumbersForIntersection
                                       key:OWSContactsManagerKeyLastKnownContactPhoneNumbers
                               transaction:transaction.asAnyWrite];
 
@@ -400,19 +403,19 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     });
 }
 
-- (void)intersectContacts:(NSSet<NSString *> *)recipientIds
+- (void)intersectContacts:(NSSet<NSString *> *)phoneNumbers
         retryDelaySeconds:(double)retryDelaySeconds
                   success:(void (^)(NSSet<SignalRecipient *> *))successParameter
                   failure:(void (^)(NSError *))failureParameter
 {
-    OWSAssertDebug(recipientIds.count > 0);
+    OWSAssertDebug(phoneNumbers.count > 0);
     OWSAssertDebug(retryDelaySeconds > 0);
     OWSAssertDebug(successParameter);
     OWSAssertDebug(failureParameter);
 
-    void (^success)(NSArray<SignalRecipient *> *) = ^(NSArray<SignalRecipient *> *registeredRecipientIds) {
+    void (^success)(NSArray<SignalRecipient *> *) = ^(NSArray<SignalRecipient *> *registeredRecipients) {
         OWSLogInfo(@"Successfully intersected contacts.");
-        successParameter([NSSet setWithArray:registeredRecipientIds]);
+        successParameter([NSSet setWithArray:registeredRecipients]);
     };
     void (^failure)(NSError *) = ^(NSError *error) {
         if ([error.domain isEqualToString:OWSSignalServiceKitErrorDomain]
@@ -429,13 +432,13 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         // TODO: Abort if another contact intersection succeeds in the meantime.
         dispatch_after(
             dispatch_time(DISPATCH_TIME_NOW, (int64_t)(retryDelaySeconds * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self intersectContacts:recipientIds
+                [self intersectContacts:phoneNumbers
                       retryDelaySeconds:retryDelaySeconds * 2.0
                                 success:successParameter
                                 failure:failureParameter];
             });
     };
-    [[ContactsUpdater sharedUpdater] lookupIdentifiers:recipientIds.allObjects success:success failure:failure];
+    [[ContactsUpdater sharedUpdater] lookupIdentifiers:phoneNumbers.allObjects success:success failure:failure];
 }
 
 - (void)startObserving
@@ -508,22 +511,22 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             }
         }];
 
-        NSMutableSet<NSString *> *seenRecipientIds = [NSMutableSet new];
+        NSMutableSet<NSString *> *seenPhoneNumbers = [NSMutableSet new];
         for (Contact *contact in contacts) {
             NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.uniqueId];
             for (SignalRecipient *signalRecipient in [signalRecipients sortedArrayUsingSelector:@selector((compare:))]) {
-                if ([seenRecipientIds containsObject:signalRecipient.recipientId]) {
+                if ([seenPhoneNumbers containsObject:signalRecipient.recipientId]) {
                     OWSLogDebug(@"Ignoring duplicate contact: %@, %@", signalRecipient.recipientId, contact.fullName);
                     continue;
                 }
-                [seenRecipientIds addObject:signalRecipient.recipientId];
+                [seenPhoneNumbers addObject:signalRecipient.recipientId];
 
                 SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
                 signalAccount.contact = contact;
                 if (signalRecipients.count > 1) {
                     signalAccount.hasMultipleAccountContact = YES;
                     signalAccount.multipleAccountLabelText =
-                        [[self class] accountLabelForContact:contact recipientId:signalRecipient.recipientId];
+                        [[self class] accountLabelForContact:contact phoneNumber:signalRecipient.recipientId];
                 }
                 [signalAccounts addObject:signalAccount];
             }
@@ -613,13 +616,20 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
+    NSMutableArray<NSString *> *transitional_phoneNumbers = [NSMutableArray array];
     for (SignalAccount *signalAccount in signalAccounts) {
-        signalAccountMap[signalAccount.recipientId] = signalAccount;
+        if (signalAccount.recipientPhoneNumber) {
+            signalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
+            [transitional_phoneNumbers addObject:signalAccount.recipientPhoneNumber];
+        }
+        if (signalAccount.recipientUUID) {
+            signalAccountMap[signalAccount.recipientUUID] = signalAccount;
+        }
     }
 
     self.signalAccountMap = [signalAccountMap copy];
     self.signalAccounts = [signalAccounts copy];
-    [self.profileManager setContactRecipientIds:signalAccountMap.allKeys];
+    [self.profileManager setContactRecipientIds:transitional_phoneNumbers];
 
     self.isSetup = YES;
 
@@ -634,31 +644,32 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [OWSProfileManager sharedManager];
 }
 
-- (NSString *_Nullable)cachedContactNameForRecipientId:(NSString *)recipientId
+- (nullable NSString *)cachedContactNameForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
-    return [self cachedContactNameForRecipientId:recipientId signalAccount:signalAccount];
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForSignalServiceAddress:address];
+    return [self cachedContactNameForSignalServiceAddress:address signalAccount:signalAccount];
 }
 
-- (NSString *_Nullable)cachedContactNameForRecipientId:(NSString *)recipientId
-                                           transaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSString *)cachedContactNameForSignalServiceAddress:(SignalServiceAddress *)address
+                                                    transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
     OWSAssertDebug(transaction);
 
-    SignalAccount *_Nullable signalAccount =
-        [self fetchSignalAccountForRecipientId:recipientId transaction:transaction];
-    return [self cachedContactNameForRecipientId:recipientId signalAccount:signalAccount];
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForSignalServiceAddress:address
+                                                                                 transaction:transaction];
+    return [self cachedContactNameForSignalServiceAddress:address signalAccount:signalAccount];
 }
 
-- (NSString *_Nullable)cachedContactNameForRecipientId:(NSString *)recipientId
-                                         signalAccount:(nullable SignalAccount *)signalAccount
+- (nullable NSString *)cachedContactNameForSignalServiceAddress:(SignalServiceAddress *)address
+                                                  signalAccount:(nullable SignalAccount *)signalAccount
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
 
     if (!signalAccount) {
         // search system contacts for no-longer-registered signal users, for which there will be no SignalAccount
-        Contact *_Nullable nonSignalContact = self.allContactsMap[recipientId];
+        NSString *_Nullable phoneNumber = [self phoneNumberForSignalServiceAddress:address];
+        Contact *_Nullable nonSignalContact = self.allContactsMap[phoneNumber];
         if (!nonSignalContact) {
             return nil;
         }
@@ -678,37 +689,43 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [NSString stringWithFormat:@"%@ (%@)", fullName, multipleAccountLabelText];
 }
 
-- (NSString *_Nullable)cachedFirstNameForRecipientId:(NSString *)recipientId
+- (nullable NSString *)cachedFirstNameForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
-
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForSignalServiceAddress:address];
     return signalAccount.contact.firstName.filterStringForDisplay;
 }
 
-- (NSString *_Nullable)cachedLastNameForRecipientId:(NSString *)recipientId
+- (nullable NSString *)cachedLastNameForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
-
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForSignalServiceAddress:address];
     return signalAccount.contact.lastName.filterStringForDisplay;
+}
+
+- (nullable NSString *)phoneNumberForSignalServiceAddress:(SignalServiceAddress *)address
+{
+    if (address.isPhoneNumber) {
+        return address.stringIdentifier;
+    }
+
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForSignalServiceAddress:address];
+    return signalAccount.recipientPhoneNumber;
 }
 
 #pragma mark - View Helpers
 
 // TODO move into Contact class.
-+ (NSString *)accountLabelForContact:(Contact *)contact recipientId:(NSString *)recipientId
++ (NSString *)accountLabelForContact:(Contact *)contact phoneNumber:(NSString *)phoneNumber
 {
     OWSAssertDebug(contact);
-    OWSAssertDebug(recipientId.length > 0);
-    OWSAssertDebug([contact.textSecureIdentifiers containsObject:recipientId]);
+    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug([contact.textSecureIdentifiers containsObject:phoneNumber]);
 
     if (contact.textSecureIdentifiers.count <= 1) {
         return nil;
     }
 
     // 1. Find the phone number type of this account.
-    NSString *phoneNumberLabel = [contact nameForPhoneNumber:recipientId];
+    NSString *phoneNumberLabel = [contact nameForPhoneNumber:phoneNumber];
 
     // 2. Find all phone numbers for this contact of the same type.
     NSMutableArray *phoneNumbersWithTheSameName = [NSMutableArray new];
@@ -718,10 +735,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }
     }
 
-    OWSAssertDebug([phoneNumbersWithTheSameName containsObject:recipientId]);
+    OWSAssertDebug([phoneNumbersWithTheSameName containsObject:phoneNumber]);
     if (phoneNumbersWithTheSameName.count > 1) {
         NSUInteger index =
-            [[phoneNumbersWithTheSameName sortedArrayUsingSelector:@selector((compare:))] indexOfObject:recipientId];
+            [[phoneNumbersWithTheSameName sortedArrayUsingSelector:@selector((compare:))] indexOfObject:phoneNumber];
         NSString *indexText = [OWSFormat formatInt:(int)index + 1];
         phoneNumberLabel =
             [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
@@ -741,23 +758,24 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 #pragma mark - Whisper User Management
 
-- (BOOL)isSystemContact:(NSString *)recipientId
+- (BOOL)isSystemContact:(NSString *)phoneNumber
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(phoneNumber.length > 0);
 
-    return self.allContactsMap[recipientId] != nil;
+    return self.allContactsMap[phoneNumber] != nil;
 }
 
-- (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId
+- (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(phoneNumber.length > 0);
 
-    return [self hasSignalAccountForRecipientId:recipientId];
+    return
+        [self hasSignalAccountForSignalServiceAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
 }
 
-- (BOOL)hasNameInSystemContactsForRecipientId:(NSString *)recipientId
+- (BOOL)hasNameInSystemContactsForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    return [self cachedContactNameForRecipientId:recipientId].length > 0;
+    return [self cachedContactNameForSignalServiceAddress:address].length > 0;
 }
 
 - (NSString *)unknownContactName
@@ -766,9 +784,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         @"UNKNOWN_CONTACT_NAME", @"Displayed if for some reason we can't determine a contacts phone number *or* name");
 }
 
-- (nullable NSString *)formattedProfileNameForRecipientId:(NSString *)recipientId
+- (nullable NSString *)formattedProfileNameForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:address.transitional_phoneNumber];
     if (profileName.length == 0) {
         return nil;
     }
@@ -779,58 +797,57 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [NSString stringWithFormat:profileNameFormatString, profileName];
 }
 
-- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId
+- (nullable NSString *)profileNameForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    return [self.profileManager profileNameForRecipientId:recipientId];
+    return [self.profileManager profileNameForRecipientId:address.transitional_phoneNumber];
 }
 
-- (nullable NSString *)nameFromSystemContactsForRecipientId:(NSString *)recipientId
+- (nullable NSString *)nameFromSystemContactsForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    return [self cachedContactNameForRecipientId:recipientId];
+    return [self cachedContactNameForSignalServiceAddress:address];
 }
 
-- (nullable NSString *)nameFromSystemContactsForRecipientId:(NSString *)recipientId
-                                                transaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSString *)nameFromSystemContactsForSignalServiceAddress:(SignalServiceAddress *)address
+                                                         transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug(transaction);
 
-    return [self cachedContactNameForRecipientId:recipientId transaction:transaction];
+    return [self cachedContactNameForSignalServiceAddress:address transaction:transaction];
 }
 
-- (NSString *)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
+- (NSString *)displayNameForSignalServiceAddress:(nullable SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
 
-    if (!recipientId) {
+    if (address == nil) {
         return self.unknownContactName;
     }
 
-    NSString *_Nullable displayName = [self nameFromSystemContactsForRecipientId:recipientId];
+    NSString *_Nullable displayName = [self nameFromSystemContactsForSignalServiceAddress:address];
 
-    // Fall back to just using their recipientId
     if (displayName.length < 1) {
-        displayName = recipientId;
+        NSString *_Nullable phoneNumber = [self phoneNumberForSignalServiceAddress:address];
+        displayName = phoneNumber ?: address.stringIdentifier;
     }
 
     return displayName;
 }
 
-- (NSString *)displayNameForPhoneIdentifier:(NSString *_Nullable)recipientId
-                                transaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)displayNameForSignalServiceAddress:(nullable SignalServiceAddress *)address
+                                     transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug(transaction);
 
-    if (!recipientId) {
+    if (address == nil) {
         return self.unknownContactName;
     }
 
-    NSString *_Nullable displayName = [self nameFromSystemContactsForRecipientId:recipientId transaction:transaction];
+    NSString *_Nullable displayName = [self nameFromSystemContactsForSignalServiceAddress:address
+                                                                              transaction:transaction];
 
-    // Fall back to just using their recipientId
     if (displayName.length < 1) {
-        displayName = recipientId;
+        NSString *_Nullable phoneNumber = [self phoneNumberForSignalServiceAddress:address];
+        displayName = phoneNumber ?: address.stringIdentifier;
     }
 
     return displayName;
@@ -840,7 +857,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertDebug(signalAccount);
 
-    return [self displayNameForPhoneIdentifier:signalAccount.recipientId];
+    return [self displayNameForSignalServiceAddress:signalAccount.recipientAddress];
 }
 
 - (NSAttributedString *_Nonnull)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *)font
@@ -848,12 +865,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertDebug(signalAccount);
     OWSAssertDebug(font);
 
-    return [self formattedFullNameForRecipientId:signalAccount.recipientId font:font];
+    return [self formattedFullNameForSignalServiceAddress:signalAccount.recipientAddress font:font];
 }
 
-- (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font
+- (NSAttributedString *)formattedFullNameForSignalServiceAddress:(SignalServiceAddress *)address font:(UIFont *)font
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
     OWSAssertDebug(font);
 
     UIFont *boldFont = [UIFont ows_mediumFontWithSize:font.pointSize];
@@ -867,8 +884,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     NSDictionary<NSString *, id> *lastNameAttributes
         = (self.shouldSortByGivenName ? normalFontAttributes : boldFontAttributes);
 
-    NSString *cachedFirstName = [self cachedFirstNameForRecipientId:recipientId];
-    NSString *cachedLastName = [self cachedLastNameForRecipientId:recipientId];
+    NSString *cachedFirstName = [self cachedFirstNameForSignalServiceAddress:address];
+    NSString *cachedLastName = [self cachedLastNameForSignalServiceAddress:address];
+    NSString *_Nullable phoneNumber = [self phoneNumberForSignalServiceAddress:address];
 
     NSMutableAttributedString *formattedName = [NSMutableAttributedString new];
 
@@ -878,7 +896,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         NSAttributedString *lastName =
             [[NSAttributedString alloc] initWithString:cachedLastName attributes:lastNameAttributes];
 
-        NSString *_Nullable cnContactId = self.allContactsMap[recipientId].cnContactId;
+        NSString *_Nullable cnContactId = self.allContactsMap[phoneNumber].cnContactId;
         CNContact *_Nullable cnContact = [self cnContactWithId:cnContactId];
         if (!cnContact) {
             // If we don't have a CNContact for this recipient id, make one.
@@ -910,15 +928,19 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     } else if (cachedLastName.length > 0) {
         [formattedName appendAttributedString:[[NSAttributedString alloc] initWithString:cachedLastName
                                                                               attributes:lastNameAttributes]];
-    } else {
-        // Else, fall back to using just their recipientId
+    } else if (phoneNumber) {
+        // Fallback to just their phone number, if we know it
         NSString *phoneString =
-            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId];
+            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
         return [[NSAttributedString alloc] initWithString:phoneString attributes:normalFontAttributes];
+
+    } else {
+        // Otherwise, fallback to their uuid
+        return [[NSAttributedString alloc] initWithString:address.stringIdentifier attributes:normalFontAttributes];
     }
 
     // Append unique label for contacts with multiple Signal accounts
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForSignalServiceAddress:address];
     if (signalAccount && signalAccount.multipleAccountLabelText) {
         OWSAssertDebug(signalAccount.multipleAccountLabelText.length > 0);
 
@@ -934,68 +956,75 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return formattedName;
 }
 
-- (NSString *)contactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
+- (NSString *)contactOrProfileNameForSignalServiceAddress:(SignalServiceAddress *)address
 {
     // Prefer a saved name from system contacts, if available
-    NSString *_Nullable savedContactName = [self cachedContactNameForRecipientId:recipientId];
+    NSString *_Nullable savedContactName = [self cachedContactNameForSignalServiceAddress:address];
     if (savedContactName.length > 0) {
         return savedContactName;
     }
 
-    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    NSString *_Nullable phoneNumber = [self phoneNumberForSignalServiceAddress:address];
+    if (phoneNumber) {
+        phoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
+    }
+
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:address.transitional_phoneNumber];
+
     if (profileName.length > 0) {
         NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
             @"Label text combining the phone number and profile name separated by a simple demarcation character. "
             @"Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced "
             @"with {{profile name}}");
 
-        NSString *numberAndProfileName =
-            [NSString stringWithFormat:numberAndProfileNameFormat, recipientId, profileName];
+        NSString *numberAndProfileName = [NSString
+            stringWithFormat:numberAndProfileNameFormat, phoneNumber ?: address.stringIdentifier, profileName];
         return numberAndProfileName;
     }
 
-    // else fall back to recipient id
-    return recipientId;
+    // else fall back to phone number or UUID
+    return phoneNumber ?: address.stringIdentifier;
 }
 
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
+- (NSAttributedString *)attributedContactOrProfileNameForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    return [[NSAttributedString alloc] initWithString:[self contactOrProfileNameForPhoneIdentifier:recipientId]];
+    return [[NSAttributedString alloc] initWithString:[self contactOrProfileNameForSignalServiceAddress:address]];
 }
 
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
-                                                             primaryFont:(UIFont *)primaryFont
-                                                           secondaryFont:(UIFont *)secondaryFont
+- (NSAttributedString *)attributedContactOrProfileNameForSignalServiceAddress:(SignalServiceAddress *)address
+                                                                  primaryFont:(UIFont *)primaryFont
+                                                                secondaryFont:(UIFont *)secondaryFont
 {
     OWSAssertDebug(primaryFont);
     OWSAssertDebug(secondaryFont);
 
-    return [self attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
-                                                primaryAttributes:@{
-                                                    NSFontAttributeName : primaryFont,
-                                                }
-                                              secondaryAttributes:@{
-                                                  NSFontAttributeName : secondaryFont,
-                                              }];
+    return [self attributedContactOrProfileNameForSignalServiceAddress:(SignalServiceAddress *)address
+                                                     primaryAttributes:@{
+                                                         NSFontAttributeName : primaryFont,
+                                                     }
+                                                   secondaryAttributes:@{
+                                                       NSFontAttributeName : secondaryFont,
+                                                   }];
 }
 
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
-                                                       primaryAttributes:(NSDictionary *)primaryAttributes
-                                                     secondaryAttributes:(NSDictionary *)secondaryAttributes
+- (NSAttributedString *)attributedContactOrProfileNameForSignalServiceAddress:(SignalServiceAddress *)address
+                                                            primaryAttributes:(NSDictionary *)primaryAttributes
+                                                          secondaryAttributes:(NSDictionary *)secondaryAttributes
 {
     OWSAssertDebug(primaryAttributes.count > 0);
     OWSAssertDebug(secondaryAttributes.count > 0);
 
     // Prefer a saved name from system contacts, if available
-    NSString *_Nullable savedContactName = [self cachedContactNameForRecipientId:recipientId];
+    NSString *_Nullable savedContactName = [self cachedContactNameForSignalServiceAddress:address];
     if (savedContactName.length > 0) {
         return [[NSAttributedString alloc] initWithString:savedContactName attributes:primaryAttributes];
     }
 
-    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    NSString *_Nullable phoneNumber = [self phoneNumberForSignalServiceAddress:address];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:address.transitional_phoneNumber];
     if (profileName.length > 0) {
-        NSAttributedString *result =
-            [[NSAttributedString alloc] initWithString:recipientId attributes:primaryAttributes];
+        NSAttributedString *result = [[NSAttributedString alloc] initWithString:phoneNumber ?: address.stringIdentifier
+                                                                     attributes:primaryAttributes];
         result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@" "]];
         result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@"~" attributes:secondaryAttributes]];
         result = [result
@@ -1003,131 +1032,107 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return [result copy];
     }
 
-    // else fall back to recipient id
-    return [[NSAttributedString alloc] initWithString:recipientId attributes:primaryAttributes];
+    // else fall back to phone number or UUID
+    return [[NSAttributedString alloc] initWithString:phoneNumber ?: address.stringIdentifier
+                                           attributes:primaryAttributes];
 }
 
-// TODO refactor attributed counterparts to use this as a helper method?
-- (NSString *)stringForConversationTitleWithPhoneIdentifier:(NSString *)recipientId
+- (nullable SignalAccount *)fetchSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    // Prefer a saved name from system contacts, if available
-    NSString *_Nullable savedContactName = [self cachedContactNameForRecipientId:recipientId];
-    if (savedContactName.length > 0) {
-        return savedContactName;
-    }
+    OWSAssertDebug(address);
 
-    NSString *formattedPhoneNumber =
-        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId];
-    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
-    if (profileName.length > 0) {
-        NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
-            @"Label text combining the phone number and profile name separated by a simple demarcation character. "
-            @"Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced "
-            @"with {{profile name}}");
-
-        NSString *numberAndProfileName =
-            [NSString stringWithFormat:numberAndProfileNameFormat, formattedPhoneNumber, profileName];
-
-        return numberAndProfileName;
-    }
-
-    // else fall back phone number
-    return formattedPhoneNumber;
-}
-
-- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId
-{
-    OWSAssertDebug(recipientId.length > 0);
-
-    __block SignalAccount *signalAccount = self.signalAccountMap[recipientId];
+    __block SignalAccount *signalAccount = self.signalAccountMap[address.stringIdentifier];
 
     // If contact intersection hasn't completed, it might exist on disk
     // even if it doesn't exist in memory yet.
     if (!signalAccount) {
         [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            signalAccount = [SignalAccount fetchObjectWithUniqueID:recipientId transaction:transaction];
+            signalAccount = [self.accountFinder signalAccountForAddress:address withTransaction:transaction];
         }];
     }
 
     return signalAccount;
 }
 
-- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId
-                                                 transaction:(YapDatabaseReadTransaction *)transaction
+- (nullable SignalAccount *)fetchSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address
+                                                          transaction:(YapDatabaseReadTransaction *)transaction
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
     OWSAssertDebug(transaction);
 
-    __block SignalAccount *signalAccount = self.signalAccountMap[recipientId];
+    __block SignalAccount *signalAccount = self.signalAccountMap[address.stringIdentifier];
 
     // If contact intersection hasn't completed, it might exist on disk
     // even if it doesn't exist in memory yet.
     if (!signalAccount) {
-        signalAccount = [SignalAccount fetchObjectWithUniqueID:recipientId transaction:transaction];
+        signalAccount = [self.accountFinder signalAccountForAddress:address withTransaction:transaction];
     }
 
     return signalAccount;
 }
 
-- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId
+- (SignalAccount *)fetchOrBuildSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
 
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
-    return (signalAccount ?: [[SignalAccount alloc] initWithRecipientId:recipientId]);
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForSignalServiceAddress:address];
+    return (signalAccount ?: [[SignalAccount alloc] initWithSignalServiceAddress:address]);
 }
 
-- (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId
+- (BOOL)hasSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    return [self fetchSignalAccountForRecipientId:recipientId] != nil;
+    return [self fetchSignalAccountForSignalServiceAddress:address] != nil;
 }
 
-- (UIImage *_Nullable)systemContactImageForPhoneIdentifier:(NSString *_Nullable)identifier
+- (nullable UIImage *)systemContactImageForSignalServiceAddress:(nullable SignalServiceAddress *)address
 {
-    if (identifier.length == 0) {   
+    if (address == nil) {
         return nil;
     }
-    
-    Contact *contact = self.allContactsMap[identifier];
+
+    NSString *_Nullable phoneNumber = [self phoneNumberForSignalServiceAddress:address];
+    Contact *_Nullable contact = self.allContactsMap[phoneNumber];
+
     if (!contact) {
         // If we haven't loaded system contacts yet, we may have a cached
         // copy in the db
-        contact = [self fetchSignalAccountForRecipientId:identifier].contact;
+        SignalAccount *_Nullable account = [self fetchSignalAccountForSignalServiceAddress:address];
+        contact = account.contact;
     }
 
     return [self avatarImageForCNContactId:contact.cnContactId];
 }
 
-- (nullable UIImage *)profileImageForPhoneIdentifier:(nullable NSString *)identifier
+- (nullable UIImage *)profileImageForSignalServiceAddress:(nullable SignalServiceAddress *)address
 {
-    if (identifier.length == 0) {
+    if (address == nil) {
         return nil;
     }
-    
-    return [self.profileManager profileAvatarForRecipientId:identifier];
+
+    return [self.profileManager profileAvatarForRecipientId:address.transitional_phoneNumber];
 }
 
-- (nullable NSData *)profileImageDataForPhoneIdentifier:(nullable NSString *)identifier
+- (nullable NSData *)profileImageDataForSignalServiceAddress:(nullable SignalServiceAddress *)address
 {
-    if (identifier.length == 0) {
+    if (address == nil) {
         return nil;
     }
-    
-    return [self.profileManager profileAvatarDataForRecipientId:identifier];
+
+    return [self.profileManager profileAvatarDataForRecipientId:address.transitional_phoneNumber];
 }
 
-- (UIImage *_Nullable)imageForPhoneIdentifier:(NSString *_Nullable)identifier
+- (nullable UIImage *)imageForSignalServiceAddress:(nullable SignalServiceAddress *)address
 {
-    if (identifier.length == 0) {
+    if (address == nil) {
         return nil;
     }
-    
+
     // Prefer the contact image from the local address book if available
-    UIImage *_Nullable image = [self systemContactImageForPhoneIdentifier:identifier];
+    UIImage *_Nullable image = [self systemContactImageForSignalServiceAddress:address];
 
     // Else try to use the image from their profile
     if (image == nil) {
-        image = [self profileImageForPhoneIdentifier:identifier];
+        image = [self profileImageForSignalServiceAddress:address];
     }
 
     return image;
@@ -1146,7 +1151,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
         NSComparisonResult nameComparison = [leftName caseInsensitiveCompare:rightName];
         if (nameComparison == NSOrderedSame) {
-            return [left.recipientId compare:right.recipientId];
+            return [left.recipientAddress.stringIdentifier compare:right.recipientAddress.stringIdentifier];
         }
 
         return nameComparison;
@@ -1170,7 +1175,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     if (name.length < 1) {
-        name = signalAccount.recipientId;
+        name = signalAccount.recipientAddress.stringIdentifier;
     }
 
     return name;
