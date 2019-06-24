@@ -119,20 +119,6 @@ import Foundation
     // MARK: Filter Methods
 
     @objc
-    public class func filterNotificationText(_ text: String?) -> String? {
-        guard let text = text?.filterStringForDisplay() else {
-            return nil
-        }
-
-        // iOS strips anything that looks like a printf formatting character from
-        // the notification body, so if we want to dispay a literal "%" in a notification
-        // it must be escaped.
-        // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
-        // for more details.
-        return text.replacingOccurrences(of: "%", with: "%%")
-    }
-
-    @objc
     public class func displayableText(_ rawText: String) -> DisplayableText {
         // Only show up to N characters of text.
         let kMaxTextDisplayLength = 512

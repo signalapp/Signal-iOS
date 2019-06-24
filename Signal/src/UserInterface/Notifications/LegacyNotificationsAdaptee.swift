@@ -154,12 +154,19 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             return
         }
 
+        // UILocalNotification strips anything that looks like a printf
+        // formatting character from the notification body, so if we want to
+        // display a literal "%" in a notification it must be escaped.
+        // see https://developer.apple.com/documentation/uikit/uilocalnotification/1616646-alertbody
+        // for more details. UNUserNotifications do not require this.
+        let escapedBody = body.replacingOccurrences(of: "%", with: "%%")
+
         let alertBody: String
         if let title = title {
             // TODO - Make this a format string for better l10n
-            alertBody = title.rtlSafeAppend(":").rtlSafeAppend(" ").rtlSafeAppend(body)
+            alertBody = title.rtlSafeAppend(":").rtlSafeAppend(" ").rtlSafeAppend(escapedBody)
         } else {
-            alertBody = body
+            alertBody = escapedBody
         }
 
         let notification = UILocalNotification()
