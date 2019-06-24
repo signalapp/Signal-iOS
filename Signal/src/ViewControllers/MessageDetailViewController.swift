@@ -431,7 +431,7 @@ class MessageDetailViewController: OWSViewController {
             return nil
         }
 
-        guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {
+        guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction.asAnyRead) else {
             Logger.warn("Missing attachment. Was it deleted?")
             return nil
         }

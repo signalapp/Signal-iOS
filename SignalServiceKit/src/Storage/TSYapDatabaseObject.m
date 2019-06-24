@@ -272,6 +272,106 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
+#pragma mark - YDB Deprecation
+
++ (NSUInteger)ydb_numberOfKeysInCollection
+{
+    return [self numberOfKeysInCollection];
+}
+
++ (NSUInteger)ydb_numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [self numberOfKeysInCollectionWithTransaction:transaction];
+}
+
++ (void)ydb_removeAllObjectsInCollection
+{
+    [self removeAllObjectsInCollection];
+}
+
++ (NSArray *)ydb_allObjectsInCollection
+{
+    return [self allObjectsInCollection];
+}
+
++ (void)ydb_enumerateCollectionObjectsUsingBlock:(void (^)(id obj, BOOL *stop))block
+{
+    return [self enumerateCollectionObjectsUsingBlock:block];
+}
+
++ (void)ydb_enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
+                                           usingBlock:(void (^)(id object, BOOL *stop))block
+{
+    return [self enumerateCollectionObjectsWithTransaction:transaction usingBlock:block];
+}
+
++ (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID
+                                         transaction:(YapDatabaseReadTransaction *)transaction
+{
+    return [self fetchObjectWithUniqueID:uniqueID transaction:transaction];
+}
+
++ (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID
+{
+    return [self fetchObjectWithUniqueID:uniqueID];
+}
+
+- (void)ydb_save
+{
+    [self save];
+}
+
+- (void)ydb_reload
+{
+    [self reload];
+}
+
+- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    [self reloadWithTransaction:transaction];
+}
+
+- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing
+{
+    [self reloadWithTransaction:transaction ignoreMissing:ignoreMissing];
+}
+
+- (void)ydb_saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock
+{
+    [self saveAsyncWithCompletionBlock:completionBlock];
+}
+
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self saveWithTransaction:transaction];
+}
+
+- (void)ydb_touch
+{
+    [self touch];
+}
+
+- (void)ydb_touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self touchWithTransaction:transaction];
+}
+
+- (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self removeWithTransaction:transaction];
+}
+
+- (void)ydb_remove
+{
+    [self remove];
+}
+
+- (void)ydb_applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
+                               changeBlock:(void (^)(id))changeBlock
+{
+    [self applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

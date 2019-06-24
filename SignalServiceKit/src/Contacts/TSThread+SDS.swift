@@ -310,7 +310,7 @@ public extension TSThread {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -406,7 +406,7 @@ public extension TSThread {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return TSThread.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return TSThread.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -419,7 +419,7 @@ public extension TSThread {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (TSThread, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            TSThread.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            TSThread.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? TSThread else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

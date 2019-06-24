@@ -1357,7 +1357,7 @@ public extension TSInteraction {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -1453,7 +1453,7 @@ public extension TSInteraction {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return TSInteraction.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return TSInteraction.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(InteractionRecord.databaseTableName) WHERE \(interactionColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -1466,7 +1466,7 @@ public extension TSInteraction {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            TSInteraction.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            TSInteraction.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? TSInteraction else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

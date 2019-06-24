@@ -63,9 +63,20 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
 - (void)run
 {
-    __block TSAttachmentStream *attachmentStream;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        attachmentStream = [TSAttachmentStream fetchObjectWithUniqueID:self.attachmentId transaction:transaction];
+    __block TSAttachmentStream *_Nullable attachmentStream;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        TSAttachment *_Nullable attachment =
+            [TSAttachment anyFetchWithUniqueId:self.attachmentId transaction:transaction.asAnyRead];
+        if (attachment == nil) {
+            // Message may have been removed.
+            OWSLogWarn(@"Missing attachment.");
+            return;
+        }
+        if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+            OWSFailDebug(@"Unexpected object: %@", [attachment class]);
+            return;
+        }
+        attachmentStream = (TSAttachmentStream *)attachment;
     }];
 
     if (!attachmentStream) {

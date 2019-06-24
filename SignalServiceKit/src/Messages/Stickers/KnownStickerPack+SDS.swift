@@ -205,7 +205,7 @@ public extension KnownStickerPack {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -301,7 +301,7 @@ public extension KnownStickerPack {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return KnownStickerPack.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return KnownStickerPack.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(KnownStickerPackRecord.databaseTableName) WHERE \(knownStickerPackColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -314,7 +314,7 @@ public extension KnownStickerPack {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (KnownStickerPack, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            KnownStickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            KnownStickerPack.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? KnownStickerPack else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

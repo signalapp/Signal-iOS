@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupImportJob.h"
@@ -409,8 +409,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 // Attachment-related errors are recoverable and can be ignored.
                 continue;
             }
-            TSAttachmentPointer *_Nullable attachment =
-                [TSAttachmentPointer fetchObjectWithUniqueID:item.attachmentId transaction:transaction];
+            TSAttachment *_Nullable attachment =
+                [TSAttachmentPointer anyFetchWithUniqueId:item.attachmentId transaction:transaction.asAnyRead];
             if (!attachment) {
                 OWSLogError(@"attachment to restore could not be found.");
                 // Attachment-related errors are recoverable and can be ignored.
@@ -421,7 +421,8 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 // Attachment-related errors are recoverable and can be ignored.
                 continue;
             }
-            [attachment markForLazyRestoreWithFragment:item transaction:transaction];
+            TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
+            [attachmentPointer markForLazyRestoreWithFragment:item transaction:transaction.asAnyWrite];
             count++;
             [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_RESTORING_FILES",
                                                     @"Indicates that the backup import data is being restored.")

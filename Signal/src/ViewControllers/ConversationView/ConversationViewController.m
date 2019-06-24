@@ -1846,7 +1846,7 @@ typedef enum : NSUInteger {
 {
     OWSAssert(message);
 
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self.attachmentDownloads downloadAllAttachmentsForMessage:message
             transaction:transaction
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
@@ -3086,15 +3086,15 @@ typedef enum : NSUInteger {
 
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
 
-    [self.editingDatabaseConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage
+        asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
             // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
             // preparation rather than duplicated here and in the SAE
             if (contactShare.avatarImage) {
                 [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
             }
         }
-        completionBlock:^{
+        completion:^{
             TSOutgoingMessage *message =
                 [ThreadUtil enqueueMessageWithContactShare:contactShare.dbRecord inThread:self.thread];
             [self messageWasSent:message];
@@ -3611,8 +3611,8 @@ typedef enum : NSUInteger {
         __block TSThread *thread = _thread;
         __block NSString *currentDraft = [self.inputToolbar messageText];
 
-        [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [thread updateWithDraft:currentDraft transaction:transaction.asAnyWrite];
+        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [thread updateWithDraft:currentDraft transaction:transaction];
         }];
     }
 }
@@ -4362,8 +4362,8 @@ typedef enum : NSUInteger {
         [BenchManager completeEventWithEventId:@"fromSendUntil_toggleDefaultKeyboard"];
     });
 
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self.thread updateWithDraft:@"" transaction:transaction.asAnyWrite];
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.thread updateWithDraft:@"" transaction:transaction];
     }];
 
     if (didAddToProfileWhitelist) {

@@ -465,7 +465,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     }
     NSError *linkPreviewError;
     OWSLinkPreview *_Nullable linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft
-                                                                                  transaction:transaction
+                                                                                  transaction:transaction.asAnyWrite
                                                                                         error:&linkPreviewError];
     if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
         OWSLogError(@"linkPreviewError: %@", linkPreviewError);

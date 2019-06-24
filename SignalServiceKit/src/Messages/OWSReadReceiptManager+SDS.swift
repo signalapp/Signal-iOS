@@ -199,7 +199,7 @@ public extension TSRecipientReadReceipt {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -295,7 +295,7 @@ public extension TSRecipientReadReceipt {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return TSRecipientReadReceipt.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return TSRecipientReadReceipt.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(RecipientReadReceiptRecord.databaseTableName) WHERE \(recipientReadReceiptColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -308,7 +308,7 @@ public extension TSRecipientReadReceipt {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (TSRecipientReadReceipt, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            TSRecipientReadReceipt.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            TSRecipientReadReceipt.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? TSRecipientReadReceipt else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

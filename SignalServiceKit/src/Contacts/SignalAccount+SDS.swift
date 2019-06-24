@@ -211,7 +211,7 @@ public extension SignalAccount {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -307,7 +307,7 @@ public extension SignalAccount {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return SignalAccount.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return SignalAccount.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(SignalAccountRecord.databaseTableName) WHERE \(signalAccountColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -320,7 +320,7 @@ public extension SignalAccount {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (SignalAccount, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            SignalAccount.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            SignalAccount.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? SignalAccount else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

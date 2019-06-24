@@ -1336,10 +1336,11 @@ static NSTimeInterval launchStartedAt;
 
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [self.primaryStorage.newDatabaseConnection
-            asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-                [TSAttachmentStream enumerateCollectionObjectsUsingBlock:^(id _Nonnull obj, BOOL *_Nonnull stop){
-                    // no-op. It's sufficient to initWithCoder: each object.
-                }];
+            asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                [TSAttachment anyEnumerateWithTransaction:transaction.asAnyRead
+                                                    block:^(TSAttachment *attachment, BOOL *stop){
+                                                        // no-op. It's sufficient to initWithCoder: each object.
+                                                    }];
             }
             completionBlock:^{
                 [Environment.shared.preferences setHasGeneratedThumbnails:YES];

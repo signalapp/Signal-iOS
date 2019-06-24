@@ -7,8 +7,6 @@
 #import "TSAttachmentStream.h"
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -275,24 +273,30 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Update With... Methods
 
 - (void)markForLazyRestoreWithFragment:(OWSBackupFragment *)lazyRestoreFragment
-                           transaction:(YapDatabaseReadWriteTransaction *)transaction
+                           transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(lazyRestoreFragment);
     OWSAssertDebug(transaction);
 
     if (!lazyRestoreFragment.uniqueId) {
         // If metadata hasn't been saved yet, save now.
-        [lazyRestoreFragment saveWithTransaction:transaction];
+        [lazyRestoreFragment anyInsertWithTransaction:transaction];
 
         OWSAssertDebug(lazyRestoreFragment.uniqueId);
     }
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSAttachmentPointer *attachment) {
-                                 [attachment setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSAttachment *attachment) {
+                                 if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                                     OWSFailDebug(@"Object has unexpected type: %@", [attachment class]);
+                                     return;
+                                 }
+                                 TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
+                                 [attachmentPointer setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
                              }];
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+// TODO: We could add a similar check to the GRDB insert logic.
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
 #ifdef DEBUG
     if (self.uniqueId.length > 0) {
@@ -305,7 +309,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 #endif
 
-    [super saveWithTransaction:transaction];
+    [super ydb_saveWithTransaction:transaction];
 }
 
 @end

@@ -210,7 +210,7 @@ public extension OWSDevice {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -306,7 +306,7 @@ public extension OWSDevice {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return OWSDevice.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return OWSDevice.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(DeviceRecord.databaseTableName) WHERE \(deviceColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -319,7 +319,7 @@ public extension OWSDevice {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSDevice, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            OWSDevice.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            OWSDevice.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? OWSDevice else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

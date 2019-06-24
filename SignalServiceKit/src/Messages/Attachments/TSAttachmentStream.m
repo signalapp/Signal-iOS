@@ -10,7 +10,6 @@
 #import <AVFoundation/AVFoundation.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -47,6 +46,20 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 #pragma mark -
 
 @implementation TSAttachmentStream
+
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (instancetype)initWithContentType:(NSString *)contentType
                           byteCount:(UInt32)byteCount
@@ -620,26 +633,50 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (void)applyChangeAsyncToLatestCopyWithChangeBlock:(void (^)(TSAttachmentStream *))changeBlock
 {
+    [self applyChangeAsyncToLatestCopyWithChangeBlock:changeBlock completion:nil];
+}
+
+- (void)applyChangeAsyncToLatestCopyWithChangeBlock:(void (^)(TSAttachmentStream *))changeBlock
+                                         completion:(nullable dispatch_block_t)completion
+{
     OWSAssertDebug(changeBlock);
 
-    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        NSString *collection = [TSAttachmentStream collection];
-        TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-        if (!latestInstance) {
-            // This attachment has either not yet been saved or has been deleted; do nothing.
-            // This isn't an error per se, but these race conditions should be
-            // _very_ rare.
-            //
-            // An exception is incoming group avatar updates which we don't ever save.
-            OWSLogWarn(@"Attachment not yet saved.");
-        } else if (![latestInstance isKindOfClass:[TSAttachmentStream class]]) {
-            OWSFailDebug(@"Attachment has unexpected type: %@", latestInstance.class);
-        } else {
-            changeBlock(latestInstance);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            // We load a new instance before using anyUpdateWithTransaction()
+            // since it isn't thread-safe to mutate the current instance async.
+            TSAttachment *_Nullable attachment =
+                [TSAttachment anyFetchWithUniqueId:self.uniqueId transaction:transaction];
+            if (!attachment) {
+                // This attachment has either not yet been saved or has been deleted; do nothing.
+                // This isn't an error per se, but these race conditions should be
+                // _very_ rare.
+                //
+                // An exception is incoming group avatar updates which we don't ever save.
+                OWSLogWarn(@"Could not load attachment.");
+                return;
+            }
+            if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                OWSFailDebug(@"Object has unexpected type: %@.", [attachment class]);
+                return;
+            }
+            TSAttachmentStream *latestInstance = (TSAttachmentStream *)attachment;
+            [latestInstance
+                anyUpdateWithTransaction:transaction
+                                   block:^(TSAttachment *attachment) {
+                                       if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                                           OWSFailDebug(@"Object has unexpected type: %@.", [attachment class]);
+                                           return;
+                                       }
+                                       TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+                                       changeBlock(attachmentStream);
+                                   }];
+        }];
 
-            [latestInstance saveWithTransaction:transaction];
+        if (completion != nil) {
+            completion();
         }
-    }];
+    });
 }
 
 #pragma mark -
@@ -874,17 +911,14 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     OWSAssertDebug(digest.length > 0);
     OWSAssertDebug(serverId > 0);
 
-    [[self dbReadWriteConnection]
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self applyChangeToSelfAndLatestCopy:transaction
-                                     changeBlock:^(TSAttachmentStream *attachment) {
-                                         [attachment setEncryptionKey:encryptionKey];
-                                         [attachment setDigest:digest];
-                                         [attachment setServerId:serverId];
-                                         [attachment setIsUploaded:YES];
-                                     }];
+    [self
+        applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *attachment) {
+            [attachment setEncryptionKey:encryptionKey];
+            [attachment setDigest:digest];
+            [attachment setServerId:serverId];
+            [attachment setIsUploaded:YES];
         }
-                completionBlock:completion];
+                                         completion:completion];
 }
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail
@@ -932,16 +966,20 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     // TODO we should past in a transaction, rather than sneakily generate one in `fetch...` to make sure we're
     // getting a consistent view in the message sending process. A brief glance shows it touches quite a bit of code,
     // but should be straight forward.
-    TSAttachment *attachment = [TSAttachmentStream fetchObjectWithUniqueID:attachmentId];
-    if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-        OWSLogError(@"Unexpected type for attachment builder: %@", attachment);
+    __block TSAttachmentStream *_Nullable attachmentStream;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
+        if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+            OWSFailDebug(@"Object has unexpected type: %@", [attachment class]);
+            return;
+        }
+        attachmentStream = (TSAttachmentStream *)attachment;
+    }];
+    if (attachmentStream == nil) {
         return nil;
     }
-
-    TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
     return [attachmentStream buildProto];
 }
-
 
 - (nullable SSKProtoAttachmentPointer *)buildProto
 {

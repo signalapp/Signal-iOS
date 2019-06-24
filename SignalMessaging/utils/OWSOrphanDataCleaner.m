@@ -679,7 +679,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 return;
             }
             TSAttachment *_Nullable attachment =
-                [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+                [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction.asAnyRead];
             if (!attachment) {
                 // This can happen on launch since we sync contacts/groups, especially if you have a lot of attachments
                 // to churn through, it's likely it's been deleted since starting this job.
@@ -701,7 +701,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             if (!shouldRemoveOrphans) {
                 continue;
             }
-            [attachmentStream removeWithTransaction:transaction];
+            [attachmentStream anyRemoveWithTransaction:transaction.asAnyWrite];
         }
         OWSLogInfo(@"Deleted orphan attachments: %zu", attachmentsRemoved);
     }];

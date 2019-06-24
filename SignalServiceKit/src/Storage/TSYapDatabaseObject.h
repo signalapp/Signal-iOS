@@ -173,6 +173,32 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction;
 // GRDB TODO: didUpdate?
 
+#pragma mark - YDB Deprecation
+
++ (NSUInteger)ydb_numberOfKeysInCollection;
++ (NSUInteger)ydb_numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction;
++ (void)ydb_removeAllObjectsInCollection;
++ (NSArray *)ydb_allObjectsInCollection;
++ (void)ydb_enumerateCollectionObjectsUsingBlock:(void (^)(id obj, BOOL *stop))block;
++ (void)ydb_enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
+                                           usingBlock:(void (^)(id object, BOOL *stop))block;
++ (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID
+                                         transaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(ydb_fetch(uniqueId:transaction:));
++ (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID NS_SWIFT_NAME(ydb_fetch(uniqueId:));
+- (void)ydb_save;
+- (void)ydb_reload;
+- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing;
+- (void)ydb_saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock;
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)ydb_touch;
+- (void)ydb_touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)ydb_remove;
+- (void)ydb_applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
+                               changeBlock:(void (^)(id))changeBlock;
+
 @end
 
 NS_ASSUME_NONNULL_END

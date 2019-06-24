@@ -204,7 +204,7 @@ public extension OWSLinkedDeviceReadReceipt {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -300,7 +300,7 @@ public extension OWSLinkedDeviceReadReceipt {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return OWSLinkedDeviceReadReceipt.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return OWSLinkedDeviceReadReceipt.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(LinkedDeviceReadReceiptRecord.databaseTableName) WHERE \(linkedDeviceReadReceiptColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -313,7 +313,7 @@ public extension OWSLinkedDeviceReadReceipt {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSLinkedDeviceReadReceipt, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            OWSLinkedDeviceReadReceipt.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            OWSLinkedDeviceReadReceipt.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? OWSLinkedDeviceReadReceipt else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

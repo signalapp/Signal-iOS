@@ -82,8 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *_Nullable thumbnailImage;
     TSAttachmentPointer *attachmentPointer;
     if (attachmentInfo.thumbnailAttachmentStreamId) {
-        TSAttachment *attachment =
-            [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentStreamId transaction:transaction];
+        TSAttachment *attachment = [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentStreamId
+                                                          transaction:transaction.asAnyRead];
 
         TSAttachmentStream *attachmentStream;
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
@@ -92,8 +92,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (attachmentInfo.thumbnailAttachmentPointerId) {
         // download failed, or hasn't completed yet.
-        TSAttachment *attachment =
-            [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentPointerId transaction:transaction];
+        TSAttachment *attachment = [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentPointerId
+                                                          transaction:transaction.asAnyRead];
 
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             attachmentPointer = (TSAttachmentPointer *)attachment;
@@ -196,7 +196,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *_Nullable quotedText = message.body;
     BOOL hasText = quotedText.length > 0;
 
-    TSAttachment *_Nullable attachment = [message bodyAttachmentsWithTransaction:transaction].firstObject;
+    TSAttachment *_Nullable attachment = [message bodyAttachmentsWithTransaction:transaction.asAnyRead].firstObject;
     TSAttachmentStream *quotedAttachment;
     if (attachment && [attachment isKindOfClass:[TSAttachmentStream class]]) {
 

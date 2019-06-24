@@ -198,7 +198,7 @@ public extension OWSDisappearingMessagesConfiguration {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -294,7 +294,7 @@ public extension OWSDisappearingMessagesConfiguration {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return OWSDisappearingMessagesConfiguration.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return OWSDisappearingMessagesConfiguration.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(DisappearingMessagesConfigurationRecord.databaseTableName) WHERE \(disappearingMessagesConfigurationColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -307,7 +307,7 @@ public extension OWSDisappearingMessagesConfiguration {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSDisappearingMessagesConfiguration, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            OWSDisappearingMessagesConfiguration.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            OWSDisappearingMessagesConfiguration.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? OWSDisappearingMessagesConfiguration else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

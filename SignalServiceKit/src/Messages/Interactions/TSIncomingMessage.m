@@ -12,6 +12,7 @@
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSGroupThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -188,7 +189,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 {
     for (NSString *attachmentId in self.attachmentIds) {
         TSAttachment *_Nullable attachment =
-            [TSAttachment fetchObjectWithUniqueID:attachmentId transaction:transaction];
+            [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction.asAnyRead];
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             return NO;
         }

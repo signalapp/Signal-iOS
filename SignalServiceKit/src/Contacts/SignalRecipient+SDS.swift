@@ -193,7 +193,7 @@ public extension SignalRecipient {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -289,7 +289,7 @@ public extension SignalRecipient {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return SignalRecipient.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return SignalRecipient.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(SignalRecipientRecord.databaseTableName) WHERE \(signalRecipientColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -302,7 +302,7 @@ public extension SignalRecipient {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (SignalRecipient, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            SignalRecipient.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            SignalRecipient.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? SignalRecipient else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

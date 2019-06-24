@@ -231,7 +231,7 @@ public extension StickerPack {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -327,7 +327,7 @@ public extension StickerPack {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return StickerPack.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return StickerPack.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(StickerPackRecord.databaseTableName) WHERE \(stickerPackColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -340,7 +340,7 @@ public extension StickerPack {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (StickerPack, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            StickerPack.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            StickerPack.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? StickerPack else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

@@ -199,7 +199,7 @@ public extension InstalledSticker {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -295,7 +295,7 @@ public extension InstalledSticker {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return InstalledSticker.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return InstalledSticker.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(InstalledStickerRecord.databaseTableName) WHERE \(installedStickerColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -308,7 +308,7 @@ public extension InstalledSticker {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (InstalledSticker, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            InstalledSticker.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            InstalledSticker.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? InstalledSticker else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

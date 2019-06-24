@@ -1114,7 +1114,7 @@ public extension %s {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -1222,7 +1222,7 @@ public extension %s {
         
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return %(class_name)s.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return %(class_name)s.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(%(record_name)s.databaseTableName) WHERE \(%(record_identifier)sColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -1237,7 +1237,7 @@ public extension %s {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (%s, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            %s.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            %s.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? %s else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

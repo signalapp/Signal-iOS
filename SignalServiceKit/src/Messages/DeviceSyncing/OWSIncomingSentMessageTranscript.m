@@ -68,14 +68,15 @@ NS_ASSUME_NONNULL_BEGIN
             _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
         }
 
-        _quotedMessage =
-            [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
-        _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
+        _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage
+                                                               thread:_thread
+                                                          transaction:transaction.asAnyWrite];
+        _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction.asAnyWrite];
 
         NSError *linkPreviewError;
         _linkPreview = [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:_dataMessage
                                                                            body:_body
-                                                                    transaction:transaction
+                                                                    transaction:transaction.asAnyWrite
                                                                           error:&linkPreviewError];
         if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
             OWSLogError(@"linkPreviewError: %@", linkPreviewError);

@@ -23,7 +23,7 @@ public extension SDSModel {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            save(with: ydbTransaction)
+            ydb_save(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()

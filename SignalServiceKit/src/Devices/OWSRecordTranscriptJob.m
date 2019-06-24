@@ -142,18 +142,20 @@ NS_ASSUME_NONNULL_BEGIN
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
                                              albumMessage:outgoingMessage];
     for (TSAttachmentPointer *pointer in attachmentPointers) {
-        [pointer saveWithTransaction:transaction];
+        [pointer anyInsertWithTransaction:transaction.asAnyWrite];
         [outgoingMessage.attachmentIds addObject:pointer.uniqueId];
     }
 
     TSQuotedMessage *_Nullable quotedMessage = transcript.quotedMessage;
     if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {
         // We weren't able to derive a local thumbnail, so we'll fetch the referenced attachment.
-        TSAttachmentPointer *attachmentPointer =
-            [TSAttachmentPointer fetchObjectWithUniqueID:quotedMessage.thumbnailAttachmentPointerId
-                                             transaction:transaction];
+        TSAttachment *_Nullable attachment =
+            [TSAttachment anyFetchWithUniqueId:quotedMessage.thumbnailAttachmentPointerId
+                                   transaction:transaction.asAnyRead];
 
-        if ([attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
+        if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
+            TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
+
             OWSLogDebug(@"downloading attachments for transcript: %lu", (unsigned long)transcript.timestamp);
 
             [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
@@ -210,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (outgoingMessage.hasAttachments) {
         [self.attachmentDownloads
             downloadAllAttachmentsForMessage:outgoingMessage
-                                 transaction:transaction
+                                 transaction:transaction.asAnyRead
                                      success:attachmentHandler
                                      failure:^(NSError *error) {
                                          OWSLogError(@"failed to fetch transcripts attachments for message: %@",

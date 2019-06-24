@@ -210,7 +210,7 @@ public extension OWSMessageContentJob {
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
-            remove(with: ydbTransaction)
+            ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
             do {
                 let record = try asRecord()
@@ -306,7 +306,7 @@ public extension OWSMessageContentJob {
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            return OWSMessageContentJob.fetch(uniqueId: uniqueId, transaction: ydbTransaction)
+            return OWSMessageContentJob.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
         case .grdbRead(let grdbTransaction):
             let sql = "SELECT * FROM \(MessageContentJobRecord.databaseTableName) WHERE \(messageContentJobColumn: .uniqueId) = ?"
             return grdbFetchOne(sql: sql, arguments: [uniqueId], transaction: grdbTransaction)
@@ -319,7 +319,7 @@ public extension OWSMessageContentJob {
     class func anyEnumerate(transaction: SDSAnyReadTransaction, block: @escaping (OWSMessageContentJob, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            OWSMessageContentJob.enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
+            OWSMessageContentJob.ydb_enumerateCollectionObjects(with: ydbTransaction) { (object, stop) in
                 guard let value = object as? OWSMessageContentJob else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return

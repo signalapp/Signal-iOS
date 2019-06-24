@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SSKProtoAttachmentPointer;
 @class TSAttachmentPointer;
-@class YapDatabaseReadWriteTransaction;
 
 typedef void (^OWSThumbnailSuccess)(UIImage *image);
 typedef void (^OWSThumbnailFailure)(void);
