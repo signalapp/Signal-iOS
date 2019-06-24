@@ -233,8 +233,8 @@ DEPENDENCIES:
   - PromiseKit (= 6.5.3)
   - PureLayout
   - Reachability
-  - SignalCoreKit (from `../SignalCoreKit`)
-  - SignalCoreKit/Tests (from `../SignalCoreKit`)
+  - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
+  - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`)
   - SignalMetadataKit (from `https://github.com/signalapp/SignalMetadataKit`)
   - SignalMetadataKit/Tests (from `https://github.com/signalapp/SignalMetadataKit`)
   - SignalServiceKit (from `.`)
@@ -276,7 +276,7 @@ EXTERNAL SOURCES:
     :branch: signal-master
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :path: "../SignalCoreKit"
+    :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :git: https://github.com/signalapp/SignalMetadataKit
   SignalServiceKit:
@@ -307,6 +307,9 @@ CHECKOUT OPTIONS:
   Mantle:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
+  SignalCoreKit:
+    :commit: 8bbbdd07bbf8c1e84b10f6aca29b3875930d4a52
+    :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: 7f75e5eac08d80510c33dd830afa390412374b63
     :git: https://github.com/signalapp/SignalMetadataKit
@@ -332,7 +335,7 @@ SPEC CHECKSUMS:
   PureLayout: f08c01b8dec00bb14a1fefa3de4c7d9c265df85e
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SignalCoreKit: 2d5db80cda950a892383a4002146ec0d81460ce1
+  SignalCoreKit: c2d8132cdedb95d35eb2f8ae7eac0957695d0a8b
   SignalMetadataKit: 6fa5e9a53c7f104568662521a2f3874672ff7a02
   SignalServiceKit: c6424d6bf9b898ea2326a8bfde27b1d9d4525b67
   SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
@@ -342,6 +345,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: 013779dd574fa4af839102da7e3efc6266dece69
+PODFILE CHECKSUM: c7bf8e3ae4248918afdf0f22707228e9df7a466c
 
 COCOAPODS: 1.5.3
