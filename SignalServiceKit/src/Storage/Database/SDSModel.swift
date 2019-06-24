@@ -18,7 +18,7 @@ public protocol SDSModel: TSYapDatabaseObject {
 public extension SDSModel {
     func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
         if saveMode == .insert {
-            anyWillInsert(transaction)
+            anyWillInsert(with: transaction)
         }
 
         switch transaction.writeTransaction {
@@ -34,7 +34,7 @@ public extension SDSModel {
         }
 
         if saveMode == .insert {
-            anyDidInsert(transaction)
+            anyDidInsert(with: transaction)
         }
     }
 }

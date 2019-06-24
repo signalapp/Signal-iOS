@@ -367,7 +367,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return [NSURL fileURLWithPath:filePath];
 }
 
-- (void)removeFileWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)removeFile
 {
     NSError *error;
 
@@ -399,9 +399,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     }
 }
 
-- (void)anyDidRemove:(SDSAnyWriteTransaction *)transaction
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [super anyDidRemove:transaction];
+    [super anyDidRemoveWithTransaction:transaction];
 
     [self removeFile];
 }

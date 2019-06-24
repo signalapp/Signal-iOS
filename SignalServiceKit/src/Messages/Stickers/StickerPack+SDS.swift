@@ -227,7 +227,7 @@ public extension StickerPack {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        anyWillRemove(transaction)
+        anyWillRemove(with: transaction)
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -241,7 +241,7 @@ public extension StickerPack {
             }
         }
 
-        anyDidRemove(transaction)
+        anyDidRemove(with: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {

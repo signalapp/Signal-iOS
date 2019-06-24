@@ -195,7 +195,7 @@ public extension TSRecipientReadReceipt {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        anyWillRemove(transaction)
+        anyWillRemove(with: transaction)
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -209,7 +209,7 @@ public extension TSRecipientReadReceipt {
             }
         }
 
-        anyDidRemove(transaction)
+        anyDidRemove(with: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {

@@ -167,10 +167,10 @@ NS_ASSUME_NONNULL_BEGIN
 // GRDB TODO: As a perf optimization, we could only call these
 //            methods for certain kinds of models which we could
 //            detect at compile time.
-- (void)anyWillInsert:(SDSAnyWriteTransaction *)transaction;
-- (void)anyDidInsert:(SDSAnyWriteTransaction *)transaction;
-- (void)anyWillRemove:(SDSAnyWriteTransaction *)transaction;
-- (void)anyDidRemove:(SDSAnyWriteTransaction *)transaction;
+- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction;
 // GRDB TODO: didUpdate?
 
 @end

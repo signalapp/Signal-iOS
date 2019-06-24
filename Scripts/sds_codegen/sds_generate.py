@@ -1110,7 +1110,7 @@ public extension %s {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        anyWillRemove(transaction)
+        anyWillRemove(with: transaction)
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -1124,7 +1124,7 @@ public extension %s {
             }
         }
         
-        anyDidRemove(transaction)
+        anyDidRemove(with: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {

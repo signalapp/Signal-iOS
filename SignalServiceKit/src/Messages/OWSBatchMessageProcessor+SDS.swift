@@ -206,7 +206,7 @@ public extension OWSMessageContentJob {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        anyWillRemove(transaction)
+        anyWillRemove(with: transaction)
 
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
@@ -220,7 +220,7 @@ public extension OWSMessageContentJob {
             }
         }
 
-        anyDidRemove(transaction)
+        anyDidRemove(with: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
