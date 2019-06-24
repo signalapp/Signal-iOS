@@ -781,17 +781,37 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogWarn(@"received unsupported group avatar envelope");
         return;
     }
+
+    [avatarPointer anyInsertWithTransaction:transaction];
+
     [self.attachmentDownloads downloadAttachmentPointer:avatarPointer
         message:nil
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-            [groupThread updateAvatarWithAttachmentStream:attachmentStream];
+
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                [groupThread updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
+
+                // Eagerly clean up the attachment.
+                [attachmentStream anyRemoveWithTransaction:transaction];
+            }];
         }
         failure:^(NSError *error) {
             OWSLogError(@"failed to fetch attachments for group avatar sent at: %llu. with error: %@",
                 envelope.timestamp,
                 error);
+
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                // Eagerly clean up the attachment.
+                TSAttachment *_Nullable attachment =
+                    [TSAttachment anyFetchWithUniqueId:avatarPointer.uniqueId transaction:transaction];
+                if (attachment == nil) {
+                    OWSFailDebug(@"Could not load attachment.");
+                    return;
+                }
+                [attachment anyRemoveWithTransaction:transaction];
+            }];
         }];
 }
 
@@ -904,13 +924,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                return;
                                            }
 
-                                           if (transaction.transitional_yapWriteTransaction) {
-                                               [groupThread
-                                                   updateAvatarWithAttachmentStream:attachmentStream
-                                                                        transaction:
-                                                                            transaction
-                                                                                .transitional_yapWriteTransaction];
-                                           }
+                                           [groupThread updateAvatarWithAttachmentStream:attachmentStream
+                                                                             transaction:transaction];
                                        }];
                                    }
                                          transaction:transaction.transitional_yapWriteTransaction];

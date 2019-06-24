@@ -17,6 +17,15 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 @implementation TSGroupThread
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 #define TSGroupThreadPrefix @"g"
 
 // --- CODE GENERATION MARKER
@@ -315,28 +324,34 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
     }];
 }
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
-                             transaction:(YapDatabaseReadWriteTransaction *)transaction
+                             transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(attachmentStream);
     OWSAssertDebug(transaction);
 
-    self.groupModel.groupImage = [attachmentStream thumbnailImageSmallSync];
-    [self saveWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 if (![thread isKindOfClass:[TSGroupThread class]]) {
+                                     OWSFailDebug(@"Unexpected object type: %@", [thread class]);
+                                     return;
+                                 }
+                                 TSGroupThread *groupThread = (TSGroupThread *)thread;
+                                 groupThread.groupModel.groupImage = [attachmentStream thumbnailImageSmallSync];
+                             }];
 
-    [transaction addCompletionQueue:nil
-                    completionBlock:^{
-                        [self fireAvatarChangedNotification];
-                    }];
+    [transaction addCompletionWithBlock:^{
+        [self fireAvatarChangedNotification];
+    }];
 
     // Avatars are stored directly in the database, so there's no need
     // to keep the attachment around after assigning the image.
-    [attachmentStream removeWithTransaction:transaction];
+    [attachmentStream anyRemoveWithTransaction:transaction];
 }
 
 - (void)fireAvatarChangedNotification

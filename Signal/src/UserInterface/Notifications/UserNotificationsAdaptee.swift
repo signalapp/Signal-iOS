@@ -184,9 +184,13 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
     func clearAllNotifications() {
         AssertIsOnMainThread()
+
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
-        LegacyNotificationPresenterAdaptee.clearExistingNotifications()
+
+        if !FeatureFlags.onlyModernNotificationClearance {
+            LegacyNotificationPresenterAdaptee.clearExistingNotifications()
+        }
     }
 
     func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {

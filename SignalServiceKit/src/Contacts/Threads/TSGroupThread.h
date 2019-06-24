@@ -79,7 +79,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
-                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                             transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)fireAvatarChangedNotification;
 

@@ -125,6 +125,12 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteCont
         }
     }
 
+    // Objective-C doesn't honor default arguments.
+    @objc
+    public func addCompletion(block: @escaping () -> Void) {
+        addCompletion(queue: DispatchQueue.main, block: block)
+    }
+
     @objc
     public func addCompletion(queue: DispatchQueue = DispatchQueue.main, block: @escaping () -> Void) {
         switch writeTransaction {

@@ -56,17 +56,21 @@ public class FeatureFlags: NSObject {
     @objc
     public static let strictSyncTranscriptTimestamps = false
 
-    @objc
-    public static let ephemeralMessageSend = true
-
     // This shouldn't be enabled in production until the receive side has been
     // in production for "long enough".
     @objc
-    public static let perMessageExpiration = true
+    public static let perMessageExpiration = OWSIsDebugBuild()
 
     // This shouldn't be enabled _in production_ but it should be enabled in beta and developer builds.
+    private static let isBetaBuild = true
+
+    // Don't enable this flag in production.
     @objc
-    public static let strictYDBExtensions = true
+    public static let strictYDBExtensions = isBetaBuild
+
+    // Don't enable this flag in production.
+    @objc
+    public static let onlyModernNotificationClearance = isBetaBuild
 
     @objc
     public static let registrationLockV2 = false

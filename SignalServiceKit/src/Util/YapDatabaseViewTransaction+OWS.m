@@ -2,8 +2,9 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "YapDatabaseViewTransaction+OWS.h"
 #import "OWSPrimaryStorage.h"
+#import "YapDatabaseViewTransaction+OWS.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,19 +32,31 @@ NS_ASSUME_NONNULL_BEGIN
                                     // Apparently, when YDB extensions are corrupt,
                                     // they can return nil collection.
                                     [OWSPrimaryStorage incrementVersionOfDatabaseExtension:extensionName];
-                                    OWSFailDebug(@"Invalid collection.");
+                                    if (SSKFeatureFlags.strictYDBExtensions) {
+                                        OWSFail(@"Invalid collection.");
+                                    } else {
+                                        OWSFailDebug(@"Invalid collection.");
+                                    }
                                     return;
                                 }
                                 if (key.length < 1) {
                                     [OWSPrimaryStorage incrementVersionOfDatabaseExtension:extensionName];
-                                    OWSFailDebug(@"Invalid key.");
+                                    if (SSKFeatureFlags.strictYDBExtensions) {
+                                        OWSFail(@"Invalid key.");
+                                    } else {
+                                        OWSFailDebug(@"Invalid key.");
+                                    }
                                     return;
                                 }
                                 if (object == nil) {
                                     [OWSPrimaryStorage incrementVersionOfDatabaseExtension:extensionName];
                                     // The other checks OWSFail(), but here we do
                                     // not fail in prod and just skip this object.
-                                    OWSFailDebug(@"Invalid object.");
+                                    if (SSKFeatureFlags.strictYDBExtensions) {
+                                        OWSFail(@"Invalid object.");
+                                    } else {
+                                        OWSFailDebug(@"Invalid object.");
+                                    }
                                     return;
                                 }
                                 if (stop == nil) {
