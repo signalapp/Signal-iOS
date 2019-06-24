@@ -4218,14 +4218,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
-        OWSDisappearingMessagesConfiguration *configuration;
-        if (transaction.transitional_yapReadTransaction) {
-            configuration = [OWSDisappearingMessagesConfiguration
-                fetchObjectWithUniqueID:thread.uniqueId
-                            transaction:transaction.transitional_yapReadTransaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:transaction];
 
         uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
         TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
@@ -4253,14 +4247,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
-        OWSDisappearingMessagesConfiguration *configuration;
-        if (initialTransaction.transitional_yapReadTransaction) {
-            configuration = [OWSDisappearingMessagesConfiguration
-                fetchObjectWithUniqueID:thread.uniqueId
-                            transaction:initialTransaction.transitional_yapReadTransaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:initialTransaction];
 
         uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
         TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
@@ -4297,14 +4285,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     NSMutableArray<TSOutgoingMessage *> *messages = [NSMutableArray new];
     for (NSUInteger i =0; i < count; i++) {
         NSString *text = [self randomText];
-        OWSDisappearingMessagesConfiguration *configuration;
-        if (initialTransaction.transitional_yapReadTransaction) {
-            configuration = [OWSDisappearingMessagesConfiguration
-                fetchObjectWithUniqueID:thread.uniqueId
-                            transaction:initialTransaction.transitional_yapReadTransaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        OWSDisappearingMessagesConfiguration *configuration =
+            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:initialTransaction];
 
         // MJK TODO - remove senderTimestamp
         TSOutgoingMessage *message = [[TSOutgoingMessage alloc]

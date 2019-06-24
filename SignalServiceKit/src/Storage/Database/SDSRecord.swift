@@ -16,7 +16,6 @@ public protocol SDSRecord: Codable, FetchableRecord, PersistableRecord {
 public enum SDSSaveMode {
     case insert
     case update
-    case upsert
 }
 
 public extension SDSRecord {

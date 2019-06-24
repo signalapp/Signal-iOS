@@ -5,6 +5,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "NSString+SSK.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -85,11 +86,10 @@ NS_ASSUME_NONNULL_BEGIN
     _newRecord = NO;
 }
 
-+ (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId
-                                    transaction:(YapDatabaseReadTransaction *)transaction
++ (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSDisappearingMessagesConfiguration *savedConfiguration =
-        [self fetchObjectWithUniqueID:threadId transaction:transaction];
+        [self anyFetchWithUniqueId:threadId transaction:transaction];
     if (savedConfiguration) {
         return savedConfiguration;
     } else {

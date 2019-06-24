@@ -2,15 +2,15 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import <SignalServiceKit/BaseModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 #define OWSDisappearingMessagesConfigurationDefaultExpirationDuration kDayInterval
 
-@class YapDatabaseReadTransaction;
+@class SDSAnyReadTransaction;
 
-@interface OWSDisappearingMessagesConfiguration : TSYapDatabaseObject
+@interface OWSDisappearingMessagesConfiguration : BaseModel
 
 - (instancetype)initDefaultWithThreadId:(NSString *)threadId;
 
@@ -39,8 +39,7 @@ NS_SWIFT_NAME(init(uniqueId:durationSeconds:enabled:));
 @property (nonatomic, readonly) BOOL dictionaryValueDidChange;
 @property (readonly, getter=isNewRecord) BOOL newRecord;
 
-+ (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId
-                                    transaction:(YapDatabaseReadTransaction *)transaction;
++ (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction;
 
 + (NSArray<NSNumber *> *)validDurationsSeconds;
 + (uint32_t)maxDurationSeconds;

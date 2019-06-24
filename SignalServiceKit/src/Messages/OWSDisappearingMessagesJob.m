@@ -240,7 +240,7 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSLogInfo(@"becoming consistent with disappearing message configuration: %@",
         disappearingMessagesConfiguration.dictionaryValue);
 
-    [disappearingMessagesConfiguration saveWithTransaction:transaction];
+    [disappearingMessagesConfiguration anyUpsertWithTransaction:transaction.asAnyWrite];
 
     // MJK TODO - should be safe to remove this senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =

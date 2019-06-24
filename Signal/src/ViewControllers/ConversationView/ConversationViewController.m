@@ -1819,15 +1819,15 @@ typedef enum : NSUInteger {
 
 - (void)updateDisappearingMessagesConfigurationWithSneakyTransaction
 {
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
     }];
 }
 
-- (void)updateDisappearingMessagesConfigurationWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (void)updateDisappearingMessagesConfigurationWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     self.disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
+        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:self.thread.uniqueId transaction:transaction];
 }
 
 - (void)setDisappearingMessagesConfiguration:
@@ -4906,13 +4906,11 @@ typedef enum : NSUInteger {
     [self updateNavigationBarSubtitleLabel];
     [self dismissMenuActionsIfNecessary];
 
-    if (transaction.transitional_yapReadTransaction != nil) {
-        if (self.isGroupConversation) {
-            [self.thread reloadWithTransaction:transaction.transitional_yapReadTransaction];
-            [self updateNavigationTitle];
-        }
-        [self updateDisappearingMessagesConfigurationWithTransaction:transaction.transitional_yapReadTransaction];
+    if (self.isGroupConversation) {
+        [self.thread anyReloadWithTransaction:transaction];
+        [self updateNavigationTitle];
     }
+    [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
 
     if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Minor) {
         return;

@@ -236,8 +236,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertDebug(contactShare.ows_isValid);
     OWSAssertDebug(thread);
 
-    OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
+    __block OWSDisappearingMessagesConfiguration *configuration;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        configuration =
+            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:transaction];
+    }];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
     TSOutgoingMessage *message =
@@ -269,8 +272,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertDebug(stickerInfo);
     OWSAssertDebug(thread);
 
-    OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
+    __block OWSDisappearingMessagesConfiguration *configuration;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        configuration =
+            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:transaction];
+    }];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
 
@@ -418,8 +424,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertDebug(messageSender);
     OWSAssertDebug(completion);
 
-    OWSDisappearingMessagesConfiguration *configuration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:thread.uniqueId];
+    __block OWSDisappearingMessagesConfiguration *configuration;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        configuration =
+            [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId transaction:transaction];
+    }];
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
     // MJK TODO - remove senderTimestamp

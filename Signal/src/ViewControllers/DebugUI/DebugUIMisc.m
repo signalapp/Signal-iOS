@@ -72,17 +72,18 @@ NS_ASSUME_NONNULL_BEGIN
                                          [DebugUIMisc clearHasDismissedOffers];
                                      }]];
 
-    [items addObject:[OWSTableItem itemWithTitle:@"Delete disappearing messages config"
-                                     actionBlock:^{
-                                         [[OWSPrimaryStorage sharedManager].newDatabaseConnection readWriteWithBlock:^(
-                                             YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                             OWSDisappearingMessagesConfiguration *config =
-                                                 [OWSDisappearingMessagesConfiguration
-                                                     fetchOrBuildDefaultWithThreadId:thread.uniqueId
-                                                                         transaction:transaction];
-                                             [config removeWithTransaction:transaction];
-                                         }];
-                                     }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Delete disappearing messages config"
+                           actionBlock:^{
+                               [DebugUIMisc.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                   OWSDisappearingMessagesConfiguration *_Nullable config =
+                                       [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId
+                                                                                      transaction:transaction];
+                                   if (config) {
+                                       [config anyRemoveWithTransaction:transaction];
+                                   }
+                               }];
+                           }]];
 
     [items addObject:[OWSTableItem
                          itemWithTitle:@"Re-register"
