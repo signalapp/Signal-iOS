@@ -2,14 +2,14 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import "BaseModel.h"
 #import "StickerInfo.h"
-#import "TSYapDatabaseObject.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyReadTransaction;
 
-@interface InstalledSticker : TSYapDatabaseObject
+@interface InstalledSticker : BaseModel
 
 @property (nonatomic, readonly) StickerInfo *info;
 @property (nonatomic, readonly, nullable) NSString *emojiString;
