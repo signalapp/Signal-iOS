@@ -352,6 +352,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return SDSDatabaseStorage.shared;
 }
 
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark -
 
 - (NSOperationQueue *)sendingQueueForMessage:(TSOutgoingMessage *)message
@@ -1956,18 +1961,27 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [attachmentStreams addObject:attachmentStream];
         }
 
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            for (TSAttachmentStream *attachmentStream in attachmentStreams) {
-                [outgoingMessage.attachmentIds addObject:attachmentStream.uniqueId];
-                if (attachmentStream.sourceFilename) {
-                    outgoingMessage.attachmentFilenameMap[attachmentStream.uniqueId] = attachmentStream.sourceFilename;
-                }
-            }
+        [OWSMessageSender.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [outgoingMessage
+                anyUpdateWithTransaction:transaction
+                                   block:^(TSInteraction *interaction) {
+                                       if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                                           OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
+                                           return;
+                                       }
+                                       TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)interaction;
+                                       for (TSAttachmentStream *attachmentStream in attachmentStreams) {
+                                           [outgoingMessage.attachmentIds addObject:attachmentStream.uniqueId];
 
-            [outgoingMessage saveWithTransaction:transaction];
+                                           if (attachmentStream.sourceFilename) {
+                                               outgoingMessage.attachmentFilenameMap[attachmentStream.uniqueId]
+                                                   = attachmentStream.sourceFilename;
+                                           }
+                                       }
+                                   }];
 
             for (TSAttachmentStream *attachmentStream in attachmentStreams) {
-                [attachmentStream anyInsertWithTransaction:transaction.asAnyWrite];
+                [attachmentStream anyInsertWithTransaction:transaction];
             }
         }];
 
