@@ -71,3 +71,16 @@ public class SignalServiceAddress: NSObject {
         return phoneNumber
     }
 }
+
+@objc
+public extension NSString {
+    var transitional_signalServiceAddress: SignalServiceAddress! {
+        return SignalServiceAddress(phoneNumber: self as String)
+    }
+}
+
+extension String {
+    var transitional_signalServiceAddress: SignalServiceAddress! {
+        return SignalServiceAddress(phoneNumber: self)
+    }
+}
