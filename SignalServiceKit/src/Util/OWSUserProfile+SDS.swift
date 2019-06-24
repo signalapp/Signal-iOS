@@ -213,6 +213,8 @@ public extension OWSUserProfile {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
+        anyWillRemove(with: transaction)
+
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -224,6 +226,8 @@ public extension OWSUserProfile {
                 owsFail("Remove failed: \(error)")
             }
         }
+
+        anyDidRemove(with: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {

@@ -13,8 +13,14 @@ public protocol SDSModel: TSYapDatabaseObject {
     func anyInsert(transaction: SDSAnyWriteTransaction)
 }
 
+// MARK: -
+
 public extension SDSModel {
     func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
+        if saveMode == .insert {
+            anyWillInsert(with: transaction)
+        }
+
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             save(with: ydbTransaction)
@@ -26,8 +32,14 @@ public extension SDSModel {
                 owsFail("Write failed: \(error)")
             }
         }
+
+        if saveMode == .insert {
+            anyDidInsert(with: transaction)
+        }
     }
 }
+
+// MARK: -
 
 public extension TableRecord {
     static func ows_fetchCount(_ db: Database) -> UInt {

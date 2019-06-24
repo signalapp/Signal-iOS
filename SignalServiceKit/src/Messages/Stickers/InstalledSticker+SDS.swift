@@ -195,6 +195,8 @@ public extension InstalledSticker {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
+        anyWillRemove(with: transaction)
+
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -206,6 +208,8 @@ public extension InstalledSticker {
                 owsFail("Remove failed: \(error)")
             }
         }
+
+        anyDidRemove(with: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {

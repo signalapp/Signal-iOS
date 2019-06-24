@@ -218,6 +218,8 @@ public extension OWSBackupFragment {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
+        anyWillRemove(with: transaction)
+
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -229,6 +231,8 @@ public extension OWSBackupFragment {
                 owsFail("Remove failed: \(error)")
             }
         }
+
+        anyDidRemove(with: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {

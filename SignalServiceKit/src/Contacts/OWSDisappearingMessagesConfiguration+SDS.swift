@@ -194,6 +194,8 @@ public extension OWSDisappearingMessagesConfiguration {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
+        anyWillRemove(with: transaction)
+
         switch transaction.writeTransaction {
         case .yapWrite(let ydbTransaction):
             remove(with: ydbTransaction)
@@ -205,6 +207,8 @@ public extension OWSDisappearingMessagesConfiguration {
                 owsFail("Remove failed: \(error)")
             }
         }
+
+        anyDidRemove(with: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
