@@ -30,17 +30,65 @@ enum DatabaseObserverError: Error {
     case changeTooLarge
 }
 
+@objc
+public class AtomicBool: NSObject {
+    private var value: Bool
+
+    @objc
+    public required init(_ value: Bool) {
+        self.value = value
+    }
+
+    // All instances can share a single queue.
+    private static let serialQueue = DispatchQueue(label: "AtomicBool")
+
+    @objc
+    public func get() -> Bool {
+        return AtomicBool.serialQueue.sync {
+            return self.value
+        }
+    }
+
+    @objc
+    public func set(_ value: Bool) {
+        return AtomicBool.serialQueue.sync {
+            self.value = value
+        }
+    }
+}
+
 func AssertIsOnUIDatabaseObserverSerialQueue() {
-    #if DEBUG
-    assertOnQueue(UIDatabaseObserver.serialQueue)
-    #endif
+    assert(UIDatabaseObserver.isOnUIDatabaseObserverSerialQueue)
 }
 
 @objc
 public class UIDatabaseObserver: NSObject {
 
     public static let kMaxIncrementalRowChanges = 200
-    public static let serialQueue = DispatchQueue(label: "UIDatabaseObserver.serialQueue")
+
+    // tldr; Instead, of protecting UIDatabaseObserver state with a nested DispatchQueue,
+    // which would break GRDB's SchedulingWatchDog, we use objc_sync
+    //
+    // Longer version:
+    // Our snapshot observers manage state, which must not be accessed concurrently.
+    // Using a serial DispatchQueue would seem straight forward, but...
+    //
+    // Some of our snapshot observers read from the database *while* accessing this
+    // state. Note that reading from the db must be done on GRDB's DispatchQueue.
+    private static var _isOnUIDatabaseObserverSerialQueue = AtomicBool(false)
+
+    static var isOnUIDatabaseObserverSerialQueue: Bool {
+        return _isOnUIDatabaseObserverSerialQueue.get()
+    }
+
+    public class func serializedSync(block: () -> Void) {
+        objc_sync_enter(self)
+        assert(!_isOnUIDatabaseObserverSerialQueue.get())
+        _isOnUIDatabaseObserverSerialQueue.set(true)
+        block()
+        _isOnUIDatabaseObserverSerialQueue.set(false)
+        objc_sync_exit(self)
+    }
 
     private var _snapshotDelegates: [Weak<DatabaseSnapshotDelegate>] = []
     private var snapshotDelegates: [DatabaseSnapshotDelegate] {
@@ -72,7 +120,7 @@ public class UIDatabaseObserver: NSObject {
         self.observer = try observation.start(in: pool) { [weak self] (database: Database) in
             guard let self = self else { return }
 
-            UIDatabaseObserver.serialQueue.sync {
+            UIDatabaseObserver.serializedSync {
                 for delegate in self.snapshotDelegates {
                     delegate.databaseSnapshotSourceDidCommit(db: database)
                 }

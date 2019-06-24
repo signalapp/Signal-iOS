@@ -86,7 +86,7 @@ extension HomeViewDatabaseObserver: TransactionObserver {
 
     public func databaseDidChange(with event: DatabaseEvent) {
         Logger.verbose("")
-        UIDatabaseObserver.serialQueue.sync {
+        UIDatabaseObserver.serializedSync {
             _ = pendingThreadChanges.insert(event.rowID)
         }
     }
@@ -105,7 +105,7 @@ extension HomeViewDatabaseObserver: TransactionObserver {
 
     public func databaseDidRollback(_ db: Database) {
         owsFailDebug("test this if we ever use it")
-        UIDatabaseObserver.serialQueue.sync {
+        UIDatabaseObserver.serializedSync {
             pendingThreadChanges = Set()
         }
     }

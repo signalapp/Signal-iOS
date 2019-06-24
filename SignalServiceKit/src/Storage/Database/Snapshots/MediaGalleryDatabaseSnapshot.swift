@@ -79,7 +79,7 @@ extension MediaGalleryDatabaseObserver: TransactionObserver {
     public func databaseDidChange(with event: DatabaseEvent) {
         Logger.verbose("")
         assert(event.tableName == AttachmentRecord.databaseTableName)
-        UIDatabaseObserver.serialQueue.sync {
+        UIDatabaseObserver.serializedSync {
             _ = pendingChanges.insert(event.rowID)
         }
     }
@@ -98,7 +98,7 @@ extension MediaGalleryDatabaseObserver: TransactionObserver {
 
     public func databaseDidRollback(_ db: Database) {
         owsFailDebug("we should verify this works if we ever start to use rollbacks")
-        UIDatabaseObserver.serialQueue.sync {
+        UIDatabaseObserver.serializedSync {
             pendingChanges = Set()
         }
     }

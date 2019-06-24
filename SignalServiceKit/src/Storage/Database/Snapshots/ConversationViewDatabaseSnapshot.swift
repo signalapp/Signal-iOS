@@ -62,7 +62,7 @@ extension ConversationViewDatabaseObserver: TransactionObserver {
     public func databaseDidChange(with event: DatabaseEvent) {
         Logger.verbose("")
         assert(event.tableName == InteractionRecord.databaseTableName)
-        UIDatabaseObserver.serialQueue.sync {
+        UIDatabaseObserver.serializedSync {
             _ = pendingInteractionChanges.insert(event.rowID)
         }
     }
@@ -81,7 +81,7 @@ extension ConversationViewDatabaseObserver: TransactionObserver {
 
     public func databaseDidRollback(_ db: Database) {
         owsFailDebug("we should verify this works if we ever start to use rollbacks")
-        UIDatabaseObserver.serialQueue.sync {
+        UIDatabaseObserver.serializedSync {
             pendingInteractionChanges = Set()
         }
     }
