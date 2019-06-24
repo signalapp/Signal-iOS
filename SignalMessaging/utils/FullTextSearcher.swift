@@ -58,7 +58,7 @@ public class ContactSearchResult: NSObject, Comparable {
     public let contactsManager: ContactsManagerProtocol
 
     public var recipientId: String {
-        return signalAccount.recipientId
+        return signalAccount.recipientAddress.transitional_phoneNumber
     }
 
     init(signalAccount: SignalAccount, contactsManager: ContactsManagerProtocol) {
@@ -421,7 +421,7 @@ public class FullTextSearcher: NSObject {
     }
 
     private lazy var signalAccountSearcher: Searcher<SignalAccount> = Searcher { (signalAccount: SignalAccount) in
-        let recipientId = signalAccount.recipientId
+        let recipientId = signalAccount.recipientAddress.transitional_phoneNumber!
         return self.conversationIndexingString(recipientId: recipientId)
     }
 
@@ -443,8 +443,8 @@ public class FullTextSearcher: NSObject {
     }
 
     private func indexingString(recipientId: String) -> String {
-        let contactName = contactsManager.displayName(forPhoneIdentifier: recipientId)
-        let profileName = contactsManager.profileName(forRecipientId: recipientId)
+        let contactName = contactsManager.displayName(for: recipientId.transitional_signalServiceAddress)
+        let profileName = contactsManager.profileName(for: recipientId.transitional_signalServiceAddress)
 
         return "\(recipientId) \(contactName) \(profileName ?? "")"
     }

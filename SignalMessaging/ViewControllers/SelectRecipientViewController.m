@@ -543,7 +543,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                     OWSCAssertDebug(strongSelf);
 
                                     ContactTableViewCell *cell = [ContactTableViewCell new];
-                                    BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+                                    BOOL isBlocked =
+                                        [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                                     if (isBlocked) {
                                         cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED",
                                             @"An indicator that a contact has been blocked.");
@@ -551,7 +552,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                         cell.accessoryMessage =
                                             [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];
                                     }
-                                    [cell configureWithRecipientId:signalAccount.recipientId];
+                                    [cell configureWithRecipientId:signalAccount.recipientAddress
+                                                                       .transitional_phoneNumber];
 
                                     if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
                                         cell.selectionStyle = UITableViewCellSelectionStyleNone;

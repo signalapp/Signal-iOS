@@ -549,7 +549,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         }
     } else {
         OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-        NSString *quotedAuthor = [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
+        NSString *quotedAuthor = [contactsManager
+            contactOrProfileNameForSignalServiceAddress:self.quotedMessage.authorId.transitional_signalServiceAddress];
         quotedAuthorText = [NSString
             stringWithFormat:
                 NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",

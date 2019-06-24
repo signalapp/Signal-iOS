@@ -24,7 +24,7 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
 {
     OWSAssertDebug(signalRecipient);
-    return [self initWithRecipientId:signalRecipient.recipientId];
+    return [self initWithSignalServiceAddress:signalRecipient.recipientId.transitional_signalServiceAddress];
 }
 
 - (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress
@@ -115,6 +115,7 @@ NSUInteger const SignalAccountSchemaVersion = 1;
         return [[SignalServiceAddress alloc] initWithPhoneNumber:self.recipientPhoneNumber];
     } else {
         OWSFail(@"unexpectedly have no address for SignalAccount, this should never happen.");
+        return nil;
     }
 }
 

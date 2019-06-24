@@ -162,12 +162,14 @@ NS_ASSUME_NONNULL_BEGIN
     __weak ShowGroupMembersViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
     // Sort the group members using contacts manager.
-    NSArray<NSString *> *sortedRecipientIds = [recipientIds sortedArrayUsingComparator:^NSComparisonResult(
-        NSString *recipientIdA, NSString *recipientIdB) {
-        SignalAccount *signalAccountA = [helper.contactsManager fetchOrBuildSignalAccountForRecipientId:recipientIdA];
-        SignalAccount *signalAccountB = [helper.contactsManager fetchOrBuildSignalAccountForRecipientId:recipientIdB];
-        return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
-    }];
+    NSArray<NSString *> *sortedRecipientIds =
+        [recipientIds sortedArrayUsingComparator:^NSComparisonResult(NSString *recipientIdA, NSString *recipientIdB) {
+            SignalAccount *signalAccountA = [helper.contactsManager
+                fetchOrBuildSignalAccountForSignalServiceAddress:recipientIdA.transitional_signalServiceAddress];
+            SignalAccount *signalAccountB = [helper.contactsManager
+                fetchOrBuildSignalAccountForSignalServiceAddress:recipientIdB.transitional_signalServiceAddress];
+            return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
+        }];
     for (NSString *recipientId in sortedRecipientIds) {
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
@@ -179,7 +181,8 @@ NS_ASSUME_NONNULL_BEGIN
                                      [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId];
                                  BOOL isVerified = verificationState == OWSVerificationStateVerified;
                                  BOOL isNoLongerVerified = verificationState == OWSVerificationStateNoLongerVerified;
-                                 BOOL isBlocked = [helper isRecipientIdBlocked:recipientId];
+                                 BOOL isBlocked = [helper
+                                     isSignalServiceAddressBlocked:recipientId.transitional_signalServiceAddress];
                                  if (isNoLongerVerified) {
                                      cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_NO_LONGER_VERIFIED",
                                          @"An indicator that a contact is no longer verified.");
@@ -278,7 +281,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(recipientId.length > 0);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    SignalAccount *_Nullable signalAccount = [helper fetchSignalAccountForRecipientId:recipientId];
+    SignalAccount *_Nullable signalAccount =
+        [helper fetchSignalAccountForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
 
     UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -299,7 +303,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     BOOL isBlocked;
     if (signalAccount) {
-        isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+        isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
         if (isBlocked) {
             [actionSheet
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
@@ -334,7 +338,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  }]];
         }
     } else {
-        isBlocked = [helper isRecipientIdBlocked:recipientId];
+        isBlocked = [helper isSignalServiceAddressBlocked:recipientId.transitional_signalServiceAddress];
         if (isBlocked) {
             [actionSheet
                 addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",

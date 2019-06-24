@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AddToBlockListViewController.h"
@@ -7,6 +7,7 @@
 #import "ContactsViewHelper.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -65,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(signalAccount);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    return ![helper isRecipientIdBlocked:signalAccount.recipientId];
+    return ![helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
 }
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
@@ -74,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak AddToBlockListViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
+    if ([helper isSignalServiceAddressBlocked:signalAccount.recipientAddress]) {
         OWSFailDebug(@"Cannot add already blocked user to block list.");
         return;
     }

@@ -374,7 +374,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let messageText = rawMessageText.filterStringForDisplay()
 
-        let senderName = contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
+        let senderName = contactsManager.displayName(for: incomingMessage.authorId.transitional_signalServiceAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?

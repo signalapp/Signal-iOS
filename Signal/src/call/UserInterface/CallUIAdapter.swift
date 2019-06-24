@@ -158,23 +158,23 @@ extension CallUIAdaptee {
 
     internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
         AssertIsOnMainThread()
-        
+
         Logger.info("remotePhoneNumber: \(call.remotePhoneNumber)")
 
         // make sure we don't terminate audio session during call
         _ = audioSession.startAudioActivity(call.audioActivity)
 
-        let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
-        
+        let callerName = self.contactsManager.displayName(for: call.remotePhoneNumber.transitional_signalServiceAddress)
+
         Logger.verbose("callerName: \(callerName)")
-        
+
         adaptee.reportIncomingCall(call, callerName: callerName)
     }
 
     internal func reportMissedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
+        let callerName = self.contactsManager.displayName(for: call.remotePhoneNumber.transitional_signalServiceAddress)
         adaptee.reportMissedCall(call, callerName: callerName)
     }
 

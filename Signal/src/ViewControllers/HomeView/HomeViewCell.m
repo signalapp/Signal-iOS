@@ -516,9 +516,9 @@ NS_ASSUME_NONNULL_BEGIN
                         NSFontAttributeName : self.nameFont,
                     }];
         } else {
-            name = [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:thread.contactIdentifier
-                                                                              primaryFont:self.nameFont
-                                                                            secondaryFont:self.nameSecondaryFont];
+            name = [self.contactsManager attributedContactOrProfileNameForSignalServiceAddress:thread.contactAddress
+                                                                                   primaryFont:self.nameFont
+                                                                                 secondaryFont:self.nameSecondaryFont];
         }
     }
 

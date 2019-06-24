@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AddToGroupViewController.h"
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
     __weak AddToGroupViewController *weakSelf = self;
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([helper isRecipientIdBlocked:phoneNumber]) {
+    if ([helper isSignalServiceAddressBlocked:phoneNumber.transitional_signalServiceAddress]) {
         [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
                                          fromViewController:self
                                             blockingManager:helper.blockingManager
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(signalAccount);
 
-    return ![self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientId];
+    return ![self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientAddress.transitional_phoneNumber];
 }
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
@@ -98,26 +98,27 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak AddToGroupViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientId]) {
+    if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientAddress.transitional_phoneNumber]) {
         OWSFailDebug(@"Cannot add user to group member if already a member.");
         return;
     }
 
-    if ([helper isRecipientIdBlocked:signalAccount.recipientId]) {
+    if ([helper isSignalServiceAddressBlocked:signalAccount.recipientAddress]) {
         [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
                                            fromViewController:self
                                               blockingManager:helper.blockingManager
                                               contactsManager:helper.contactsManager
                                               completionBlock:^(BOOL isBlocked) {
                                                   if (!isBlocked) {
-                                                      [weakSelf addToGroup:signalAccount.recipientId];
+                                                      [weakSelf addToGroup:signalAccount.recipientAddress
+                                                                               .transitional_phoneNumber];
                                                   }
                                               }];
         return;
     }
 
     BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
-        presentAlertIfNecessaryWithRecipientId:signalAccount.recipientId
+        presentAlertIfNecessaryWithRecipientId:signalAccount.recipientAddress.transitional_phoneNumber
                               confirmationText:
                                   NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION",
                                       @"button title to confirm adding a recipient to a group when their safety "
@@ -125,14 +126,15 @@ NS_ASSUME_NONNULL_BEGIN
                                contactsManager:helper.contactsManager
                                     completion:^(BOOL didConfirmIdentity) {
                                         if (didConfirmIdentity) {
-                                            [weakSelf addToGroup:signalAccount.recipientId];
+                                            [weakSelf
+                                                addToGroup:signalAccount.recipientAddress.transitional_phoneNumber];
                                         }
                                     }];
     if (didShowSNAlert) {
         return;
     }
 
-    [self addToGroup:signalAccount.recipientId];
+    [self addToGroup:signalAccount.recipientAddress.transitional_phoneNumber];
 }
 
 - (void)addToGroup:(NSString *)recipientId
@@ -162,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(signalAccount);
 
-    if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientId]) {
+    if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientAddress.transitional_phoneNumber]) {
         return NSLocalizedString(@"NEW_GROUP_MEMBER_LABEL", @"An indicator that a user is a member of the new group.");
     }
 

@@ -503,30 +503,34 @@ NS_ASSUME_NONNULL_BEGIN
         NSArray<SignalAccount *> *signalAccounts = collatedSignalAccounts[i];
         NSMutableArray <OWSTableItem *> *contactItems = [NSMutableArray new];
         for (SignalAccount *signalAccount in signalAccounts) {
-            [contactItems addObject:[OWSTableItem
-                                        itemWithCustomCellBlock:^{
-                                            typeof(self) strongSelf = weakSelf;
-                                            ContactTableViewCell *cell = [ContactTableViewCell new];
-                                            BOOL isBlocked = [strongSelf.contactsViewHelper
-                                                isRecipientIdBlocked:signalAccount.recipientId];
-                                            if (isBlocked) {
-                                                cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED",
-                                                    @"An indicator that a contact has been blocked.");
-                                            }
+            [contactItems
+                addObject:[OWSTableItem
+                              itemWithCustomCellBlock:^{
+                                  typeof(self) strongSelf = weakSelf;
+                                  ContactTableViewCell *cell = [ContactTableViewCell new];
+                                  BOOL isBlocked = [strongSelf.contactsViewHelper
+                                      isSignalServiceAddressBlocked:signalAccount.recipientAddress];
+                                  if (isBlocked) {
+                                      cell.accessoryMessage = NSLocalizedString(
+                                          @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                  }
 
-                                            [cell configureWithRecipientId:signalAccount.recipientId];
+                                  [cell
+                                      configureWithRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
 
-                                            NSString *cellName = [NSString
-                                                stringWithFormat:@"signal_contact.%@", signalAccount.recipientId];
-                                            cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                NewContactThreadViewController, cellName);
+                                  NSString *cellName =
+                                      [NSString stringWithFormat:@"signal_contact.%@",
+                                                signalAccount.recipientAddress.transitional_phoneNumber];
+                                  cell.accessibilityIdentifier
+                                      = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewContactThreadViewController, cellName);
 
-                                            return cell;
-                                        }
-                                        customRowHeight:UITableViewAutomaticDimension
-                                        actionBlock:^{
-                                            [weakSelf newConversationWithRecipientId:signalAccount.recipientId];
-                                        }]];
+                                  return cell;
+                              }
+                              customRowHeight:UITableViewAutomaticDimension
+                              actionBlock:^{
+                                  [weakSelf newConversationWithRecipientId:signalAccount.recipientAddress
+                                                                               .transitional_phoneNumber];
+                              }]];
         }
 
         // Don't show empty sections.
@@ -561,7 +565,8 @@ NS_ASSUME_NONNULL_BEGIN
                 addItem:[OWSTableItem
                             itemWithCustomCellBlock:^{
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
-                                BOOL isBlocked = [helper isRecipientIdBlocked:phoneNumber];
+                                BOOL isBlocked = [helper
+                                    isSignalServiceAddressBlocked:phoneNumber.transitional_signalServiceAddress];
                                 if (isBlocked) {
                                     cell.accessoryMessage = NSLocalizedString(
                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
@@ -606,7 +611,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
         hasSearchResults = YES;
 
-        if ([searchPhoneNumbers containsObject:signalAccount.recipientId]) {
+        if ([searchPhoneNumbers containsObject:signalAccount.recipientAddress.transitional_phoneNumber]) {
             // Don't show a contact if they already appear in the "search phone numbers"
             // results.
             continue;
@@ -615,16 +620,16 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
                             ContactTableViewCell *cell = [ContactTableViewCell new];
-                            BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+                            BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                             if (isBlocked) {
                                 cell.accessoryMessage = NSLocalizedString(
                                     @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                             }
 
-                            [cell configureWithRecipientId:signalAccount.recipientId];
+                            [cell configureWithRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
 
-                            NSString *cellName =
-                                [NSString stringWithFormat:@"signal_contact.%@", signalAccount.recipientId];
+                            NSString *cellName = [NSString stringWithFormat:@"signal_contact.%@",
+                                                           signalAccount.recipientAddress.transitional_phoneNumber];
                             cell.accessibilityIdentifier
                                 = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewContactThreadViewController, cellName);
 
@@ -632,7 +637,8 @@ NS_ASSUME_NONNULL_BEGIN
                         }
                         customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
-                            [weakSelf newConversationWithRecipientId:signalAccount.recipientId];
+                            [weakSelf
+                                newConversationWithRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
                         }]];
     }
     if (filteredSignalAccounts.count > 0) {

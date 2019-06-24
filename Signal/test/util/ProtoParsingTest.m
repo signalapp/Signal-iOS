@@ -23,9 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TestContactsManager
 
-- (NSString *)displayNameForPhoneIdentifier:(NSString *_Nullable)phoneNumber
+- (nonnull NSString *)displayNameForSignalServiceAddress:(nullable SignalServiceAddress *)address
 {
-    return phoneNumber;
+    return address.stringIdentifier;
 }
 
 - (NSArray<SignalAccount *> *)signalAccounts
@@ -63,7 +63,9 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (nonnull NSString *)displayNameForPhoneIdentifier:(NSString * _Nullable)recipientId transaction:(nonnull YapDatabaseReadTransaction *)transaction {
+- (nonnull NSString *)displayNameForSignalServiceAddress:(nullable SignalServiceAddress *)address
+                                             transaction:(nonnull YapDatabaseReadTransaction *)transaction
+{
     return nil;
 }
 
@@ -124,9 +126,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)testProtoStreams
 {
     NSArray<SignalAccount *> *signalAccounts = @[
-        [[SignalAccount alloc] initWithRecipientId:@"+13213214321"],
-        [[SignalAccount alloc] initWithRecipientId:@"+13213214322"],
-        [[SignalAccount alloc] initWithRecipientId:@"+13213214323"],
+        [[SignalAccount alloc]
+            initWithSignalServiceAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13213214321"]],
+        [[SignalAccount alloc]
+            initWithSignalServiceAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13213214322"]],
+        [[SignalAccount alloc]
+            initWithSignalServiceAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13213214323"]],
     ];
     NSData *_Nullable streamData = [self dataForSyncingContacts:signalAccounts];
     XCTAssertNotNil(streamData);

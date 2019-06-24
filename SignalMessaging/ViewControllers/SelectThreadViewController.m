@@ -273,12 +273,12 @@ NS_ASSUME_NONNULL_BEGIN
                             OWSCAssertDebug(strongSelf);
 
                             ContactTableViewCell *cell = [ContactTableViewCell new];
-                            BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+                            BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                             if (isBlocked) {
                                 cell.accessoryMessage = NSLocalizedString(
                                     @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                             }
-                            [cell configureWithRecipientId:signalAccount.recipientId];
+                            [cell configureWithRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension
@@ -310,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     ContactsViewHelper *helper = self.contactsViewHelper;
 
-    if ([helper isRecipientIdBlocked:signalAccount.recipientId]
+    if ([helper isSignalServiceAddressBlocked:signalAccount.recipientAddress]
         && ![self.selectThreadViewDelegate canSelectBlockedContact]) {
 
         __weak SelectThreadViewController *weakSelf = self;
@@ -328,7 +328,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block TSThread *thread = nil;
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
+        thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientAddress.transitional_phoneNumber
+                                                     transaction:transaction];
     }];
     OWSAssertDebug(thread);
 
@@ -364,7 +365,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [matchingAccounts
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return ![contactIdsToIgnore containsObject:signalAccount.recipientId];
+            return ![contactIdsToIgnore containsObject:signalAccount.recipientAddress.transitional_phoneNumber];
         }]];
 }
 
@@ -406,7 +407,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)recipientIdWasSelected:(NSString *)recipientId
 {
-    SignalAccount *signalAccount = [self.contactsViewHelper fetchOrBuildSignalAccountForRecipientId:recipientId];
+    SignalAccount *signalAccount = [self.contactsViewHelper
+        fetchOrBuildSignalAccountForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
     [self signalAccountWasSelected:signalAccount];
 }
 

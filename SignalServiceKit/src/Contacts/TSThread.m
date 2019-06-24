@@ -267,6 +267,11 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return nil;
 }
 
+- (nullable SignalServiceAddress *)contactAddress
+{
+    return nil;
+}
+
 - (NSString *)name {
     OWSAbstractMethod();
 

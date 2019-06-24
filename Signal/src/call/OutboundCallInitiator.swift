@@ -41,9 +41,8 @@ import SignalMessaging
             Logger.warn("unable to parse signalId from phone number: \(handle)")
             return false
         }
-        // TODO UUID: map phone number from contacts to UUID, maybe requires lookup?
-        let address = SignalServiceAddress(phoneNumber: e164Number)
-        return initiateCall(address: address, isVideo: false)
+
+        return initiateCall(address: e164Number.transitional_signalServiceAddress, isVideo: false)
     }
 
     /**

@@ -184,7 +184,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String, transaction: YapDatabaseReadTransaction) in
-        let displayName = contactsManager.displayName(forPhoneIdentifier: recipientId, transaction: transaction)
+        let displayName = contactsManager.displayName(for: recipientId.transitional_signalServiceAddress, transaction: transaction)
 
         let nationalNumber: String = { (recipientId: String) -> String in
 

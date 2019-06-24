@@ -500,7 +500,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     for (SignalAccount *account in self.contactsManager.signalAccounts) {
-        if ([localNumber isEqual:account.recipientId]) {
+        if ([localNumber isEqual:account.recipientPhoneNumber]) {
             continue;
         }
         if (accounts.count >= 3) {

@@ -42,7 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.accountManager = [TSAccountManager sharedInstance];
 
     OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-    self.contactName = [contactsManager displayNameForPhoneIdentifier:recipientId];
+    self.contactName =
+        [contactsManager displayNameForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];

@@ -90,20 +90,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Contacts
 
-- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId
+- (nullable SignalAccount *)fetchSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
 
-    return self.signalAccountMap[recipientId];
+    return self.signalAccountMap[address.stringIdentifier];
 }
 
-- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId
+- (SignalAccount *)fetchOrBuildSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
 
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
-    return (signalAccount ?: [[SignalAccount alloc] initWithRecipientId:recipientId]);
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForSignalServiceAddress:address];
+    return (signalAccount ?: [[SignalAccount alloc] initWithSignalServiceAddress:address]);
 }
 
 - (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
@@ -124,7 +124,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     NSString *localNumber = [TSAccountManager localNumber];
-    if ([signalAccount.recipientId isEqualToString:localNumber]) {
+    if ([signalAccount.recipientAddress.transitional_phoneNumber isEqualToString:localNumber]) {
         return YES;
     }
 
@@ -142,11 +142,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSAccountManager localNumber];
 }
 
-- (BOOL)isRecipientIdBlocked:(NSString *)recipientId
+- (BOOL)isSignalServiceAddressBlocked:(SignalServiceAddress *)address
 {
     OWSAssertIsOnMainThread();
 
-    return [self.blockListCache isRecipientIdBlocked:recipientId];
+    return [self.blockListCache isRecipientIdBlocked:address.transitional_phoneNumber];
 }
 
 - (BOOL)isGroupIdBlocked:(NSData *)groupId
@@ -160,7 +160,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        return [self isRecipientIdBlocked:contactThread.contactIdentifier];
+        return [self isSignalServiceAddressBlocked:contactThread.contactAddress];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         return [self isGroupIdBlocked:groupThread.groupModel.groupId];
@@ -178,7 +178,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
     for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
         if (![self isSignalAccountHidden:signalAccount]) {
-            signalAccountMap[signalAccount.recipientId] = signalAccount;
+            if (signalAccount.recipientPhoneNumber) {
+                signalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
+            }
+            if (signalAccount.recipientUUID) {
+                signalAccountMap[signalAccount.recipientUUID] = signalAccount;
+            }
             [signalAccounts addObject:signalAccount];
         }
     }
@@ -207,7 +212,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Check for matches against "Note to Self".
     NSMutableArray<SignalAccount *> *signalAccountsToSearch = [self.signalAccounts mutableCopy];
-    SignalAccount *selfAccount = [[SignalAccount alloc] initWithRecipientId:self.localNumber];
+    SignalAccount *selfAccount =
+        [[SignalAccount alloc] initWithSignalServiceAddress:self.localNumber.transitional_signalServiceAddress];
     [signalAccountsToSearch addObject:selfAccount];
     return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch withSearchText:searchText];
 }
@@ -360,7 +366,8 @@ NS_ASSUME_NONNULL_BEGIN
                                    editImmediately:(BOOL)shouldEditImmediately
                             addToExistingCnContact:(CNContact *_Nullable)existingContact
 {
-    SignalAccount *signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
+    SignalAccount *signalAccount =
+        [self fetchSignalAccountForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
 
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.

@@ -204,8 +204,9 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                 NSString *recipientName;
                 if (transaction.transitional_yapReadTransaction != nil) {
                     recipientName = [self.contactsManager
-                        displayNameForPhoneIdentifier:self.unregisteredRecipientId
-                                          transaction:transaction.transitional_yapReadTransaction];
+                        displayNameForSignalServiceAddress:self.unregisteredRecipientId
+                                                               .transitional_signalServiceAddress
+                                               transaction:transaction.transitional_yapReadTransaction];
                 }
                 return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
                                                       @"Format string for 'unregistered user' error. Embeds {{the "
@@ -238,9 +239,9 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
             NSString *recipientName;
             if (transaction.transitional_yapReadTransaction != nil) {
                 NSString *contactId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
-                recipientName =
-                    [self.contactsManager displayNameForPhoneIdentifier:contactId
-                                                            transaction:transaction.transitional_yapReadTransaction];
+                recipientName = [self.contactsManager
+                    displayNameForSignalServiceAddress:contactId.transitional_signalServiceAddress
+                                           transaction:transaction.transitional_yapReadTransaction];
             }
             NSString *format = NSLocalizedString(@"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT",
                 @"Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}}");

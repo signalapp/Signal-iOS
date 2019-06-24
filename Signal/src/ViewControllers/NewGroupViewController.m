@@ -222,7 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSArray<SignalAccount *> *signalAccounts = self.contactsViewHelper.signalAccounts;
     NSMutableSet *nonContactMemberRecipientIds = [self.memberRecipientIds mutableCopy];
     for (SignalAccount *signalAccount in signalAccounts) {
-        [nonContactMemberRecipientIds removeObject:signalAccount.recipientId];
+        [nonContactMemberRecipientIds removeObject:signalAccount.recipientAddress.transitional_phoneNumber];
     }
 
     // Non-contact Members
@@ -246,7 +246,8 @@ NS_ASSUME_NONNULL_BEGIN
 
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
                                 BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
-                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                                BOOL isBlocked = [contactsViewHelper
+                                    isSignalServiceAddressBlocked:recipientId.transitional_signalServiceAddress];
                                 if (isCurrentMember) {
                                     // In the "contacts" section, we label members as such when editing an existing
                                     // group.
@@ -267,7 +268,8 @@ NS_ASSUME_NONNULL_BEGIN
                             customRowHeight:UITableViewAutomaticDimension
                             actionBlock:^{
                                 BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
-                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                                BOOL isBlocked = [contactsViewHelper
+                                    isSignalServiceAddressBlocked:recipientId.transitional_signalServiceAddress];
                                 if (isCurrentMember) {
                                     [weakSelf removeRecipientId:recipientId];
                                 } else if (isBlocked) {
@@ -336,9 +338,10 @@ NS_ASSUME_NONNULL_BEGIN
 
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
 
-                                NSString *recipientId = signalAccount.recipientId;
+                                NSString *recipientId = signalAccount.recipientAddress.transitional_phoneNumber;
                                 BOOL isCurrentMember = [strongSelf.memberRecipientIds containsObject:recipientId];
-                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                                BOOL isBlocked =
+                                    [contactsViewHelper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                                 if (isCurrentMember) {
                                     // In the "contacts" section, we label members as such when editing an existing
                                     // group.
@@ -349,10 +352,10 @@ NS_ASSUME_NONNULL_BEGIN
                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                 }
 
-                                [cell configureWithRecipientId:signalAccount.recipientId];
+                                [cell configureWithRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
 
-                                NSString *cellName =
-                                    [NSString stringWithFormat:@"signal_contact.%@", signalAccount.recipientId];
+                                NSString *cellName = [NSString stringWithFormat:@"signal_contact.%@",
+                                                               signalAccount.recipientAddress.transitional_phoneNumber];
                                 cell.accessibilityIdentifier
                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewGroupViewController, cellName);
 
@@ -360,9 +363,10 @@ NS_ASSUME_NONNULL_BEGIN
                             }
                             customRowHeight:UITableViewAutomaticDimension
                             actionBlock:^{
-                                NSString *recipientId = signalAccount.recipientId;
+                                NSString *recipientId = signalAccount.recipientAddress.transitional_phoneNumber;
                                 BOOL isCurrentMember = [weakSelf.memberRecipientIds containsObject:recipientId];
-                                BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                                BOOL isBlocked =
+                                    [contactsViewHelper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                                 if (isCurrentMember) {
                                     [weakSelf removeRecipientId:recipientId];
                                 } else if (isBlocked) {
@@ -378,7 +382,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                             }];
                                 } else {
                                     BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
-                                        presentAlertIfNecessaryWithRecipientId:signalAccount.recipientId
+                                        presentAlertIfNecessaryWithRecipientId:signalAccount.recipientAddress
+                                                                                   .transitional_phoneNumber
                                                               confirmationText:NSLocalizedString(
                                                                                    @"SAFETY_NUMBER_CHANGED_CONFIRM_"
                                                                                    @"ADD_TO_GROUP_ACTION",

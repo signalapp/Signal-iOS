@@ -934,7 +934,8 @@ typedef enum : NSUInteger {
                 @"Indicates that more than one member of this group conversation is no longer verified.");
         } else {
             NSString *recipientId = [noLongerVerifiedRecipientIds firstObject];
-            NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:recipientId];
+            NSString *displayName =
+                [self.contactsManager displayNameForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
             NSString *format
                 = (self.isGroupConversation ? NSLocalizedString(@"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
                                                   @"Indicates that one member of this group conversation is no longer "
@@ -1389,9 +1390,9 @@ typedef enum : NSUInteger {
                     }];
         } else {
             name = [self.contactsManager
-                attributedContactOrProfileNameForPhoneIdentifier:self.thread.contactIdentifier
-                                                     primaryFont:self.headerView.titlePrimaryFont
-                                                   secondaryFont:self.headerView.titleSecondaryFont];
+                attributedContactOrProfileNameForSignalServiceAddress:self.thread.contactAddress
+                                                          primaryFont:self.headerView.titlePrimaryFont
+                                                        secondaryFont:self.headerView.titleSecondaryFont];
         }
     }
     self.title = nil;
@@ -1944,7 +1945,8 @@ typedef enum : NSUInteger {
 
 - (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage
 {
-    NSString *keyOwner = [self.contactsManager displayNameForPhoneIdentifier:errorMessage.theirSignalId];
+    NSString *keyOwner = [self.contactsManager
+        displayNameForSignalServiceAddress:errorMessage.theirSignalId.transitional_signalServiceAddress];
     NSString *titleFormat = NSLocalizedString(@"SAFETY_NUMBERS_ACTIONSHEET_TITLE", @"Action sheet heading");
     NSString *titleText = [NSString stringWithFormat:titleFormat, keyOwner];
 
@@ -2000,7 +2002,7 @@ typedef enum : NSUInteger {
     }
 
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:contactThread.contactIdentifier];
+    NSString *displayName = [self.contactsManager displayNameForSignalServiceAddress:contactThread.contactAddress];
 
     UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:[CallStrings callBackAlertTitle]
@@ -2273,7 +2275,8 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(recipientId.length > 0);
 
-    return [self.contactsManager attributedContactOrProfileNameForPhoneIdentifier:recipientId];
+    return [self.contactsManager
+        attributedContactOrProfileNameForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
 }
 
 - (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
@@ -2284,7 +2287,8 @@ typedef enum : NSUInteger {
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
 
-    NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:interaction.recipientId];
+    NSString *displayName = [self.contactsManager
+        displayNameForSignalServiceAddress:interaction.recipientId.transitional_signalServiceAddress];
     NSString *title =
         [NSString stringWithFormat:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT",
                                        @"Title format for action sheet that offers to block an unknown user."
@@ -4749,7 +4753,8 @@ typedef enum : NSUInteger {
         if (avatarImageData) {
             break;
         }
-        avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+        avatarImageData = [self.contactsManager
+            profileImageDataForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
         if (avatarImageData) {
             isProfileAvatar = YES;
         }
