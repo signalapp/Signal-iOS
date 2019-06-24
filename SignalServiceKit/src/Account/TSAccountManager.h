@@ -54,12 +54,15 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 + (nullable NSString *)localNumber;
 - (nullable NSString *)localNumber;
 
+@property (readonly, nullable) NSUUID *uuid;
+
 // A variant of localNumber that never opens a "sneaky" transaction.
 - (nullable NSString *)storedOrCachedLocalNumber:(SDSAnyReadTransaction *)transaction;
 
 #ifdef DEBUG
 // This method is exposed for testing purposes only.
-- (void)storeLocalNumber:(NSString *)localNumber;
+// TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.contactUUID in production
+- (void)storeLocalNumber:(NSString *)localNumber uuid:(nullable NSUUID *)uuid;
 #endif
 
 /**
@@ -143,7 +146,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (void)setIsManualMessageFetchEnabled:(BOOL)value;
 
 #ifdef DEBUG
-- (void)registerForTestsWithLocalNumber:(NSString *)localNumber;
+- (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid;
 #endif
 
 - (AnyPromise *)updateAccountAttributes __attribute__((warn_unused_result));

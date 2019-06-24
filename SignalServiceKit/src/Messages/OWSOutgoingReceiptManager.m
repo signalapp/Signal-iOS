@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingReceiptManager.h"
@@ -221,7 +221,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
 - (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope
 {
-    [self enqueueReceiptWithRecipientId:envelope.source
+    [self enqueueReceiptWithRecipientId:envelope.sourceE164
                               timestamp:envelope.timestamp
                             receiptType:OWSReceiptType_Delivery];
 }

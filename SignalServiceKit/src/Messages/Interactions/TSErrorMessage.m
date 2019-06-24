@@ -91,8 +91,8 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                  withTransaction:(YapDatabaseReadWriteTransaction *)transaction
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
-    TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.sourceE164
+                                                                         transaction:transaction];
 
     // Legit usage of senderTimestamp. We don't actually currently surface it in the UI, but it serves as
     // a reference to the envelope which we failed to process.
