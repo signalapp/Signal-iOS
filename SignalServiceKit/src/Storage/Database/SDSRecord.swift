@@ -49,8 +49,7 @@ public extension SDSRecord {
                     owsFailDebug("Could not update missing record.")
                 }
 
-                var recordCopy = self
-                try recordCopy.insert(transaction.database)
+                try self.insert(transaction.database)
             }
         } catch {
             // TODO:
