@@ -63,10 +63,13 @@ NS_ASSUME_NONNULL_BEGIN
                                      actionBlock:^{
                                          [DebugUIMisc setManualCensorshipCircumventionEnabled:NO];
                                      }]];
-    [items addObject:[OWSTableItem itemWithTitle:@"Clear experience upgrades (works once per launch)"
-                                     actionBlock:^{
-                                         [ExperienceUpgrade removeAllObjectsInCollection];
-                                     }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Clear experience upgrades (works once per launch)"
+                           actionBlock:^{
+                               [DebugUIMisc.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                   [ExperienceUpgrade anyRemoveAllWithoutInstantationWithTransaction:transaction];
+                               }];
+                           }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
                                      actionBlock:^{
                                          [DebugUIMisc clearHasDismissedOffers];

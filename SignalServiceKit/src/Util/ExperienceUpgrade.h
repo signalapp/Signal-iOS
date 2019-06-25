@@ -2,11 +2,11 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSYapDatabaseObject.h>
+#import <SignalServiceKit/BaseModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ExperienceUpgrade : TSYapDatabaseObject
+@interface ExperienceUpgrade : BaseModel
 
 // --- CODE GENERATION MARKER
 
