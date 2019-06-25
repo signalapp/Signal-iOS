@@ -1071,7 +1071,10 @@ const CGFloat kIconViewLength = 24;
 
     if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             [self.disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
 
             // MJK TODO - should be safe to remove this senderTimestamp
             OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
