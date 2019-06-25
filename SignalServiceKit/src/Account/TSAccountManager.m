@@ -19,6 +19,7 @@
 #import <Reachability/Reachability.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
@@ -127,6 +128,13 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return SSKEnvironment.shared.sessionStore;
 }
 
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
+
+    return SSKEnvironment.shared.primaryStorage;
+}
+
 #pragma mark -
 
 - (void)setPhoneNumberAwaitingVerification:(NSString *_Nullable)phoneNumberAwaitingVerification
@@ -220,9 +228,20 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 {
     @synchronized (self) {
         __block NSString *_Nullable result;
+
+        // GRDB TODO: Until GRDB migration is complete, we need to load this from YDB,
+        //            since localNumber is used in [OWSOutgoingSyncMessage initWithCoder:]
+        //            which is used while registering the "index_signal_accounts_on_recipientUUID"
+        //            secondary index.
+        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            result =
+                [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction.asAnyRead];
+        }];
+#ifdef GRDB_MIGRATION_COMPLETE
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             result = [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
         }];
+#endif
         return result;
     }
 }
