@@ -700,13 +700,13 @@ class NotificationActionHandler {
 }
 
 extension ThreadUtil {
-    static var dbReadConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadConnection
+    static var databaseStorage: SDSDatabaseStorage {
+        return SSKEnvironment.shared.databaseStorage
     }
 
     class func sendMessageNonDurably(text: String, thread: TSThread, quotedReplyModel: OWSQuotedReplyModel?, messageSender: MessageSender) -> Promise<Void> {
         return Promise { resolver in
-            self.dbReadConnection.read { transaction in
+            self.databaseStorage.read { transaction in
                 _ = self.sendMessageNonDurably(withText: text,
                                                in: thread,
                                                quotedReplyModel: quotedReplyModel,

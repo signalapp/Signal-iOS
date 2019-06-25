@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                               thread:transcript.thread
                                                           createdByRemoteRecipientId:nil
                                                               createdInExistingGroup:NO
-                                                                         transaction:transaction];
+                                                                         transaction:transaction.asAnyWrite];
 
     if (transcript.isExpirationTimerUpdate) {
         // early return to avoid saving an empty incoming message.
@@ -203,9 +203,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                              transaction:transaction];
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:outgoingMessage
                                                      expirationStartedAt:transcript.expirationStartedAt
-                                                             transaction:transaction];
+                                                             transaction:transaction.asAnyWrite];
     [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
-                                                                          transaction:transaction];
+                                                                          transaction:transaction.asAnyWrite];
     [PerMessageExpiration expireIfNecessaryWithMessage:outgoingMessage
                                            transaction:transaction.asAnyWrite];
 

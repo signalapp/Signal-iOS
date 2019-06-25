@@ -296,18 +296,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 }
             }
 
-            [SignalRecipient
-                enumerateCollectionObjectsWithTransaction:transaction
-                                               usingBlock:^(id _Nonnull object, BOOL *_Nonnull stop) {
-                                                   if (![object isKindOfClass:[SignalRecipient class]]) {
-                                                       OWSFailDebug(@"unexpected object: %@", object);
-                                                       return;
-                                                   }
-                                                   SignalRecipient *signalRecipient = (SignalRecipient *)object;
-                                                   if (signalRecipient.devices.count > 0) {
-                                                       [existingRegisteredRecipients addObject:(SignalRecipient *)object];
-                                                   }
-                                               }];
+            [SignalRecipient anyEnumerateWithTransaction:transaction.asAnyRead
+                                                   block:^(SignalRecipient *signalRecipient, BOOL *stop) {
+                                                       if (signalRecipient.devices.count > 0) {
+                                                           [existingRegisteredRecipients addObject:signalRecipient];
+                                                       }
+                                                   }];
 
             allContactPhoneNumbers = [self phoneNumbersForIntersectionWithContacts:contacts];
             phoneNumbersForIntersection = allContactPhoneNumbers;

@@ -205,14 +205,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                               asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
                                   [message anyInsertWithTransaction:writeTransaction];
 
-                                  if (writeTransaction.transitional_yapWriteTransaction != nil) {
-                                      OWSLinkPreview *_Nullable linkPreview =
-                                          [self linkPreviewForLinkPreviewDraft:linkPreviewDraft
-                                                                   transaction:writeTransaction
-                                                                                   .transitional_yapWriteTransaction];
-                                      if (linkPreview) {
-                                          [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
-                                      }
+                                  OWSLinkPreview *_Nullable linkPreview =
+                                      [self linkPreviewForLinkPreviewDraft:linkPreviewDraft
+                                                               transaction:writeTransaction];
+                                  if (linkPreview) {
+                                      [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
                                   }
 
                                   NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
@@ -258,9 +255,9 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                      messageSticker:nil
                                 perMessageExpirationDurationSeconds:0];
 
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [message saveWithTransaction:transaction];
-        [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [message anyInsertWithTransaction:transaction];
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
 
     return message;
@@ -310,7 +307,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         MessageStickerDraft *stickerDraft =
             [[MessageStickerDraft alloc] initWithInfo:stickerInfo stickerData:stickerData];
 
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             MessageSticker *_Nullable messageSticker =
                 [self messageStickerForStickerDraft:stickerDraft transaction:transaction];
             if (!messageSticker) {
@@ -318,10 +315,10 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                 return;
             }
 
-            [message anyInsertWithTransaction:transaction.asAnyWrite];
-            [message updateWithMessageSticker:messageSticker transaction:transaction.asAnyWrite];
+            [message anyInsertWithTransaction:transaction];
+            [message updateWithMessageSticker:messageSticker transaction:transaction];
 
-            [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
+            [self.messageSenderJobQueue addMessage:message transaction:transaction];
         }];
     });
 
@@ -335,8 +332,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     TSOutgoingMessage *message =
         [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
 }
 
@@ -346,7 +343,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 + (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                         transaction:(YapDatabaseReadTransaction *)transaction
+                                         transaction:(SDSAnyReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
                                           completion:(void (^)(NSError *_Nullable error))completion
 {
@@ -365,7 +362,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                     mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                         transaction:(YapDatabaseReadTransaction *)transaction
+                                         transaction:(SDSAnyReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
                                           completion:(void (^)(NSError *_Nullable error))completion
 {
@@ -379,7 +376,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                     thread:thread
                           quotedReplyModel:quotedReplyModel
                           linkPreviewDraft:nil
-                               transaction:transaction.asAnyRead
+                               transaction:transaction
                                 completion:^(TSOutgoingMessage *_Nonnull savedMessage,
                                     NSMutableArray<OWSOutgoingAttachmentInfo *> *_Nonnull attachmentInfos,
                                     SDSAnyWriteTransaction *writeTransaction) {
@@ -465,7 +462,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 }
 
 + (nullable OWSLinkPreview *)linkPreviewForLinkPreviewDraft:(nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                                transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                                transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -474,7 +471,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     }
     NSError *linkPreviewError;
     OWSLinkPreview *_Nullable linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft
-                                                                                  transaction:transaction.asAnyWrite
+                                                                                  transaction:transaction
                                                                                         error:&linkPreviewError];
     if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
         OWSLogError(@"linkPreviewError: %@", linkPreviewError);
@@ -483,15 +480,13 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 }
 
 + (nullable MessageSticker *)messageStickerForStickerDraft:(MessageStickerDraft *)stickerDraft
-                                               transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
     NSError *error;
     MessageSticker *_Nullable messageSticker =
-        [MessageSticker buildValidatedMessageStickerFromDraft:stickerDraft
-                                                  transaction:transaction.asAnyWrite
-                                                        error:&error];
+        [MessageSticker buildValidatedMessageStickerFromDraft:stickerDraft transaction:transaction error:&error];
     if (error && ![MessageSticker isNoStickerError:error]) {
         OWSFailDebug(@"error: %@", error);
     }

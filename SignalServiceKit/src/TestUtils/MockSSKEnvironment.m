@@ -75,9 +75,8 @@ NS_ASSUME_NONNULL_BEGIN
     TSSocketManager *socketManager = [[TSSocketManager alloc] init];
     TSAccountManager *tsAccountManager = [TSAccountManager new];
     OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
-    OWSDisappearingMessagesJob *disappearingMessagesJob =
-        [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
-    OWSReadReceiptManager *readReceiptManager = [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
+    OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
+    OWSReadReceiptManager *readReceiptManager = [OWSReadReceiptManager new];
     OWSOutgoingReceiptManager *outgoingReceiptManager =
         [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
     id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];

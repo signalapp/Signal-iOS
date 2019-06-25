@@ -2,9 +2,12 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 
 // SignalRecipient serves two purposes:
 //
@@ -15,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 //    from that SignalRecipient - but do not remove it from the database.
 //    Note that SignalRecipients without any devices are not considered registered.
 //// b) We hang the "known device list" for known signal accounts on this entity.
-@interface SignalRecipient : TSYapDatabaseObject
+@interface SignalRecipient : BaseModel
 
 @property (nonatomic, readonly) NSOrderedSet *devices;
 
@@ -38,26 +41,26 @@ NS_SWIFT_NAME(init(uniqueId:devices:));
 
 + (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
                                            mustHaveDevices:(BOOL)mustHaveDevices
-                                               transaction:(YapDatabaseReadTransaction *)transaction;
+                                               transaction:(SDSAnyReadTransaction *)transaction;
 + (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
-                                             transaction:(YapDatabaseReadTransaction *)transaction;
+                                             transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray *)devicesToAdd
                                   devicesToRemove:(nullable NSArray *)devicesToRemove
-                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (nonatomic, readonly) NSString *recipientId;
 
 - (NSComparisonResult)compare:(SignalRecipient *)other;
 
-+ (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(YapDatabaseReadTransaction *)transaction;
++ (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(SDSAnyReadTransaction *)transaction;
 
 + (SignalRecipient *)markRecipientAsRegisteredAndGet:(NSString *)recipientId
-                                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                         transaction:(SDSAnyWriteTransaction *)transaction;
 + (void)markRecipientAsRegistered:(NSString *)recipientId
                          deviceId:(UInt32)deviceId
-                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
-+ (void)markRecipientAsUnregistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                      transaction:(SDSAnyWriteTransaction *)transaction;
++ (void)markRecipientAsUnregistered:(NSString *)recipientId transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

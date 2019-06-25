@@ -11,6 +11,8 @@ public protocol SDSModel: TSYapDatabaseObject {
     var serializer: SDSSerializer { get }
 
     func anyInsert(transaction: SDSAnyWriteTransaction)
+
+    func anyRemove(transaction: SDSAnyWriteTransaction)
 }
 
 // MARK: -

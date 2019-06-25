@@ -7,6 +7,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSPrimaryStorage;
+@class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
 @class SSKProtoSyncMessageRead;
 @class TSIncomingMessage;
 @class TSOutgoingMessage;
@@ -59,8 +61,9 @@ NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
 // This manager is responsible for handling and emitting all four kinds.
 @interface OWSReadReceiptManager : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
++ (SDSKeyValueStore *)keyValueStore;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 + (instancetype)sharedManager;
 
 #pragma mark - Sender/Recipient Read Receipts
@@ -74,13 +77,13 @@ NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
                              readTimestamp:(uint64_t)readTimestamp;
 
 - (void)applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
-                                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Linked Device Read Receipts
 
 - (void)processReadReceiptsFromLinkedDevice:(NSArray<SSKProtoSyncMessageRead *> *)readReceiptProtos
                               readTimestamp:(uint64_t)readTimestamp
-                                transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)applyEarlyReadReceiptsForIncomingMessage:(TSIncomingMessage *)message
                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;

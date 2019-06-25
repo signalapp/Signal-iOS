@@ -24,11 +24,6 @@
 
 @implementation ConversationViewItemTest
 
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
 - (void)setUp
 {
     [super setUp];
@@ -285,8 +280,8 @@
 - (nullable TSMessage *)fetchMessageWithUniqueId:(NSString *)uniqueId
 {
     __block TSInteraction *_Nullable instance;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        instance = [TSInteraction anyFetchWithUniqueId:uniqueId transaction:transaction];
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        instance = [TSInteraction anyFetchWithUniqueId:uniqueId transaction:transaction.asAnyRead];
     }];
     if (!instance) {
         return nil;
@@ -301,8 +296,8 @@
 - (nullable TSAttachment *)fetchAttachmentWithUniqueId:(NSString *)uniqueId
 {
     __block TSAttachment *_Nullable instance;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        instance = [TSAttachment anyFetchWithUniqueId:uniqueId transaction:transaction];
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        instance = [TSAttachment anyFetchWithUniqueId:uniqueId transaction:transaction.asAnyRead];
     }];
     return instance;
 }

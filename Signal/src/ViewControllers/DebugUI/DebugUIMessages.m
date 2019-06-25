@@ -4406,7 +4406,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                               transaction:transaction.transitional_yapWriteTransaction];
                     [message updateWithReadRecipientId:recipientId
                                          readTimestamp:timestamp.unsignedLongLongValue
-                                           transaction:transaction.transitional_yapWriteTransaction];
+                                           transaction:transaction];
                 } else {
                     OWSFailDebug(@"failure: not yet implemented for GRDB");
                 }
@@ -4761,7 +4761,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         if (transaction.transitional_yapWriteTransaction) {
             [message updateWithReadRecipientId:recipientId
                                  readTimestamp:[NSDate ows_millisecondTimeStamp]
-                                   transaction:transaction.transitional_yapWriteTransaction];
+                                   transaction:transaction];
         } else {
             OWSFailDebug(@"failure: not yet implemented for GRDB");
         }

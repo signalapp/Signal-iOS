@@ -5,7 +5,6 @@
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSMessage.h"

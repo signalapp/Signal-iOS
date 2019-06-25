@@ -236,7 +236,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method is used to record a skipped send to one recipient.
-- (void)updateWithSkippedRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithSkippedRecipient:(NSString *)recipientId transaction:(SDSAnyWriteTransaction *)transaction;
 
 // On app launch, all "sending" recipients should be marked as "failed".
 - (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(YapDatabaseReadWriteTransaction *)transaction;
@@ -255,8 +255,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (void)updateWithSendingError:(NSError *)error
                    transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(update(sendingError:transaction:));
 
-- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
-                          transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)updateWithCustomMessage:(NSString *)customMessage;
 
@@ -284,7 +283,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // This method is used to record a successful "read" by one recipient.
 - (void)updateWithReadRecipientId:(NSString *)recipientId
                     readTimestamp:(uint64_t)readTimestamp
-                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (nullable NSNumber *)firstRecipientReadTimestamp;
 

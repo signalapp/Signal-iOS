@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOperation.h"
@@ -7,7 +7,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSOutgoingMessage;
-@class YapDatabaseConnection;
 
 extern NSString *const kAttachmentUploadProgressNotification;
 extern NSString *const kAttachmentUploadProgressKey;
@@ -18,8 +17,7 @@ extern NSString *const kAttachmentUploadAttachmentIDKey;
 @property (nullable, readonly) NSError *lastError;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId
-                        dbConnection:(YapDatabaseConnection *)dbConnection NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAttachmentId:(NSString *)attachmentId NS_DESIGNATED_INITIALIZER;
 
 @end
 

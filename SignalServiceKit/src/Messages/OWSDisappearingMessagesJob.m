@@ -11,7 +11,6 @@
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesFinder.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
@@ -23,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Can we move to Signal-iOS?
 @interface OWSDisappearingMessagesJob ()
-
-@property (nonatomic, readonly) YapDatabaseConnection *databaseConnection;
 
 @property (nonatomic, readonly) OWSDisappearingMessagesFinder *disappearingMessagesFinder;
 
@@ -58,14 +55,13 @@ void AssertIsOnDisappearingMessagesQueue()
     return SSKEnvironment.shared.disappearingMessagesJob;
 }
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)init
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _databaseConnection = primaryStorage.newDatabaseConnection;
     _disappearingMessagesFinder = [OWSDisappearingMessagesFinder new];
 
     // suspenders in case a deletion schedule is missed.
@@ -116,6 +112,11 @@ void AssertIsOnDisappearingMessagesQueue()
     return SSKEnvironment.shared.contactsManager;
 }
 
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark -
 
 - (NSUInteger)deleteExpiredMessages
@@ -127,7 +128,7 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     __block NSUInteger expirationCount = 0;
-    [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
             // sanity check
             if (message.expiresAt > now) {
@@ -136,7 +137,7 @@ void AssertIsOnDisappearingMessagesQueue()
             }
 
             OWSLogInfo(@"Removing message which expired at: %lld", message.expiresAt);
-            [message removeWithTransaction:transaction];
+            [message anyRemoveWithTransaction:transaction];
             expirationCount++;
         }
                                                                transaction:transaction];
@@ -158,7 +159,7 @@ void AssertIsOnDisappearingMessagesQueue()
     NSUInteger deletedCount = [self deleteExpiredMessages];
 
     __block NSNumber *nextExpirationTimestampNumber;
-    [self.databaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         nextExpirationTimestampNumber =
             [self.disappearingMessagesFinder nextExpirationTimestampWithTransaction:transaction];
     }];
@@ -177,7 +178,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)startAnyExpirationForMessage:(TSMessage *)message
                  expirationStartedAt:(uint64_t)expirationStartedAt
-                         transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
+                         transaction:(SDSAnyWriteTransaction *_Nonnull)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -190,15 +191,14 @@ void AssertIsOnDisappearingMessagesQueue()
 
     // Don't clobber if multiple actions simultaneously triggered expiration.
     if (message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt) {
-        [message updateWithExpireStartedAt:expirationStartedAt transaction:transaction.asAnyWrite];
+        [message updateWithExpireStartedAt:expirationStartedAt transaction:transaction];
     }
 
-    [transaction addCompletionQueue:nil
-                    completionBlock:^{
-                        // Necessary that the async expiration run happens *after* the message is saved with it's new
-                        // expiration configuration.
-                        [self scheduleRunByDate:[NSDate ows_dateWithMillisecondsSince1970:message.expiresAt]];
-                    }];
+    [transaction addCompletionWithBlock:^{
+        // Necessary that the async expiration run happens *after* the message is saved with it's new
+        // expiration configuration.
+        [self scheduleRunByDate:[NSDate ows_dateWithMillisecondsSince1970:message.expiresAt]];
+    }];
 }
 
 #pragma mark - Apply Remote Configuration
@@ -207,10 +207,14 @@ void AssertIsOnDisappearingMessagesQueue()
                                           thread:(TSThread *)thread
                       createdByRemoteRecipientId:(nullable NSString *)remoteRecipientId
                           createdInExistingGroup:(BOOL)createdInExistingGroup
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                     transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
+
+    if (!transaction.transitional_yapReadTransaction) {
+        return;
+    }
 
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
@@ -218,13 +222,13 @@ void AssertIsOnDisappearingMessagesQueue()
     if (remoteRecipientId) {
         remoteContactName =
             [self.contactsManager displayNameForAddress:remoteRecipientId.transitional_signalServiceAddress
-                                            transaction:transaction];
+                                            transaction:transaction.transitional_yapReadTransaction];
     }
 
     // Become eventually consistent in the case that the remote changed their settings at the same time.
     // Also in case remote doesn't support expiring messages
     OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-        [thread disappearingMessagesConfigurationWithTransaction:transaction];
+        [thread disappearingMessagesConfigurationWithTransaction:transaction.transitional_yapReadTransaction];
 
     if (duration == 0) {
         disappearingMessagesConfiguration.enabled = NO;
@@ -240,7 +244,7 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSLogInfo(@"becoming consistent with disappearing message configuration: %@",
         disappearingMessagesConfiguration.dictionaryValue);
 
-    [disappearingMessagesConfiguration anyUpsertWithTransaction:transaction.asAnyWrite];
+    [disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
 
     // MJK TODO - should be safe to remove this senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
@@ -249,7 +253,7 @@ void AssertIsOnDisappearingMessagesQueue()
                                                                    configuration:disappearingMessagesConfiguration
                                                              createdByRemoteName:remoteContactName
                                                           createdInExistingGroup:createdInExistingGroup];
-    [infoMessage saveWithTransaction:transaction];
+    [infoMessage anyInsertWithTransaction:transaction];
 
     OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
@@ -268,7 +272,7 @@ void AssertIsOnDisappearingMessagesQueue()
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
             // Theoretically this shouldn't be necessary, but there was a race condition when receiving a backlog
             // of messages across timer changes which could cause a disappearing message's timer to never be started.
-            [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                 [self cleanupMessagesWhichFailedToStartExpiringWithTransaction:transaction];
             }];
 
@@ -385,7 +389,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
 #pragma mark - Cleanup
 
-- (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [self.disappearingMessagesFinder
         enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *_Nonnull message) {

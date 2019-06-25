@@ -32,6 +32,25 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 
 @implementation OWSDeviceManager
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
++ (SDSKeyValueStore *)keyValueStore
+{
+    static SDSKeyValueStore *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[SDSKeyValueStore alloc] initWithCollection:kOWSPrimaryStorage_OWSDeviceCollection];
+    });
+    return instance;
+}
+
 + (instancetype)sharedManager
 {
     static OWSDeviceManager *instance = nil;
@@ -47,13 +66,13 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
     return [super init];
 }
 
-- (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection
+- (BOOL)mayHaveLinkedDevicesWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(dbConnection);
+    OWSAssertDebug(transaction);
 
-    return [dbConnection boolForKey:kOWSPrimaryStorage_MayHaveLinkedDevices
-                       inCollection:kOWSPrimaryStorage_OWSDeviceCollection
-                       defaultValue:YES];
+    return [OWSDeviceManager.keyValueStore getBool:kOWSPrimaryStorage_MayHaveLinkedDevices
+                                      defaultValue:YES
+                                       transaction:transaction];
 }
 
 // In order to avoid skipping necessary sync messages, the default value
@@ -66,23 +85,19 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 - (void)clearMayHaveLinkedDevices
 {
     // Note that we write async to avoid opening transactions within transactions.
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [transaction setObject:@(NO)
-                            forKey:kOWSPrimaryStorage_MayHaveLinkedDevices
-                      inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
-        }];
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [OWSDeviceManager.keyValueStore setBool:NO key:kOWSPrimaryStorage_MayHaveLinkedDevices transaction:transaction];
+    }];
 }
 
 - (void)setMayHaveLinkedDevices
 {
     // Note that we write async to avoid opening transactions within transactions.
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [transaction setObject:@(YES)
-                            forKey:kOWSPrimaryStorage_MayHaveLinkedDevices
-                      inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
-        }];
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [OWSDeviceManager.keyValueStore setBool:YES
+                                            key:kOWSPrimaryStorage_MayHaveLinkedDevices
+                                    transaction:transaction];
+    }];
 }
 
 - (BOOL)hasReceivedSyncMessageInLastSeconds:(NSTimeInterval)intervalSeconds

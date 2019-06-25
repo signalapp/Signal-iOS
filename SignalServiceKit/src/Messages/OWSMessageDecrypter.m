@@ -192,13 +192,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return failureBlock();
         }
 
-        if (transaction.transitional_yapWriteTransaction) {
-            // Having received a valid (decryptable) message from this user,
-            // make note of the fact that they have a valid Signal account.
-            [SignalRecipient markRecipientAsRegistered:result.source
-                                              deviceId:result.sourceDevice
-                                           transaction:transaction.transitional_yapWriteTransaction];
-        }
+        // Having received a valid (decryptable) message from this user,
+        // make note of the fact that they have a valid Signal account.
+        [SignalRecipient markRecipientAsRegistered:result.source deviceId:result.sourceDevice transaction:transaction];
 
         successBlockParameter(result, transaction);
     };

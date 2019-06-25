@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSContactsManager *contactsManager = [[OWSContactsManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
         ContactsUpdater *contactsUpdater = [ContactsUpdater new];
-        OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithPrimaryStorage:primaryStorage];
+        OWSMessageSender *messageSender = [OWSMessageSender new];
         MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSMessageManager *messageManager = [OWSMessageManager new];
@@ -81,10 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
         TSSocketManager *socketManager = [[TSSocketManager alloc] init];
         TSAccountManager *tsAccountManager = [TSAccountManager new];
         OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSDisappearingMessagesJob *disappearingMessagesJob =
-            [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
-        OWSReadReceiptManager *readReceiptManager =
-            [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
+        OWSReadReceiptManager *readReceiptManager = [OWSReadReceiptManager new];
         OWSOutgoingReceiptManager *outgoingReceiptManager =
             [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSSyncManager *syncManager = [[OWSSyncManager alloc] initDefault];

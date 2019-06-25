@@ -1,13 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
+@class SDSAnyWriteTransaction;
 @class TSMessage;
 @class TSThread;
-@class YapDatabaseReadWriteTransaction;
 
 @protocol ContactsManagerProtocol;
 
@@ -15,13 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedJob;
 
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (void)startAnyExpirationForMessage:(TSMessage *)message
                  expirationStartedAt:(uint64_t)expirationStartedAt
-                         transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction;
+                         transaction:(SDSAnyWriteTransaction *_Nonnull)transaction;
 
 /**
  * Synchronize our disappearing messages settings with that of the given message. Useful so we can
@@ -41,13 +38,13 @@ NS_ASSUME_NONNULL_BEGIN
                                           thread:(TSThread *)thread
                       createdByRemoteRecipientId:(nullable NSString *)remoteRecipientId
                           createdInExistingGroup:(BOOL)createdInExistingGroup
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 // Clean up any messages that expired since last launch immediately
 // and continue cleaning in the background.
 - (void)startIfNecessary;
 
-- (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 
