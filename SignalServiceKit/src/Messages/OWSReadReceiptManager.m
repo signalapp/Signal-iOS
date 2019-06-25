@@ -353,40 +353,36 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         return;
     }
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            for (NSNumber *nsSentTimestamp in sentTimestamps) {
-                UInt64 sentTimestamp = [nsSentTimestamp unsignedLongLongValue];
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        for (NSNumber *nsSentTimestamp in sentTimestamps) {
+            UInt64 sentTimestamp = [nsSentTimestamp unsignedLongLongValue];
 
-                NSArray<TSOutgoingMessage *> *messages;
-                if (transaction.transitional_yapReadTransaction) {
-                    messages = (NSArray<TSOutgoingMessage *> *)[TSInteraction
-                        interactionsWithTimestamp:sentTimestamp
-                                          ofClass:[TSOutgoingMessage class]
-                                  withTransaction:transaction.transitional_yapReadTransaction];
-                }
-                if (messages.count > 1) {
-                    OWSLogError(@"More than one matching message with timestamp: %llu.", sentTimestamp);
-                }
-                if (messages.count > 0) {
-                    // TODO: We might also need to "mark as read by recipient" any older messages
-                    // from us in that thread.  Or maybe this state should hang on the thread?
-                    for (TSOutgoingMessage *message in messages) {
-                        [message updateWithReadRecipientId:recipientId
-                                             readTimestamp:readTimestamp
-                                               transaction:transaction];
-                    }
-                } else {
-                    // Persist the read receipts so that we can apply them to outgoing messages
-                    // that we learn about later through sync messages.
-                    [TSRecipientReadReceipt addRecipientId:recipientId
-                                             sentTimestamp:sentTimestamp
-                                             readTimestamp:readTimestamp
-                                               transaction:transaction];
-                }
+            NSArray<TSOutgoingMessage *> *messages;
+            if (transaction.transitional_yapReadTransaction) {
+                messages = (NSArray<TSOutgoingMessage *> *)[TSInteraction
+                    interactionsWithTimestamp:sentTimestamp
+                                      ofClass:[TSOutgoingMessage class]
+                              withTransaction:transaction.transitional_yapReadTransaction];
             }
-        }];
-    });
+            if (messages.count > 1) {
+                OWSLogError(@"More than one matching message with timestamp: %llu.", sentTimestamp);
+            }
+            if (messages.count > 0) {
+                // TODO: We might also need to "mark as read by recipient" any older messages
+                // from us in that thread.  Or maybe this state should hang on the thread?
+                for (TSOutgoingMessage *message in messages) {
+                    [message updateWithReadRecipientId:recipientId readTimestamp:readTimestamp transaction:transaction];
+                }
+            } else {
+                // Persist the read receipts so that we can apply them to outgoing messages
+                // that we learn about later through sync messages.
+                [TSRecipientReadReceipt addRecipientId:recipientId
+                                         sentTimestamp:sentTimestamp
+                                         readTimestamp:readTimestamp
+                                           transaction:transaction];
+            }
+        }
+    }];
 }
 
 - (void)applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message

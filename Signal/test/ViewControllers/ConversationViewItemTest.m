@@ -11,7 +11,6 @@
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
-#import <YapDatabase/YapDatabase.h>
 
 @interface ConversationViewItemTest : SignalBaseTest
 
@@ -48,10 +47,10 @@
         [TSOutgoingMessage outgoingMessageInThread:self.thread messageBody:self.fakeTextMessageText attachmentId:nil];
     [message save];
     __block ConversationInteractionViewItem *viewItem = nil;
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:message
                                                                   isGroupThread:NO
-                                                                    transaction:transaction.asAnyRead
+                                                                    transaction:transaction
                                                               conversationStyle:self.conversationStyle];
     }];
     return viewItem;
@@ -70,18 +69,17 @@
     dataSource.sourceFilename = filename;
 
     __block ConversationInteractionViewItem *viewItem = nil;
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSAttachmentStream *attachment = [AttachmentStreamFactory createWithContentType:mimeType
-                                                                             dataSource:dataSource
-                                                                            transaction:transaction.asAnyWrite];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        TSAttachmentStream *attachment =
+            [AttachmentStreamFactory createWithContentType:mimeType dataSource:dataSource transaction:transaction];
 
         TSOutgoingMessage *message =
             [TSOutgoingMessage outgoingMessageInThread:self.thread messageBody:nil attachmentId:attachment.uniqueId];
-        [message anyInsertWithTransaction:transaction.asAnyWrite];
+        [message anyInsertWithTransaction:transaction];
 
         viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:message
                                                                   isGroupThread:NO
-                                                                    transaction:transaction.asAnyRead
+                                                                    transaction:transaction
                                                               conversationStyle:self.conversationStyle];
     }];
 
@@ -280,8 +278,8 @@
 - (nullable TSMessage *)fetchMessageWithUniqueId:(NSString *)uniqueId
 {
     __block TSInteraction *_Nullable instance;
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        instance = [TSInteraction anyFetchWithUniqueId:uniqueId transaction:transaction.asAnyRead];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        instance = [TSInteraction anyFetchWithUniqueId:uniqueId transaction:transaction];
     }];
     if (!instance) {
         return nil;
@@ -296,8 +294,8 @@
 - (nullable TSAttachment *)fetchAttachmentWithUniqueId:(NSString *)uniqueId
 {
     __block TSAttachment *_Nullable instance;
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        instance = [TSAttachment anyFetchWithUniqueId:uniqueId transaction:transaction.asAnyRead];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        instance = [TSAttachment anyFetchWithUniqueId:uniqueId transaction:transaction];
     }];
     return instance;
 }

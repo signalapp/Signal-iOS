@@ -809,12 +809,9 @@ NS_ASSUME_NONNULL_BEGIN
                 TSAttachment *_Nullable attachment =
                     [TSAttachment anyFetchWithUniqueId:avatarPointer.uniqueId transaction:transaction];
                 if (attachment == nil) {
-                    if (CurrentAppContext().isRunningTests) {
-                        // Database storage may be reset by the time the pointer download fails.
-                        OWSLogWarn(@"Could not load attachment.");
-                    } else {
-                        OWSFailDebug(@"Could not load attachment.");
-                    }
+                    // In the test case, database storage may be reset by the
+                    // time the pointer download fails.
+                    OWSFailDebugUnlessRunningTests(@"Could not load attachment.");
                     return;
                 }
                 [attachment anyRemoveWithTransaction:transaction];

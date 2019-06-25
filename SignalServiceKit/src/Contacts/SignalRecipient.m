@@ -279,10 +279,15 @@ NS_ASSUME_NONNULL_BEGIN
     SignalRecipient *recipient = [self getOrBuildUnsavedRecipientForRecipientId:recipientId transaction:transaction];
     OWSLogDebug(@"Marking recipient as not registered: %@", recipientId);
     if (recipient.devices.count > 0) {
-        [recipient anyUpdateWithTransaction:transaction
-                                      block:^(SignalRecipient *signalRecipient) {
-                                          [signalRecipient removeDevices:recipient.devices.set];
-                                      }];
+        if ([SignalRecipient anyFetchWithUniqueId:recipient.uniqueId transaction:transaction] == nil) {
+            [recipient removeDevices:recipient.devices.set];
+            [recipient anyInsertWithTransaction:transaction];
+        } else {
+            [recipient anyUpdateWithTransaction:transaction
+                                          block:^(SignalRecipient *signalRecipient) {
+                                              [signalRecipient removeDevices:recipient.devices.set];
+                                          }];
+        }
     }
 }
 
