@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nonnull NSString *)displayNameForAddress:(nullable SignalServiceAddress *)address
 {
-    return address.stringIdentifier;
+    return address.stringForDisplay;
 }
 
 - (NSArray<SignalAccount *> *)signalAccounts

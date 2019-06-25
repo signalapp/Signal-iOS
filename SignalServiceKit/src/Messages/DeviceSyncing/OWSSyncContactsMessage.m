@@ -100,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (localNumber) {
         BOOL hasLocalNumber = NO;
         for (SignalAccount *signalAccount in signalAccounts) {
-            hasLocalNumber |= [signalAccount.recipientAddress.transitional_phoneNumber isEqualToString:localNumber];
+            hasLocalNumber |= signalAccount.recipientAddress.isLocalAddress;
         }
         if (!hasLocalNumber) {
             SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:localNumber];

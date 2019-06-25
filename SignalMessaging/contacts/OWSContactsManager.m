@@ -828,7 +828,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     if (displayName.length < 1) {
         NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
-        displayName = phoneNumber ?: address.stringIdentifier;
+        displayName = phoneNumber ?: address.stringForDisplay;
     }
 
     return displayName;
@@ -847,7 +847,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     if (displayName.length < 1) {
         NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
-        displayName = phoneNumber ?: address.stringIdentifier;
+        displayName = phoneNumber ?: address.stringForDisplay;
     }
 
     return displayName;
@@ -936,7 +936,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     } else {
         // Otherwise, fallback to their uuid
-        return [[NSAttributedString alloc] initWithString:address.stringIdentifier attributes:normalFontAttributes];
+        return [[NSAttributedString alloc] initWithString:address.stringForDisplay attributes:normalFontAttributes];
     }
 
     // Append unique label for contacts with multiple Signal accounts
@@ -978,12 +978,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             @"with {{profile name}}");
 
         NSString *numberAndProfileName = [NSString
-            stringWithFormat:numberAndProfileNameFormat, phoneNumber ?: address.stringIdentifier, profileName];
+            stringWithFormat:numberAndProfileNameFormat, phoneNumber ?: address.stringForDisplay, profileName];
         return numberAndProfileName;
     }
 
     // else fall back to phone number or UUID
-    return phoneNumber ?: address.stringIdentifier;
+    return phoneNumber ?: address.stringForDisplay;
 }
 
 - (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
@@ -1023,7 +1023,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
     NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:address.transitional_phoneNumber];
     if (profileName.length > 0) {
-        NSAttributedString *result = [[NSAttributedString alloc] initWithString:phoneNumber ?: address.stringIdentifier
+        NSAttributedString *result = [[NSAttributedString alloc] initWithString:phoneNumber ?: address.stringForDisplay
                                                                      attributes:primaryAttributes];
         result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@" "]];
         result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@"~" attributes:secondaryAttributes]];
@@ -1033,7 +1033,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     // else fall back to phone number or UUID
-    return [[NSAttributedString alloc] initWithString:phoneNumber ?: address.stringIdentifier
+    return [[NSAttributedString alloc] initWithString:phoneNumber ?: address.stringForDisplay
                                            attributes:primaryAttributes];
 }
 
@@ -1167,7 +1167,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
         NSComparisonResult nameComparison = [leftName caseInsensitiveCompare:rightName];
         if (nameComparison == NSOrderedSame) {
-            return [left.recipientAddress.stringIdentifier compare:right.recipientAddress.stringIdentifier];
+            return [left.recipientAddress.stringForDisplay compare:right.recipientAddress.stringForDisplay];
         }
 
         return nameComparison;
@@ -1191,7 +1191,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     if (name.length < 1) {
-        name = signalAccount.recipientAddress.stringIdentifier;
+        name = signalAccount.recipientAddress.stringForDisplay;
     }
 
     return name;

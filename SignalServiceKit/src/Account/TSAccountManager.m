@@ -238,6 +238,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
 }
 
+- (SignalServiceAddress *)localAddress
+{
+    return [[SignalServiceAddress alloc] initWithUuidString:self.uuid.UUIDString phoneNumber:self.localNumber];
+}
+
 // TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.contactUUID in production
 - (void)storeLocalNumber:(NSString *)localNumber uuid:(nullable NSUUID *)uuid
 {

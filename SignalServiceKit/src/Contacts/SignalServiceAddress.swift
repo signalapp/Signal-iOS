@@ -55,11 +55,25 @@ public class SignalServiceAddress: NSObject {
     }
 
     @objc
-    public var stringIdentifier: String? {
-        if let uuid = uuid {
-            return uuid.uuidString
-        } else if let phoneNumber = phoneNumber {
+    public func matchesAddress(_ otherAddress: SignalServiceAddress?) -> Bool {
+        guard let otherAddress = otherAddress else {
+            return false
+        }
+
+        return otherAddress.uuid == uuid || otherAddress.phoneNumber == phoneNumber
+    }
+
+    @objc
+    public var isLocalAddress: Bool {
+        return matchesAddress(SSKEnvironment.shared.tsAccountManager.localAddress)
+    }
+
+    @objc
+    public var stringForDisplay: String? {
+        if let phoneNumber = phoneNumber {
             return phoneNumber
+        } else if let uuid = uuid {
+            return uuid.uuidString
         }
 
         return nil

@@ -1184,9 +1184,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return nil;
     }
 
-    NSString *localNumber = [self.tsAccountManager localNumber];
-    OWSAssertDebug(localNumber.length > 0);
-
     TSInteraction *firstCallOrMessage = [self firstCallOrMessageForLoadedInteractions:loadedInteractions];
     if (!firstCallOrMessage) {
         return nil;
@@ -1210,7 +1207,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     SignalServiceAddress *recipientAddress = ((TSContactThread *)thread).contactAddress;
 
-    if ([recipientAddress.transitional_phoneNumber isEqualToString:localNumber]) {
+    if (recipientAddress.isLocalAddress) {
         // Don't add self to contacts.
         shouldHaveAddToContactsOffer = NO;
         // Don't bother to block self.

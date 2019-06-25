@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     NSString *localNumber = [TSAccountManager localNumber];
-    if ([signalAccount.recipientAddress.transitional_phoneNumber isEqualToString:localNumber]) {
+    if (signalAccount.recipientAddress.isLocalAddress) {
         return YES;
     }
 

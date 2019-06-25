@@ -945,12 +945,7 @@ const CGFloat kIconViewLength = 24;
 
     __block UIView *lastTitleView = threadTitleLabel;
 
-    if (![self isGroupThread]) {
-        if (![self.thread isKindOfClass:[TSContactThread class]]) {
-            OWSFailDebug(@"Unexpected class for thread");
-            return nil;
-        }
-
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *thread = (TSContactThread *)self.thread;
 
         const CGFloat kSubtitlePointSize = 12.f;

@@ -1373,18 +1373,7 @@ typedef enum : NSUInteger {
 - (void)updateNavigationTitle
 {
     NSAttributedString *name;
-    if (self.thread.isGroupThread) {
-        if (self.thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
-        } else {
-            name = [[NSAttributedString alloc] initWithString:self.thread.name];
-        }
-    } else {
-        if (![self.thread isKindOfClass:[TSContactThread class]]) {
-            OWSFailDebug(@"Unexpected class for thread");
-            return;
-        }
-
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *thread = (TSContactThread *)self.thread;
 
         OWSAssertDebug(thread.contactAddress);
@@ -1399,6 +1388,12 @@ typedef enum : NSUInteger {
             name = [self.contactsManager attributedContactOrProfileNameForAddress:thread.contactAddress
                                                                       primaryFont:self.headerView.titlePrimaryFont
                                                                     secondaryFont:self.headerView.titleSecondaryFont];
+        }
+    } else {
+        if (self.thread.name.length == 0) {
+            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
+        } else {
+            name = [[NSAttributedString alloc] initWithString:self.thread.name];
         }
     }
     self.title = nil;
