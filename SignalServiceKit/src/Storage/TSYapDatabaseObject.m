@@ -252,6 +252,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Write Hooks
 
+- (BOOL)anyCanBeSaved
+{
+    return YES;
+}
+
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     // Do nothing.

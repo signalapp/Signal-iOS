@@ -219,11 +219,16 @@ void AssertIsOnSendingQueue()
     }
 
     // If the message has been deleted, abort send.
-    if (self.message.shouldBeSaved && ![TSOutgoingMessage fetchObjectWithUniqueID:self.message.uniqueId]) {
+    __block TSInteraction *_Nullable latestCopy;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        latestCopy = [TSInteraction anyFetchWithUniqueId:self.message.uniqueId transaction:transaction];
+    }];
+    if (self.message.shouldBeSaved && latestCopy == nil) {
         OWSLogInfo(@"aborting message send; message deleted.");
         NSError *error = OWSErrorWithCodeDescription(
             OWSErrorCodeMessageDeletedBeforeSent, @"Message was deleted before it could be sent.");
         error.isFatal = YES;
+        error.isRetryable = NO;
         [self reportError:error];
         return;
     }
@@ -1897,7 +1902,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     // All outgoing messages should be saved at the time they are enqueued.
-    [message anyInsertWithTransaction:transaction];
+
+    // GRDB TODO: Remove; this should be redundant.
+    if (message.anyCanBeSaved && [TSInteraction anyFetchWithUniqueId:message.uniqueId transaction:transaction] == nil) {
+        OWSFailDebug(@"Message not saved.");
+        [message anyInsertWithTransaction:transaction];
+    }
+
     // When we start a message send, all "failed" recipients should be marked as "sending".
     [message updateAllUnsentRecipientsAsSendingWithTransaction:transaction];
 
