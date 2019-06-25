@@ -22,7 +22,6 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/SignalAccountFinder.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -47,7 +46,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbWriteConnection;
-@property (nonatomic, readonly) SignalAccountFinder *accountFinder;
+@property (nonatomic, readonly) AnySignalAccountFinder *accountFinder;
 @property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
 @property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
 @property (atomic) BOOL isSetup;
@@ -72,7 +71,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     _dbReadConnection = primaryStorage.newDatabaseConnection;
     _dbWriteConnection = primaryStorage.newDatabaseConnection;
-    _accountFinder = [SignalAccountFinder new];
+    _accountFinder = [AnySignalAccountFinder new];
 
     _allContacts = @[];
     _allContactsMap = @{};
@@ -1059,7 +1058,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     // even if it doesn't exist in memory yet.
     if (!signalAccount) {
         [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            signalAccount = [self.accountFinder signalAccountForAddress:address withTransaction:transaction];
+            signalAccount = [self.accountFinder signalAccountForAddress:address transaction:transaction.asAnyRead];
         }];
     }
 
@@ -1085,7 +1084,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     // If contact intersection hasn't completed, it might exist on disk
     // even if it doesn't exist in memory yet.
     if (!signalAccount) {
-        signalAccount = [self.accountFinder signalAccountForAddress:address withTransaction:transaction];
+        signalAccount = [self.accountFinder signalAccountForAddress:address transaction:transaction.asAnyRead];
     }
 
     return signalAccount;

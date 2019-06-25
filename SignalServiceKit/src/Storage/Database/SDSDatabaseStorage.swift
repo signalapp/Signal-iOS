@@ -488,6 +488,19 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             InteractionRecord.columnName(.uniqueId),
                             InteractionRecord.columnName(.threadUniqueId)
                 ])
+
+            // Signal Account Indices
+            try db.create(
+                index: "index_signal_accounts_on_recipientPhoneNumber",
+                on: SignalAccountRecord.databaseTableName,
+                columns: [SignalAccountRecord.columnName(.recipientPhoneNumber)]
+            )
+
+            try db.create(
+                index: "index_signal_accounts_on_recipientUUID",
+                on: SignalAccountRecord.databaseTableName,
+                columns: [SignalAccountRecord.columnName(.recipientUUID)]
+            )
         }
         return migrator
     }()
