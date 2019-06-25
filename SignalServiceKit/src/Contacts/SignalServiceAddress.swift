@@ -6,65 +6,68 @@ import Foundation
 
 @objc
 public class SignalServiceAddress: NSObject {
-    private enum BackingStorage {
-        case phoneNumber(_ number: String)
-        case uuid(_ uuid: UUID)
-    }
-
-    private let backingAddress: BackingStorage
+    @objc
+    let phoneNumber: String?
 
     @objc
-    public init?(phoneNumber: String) {
-        guard !phoneNumber.isEmpty else {
-            owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
-            return nil
+    let uuid: UUID? // TODO UUID: eventually this can be not optional
+
+    @objc
+    var uuidString: String? {
+        return uuid?.uuidString
+    }
+
+    @objc
+    convenience init(uuidString: String) {
+        self.init(uuidString: uuidString, phoneNumber: nil)
+    }
+
+    @objc
+    convenience init(phoneNumber: String) {
+        self.init(uuidString: nil, phoneNumber: phoneNumber)
+    }
+
+    @objc
+    public init(uuidString: String?, phoneNumber: String?) {
+        if let uuidString = uuidString, let uuid = UUID(uuidString: uuidString) {
+            self.uuid = uuid
+        } else {
+            if uuidString != nil {
+                owsFailDebug("Unexpectedly initialized signal service address with invalid uuid")
+            }
+            self.uuid = nil
         }
-        backingAddress = .phoneNumber(phoneNumber)
-    }
 
-    @objc
-    public init(uuid: UUID) {
-        backingAddress = .uuid(uuid)
-    }
-
-    @objc
-    public init?(uuidString: String) {
-        guard let uuid = UUID(uuidString: uuidString) else {
-            owsFailDebug("Tried to intialize signal service address with invalid UUID")
-            return nil
+        if let phoneNumber = phoneNumber, !phoneNumber.isEmpty {
+            self.phoneNumber = phoneNumber
+        } else {
+            if phoneNumber != nil {
+                owsFailDebug("Unexpectedly initialized signal service address with invalid phone number")
+            }
+            self.phoneNumber = nil
         }
-        backingAddress = .uuid(uuid)
+
+        super.init()
+
+        if self.uuid == nil && self.phoneNumber == nil {
+            owsFailDebug("Unexpectedly initialized address with no identifier")
+        }
     }
 
     @objc
-    public var stringIdentifier: String {
-        switch backingAddress {
-        case .phoneNumber(let phoneNumber):
-            return phoneNumber
-        case .uuid(let uuid):
+    public var stringIdentifier: String? {
+        if let uuid = uuid {
             return uuid.uuidString
+        } else if let phoneNumber = phoneNumber {
+            return phoneNumber
         }
-    }
 
-    @objc
-    public var isUUID: Bool {
-        guard case .uuid = backingAddress else {
-            return false
-        }
-        return true
-    }
-
-    @objc
-    public var isPhoneNumber: Bool {
-        guard case .phoneNumber = backingAddress else {
-            return false
-        }
-        return true
+        return nil
     }
 
     @objc
     public var transitional_phoneNumber: String! {
-        guard case .phoneNumber(let phoneNumber) = backingAddress else {
+        guard let phoneNumber = phoneNumber else {
             owsFailDebug("transitional_phoneNumber was unexpectedly nil")
             return nil
         }
@@ -74,13 +77,13 @@ public class SignalServiceAddress: NSObject {
 
 @objc
 public extension NSString {
-    var transitional_signalServiceAddress: SignalServiceAddress! {
+    var transitional_signalServiceAddress: SignalServiceAddress {
         return SignalServiceAddress(phoneNumber: self as String)
     }
 }
 
 extension String {
-    var transitional_signalServiceAddress: SignalServiceAddress! {
+    var transitional_signalServiceAddress: SignalServiceAddress {
         return SignalServiceAddress(phoneNumber: self)
     }
 }

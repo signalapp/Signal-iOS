@@ -30,12 +30,8 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 - (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress
 {
     if (self = [super init]) {
-        if (serviceAddress.isUUID) {
-            _recipientUUID = serviceAddress.stringIdentifier;
-        } else {
-            _recipientPhoneNumber = serviceAddress.stringIdentifier;
-        }
-
+        _recipientUUID = serviceAddress.uuidString;
+        _recipientPhoneNumber = serviceAddress.phoneNumber;
         _accountSchemaVersion = SignalAccountSchemaVersion;
     }
     return self;
@@ -109,14 +105,7 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 
 - (SignalServiceAddress *)recipientAddress
 {
-    if (self.recipientUUID != nil) {
-        return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID];
-    } else if (self.recipientPhoneNumber != nil) {
-        return [[SignalServiceAddress alloc] initWithPhoneNumber:self.recipientPhoneNumber];
-    } else {
-        OWSFail(@"unexpectedly have no address for SignalAccount, this should never happen.");
-        return nil;
-    }
+    return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID phoneNumber:self.recipientPhoneNumber];
 }
 
 @end

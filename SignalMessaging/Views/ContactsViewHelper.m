@@ -23,7 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 // This property is a cached value that is lazy-populated.
 @property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
 
-@property (nonatomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
+@property (nonatomic) NSDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap;
+@property (nonatomic) NSDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap;
+
 @property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
 
 @property (nonatomic, readonly) OWSBlockListCache *blockListCache;
@@ -95,7 +97,17 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(address);
 
-    return self.signalAccountMap[address.stringIdentifier];
+    SignalAccount *_Nullable signalAccount;
+
+    if (address.uuid) {
+        signalAccount = self.uuidSignalAccountMap[address.uuid];
+    }
+
+    if (!signalAccount && address.phoneNumber) {
+        signalAccount = self.phoneNumberSignalAccountMap[address.phoneNumber];
+    }
+
+    return signalAccount;
 }
 
 - (SignalAccount *)fetchOrBuildSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address
@@ -174,20 +186,22 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap = [NSMutableDictionary new];
     NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
     for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
         if (![self isSignalAccountHidden:signalAccount]) {
             if (signalAccount.recipientPhoneNumber) {
-                signalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
+                phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
             }
             if (signalAccount.recipientUUID) {
-                signalAccountMap[signalAccount.recipientUUID] = signalAccount;
+                uuidSignalAccountMap[signalAccount.recipientUUID] = signalAccount;
             }
             [signalAccounts addObject:signalAccount];
         }
     }
-    self.signalAccountMap = [signalAccountMap copy];
+    self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
+    self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
     self.signalAccounts = [signalAccounts copy];
     self.nonSignalContacts = nil;
 

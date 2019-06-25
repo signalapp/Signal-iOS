@@ -42,7 +42,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 @property (atomic) NSArray<Contact *> *allContacts;
 @property (atomic) NSDictionary<NSString *, Contact *> *allContactsMap;
 @property (atomic) NSArray<SignalAccount *> *signalAccounts;
-@property (atomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
+@property (atomic) NSDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap;
+@property (atomic) NSDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap;
 @property (nonatomic, readonly) SystemContactsFetcher *systemContactsFetcher;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbWriteConnection;
@@ -75,7 +76,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     _allContacts = @[];
     _allContactsMap = @{};
-    _signalAccountMap = @{};
+    _phoneNumberSignalAccountMap = @{};
+    _uuidSignalAccountMap = @{};
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
@@ -615,21 +617,23 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return;
     }
 
-    NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
-    NSMutableArray<NSString *> *transitional_phoneNumbers = [NSMutableArray array];
+    NSMutableDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap = [NSMutableDictionary new];
     for (SignalAccount *signalAccount in signalAccounts) {
         if (signalAccount.recipientPhoneNumber) {
-            signalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
-            [transitional_phoneNumbers addObject:signalAccount.recipientPhoneNumber];
+            phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
         }
         if (signalAccount.recipientUUID) {
-            signalAccountMap[signalAccount.recipientUUID] = signalAccount;
+            uuidSignalAccountMap[signalAccount.recipientUUID] = signalAccount;
         }
     }
 
-    self.signalAccountMap = [signalAccountMap copy];
+    self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
+    self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
+
     self.signalAccounts = [signalAccounts copy];
-    [self.profileManager setContactRecipientIds:transitional_phoneNumbers];
+
+    [self.profileManager setContactRecipientIds:phoneNumberSignalAccountMap.allKeys];
 
     self.isSetup = YES;
 
@@ -703,8 +707,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (nullable NSString *)phoneNumberForSignalServiceAddress:(SignalServiceAddress *)address
 {
-    if (address.isPhoneNumber) {
-        return address.stringIdentifier;
+    if (address.phoneNumber != nil) {
+        return address.phoneNumber;
     }
 
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForSignalServiceAddress:address];
@@ -1041,7 +1045,15 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertDebug(address);
 
-    __block SignalAccount *signalAccount = self.signalAccountMap[address.stringIdentifier];
+    __block SignalAccount *_Nullable signalAccount;
+
+    if (address.uuid) {
+        signalAccount = self.uuidSignalAccountMap[address.uuid];
+    }
+
+    if (!signalAccount && address.phoneNumber) {
+        signalAccount = self.phoneNumberSignalAccountMap[address.phoneNumber];
+    }
 
     // If contact intersection hasn't completed, it might exist on disk
     // even if it doesn't exist in memory yet.
@@ -1060,7 +1072,15 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertDebug(address);
     OWSAssertDebug(transaction);
 
-    __block SignalAccount *signalAccount = self.signalAccountMap[address.stringIdentifier];
+    __block SignalAccount *_Nullable signalAccount;
+
+    if (address.uuid) {
+        signalAccount = self.uuidSignalAccountMap[address.uuid];
+    }
+
+    if (!signalAccount && address.phoneNumber) {
+        signalAccount = self.phoneNumberSignalAccountMap[address.phoneNumber];
+    }
 
     // If contact intersection hasn't completed, it might exist on disk
     // even if it doesn't exist in memory yet.
