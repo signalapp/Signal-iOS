@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS104CreateRecipientIdentities.h"
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -52,7 +53,7 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
                                            isFirstKnownKey:NO
                                                  createdAt:[NSDate dateWithTimeIntervalSince1970:0]
                                          verificationState:OWSVerificationStateDefault]
-            saveWithTransaction:transaction];
+            anyInsertWithTransaction:transaction.asAnyWrite];
     }];
 }
 

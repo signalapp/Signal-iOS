@@ -4,10 +4,8 @@
 
 #import "OWSRecipientIdentity.h"
 #import "OWSIdentityManager.h"
-#import "OWSPrimaryStorage.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -81,6 +79,20 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
  *       which makes some special accomodations to enforce consistency.
  */
 @implementation OWSRecipientIdentity
+
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark - Table Contents
 
 - (instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -161,35 +173,35 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 }
 
 - (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+                  transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
-    changeBlock(self);
-
-    OWSRecipientIdentity *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
+    OWSRecipientIdentity *_Nullable latest =
+        [OWSRecipientIdentity anyFetchWithUniqueId:self.uniqueId transaction:transaction];
     if (latest == nil) {
-        [self saveWithTransaction:transaction];
+        changeBlock(self);
+        [self anyInsertWithTransaction:transaction];
         return;
     }
 
-    changeBlock(latest);
-    [latest saveWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction block:changeBlock];
 }
 
 - (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock
 {
     changeBlock(self);
 
-    [[self class].dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        OWSRecipientIdentity *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSRecipientIdentity *_Nullable latest =
+            [OWSRecipientIdentity anyFetchWithUniqueId:self.uniqueId transaction:transaction];
         if (latest == nil) {
-            [self saveWithTransaction:transaction];
+            changeBlock(self);
+            [self anyInsertWithTransaction:transaction];
             return;
         }
-        
-        changeBlock(latest);
-        [latest saveWithTransaction:transaction];
+
+        [self anyUpdateWithTransaction:transaction block:changeBlock];
     }];
 }
 
@@ -199,15 +211,12 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 {
     OWSLogInfo(@"### All Recipient Identities ###");
     __block int count = 0;
-    [self enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
-        count++;
-        if (![obj isKindOfClass:[self class]]) {
-            OWSFailDebug(@"unexpected object in collection: %@", obj);
-            return;
-        }
-        OWSRecipientIdentity *recipientIdentity = (OWSRecipientIdentity *)obj;
-
-        OWSLogInfo(@"Identity %d: %@", count, recipientIdentity.debugDescription);
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [OWSRecipientIdentity
+            anyEnumerateWithTransaction:transaction
+                                  block:^(OWSRecipientIdentity *recipientIdentity, BOOL *stop) {
+                                      OWSLogInfo(@"Identity %d: %@", count, recipientIdentity.debugDescription);
+                                  }];
     }];
 }
 
