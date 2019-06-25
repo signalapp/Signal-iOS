@@ -935,7 +935,7 @@ typedef enum : NSUInteger {
         } else {
             NSString *recipientId = [noLongerVerifiedRecipientIds firstObject];
             NSString *displayName =
-                [self.contactsManager displayNameForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
+                [self.contactsManager displayNameForAddress:recipientId.transitional_signalServiceAddress];
             NSString *format
                 = (self.isGroupConversation ? NSLocalizedString(@"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
                                                   @"Indicates that one member of this group conversation is no longer "
@@ -1380,19 +1380,25 @@ typedef enum : NSUInteger {
             name = [[NSAttributedString alloc] initWithString:self.thread.name];
         }
     } else {
-        OWSAssertDebug(self.thread.contactIdentifier);
+        if (![self.thread isKindOfClass:[TSContactThread class]]) {
+            OWSFailDebug(@"Unexpected class for thread");
+            return;
+        }
 
-        if (self.thread.isNoteToSelf) {
+        TSContactThread *thread = (TSContactThread *)self.thread;
+
+        OWSAssertDebug(thread.contactAddress);
+
+        if (thread.isNoteToSelf) {
             name = [[NSAttributedString alloc]
                 initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
                     attributes:@{
                         NSFontAttributeName : self.headerView.titlePrimaryFont,
                     }];
         } else {
-            name = [self.contactsManager
-                attributedContactOrProfileNameForSignalServiceAddress:self.thread.contactAddress
-                                                          primaryFont:self.headerView.titlePrimaryFont
-                                                        secondaryFont:self.headerView.titleSecondaryFont];
+            name = [self.contactsManager attributedContactOrProfileNameForAddress:thread.contactAddress
+                                                                      primaryFont:self.headerView.titlePrimaryFont
+                                                                    secondaryFont:self.headerView.titleSecondaryFont];
         }
     }
     self.title = nil;
@@ -1945,8 +1951,8 @@ typedef enum : NSUInteger {
 
 - (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage
 {
-    NSString *keyOwner = [self.contactsManager
-        displayNameForSignalServiceAddress:errorMessage.theirSignalId.transitional_signalServiceAddress];
+    NSString *keyOwner =
+        [self.contactsManager displayNameForAddress:errorMessage.theirSignalId.transitional_signalServiceAddress];
     NSString *titleFormat = NSLocalizedString(@"SAFETY_NUMBERS_ACTIONSHEET_TITLE", @"Action sheet heading");
     NSString *titleText = [NSString stringWithFormat:titleFormat, keyOwner];
 
@@ -2002,7 +2008,7 @@ typedef enum : NSUInteger {
     }
 
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    NSString *displayName = [self.contactsManager displayNameForSignalServiceAddress:contactThread.contactAddress];
+    NSString *displayName = [self.contactsManager displayNameForAddress:contactThread.contactAddress];
 
     UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:[CallStrings callBackAlertTitle]
@@ -2275,8 +2281,8 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(recipientId.length > 0);
 
-    return [self.contactsManager
-        attributedContactOrProfileNameForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
+    return
+        [self.contactsManager attributedContactOrProfileNameForAddress:recipientId.transitional_signalServiceAddress];
 }
 
 - (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
@@ -2287,8 +2293,8 @@ typedef enum : NSUInteger {
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
 
-    NSString *displayName = [self.contactsManager
-        displayNameForSignalServiceAddress:interaction.recipientId.transitional_signalServiceAddress];
+    NSString *displayName =
+        [self.contactsManager displayNameForAddress:interaction.recipientId.transitional_signalServiceAddress];
     NSString *title =
         [NSString stringWithFormat:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT",
                                        @"Title format for action sheet that offers to block an unknown user."
@@ -4753,8 +4759,8 @@ typedef enum : NSUInteger {
         if (avatarImageData) {
             break;
         }
-        avatarImageData = [self.contactsManager
-            profileImageDataForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
+        avatarImageData =
+            [self.contactsManager profileImageDataForAddress:recipientId.transitional_signalServiceAddress];
         if (avatarImageData) {
             isProfileAvatar = YES;
         }

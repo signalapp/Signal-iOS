@@ -200,7 +200,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        contactNameLabel.text = contactsManager.contactOrProfileName(for: thread.contactAddress())
+        contactNameLabel.text = contactsManager.contactOrProfileName(for: thread.contactAddress)
         updateAvatarImage()
         NotificationCenter.default.addObserver(forName: .OWSContactsManagerSignalAccountsDidChange, object: nil, queue: nil) { [weak self] _ in
             guard let strongSelf = self else { return }

@@ -310,8 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
                         customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             SignalAccount *_Nullable signalAccount = [contactsViewHelper
-                                fetchSignalAccountForSignalServiceAddress:recipientId
-                                                                              .transitional_signalServiceAddress];
+                                fetchSignalAccountForAddress:recipientId.transitional_signalServiceAddress];
                             BOOL isPreviousMember = [weakSelf.previousMemberRecipientIds containsObject:recipientId];
                             BOOL isBlocked =
                                 [contactsViewHelper isSignalServiceAddressBlocked:signalAccount.recipientAddress];

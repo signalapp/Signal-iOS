@@ -140,7 +140,7 @@ const int32_t kGroupIdLength = 16;
 
     if ([membersWhoLeft count] > 0) {
         NSArray *oldMembersNames = [[membersWhoLeft allObjects] map:^NSString *(NSString *item) {
-            return [contactsManager displayNameForSignalServiceAddress:item.transitional_signalServiceAddress];
+            return [contactsManager displayNameForAddress:item.transitional_signalServiceAddress];
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString
@@ -150,7 +150,7 @@ const int32_t kGroupIdLength = 16;
     
     if ([membersWhoJoined count] > 0) {
         NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString *(NSString *item) {
-            return [contactsManager displayNameForSignalServiceAddress:item.transitional_signalServiceAddress];
+            return [contactsManager displayNameForAddress:item.transitional_signalServiceAddress];
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_JOINED", @""),

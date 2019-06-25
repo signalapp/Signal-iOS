@@ -52,8 +52,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                         contactsManager:(OWSContactsManager *)contactsManager
                         completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName =
-        [contactsManager displayNameForSignalServiceAddress:phoneNumber.transitional_signalServiceAddress];
+    NSString *displayName = [contactsManager displayNameForAddress:phoneNumber.transitional_signalServiceAddress];
     [self showBlockPhoneNumbersActionSheet:@[ phoneNumber ]
                                displayName:displayName
                         fromViewController:fromViewController
@@ -292,8 +291,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                           contactsManager:(OWSContactsManager *)contactsManager
                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName =
-        [contactsManager displayNameForSignalServiceAddress:phoneNumber.transitional_signalServiceAddress];
+    NSString *displayName = [contactsManager displayNameForAddress:phoneNumber.transitional_signalServiceAddress];
     [self showUnblockPhoneNumbersActionSheet:@[ phoneNumber ]
                                  displayName:displayName
                           fromViewController:fromViewController

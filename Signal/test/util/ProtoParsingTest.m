@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation TestContactsManager
 
-- (nonnull NSString *)displayNameForSignalServiceAddress:(nullable SignalServiceAddress *)address
+- (nonnull NSString *)displayNameForAddress:(nullable SignalServiceAddress *)address
 {
     return address.stringIdentifier;
 }
@@ -63,8 +63,8 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (nonnull NSString *)displayNameForSignalServiceAddress:(nullable SignalServiceAddress *)address
-                                             transaction:(nonnull YapDatabaseReadTransaction *)transaction
+- (nonnull NSString *)displayNameForAddress:(nullable SignalServiceAddress *)address
+                                transaction:(nonnull YapDatabaseReadTransaction *)transaction
 {
     return nil;
 }

@@ -145,8 +145,7 @@ typedef void (^CustomLayoutBlock)(void);
     self.recipientId = recipientId;
 
     OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-    self.contactName =
-        [contactsManager displayNameForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
+    self.contactName = [contactsManager displayNameForAddress:recipientId.transitional_signalServiceAddress];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
         [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];

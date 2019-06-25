@@ -407,8 +407,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)recipientIdWasSelected:(NSString *)recipientId
 {
-    SignalAccount *signalAccount = [self.contactsViewHelper
-        fetchOrBuildSignalAccountForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
+    SignalAccount *signalAccount =
+        [self.contactsViewHelper fetchOrBuildSignalAccountForAddress:recipientId.transitional_signalServiceAddress];
     [self signalAccountWasSelected:signalAccount];
 }
 

@@ -164,7 +164,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
             return recipientRow
         }
 
-        nameLabel.attributedText = contactsManager.formattedFullName(for: contactThread.contactAddress(), font: font)
+        nameLabel.attributedText = contactsManager.formattedFullName(for: contactThread.contactAddress, font: font)
         nameLabel.textColor = Theme.primaryColor
 
         if let profileName = self.profileName(contactThread: contactThread) {
@@ -189,7 +189,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
     }
 
     private func profileName(contactThread: TSContactThread) -> String? {
-        let contactAddress = contactThread.contactAddress()
+        let contactAddress = contactThread.contactAddress
 
         if contactsManager.hasNameInSystemContacts(for: contactAddress) {
             // Don't display profile name when we have a veritas name in system Contacts

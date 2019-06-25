@@ -149,8 +149,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                 }];
     } else {
         self.nameLabel.attributedText =
-            [self.contactsManager formattedFullNameForSignalServiceAddress:recipientId.transitional_signalServiceAddress
-                                                                      font:self.nameLabel.font];
+            [self.contactsManager formattedFullNameForAddress:recipientId.transitional_signalServiceAddress
+                                                         font:self.nameLabel.font];
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -254,14 +254,13 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         return;
     }
 
-    if ([contactsManager
-            hasNameInSystemContactsForSignalServiceAddress:recipientId.transitional_signalServiceAddress]) {
+    if ([contactsManager hasNameInSystemContactsForAddress:recipientId.transitional_signalServiceAddress]) {
         // Don't display profile name when we have a veritas name in system Contacts
         self.profileNameLabel.text = nil;
     } else {
         // Use profile name, if any is available
         self.profileNameLabel.text =
-            [contactsManager formattedProfileNameForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
+            [contactsManager formattedProfileNameForAddress:recipientId.transitional_signalServiceAddress];
     }
 
     [self.profileNameLabel setNeedsLayout];

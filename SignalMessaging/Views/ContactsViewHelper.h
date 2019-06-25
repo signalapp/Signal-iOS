@@ -54,8 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate;
 
-- (nullable SignalAccount *)fetchSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address;
-- (SignalAccount *)fetchOrBuildSignalAccountForSignalServiceAddress:(SignalServiceAddress *)address;
+- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
+- (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
 
 // This method is faster than OWSBlockingManager but
 // is only safe to be called on the main thread.

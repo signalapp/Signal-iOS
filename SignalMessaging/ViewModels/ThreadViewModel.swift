@@ -37,7 +37,7 @@ public class ThreadViewModel: NSObject {
 
         if let contactThread = thread as? TSContactThread {
             self.contactIdentifier = contactThread.contactIdentifier()
-            self.contactAddress = contactThread.contactAddress()
+            self.contactAddress = contactThread.contactAddress
         } else {
             self.contactIdentifier = nil
             self.contactAddress = nil

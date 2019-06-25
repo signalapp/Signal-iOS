@@ -165,9 +165,9 @@ NS_ASSUME_NONNULL_BEGIN
     NSArray<NSString *> *sortedRecipientIds =
         [recipientIds sortedArrayUsingComparator:^NSComparisonResult(NSString *recipientIdA, NSString *recipientIdB) {
             SignalAccount *signalAccountA = [helper.contactsManager
-                fetchOrBuildSignalAccountForSignalServiceAddress:recipientIdA.transitional_signalServiceAddress];
+                fetchOrBuildSignalAccountForAddress:recipientIdA.transitional_signalServiceAddress];
             SignalAccount *signalAccountB = [helper.contactsManager
-                fetchOrBuildSignalAccountForSignalServiceAddress:recipientIdB.transitional_signalServiceAddress];
+                fetchOrBuildSignalAccountForAddress:recipientIdB.transitional_signalServiceAddress];
             return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
         }];
     for (NSString *recipientId in sortedRecipientIds) {
@@ -282,7 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     ContactsViewHelper *helper = self.contactsViewHelper;
     SignalAccount *_Nullable signalAccount =
-        [helper fetchSignalAccountForSignalServiceAddress:recipientId.transitional_signalServiceAddress];
+        [helper fetchSignalAccountForAddress:recipientId.transitional_signalServiceAddress];
 
     UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];

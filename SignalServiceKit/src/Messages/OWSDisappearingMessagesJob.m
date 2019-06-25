@@ -217,8 +217,8 @@ void AssertIsOnDisappearingMessagesQueue()
     NSString *_Nullable remoteContactName = nil;
     if (remoteRecipientId) {
         remoteContactName =
-            [self.contactsManager displayNameForSignalServiceAddress:remoteRecipientId.transitional_signalServiceAddress
-                                                         transaction:transaction];
+            [self.contactsManager displayNameForAddress:remoteRecipientId.transitional_signalServiceAddress
+                                            transaction:transaction];
     }
 
     // Become eventually consistent in the case that the remote changed their settings at the same time.

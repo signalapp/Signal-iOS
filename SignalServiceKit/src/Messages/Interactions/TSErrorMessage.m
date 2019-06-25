@@ -190,8 +190,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                         @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
 
                     NSString *recipientDisplayName = [SSKEnvironment.shared.contactsManager
-                        displayNameForSignalServiceAddress:self.recipientId.transitional_signalServiceAddress
-                                               transaction:transaction.transitional_yapReadTransaction];
+                        displayNameForAddress:self.recipientId.transitional_signalServiceAddress
+                                  transaction:transaction.transitional_yapReadTransaction];
                     return [NSString stringWithFormat:messageFormat, recipientDisplayName];
                 }
             } else {

@@ -53,10 +53,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Name for avatar initials.
     NSString *_Nullable name = [OWSContactAvatarBuilder.contactsManager
-        nameFromSystemContactsForSignalServiceAddress:signalId.transitional_signalServiceAddress];
+        nameFromSystemContactsForAddress:signalId.transitional_signalServiceAddress];
     if (name.length == 0) {
-        name = [OWSContactAvatarBuilder.contactsManager
-            profileNameForSignalServiceAddress:signalId.transitional_signalServiceAddress];
+        name =
+            [OWSContactAvatarBuilder.contactsManager profileNameForAddress:signalId.transitional_signalServiceAddress];
     }
     if (name.length == 0) {
         name = signalId;
@@ -113,8 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
         return image;
     }
 
-    return [OWSContactAvatarBuilder.contactsManager
-        imageForSignalServiceAddress:self.signalId.transitional_signalServiceAddress];
+    return [OWSContactAvatarBuilder.contactsManager imageForAddress:self.signalId.transitional_signalServiceAddress];
 }
 
 - (id)cacheKey

@@ -1227,7 +1227,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             shouldHaveAddToProfileWhitelistOffer = NO;
         }
 
-        if ([self.contactsManager hasNameInSystemContactsForSignalServiceAddress:recipientAddress]) {
+        if ([self.contactsManager hasNameInSystemContactsForAddress:recipientAddress]) {
             // Only create "add to contacts" offers for non-contacts.
             shouldHaveAddToContactsOffer = NO;
             // Only create block offers for non-contacts.
@@ -1628,12 +1628,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 }
                 if (shouldShowSenderName) {
                     senderName = [self.contactsManager
-                        attributedContactOrProfileNameForSignalServiceAddress:incomingSenderId
-                                                                                  .transitional_signalServiceAddress
-                                                            primaryAttributes:[OWSMessageBubbleView
-                                                                                  senderNamePrimaryAttributes]
-                                                          secondaryAttributes:[OWSMessageBubbleView
-                                                                                  senderNameSecondaryAttributes]];
+                        attributedContactOrProfileNameForAddress:incomingSenderId.transitional_signalServiceAddress
+                                               primaryAttributes:[OWSMessageBubbleView senderNamePrimaryAttributes]
+                                             secondaryAttributes:[OWSMessageBubbleView senderNameSecondaryAttributes]];
                 }
 
                 // Show the sender avatar for incoming group messages unless

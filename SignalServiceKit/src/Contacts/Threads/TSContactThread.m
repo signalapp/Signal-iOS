@@ -153,7 +153,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 - (NSString *)name
 {
     return [SSKEnvironment.shared.contactsManager
-        displayNameForSignalServiceAddress:self.contactIdentifier.transitional_signalServiceAddress];
+        displayNameForAddress:self.contactIdentifier.transitional_signalServiceAddress];
 }
 
 + (NSString *)threadIdFromContactId:(NSString *)contactId {

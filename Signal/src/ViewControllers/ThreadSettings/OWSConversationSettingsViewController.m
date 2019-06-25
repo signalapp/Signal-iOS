@@ -233,7 +233,7 @@ const CGFloat kIconViewLength = 24;
     OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
     TSContactThread *contactThread = (TSContactThread *)self.thread;
     SignalServiceAddress *recipientAddress = contactThread.contactAddress;
-    return [self.contactsManager hasSignalAccountForSignalServiceAddress:recipientAddress];
+    return [self.contactsManager hasSignalAccountForAddress:recipientAddress];
 }
 
 #pragma mark - ContactEditingDelegate
@@ -946,6 +946,13 @@ const CGFloat kIconViewLength = 24;
     __block UIView *lastTitleView = threadTitleLabel;
 
     if (![self isGroupThread]) {
+        if (![self.thread isKindOfClass:[TSContactThread class]]) {
+            OWSFailDebug(@"Unexpected class for thread");
+            return nil;
+        }
+
+        TSContactThread *thread = (TSContactThread *)self.thread;
+
         const CGFloat kSubtitlePointSize = 12.f;
         void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
             UILabel *subtitleLabel = [UILabel new];
@@ -959,7 +966,7 @@ const CGFloat kIconViewLength = 24;
             lastTitleView = subtitleLabel;
         };
 
-        SignalServiceAddress *recipientAddress = self.thread.contactAddress;
+        SignalServiceAddress *recipientAddress = thread.contactAddress;
         NSString *recipientId = recipientAddress.transitional_phoneNumber;
 
         BOOL hasName = ![self.thread.name isEqualToString:recipientId];
@@ -969,8 +976,7 @@ const CGFloat kIconViewLength = 24;
                                    bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]];
             addSubtitle(subtitle);
         } else {
-            NSString *_Nullable profileName =
-                [self.contactsManager formattedProfileNameForSignalServiceAddress:recipientAddress];
+            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForAddress:recipientAddress];
             if (profileName) {
                 addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
             }
