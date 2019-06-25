@@ -7,7 +7,7 @@
 		<key>CarthageVersion</key>
 		<string>0.33.0</string>
 		<key>DateTime</key>
-		<string>Tue Jun 25 06:15:45 UTC 2019</string>
+		<string>Tue Jun 25 23:45:42 UTC 2019</string>
 		<key>OSXVersion</key>
 		<string>10.14.5</string>
 		<key>WebRTCCommit</key>
@@ -34,7 +34,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.0-alpha.3</string>
+	<string>1.0.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
