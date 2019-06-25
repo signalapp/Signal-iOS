@@ -22,6 +22,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -56,6 +57,15 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 #pragma mark -
 
 @implementation OWSContactsManager
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (id)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
 {
@@ -98,15 +108,16 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (void)setup {
     __block NSMutableArray<SignalAccount *> *signalAccounts;
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        NSUInteger signalAccountCount = [SignalAccount numberOfKeysInCollectionWithTransaction:transaction];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSUInteger signalAccountCount = [SignalAccount anyCountWithTransaction:transaction];
         OWSLogInfo(@"loading %lu signal accounts from cache.", (unsigned long)signalAccountCount);
 
         signalAccounts = [[NSMutableArray alloc] initWithCapacity:signalAccountCount];
 
-        [SignalAccount enumerateCollectionObjectsWithTransaction:transaction usingBlock:^(SignalAccount *signalAccount, BOOL * _Nonnull stop) {
-            [signalAccounts addObject:signalAccount];
-        }];
+        [SignalAccount anyEnumerateWithTransaction:transaction
+                                             block:^(SignalAccount *signalAccount, BOOL *stop) {
+                                                 [signalAccounts addObject:signalAccount];
+                                             }];
     }];
     [signalAccounts sortUsingComparator:self.signalAccountComparator];
 
@@ -528,15 +539,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }
 
         NSMutableDictionary<NSString *, SignalAccount *> *oldSignalAccounts = [NSMutableDictionary new];
-        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [SignalAccount
-                enumerateCollectionObjectsWithTransaction:transaction
-                                               usingBlock:^(id _Nonnull object, BOOL *_Nonnull stop) {
-                                                   OWSAssertDebug([object isKindOfClass:[SignalAccount class]]);
-                                                   SignalAccount *oldSignalAccount = (SignalAccount *)object;
-
-                                                   oldSignalAccounts[oldSignalAccount.uniqueId] = oldSignalAccount;
-                                               }];
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            [SignalAccount anyEnumerateWithTransaction:transaction
+                                                 block:^(SignalAccount *signalAccount, BOOL *stop) {
+                                                     oldSignalAccounts[signalAccount.uniqueId] = signalAccount;
+                                                 }];
         }];
 
         NSMutableArray *accountsToSave = [NSMutableArray new];
@@ -562,18 +569,21 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }
 
         // Update cached SignalAccounts on disk
-        [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)accountsToSave.count);
             for (SignalAccount *signalAccount in accountsToSave) {
                 OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount);
-                [signalAccount saveWithTransaction:transaction];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                [signalAccount anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
             }
 
             if (shouldClearStaleCache) {
                 OWSLogInfo(@"Removing %lu old SignalAccounts.", (unsigned long)oldSignalAccounts.count);
                 for (SignalAccount *signalAccount in oldSignalAccounts.allValues) {
                     OWSLogVerbose(@"Removing old SignalAccount: %@", signalAccount);
-                    [signalAccount removeWithTransaction:transaction];
+                    [signalAccount anyRemoveWithTransaction:transaction];
                 }
             } else {
                 // In theory we want to remove SignalAccounts if the user deletes the corresponding system contact.

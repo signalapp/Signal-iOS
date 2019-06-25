@@ -2,21 +2,20 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class Contact;
 @class SignalRecipient;
 @class SignalServiceAddress;
-@class YapDatabaseReadTransaction;
 
 // This class represents a single valid Signal account.
 //
 // * Contacts with multiple signal accounts will correspond to
 //   multiple instances of SignalAccount.
 // * For non-contacts, the contact property will be nil.
-@interface SignalAccount : TSYapDatabaseObject
+@interface SignalAccount : BaseModel
 
 /// An E164 value identifying the signal account.
 @property (nullable, nonatomic, readonly) NSString *recipientPhoneNumber;

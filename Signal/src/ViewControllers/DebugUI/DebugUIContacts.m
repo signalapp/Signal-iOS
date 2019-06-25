@@ -81,7 +81,9 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)clearSignalAccountCache
 {
     OWSLogWarn(@"Deleting all signal accounts.");
-    [SignalAccount removeAllObjectsInCollection];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [SignalAccount anyRemoveAllWithoutInstantationWithTransaction:transaction];
+    }];
 }
 
 + (void)clearSignalRecipientCache
