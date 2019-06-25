@@ -426,13 +426,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSLinkedDeviceReadReceipt *_Nullable readReceipt =
         [OWSLinkedDeviceReadReceipt findLinkedDeviceReadReceiptWithSenderId:senderId
                                                          messageIdTimestamp:timestamp
-                                                                transaction:transaction];
+                                                                transaction:transaction.asAnyRead];
     if (!readReceipt) {
         return;
     }
 
     [message markAsReadAtTimestamp:readReceipt.readTimestamp sendReadReceipt:NO transaction:transaction];
-    [readReceipt removeWithTransaction:transaction];
+    [readReceipt anyRemoveWithTransaction:transaction.asAnyWrite];
 }
 
 - (void)processReadReceiptsFromLinkedDevice:(NSArray<SSKProtoSyncMessageRead *> *)readReceiptProtos

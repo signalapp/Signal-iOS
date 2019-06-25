@@ -2,11 +2,13 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSLinkedDeviceReadReceipt : TSYapDatabaseObject
+@class SDSAnyReadTransaction;
+
+@interface OWSLinkedDeviceReadReceipt : BaseModel
 
 @property (nonatomic, readonly) NSString *senderId;
 @property (nonatomic, readonly) uint64_t messageIdTimestamp;
@@ -35,8 +37,7 @@ NS_SWIFT_NAME(init(uniqueId:messageIdTimestamp:readTimestamp:senderId:));
 
 + (nullable OWSLinkedDeviceReadReceipt *)findLinkedDeviceReadReceiptWithSenderId:(NSString *)senderId
                                                               messageIdTimestamp:(uint64_t)messageIdTimestamp
-                                                                     transaction:
-                                                                         (YapDatabaseReadTransaction *)transaction;
+                                                                     transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

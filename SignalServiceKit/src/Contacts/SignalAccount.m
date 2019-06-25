@@ -5,7 +5,6 @@
 #import "SignalAccount.h"
 #import "Contact.h"
 #import "NSString+SSK.h"
-#import "OWSPrimaryStorage.h"
 #import "SignalRecipient.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -14,7 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 NSUInteger const SignalAccountSchemaVersion = 1;
 
 @interface SignalAccount ()
+
 @property (nonatomic, readonly) NSUInteger accountSchemaVersion;
+
 @end
 
 #pragma mark -
