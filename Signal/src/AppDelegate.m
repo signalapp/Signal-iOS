@@ -1411,7 +1411,7 @@ static NSTimeInterval launchStartedAt;
     NSLog(@"[Loki] Received %lu messages through long polling.", messages.count);
 
     for (SSKProtoEnvelope *envelope in messages) {
-        NSData *envelopeData = envelope.serializedDataIgnoringErrors;
+        NSData *envelopeData = [envelope serializedDataAndReturnError:nil];
         if (envelopeData != nil) {
             [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:envelopeData];
         } else {

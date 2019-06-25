@@ -1109,7 +1109,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
         SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
         [profileBuilder setDisplayName:displayName];
         
-        SSKProtoDataMessageLokiProfile *profile = [profileBuilder buildIgnoringErrors];
+        SSKProtoDataMessageLokiProfile *profile = [profileBuilder buildAndReturnError:nil];
         [builder setProfile:profile];
     }
     
