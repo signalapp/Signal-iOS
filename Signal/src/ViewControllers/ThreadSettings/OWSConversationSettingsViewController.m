@@ -30,6 +30,7 @@
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSUserProfile.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
@@ -147,6 +148,11 @@ const CGFloat kIconViewLength = 24;
 - (OWSProfileManager *)profileManager
 {
     return [OWSProfileManager sharedManager];
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
 }
 
 #pragma mark
@@ -286,13 +292,11 @@ const CGFloat kIconViewLength = 24;
 
     self.disappearingMessagesDurations = [OWSDisappearingMessagesConfiguration validDurationsSeconds];
 
-    self.disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId];
-
-    if (!self.disappearingMessagesConfiguration) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         self.disappearingMessagesConfiguration =
-            [[OWSDisappearingMessagesConfiguration alloc] initDefaultWithThreadId:self.thread.uniqueId];
-    }
+            [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.thread.uniqueId
+                                                                      transaction:transaction];
+    }];
 
 #ifdef SHOW_COLOR_PICKER
     self.colorPicker = [[OWSColorPicker alloc] initWithThread:self.thread];
@@ -1066,8 +1070,12 @@ const CGFloat kIconViewLength = 24;
     }
 
     if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [self.disappearingMessagesConfiguration saveWithTransaction:transaction];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+            [self.disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
+
             // MJK TODO - should be safe to remove this senderTimestamp
             OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
                 [[OWSDisappearingConfigurationUpdateInfoMessage alloc]
@@ -1076,13 +1084,13 @@ const CGFloat kIconViewLength = 24;
                              configuration:self.disappearingMessagesConfiguration
                        createdByRemoteName:nil
                     createdInExistingGroup:NO];
-            [infoMessage saveWithTransaction:transaction];
+            [infoMessage anyInsertWithTransaction:transaction];
 
             OWSDisappearingMessagesConfigurationMessage *message = [[OWSDisappearingMessagesConfigurationMessage alloc]
                 initWithConfiguration:self.disappearingMessagesConfiguration
                                thread:self.thread];
 
-            [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
+            [self.messageSenderJobQueue addMessage:message transaction:transaction];
         }];
     }
 }

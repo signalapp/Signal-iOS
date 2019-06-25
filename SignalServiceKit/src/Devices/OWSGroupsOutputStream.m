@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSGroupsOutputStream.h"
@@ -49,7 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:groupThread.uniqueId transaction:transaction];
+        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:groupThread.uniqueId
+                                                       transaction:transaction.asAnyRead];
 
     if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
         [groupBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];

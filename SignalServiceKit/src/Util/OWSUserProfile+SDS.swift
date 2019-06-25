@@ -162,7 +162,18 @@ public extension OWSUserProfile {
 
     @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
     func anyUpsert(transaction: SDSAnyWriteTransaction) {
-        sdsSave(saveMode: .upsert, transaction: transaction)
+        let isInserting: Bool
+        if let uniqueId = uniqueId {
+            if OWSUserProfile.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
+                isInserting = false
+            } else {
+                isInserting = true
+            }
+        } else {
+            owsFailDebug("Missing uniqueId: \(type(of: self))")
+            isInserting = true
+        }
+        sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
     }
 
     // This method is used by "updateWith..." methods.

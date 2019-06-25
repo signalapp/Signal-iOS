@@ -212,8 +212,8 @@ NS_ASSUME_NONNULL_BEGIN
                                 [self.uiDatabaseConnection
                                     readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
                                         disappearingMessagesConfiguration = [OWSDisappearingMessagesConfiguration
-                                            fetchObjectWithUniqueID:thread.uniqueId
-                                                        transaction:transaction];
+                                            anyFetchWithUniqueId:thread.uniqueId
+                                                     transaction:transaction.asAnyRead];
                                     }];
 
                                 if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {

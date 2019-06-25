@@ -458,7 +458,8 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
     (YapDatabaseReadTransaction *)transaction
 {
-    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
+    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId
+                                                                     transaction:transaction.asAnyRead];
 }
 
 - (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction
