@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class Contact;
 @class SignalRecipient;
+@class SignalServiceAddress;
 @class YapDatabaseReadTransaction;
 
 // This class represents a single valid Signal account.
@@ -17,11 +18,15 @@ NS_ASSUME_NONNULL_BEGIN
 // * For non-contacts, the contact property will be nil.
 @interface SignalAccount : TSYapDatabaseObject
 
-// An E164 value identifying the signal account.
-//
-// This is the key property of this class and it
-// will always be non-null.
-@property (nonatomic, readonly) NSString *recipientId;
+/// An E164 value identifying the signal account.
+@property (nullable, nonatomic, readonly) NSString *recipientPhoneNumber;
+
+/// A UUID identifying the signal account.
+@property (nullable, nonatomic, readonly) NSString *recipientUUID;
+
+/// An address representing the signal account. This will be
+/// the UUID, if defined, otherwise it will be the E164 number.
+@property (nonatomic, readonly) SignalServiceAddress *recipientAddress;
 
 // This property is optional and will not be set for
 // non-contact account.
@@ -39,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient;
 
-- (instancetype)initWithRecipientId:(NSString *)recipientId;
+- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)address;
 
 // --- CODE GENERATION MARKER
 
@@ -49,11 +54,13 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+            accountSchemaVersion:(NSUInteger)accountSchemaVersion
                          contact:(nullable Contact *)contact
        hasMultipleAccountContact:(BOOL)hasMultipleAccountContact
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
-                     recipientId:(NSString *)recipientId
-NS_SWIFT_NAME(init(uniqueId:contact:hasMultipleAccountContact:multipleAccountLabelText:recipientId:));
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+                   recipientUUID:(nullable NSString *)recipientUUID
+NS_SWIFT_NAME(init(uniqueId:accountSchemaVersion:contact:hasMultipleAccountContact:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
 
 // clang-format on
 

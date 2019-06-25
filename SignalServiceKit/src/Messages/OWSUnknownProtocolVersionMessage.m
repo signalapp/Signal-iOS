@@ -138,8 +138,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
     NSString *senderName = nil;
     if (transaction.transitional_yapReadTransaction) {
-        senderName = [self.contactsManager displayNameForPhoneIdentifier:self.senderId
-                                                             transaction:transaction.transitional_yapReadTransaction];
+        senderName = [self.contactsManager displayNameForAddress:self.senderId.transitional_signalServiceAddress
+                                                     transaction:transaction.transitional_yapReadTransaction];
     }
 
     if (self.isProtocolVersionUnknown) {

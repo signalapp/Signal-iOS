@@ -895,9 +895,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 = NSLocalizedString(@"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY",
                     @"action sheet header when re-sending message which failed because of untrusted identity keys");
 
-            NSString *localizedErrorDescription =
-                [NSString stringWithFormat:localizedErrorDescriptionFormat,
-                          [self.contactsManager displayNameForPhoneIdentifier:recipient.recipientId]];
+            NSString *localizedErrorDescription = [NSString
+                stringWithFormat:localizedErrorDescriptionFormat,
+                [self.contactsManager displayNameForAddress:recipient.recipientId.transitional_signalServiceAddress]];
             NSError *error = OWSErrorMakeUntrustedIdentityError(localizedErrorDescription, recipient.recipientId);
 
             // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request

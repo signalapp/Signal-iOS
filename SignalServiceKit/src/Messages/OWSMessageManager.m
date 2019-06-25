@@ -1079,8 +1079,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration anyInsertWithTransaction:transaction];
-    NSString *name = [self.contactsManager displayNameForPhoneIdentifier:envelope.sourceE164
-                                                             transaction:transaction.transitional_yapWriteTransaction];
+    NSString *name = [self.contactsManager displayNameForAddress:envelope.sourceE164.transitional_signalServiceAddress
+                                                     transaction:transaction.transitional_yapWriteTransaction];
 
     // MJK TODO - safe to remove senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *message =
@@ -1344,8 +1344,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    }];
 
                 NSString *nameString =
-                    [self.contactsManager displayNameForPhoneIdentifier:envelope.sourceE164
-                                                            transaction:transaction.transitional_yapWriteTransaction];
+                    [self.contactsManager displayNameForAddress:envelope.sourceE164.transitional_signalServiceAddress];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
                 // MJK TODO - should be safe to remove senderTimestamp

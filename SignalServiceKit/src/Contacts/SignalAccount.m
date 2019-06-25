@@ -7,13 +7,14 @@
 #import "NSString+SSK.h"
 #import "OWSPrimaryStorage.h"
 #import "SignalRecipient.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSUInteger const SignalAccountSchemaVersion = 1;
+
 @interface SignalAccount ()
-
-@property (nonatomic) NSString *recipientId;
-
+@property (nonatomic, readonly) NSUInteger accountSchemaVersion;
 @end
 
 #pragma mark -
@@ -23,16 +24,37 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
 {
     OWSAssertDebug(signalRecipient);
-    return [self initWithRecipientId:signalRecipient.recipientId];
+    return [self initWithSignalServiceAddress:signalRecipient.recipientId.transitional_signalServiceAddress];
 }
 
-- (instancetype)initWithRecipientId:(NSString *)recipientId
+- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress
 {
     if (self = [super init]) {
-        OWSAssertDebug(recipientId.length > 0);
-
-        _recipientId = recipientId;
+        _recipientUUID = serviceAddress.uuidString;
+        _recipientPhoneNumber = serviceAddress.phoneNumber;
+        _accountSchemaVersion = SignalAccountSchemaVersion;
     }
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    // Migrating from an everyone has a phone number world to a
+    // world in which we have UUIDs
+    if (_accountSchemaVersion == 0) {
+        // Rename recipientId to recipientPhoneNumber
+        _recipientPhoneNumber = [coder decodeObjectForKey:@"recipientId"];
+
+        OWSAssert(_recipientPhoneNumber != nil);
+    }
+
+    _accountSchemaVersion = SignalAccountSchemaVersion;
+
     return self;
 }
 
@@ -44,10 +66,12 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+            accountSchemaVersion:(NSUInteger)accountSchemaVersion
                          contact:(nullable Contact *)contact
        hasMultipleAccountContact:(BOOL)hasMultipleAccountContact
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
-                     recipientId:(NSString *)recipientId
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+                   recipientUUID:(nullable NSString *)recipientUUID
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -55,10 +79,12 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    _accountSchemaVersion = accountSchemaVersion;
     _contact = contact;
     _hasMultipleAccountContact = hasMultipleAccountContact;
     _multipleAccountLabelText = multipleAccountLabelText;
-    _recipientId = recipientId;
+    _recipientPhoneNumber = recipientPhoneNumber;
+    _recipientUUID = recipientUUID;
 
     return self;
 }
@@ -66,11 +92,6 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (nullable NSString *)uniqueId
-{
-    return _recipientId;
-}
 
 - (nullable NSString *)contactFullName
 {
@@ -80,6 +101,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)multipleAccountLabelText
 {
     return _multipleAccountLabelText.filterStringForDisplay;
+}
+
+- (SignalServiceAddress *)recipientAddress
+{
+    return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID phoneNumber:self.recipientPhoneNumber];
 }
 
 @end

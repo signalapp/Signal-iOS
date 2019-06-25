@@ -55,7 +55,8 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
                                  anyTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSString *)contactIdentifier;
-- (SignalServiceAddress *)contactAddress;
+
+@property (nonatomic, readonly) SignalServiceAddress *contactAddress;
 
 + (NSString *)contactIdFromThreadId:(NSString *)threadId;
 

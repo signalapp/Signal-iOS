@@ -184,7 +184,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String, transaction: YapDatabaseReadTransaction) in
-        let displayName = contactsManager.displayName(forPhoneIdentifier: recipientId, transaction: transaction)
+        let displayName = contactsManager.displayName(for: recipientId.transitional_signalServiceAddress, transaction: transaction)
 
         let nationalNumber: String = { (recipientId: String) -> String in
 
@@ -229,7 +229,7 @@ public class FullTextSearchFinder: NSObject {
             }
             return self.messageIndexer.index(message, transaction: transaction)
         } else if let signalAccount = object as? SignalAccount {
-            return self.recipientIndexer.index(signalAccount.recipientId, transaction: transaction)
+            return self.recipientIndexer.index(signalAccount.recipientAddress.transitional_phoneNumber, transaction: transaction)
         } else {
             return nil
         }

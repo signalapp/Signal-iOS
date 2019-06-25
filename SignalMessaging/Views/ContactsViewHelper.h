@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CNContact;
 @class OWSBlockingManager;
 @class OWSContactsManager;
+@class SignalServiceAddress;
 
 @interface ContactsViewHelper : NSObject
 
@@ -40,7 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
 
-@property (nonatomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
 // Useful to differentiate between having no signal accounts vs. haven't checked yet
@@ -54,12 +54,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate;
 
-- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId;
-- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId;
+- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
+- (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
 
 // This method is faster than OWSBlockingManager but
 // is only safe to be called on the main thread.
-- (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
+- (BOOL)isSignalServiceAddressBlocked:(SignalServiceAddress *)address;
 
 // This method is faster than OWSBlockingManager but
 // is only safe to be called on the main thread.

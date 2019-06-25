@@ -16,6 +16,7 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
+@class SignalServiceAddress;
 @class TSNetworkManager;
 
 typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
@@ -55,6 +56,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (nullable NSString *)localNumber;
 
 @property (readonly, nullable) NSUUID *uuid;
+@property (readonly) SignalServiceAddress *localAddress;
 
 // A variant of localNumber that never opens a "sneaky" transaction.
 - (nullable NSString *)storedOrCachedLocalNumber:(SDSAnyReadTransaction *)transaction;

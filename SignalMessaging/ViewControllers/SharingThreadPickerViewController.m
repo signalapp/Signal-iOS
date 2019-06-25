@@ -235,7 +235,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         if (avatarImageData) {
             break;
         }
-        avatarImageData = [self.contactsManager profileImageDataForPhoneIdentifier:recipientId];
+        avatarImageData =
+            [self.contactsManager profileImageDataForAddress:recipientId.transitional_signalServiceAddress];
         if (avatarImageData) {
             isProfileAvatar = YES;
         }
@@ -481,7 +482,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         NSString *failureFormat = NSLocalizedString(@"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
             @"alert body when sharing file failed because of untrusted/changed identity keys");
 
-        NSString *displayName = [self.contactsManager displayNameForPhoneIdentifier:untrustedRecipientId];
+        NSString *displayName =
+            [self.contactsManager displayNameForAddress:untrustedRecipientId.transitional_signalServiceAddress];
         NSString *failureMessage = [NSString stringWithFormat:failureFormat, displayName];
 
         UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle

@@ -52,7 +52,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
             return false
         }
 
-        let displayName = contactsManager.displayName(forPhoneIdentifier: untrustedIdentity.recipientId)
+        let displayName = contactsManager.displayName(for: untrustedIdentity.recipientId.transitional_signalServiceAddress)
 
         let titleFormat = NSLocalizedString("CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT",
                                             comment: "Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}}")

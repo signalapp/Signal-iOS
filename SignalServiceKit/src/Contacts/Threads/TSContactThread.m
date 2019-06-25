@@ -152,7 +152,8 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 // TODO deprecate this? seems weird to access the displayName in the DB model
 - (NSString *)name
 {
-    return [SSKEnvironment.shared.contactsManager displayNameForPhoneIdentifier:self.contactIdentifier];
+    return [SSKEnvironment.shared.contactsManager
+        displayNameForAddress:self.contactIdentifier.transitional_signalServiceAddress];
 }
 
 + (NSString *)threadIdFromContactId:(NSString *)contactId {

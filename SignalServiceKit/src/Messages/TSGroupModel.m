@@ -5,6 +5,7 @@
 #import "TSGroupModel.h"
 #import "FunctionalUtil.h"
 #import "NSString+SSK.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -138,8 +139,8 @@ const int32_t kGroupIdLength = 16;
 
 
     if ([membersWhoLeft count] > 0) {
-        NSArray *oldMembersNames = [[membersWhoLeft allObjects] map:^NSString*(NSString* item) {
-            return [contactsManager displayNameForPhoneIdentifier:item];
+        NSArray *oldMembersNames = [[membersWhoLeft allObjects] map:^NSString *(NSString *item) {
+            return [contactsManager displayNameForAddress:item.transitional_signalServiceAddress];
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString
@@ -148,8 +149,8 @@ const int32_t kGroupIdLength = 16;
     }
     
     if ([membersWhoJoined count] > 0) {
-        NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString*(NSString* item) {
-            return [contactsManager displayNameForPhoneIdentifier:item];
+        NSArray *newMembersNames = [[membersWhoJoined allObjects] map:^NSString *(NSString *item) {
+            return [contactsManager displayNameForAddress:item.transitional_signalServiceAddress];
         }];
         updatedGroupInfoString = [updatedGroupInfoString
                                   stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_JOINED", @""),

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactsOutputStream.h"
@@ -32,7 +32,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     OWSAssertDebug(contactsManager);
 
     SSKProtoContactDetailsBuilder *contactBuilder =
-        [SSKProtoContactDetails builderWithNumber:signalAccount.recipientId];
+        [SSKProtoContactDetails builderWithNumber:signalAccount.recipientAddress.transitional_phoneNumber];
     [contactBuilder setName:signalAccount.contact.fullName];
     [contactBuilder setColor:conversationColorName];
 
@@ -81,7 +81,8 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         [contactBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
     }
 
-    if ([OWSBlockingManager.sharedManager isRecipientIdBlocked:signalAccount.recipientId]) {
+    if ([OWSBlockingManager.sharedManager
+            isRecipientIdBlocked:signalAccount.recipientAddress.transitional_phoneNumber]) {
         [contactBuilder setBlocked:YES];
     }
 

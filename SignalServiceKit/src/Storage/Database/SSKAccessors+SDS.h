@@ -152,4 +152,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface SignalAccount (SDS)
+
+@property (nonatomic, readonly) NSUInteger accountSchemaVersion;
+
+@end
+
+#pragma mark -
+
 NS_ASSUME_NONNULL_END

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "NewNonContactConversationViewController.h"
@@ -7,6 +7,7 @@
 #import "ContactsViewHelper.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -57,7 +58,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(signalAccount);
 
-    [self selectRecipient:signalAccount.recipientId];
+    [self selectRecipient:signalAccount.recipientAddress.transitional_phoneNumber];
 }
 
 - (void)selectRecipient:(NSString *)recipientId

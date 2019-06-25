@@ -26,19 +26,23 @@ public struct SignalAccountRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
+    public let accountSchemaVersion: UInt
     public let contact: Data?
     public let hasMultipleAccountContact: Bool
     public let multipleAccountLabelText: String
-    public let recipientId: String
+    public let recipientPhoneNumber: String?
+    public let recipientUUID: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
         case recordType
         case uniqueId
+        case accountSchemaVersion
         case contact
         case hasMultipleAccountContact
         case multipleAccountLabelText
-        case recipientId
+        case recipientPhoneNumber
+        case recipientUUID
     }
 
     public static func columnName(_ column: SignalAccountRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -74,17 +78,21 @@ extension SignalAccount {
         case .signalAccount:
 
             let uniqueId: String = record.uniqueId
+            let accountSchemaVersion: UInt = record.accountSchemaVersion
             let contactSerialized: Data? = record.contact
             let contact: Contact? = try SDSDeserialization.optionalUnarchive(contactSerialized, name: "contact")
             let hasMultipleAccountContact: Bool = record.hasMultipleAccountContact
             let multipleAccountLabelText: String = record.multipleAccountLabelText
-            let recipientId: String = record.recipientId
+            let recipientPhoneNumber: String? = record.recipientPhoneNumber
+            let recipientUUID: String? = record.recipientUUID
 
             return SignalAccount(uniqueId: uniqueId,
+                                 accountSchemaVersion: accountSchemaVersion,
                                  contact: contact,
                                  hasMultipleAccountContact: hasMultipleAccountContact,
                                  multipleAccountLabelText: multipleAccountLabelText,
-                                 recipientId: recipientId)
+                                 recipientPhoneNumber: recipientPhoneNumber,
+                                 recipientUUID: recipientUUID)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -121,10 +129,12 @@ extension SignalAccountSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let contactColumn = SDSColumnMetadata(columnName: "contact", columnType: .blob, isOptional: true, columnIndex: 3)
-    static let hasMultipleAccountContactColumn = SDSColumnMetadata(columnName: "hasMultipleAccountContact", columnType: .int, columnIndex: 4)
-    static let multipleAccountLabelTextColumn = SDSColumnMetadata(columnName: "multipleAccountLabelText", columnType: .unicodeString, columnIndex: 5)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, columnIndex: 6)
+    static let accountSchemaVersionColumn = SDSColumnMetadata(columnName: "accountSchemaVersion", columnType: .int64, columnIndex: 3)
+    static let contactColumn = SDSColumnMetadata(columnName: "contact", columnType: .blob, isOptional: true, columnIndex: 4)
+    static let hasMultipleAccountContactColumn = SDSColumnMetadata(columnName: "hasMultipleAccountContact", columnType: .int, columnIndex: 5)
+    static let multipleAccountLabelTextColumn = SDSColumnMetadata(columnName: "multipleAccountLabelText", columnType: .unicodeString, columnIndex: 6)
+    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 7)
+    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 8)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -132,10 +142,12 @@ extension SignalAccountSerializer {
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,
+        accountSchemaVersionColumn,
         contactColumn,
         hasMultipleAccountContactColumn,
         multipleAccountLabelTextColumn,
-        recipientIdColumn
+        recipientPhoneNumberColumn,
+        recipientUUIDColumn
         ])
 }
 
@@ -429,11 +441,13 @@ class SignalAccountSerializer: SDSSerializer {
         }
 
         // Base class properties
+        let accountSchemaVersion: UInt = model.accountSchemaVersion
         let contact: Data? = optionalArchive(model.contact)
         let hasMultipleAccountContact: Bool = model.hasMultipleAccountContact
         let multipleAccountLabelText: String = model.multipleAccountLabelText
-        let recipientId: String = model.recipientId
+        let recipientPhoneNumber: String? = model.recipientPhoneNumber
+        let recipientUUID: String? = model.recipientUUID
 
-        return SignalAccountRecord(id: id, recordType: recordType, uniqueId: uniqueId, contact: contact, hasMultipleAccountContact: hasMultipleAccountContact, multipleAccountLabelText: multipleAccountLabelText, recipientId: recipientId)
+        return SignalAccountRecord(id: id, recordType: recordType, uniqueId: uniqueId, accountSchemaVersion: accountSchemaVersion, contact: contact, hasMultipleAccountContact: hasMultipleAccountContact, multipleAccountLabelText: multipleAccountLabelText, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
     }
 }

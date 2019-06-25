@@ -279,7 +279,8 @@ NS_ASSUME_NONNULL_BEGIN
 
                             ContactTableViewCell *cell = [ContactTableViewCell new];
                             BOOL isPreviousMember = [strongSelf.previousMemberRecipientIds containsObject:recipientId];
-                            BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                            BOOL isBlocked = [contactsViewHelper
+                                isSignalServiceAddressBlocked:recipientId.transitional_signalServiceAddress];
                             if (isPreviousMember) {
                                 if (isBlocked) {
                                     cell.accessoryMessage = NSLocalizedString(
@@ -308,10 +309,11 @@ NS_ASSUME_NONNULL_BEGIN
                         }
                         customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
-                            SignalAccount *_Nullable signalAccount =
-                                [contactsViewHelper fetchSignalAccountForRecipientId:recipientId];
+                            SignalAccount *_Nullable signalAccount = [contactsViewHelper
+                                fetchSignalAccountForAddress:recipientId.transitional_signalServiceAddress];
                             BOOL isPreviousMember = [weakSelf.previousMemberRecipientIds containsObject:recipientId];
-                            BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
+                            BOOL isBlocked =
+                                [contactsViewHelper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                             if (isPreviousMember) {
                                 if (isBlocked) {
                                     if (signalAccount) {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -62,7 +62,7 @@ import SignalServiceKit
 
         let groupMemberIds: [String] = thread.groupModel.groupMemberIds
         let groupMemberNames = groupMemberIds.map { (recipientId: String) in
-            contactsManager.displayName(forPhoneIdentifier: recipientId)
+            contactsManager.displayName(for: recipientId.transitional_signalServiceAddress)
         }.joined(separator: ", ")
         self.subtitleLabel.text = groupMemberNames
 

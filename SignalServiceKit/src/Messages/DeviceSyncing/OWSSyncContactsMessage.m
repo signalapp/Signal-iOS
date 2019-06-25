@@ -100,10 +100,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (localNumber) {
         BOOL hasLocalNumber = NO;
         for (SignalAccount *signalAccount in signalAccounts) {
-            hasLocalNumber |= [signalAccount.recipientId isEqualToString:localNumber];
+            hasLocalNumber |= signalAccount.recipientAddress.isLocalAddress;
         }
         if (!hasLocalNumber) {
-            SignalAccount *signalAccount = [[SignalAccount alloc] initWithRecipientId:localNumber];
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:localNumber];
+            SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalServiceAddress:address];
             // OWSContactsOutputStream requires all signalAccount to have a contact.
             signalAccount.contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
             [signalAccounts addObject:signalAccount];
@@ -119,19 +120,23 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSContactsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
     for (SignalAccount *signalAccount in signalAccounts) {
-        OWSRecipientIdentity *_Nullable recipientIdentity =
-            [self.identityManager recipientIdentityForRecipientId:signalAccount.recipientId];
-        NSData *_Nullable profileKeyData = [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientId];
+        OWSRecipientIdentity *_Nullable recipientIdentity = [self.identityManager
+            recipientIdentityForRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
+        NSData *_Nullable profileKeyData =
+            [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
 
         OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration;
         NSString *conversationColorName;
-        
-        TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactId:signalAccount.recipientId transaction:transaction];
+
+        TSContactThread *_Nullable contactThread =
+            [TSContactThread getThreadWithContactId:signalAccount.recipientAddress.transitional_phoneNumber
+                                        transaction:transaction];
         if (contactThread) {
             conversationColorName = contactThread.conversationColorName;
             disappearingMessagesConfiguration = [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
         } else {
-            conversationColorName = [TSThread stableColorNameForNewConversationWithString:signalAccount.recipientId];
+            conversationColorName = [TSThread
+                stableColorNameForNewConversationWithString:signalAccount.recipientAddress.transitional_phoneNumber];
         }
 
         [contactsOutputStream writeSignalAccount:signalAccount

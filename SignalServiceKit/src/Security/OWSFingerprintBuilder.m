@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFingerprintBuilder.h"
@@ -8,6 +8,7 @@
 #import "OWSIdentityManager.h"
 #import "TSAccountManager.h"
 #import <Curve25519Kit/Curve25519.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId theirIdentityKey:(NSData *)theirIdentityKey
 {
-    NSString *theirName = [self.contactsManager displayNameForPhoneIdentifier:theirSignalId];
+    NSString *theirName = [self.contactsManager displayNameForAddress:theirSignalId.transitional_signalServiceAddress];
 
     NSString *mySignalId = [self.accountManager localNumber];
     NSData *myIdentityKey = [[OWSIdentityManager sharedManager] identityKeyPair].publicKey;

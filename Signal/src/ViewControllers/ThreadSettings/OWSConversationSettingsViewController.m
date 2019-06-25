@@ -232,8 +232,8 @@ const CGFloat kIconViewLength = 24;
 {
     OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    NSString *recipientId = contactThread.contactIdentifier;
-    return [self.contactsManager hasSignalAccountForRecipientId:recipientId];
+    SignalServiceAddress *recipientAddress = contactThread.contactAddress;
+    return [self.contactsManager hasSignalAccountForAddress:recipientAddress];
 }
 
 #pragma mark - ContactEditingDelegate
@@ -945,7 +945,9 @@ const CGFloat kIconViewLength = 24;
 
     __block UIView *lastTitleView = threadTitleLabel;
 
-    if (![self isGroupThread]) {
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *thread = (TSContactThread *)self.thread;
+
         const CGFloat kSubtitlePointSize = 12.f;
         void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
             UILabel *subtitleLabel = [UILabel new];
@@ -959,7 +961,8 @@ const CGFloat kIconViewLength = 24;
             lastTitleView = subtitleLabel;
         };
 
-        NSString *recipientId = self.thread.contactIdentifier;
+        SignalServiceAddress *recipientAddress = thread.contactAddress;
+        NSString *recipientId = recipientAddress.transitional_phoneNumber;
 
         BOOL hasName = ![self.thread.name isEqualToString:recipientId];
         if (hasName) {
@@ -968,7 +971,7 @@ const CGFloat kIconViewLength = 24;
                                    bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]];
             addSubtitle(subtitle);
         } else {
-            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForRecipientId:recipientId];
+            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForAddress:recipientAddress];
             if (profileName) {
                 addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
             }

@@ -1184,9 +1184,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return nil;
     }
 
-    NSString *localNumber = [self.tsAccountManager localNumber];
-    OWSAssertDebug(localNumber.length > 0);
-
     TSInteraction *firstCallOrMessage = [self firstCallOrMessageForLoadedInteractions:loadedInteractions];
     if (!firstCallOrMessage) {
         return nil;
@@ -1208,9 +1205,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     BOOL shouldHaveAddToContactsOffer = YES;
     BOOL shouldHaveAddToProfileWhitelistOffer = YES;
 
-    NSString *recipientId = ((TSContactThread *)thread).contactIdentifier;
+    SignalServiceAddress *recipientAddress = ((TSContactThread *)thread).contactAddress;
 
-    if ([recipientId isEqualToString:localNumber]) {
+    if (recipientAddress.isLocalAddress) {
         // Don't add self to contacts.
         shouldHaveAddToContactsOffer = NO;
         // Don't bother to block self.
@@ -1218,7 +1215,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         // Don't bother adding self to profile whitelist.
         shouldHaveAddToProfileWhitelistOffer = NO;
     } else {
-        if ([[self.blockingManager blockedPhoneNumbers] containsObject:recipientId]) {
+        if ([[self.blockingManager blockedPhoneNumbers] containsObject:recipientAddress.transitional_phoneNumber]) {
             // Only create "add to contacts" offers for users which are not already blocked.
             shouldHaveAddToContactsOffer = NO;
             // Only create block offers for users which are not already blocked.
@@ -1227,7 +1224,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             shouldHaveAddToProfileWhitelistOffer = NO;
         }
 
-        if ([self.contactsManager hasNameInSystemContactsForRecipientId:recipientId]) {
+        if ([self.contactsManager hasNameInSystemContactsForAddress:recipientAddress]) {
             // Only create "add to contacts" offers for non-contacts.
             shouldHaveAddToContactsOffer = NO;
             // Only create block offers for non-contacts.
@@ -1281,13 +1278,13 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSString *uniqueId = @"contact-offers";
     OWSContactOffersInteraction *offersMessage =
         [[OWSContactOffersInteraction alloc] initWithUniqueId:uniqueId
-                                                               timestamp:contactOffersTimestamp
-                                                                  thread:thread
-                                                           hasBlockOffer:shouldHaveBlockOffer
-                                                   hasAddToContactsOffer:shouldHaveAddToContactsOffer
-                                           hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                                             recipientId:recipientId
-                                                     beforeInteractionId:firstCallOrMessage.uniqueId];
+                                                    timestamp:contactOffersTimestamp
+                                                       thread:thread
+                                                hasBlockOffer:shouldHaveBlockOffer
+                                        hasAddToContactsOffer:shouldHaveAddToContactsOffer
+                                hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
+                                                  recipientId:recipientAddress.transitional_phoneNumber
+                                          beforeInteractionId:firstCallOrMessage.uniqueId];
 
     OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.sortId);
     return offersMessage;
@@ -1628,11 +1625,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 }
                 if (shouldShowSenderName) {
                     senderName = [self.contactsManager
-                        attributedContactOrProfileNameForPhoneIdentifier:incomingSenderId
-                                                       primaryAttributes:[OWSMessageBubbleView
-                                                                             senderNamePrimaryAttributes]
-                                                     secondaryAttributes:[OWSMessageBubbleView
-                                                                             senderNameSecondaryAttributes]];
+                        attributedContactOrProfileNameForAddress:incomingSenderId.transitional_signalServiceAddress
+                                               primaryAttributes:[OWSMessageBubbleView senderNamePrimaryAttributes]
+                                             secondaryAttributes:[OWSMessageBubbleView senderNameSecondaryAttributes]];
                 }
 
                 // Show the sender avatar for incoming group messages unless

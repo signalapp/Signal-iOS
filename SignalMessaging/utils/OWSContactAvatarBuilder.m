@@ -52,9 +52,11 @@ NS_ASSUME_NONNULL_BEGIN
                         diameter:(NSUInteger)diameter
 {
     // Name for avatar initials.
-    NSString *_Nullable name = [OWSContactAvatarBuilder.contactsManager nameFromSystemContactsForRecipientId:signalId];
+    NSString *_Nullable name = [OWSContactAvatarBuilder.contactsManager
+        nameFromSystemContactsForAddress:signalId.transitional_signalServiceAddress];
     if (name.length == 0) {
-        name = [OWSContactAvatarBuilder.contactsManager profileNameForRecipientId:signalId];
+        name =
+            [OWSContactAvatarBuilder.contactsManager profileNameForAddress:signalId.transitional_signalServiceAddress];
     }
     if (name.length == 0) {
         name = signalId;
@@ -111,7 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
         return image;
     }
 
-    return [OWSContactAvatarBuilder.contactsManager imageForPhoneIdentifier:self.signalId];
+    return [OWSContactAvatarBuilder.contactsManager imageForAddress:self.signalId.transitional_signalServiceAddress];
 }
 
 - (id)cacheKey

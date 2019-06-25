@@ -243,7 +243,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 owsFailDebug("searchResult was unexpectedly nil")
                 return UITableViewCell()
             }
-            cell.configure(withRecipientId: searchResult.signalAccount.recipientId)
+            cell.configure(withRecipientId: searchResult.signalAccount.recipientAddress.transitional_phoneNumber)
             return cell
         case .messages:
             guard let cell = tableView.dequeueReusableCell(withIdentifier: HomeViewCell.cellReuseIdentifier()) as? HomeViewCell else {

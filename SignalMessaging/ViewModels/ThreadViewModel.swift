@@ -12,6 +12,7 @@ public class ThreadViewModel: NSObject {
     @objc public let threadRecord: TSThread
     @objc public let unreadCount: UInt
     @objc public let contactIdentifier: String?
+    @objc public let contactAddress: SignalServiceAddress?
     @objc public let name: String
     @objc public let isMuted: Bool
 
@@ -36,8 +37,10 @@ public class ThreadViewModel: NSObject {
 
         if let contactThread = thread as? TSContactThread {
             self.contactIdentifier = contactThread.contactIdentifier()
+            self.contactAddress = contactThread.contactAddress
         } else {
             self.contactIdentifier = nil
+            self.contactAddress = nil
         }
 
         if let threadUniqueId = thread.uniqueId,

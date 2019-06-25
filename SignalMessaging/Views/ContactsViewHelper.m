@@ -23,7 +23,9 @@ NS_ASSUME_NONNULL_BEGIN
 // This property is a cached value that is lazy-populated.
 @property (nonatomic, nullable) NSArray<Contact *> *nonSignalContacts;
 
-@property (nonatomic) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
+@property (nonatomic) NSDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap;
+@property (nonatomic) NSDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap;
+
 @property (nonatomic) NSArray<SignalAccount *> *signalAccounts;
 
 @property (nonatomic, readonly) OWSBlockListCache *blockListCache;
@@ -90,20 +92,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Contacts
 
-- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId
+- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
 
-    return self.signalAccountMap[recipientId];
+    SignalAccount *_Nullable signalAccount;
+
+    if (address.uuid) {
+        signalAccount = self.uuidSignalAccountMap[address.uuid];
+    }
+
+    if (!signalAccount && address.phoneNumber) {
+        signalAccount = self.phoneNumberSignalAccountMap[address.phoneNumber];
+    }
+
+    return signalAccount;
 }
 
-- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId
+- (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
 
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
-    return (signalAccount ?: [[SignalAccount alloc] initWithRecipientId:recipientId]);
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address];
+    return (signalAccount ?: [[SignalAccount alloc] initWithSignalServiceAddress:address]);
 }
 
 - (BOOL)isSignalAccountHidden:(SignalAccount *)signalAccount
@@ -124,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     NSString *localNumber = [TSAccountManager localNumber];
-    if ([signalAccount.recipientId isEqualToString:localNumber]) {
+    if (signalAccount.recipientAddress.isLocalAddress) {
         return YES;
     }
 
@@ -142,11 +154,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSAccountManager localNumber];
 }
 
-- (BOOL)isRecipientIdBlocked:(NSString *)recipientId
+- (BOOL)isSignalServiceAddressBlocked:(SignalServiceAddress *)address
 {
     OWSAssertIsOnMainThread();
 
-    return [self.blockListCache isRecipientIdBlocked:recipientId];
+    return [self.blockListCache isRecipientIdBlocked:address.transitional_phoneNumber];
 }
 
 - (BOOL)isGroupIdBlocked:(NSData *)groupId
@@ -160,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        return [self isRecipientIdBlocked:contactThread.contactIdentifier];
+        return [self isSignalServiceAddressBlocked:contactThread.contactAddress];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         return [self isGroupIdBlocked:groupThread.groupModel.groupId];
@@ -174,15 +186,22 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    NSMutableDictionary<NSString *, SignalAccount *> *signalAccountMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap = [NSMutableDictionary new];
+    NSMutableDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap = [NSMutableDictionary new];
     NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
     for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
         if (![self isSignalAccountHidden:signalAccount]) {
-            signalAccountMap[signalAccount.recipientId] = signalAccount;
+            if (signalAccount.recipientPhoneNumber) {
+                phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
+            }
+            if (signalAccount.recipientUUID) {
+                uuidSignalAccountMap[signalAccount.recipientUUID] = signalAccount;
+            }
             [signalAccounts addObject:signalAccount];
         }
     }
-    self.signalAccountMap = [signalAccountMap copy];
+    self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
+    self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
     self.signalAccounts = [signalAccounts copy];
     self.nonSignalContacts = nil;
 
@@ -207,7 +226,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Check for matches against "Note to Self".
     NSMutableArray<SignalAccount *> *signalAccountsToSearch = [self.signalAccounts mutableCopy];
-    SignalAccount *selfAccount = [[SignalAccount alloc] initWithRecipientId:self.localNumber];
+    SignalAccount *selfAccount =
+        [[SignalAccount alloc] initWithSignalServiceAddress:self.localNumber.transitional_signalServiceAddress];
     [signalAccountsToSearch addObject:selfAccount];
     return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch withSearchText:searchText];
 }
@@ -360,7 +380,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    editImmediately:(BOOL)shouldEditImmediately
                             addToExistingCnContact:(CNContact *_Nullable)existingContact
 {
-    SignalAccount *signalAccount = [self fetchSignalAccountForRecipientId:recipientId];
+    SignalAccount *signalAccount = [self fetchSignalAccountForAddress:recipientId.transitional_signalServiceAddress];
 
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
