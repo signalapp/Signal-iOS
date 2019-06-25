@@ -563,6 +563,27 @@ public extension TSAttachment {
             return AttachmentRecord.ows_fetchCount(grdbTransaction.database)
         }
     }
+
+    // WARNING: Do not use this method for any models which do cleanup
+    //          in their anyWillRemove(), anyDidRemove() methods.
+    class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            ydbTransaction.removeAllObjects(inCollection: TSAttachment.collection())
+        case .grdbWrite(let grdbTransaction):
+            do {
+                try AttachmentRecord.deleteAll(grdbTransaction.database)
+            } catch {
+                owsFailDebug("deleteAll() failed: \(error)")
+            }
+        }
+    }
+
+    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
+        anyEnumerate(transaction: transaction) { (instance, _) in
+            instance.anyRemove(transaction: transaction)
+        }
+    }
 }
 
 // MARK: - Swift Fetch

@@ -19,9 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSInteraction;
 @class TSOutgoingMessage;
 @class TSThread;
-@class YapDatabaseConnection;
 @class YapDatabaseReadTransaction;
-@class YapDatabaseReadWriteTransaction;
 
 @interface ThreadDynamicInteractions : NSObject
 
@@ -69,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (TSOutgoingMessage *)sendMessageNonDurablyWithText:(NSString *)fullMessageText
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                         transaction:(YapDatabaseReadTransaction *)transaction
+                                         transaction:(SDSAnyReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
                                           completion:(void (^)(NSError *_Nullable error))completion;
 
@@ -78,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     mediaAttachments:(NSArray<SignalAttachment *> *)attachments
                                             inThread:(TSThread *)thread
                                     quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
-                                         transaction:(YapDatabaseReadTransaction *)transaction
+                                         transaction:(SDSAnyReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
                                           completion:(void (^)(NSError *_Nullable error))completion;
 

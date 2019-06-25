@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsUpdater.h"
@@ -25,6 +25,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation ContactsUpdater
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 + (instancetype)sharedUpdater {
     OWSAssertDebug(SSKEnvironment.shared.contactsUpdater);
@@ -96,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSSet<NSString *> *registeredRecipientIds = operation.registeredRecipientIds;
 
         NSMutableSet<SignalRecipient *> *recipients = [NSMutableSet new];
-        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             for (NSString *recipientId in recipientIdsToLookup) {
                 if ([registeredRecipientIds containsObject:recipientId]) {
                     SignalRecipient *recipient =

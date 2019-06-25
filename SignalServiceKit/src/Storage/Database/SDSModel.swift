@@ -11,6 +11,8 @@ public protocol SDSModel: TSYapDatabaseObject {
     var serializer: SDSSerializer { get }
 
     func anyInsert(transaction: SDSAnyWriteTransaction)
+
+    func anyRemove(transaction: SDSAnyWriteTransaction)
 }
 
 // MARK: -
@@ -18,6 +20,10 @@ public protocol SDSModel: TSYapDatabaseObject {
 public extension SDSModel {
     func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
         if saveMode == .insert {
+            if !anyCanBeSaved {
+                Logger.info("Skipping save of: \(type(of: self))")
+                return
+            }
             anyWillInsert(with: transaction)
         }
 

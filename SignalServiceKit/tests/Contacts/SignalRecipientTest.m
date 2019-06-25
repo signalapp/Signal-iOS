@@ -38,7 +38,7 @@
     // Sanity Check
     XCTAssertNotNil(self.localNumber);
 
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [SignalRecipient markRecipientAsRegisteredAndGet:self.localNumber transaction:transaction];
 
         XCTAssertTrue([SignalRecipient isRegisteredRecipient:self.localNumber transaction:transaction]);
@@ -50,7 +50,7 @@
     // Sanity Check
     XCTAssertNotNil(self.localNumber);
     NSString *recipientId = @"+15551231234";
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
         
         XCTAssertTrue([SignalRecipient isRegisteredRecipient:recipientId transaction:transaction]);

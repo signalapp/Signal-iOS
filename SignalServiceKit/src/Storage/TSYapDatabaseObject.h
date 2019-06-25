@@ -167,6 +167,8 @@ NS_ASSUME_NONNULL_BEGIN
 // GRDB TODO: As a perf optimization, we could only call these
 //            methods for certain kinds of models which we could
 //            detect at compile time.
+@property (nonatomic) BOOL anyCanBeSaved;
+
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction;

@@ -809,7 +809,9 @@ NS_ASSUME_NONNULL_BEGIN
                 TSAttachment *_Nullable attachment =
                     [TSAttachment anyFetchWithUniqueId:avatarPointer.uniqueId transaction:transaction];
                 if (attachment == nil) {
-                    OWSFailDebug(@"Could not load attachment.");
+                    // In the test case, database storage may be reset by the
+                    // time the pointer download fails.
+                    OWSFailDebugUnlessRunningTests(@"Could not load attachment.");
                     return;
                 }
                 [attachment anyRemoveWithTransaction:transaction];
@@ -989,10 +991,9 @@ NS_ASSUME_NONNULL_BEGIN
         });
     } else if (syncMessage.read.count > 0) {
         OWSLogInfo(@"Received %lu read receipt(s)", (unsigned long)syncMessage.read.count);
-        [OWSReadReceiptManager.sharedManager
-            processReadReceiptsFromLinkedDevice:syncMessage.read
-                                  readTimestamp:envelope.timestamp
-                                    transaction:transaction.transitional_yapWriteTransaction];
+        [OWSReadReceiptManager.sharedManager processReadReceiptsFromLinkedDevice:syncMessage.read
+                                                                   readTimestamp:envelope.timestamp
+                                                                     transaction:transaction];
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
@@ -1318,7 +1319,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                           thread:newGroupThread
                                       createdByRemoteRecipientId:nil
                                           createdInExistingGroup:YES
-                                                     transaction:transaction.transitional_yapWriteTransaction];
+                                                     transaction:transaction];
                 }
 
                 // MJK TODO - should be safe to remove senderTimestamp
@@ -1464,12 +1465,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSContact *_Nullable contact;
     OWSLinkPreview *_Nullable linkPreview;
     if (transaction.transitional_yapWriteTransaction) {
-        [[OWSDisappearingMessagesJob sharedJob]
-            becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                              thread:thread
-                          createdByRemoteRecipientId:authorId
-                              createdInExistingGroup:NO
-                                         transaction:transaction.transitional_yapWriteTransaction];
+        [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
+                                                                                  thread:thread
+                                                              createdByRemoteRecipientId:authorId
+                                                                  createdInExistingGroup:NO
+                                                                             transaction:transaction];
 
         contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
 
@@ -1683,9 +1683,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Consult the device list cache we use for message sending
     // whether or not we know about this linked device.
     SignalRecipient *_Nullable recipient =
-        [SignalRecipient registeredRecipientForRecipientId:localNumber
-                                           mustHaveDevices:NO
-                                               transaction:transaction.transitional_yapWriteTransaction];
+        [SignalRecipient registeredRecipientForRecipientId:localNumber mustHaveDevices:NO transaction:transaction];
     if (!recipient) {
         OWSFailDebug(@"No local SignalRecipient.");
     } else {
@@ -1696,7 +1694,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             [recipient updateRegisteredRecipientWithDevicesToAdd:@[ @(envelope.sourceDevice) ]
                                                  devicesToRemove:nil
-                                                     transaction:transaction.transitional_yapWriteTransaction];
+                                                     transaction:transaction];
         }
     }
 

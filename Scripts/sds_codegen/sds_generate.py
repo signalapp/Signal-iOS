@@ -25,7 +25,8 @@ import random
 #
 # We treat direct subclasses of TSYapDatabaseObject as "roots" of the model class hierarchy.
 # Only root models do deserialization.
-BASE_MODEL_CLASS_NAME = 'TSYapDatabaseObject'
+OLD_BASE_MODEL_CLASS_NAME = 'TSYapDatabaseObject'
+NEW_BASE_MODEL_CLASS_NAME = 'BaseModel'
 
 CODE_GEN_SNIPPET_MARKER_OBJC = '// --- CODE GENERATION MARKER'
 
@@ -158,7 +159,7 @@ class ParsedClass:
          if not self.super_class_name in global_class_map:
              # print 'is_sds_model (2):', self.name, self.super_class_name
              return False
-         if self.super_class_name == BASE_MODEL_CLASS_NAME:
+         if self.super_class_name in (OLD_BASE_MODEL_CLASS_NAME, NEW_BASE_MODEL_CLASS_NAME, ):
              # print 'is_sds_model (3):', self.name, self.super_class_name
              return True
          super_class = global_class_map[self.super_class_name]
@@ -170,21 +171,23 @@ class ParsedClass:
          # print 'self.super_class_name:', self.super_class_name, self.super_class_name in global_class_map, self.super_class_name != BASE_MODEL_CLASS_NAME
          return (self.super_class_name and
                 self.super_class_name in global_class_map
-                and self.super_class_name != BASE_MODEL_CLASS_NAME)
+                and self.super_class_name != OLD_BASE_MODEL_CLASS_NAME
+                and self.super_class_name != NEW_BASE_MODEL_CLASS_NAME)
         
      def table_superclass(self):
          if self.super_class_name is None:
              return self
          if not self.super_class_name in global_class_map:
              return self
-         if self.super_class_name == BASE_MODEL_CLASS_NAME:
+         if self.super_class_name == OLD_BASE_MODEL_CLASS_NAME:
+             return self
+         if self.super_class_name == NEW_BASE_MODEL_CLASS_NAME:
              return self
          super_class = global_class_map[self.super_class_name]
          return super_class.table_superclass()
-    
-    
+        
      def should_generate_extensions(self):
-        if self.name == BASE_MODEL_CLASS_NAME:
+        if self.name in (OLD_BASE_MODEL_CLASS_NAME, NEW_BASE_MODEL_CLASS_NAME, ):
             print 'Ignoring class (1):', self.name 
             return False
         if should_ignore_class(self):
@@ -1281,7 +1284,7 @@ public extension %s {
     }
 ''' % ( ( str(clazz.name), ) * 6 )
 
-        # ---- Fetch ----
+        # ---- Count ----
 
         swift_body += '''
     class func anyCount(transaction: SDSAnyReadTransaction) -> UInt {
@@ -1290,6 +1293,31 @@ public extension %s {
             return ydbTransaction.numberOfKeys(inCollection: %s.collection())
         case .grdbRead(let grdbTransaction):
             return %s.ows_fetchCount(grdbTransaction.database)
+        }
+    }
+''' % ( str(clazz.name),  record_name, )
+
+        # ---- Remove All ----
+
+        swift_body += '''    
+    // WARNING: Do not use this method for any models which do cleanup
+    //          in their anyWillRemove(), anyDidRemove() methods.
+    class func anyRemoveAllWithoutInstantation(transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            ydbTransaction.removeAllObjects(inCollection: %s.collection())
+        case .grdbWrite(let grdbTransaction):
+            do {
+                try %s.deleteAll(grdbTransaction.database)
+            } catch {
+                owsFailDebug("deleteAll() failed: \(error)")
+            }
+        }
+    }
+    
+    class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
+        anyEnumerate(transaction: transaction) { (instance, stop) in
+            instance.anyRemove(transaction: transaction)
         }
     }
 }

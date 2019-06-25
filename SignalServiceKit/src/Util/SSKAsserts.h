@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppContext.h"
@@ -54,13 +54,17 @@ NS_ASSUME_NONNULL_BEGIN
     do {                                                                                                               \
         if (!CurrentAppContext().isRunningTests) {                                                                     \
             OWSFailDebug(_messageFormat, ##__VA_ARGS__);                                                               \
+        } else {                                                                                                       \
+            OWSLogError(_messageFormat, ##__VA_ARGS__);                                                                \
         }                                                                                                              \
-    } while (0)
+    } while (NO)
 
 #define OWSCFailDebugUnlessRunningTests(_messageFormat, ...)                                                           \
     do {                                                                                                               \
         if (!CurrentAppContext().isRunningTests) {                                                                     \
             OWSCFailDebug(_messageFormat, ##__VA_ARGS__);                                                              \
+        } else {                                                                                                       \
+            OWSLogError(_messageFormat, ##__VA_ARGS__);                                                                \
         }                                                                                                              \
     } while (NO)
 

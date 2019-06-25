@@ -9,13 +9,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern uint32_t const OWSDevicePrimaryDeviceId;
 
+@class SDSAnyReadTransaction;
+@class SDSKeyValueStore;
+
 @interface OWSDeviceManager : NSObject
+
++ (SDSKeyValueStore *)keyValueStore;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)sharedManager;
 
-- (BOOL)mayHaveLinkedDevices:(YapDatabaseConnection *)dbConnection;
+- (BOOL)mayHaveLinkedDevicesWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (void)setMayHaveLinkedDevices;
 - (void)clearMayHaveLinkedDevices;
 

@@ -569,6 +569,19 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     return NO;
 }
 
+- (BOOL)anyCanBeSaved
+{
+    if (!self.shouldBeSaved) {
+        // There's no need to save this message, since it's not displayed to the user.
+        //
+        // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
+        OWSLogDebug(@"Skipping save for transient outgoing message.");
+        return NO;
+    }
+    return YES;
+}
+
+// GRDB TODO: Remove this override.
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!self.shouldBeSaved) {
@@ -755,11 +768,15 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                              }];
 }
 
-- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript
-                          transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
+                                     return;
+                                 }
+                                 TSOutgoingMessage *message = (TSOutgoingMessage *)interaction;
                                  [message setHasSyncedTranscript:hasSyncedTranscript];
                              }];
 }
@@ -805,13 +822,18 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                              }];
 }
 
-- (void)updateWithSkippedRecipient:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithSkippedRecipient:(NSString *)recipientId transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
+                                     return;
+                                 }
+                                 TSOutgoingMessage *message = (TSOutgoingMessage *)interaction;
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {
@@ -852,13 +874,18 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 - (void)updateWithReadRecipientId:(NSString *)recipientId
                     readTimestamp:(uint64_t)readTimestamp
-                      transaction:(YapDatabaseReadWriteTransaction *)transaction
+                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(recipientId.length > 0);
     OWSAssertDebug(transaction);
 
-    [self applyChangeToSelfAndLatestCopy:transaction
-                             changeBlock:^(TSOutgoingMessage *message) {
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
+                                     return;
+                                 }
+                                 TSOutgoingMessage *message = (TSOutgoingMessage *)interaction;
                                  TSOutgoingMessageRecipientState *_Nullable recipientState
                                      = message.recipientStateMap[recipientId];
                                  if (!recipientState) {

@@ -239,7 +239,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
                                                      expirationStartedAt:readTimestamp
-                                                             transaction:transaction];
+                                                             transaction:transaction.asAnyWrite];
 
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];

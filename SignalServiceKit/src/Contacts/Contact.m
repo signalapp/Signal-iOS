@@ -11,6 +11,7 @@
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSString+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -220,9 +221,10 @@ NS_ASSUME_NONNULL_BEGIN
     __block NSMutableArray *result = [NSMutableArray array];
 
     for (PhoneNumber *number in [self.parsedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)]) {
-        SignalRecipient *_Nullable signalRecipient = [SignalRecipient registeredRecipientForRecipientId:number.toE164
-                                                                                        mustHaveDevices:YES
-                                                                                            transaction:transaction];
+        SignalRecipient *_Nullable signalRecipient =
+            [SignalRecipient registeredRecipientForRecipientId:number.toE164
+                                               mustHaveDevices:YES
+                                                   transaction:transaction.asAnyRead];
         if (signalRecipient) {
             [result addObject:signalRecipient];
         }
@@ -236,7 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         for (PhoneNumber *number in self.parsedPhoneNumbers) {
-            if ([SignalRecipient isRegisteredRecipient:number.toE164 transaction:transaction]) {
+            if ([SignalRecipient isRegisteredRecipient:number.toE164 transaction:transaction.asAnyRead]) {
                 [identifiers addObject:number.toE164];
             }
         }
