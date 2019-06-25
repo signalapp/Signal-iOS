@@ -7,7 +7,6 @@
 #import "OWSLinkedDeviceReadReceipt.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingReceiptManager.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSReceiptsForSenderMessage.h"
 #import "OWSStorage.h"
@@ -16,11 +15,9 @@
 #import "TSContactThread.h"
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
-#import "YapDatabaseConnection+OWS.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -411,7 +408,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 #pragma mark - Linked Device Read Receipts
 
 - (void)applyEarlyReadReceiptsForIncomingMessage:(TSIncomingMessage *)message
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                     transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(message);
     OWSAssertDebug(transaction);
@@ -426,13 +423,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSLinkedDeviceReadReceipt *_Nullable readReceipt =
         [OWSLinkedDeviceReadReceipt findLinkedDeviceReadReceiptWithSenderId:senderId
                                                          messageIdTimestamp:timestamp
-                                                                transaction:transaction.asAnyRead];
+                                                                transaction:transaction];
     if (!readReceipt) {
         return;
     }
 
     [message markAsReadAtTimestamp:readReceipt.readTimestamp sendReadReceipt:NO transaction:transaction];
-    [readReceipt anyRemoveWithTransaction:transaction.asAnyWrite];
+    [readReceipt anyRemoveWithTransaction:transaction];
 }
 
 - (void)processReadReceiptsFromLinkedDevice:(NSArray<SSKProtoSyncMessageRead *> *)readReceiptProtos
@@ -491,9 +488,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
     // Always re-mark the message as read to ensure any earlier read time is applied to disappearing messages.
     if (transaction.transitional_yapWriteTransaction) {
-        [message markAsReadAtTimestamp:readTimestamp
-                       sendReadReceipt:NO
-                           transaction:transaction.transitional_yapWriteTransaction];
+        [message markAsReadAtTimestamp:readTimestamp sendReadReceipt:NO transaction:transaction];
     }
 
     // Also mark any unread messages appearing earlier in the thread as read as well.
@@ -558,9 +553,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }
     for (id<OWSReadTracking> readItem in newlyReadList) {
         if (transaction.transitional_yapWriteTransaction) {
-            [readItem markAsReadAtTimestamp:readTimestamp
-                            sendReadReceipt:wasLocal
-                                transaction:transaction.transitional_yapWriteTransaction];
+            [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];
         }
     }
 }

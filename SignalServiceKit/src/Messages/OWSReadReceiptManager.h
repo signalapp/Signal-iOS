@@ -2,23 +2,20 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class SSKProtoSyncMessageRead;
 @class TSIncomingMessage;
 @class TSOutgoingMessage;
 @class TSThread;
-@class YapDatabaseReadTransaction;
-@class YapDatabaseReadWriteTransaction;
 
 extern NSString *const kIncomingMessageMarkedAsReadNotification;
 
-@interface TSRecipientReadReceipt : TSYapDatabaseObject
+@interface TSRecipientReadReceipt : BaseModel
 
 @property (nonatomic, readonly) uint64_t sentTimestamp;
 // Map of "recipient id"-to-"read timestamp".
@@ -86,7 +83,7 @@ NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)applyEarlyReadReceiptsForIncomingMessage:(TSIncomingMessage *)message
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Locally Read
 

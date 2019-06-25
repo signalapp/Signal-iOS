@@ -204,8 +204,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     return YES;
 }
 
-- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
-                             transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
                 sendReadReceipt:sendReadReceipt
@@ -214,32 +213,38 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
               sendReadReceipt:(BOOL)sendReadReceipt
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+                  transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
-    if (_read && readTimestamp >= self.expireStartedAt) {
+    if (self.read && readTimestamp >= self.expireStartedAt) {
         return;
     }
-    
+
     NSTimeInterval secondsAgoRead = ((NSTimeInterval)[NSDate ows_millisecondTimeStamp] - (NSTimeInterval)readTimestamp) / 1000;
     OWSLogDebug(@"marking uniqueId: %@  which has timestamp: %llu as read: %f seconds ago",
         self.uniqueId,
         self.timestamp,
         secondsAgoRead);
-    _read = YES;
-    [self saveWithTransaction:transaction];
-    
-    [transaction addCompletionQueue:nil
-                    completionBlock:^{
-                        [[NSNotificationCenter defaultCenter]
-                         postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
-                         object:self];
-                    }];
+
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 if (![interaction isKindOfClass:[TSIncomingMessage class]]) {
+                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
+                                     return;
+                                 }
+                                 TSIncomingMessage *message = (TSIncomingMessage *)interaction;
+                                 message.read = YES;
+                             }];
+
+    [transaction addCompletionWithBlock:^{
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
+                                                                 object:self];
+    }];
 
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:self
                                                      expirationStartedAt:readTimestamp
-                                                             transaction:transaction.asAnyWrite];
+                                                             transaction:transaction];
 
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];

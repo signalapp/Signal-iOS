@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyWriteTransaction;
 @class TSContactThread;
 @class TSGroupThread;
 
@@ -121,8 +122,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 @property (nonatomic, readonly) NSString *authorId;
 
 // convenience method for expiring a message which was just read
-- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt
-                             transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

@@ -4,6 +4,7 @@
 
 #import "TSCall.h"
 #import "TSContactThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -168,18 +169,26 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
               sendReadReceipt:(BOOL)sendReadReceipt
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+                  transaction:(SDSAnyWriteTransaction *)transaction
 {
 
     OWSAssertDebug(transaction);
 
-    if (_read) {
+    if (self.read) {
         return;
     }
 
     OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
-    _read = YES;
-    [self saveWithTransaction:transaction];
+
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 if (![interaction isKindOfClass:[TSCall class]]) {
+                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
+                                     return;
+                                 }
+                                 TSCall *message = (TSCall *)interaction;
+                                 message.read = YES;
+                             }];
 
     // Ignore sendReadReceipt - it doesn't apply to calls.
 }
