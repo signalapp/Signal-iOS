@@ -536,8 +536,8 @@
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
-		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
 		83AEC8B7221E3156009672C6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 83AEC8B9221E3156009672C6 /* InfoPlist.strings */; };
+		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
@@ -671,6 +671,8 @@
 
 /* Begin PBXFileReference section */
 		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1AC63FB222C1B19F00955EAE /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = translations/de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1AC63FB322C1B1AE00955EAE /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = translations/es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1361,8 +1363,6 @@
 		83AEC8CA221E3CDE009672C6 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = translations/sv.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83AEC8CB221E3CE2009672C6 /* cs */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = cs; path = translations/cs.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		83AEC8CC221E3D30009672C6 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = translations/ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83C803D82222963600D89EF8 /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = translations/es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		83D51F9B2222956100EDA0A6 /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = translations/de.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
 		8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.test.xcconfig"; sourceTree = "<group>"; };
 		8EEE74B0753448C085B48721 /* Pods-SignalMessaging.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.app store release.xcconfig"; sourceTree = "<group>"; };
@@ -3993,8 +3993,6 @@
 		83AEC8B9221E3156009672C6 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				83AEC8BA221E315F009672C6 /* de */,
-				83AEC8BC221E3B6D009672C6 /* es */,
 				83AEC8BD221E3C16009672C6 /* fi */,
 				83AEC8BE221E3C30009672C6 /* fr */,
 				83AEC8BF221E3C6F009672C6 /* ca */,
@@ -4037,6 +4035,8 @@
 				835C9C2322226DA700C5ED0C /* id */,
 				835C9C2422226DB800C5ED0C /* km */,
 				835C9C2522226DCB00C5ED0C /* lv */,
+				1AC63FB222C1B19F00955EAE /* de */,
+				1AC63FB322C1B1AE00955EAE /* es */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
