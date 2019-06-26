@@ -9,6 +9,7 @@ public protocol StickerHorizontalListViewItem {
     var view: UIView { get }
     var didSelectBlock: () -> Void { get }
     var isSelected: Bool { get }
+    var accessibilityName: String { get }
 }
 
 // MARK: -
@@ -43,6 +44,11 @@ public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalLi
     public var isSelected: Bool {
         return isSelectedBlock()
     }
+
+    public var accessibilityName: String {
+        // We just need a stable identifier.
+        return "pack." + stickerInfo.asKey()
+    }
 }
 
 // MARK: -
@@ -66,6 +72,10 @@ public class StickerHorizontalListViewItemRecents: NSObject, StickerHorizontalLi
 
     public var isSelected: Bool {
         return isSelectedBlock()
+    }
+
+    public var accessibilityName: String {
+        return "recents"
     }
 }
 
@@ -198,6 +208,10 @@ extension StickerHorizontalListView: UICollectionViewDataSource {
         let itemView = item.view
         cell.contentView.addSubview(itemView)
         itemView.autoPinEdgesToSuperviewEdges(with: UIEdgeInsets(top: cellInset, leading: cellInset, bottom: cellInset, trailing: cellInset))
+
+        itemView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: item.accessibilityName + ".item")
+        cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: item.accessibilityName + ".cell")
+
         return cell
     }
 }
