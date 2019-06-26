@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
     [super setUp];
 
     self.contactThread = [TSContactThread getOrCreateThreadWithContactId:@"fake-contact-id"];
-    [OWSRecipientIdentity removeAllObjectsInCollection];
 }
 
 - (void)testHasSafetyNumbersWithoutRemoteIdentity
