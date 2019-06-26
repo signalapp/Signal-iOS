@@ -379,7 +379,9 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 - (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
-        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] sendReadReceipt:YES transaction:transaction];
+        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
+                       sendReadReceipt:YES
+                           transaction:transaction.asAnyWrite];
     }
 
     // Just to be defensive, we'll also check for unread messages.

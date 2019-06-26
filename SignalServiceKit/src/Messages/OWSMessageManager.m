@@ -1532,9 +1532,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if ([envelope.sourceE164 isEqualToString:self.tsAccountManager.localNumber]) {
         // Don't send a read receipt for messages sent by ourselves.
-        [incomingMessage markAsReadAtTimestamp:envelope.timestamp
-                               sendReadReceipt:NO
-                                   transaction:transaction.transitional_yapWriteTransaction];
+        [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
     }
 
     // Download the "non-message body" attachments.
@@ -1589,12 +1587,11 @@ NS_ASSUME_NONNULL_BEGIN
             }];
     }
 
-    if (transaction.transitional_yapWriteTransaction) {
-        // In case we already have a read receipt for this new message (this happens sometimes).
-        [OWSReadReceiptManager.sharedManager
-            applyEarlyReadReceiptsForIncomingMessage:incomingMessage
-                                         transaction:transaction.transitional_yapWriteTransaction];
+    // In case we already have a read receipt for this new message (this happens sometimes).
+    [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
+                                                                      transaction:transaction];
 
+    if (transaction.transitional_yapWriteTransaction) {
         // Update thread preview in inbox
         [thread touchWithTransaction:transaction.transitional_yapWriteTransaction];
     } else {

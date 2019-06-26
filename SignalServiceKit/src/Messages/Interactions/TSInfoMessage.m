@@ -283,17 +283,25 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
               sendReadReceipt:(BOOL)sendReadReceipt
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+                  transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
-    if (_read) {
+    if (self.read) {
         return;
     }
 
     OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
-    _read = YES;
-    [self saveWithTransaction:transaction];
+
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 if (![interaction isKindOfClass:[TSInfoMessage class]]) {
+                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
+                                     return;
+                                 }
+                                 TSInfoMessage *message = (TSInfoMessage *)interaction;
+                                 message.read = YES;
+                             }];
 
     // Ignore sendReadReceipt, it doesn't apply to info messages.
 }

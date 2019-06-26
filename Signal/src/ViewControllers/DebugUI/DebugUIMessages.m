@@ -3850,13 +3850,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                 serverTimestamp:nil
                                                                 wasReceivedByUD:NO
                                             perMessageExpirationDurationSeconds:0];
-                if (transaction.transitional_yapWriteTransaction) {
-                    [message markAsReadNowWithSendReadReceipt:NO
-                                                  transaction:transaction.transitional_yapWriteTransaction];
-                } else {
-                    OWSLogWarn(@"GRDB TODO: not yet implemented");
-                    [message anyInsertWithTransaction:transaction];
-                }
+                [message anyInsertWithTransaction:transaction];
+                [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
             case 1: {
@@ -3907,13 +3902,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                 serverTimestamp:nil
                                                                 wasReceivedByUD:NO
                                             perMessageExpirationDurationSeconds:0];
-                if (transaction.transitional_yapWriteTransaction) {
-                    [message markAsReadNowWithSendReadReceipt:NO
-                                                  transaction:transaction.transitional_yapWriteTransaction];
-                } else {
-                    OWSLogWarn(@"GRDB TODO: not yet implemented");
-                    [message anyInsertWithTransaction:transaction];
-                }
+                [message anyInsertWithTransaction:transaction];
+                [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
             }
             case 3: {
@@ -4374,12 +4364,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                 serverTimestamp:nil
                                                                 wasReceivedByUD:NO
                                             perMessageExpirationDurationSeconds:0];
-                if (transaction.transitional_yapWriteTransaction) {
-                    [message markAsReadNowWithSendReadReceipt:NO
-                                                  transaction:transaction.transitional_yapWriteTransaction];
-                } else {
-                    OWSFailDebug(@"not yet supported for GRDB");
-                }
+                [message anyInsertWithTransaction:transaction];
+                [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
             }
             {
                 // MJK TODO - this might be the one place we actually use senderTimestamp
@@ -4839,11 +4825,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO
                                 perMessageExpirationDurationSeconds:0];
-    if (transaction.transitional_yapWriteTransaction) {
-        [message markAsReadNowWithSendReadReceipt:NO transaction:transaction.transitional_yapWriteTransaction];
-    } else {
-        OWSFailDebug(@"failure: not yet supported by GRDB");
-    }
+    [message anyInsertWithTransaction:transaction];
+    [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
     return message;
 }
 

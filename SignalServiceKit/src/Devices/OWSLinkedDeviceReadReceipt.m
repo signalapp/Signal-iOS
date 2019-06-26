@@ -3,6 +3,7 @@
 //
 
 #import "OWSLinkedDeviceReadReceipt.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -91,13 +92,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable OWSLinkedDeviceReadReceipt *)findLinkedDeviceReadReceiptWithSenderId:(NSString *)senderId
                                                               messageIdTimestamp:(uint64_t)messageIdTimestamp
-                                                                     transaction:
-                                                                         (YapDatabaseReadTransaction *)transaction
+                                                                     transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     NSString *receiptId =
         [OWSLinkedDeviceReadReceipt uniqueIdForSenderId:senderId messageIdTimestamp:messageIdTimestamp];
-    return [OWSLinkedDeviceReadReceipt fetchObjectWithUniqueID:receiptId transaction:transaction];
+    return [OWSLinkedDeviceReadReceipt anyFetchWithUniqueId:receiptId transaction:transaction];
 }
 
 @end

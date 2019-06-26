@@ -447,6 +447,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             try SignalAccountSerializer.table.createTable(database: db)
             try OWSUserProfileSerializer.table.createTable(database: db)
             try TSRecipientReadReceiptSerializer.table.createTable(database: db)
+            try OWSLinkedDeviceReadReceiptSerializer.table.createTable(database: db)
 
             try db.create(index: "index_interactions_on_id_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,
