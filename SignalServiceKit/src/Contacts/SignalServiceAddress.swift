@@ -60,7 +60,16 @@ public class SignalServiceAddress: NSObject {
             return false
         }
 
-        return otherAddress.uuid == uuid || otherAddress.phoneNumber == phoneNumber
+        if let otherUuid = otherAddress.uuid, let thisUuid = uuid {
+            return otherUuid == thisUuid
+        }
+
+        if let otherPhone = otherAddress.phoneNumber, let thisPhone = phoneNumber {
+            return otherPhone == thisPhone
+        }
+
+        owsFailDebug("otherAddress had neither uuid nor phone")
+        return false
     }
 
     @objc
