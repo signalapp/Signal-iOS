@@ -230,16 +230,28 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         __block NSString *_Nullable result;
 
         // GRDB TODO: Until GRDB migration is complete, we need to load this from YDB,
-        //            since localNumber is used in [OWSOutgoingSyncMessage initWithCoder:]
-        //            which is used while registering the "index_signal_accounts_on_recipientUUID"
-        //            secondary index.
-        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            result =
-                [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction.asAnyRead];
-        }];
+        //
+        // * YAPDBJobRecordFinder uses a secondary index.
+        // * Yaps views and indices enumerate all (per whitelist or blacklist) entities when building or updating the
+        //   index. Views and indices can be built or re-built on launch.
+        // * These views and indices are built before migrations are run and "database is ready".
+        // * MessageSenderJobQueue uses SSKMessageSenderJobRecord whose invisibleMessage is an TSOutgoingMessage.
+        //   Therefore (re-)building YAPDBJobRecordFinder's index can deserialize outgoing sync messages.
+        // * OWSOutgoingSyncMessage extends TSOutgoingMessage whose deserialization initializer initWithCoder uses
+        //   TSAccountManager.localNumber.
+        // * TSAccountManager.localNumber is persisted in the database.
+        // * When we load TSAccountManager.localNumber we use the "current" database which might be GRDB. GRDB might not
+        //   be populated because the migration hasn't occurred yet.
+        //
+        // GRDB TODO: GRDB_MIGRATION_COMPLETE might eventually be replaced by a flag set at runtime.
 #ifdef GRDB_MIGRATION_COMPLETE
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             result = [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
+        }];
+#else
+        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            result =
+                [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction.asAnyRead];
         }];
 #endif
         return result;
