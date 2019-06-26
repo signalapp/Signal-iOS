@@ -304,24 +304,23 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 }
 
 // TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.contactUUID in production
-- (void)storeLocalNumber:(NSString *)localNumber uuid:(nullable NSUUID *)uuid
+- (void)storeLocalNumber:(NSString *)localNumber
+                    uuid:(nullable NSUUID *)uuid
+             transaction:(SDSAnyWriteTransaction *)transaction
 {
     @synchronized (self) {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
+        [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
 
-            if (SSKFeatureFlags.contactUUID) {
-                OWSAssert(uuid);
-                [self.keyValueStore setString:uuid.UUIDString
-                                          key:TSAccountManager_RegisteredUUIDKey
-                                  transaction:transaction];
-            }
+        if (SSKFeatureFlags.contactUUID) {
+            OWSAssert(uuid);
+            [self.keyValueStore setString:uuid.UUIDString
+                                      key:TSAccountManager_RegisteredUUIDKey
+                              transaction:transaction];
+        }
 
-            [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringPhoneNumberKey transaction:transaction];
-        }];
+        [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringPhoneNumberKey transaction:transaction];
 
         self.phoneNumberAwaitingVerification = nil;
-
         self.cachedLocalNumber = localNumber;
     }
 }
@@ -746,7 +745,17 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     OWSAssertDebug(localNumber.length > 0);
     OWSAssertDebug(uuid != nil);
 
-    [self storeLocalNumber:localNumber uuid:uuid];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self storeLocalNumber:localNumber uuid:uuid transaction:transaction];
+    }];
+    if (SSKFeatureFlags.useGRDB) {
+        // Redundantly store in yap db as well - this works around another work around, which
+        // insists on reading account registration state from YapDB.
+        [self.primaryStorage.dbReadWriteConnection
+            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [self storeLocalNumber:localNumber uuid:uuid transaction:transaction.asAnyWrite];
+            }];
+    }
 }
 
 
