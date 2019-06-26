@@ -4594,9 +4594,14 @@ typedef enum : NSUInteger {
 
     [cell loadForDisplay];
 
+#ifdef DEBUG
     // TODO: Confirm with nancy if this will work.
     NSString *cellName = [NSString stringWithFormat:@"interaction.%@", NSUUID.UUID.UUIDString];
+    if (viewItem.displayableBodyText.displayText.length > 0) {
+        cellName = [NSString stringWithFormat:@"interaction.%@", viewItem.displayableBodyText.displayText];
+    }
     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
+#endif
 
     return cell;
 }
