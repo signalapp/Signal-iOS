@@ -78,6 +78,7 @@ public class StickerPackViewController: OWSViewController {
         dismissButton.setTemplateImageName("x-24", tintColor: Theme.darkThemePrimaryColor)
         dismissButton.addTarget(self, action: #selector(dismissButtonPressed(sender:)), for: .touchUpInside)
         dismissButton.contentEdgeInsets = UIEdgeInsets(top: 20, leading: hMargin, bottom: 20, trailing: hMargin)
+        dismissButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "dismissButton")
 
         coverView.autoSetDimensions(to: CGSize(width: 48, height: 48))
         coverView.setCompressionResistanceHigh()
@@ -95,6 +96,7 @@ public class StickerPackViewController: OWSViewController {
         if FeatureFlags.stickerSharing {
             shareButton.setTemplateImageName("forward-outline-24", tintColor: Theme.darkThemePrimaryColor)
             shareButton.addTarget(self, action: #selector(shareButtonPressed(sender:)), for: .touchUpInside)
+            shareButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "shareButton")
         }
 
         view.addSubview(dismissButton)
@@ -131,23 +133,23 @@ public class StickerPackViewController: OWSViewController {
         stickerCollectionView.autoPinEdge(.top, to: .bottom, of: headerStack)
         stickerCollectionView.autoPinEdge(toSuperviewMargin: .bottom)
 
-        installButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
+        let installButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
                                              font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
                                              titleColor: UIColor.ows_materialBlue,
                                              backgroundColor: UIColor.white,
                                              target: self,
                                              selector: #selector(didTapInstall))
-        uninstallButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
+        self.installButton = installButton
+        installButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "installButton")
+        let uninstallButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
                                              font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
                                              titleColor: UIColor.ows_materialBlue,
                                              backgroundColor: UIColor.white,
                                              target: self,
                                              selector: #selector(didTapUninstall))
+        self.uninstallButton = uninstallButton
+        uninstallButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "uninstallButton")
         for button in [installButton, uninstallButton] {
-            guard let button = button else {
-                owsFailDebug("Missing button.")
-                continue
-            }
             view.addSubview(button)
             button.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
             button.autoPinWidthToSuperview(withMargin: hMargin)
