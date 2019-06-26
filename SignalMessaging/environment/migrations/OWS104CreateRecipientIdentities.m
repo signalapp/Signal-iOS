@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS104CreateRecipientIdentities.h"
@@ -47,12 +47,14 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
     [identityKeys enumerateKeysAndObjectsUsingBlock:^(
         NSString *_Nonnull recipientId, NSData *_Nonnull identityKey, BOOL *_Nonnull stop) {
         OWSLogInfo(@"Migrating identity key for recipient: %@", recipientId);
-        [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
-                                               identityKey:identityKey
-                                           isFirstKnownKey:NO
-                                                 createdAt:[NSDate dateWithTimeIntervalSince1970:0]
-                                         verificationState:OWSVerificationStateDefault]
-            saveWithTransaction:transaction];
+        OWSRecipientIdentity *recipientIdentity =
+            [[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
+                                                  identityKey:identityKey
+                                              isFirstKnownKey:NO
+                                                    createdAt:[NSDate dateWithTimeIntervalSince1970:0]
+                                            verificationState:OWSVerificationStateDefault];
+        // All pre-GRDB migrations should be YAP-only.
+        [recipientIdentity ydb_saveWithTransaction:transaction];
     }];
 }
 

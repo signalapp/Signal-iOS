@@ -13,6 +13,7 @@
 #import "TSAttachmentStream.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/BaseModel.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
@@ -186,7 +187,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 #pragma mark -
 
-@interface OWSUnknownDBObject : TSYapDatabaseObject <NSCoding>
+@interface OWSUnknownDBObject : BaseModel <NSCoding>
 
 @end
 

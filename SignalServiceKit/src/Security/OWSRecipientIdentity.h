@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,7 +21,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
     OWSVerificationState verificationState,
     NSUInteger paddingBytesLength);
 
-@interface OWSRecipientIdentity : TSYapDatabaseObject
+@interface OWSRecipientIdentity : BaseModel
 
 @property (nonatomic, readonly) NSString *recipientId;
 @property (nonatomic, readonly) NSData *identityKey;
