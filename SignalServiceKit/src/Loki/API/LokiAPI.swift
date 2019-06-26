@@ -39,7 +39,7 @@ public final class LokiAPI : NSObject {
     // MARK: Internal API
     internal static func invoke(_ method: LokiAPITarget.Method, on target: LokiAPITarget, associatedWith hexEncodedPublicKey: String,
         parameters: [String:Any], headers: [String:String]? = nil, timeout: TimeInterval? = nil) -> RawResponsePromise {
-        let url = URL(string: "\(target.address):\(target.port)/\(version)/storage_rpc")!
+        let url = URL(string: "\(target.address):\(target.port)/storage_rpc/\(version)")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         if let headers = headers { request.allHTTPHeaderFields = headers }
         request.timeoutInterval = timeout ?? defaultTimeout

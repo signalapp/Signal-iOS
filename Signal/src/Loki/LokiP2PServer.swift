@@ -62,7 +62,7 @@ final class LokiP2PServer : NSObject {
         })
         
         // Handle our specific storage path
-        webServer.addHandler(forMethod: "POST", path: "/v1/storage_rpc", request: GCDWebServerDataRequest.self, processBlock: { request in
+        webServer.addHandler(forMethod: "POST", path: "/storage_rpc/v1", request: GCDWebServerDataRequest.self, processBlock: { request in
             // Make sure we were sent a good request
             guard let dataRequest = request as? GCDWebServerDataRequest, let json = dataRequest.jsonObject else {
                 return GCDWebServerResponse(statusCode: StatusCode.badRequest)
