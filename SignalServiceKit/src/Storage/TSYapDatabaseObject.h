@@ -168,7 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
 //            methods for certain kinds of models which we could
 //            detect at compile time.
 // GRDB TODO: Remove TSInteraction.shouldBeSaved in favor of this property.
-@property (nonatomic) BOOL anyCanBeSaved;
+@property (nonatomic, readonly) BOOL anyCanBeSaved;
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;
