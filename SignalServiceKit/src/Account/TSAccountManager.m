@@ -47,6 +47,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 @interface TSAccountManager ()
 
 @property (nonatomic, nullable) NSString *cachedLocalNumber;
+@property (nonatomic, nullable) NSUUID *cachedUuid;
 
 @property (nonatomic, nullable) NSNumber *cachedIsDeregistered;
 
@@ -254,6 +255,34 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                 [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction.asAnyRead];
         }];
 #endif
+        return result;
+    }
+}
+
+- (nullable NSUUID *)uuid
+{
+    // Cache this since we access this a lot, and once set it will not change.
+    @synchronized(self) {
+        if (self.cachedUuid == nil) {
+            self.cachedUuid = self.storedUuid;
+        }
+
+        return self.cachedUuid;
+    }
+}
+
+- (nullable NSUUID *)storedUuid
+{
+    @synchronized(self) {
+        __block NSUUID *_Nullable result;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            NSString *_Nullable storedString = [self.keyValueStore getString:TSAccountManager_RegisteredUUIDKey
+                                                                 transaction:transaction];
+            if (storedString != nil) {
+                result = [[NSUUID alloc] initWithUUIDString:storedString];
+                OWSAssert(result);
+            }
+        }];
         return result;
     }
 }
