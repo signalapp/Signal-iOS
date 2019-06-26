@@ -5,7 +5,6 @@
 #import "OWS104CreateRecipientIdentities.h"
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
@@ -48,12 +47,14 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
     [identityKeys enumerateKeysAndObjectsUsingBlock:^(
         NSString *_Nonnull recipientId, NSData *_Nonnull identityKey, BOOL *_Nonnull stop) {
         OWSLogInfo(@"Migrating identity key for recipient: %@", recipientId);
-        [[[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
-                                               identityKey:identityKey
-                                           isFirstKnownKey:NO
-                                                 createdAt:[NSDate dateWithTimeIntervalSince1970:0]
-                                         verificationState:OWSVerificationStateDefault]
-            anyInsertWithTransaction:transaction.asAnyWrite];
+        OWSRecipientIdentity *recipientIdentity =
+            [[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
+                                                  identityKey:identityKey
+                                              isFirstKnownKey:NO
+                                                    createdAt:[NSDate dateWithTimeIntervalSince1970:0]
+                                            verificationState:OWSVerificationStateDefault];
+        // All pre-GRDB migrations should be YAP-only.
+        [recipientIdentity ydb_saveWithTransaction:transaction];
     }];
 }
 

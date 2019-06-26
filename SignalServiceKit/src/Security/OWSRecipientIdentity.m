@@ -172,39 +172,6 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
                              }];
 }
 
-- (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock
-                  transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    OWSRecipientIdentity *_Nullable latest =
-        [OWSRecipientIdentity anyFetchWithUniqueId:self.uniqueId transaction:transaction];
-    if (latest == nil) {
-        changeBlock(self);
-        [self anyInsertWithTransaction:transaction];
-        return;
-    }
-
-    [self anyUpdateWithTransaction:transaction block:changeBlock];
-}
-
-- (void)updateWithChangeBlock:(void (^)(OWSRecipientIdentity *obj))changeBlock
-{
-    changeBlock(self);
-
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        OWSRecipientIdentity *_Nullable latest =
-            [OWSRecipientIdentity anyFetchWithUniqueId:self.uniqueId transaction:transaction];
-        if (latest == nil) {
-            changeBlock(self);
-            [self anyInsertWithTransaction:transaction];
-            return;
-        }
-
-        [self anyUpdateWithTransaction:transaction block:changeBlock];
-    }];
-}
-
 #pragma mark - debug
 
 + (void)printAllIdentities
