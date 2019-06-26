@@ -386,6 +386,8 @@ public class SDSDatabaseStorage: NSObject {
     }
 }
 
+// MARK: -
+
 protocol SDSDatabaseStorageAdapter {
     associatedtype ReadTransaction
     associatedtype WriteTransaction
@@ -394,9 +396,13 @@ protocol SDSDatabaseStorageAdapter {
     func write(block: @escaping (WriteTransaction) -> Void) throws
 }
 
+// MARK: -
+
 struct YAPDBStorageAdapter {
     let storage: OWSPrimaryStorage
 }
+
+// MARK: -
 
 extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
     func uiReadThrows(block: @escaping (YapDatabaseReadTransaction) throws -> Void) throws {
@@ -435,6 +441,8 @@ extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
         return YAPDBDatabaseQueue(databaseConnection: storage.newDatabaseConnection())
     }
 }
+
+// MARK: -
 
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
@@ -678,6 +686,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 }
 
+// MARK: -
+
 extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
     // TODO readThrows/writeThrows flavors
@@ -803,6 +813,8 @@ private struct Storage {
         }
     }
 }
+
+// MARK: -
 
 private struct KeySpecSource {
     let keyServiceName: String
