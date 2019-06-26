@@ -111,7 +111,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         if firstAttempt {
             self.dbConnection.readWrite { transaction in
                 Logger.info("deleting sessions for recipient: \(self.recipientId)")
-                self.sessionStore.deleteAllSessions(forContact: self.recipientId, transaction: transaction.asAnyWrite)
+                self.sessionStore.deleteAllSessions(for: self.recipientId.transitional_signalServiceAddress, transaction: transaction.asAnyWrite)
             }
             firstAttempt = false
         }
@@ -126,7 +126,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                 // Archive the just-created session since the recipient should delete their corresponding
                 // session upon receiving and decrypting our EndSession message.
                 // Otherwise if we send another message before them, they wont have the session to decrypt it.
-                self.sessionStore.archiveAllSessions(forContact: self.recipientId, transaction: transaction.asAnyWrite)
+                self.sessionStore.archiveAllSessions(for: self.recipientId.transitional_signalServiceAddress, transaction: transaction.asAnyWrite)
 
                 let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                             in: self.contactThread,
@@ -184,7 +184,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             // Archive the just-created session since the recipient should delete their corresponding
             // session upon receiving and decrypting our EndSession message.
             // Otherwise if we send another message before them, they wont have the session to decrypt it.
-            self.sessionStore.archiveAllSessions(forContact: self.recipientId, transaction: transaction.asAnyWrite)
+            self.sessionStore.archiveAllSessions(for: self.recipientId.transitional_signalServiceAddress, transaction: transaction.asAnyWrite)
         }
     }
 }

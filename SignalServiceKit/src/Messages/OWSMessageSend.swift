@@ -83,13 +83,13 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public func disableUD() {
-        Logger.verbose("\(String(describing: recipient.recipientId))")
+        Logger.verbose("\(String(describing: recipient.address))")
         udAccess = nil
     }
 
     @objc
     public func setHasUDAuthFailed() {
-        Logger.verbose("\(String(describing: recipient.recipientId))")
+        Logger.verbose("\(String(describing: recipient.address))")
         // We "fail over" to non-UD sends after auth errors sending via UD.
         disableUD()
     }

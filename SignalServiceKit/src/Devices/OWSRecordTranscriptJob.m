@@ -85,7 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (transcript.isEndSessionMessage) {
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientId);
-        [self.sessionStore deleteAllSessionsForContact:transcript.recipientId transaction:transaction.asAnyWrite];
+        [self.sessionStore deleteAllSessionsForAddress:transcript.recipientId.transitional_signalServiceAddress
+                                           transaction:transaction.asAnyWrite];
 
         // MJK TODO - we don't use this timestamp, safe to remove
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp

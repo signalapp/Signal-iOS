@@ -25,7 +25,8 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
 {
     OWSAssertDebug(signalRecipient);
-    return [self initWithSignalServiceAddress:signalRecipient.recipientId.transitional_signalServiceAddress];
+    OWSAssertDebug(signalRecipient.address.isValid);
+    return [self initWithSignalServiceAddress:signalRecipient.address];
 }
 
 - (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress

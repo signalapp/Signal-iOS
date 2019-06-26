@@ -211,7 +211,7 @@ class DebugUINotifications: DebugUIPage {
                         return false
                     }
 
-                    guard recipient.recipientId != TSAccountManager.localNumber() else {
+                    guard !recipient.address.isLocalAddress else {
                         return false
                     }
 

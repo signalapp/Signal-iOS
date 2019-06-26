@@ -47,7 +47,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
 @property (nonatomic) NSData *envelopeData;
 @property (nonatomic, nullable) NSData *plaintextData;
-@property (nonatomic) NSString *source;
+@property (nonatomic) SignalServiceAddress *sourceAddress;
 @property (nonatomic) UInt32 sourceDevice;
 @property (nonatomic) BOOL isUDMessage;
 
@@ -59,18 +59,18 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
 + (OWSMessageDecryptResult *)resultWithEnvelopeData:(NSData *)envelopeData
                                       plaintextData:(nullable NSData *)plaintextData
-                                             source:(NSString *)source
+                                      sourceAddress:(SignalServiceAddress *)sourceAddress
                                        sourceDevice:(UInt32)sourceDevice
                                         isUDMessage:(BOOL)isUDMessage
 {
     OWSAssertDebug(envelopeData);
-    OWSAssertDebug(source.length > 0);
+    OWSAssertDebug(sourceAddress.isValid);
     OWSAssertDebug(sourceDevice > 0);
 
     OWSMessageDecryptResult *result = [OWSMessageDecryptResult new];
     result.envelopeData = envelopeData;
     result.plaintextData = plaintextData;
-    result.source = source;
+    result.sourceAddress = sourceAddress;
     result.sourceDevice = sourceDevice;
     result.isUDMessage = isUDMessage;
     return result;
@@ -177,7 +177,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         });
     };
 
-    NSString *localRecipientId = self.tsAccountManager.localNumber;
     uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
     DecryptSuccessBlock successBlock = ^(OWSMessageDecryptResult *result, SDSAnyWriteTransaction *transaction) {
         // Ensure all blocked messages are discarded.
@@ -186,7 +185,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return failureBlock();
         }
 
-        if ([result.source isEqualToString:localRecipientId] && result.sourceDevice == localDeviceId) {
+        if (result.sourceAddress.isLocalAddress && result.sourceDevice == localDeviceId) {
             // Self-sent messages should be discarded during the decryption process.
             OWSFailDebug(@"Unexpected self-sent sync message.");
             return failureBlock();
@@ -194,7 +193,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
         // Having received a valid (decryptable) message from this user,
         // make note of the fact that they have a valid Signal account.
-        [SignalRecipient markRecipientAsRegistered:result.source deviceId:result.sourceDevice transaction:transaction];
+        [SignalRecipient markRecipientAsRegistered:result.sourceAddress
+                                          deviceId:result.sourceDevice
+                                       transaction:transaction];
 
         successBlockParameter(result, transaction);
     };
@@ -208,10 +209,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         }
 
         if (envelope.unwrappedType != SSKProtoEnvelopeTypeUnidentifiedSender) {
-            if (!envelope.hasSourceE164 || envelope.sourceE164.length < 1 || !envelope.sourceE164.isValidE164) {
+            if (!envelope.hasValidSource) {
                 OWSFailDebug(@"incoming envelope has invalid source");
                 return failureBlock();
             }
+
             if (!envelope.hasSourceDevice || envelope.sourceDevice < 1) {
                 OWSFailDebug(@"incoming envelope has invalid source device");
                 return failureBlock();
@@ -268,7 +270,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                     OWSMessageDecryptResult *result =
                         [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                           plaintextData:nil
-                                                                 source:envelope.sourceE164
+                                                          sourceAddress:envelope.sourceAddress
                                                            sourceDevice:envelope.sourceDevice
                                                             isUDMessage:NO];
                     successBlock(result, transaction);
@@ -368,7 +370,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
-    NSString *recipientId = envelope.sourceE164;
     int deviceId = envelope.sourceDevice;
 
     // DEPRECATED - Remove `legacyMessage` after all clients have been upgraded.
@@ -381,13 +382,15 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
     [self.databaseStorage
         asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            NSString *accountIdentifier = [[OWSAccountIdFinder new] ensureAccountIdForAddress:envelope.sourceAddress
+                                                                                  transaction:transaction];
             @try {
                 id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
                 SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:self.sessionStore
                                                                         preKeyStore:self.preKeyStore
                                                                   signedPreKeyStore:self.signedPreKeyStore
                                                                    identityKeyStore:self.identityManager
-                                                                        recipientId:recipientId
+                                                                        recipientId:accountIdentifier
                                                                            deviceId:deviceId];
 
                 // plaintextData may be nil for some envelope types.
@@ -395,7 +398,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                     [[cipher throws_decrypt:cipherMessage protocolContext:transaction] removePadding];
                 OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                                                     plaintextData:plaintextData
-                                                                                           source:envelope.sourceE164
+                                                                                    sourceAddress:envelope.sourceAddress
                                                                                      sourceDevice:envelope.sourceDevice
                                                                                       isUDMessage:NO];
                 successBlock(result, transaction);
@@ -547,8 +550,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             [TSPreKeyManager checkPreKeys];
         }
 
-        NSString *source = decryptResult.senderRecipientId;
-        if (source.length < 1 || !source.isValidE164) {
+        NSString *sourceE164 = decryptResult.senderRecipientId;
+        if (sourceE164.length < 1 || !sourceE164.isValidE164) {
             NSString *errorDescription = @"Invalid UD sender.";
             OWSFailDebug(@"%@", errorDescription);
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
@@ -565,7 +568,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         NSData *plaintextData = [decryptResult.paddedPayload removePadding];
 
         SSKProtoEnvelopeBuilder *envelopeBuilder = [envelope asBuilder];
-        [envelopeBuilder setSourceE164:source];
+        [envelopeBuilder setSourceE164:sourceE164];
         [envelopeBuilder setSourceDevice:(uint32_t)sourceDeviceId];
         NSError *envelopeBuilderError;
         NSData *_Nullable newEnvelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&envelopeBuilderError];
@@ -575,9 +578,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return failureBlock(error);
         }
 
+        // UUID TODO: pass uuid through SMK for UD delivery
+        SignalServiceAddress *sourceAddress = [[SignalServiceAddress alloc] initWithUuid:nil phoneNumber:sourceE164];
         OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:newEnvelopeData
                                                                             plaintextData:plaintextData
-                                                                                   source:source
+                                                                            sourceAddress:sourceAddress
                                                                              sourceDevice:(uint32_t)sourceDeviceId
                                                                               isUDMessage:YES];
         successBlock(result, transaction);

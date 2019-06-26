@@ -74,14 +74,14 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{
                                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                    [self.sessionStore deleteAllSessionsForContact:thread.contactIdentifier
+                                    [self.sessionStore deleteAllSessionsForAddress:thread.contactAddress
                                                                        transaction:transaction];
                                 }];
                             }],
             [OWSTableItem itemWithTitle:@"Archive all sessions"
                             actionBlock:^{
                                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                    [self.sessionStore archiveAllSessionsForContact:thread.contactIdentifier
+                                    [self.sessionStore archiveAllSessionsForAddress:thread.contactAddress
                                                                         transaction:transaction];
                                 }];
                             }],

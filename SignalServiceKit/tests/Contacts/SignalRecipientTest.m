@@ -39,9 +39,11 @@
     XCTAssertNotNil(self.localNumber);
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [SignalRecipient markRecipientAsRegisteredAndGet:self.localNumber transaction:transaction];
+        [SignalRecipient markRecipientAsRegisteredAndGet:self.localNumber.transitional_signalServiceAddress
+                                             transaction:transaction];
 
-        XCTAssertTrue([SignalRecipient isRegisteredRecipient:self.localNumber transaction:transaction]);
+        XCTAssertTrue([SignalRecipient isRegisteredRecipient:self.localNumber.transitional_signalServiceAddress
+                                                 transaction:transaction]);
     }];
 }
 
@@ -51,9 +53,11 @@
     XCTAssertNotNil(self.localNumber);
     NSString *recipientId = @"+15551231234";
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
-        
-        XCTAssertTrue([SignalRecipient isRegisteredRecipient:recipientId transaction:transaction]);
+        [SignalRecipient markRecipientAsRegisteredAndGet:recipientId.transitional_signalServiceAddress
+                                             transaction:transaction];
+
+        XCTAssertTrue([SignalRecipient isRegisteredRecipient:recipientId.transitional_signalServiceAddress
+                                                 transaction:transaction]);
     }];
 }
 

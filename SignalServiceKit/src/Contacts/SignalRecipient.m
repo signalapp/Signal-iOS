@@ -12,9 +12,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const NSUInteger SignalRecipientSchemaVersion = 1;
+
 @interface SignalRecipient ()
 
 @property (nonatomic) NSOrderedSet *devices;
+@property (nonatomic) NSUInteger recipientSchemaVersion;
 
 @end
 
@@ -50,27 +53,39 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-+ (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
-                                             transaction:(SDSAnyReadTransaction *)transaction
++ (instancetype)getOrBuildUnsavedRecipientForAddress:(SignalServiceAddress *)address
+                                         transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    SignalRecipient *_Nullable recipient =
-        [self registeredRecipientForRecipientId:recipientId mustHaveDevices:NO transaction:transaction];
+    SignalRecipient *_Nullable recipient = [self registeredRecipientForAddress:address
+                                                               mustHaveDevices:NO
+                                                                   transaction:transaction];
     if (!recipient) {
-        recipient = [[self alloc] initWithTextSecureIdentifier:recipientId];
+        recipient = [[self alloc] initWithAddress:address];
     }
     return recipient;
 }
 
-- (instancetype)initWithTextSecureIdentifier:(NSString *)textSecureIdentifier
+- (instancetype)initWithAddress:(SignalServiceAddress *)address
 {
-    self = [super initWithUniqueId:textSecureIdentifier];
+    // Before removing this feature flag, we need to be sure no callers use `recipient.uniqueId`
+    // as a way to get the recipients phone number.
+    if (SSKFeatureFlags.contactUUID) {
+        self = [super init];
+    } else {
+        self = [super initWithUniqueId:address.transitional_phoneNumber];
+    }
+
     if (!self) {
         return self;
     }
-   
+
+    _recipientUUID = address.uuidString;
+    _recipientPhoneNumber = address.phoneNumber;
+    _recipientSchemaVersion = SignalRecipientSchemaVersion;
+
     _devices = [NSOrderedSet orderedSetWithObject:@(OWSDevicePrimaryDeviceId)];
 
     return self;
@@ -87,6 +102,15 @@ NS_ASSUME_NONNULL_BEGIN
         _devices = [NSOrderedSet new];
     }
 
+    // Migrating from an everyone has a phone number world to a
+    // world in which we have UUIDs
+    if (_recipientSchemaVersion < 1) {
+        // Copy uniqueId to recipientPhoneNumber
+        _recipientPhoneNumber = [coder decodeObjectForKey:@"uniqueId"];
+
+        OWSAssert(_recipientPhoneNumber != nil);
+    }
+
     // Since we use device count to determine whether a user is registered or not,
     // ensure the local user always has at least *this* device.
     if (![_devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
@@ -95,6 +119,8 @@ NS_ASSUME_NONNULL_BEGIN
             [self addDevices:[NSSet setWithObject:@(OWSDevicePrimaryDeviceId)]];
         }
     }
+
+    _recipientSchemaVersion = SignalRecipientSchemaVersion;
 
     return self;
 }
@@ -130,19 +156,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
-+ (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
-                                           mustHaveDevices:(BOOL)mustHaveDevices
-                                               transaction:(SDSAnyReadTransaction *)transaction
++ (AnySignalRecipientFinder *)recipientFinder
+{
+    return [AnySignalRecipientFinder new];
+}
+
++ (nullable instancetype)registeredRecipientForAddress:(SignalServiceAddress *)address
+                                       mustHaveDevices:(BOOL)mustHaveDevices
+                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    OWSAssertDebug(recipientId.length > 0);
-
-    SignalRecipient *_Nullable signalRecipient = [self anyFetchWithUniqueId:recipientId transaction:transaction];
+    OWSAssertDebug(address.isValid);
+    SignalRecipient *_Nullable signalRecipient = [self.recipientFinder signalRecipientForAddress:address
+                                                                                     transaction:transaction];
     if (mustHaveDevices && signalRecipient.devices.count < 1) {
         return nil;
     }
+
     return signalRecipient;
 }
+
+#pragma mark -
 
 - (void)addDevices:(NSSet *)devices
 {
@@ -183,9 +217,9 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
         // Device changes can affect the UD access mode for a recipient,
         // so we need to fetch the profile for this user to update UD access mode.
-        [self.profileManager fetchProfileForRecipientId:self.recipientId];
-        
-        if ([self.recipientId isEqualToString:self.tsAccountManager.localNumber]) {
+        [self.profileManager fetchProfileForRecipientId:self.address.transitional_phoneNumber];
+
+        if (self.address.isLocalAddress) {
             [self.socketManager cycleSocket];
         }
     });
@@ -217,14 +251,23 @@ NS_ASSUME_NONNULL_BEGIN
                              }];
 }
 
-- (NSString *)recipientId
+#pragma mark -
+
+- (SignalServiceAddress *)address
 {
-    return self.uniqueId;
+    return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID phoneNumber:self.recipientPhoneNumber];
 }
+
+- (NSString *)ensureAccountIdWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    return [[OWSAccountIdFinder new] ensureAccountIdForAddress:self.address transaction:transaction];
+}
+
+#pragma mark -
 
 - (NSComparisonResult)compare:(SignalRecipient *)other
 {
-    return [self.recipientId compare:other.recipientId];
+    return [self.address.transitional_phoneNumber compare:other.address.transitional_phoneNumber];
 }
 
 // GRDB TODO: We might want will/did hooks for updates.
@@ -232,40 +275,44 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super anyWillInsertWithTransaction:transaction];
 
-    OWSLogVerbose(@"saved signal recipient: %@ (%lu)", self.recipientId, (unsigned long) self.devices.count);
+    OWSLogVerbose(@"saved signal recipient: %@ (%lu)", self.address, (unsigned long)self.devices.count);
 }
 
-+ (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(SDSAnyReadTransaction *)transaction
-{
-    return nil != [self registeredRecipientForRecipientId:recipientId mustHaveDevices:YES transaction:transaction];
-}
-
-+ (SignalRecipient *)markRecipientAsRegisteredAndGet:(NSString *)recipientId
-                                         transaction:(SDSAnyWriteTransaction *)transaction
++ (BOOL)isRegisteredRecipient:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
+    return nil != [self registeredRecipientForAddress:address mustHaveDevices:YES transaction:transaction];
+}
 
-    SignalRecipient *_Nullable instance =
-        [self registeredRecipientForRecipientId:recipientId mustHaveDevices:YES transaction:transaction];
++ (SignalRecipient *)markRecipientAsRegisteredAndGet:(SignalServiceAddress *)address
+                                         transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug(transaction);
+
+    SignalRecipient *_Nullable instance = [self registeredRecipientForAddress:address
+                                                              mustHaveDevices:YES
+                                                                  transaction:transaction];
 
     if (!instance) {
-        OWSLogDebug(@"creating recipient: %@", recipientId);
+        OWSLogDebug(@"creating recipient: %@", address);
 
-        instance = [[self alloc] initWithTextSecureIdentifier:recipientId];
+        instance = [[self alloc] initWithAddress:address];
         [instance anyInsertWithTransaction:transaction];
     }
     return instance;
 }
 
-+ (void)markRecipientAsRegistered:(NSString *)recipientId
++ (void)markRecipientAsRegistered:(SignalServiceAddress *)address
                          deviceId:(UInt32)deviceId
                       transaction:(SDSAnyWriteTransaction *)transaction
 {
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug(deviceId > 0);
     OWSAssertDebug(transaction);
-    OWSAssertDebug(recipientId.length > 0);
 
-    SignalRecipient *recipient = [self markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
+    SignalRecipient *recipient = [self markRecipientAsRegisteredAndGet:address transaction:transaction];
     if (![recipient.devices containsObject:@(deviceId)]) {
         OWSLogDebug(@"Adding device %u to existing recipient.", (unsigned int)deviceId);
 
@@ -277,13 +324,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (void)markRecipientAsUnregistered:(NSString *)recipientId transaction:(SDSAnyWriteTransaction *)transaction
++ (void)markRecipientAsUnregistered:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction
 {
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
-    OWSAssertDebug(recipientId.length > 0);
 
-    SignalRecipient *recipient = [self getOrBuildUnsavedRecipientForRecipientId:recipientId transaction:transaction];
-    OWSLogDebug(@"Marking recipient as not registered: %@", recipientId);
+    SignalRecipient *recipient = [self getOrBuildUnsavedRecipientForAddress:address transaction:transaction];
+    OWSLogDebug(@"Marking recipient as not registered: %@", address);
     if (recipient.devices.count > 0) {
         if ([SignalRecipient anyFetchWithUniqueId:recipient.uniqueId transaction:transaction] == nil) {
             [recipient removeDevices:recipient.devices.set];

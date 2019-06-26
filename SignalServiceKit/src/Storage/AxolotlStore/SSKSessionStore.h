@@ -8,33 +8,35 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
+@class SignalServiceAddress;
 
 extern NSString *const OWSPrimaryStorageSessionStoreCollection;
 
 @interface SSKSessionStore : NSObject <SessionStore>
 
-- (SessionRecord *)loadSession:(NSString *)contactIdentifier
-                      deviceId:(int)deviceId
-                   transaction:(SDSAnyReadTransaction *)transaction;
+- (SessionRecord *)loadSessionForAddress:(SignalServiceAddress *)address
+                                deviceId:(int)deviceId
+                             transaction:(SDSAnyReadTransaction *)transaction;
 
-- (NSArray *)subDevicesSessions:(NSString *)contactIdentifier transaction:(SDSAnyReadTransaction *)transaction;
+- (NSArray *)subDevicesSessionsForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)storeSession:(NSString *)contactIdentifier
+- (void)storeSession:(SessionRecord *)session
+             address:(SignalServiceAddress *)address
             deviceId:(int)deviceId
-             session:(SessionRecord *)session
          transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (BOOL)containsSession:(NSString *)contactIdentifier
-               deviceId:(int)deviceId
-            transaction:(SDSAnyReadTransaction *)transaction;
+- (BOOL)containsSessionForAddress:(SignalServiceAddress *)address
+                         deviceId:(int)deviceId
+                      transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)deleteSessionForContact:(NSString *)contactIdentifier
+- (void)deleteSessionForAddress:(SignalServiceAddress *)address
                        deviceId:(int)deviceId
                     transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)deleteAllSessionsForContact:(NSString *)contactIdentifier transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)deleteAllSessionsForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)archiveAllSessionsForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Debug
 

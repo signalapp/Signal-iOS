@@ -9,12 +9,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSPrimaryStorage;
 @class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
+@class SignalServiceAddress;
 
 @interface OWSMessageDecryptResult : NSObject
 
 @property (nonatomic, readonly) NSData *envelopeData;
 @property (nonatomic, readonly, nullable) NSData *plaintextData;
-@property (nonatomic, readonly) NSString *source;
+@property (nonatomic, readonly) SignalServiceAddress *sourceAddress;
 @property (nonatomic, readonly) UInt32 sourceDevice;
 @property (nonatomic, readonly) BOOL isUDMessage;
 

@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(recipient);
 
-    SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessage:recipient.recipientId];
+    SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessage];
     if (!receiptMessage) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
@@ -101,7 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
     return contentData;
 }
 
-- (nullable SSKProtoReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
+- (nullable SSKProtoReceiptMessage *)buildReceiptMessage
 {
     SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builder];
     [builder setType:self.receiptType];
