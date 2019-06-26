@@ -108,6 +108,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                          devices:(NSOrderedSet *)devices
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+          recipientSchemaVersion:(NSUInteger)recipientSchemaVersion
+                   recipientUUID:(nullable NSString *)recipientUUID
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -116,6 +119,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _devices = devices;
+    _recipientPhoneNumber = recipientPhoneNumber;
+    _recipientSchemaVersion = recipientSchemaVersion;
+    _recipientUUID = recipientUUID;
 
     return self;
 }
