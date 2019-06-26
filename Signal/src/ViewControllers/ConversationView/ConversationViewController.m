@@ -4599,7 +4599,7 @@ typedef enum : NSUInteger {
 #ifdef DEBUG
     // TODO: Confirm with nancy if this will work.
     NSString *cellName = [NSString stringWithFormat:@"interaction.%@", NSUUID.UUID.UUIDString];
-    if (viewItem.displayableBodyText.displayText.length > 0) {
+    if (viewItem.hasBodyText && viewItem.displayableBodyText.displayText.length > 0) {
         NSString *textForId =
             [viewItem.displayableBodyText.displayText stringByReplacingOccurrencesOfString:@" " withString:@"_"];
         cellName = [NSString stringWithFormat:@"message.text.%@", textForId];
