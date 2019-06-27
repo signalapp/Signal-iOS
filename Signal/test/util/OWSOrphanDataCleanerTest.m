@@ -75,7 +75,7 @@
     TSIncomingMessage *incomingMessage =
         [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:1
                                                            inThread:thread
-                                                           authorId:@"fake-author-id"
+                                                      authorAddress:@"fake-author-id".transitional_signalServiceAddress
                                                      sourceDeviceId:OWSDevicePrimaryDeviceId
                                                         messageBody:@"footch"
                                                       attachmentIds:attachmentIds

@@ -45,7 +45,7 @@
     TSIncomingMessage *incomingMessage =
         [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:10000
                                                            inThread:thread
-                                                           authorId:@"+12223334444"
+                                                      authorAddress:@"+12223334444".transitional_signalServiceAddress
                                                      sourceDeviceId:OWSDevicePrimaryDeviceId
                                                         messageBody:@"Incoming message body"
                                                       attachmentIds:@[]
@@ -112,7 +112,7 @@
     TSIncomingMessage *incomingMessage =
         [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:10000
                                                            inThread:thread
-                                                           authorId:@"+12223334444"
+                                                      authorAddress:@"+12223334444".transitional_signalServiceAddress
                                                      sourceDeviceId:OWSDevicePrimaryDeviceId
                                                         messageBody:@"incoming message body"
                                                       attachmentIds:@[ incomingAttachment.uniqueId ]

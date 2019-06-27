@@ -303,7 +303,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             NSString *threadUniqueId = message.uniqueThreadId;
             OWSAssertDebug(threadUniqueId.length > 0);
 
-            NSString *messageAuthorId = message.authorId;
+            NSString *messageAuthorId = message.authorAddress.transitional_phoneNumber;
             OWSAssertDebug(messageAuthorId.length > 0);
 
             OWSLinkedDeviceReadReceipt *newReadReceipt =
@@ -321,7 +321,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
             }
 
-            if ([message.authorId isEqualToString:[TSAccountManager localNumber]]) {
+            if (message.authorAddress.isLocalAddress) {
                 OWSLogVerbose(@"Ignoring read receipt for self-sender.");
                 return;
             }
@@ -412,16 +412,20 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     OWSAssertDebug(message);
     OWSAssertDebug(transaction);
+    if (SSKFeatureFlags.contactUUID) {
+        // UUID TODO
+        return;
+    }
 
-    NSString *senderId = message.authorId;
+    SignalServiceAddress *senderAddress = message.authorAddress;
     uint64_t timestamp = message.timestamp;
-    if (senderId.length < 1 || timestamp < 1) {
-        OWSFailDebug(@"Invalid incoming message: %@ %llu", senderId, timestamp);
+    if (!senderAddress.isValid || timestamp < 1) {
+        OWSFailDebug(@"Invalid incoming message: %@ %llu", senderAddress, timestamp);
         return;
     }
 
     OWSLinkedDeviceReadReceipt *_Nullable readReceipt =
-        [OWSLinkedDeviceReadReceipt findLinkedDeviceReadReceiptWithSenderId:senderId
+        [OWSLinkedDeviceReadReceipt findLinkedDeviceReadReceiptWithSenderId:senderAddress.transitional_phoneNumber
                                                          messageIdTimestamp:timestamp
                                                                 transaction:transaction];
     if (!readReceipt) {

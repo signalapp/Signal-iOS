@@ -17,6 +17,8 @@ public class SignalServiceAddress: NSObject {
         return uuid?.uuidString
     }
 
+    // MARK: - Initializers
+
     @objc
     convenience init(uuidString: String) {
         self.init(uuidString: uuidString, phoneNumber: nil)
@@ -61,6 +63,8 @@ public class SignalServiceAddress: NSObject {
             owsFailDebug("Unexpectedly initialized address with no identifier")
         }
     }
+
+    // MARK: -
 
     @objc
     public var isValid: Bool {
@@ -108,6 +112,20 @@ public class SignalServiceAddress: NSObject {
 
         return nil
     }
+
+    @objc
+    override public var description: String {
+        let redactedUUID: String?
+        if let uuid = uuid {
+            redactedUUID = "[REDACTED_UUID:xxx\(uuid.uuidString.suffix(2))]"
+        } else {
+            redactedUUID = nil
+        }
+
+        return "<SignalServiceAddress phoneNumber: \(phoneNumber ?? "nil"), uuid: \(redactedUUID ?? "nil")>"
+    }
+
+    // MARK: - Transitional Methods
 
     @objc
     public var transitional_phoneNumber: String! {

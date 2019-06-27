@@ -1564,14 +1564,14 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         } else if (interactionType == OWSInteractionType_IncomingMessage) {
 
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
-            NSString *incomingSenderId = incomingMessage.authorId;
+            NSString *incomingSenderId = incomingMessage.authorAddress.transitional_phoneNumber;
             OWSAssertDebug(incomingSenderId.length > 0);
             BOOL isDisappearingMessage = incomingMessage.hasPerConversationExpiration;
 
             NSString *_Nullable nextIncomingSenderId = nil;
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                 TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
-                nextIncomingSenderId = nextIncomingMessage.authorId;
+                nextIncomingSenderId = nextIncomingMessage.authorAddress.transitional_phoneNumber;
                 OWSAssertDebug(nextIncomingSenderId.length > 0);
             }
 
@@ -1594,7 +1594,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 isFirstInCluster = YES;
             } else {
                 TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
-                isFirstInCluster = ![incomingSenderId isEqual:previousIncomingMessage.authorId];
+                isFirstInCluster
+                    = ![incomingSenderId isEqual:previousIncomingMessage.authorAddress.transitional_phoneNumber];
             }
 
             if (nextViewItem == nil) {
@@ -1605,7 +1606,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 isLastInCluster = YES;
             } else {
                 TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
-                isLastInCluster = ![incomingSenderId isEqual:nextIncomingMessage.authorId];
+                isLastInCluster
+                    = ![incomingSenderId isEqual:nextIncomingMessage.authorAddress.transitional_phoneNumber];
             }
 
             if (viewItem.isGroupThread) {
@@ -1616,7 +1618,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
 
                     TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
-                    NSString *previousIncomingSenderId = previousIncomingMessage.authorId;
+                    NSString *previousIncomingSenderId = previousIncomingMessage.authorAddress.transitional_phoneNumber;
                     OWSAssertDebug(previousIncomingSenderId.length > 0);
 
                     shouldShowSenderName

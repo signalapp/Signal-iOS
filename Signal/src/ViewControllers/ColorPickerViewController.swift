@@ -444,7 +444,7 @@ private class MockIncomingMessage: TSIncomingMessage {
     init(messageBody: String) {
         super.init(incomingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(),
                    in: TSThread(),
-                   authorId: "+fake-id",
+                   authorAddress: "+fake-id".transitional_signalServiceAddress,
                    sourceDeviceId: 1,
                    messageBody: messageBody,
                    attachmentIds: [],

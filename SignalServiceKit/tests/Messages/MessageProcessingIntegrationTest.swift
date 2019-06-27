@@ -24,7 +24,11 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
     let localE164Identifier = "+13235551234"
     let localUUID = UUID()
-    let bobE164Identifier = "+18085551234"
+
+    let aliceE164Identifier = "+147153"
+    var aliceClient: SignalClient!
+
+    let bobE164Identifier = "+1808"
     var bobClient: SignalClient!
 
     let localClient = LocalSignalClient()
@@ -44,6 +48,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         // changes occur
         try! databaseStorage.grdbStorage.setupUIDatabase()
         bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)
+        aliceClient = FakeSignalClient.generate(e164Identifier: aliceE164Identifier)
 
         // for unit tests, we must manually start the decryptJobQueue
         SSKEnvironment.shared.messageDecryptJobQueue.setup()
@@ -79,14 +84,17 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                 // this block is called after each one, so it must be forgiving for the prior writes.
                 if let message = TSMessage.anyFetchAll(transaction: transaction).first as? TSIncomingMessage {
                     XCTAssertEqual(1, TSMessage.anyCount(transaction: transaction))
-                    XCTAssertEqual(message.authorId, self.bobClient.e164Identifier)
+                    XCTAssert(message.authorAddress.matchesAddress(self.bobClient.address))
+                    XCTAssertFalse(message.authorAddress.matchesAddress(self.aliceClient.address))
                     XCTAssertEqual(message.body, "Those who stands for nothing will fall for anything")
                     XCTAssertEqual(1, TSThread.anyCount(transaction: transaction))
                     guard let thread = TSThread.anyFetchAll(transaction: transaction).first as? TSContactThread else {
                         XCTFail("thread was unexpetedly nil")
                         return
                     }
-                    XCTAssertEqual(thread.contactAddress.transitional_phoneNumber, self.bobClient.e164Identifier)
+                    XCTAssert(thread.contactAddress.matchesAddress(self.bobClient.address))
+                    XCTAssertFalse(thread.contactAddress.matchesAddress(self.aliceClient.address))
+
                     expectMessageProcessed.fulfill()
                 }
             }
@@ -133,14 +141,17 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                 // this block is called after each one, so it must be forgiving for the prior writes.
                 if let message = TSMessage.anyFetchAll(transaction: transaction).first as? TSIncomingMessage {
                     XCTAssertEqual(1, TSMessage.anyCount(transaction: transaction))
-                    XCTAssertEqual(message.authorId, self.bobClient.e164Identifier)
+                    XCTAssert(message.authorAddress.matchesAddress(self.bobClient.address))
+                    XCTAssertFalse(message.authorAddress.matchesAddress(self.aliceClient.address))
                     XCTAssertEqual(message.body, "Those who stands for nothing will fall for anything")
                     XCTAssertEqual(1, TSThread.anyCount(transaction: transaction))
                     guard let thread = TSThread.anyFetchAll(transaction: transaction).first as? TSContactThread else {
                         XCTFail("thread was unexpetedly nil")
                         return
                     }
-                    XCTAssertEqual(thread.contactAddress.transitional_phoneNumber, self.bobClient.e164Identifier)
+                    XCTAssert(thread.contactAddress.matchesAddress(self.bobClient.address))
+                    XCTAssertFalse(thread.contactAddress.matchesAddress(self.aliceClient.address))
+
                     expectMessageProcessed.fulfill()
                 }
             }

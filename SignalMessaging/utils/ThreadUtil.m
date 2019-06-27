@@ -853,7 +853,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                               NSString *_Nullable messageAuthorId = nil;
                                               if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
                                                   TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
-                                                  messageAuthorId = incomingMessage.authorId;
+                                                  messageAuthorId
+                                                      = incomingMessage.authorAddress.transitional_phoneNumber;
                                               } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
                                                   messageAuthorId = localNumber;
                                               }

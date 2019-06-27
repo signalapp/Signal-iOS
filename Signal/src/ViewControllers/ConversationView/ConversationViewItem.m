@@ -200,9 +200,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSInteractionType_IncomingMessage: {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
-            _authorConversationColorName = [TSContactThread
-                conversationColorNameForContactAddress:incomingMessage.authorId.transitional_signalServiceAddress
-                                           transaction:transaction];
+            _authorConversationColorName =
+                [TSContactThread conversationColorNameForContactAddress:incomingMessage.authorAddress
+                                                            transaction:transaction];
             break;
         }
         default:
@@ -475,7 +475,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         && previousLayoutItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
         TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
-        if ([incomingMessage.authorId isEqualToString:previousIncomingMessage.authorId]) {
+        if ([incomingMessage.authorAddress matchesAddress:previousIncomingMessage.authorAddress]) {
             return 2.f;
         }
     } else if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage

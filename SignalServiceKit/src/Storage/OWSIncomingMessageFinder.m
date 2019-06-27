@@ -5,6 +5,7 @@
 #import "OWSIncomingMessageFinder.h"
 #import "OWSPrimaryStorage.h"
 #import "TSIncomingMessage.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
 
@@ -50,7 +51,9 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
 
             // On new messages authorId should be set on all incoming messages, but there was a time when authorId was
             // only set on incoming group messages.
-            NSObject *authorIdOrNull = incomingMessage.authorId ? incomingMessage.authorId : [NSNull null];
+            NSObject *authorIdOrNull = incomingMessage.authorAddress.transitional_phoneNumber
+                ? incomingMessage.authorAddress.transitional_phoneNumber
+                : [NSNull null];
             [dict setObject:@(incomingMessage.timestamp) forKey:OWSIncomingMessageFinderColumnTimestamp];
             [dict setObject:authorIdOrNull forKey:OWSIncomingMessageFinderColumnSourceId];
             [dict setObject:@(incomingMessage.sourceDeviceId) forKey:OWSIncomingMessageFinderColumnSourceDeviceId];
