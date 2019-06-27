@@ -279,7 +279,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
                                                                     sessionConfiguration:sessionConf];
 
     sessionManager.securityPolicy =
-        [OWSCensorshipConfiguration pinningPolicyWithCertNames:@[ @"DigiCertGlobalRootG2" ]];
+        [OWSCensorshipConfiguration pinningPolicyWithCertNames:@[ @"CloudFrontDistributionLeaf" ]];
 
     // Default acceptable content headers are rejected by AWS
     sessionManager.responseSerializer.acceptableContentTypes = nil;
