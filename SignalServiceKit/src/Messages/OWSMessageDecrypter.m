@@ -653,8 +653,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                          envelope:(SSKProtoEnvelope *)envelope
                       transaction:(SDSAnyWriteTransaction *)transaction
 {
-    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.sourceE164
-                                                               anyTransaction:transaction];
+    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
+                                                                       transaction:transaction];
     [SSKEnvironment.shared.notificationsManager notifyUserForErrorMessage:errorMessage
                                                                    thread:contactThread
                                                               transaction:transaction];

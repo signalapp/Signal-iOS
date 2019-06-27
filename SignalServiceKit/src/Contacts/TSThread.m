@@ -85,13 +85,10 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         _creationDate    = [NSDate date];
         _messageDraft    = nil;
 
-        NSString *_Nullable contactId = self.contactIdentifier;
-        if (contactId.length > 0) {
-            // To be consistent with colors synced to desktop
-            _conversationColorName = [self.class stableColorNameForNewConversationWithString:contactId];
-        } else {
-            _conversationColorName = [self.class stableColorNameForNewConversationWithString:self.uniqueId];
-        }
+        // This is overriden in TSContactThread to use the phone number when available
+        // We can't use self.colorSeed here because the subclass hasn't done its
+        // initializing work yet to set it up.
+        _conversationColorName = [self.class stableColorNameForNewConversationWithString:uniqueId];
     }
 
     return self;
@@ -154,14 +151,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     }
 
     if (_conversationColorName.length == 0) {
-        NSString *_Nullable colorSeed = self.contactIdentifier;
-        if (colorSeed.length > 0) {
-            // group threads
-            colorSeed = self.uniqueId;
-        }
-
-        // To be consistent with colors synced to desktop
-        ConversationColorName colorName = [self.class stableColorNameForLegacyConversationWithString:colorSeed];
+        ConversationColorName colorName = [self.class stableColorNameForLegacyConversationWithString:self.colorSeed];
         OWSAssertDebug(colorName);
 
         _conversationColorName = colorName;
@@ -246,11 +236,12 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 
 - (BOOL)isNoteToSelf
 {
-    if (!IsNoteToSelfEnabled()) {
-        return NO;
-    }
-    return (!self.isGroupThread && self.contactIdentifier != nil &&
-        [self.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+    return NO;
+}
+
+- (NSString *)colorSeed
+{
+    return self.uniqueId;
 }
 
 #pragma mark - To be subclassed.
@@ -259,12 +250,6 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     OWSAbstractMethod();
 
     return NO;
-}
-
-// Override in ContactThread
-- (nullable NSString *)contactIdentifier
-{
-    return nil;
 }
 
 - (NSString *)name {

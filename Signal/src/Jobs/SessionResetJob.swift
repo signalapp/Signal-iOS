@@ -79,7 +79,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
     let contactThread: TSContactThread
     var recipientId: String {
-        return contactThread.contactIdentifier()
+        return contactThread.contactAddress.transitional_phoneNumber
     }
 
     @objc public required init(contactThread: TSContactThread, jobRecord: OWSSessionResetJobRecord) {

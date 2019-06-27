@@ -550,7 +550,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
 
     TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:recipientId anyTransaction:transaction];
+        [TSContactThread getOrCreateThreadWithContactAddress:recipientId.transitional_signalServiceAddress
+                                                 transaction:transaction];
     OWSAssertDebug(contactThread != nil);
 
     TSErrorMessage *errorMessage =
@@ -652,8 +653,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssertDebug(message);
     OWSAssertDebug(message.verificationForRecipientId.length > 0);
 
-    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:message.verificationForRecipientId];
-    
+    TSContactThread *contactThread = [TSContactThread
+        getOrCreateThreadWithContactAddress:message.verificationForRecipientId.transitional_signalServiceAddress];
+
     // Send null message to appear as though we're sending a normal message to cover the sync messsage sent
     // subsequently
     OWSOutgoingNullMessage *nullMessage = [[OWSOutgoingNullMessage alloc] initWithContactThread:contactThread
@@ -876,7 +878,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     NSMutableArray<TSMessage *> *messages = [NSMutableArray new];
 
     TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:recipientId anyTransaction:transaction];
+        [TSContactThread getOrCreateThreadWithContactAddress:recipientId.transitional_signalServiceAddress
+                                                 transaction:transaction];
     OWSAssertDebug(contactThread);
     // MJK TODO - should be safe to remove senderTimestamp
     [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]

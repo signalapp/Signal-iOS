@@ -41,7 +41,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
         XCTAssertEqual(0, TSThread.anyFetchAll(databaseStorage: storage).count)
 
         let contactId = "+13213214321"
-        let contactThread = TSContactThread(contactId: contactId)
+        let contactThread = TSContactThread(contactAddress: contactId.transitional_signalServiceAddress)
 
         storage.write { (transaction) in
             XCTAssertEqual(0, TSThread.anyFetchAll(transaction: transaction).count)
@@ -111,7 +111,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
         XCTAssertEqual(0, TSInteraction.anyFetchAll(databaseStorage: storage).count)
 
         let contactId = "+13213214321"
-        let contactThread = TSContactThread(contactId: contactId)
+        let contactThread = TSContactThread(contactAddress: contactId.transitional_signalServiceAddress)
 
         storage.write { (transaction) in
             XCTAssertEqual(0, TSThread.anyFetchAll(transaction: transaction).count)

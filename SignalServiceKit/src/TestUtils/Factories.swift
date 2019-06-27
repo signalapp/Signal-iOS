@@ -97,7 +97,7 @@ public class ContactThreadFactory: NSObject, Factory {
     @objc
     public func create(transaction: SDSAnyWriteTransaction) -> TSContactThread {
         let threadId = generateContactThreadId()
-        let thread = TSContactThread.getOrCreateThread(withContactId: threadId, anyTransaction: transaction)
+        let thread = TSContactThread.getOrCreateThread(withContactAddress: SignalServiceAddress(phoneNumber: threadId), transaction: transaction)
 
         let incomingMessageFactory = IncomingMessageFactory()
         incomingMessageFactory.threadCreator = { _ in return thread }
@@ -301,7 +301,7 @@ public class IncomingMessageFactory: NSObject, Factory {
     public var authorIdBuilder: (TSThread) -> String = { thread in
         switch thread {
         case let contactThread as TSContactThread:
-            return contactThread.contactIdentifier()
+            return contactThread.contactAddress.transitional_phoneNumber
         case let groupThread as TSGroupThread:
             return groupThread.recipientIdentifiers.ows_randomElement() ?? CommonGenerator.contactId
         default:

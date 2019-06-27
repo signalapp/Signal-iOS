@@ -1205,7 +1205,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     BOOL shouldHaveAddToContactsOffer = YES;
     BOOL shouldHaveAddToProfileWhitelistOffer = YES;
 
-    SignalServiceAddress *recipientAddress = ((TSContactThread *)thread).contactAddress;
+    SignalServiceAddress *recipientAddress = contactThread.contactAddress;
 
     if (recipientAddress.isLocalAddress) {
         // Don't add self to contacts.

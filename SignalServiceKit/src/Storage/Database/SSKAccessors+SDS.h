@@ -166,4 +166,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
+@interface TSContactThread (SDS)
+
+@property (nonatomic, nullable, readonly) NSString *contactPhoneNumber;
+@property (nonatomic, nullable, readonly) NSString *contactUUID;
+@property (nonatomic, readonly) NSUInteger contactThreadSchemaVersion;
+
+@end
+
+#pragma mark -
+
 NS_ASSUME_NONNULL_END

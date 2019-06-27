@@ -137,7 +137,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.recipientId = recipientId;
 
     [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        self.thread = [TSContactThread getThreadWithContactId:recipientId transaction:transaction];
+        self.thread = [TSContactThread getThreadWithContactAddress:recipientId.transitional_signalServiceAddress
+                                                       transaction:transaction.asAnyRead];
     }];
 
     BOOL isNoteToSelf = (IsNoteToSelfEnabled() && [recipientId isEqualToString:self.tsAccountManager.localNumber]);
@@ -182,8 +183,12 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         threadName = [MessageStrings newGroupDefaultTitle];
     }
 
-    BOOL isNoteToSelf
-        = (!thread.isGroupThread && [thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+    TSContactThread *_Nullable contactThread;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        contactThread = (TSContactThread *)self.thread;
+    }
+
+    BOOL isNoteToSelf = contactThread && contactThread.contactAddress.isLocalAddress;
     if (isNoteToSelf) {
         threadName = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
     }
@@ -195,8 +200,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                                         }];
     self.nameLabel.attributedText = attributedText;
 
-    if ([thread isKindOfClass:[TSContactThread class]]) {
-        self.recipientId = thread.contactIdentifier;
+    if (contactThread != nil) {
+        self.recipientId = contactThread.contactAddress.transitional_phoneNumber;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(otherUsersProfileDidChange:)

@@ -65,7 +65,9 @@ NS_ASSUME_NONNULL_BEGIN
         if (self.dataMessage.group) {
             _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
         } else {
-            _thread = [TSContactThread getOrCreateThreadWithContactId:_recipientId transaction:transaction];
+            _thread =
+                [TSContactThread getOrCreateThreadWithContactAddress:_recipientId.transitional_signalServiceAddress
+                                                         transaction:transaction.asAnyWrite];
         }
 
         _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage

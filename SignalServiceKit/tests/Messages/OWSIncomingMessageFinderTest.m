@@ -8,6 +8,7 @@
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super setUp];
     self.sourceId = @"+19999999999";
-    self.thread = [TSContactThread getOrCreateThreadWithContactId:self.sourceId];
+    self.thread = [TSContactThread getOrCreateThreadWithContactAddress:self.sourceId.transitional_signalServiceAddress];
     self.finder = [OWSIncomingMessageFinder new];
 }
 

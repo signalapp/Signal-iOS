@@ -328,8 +328,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block TSThread *thread = nil;
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientAddress.transitional_phoneNumber
-                                                     transaction:transaction];
+        thread = [TSContactThread getOrCreateThreadWithContactAddress:signalAccount.recipientAddress
+                                                          transaction:transaction.asAnyWrite];
     }];
     OWSAssertDebug(thread);
 
@@ -354,7 +354,7 @@ NS_ASSUME_NONNULL_BEGIN
     for (TSThread *thread in threads) {
         if ([thread isKindOfClass:[TSContactThread class]]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
-            [contactIdsToIgnore addObject:contactThread.contactIdentifier];
+            [contactIdsToIgnore addObject:contactThread.contactAddress.transitional_phoneNumber];
         }
     }
 

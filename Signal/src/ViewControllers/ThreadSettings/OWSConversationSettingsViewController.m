@@ -177,10 +177,15 @@ const CGFloat kIconViewLength = 24;
 - (NSString *)threadName
 {
     NSString *threadName = self.thread.name;
-    if (self.thread.contactIdentifier &&
-        [threadName isEqualToString:self.thread.contactIdentifier]) {
-        threadName =
-            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:self.thread.contactIdentifier];
+
+    TSContactThread *_Nullable contactThread;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        contactThread = (TSContactThread *)self.thread;
+    }
+
+    if (contactThread && [threadName isEqualToString:contactThread.contactAddress.phoneNumber]) {
+        threadName = [PhoneNumber
+            bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:contactThread.contactAddress.phoneNumber];
     } else if (threadName.length == 0 && [self isGroupThread]) {
         threadName = [MessageStrings newGroupDefaultTitle];
     }
@@ -367,7 +372,7 @@ const CGFloat kIconViewLength = 24;
                                      OWSConversationSettingsViewController *strongSelf = weakSelf;
                                      OWSCAssertDebug(strongSelf);
                                      TSContactThread *contactThread = (TSContactThread *)strongSelf.thread;
-                                     NSString *recipientId = contactThread.contactIdentifier;
+                                     NSString *recipientId = contactThread.contactAddress.transitional_phoneNumber;
                                      [strongSelf presentAddToContactViewControllerWithRecipientId:recipientId];
                                  }]];
     }
@@ -1108,7 +1113,9 @@ const CGFloat kIconViewLength = 24;
 
 - (void)showVerificationView
 {
-    NSString *recipientId = self.thread.contactIdentifier;
+    OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
+    NSString *recipientId = contactThread.contactAddress.transitional_phoneNumber;
     OWSAssertDebug(recipientId.length > 0);
 
     [FingerprintViewController presentFromViewController:self recipientId:recipientId];
@@ -1144,9 +1151,10 @@ const CGFloat kIconViewLength = 24;
     }
 
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
-                                                     fromViewController:self
-                                                        editImmediately:YES];
+    [self.contactsViewHelper
+        presentContactViewControllerForRecipientId:contactThread.contactAddress.transitional_phoneNumber
+                                fromViewController:self
+                                   editImmediately:YES];
 }
 
 - (void)presentAddToContactViewControllerWithRecipientId:(NSString *)recipientId
@@ -1469,8 +1477,13 @@ const CGFloat kIconViewLength = 24;
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssertDebug(recipientId.length > 0);
 
-    if (recipientId.length > 0 && [self.thread isKindOfClass:[TSContactThread class]] &&
-        [self.thread.contactIdentifier isEqualToString:recipientId]) {
+    TSContactThread *_Nullable contactThread;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        contactThread = (TSContactThread *)self.thread;
+    }
+
+    if (recipientId.length > 0 && contactThread &&
+        [contactThread.contactAddress.transitional_phoneNumber isEqualToString:recipientId]) {
         [self updateTableContents];
     }
 }

@@ -37,6 +37,9 @@ public struct ThreadRecord: SDSRecord {
     public let shouldThreadBeVisible: Bool
 
     // Subclass properties
+    public let contactPhoneNumber: String?
+    public let contactThreadSchemaVersion: UInt?
+    public let contactUUID: String?
     public let groupModel: Data?
     public let hasDismissedOffers: Bool?
 
@@ -53,6 +56,9 @@ public struct ThreadRecord: SDSRecord {
         case messageDraft
         case mutedUntilDate
         case shouldThreadBeVisible
+        case contactPhoneNumber
+        case contactThreadSchemaVersion
+        case contactUUID
         case groupModel
         case hasDismissedOffers
     }
@@ -99,6 +105,9 @@ extension TSThread {
             let messageDraft: String? = record.messageDraft
             let mutedUntilDate: Date? = record.mutedUntilDate
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
+            let contactPhoneNumber: String? = record.contactPhoneNumber
+            let contactThreadSchemaVersion: UInt = try SDSDeserialization.required(record.contactThreadSchemaVersion, name: "contactThreadSchemaVersion")
+            let contactUUID: String? = record.contactUUID
             let hasDismissedOffers: Bool = try SDSDeserialization.required(record.hasDismissedOffers, name: "hasDismissedOffers")
 
             return TSContactThread(uniqueId: uniqueId,
@@ -111,6 +120,9 @@ extension TSThread {
                                    messageDraft: messageDraft,
                                    mutedUntilDate: mutedUntilDate,
                                    shouldThreadBeVisible: shouldThreadBeVisible,
+                                   contactPhoneNumber: contactPhoneNumber,
+                                   contactThreadSchemaVersion: contactThreadSchemaVersion,
+                                   contactUUID: contactUUID,
                                    hasDismissedOffers: hasDismissedOffers)
 
         case .groupThread:
@@ -215,8 +227,11 @@ extension TSThreadSerializer {
     static let mutedUntilDateColumn = SDSColumnMetadata(columnName: "mutedUntilDate", columnType: .int64, isOptional: true, columnIndex: 10)
     static let shouldThreadBeVisibleColumn = SDSColumnMetadata(columnName: "shouldThreadBeVisible", columnType: .int, columnIndex: 11)
     // Subclass properties
-    static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true, columnIndex: 12)
-    static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true, columnIndex: 13)
+    static let contactPhoneNumberColumn = SDSColumnMetadata(columnName: "contactPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 12)
+    static let contactThreadSchemaVersionColumn = SDSColumnMetadata(columnName: "contactThreadSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 13)
+    static let contactUUIDColumn = SDSColumnMetadata(columnName: "contactUUID", columnType: .unicodeString, isOptional: true, columnIndex: 14)
+    static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true, columnIndex: 15)
+    static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true, columnIndex: 16)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -233,6 +248,9 @@ extension TSThreadSerializer {
         messageDraftColumn,
         mutedUntilDateColumn,
         shouldThreadBeVisibleColumn,
+        contactPhoneNumberColumn,
+        contactThreadSchemaVersionColumn,
+        contactUUIDColumn,
         groupModelColumn,
         hasDismissedOffersColumn
         ])
@@ -571,9 +589,12 @@ class TSThreadSerializer: SDSSerializer {
         let shouldThreadBeVisible: Bool = model.shouldThreadBeVisible
 
         // Subclass properties
+        let contactPhoneNumber: String? = nil
+        let contactThreadSchemaVersion: UInt? = nil
+        let contactUUID: String? = nil
         let groupModel: Data? = nil
         let hasDismissedOffers: Bool? = nil
 
-        return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+        return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
     }
 }

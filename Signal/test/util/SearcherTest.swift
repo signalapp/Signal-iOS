@@ -91,10 +91,10 @@ class FullTextSearcherTest: SignalBaseTest {
             let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyWrite)
 
-            let aliceContactThread = TSContactThread.getOrCreateThread(withContactId: aliceRecipientId, transaction: transaction)
+            let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipientId.transitional_signalServiceAddress, transaction: transaction.asAnyWrite)
             self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction.asAnyWrite)
 
-            let bobContactThread = TSContactThread.getOrCreateThread(withContactId: bobRecipientId, transaction: transaction)
+            let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: bobRecipientId.transitional_signalServiceAddress, transaction: transaction.asAnyWrite)
             self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction.asAnyWrite)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)

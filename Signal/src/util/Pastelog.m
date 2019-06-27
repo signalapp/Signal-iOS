@@ -593,12 +593,13 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     if (![self.tsAccountManager isRegistered]) {
         return;
     }
-    NSString *recipientId = [TSAccountManager localNumber];
+    SignalServiceAddress *recipientAddress = TSAccountManager.sharedInstance.localAddress;
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
         [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
+            thread = [TSContactThread getOrCreateThreadWithContactAddress:recipientAddress
+                                                              transaction:transaction.asAnyWrite];
         }];
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             [ThreadUtil enqueueMessageWithText:url.absoluteString

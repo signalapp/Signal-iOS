@@ -53,13 +53,13 @@ public class NewAccountDiscovery: NSObject {
                 // Typically we'd never want to create a "new user" notification if the thread already existed
                 // but for testing we disabled the `forNewThreadsOnly` flag.
                 if forNewThreadsOnly {
-                    guard TSContactThread.getWithContactId(recipient.address.transitional_phoneNumber, anyTransaction: transaction) == nil else {
+                    guard TSContactThread.getWithContactAddress(recipient.address, transaction: transaction) == nil else {
                         owsFailDebug("not creating notification for 'new' user in existing thread.")
                         continue
                     }
                 }
 
-                let thread = TSContactThread.getOrCreateThread(withContactId: recipient.address.transitional_phoneNumber, anyTransaction: transaction)
+                let thread = TSContactThread.getOrCreateThread(withContactAddress: recipient.address, transaction: transaction)
                 let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                             in: thread,
                                             messageType: .userJoinedSignal)

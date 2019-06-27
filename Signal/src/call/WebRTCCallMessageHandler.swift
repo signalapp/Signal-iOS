@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,8 +12,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     // MARK: Initializers
 
     @objc
-    public override init()
-    {
+    public override init() {
         super.init()
 
         SwiftSingletons.register(self)
@@ -21,18 +20,15 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK: - Dependencies
 
-    private var messageSender : MessageSender
-    {
+    private var messageSender: MessageSender {
         return SSKEnvironment.shared.messageSender
     }
 
-    private var accountManager : AccountManager
-    {
+    private var accountManager: AccountManager {
         return AppEnvironment.shared.accountManager
     }
 
-    private var callService : CallService
-    {
+    private var callService: CallService {
         return AppEnvironment.shared.callService
     }
 
@@ -41,21 +37,21 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from callerId: String) {
         AssertIsOnMainThread()
 
-        let thread = TSContactThread.getOrCreateThread(contactId: callerId)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: callerId.transitional_signalServiceAddress)
         self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sessionDescription: offer.sessionDescription)
     }
 
     public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from callerId: String) {
         AssertIsOnMainThread()
 
-        let thread = TSContactThread.getOrCreateThread(contactId: callerId)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: callerId.transitional_signalServiceAddress)
         self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sessionDescription: answer.sessionDescription)
     }
 
     public func receivedIceUpdate(_ iceUpdate: SSKProtoCallMessageIceUpdate, from callerId: String) {
         AssertIsOnMainThread()
 
-        let thread = TSContactThread.getOrCreateThread(contactId: callerId)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: callerId.transitional_signalServiceAddress)
 
         // Discrepency between our protobuf's sdpMlineIndex, which is unsigned, 
         // while the RTC iOS API requires a signed int.
@@ -67,14 +63,14 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
     public func receivedHangup(_ hangup: SSKProtoCallMessageHangup, from callerId: String) {
         AssertIsOnMainThread()
 
-        let thread = TSContactThread.getOrCreateThread(contactId: callerId)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: callerId.transitional_signalServiceAddress)
         self.callService.handleRemoteHangup(thread: thread, callId: hangup.id)
     }
 
     public func receivedBusy(_ busy: SSKProtoCallMessageBusy, from callerId: String) {
         AssertIsOnMainThread()
 
-        let thread = TSContactThread.getOrCreateThread(contactId: callerId)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: callerId.transitional_signalServiceAddress)
         self.callService.handleRemoteBusy(thread: thread, callId: busy.id)
     }
 

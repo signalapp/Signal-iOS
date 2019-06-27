@@ -292,7 +292,7 @@ public class FullTextSearcher: NSObject {
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
 
                 if let contactThread = thread as? TSContactThread {
-                    let recipientId = contactThread.contactIdentifier()
+                    let recipientId = contactThread.contactAddress.transitional_phoneNumber!
                     existingConversationRecipientIds.insert(recipientId)
                 }
 
@@ -416,7 +416,7 @@ public class FullTextSearcher: NSObject {
     }
 
     private lazy var contactThreadSearcher: Searcher<TSContactThread> = Searcher { (contactThread: TSContactThread) in
-        let recipientId = contactThread.contactIdentifier()
+        let recipientId = contactThread.contactAddress.transitional_phoneNumber!
         return self.conversationIndexingString(recipientId: recipientId)
     }
 

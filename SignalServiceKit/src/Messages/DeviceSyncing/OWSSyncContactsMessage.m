@@ -129,8 +129,8 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *conversationColorName;
 
         TSContactThread *_Nullable contactThread =
-            [TSContactThread getThreadWithContactId:signalAccount.recipientAddress.transitional_phoneNumber
-                                        transaction:transaction];
+            [TSContactThread getThreadWithContactAddress:signalAccount.recipientAddress
+                                             transaction:transaction.asAnyRead];
         if (contactThread) {
             conversationColorName = contactThread.conversationColorName;
             disappearingMessagesConfiguration = [contactThread disappearingMessagesConfigurationWithTransaction:transaction];

@@ -26,7 +26,7 @@
 - (void)setUp
 {
     [super setUp];
-    self.thread = [TSContactThread getOrCreateThreadWithContactId:@"+15555555"];
+    self.thread = [TSContactThread getOrCreateThreadWithContactAddress:@"+15555555".transitional_signalServiceAddress];
     self.conversationStyle = [[ConversationStyle alloc] initWithThread:self.thread];
 }
 

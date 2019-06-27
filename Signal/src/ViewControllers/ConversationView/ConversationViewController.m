@@ -1720,8 +1720,12 @@ typedef enum : NSUInteger {
 
 - (BOOL)canCall
 {
-    return !(self.isGroupConversation ||
-        [((TSContactThread *)self.thread).contactIdentifier isEqualToString:self.tsAccountManager.localNumber]);
+    TSContactThread *_Nullable contactThread;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        contactThread = (TSContactThread *)self.thread;
+    }
+
+    return !(self.isGroupConversation || contactThread.contactAddress.isLocalAddress);
 }
 
 #pragma mark - Dynamic Text
@@ -1900,9 +1904,10 @@ typedef enum : NSUInteger {
             return;
             
         } else {
+            TSContactThread *thread = (TSContactThread *)self.thread;
             OWSLogInfo(@"Assuming tap on legacy nonblocking identity change corresponds to current contact thread: %@",
-                self.thread.contactIdentifier);
-            signalIdParam = self.thread.contactIdentifier;
+                thread.contactAddress);
+            signalIdParam = thread.contactAddress.transitional_phoneNumber;
         }
     }
     
@@ -2271,15 +2276,6 @@ typedef enum : NSUInteger {
     [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
 }
 
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(recipientId.length > 0);
-
-    return
-        [self.contactsManager attributedContactOrProfileNameForAddress:recipientId.transitional_signalServiceAddress];
-}
-
 - (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
 {
     if (![self.thread isKindOfClass:[TSContactThread class]]) {
@@ -2334,9 +2330,10 @@ typedef enum : NSUInteger {
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:contactThread.contactIdentifier
-                                                     fromViewController:self
-                                                        editImmediately:YES];
+    [self.contactsViewHelper
+        presentContactViewControllerForRecipientId:contactThread.contactAddress.transitional_phoneNumber
+                                fromViewController:self
+                                   editImmediately:YES];
 
     // Delete the offers.
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

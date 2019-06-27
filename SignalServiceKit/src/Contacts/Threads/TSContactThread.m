@@ -9,14 +9,39 @@
 #import "OWSIdentityManager.h"
 #import "SSKEnvironment.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseConnection.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const TSContactThreadPrefix = @"c";
+NSString *const TSContactThreadLegacyPrefix = @"c";
+NSUInteger const TSContactThreadSchemaVersion = 1;
+
+@interface TSContactThread ()
+
+@property (nonatomic, nullable, readonly) NSString *contactPhoneNumber;
+@property (nonatomic, nullable, readonly) NSString *contactUUID;
+@property (nonatomic, readonly) NSUInteger contactThreadSchemaVersion;
+
+// From TSThread
+@property (nonatomic) NSString *conversationColorName;
+
+@end
 
 @implementation TSContactThread
+
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
++ (AnyContactThreadFinder *)threadFinder
+{
+    return [AnyContactThreadFinder new];
+}
+
+
+#pragma mark -
 
 // --- CODE GENERATION MARKER
 
@@ -34,6 +59,9 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
+              contactPhoneNumber:(nullable NSString *)contactPhoneNumber
+      contactThreadSchemaVersion:(NSUInteger)contactThreadSchemaVersion
+                     contactUUID:(nullable NSString *)contactUUID
               hasDismissedOffers:(BOOL)hasDismissedOffers
 {
     self = [super initWithUniqueId:uniqueId
@@ -51,6 +79,9 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
         return self;
     }
 
+    _contactPhoneNumber = contactPhoneNumber;
+    _contactThreadSchemaVersion = contactThreadSchemaVersion;
+    _contactUUID = contactUUID;
     _hasDismissedOffers = hasDismissedOffers;
 
     return self;
@@ -60,93 +91,108 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 // --- CODE GENERATION MARKER
 
-- (instancetype)initWithContactId:(NSString *)contactId {
-    NSString *uniqueIdentifier = [[self class] threadIdFromContactId:contactId];
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        // Migrate legacy threads to store phone number and UUID
+        if (_contactThreadSchemaVersion < 1) {
+            _contactPhoneNumber = [[self class] legacyContactPhoneNumberFromThreadId:self.uniqueId];
+        }
 
-    OWSAssertDebug(contactId.length > 0);
+        _contactThreadSchemaVersion = TSContactThreadSchemaVersion;
+    }
+    return self;
+}
 
-    self = [super initWithUniqueId:uniqueIdentifier];
+- (instancetype)initWithContactAddress:(SignalServiceAddress *)contactAddress
+{
+    OWSAssertDebug(contactAddress.isValid);
+
+    if (self = [super init]) {
+        _contactUUID = contactAddress.uuidString;
+        _contactPhoneNumber = contactAddress.phoneNumber;
+        _contactThreadSchemaVersion = TSContactThreadSchemaVersion;
+
+        // Reset the conversation color to use our phone number, if available. The super initializer just uses the
+        // uniqueId
+        self.conversationColorName =
+            [[self class] stableColorNameForNewConversationWithString:contactAddress.stringForDisplay];
+    }
 
     return self;
 }
 
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
-                                   transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    OWSAssertDebug(contactId.length > 0);
-
-    TSContactThread *thread =
-        [self fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
-
-    if (!thread) {
-        thread = [[TSContactThread alloc] initWithContactId:contactId];
-        [thread saveWithTransaction:transaction];
-    }
-
-    return thread;
-}
-
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
-                                anyTransaction:(SDSAnyWriteTransaction *)transaction
++ (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
+                                        transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(contactId.length > 0);
+    OWSAssertDebug(contactAddress.isValid);
 
-    NSString *uniqueId = [self threadIdFromContactId:contactId];
-    TSContactThread *thread = (TSContactThread *)[self anyFetchWithUniqueId:uniqueId transaction:transaction];
+    TSContactThread *thread = [self.threadFinder contactThreadForAddress:contactAddress transaction:transaction];
 
     if (!thread) {
-        thread = [[TSContactThread alloc] initWithContactId:contactId];
+        thread = [[TSContactThread alloc] initWithContactAddress:contactAddress];
         [thread anyInsertWithTransaction:transaction];
     }
 
     return thread;
 }
 
-+ (instancetype)getOrCreateThreadWithContactId:(NSString *)contactId
++ (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
 {
-    OWSAssertDebug(contactId.length > 0);
+    OWSAssertDebug(contactAddress.isValid);
 
     __block TSContactThread *thread;
-    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [self getOrCreateThreadWithContactId:contactId transaction:transaction];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [self getOrCreateThreadWithContactAddress:contactAddress transaction:transaction];
     }];
 
     return thread;
 }
 
-+ (nullable instancetype)getThreadWithContactId:(NSString *)contactId
-                                    transaction:(YapDatabaseReadTransaction *)transaction
++ (nullable instancetype)getThreadWithContactAddress:(SignalServiceAddress *)contactAddress
+                                         transaction:(SDSAnyReadTransaction *)transaction
 {
-    return [TSContactThread fetchObjectWithUniqueID:[self threadIdFromContactId:contactId] transaction:transaction];
-}
-
-+ (nullable instancetype)getThreadWithContactId:(NSString *)contactId
-                                 anyTransaction:(SDSAnyReadTransaction *)transaction
-{
-    return (TSContactThread *)[TSContactThread anyFetchWithUniqueId:[self threadIdFromContactId:contactId]
-                                                        transaction:transaction];
-}
-
-- (NSString *)contactIdentifier {
-    return [[self class] contactIdFromThreadId:self.uniqueId];
+    return [self.threadFinder contactThreadForAddress:contactAddress transaction:transaction];
 }
 
 - (SignalServiceAddress *)contactAddress
 {
-    return [[SignalServiceAddress alloc] initWithPhoneNumber:self.contactIdentifier];
+    return [[SignalServiceAddress alloc] initWithUuidString:self.contactUUID phoneNumber:self.contactPhoneNumber];
 }
 
 - (NSArray<NSString *> *)recipientIdentifiers
 {
-    return @[self.contactIdentifier];
+    return @[ self.contactAddress.transitional_phoneNumber ];
 }
 
 - (BOOL)isGroupThread {
-    return false;
+    return NO;
+}
+
+- (BOOL)isNoteToSelf
+{
+    if (!IsNoteToSelfEnabled()) {
+        return NO;
+    }
+
+    return self.contactAddress.isLocalAddress;
+}
+
+- (NSString *)colorSeed
+{
+    NSString *_Nullable phoneNumber = self.contactAddress.phoneNumber;
+    if (!phoneNumber) {
+        phoneNumber = [[self class] legacyContactPhoneNumberFromThreadId:self.uniqueId];
+    }
+
+    return phoneNumber ?: self.uniqueId;
 }
 
 - (BOOL)hasSafetyNumbers
 {
-    return !![[OWSIdentityManager sharedManager] identityKeyForRecipientId:self.contactIdentifier];
+    return !!
+            [[OWSIdentityManager sharedManager] identityKeyForRecipientId:self.contactAddress.transitional_phoneNumber];
 }
 
 // TODO deprecate this? seems weird to access the displayName in the DB model
@@ -155,25 +201,34 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return [SSKEnvironment.shared.contactsManager displayNameForAddress:self.contactAddress];
 }
 
-+ (NSString *)threadIdFromContactId:(NSString *)contactId {
-    return [TSContactThreadPrefix stringByAppendingString:contactId];
++ (nullable SignalServiceAddress *)contactAddressFromThreadId:(NSString *)threadId
+                                                  transaction:(SDSAnyReadTransaction *)transaction
+{
+    TSContactThread *_Nullable contactThread = (TSContactThread *)[TSContactThread anyFetchWithUniqueId:threadId
+                                                                                            transaction:transaction];
+    return contactThread.contactAddress;
 }
 
-+ (NSString *)contactIdFromThreadId:(NSString *)threadId {
++ (nullable NSString *)legacyContactPhoneNumberFromThreadId:(NSString *)threadId
+{
+    if (![threadId hasPrefix:TSContactThreadLegacyPrefix]) {
+        return nil;
+    }
+
     return [threadId substringWithRange:NSMakeRange(1, threadId.length - 1)];
 }
 
-+ (NSString *)conversationColorNameForRecipientId:(NSString *)recipientId
-                                      transaction:(SDSAnyReadTransaction *)transaction
++ (NSString *)conversationColorNameForContactAddress:(SignalServiceAddress *)address
+                                         transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address);
 
-    TSContactThread *_Nullable contactThread =
-        [TSContactThread getThreadWithContactId:recipientId anyTransaction:transaction];
+    TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactAddress:address
+                                                                                transaction:transaction];
     if (contactThread) {
         return contactThread.conversationColorName;
     }
-    return [self stableColorNameForNewConversationWithString:recipientId];
+    return [self stableColorNameForNewConversationWithString:address.stringForDisplay];
 }
 
 @end

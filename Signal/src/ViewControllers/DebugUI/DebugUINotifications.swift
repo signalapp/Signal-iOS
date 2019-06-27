@@ -108,7 +108,7 @@ class DebugUINotifications: DebugUIPage {
     }
 
     func delayedNotificationDispatchWithFakeCall(thread: TSContactThread, callBlock: @escaping (SignalCall) -> Void) -> Guarantee<Void> {
-        let call = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: 0)
+        let call = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactAddress.transitional_phoneNumber, signalingId: 0)
 
         return delayedNotificationDispatch {
             callBlock(call)

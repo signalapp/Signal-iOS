@@ -502,6 +502,32 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 on: SignalAccountRecord.databaseTableName,
                 columns: [SignalAccountRecord.columnName(.recipientUUID)]
             )
+
+            // Signal Recipient Indices
+            try db.create(
+                index: "index_signal_recipients_on_recipientPhoneNumber",
+                on: SignalRecipientRecord.databaseTableName,
+                columns: [SignalRecipientRecord.columnName(.recipientPhoneNumber)]
+            )
+
+            try db.create(
+                index: "index_signal_recipients_on_recipientUUID",
+                on: SignalRecipientRecord.databaseTableName,
+                columns: [SignalRecipientRecord.columnName(.recipientUUID)]
+            )
+
+            // Thread Indices
+            try db.create(
+                index: "index_thread_on_contactPhoneNumber",
+                on: ThreadRecord.databaseTableName,
+                columns: [ThreadRecord.columnName(.contactPhoneNumber)]
+            )
+
+            try db.create(
+                index: "index_tsthread_on_contactUUID",
+                on: ThreadRecord.databaseTableName,
+                columns: [ThreadRecord.columnName(.contactUUID)]
+            )
         }
         return migrator
     }()

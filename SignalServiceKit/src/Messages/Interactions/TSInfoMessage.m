@@ -237,9 +237,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         case TSInfoMessageUserJoinedSignal: {
             NSString *recipientName;
             if (transaction.transitional_yapReadTransaction != nil) {
-                NSString *contactId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
+                SignalServiceAddress *address = [TSContactThread contactAddressFromThreadId:self.uniqueThreadId
+                                                                                transaction:transaction];
                 recipientName =
-                    [self.contactsManager displayNameForAddress:contactId.transitional_signalServiceAddress
+                    [self.contactsManager displayNameForAddress:address
                                                     transaction:transaction.transitional_yapReadTransaction];
             }
             NSString *format = NSLocalizedString(@"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT",
