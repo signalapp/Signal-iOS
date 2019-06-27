@@ -32,6 +32,12 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
     return SDSDatabaseStorage.shared;
 }
 
++ (AnyContactThreadFinder *)threadFinder
+{
+    return [AnyContactThreadFinder new];
+}
+
+
 #pragma mark -
 
 // --- CODE GENERATION MARKER
@@ -114,10 +120,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 {
     OWSAssertDebug(contactAddress);
 
-    // TODO
-    TSContactThread *thread
-        = (TSContactThread *)[self anyFetchWithUniqueId:"c" + contactAddress.transitional_phoneNumber
-                                            transaction:transaction];
+    TSContactThread *thread = [self.threadFinder contactThreadForAddress:contactAddress transaction:transaction];
 
     if (!thread) {
         thread = [[TSContactThread alloc] initWithContactAddress:contactAddress];
@@ -142,9 +145,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 + (nullable instancetype)getThreadWithContactAddress:(SignalServiceAddress *)contactAddress
                                          transaction:(SDSAnyReadTransaction *)transaction
 {
-    // TODO
-    return (TSContactThread *)[TSContactThread anyFetchWithUniqueId:"c" + contactAddress.transitional_phoneNumber
-                                                        transaction:transaction];
+    return [self.threadFinder contactThreadForAddress:contactAddress transaction:transaction];
 }
 
 - (SignalServiceAddress *)contactAddress
@@ -194,7 +195,9 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 + (nullable SignalServiceAddress *)contactAddressFromThreadId:(NSString *)threadId
                                                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    return nil;
+    TSContactThread *_Nullable contactThread = (TSContactThread *)[TSContactThread anyFetchWithUniqueId:threadId
+                                                                                            transaction:transaction];
+    return contactThread.contactAddress;
 }
 
 + (nullable NSString *)legacyContactPhoneNumberFromThreadId:(NSString *)threadId
