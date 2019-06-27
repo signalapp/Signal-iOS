@@ -29,7 +29,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        [self showBlockPhoneNumberActionSheet:contactThread.contactIdentifier
+        [self showBlockPhoneNumberActionSheet:contactThread.contactAddress.transitional_phoneNumber
                            fromViewController:fromViewController
                               blockingManager:blockingManager
                               contactsManager:contactsManager
@@ -267,7 +267,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        [self showUnblockPhoneNumberActionSheet:contactThread.contactIdentifier
+        [self showUnblockPhoneNumberActionSheet:contactThread.contactAddress.transitional_phoneNumber
                              fromViewController:fromViewController
                                 blockingManager:blockingManager
                                 contactsManager:contactsManager

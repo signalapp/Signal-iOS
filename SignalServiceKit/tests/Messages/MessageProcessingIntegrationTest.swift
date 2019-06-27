@@ -86,7 +86,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                         XCTFail("thread was unexpetedly nil")
                         return
                     }
-                    XCTAssertEqual(thread.contactIdentifier(), self.bobClient.e164Identifier)
+                    XCTAssertEqual(thread.contactAddress.transitional_phoneNumber, self.bobClient.e164Identifier)
                     expectMessageProcessed.fulfill()
                 }
             }
@@ -140,7 +140,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                         XCTFail("thread was unexpetedly nil")
                         return
                     }
-                    XCTAssertEqual(thread.contactIdentifier(), self.bobClient.e164Identifier)
+                    XCTAssertEqual(thread.contactAddress.transitional_phoneNumber, self.bobClient.e164Identifier)
                     expectMessageProcessed.fulfill()
                 }
             }

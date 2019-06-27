@@ -479,7 +479,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (![self.thread.contactIdentifier isEqualToString:recipientId]) {
+    if (![self.thread.contactAddress.transitional_phoneNumber isEqualToString:recipientId]) {
         return;
     }
 

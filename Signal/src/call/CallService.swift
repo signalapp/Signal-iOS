@@ -569,7 +569,7 @@ private class SignalCallData: NSObject {
      */
     public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sessionDescription: String) {
         AssertIsOnMainThread()
-        Logger.info("received call answer for call: \(callId) thread: \(thread.contactIdentifier())")
+        Logger.info("received call answer for call: \(callId) thread: \(thread.contactAddress)")
 
         guard let call = self.call else {
             Logger.warn("ignoring obsolete call: \(callId)")
@@ -613,7 +613,7 @@ private class SignalCallData: NSObject {
         if call.callRecord == nil {
             // MJK TODO remove this timestamp param
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                     withCallNumber: call.thread.contactIdentifier(),
+                                     withCallNumber: call.thread.contactAddress.transitional_phoneNumber,
                                      callType: .incomingMissed,
                                      in: call.thread)
         }
@@ -646,7 +646,7 @@ private class SignalCallData: NSObject {
      */
     private func handleLocalBusyCall(_ call: SignalCall) {
         AssertIsOnMainThread()
-        Logger.info("for call: \(call.identifiersForLogs) thread: \(call.thread.contactIdentifier())")
+        Logger.info("for call: \(call.identifiersForLogs) thread: \(call.thread.contactAddress)")
 
         do {
             let busyBuilder = SSKProtoCallMessageBusy.builder(id: call.signalingId)
@@ -665,7 +665,7 @@ private class SignalCallData: NSObject {
      */
     public func handleRemoteBusy(thread: TSContactThread, callId: UInt64) {
         AssertIsOnMainThread()
-        Logger.info("for thread: \(thread.contactIdentifier())")
+        Logger.info("for thread: \(thread.contactAddress)")
 
         guard let call = self.call else {
             Logger.warn("ignoring obsolete call: \(callId)")
@@ -677,7 +677,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard thread.contactIdentifier() == call.remotePhoneNumber else {
+        guard thread.contactAddress.transitional_phoneNumber == call.remotePhoneNumber else {
             Logger.warn("ignoring obsolete call")
             return
         }
@@ -699,11 +699,11 @@ private class SignalCallData: NSObject {
 
         BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(callId)")
 
-        let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
+        let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactAddress.transitional_phoneNumber, signalingId: callId)
 
         Logger.info("receivedCallOffer: \(newCall.identifiersForLogs)")
 
-        let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: thread.contactIdentifier())
+        let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: thread.contactAddress.transitional_phoneNumber)
 
         guard untrustedIdentity == nil else {
             Logger.warn("missed a call due to untrusted identity: \(newCall.identifiersForLogs)")
@@ -722,7 +722,7 @@ private class SignalCallData: NSObject {
 
             // MJK TODO remove this timestamp param
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                    withCallNumber: thread.contactIdentifier(),
+                                    withCallNumber: thread.contactAddress.transitional_phoneNumber,
                                     callType: .incomingMissedBecauseOfChangedIdentity,
                                     in: thread)
             assert(newCall.callRecord == nil)
@@ -901,7 +901,7 @@ private class SignalCallData: NSObject {
                 return
             }
 
-            guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
+            guard thread.contactAddress.matchesAddress(call.thread.contactAddress) else {
                 Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) due to thread mismatch. Call already ended?")
                 return
             }
@@ -1070,10 +1070,10 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard thread.contactIdentifier() == call.thread.contactIdentifier() else {
+        guard thread.contactAddress.matchesAddress(call.thread.contactAddress) else {
             // This can safely be ignored.
             // We don't want to fail the current call because an old call was slow to send us the hangup message.
-            Logger.warn("ignoring hangup for thread: \(thread.contactIdentifier()) which is not the current call: \(call.identifiersForLogs)")
+            Logger.warn("ignoring hangup for thread: \(thread.contactAddress) which is not the current call: \(call.identifiersForLogs)")
             return
         }
 
@@ -1317,10 +1317,10 @@ private class SignalCallData: NSObject {
 
             self.messageSender.sendPromise(message: callMessage)
             .done {
-                Logger.debug("successfully sent hangup call message to \(call.thread.contactIdentifier())")
+                Logger.debug("successfully sent hangup call message to \(call.thread.contactAddress)")
             }.catch { error in
                 OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file: #file, function: #function, line: #line)
-                Logger.error("failed to send hangup call message to \(call.thread.contactIdentifier()) with error: \(error)")
+                Logger.error("failed to send hangup call message to \(call.thread.contactAddress) with error: \(error)")
             }.retainUntilComplete()
 
             terminateCall()

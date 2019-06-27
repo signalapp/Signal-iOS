@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
 #import "OWSIdentityManager.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,7 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super setUp];
 
-    self.contactThread = [TSContactThread getOrCreateThreadWithContactId:@"fake-contact-id"];
+    self.contactThread =
+        [TSContactThread getOrCreateThreadWithContactAddress:@"fake-contact-id".transitional_signalServiceAddress];
 }
 
 - (void)testHasSafetyNumbersWithoutRemoteIdentity
@@ -31,8 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testHasSafetyNumbersWithRemoteIdentity
 {
-    [[OWSIdentityManager sharedManager] saveRemoteIdentity:[[NSMutableData alloc] initWithLength:kStoredIdentityKeyLength]
-                                               recipientId:self.contactThread.contactIdentifier];
+    [[OWSIdentityManager sharedManager]
+        saveRemoteIdentity:[[NSMutableData alloc] initWithLength:kStoredIdentityKeyLength]
+               recipientId:self.contactThread.contactAddress.transitional_phoneNumber];
     XCTAssert(self.contactThread.hasSafetyNumbers);
 }
 

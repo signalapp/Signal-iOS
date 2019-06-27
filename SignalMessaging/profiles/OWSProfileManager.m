@@ -857,7 +857,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             [self addUserToProfileWhitelist:recipientId];
         }
     } else {
-        NSString *recipientId = thread.contactIdentifier;
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        NSString *recipientId = contactThread.contactAddress.transitional_phoneNumber;
         [self addUserToProfileWhitelist:recipientId];
     }
 }
@@ -890,7 +891,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         NSData *groupId = groupThread.groupModel.groupId;
         return [self isGroupIdInProfileWhitelist:groupId];
     } else {
-        NSString *recipientId = thread.contactIdentifier;
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        NSString *recipientId = contactThread.contactAddress.transitional_phoneNumber;
         return [self isUserInProfileWhitelist:recipientId];
     }
 }

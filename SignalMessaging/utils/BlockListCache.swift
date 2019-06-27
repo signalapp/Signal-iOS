@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -86,7 +86,7 @@ public class BlockListCache: NSObject {
         switch thread {
         case let contactThread as TSContactThread:
             return serialQueue.sync {
-                blockedRecipientIds.contains(contactThread.contactIdentifier())
+                blockedRecipientIds.contains(contactThread.contactAddress.transitional_phoneNumber)
             }
         case let groupThread as TSGroupThread:
             return serialQueue.sync {

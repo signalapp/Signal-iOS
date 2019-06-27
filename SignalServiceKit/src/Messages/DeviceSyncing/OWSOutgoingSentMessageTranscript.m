@@ -52,9 +52,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _message = message;
-    // This will be nil for groups.
-    _sentRecipientId = message.thread.contactIdentifier;
     _isRecipientUpdate = isRecipientUpdate;
+
+    if ([message.thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)message.thread;
+        _sentRecipientId = contactThread.contactAddress.transitional_phoneNumber;
+    }
 
     return self;
 }

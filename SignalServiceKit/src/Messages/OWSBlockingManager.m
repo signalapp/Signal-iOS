@@ -95,7 +95,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        return [self isRecipientIdBlocked:contactThread.contactIdentifier];
+        return [self isRecipientIdBlocked:contactThread.contactAddress.transitional_phoneNumber];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         return [self isGroupIdBlocked:groupThread.groupModel.groupId];

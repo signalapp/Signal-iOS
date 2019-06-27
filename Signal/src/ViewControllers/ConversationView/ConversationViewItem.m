@@ -193,15 +193,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.interaction.interactionType) {
         case OWSInteractionType_TypingIndicator: {
             OWSTypingIndicatorInteraction *typingIndicator = (OWSTypingIndicatorInteraction *)self.interaction;
-            _authorConversationColorName =
-                [TSContactThread conversationColorNameForRecipientId:typingIndicator.recipientId
-                                                         transaction:transaction];
+            _authorConversationColorName = [TSContactThread
+                conversationColorNameForContactAddress:typingIndicator.recipientId.transitional_signalServiceAddress
+                                           transaction:transaction];
             break;
         }
         case OWSInteractionType_IncomingMessage: {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
-            _authorConversationColorName =
-                [TSContactThread conversationColorNameForRecipientId:incomingMessage.authorId transaction:transaction];
+            _authorConversationColorName = [TSContactThread
+                conversationColorNameForContactAddress:incomingMessage.authorId.transitional_signalServiceAddress
+                                           transaction:transaction];
             break;
         }
         default:

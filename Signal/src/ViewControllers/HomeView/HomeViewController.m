@@ -1078,7 +1078,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         cellName = [NSString stringWithFormat:@"cell-group-%@", groupThread.groupModel.groupName];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread.threadRecord;
-        cellName = [NSString stringWithFormat:@"cell-contact-%@", contactThread.contactIdentifier];
+        cellName = [NSString stringWithFormat:@"cell-contact-%@", contactThread.contactAddress.stringForDisplay];
     }
     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
 

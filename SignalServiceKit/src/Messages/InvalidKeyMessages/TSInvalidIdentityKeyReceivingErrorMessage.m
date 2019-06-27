@@ -41,8 +41,8 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
                                   withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.sourceE164
-                                                                         transaction:transaction];
+    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
+                                                                              transaction:transaction.asAnyWrite];
 
     // Legit usage of senderTimestamp, references message which failed to decrypt
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =

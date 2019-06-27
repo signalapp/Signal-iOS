@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 OWSLogError(@"Flipping identity Key. Flip again to return.");
 
                                 OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
-                                NSString *recipientId = [thread contactIdentifier];
+                                NSString *recipientId = thread.contactAddress.transitional_phoneNumber;
 
                                 NSData *currentKey = [identityManager identityKeyForRecipientId:recipientId];
                                 NSMutableData *flippedKey = [NSMutableData new];

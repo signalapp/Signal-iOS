@@ -35,7 +35,7 @@
 - (void)testDeletingThreadDeletesInteractions
 {
     TSContactThread *thread =
-        [[TSContactThread alloc] initWithUniqueId:[TSContactThread threadIdFromContactId:@"+13334445555"]];
+        [[TSContactThread alloc] initWithContactAddress:@"+13334445555".transitional_signalServiceAddress];
     [thread save];
 
     [self readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
@@ -89,7 +89,7 @@
 - (void)testDeletingThreadDeletesAttachmentFiles
 {
     TSContactThread *thread =
-        [[TSContactThread alloc] initWithUniqueId:[TSContactThread threadIdFromContactId:@"+13334445555"]];
+        [[TSContactThread alloc] initWithContactAddress:@"+13334445555".transitional_signalServiceAddress];
     [thread save];
 
     // Sanity check

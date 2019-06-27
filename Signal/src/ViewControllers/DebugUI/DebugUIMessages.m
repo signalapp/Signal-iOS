@@ -305,7 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        NSString *recipientId = contactThread.contactIdentifier;
+        NSString *recipientId = contactThread.contactAddress.transitional_phoneNumber;
         [items addObject:[OWSTableItem itemWithTitle:@"Create 10 new groups"
                                          actionBlock:^{
                                              [DebugUIMessages createNewGroups:10 recipientId:recipientId];
@@ -381,7 +381,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSGroupThread *)groupThread
 {
     for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
-        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+        TSContactThread *contactThread =
+            [TSContactThread getOrCreateThreadWithContactAddress:recipientId.transitional_signalServiceAddress];
         [[self sendTextMessagesActionInThread:contactThread] prepareAndPerformNTimes:count];
     }
 }
@@ -3457,7 +3458,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             return gThread.groupModel.groupMemberIds[0];
         } else if ([thread isKindOfClass:[TSContactThread class]]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
-            return contactThread.contactIdentifier;
+            return contactThread.contactAddress.transitional_phoneNumber;
         } else {
             OWSFailDebug(@"failure: unknown thread type");
             return @"unknown-source-id";
@@ -3760,7 +3761,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                   OWSAssertDebug(phoneNumber);
                   OWSAssertDebug(phoneNumber.toE164);
 
-                  TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:phoneNumber.toE164];
+                  TSContactThread *contactThread = [TSContactThread
+                      getOrCreateThreadWithContactAddress:phoneNumber.toE164.transitional_signalServiceAddress];
                   [self sendFakeMessages:messageCount thread:contactThread];
                   [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                       NSUInteger interactionCount = [contactThread numberOfInteractionsWithTransaction:transaction];

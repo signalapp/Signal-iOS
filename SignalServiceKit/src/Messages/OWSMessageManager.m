@@ -581,9 +581,8 @@ NS_ASSUME_NONNULL_BEGIN
     // FIXME: https://github.com/signalapp/Signal-iOS/issues/1340
     OWSLogInfo(@"Sending group info request: %@", envelopeAddress(envelope));
 
-    NSString *recipientId = envelope.sourceE164;
-
-    TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId anyTransaction:transaction];
+    TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
+                                                                transaction:transaction];
 
     OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
         [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
@@ -719,7 +718,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         thread = groupThread;
     } else {
-        thread = [TSContactThread getThreadWithContactId:envelope.sourceE164 anyTransaction:transaction];
+        thread = [TSContactThread getThreadWithContactAddress:envelope.sourceAddress transaction:transaction];
     }
 
     if (!thread) {
@@ -1029,8 +1028,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.sourceE164
-                                                               anyTransaction:transaction];
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
+                                                                       transaction:transaction];
 
     // MJK TODO - safe to remove senderTimestamp
     [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -1379,8 +1378,8 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     } else {
-        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.sourceE164
-                                                                   anyTransaction:transaction];
+        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
+                                                                           transaction:transaction];
 
         if (dataMessage.hasRequiredProtocolVersion
             && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
@@ -1661,7 +1660,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssertDebug(groupThread);
         return groupThread;
     } else {
-        return [TSContactThread getOrCreateThreadWithContactId:envelope.sourceE164 anyTransaction:transaction];
+        return [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress transaction:transaction];
     }
 }
 

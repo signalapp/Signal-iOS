@@ -84,12 +84,6 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 @property (class, nonatomic, readonly) NSArray<ConversationColorName> *conversationColorNames;
 
 /**
- * @returns
- *   Signal Id (e164) of the contact if it's a contact thread.
- */
-- (nullable NSString *)contactIdentifier;
-
-/**
  * @returns recipientId for each recipient in the thread
  */
 @property (nonatomic, readonly) NSArray<NSString *> *recipientIdentifiers;

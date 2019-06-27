@@ -172,7 +172,8 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
             continue;
         }
 
-        TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+        TSThread *thread =
+            [TSContactThread getOrCreateThreadWithContactAddress:recipientId.transitional_signalServiceAddress];
         OWSReceiptsForSenderMessage *message;
         NSString *receiptName;
         switch (receiptType) {

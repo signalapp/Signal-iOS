@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAvatarBuilder.h"
@@ -11,6 +11,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,9 +31,10 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         ConversationColorName colorName = thread.conversationColorName;
-        avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier
-                                                                colorName:colorName
-                                                                 diameter:diameter];
+        avatarBuilder =
+            [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactAddress.transitional_phoneNumber
+                                                    colorName:colorName
+                                                     diameter:diameter];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread diameter:diameter];
     } else {

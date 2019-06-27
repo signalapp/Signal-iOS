@@ -557,23 +557,23 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSFailDebug(@"Message send recipients should not include self.");
         }
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
-        NSString *recipientContactId = ((TSContactThread *)thread).contactIdentifier;
+        SignalServiceAddress *recipientAddress = ((TSContactThread *)thread).contactAddress;
 
         // Treat 1:1 sends to blocked contacts as failures.
         // If we block a user, don't send 1:1 messages to them. The UI
         // should prevent this from occurring, but in some edge cases
         // you might, for example, have a pending outgoing message when
         // you block them.
-        OWSAssertDebug(recipientContactId.length > 0);
-        if ([self.blockingManager isRecipientIdBlocked:recipientContactId]) {
-            OWSLogInfo(@"skipping 1:1 send to blocked contact: %@", recipientContactId);
+        OWSAssertDebug(recipientAddress);
+        if ([self.blockingManager isRecipientIdBlocked:recipientAddress.transitional_phoneNumber]) {
+            OWSLogInfo(@"skipping 1:1 send to blocked contact: %@", recipientAddress);
             NSError *error = OWSErrorMakeMessageSendFailedDueToBlockListError();
             [error setIsRetryable:NO];
             *errorHandle = error;
             return nil;
         }
 
-        [recipientIds addObject:recipientContactId];
+        [recipientIds addObject:recipientAddress.transitional_phoneNumber];
 
         if ([recipientIds containsObject:self.tsAccountManager.localNumber]) {
             OWSFailDebug(@"Message send recipients should not include self.");
@@ -716,8 +716,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     // In the "self-send" special case, we ony need to send a sync message with a delivery receipt.
-    if ([thread isKindOfClass:[TSContactThread class]] &&
-        [((TSContactThread *)thread).contactIdentifier isEqualToString:self.tsAccountManager.localNumber]) {
+    if ([thread isKindOfClass:[TSContactThread class]] && ((TSContactThread *)thread).contactAddress.isLocalAddress) {
         // Send to self.
         OWSAssertDebug(message.recipientIds.count == 1);
         // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
@@ -1411,8 +1410,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     dispatch_block_t success = ^{
         TSThread *_Nullable thread = message.thread;
-        if (thread && [thread isKindOfClass:[TSContactThread class]] &&
-            [thread.contactIdentifier isEqualToString:self.tsAccountManager.localNumber]) {
+        if (thread && [thread isKindOfClass:[TSContactThread class]]
+            && ((TSContactThread *)thread).contactAddress.isLocalAddress) {
             OWSAssertDebug(message.recipientIds.count == 1);
             // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {

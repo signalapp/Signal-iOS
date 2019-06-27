@@ -875,7 +875,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)newConversationWithRecipientId:(NSString *)recipientId
 {
     OWSAssertDebug(recipientId.length > 0);
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
+    TSContactThread *thread =
+        [TSContactThread getOrCreateThreadWithContactAddress:recipientId.transitional_signalServiceAddress];
     [self newConversationWithThread:thread];
 }
 

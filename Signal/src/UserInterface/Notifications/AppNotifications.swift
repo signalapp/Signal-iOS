@@ -212,7 +212,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     func presentIncomingCall(_ call: SignalCall, callerName: String) {
 
         let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remotePhoneNumber.transitional_signalServiceAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -250,7 +250,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     func presentMissedCall(_ call: SignalCall, callerName: String) {
 
         let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remotePhoneNumber.transitional_signalServiceAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -289,7 +289,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
 
         let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remotePhoneNumber.transitional_signalServiceAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -327,7 +327,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
 
         let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactId: remotePhoneNumber)
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remotePhoneNumber.transitional_signalServiceAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?

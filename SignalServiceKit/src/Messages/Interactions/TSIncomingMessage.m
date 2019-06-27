@@ -37,8 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (_authorId == nil) {
-        OWSAssertDebug([self.uniqueThreadId hasPrefix:TSContactThreadPrefix]);
-        _authorId = [TSContactThread contactIdFromThreadId:self.uniqueThreadId];
+        _authorId = [TSContactThread legacyContactPhoneNumberFromThreadId:self.uniqueThreadId];
     }
 
     return self;
