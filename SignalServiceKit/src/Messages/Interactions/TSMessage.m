@@ -518,7 +518,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
         if (!attachment) {
             if (self.anyCanBeSaved) {
-                OWSFailDebug(@"couldn't load interaction's attachment for deletion.");
+                OWSFailDebugUnlessRunningTests(@"couldn't load interaction's attachment for deletion.");
             } else {
                 OWSLogWarn(@"couldn't load interaction's attachment for deletion.");
             }
