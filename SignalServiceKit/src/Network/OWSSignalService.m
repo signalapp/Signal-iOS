@@ -239,7 +239,13 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
         OWSLogInfo(@"using reflector CDNSessionManager via: %@", censorshipConfiguration.domainFrontBaseURL);
         result = [self reflectorCDNSessionManagerWithCensorshipConfiguration:censorshipConfiguration];
     } else {
-        result = self.defaultCDNSessionManager;
+        // On iOS 13 there is a bug that currently prevents us from telling iOS our CDN is trusted.
+        // As a workaround, connect to cloudfront directly for now.
+        if (@available(iOS 13, *)) {
+            result = self.iOS13CDNSessionManager;
+        } else {
+            result = self.defaultCDNSessionManager;
+        }
     }
     // By default, CDN content should be binary.
     result.responseSerializer = [AFHTTPResponseSerializer serializer];
@@ -257,6 +263,24 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
 
     sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
     
+    // Default acceptable content headers are rejected by AWS
+    sessionManager.responseSerializer.acceptableContentTypes = nil;
+
+    return sessionManager;
+}
+
+- (AFHTTPSessionManager *)iOS13CDNSessionManager
+{
+    NSURL *baseURL = [[NSURL alloc] initWithString:textSecureDirectCDNServerURL];
+    OWSAssertDebug(baseURL);
+
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL
+                                                                    sessionConfiguration:sessionConf];
+
+    sessionManager.securityPolicy =
+        [OWSCensorshipConfiguration pinningPolicyWithCertNames:@[ @"CloudFrontDistributionLeaf" ]];
+
     // Default acceptable content headers are rejected by AWS
     sessionManager.responseSerializer.acceptableContentTypes = nil;
 
