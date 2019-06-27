@@ -311,7 +311,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         if ([message isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-            if (![authorId isEqual:incomingMessage.authorId]) {
+            if (![authorId isEqual:incomingMessage.authorAddress.transitional_phoneNumber]) {
                 continue;
             }
         } else if ([message isKindOfClass:[TSOutgoingMessage class]]) {

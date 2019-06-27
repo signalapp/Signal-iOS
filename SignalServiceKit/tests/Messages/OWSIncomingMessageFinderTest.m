@@ -2,8 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDevice.h"
 #import "OWSIncomingMessageFinder.h"
+#import "OWSDevice.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSIncomingMessageFinderTest : SSKBaseTestObjC
 
-@property (nonatomic) NSString *sourceId;
+@property (nonatomic) SignalServiceAddress *sourceAddress;
 @property (nonatomic) TSThread *thread;
 @property (nonatomic) OWSIncomingMessageFinder *finder;
 
@@ -31,8 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setUp
 {
     [super setUp];
-    self.sourceId = @"+19999999999";
-    self.thread = [TSContactThread getOrCreateThreadWithContactAddress:self.sourceId.transitional_signalServiceAddress];
+    self.sourceAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19999999999"];
+    self.thread = [TSContactThread getOrCreateThreadWithContactAddress:self.sourceAddress];
     self.finder = [OWSIncomingMessageFinder new];
 }
 
@@ -44,12 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 - (void)createIncomingMessageWithTimestamp:(uint64_t)timestamp
-                                  authorId:(NSString *)authorId
+                             authorAddress:(SignalServiceAddress *)authorAddress
                             sourceDeviceId:(uint32_t)sourceDeviceId
 {
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
                                                                                             inThread:self.thread
-                                                                                            authorId:authorId
+                                                                                       authorAddress:authorAddress
                                                                                       sourceDeviceId:sourceDeviceId
                                                                                          messageBody:@"foo"
                                                                                        attachmentIds:@[]
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceId
+                                                sourceId:self.sourceAddress.transitional_phoneNumber
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
                                              transaction:transaction];
     }];
@@ -83,12 +83,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Different timestamp
     [self createIncomingMessageWithTimestamp:timestamp + 1
-                                    authorId:self.sourceId
+                               authorAddress:self.sourceAddress
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceId
+                                                sourceId:self.sourceAddress.transitional_phoneNumber
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
                                              transaction:transaction];
     }];
@@ -97,12 +97,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Different authorId
     [self createIncomingMessageWithTimestamp:timestamp
-                                    authorId:@"some-other-author-id"
+                               authorAddress:self.sourceAddress
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceId
+                                                sourceId:self.sourceAddress.transitional_phoneNumber
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
                                              transaction:transaction];
     }];
@@ -110,23 +110,25 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Different device
     [self createIncomingMessageWithTimestamp:timestamp
-                                    authorId:self.sourceId
+                               authorAddress:self.sourceAddress
                               sourceDeviceId:OWSDevicePrimaryDeviceId + 1];
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceId
+                                                sourceId:self.sourceAddress.transitional_phoneNumber
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
                                              transaction:transaction];
     }];
     XCTAssertFalse(result);
 
     // The real deal...
-    [self createIncomingMessageWithTimestamp:timestamp authorId:self.sourceId sourceDeviceId:OWSDevicePrimaryDeviceId];
+    [self createIncomingMessageWithTimestamp:timestamp
+                               authorAddress:self.sourceAddress
+                              sourceDeviceId:OWSDevicePrimaryDeviceId];
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceId
+                                                sourceId:self.sourceAddress.transitional_phoneNumber
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
                                              transaction:transaction];
     }];

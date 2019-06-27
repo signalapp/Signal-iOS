@@ -260,7 +260,7 @@ public class IncomingMessageFactory: NSObject, Factory {
 
         let item = TSIncomingMessage(incomingMessageWithTimestamp: timestampBuilder(),
                                      in: thread,
-                                     authorId: authorIdBuilder(thread),
+                                     authorAddress: authorAddressBuilder(thread),
                                      sourceDeviceId: sourceDeviceIdBuilder(),
                                      messageBody: messageBodyBuilder(),
                                      attachmentIds: attachmentIdsBuilder(),
@@ -298,15 +298,16 @@ public class IncomingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var authorIdBuilder: (TSThread) -> String = { thread in
+    public var authorAddressBuilder: (TSThread) -> SignalServiceAddress = { thread in
         switch thread {
         case let contactThread as TSContactThread:
-            return contactThread.contactAddress.transitional_phoneNumber
+            return contactThread.contactAddress
         case let groupThread as TSGroupThread:
-            return groupThread.recipientIdentifiers.ows_randomElement() ?? CommonGenerator.contactId
+            let randomE164 = groupThread.recipientIdentifiers.ows_randomElement() ?? CommonGenerator.contactId
+            return SignalServiceAddress(phoneNumber: randomE164)
         default:
             owsFailDebug("unexpected thread type")
-            return CommonGenerator.contactId
+            return SignalServiceAddress(phoneNumber: CommonGenerator.contactId)
         }
     }
 

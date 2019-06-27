@@ -3837,21 +3837,21 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         switch (arc4random_uniform(isTextOnly ? 2 : 4)) {
             case 0: {
                 // MJK - should be safe to remove this senderTimestamp
-                TSIncomingMessage *message =
-                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                       inThread:thread
-                                                                       authorId:@"+19174054215"
-                                                                 sourceDeviceId:0
-                                                                    messageBody:randomText
-                                                                  attachmentIds:@[]
-                                                               expiresInSeconds:0
-                                                                  quotedMessage:nil
-                                                                   contactShare:nil
-                                                                    linkPreview:nil
-                                                                 messageSticker:nil
-                                                                serverTimestamp:nil
-                                                                wasReceivedByUD:NO
-                                            perMessageExpirationDurationSeconds:0];
+                TSIncomingMessage *message = [[TSIncomingMessage alloc]
+                       initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                               inThread:thread
+                                          authorAddress:@"+19174054215".transitional_signalServiceAddress
+                                         sourceDeviceId:0
+                                            messageBody:randomText
+                                          attachmentIds:@[]
+                                       expiresInSeconds:0
+                                          quotedMessage:nil
+                                           contactShare:nil
+                                            linkPreview:nil
+                                         messageSticker:nil
+                                        serverTimestamp:nil
+                                        wasReceivedByUD:NO
+                    perMessageExpirationDurationSeconds:0];
                 [message anyInsertWithTransaction:transaction];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
@@ -3887,23 +3887,23 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 pointer.state = TSAttachmentPointerStateFailed;
                 [pointer anyInsertWithTransaction:transaction];
                 // MJK - should be safe to remove this senderTimestamp
-                TSIncomingMessage *message =
-                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                       inThread:thread
-                                                                       authorId:@"+19174054215"
-                                                                 sourceDeviceId:0
-                                                                    messageBody:nil
-                                                                  attachmentIds:@[
-                                                                      pointer.uniqueId,
-                                                                  ]
-                                                               expiresInSeconds:0
-                                                                  quotedMessage:nil
-                                                                   contactShare:nil
-                                                                    linkPreview:nil
-                                                                 messageSticker:nil
-                                                                serverTimestamp:nil
-                                                                wasReceivedByUD:NO
-                                            perMessageExpirationDurationSeconds:0];
+                TSIncomingMessage *message = [[TSIncomingMessage alloc]
+                       initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                               inThread:thread
+                                          authorAddress:@"+19174054215".transitional_signalServiceAddress
+                                         sourceDeviceId:0
+                                            messageBody:nil
+                                          attachmentIds:@[
+                                              pointer.uniqueId,
+                                          ]
+                                       expiresInSeconds:0
+                                          quotedMessage:nil
+                                           contactShare:nil
+                                            linkPreview:nil
+                                         messageSticker:nil
+                                        serverTimestamp:nil
+                                        wasReceivedByUD:NO
+                    perMessageExpirationDurationSeconds:0];
                 [message anyInsertWithTransaction:transaction];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
@@ -4351,21 +4351,21 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             NSString *randomText = [self randomText];
             {
                 // Legit usage of SenderTimestamp to backdate incoming sent messages for Debug
-                TSIncomingMessage *message =
-                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp.unsignedLongLongValue
-                                                                       inThread:thread
-                                                                       authorId:recipientId
-                                                                 sourceDeviceId:0
-                                                                    messageBody:randomText
-                                                                  attachmentIds:[NSMutableArray new]
-                                                               expiresInSeconds:0
-                                                                  quotedMessage:nil
-                                                                   contactShare:nil
-                                                                    linkPreview:nil
-                                                                 messageSticker:nil
-                                                                serverTimestamp:nil
-                                                                wasReceivedByUD:NO
-                                            perMessageExpirationDurationSeconds:0];
+                TSIncomingMessage *message = [[TSIncomingMessage alloc]
+                       initIncomingMessageWithTimestamp:timestamp.unsignedLongLongValue
+                                               inThread:thread
+                                          authorAddress:recipientId.transitional_signalServiceAddress
+                                         sourceDeviceId:0
+                                            messageBody:randomText
+                                          attachmentIds:[NSMutableArray new]
+                                       expiresInSeconds:0
+                                          quotedMessage:nil
+                                           contactShare:nil
+                                            linkPreview:nil
+                                         messageSticker:nil
+                                        serverTimestamp:nil
+                                        wasReceivedByUD:NO
+                    perMessageExpirationDurationSeconds:0];
                 [message anyInsertWithTransaction:transaction];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
             }
@@ -4405,13 +4405,14 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (void)createDisappearingMessagesWhichFailedToStartInThread:(TSThread *)thread
 {
+    // MJK TODO - should be safe to remove this senderTimestamp
     uint64_t now = [NSDate ows_millisecondTimeStamp];
 
-    // MJK TODO - should be safe to remove this senderTimestamp
+    SignalServiceAddress *address = thread.recipientIdentifiers.firstObject.transitional_signalServiceAddress;
     TSIncomingMessage *message = [[TSIncomingMessage alloc]
            initIncomingMessageWithTimestamp:now
                                    inThread:thread
-                                   authorId:thread.recipientIdentifiers.firstObject
+                              authorAddress:address
                              sourceDeviceId:0
                                 messageBody:[NSString
                                                 stringWithFormat:@"Should disappear 60s after %lu", (unsigned long)now]
@@ -4815,7 +4816,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     TSIncomingMessage *message =
         [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                            inThread:thread
-                                                           authorId:@"+19174054215"
+                                                      authorAddress:@"+19174054215".transitional_signalServiceAddress
                                                      sourceDeviceId:0
                                                         messageBody:messageBody
                                                       attachmentIds:attachmentIds

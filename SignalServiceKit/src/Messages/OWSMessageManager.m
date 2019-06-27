@@ -240,7 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"handling decrypted envelope: %@", [self descriptionForEnvelope:envelope]);
 
-    if (!envelope.hasSourceE164 || envelope.sourceE164.length < 1 || !envelope.sourceE164.isValidE164) {
+    if (!envelope.hasValidSource) {
         OWSFailDebug(@"incoming envelope has invalid source");
         return;
     }
@@ -378,8 +378,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Invalid timestamp.");
         return;
     }
-    if (envelope.sourceE164.length < 1) {
-        OWSFailDebug(@"Missing source.");
+    if (!envelope.hasValidSource) {
+        OWSFailDebug(@"Invalid source.");
         return;
     }
     if (envelope.sourceDevice < 1) {
@@ -387,6 +387,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // UUID TODO: dedupe based on sourceAddress.
     BOOL duplicateEnvelope = [InteractionFinder existsIncomingMessageWithTimestamp:envelope.timestamp
                                                                           sourceId:envelope.sourceE164
                                                                     sourceDeviceId:envelope.sourceDevice
@@ -1442,11 +1443,13 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Missing thread.");
         return nil;
     }
-    NSString *authorId = envelope.sourceE164;
-    if (authorId.length < 1) {
-        OWSFailDebug(@"Missing authorId.");
+
+    SignalServiceAddress *authorAddress = envelope.sourceAddress;
+    if (!authorAddress.isValid) {
+        OWSFailDebug(@"invalid authorAddress");
         return nil;
     }
+
     if (!transaction) {
         OWSFail(@"Missing transaction.");
         return nil;
@@ -1464,11 +1467,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSContact *_Nullable contact;
     OWSLinkPreview *_Nullable linkPreview;
     if (transaction.transitional_yapWriteTransaction) {
-        [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                                                                  thread:thread
-                                                              createdByRemoteRecipientId:authorId
-                                                                  createdInExistingGroup:NO
-                                                                             transaction:transaction];
+        [[OWSDisappearingMessagesJob sharedJob]
+            becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
+                                              thread:thread
+                          createdByRemoteRecipientId:authorAddress.transitional_phoneNumber
+                              createdInExistingGroup:NO
+                                         transaction:transaction];
 
         contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
 
@@ -1497,7 +1501,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSIncomingMessage *incomingMessage =
         [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
                                                            inThread:thread
-                                                           authorId:authorId
+                                                      authorAddress:authorAddress
                                                      sourceDeviceId:envelope.sourceDevice
                                                         messageBody:body
                                                       attachmentIds:@[]

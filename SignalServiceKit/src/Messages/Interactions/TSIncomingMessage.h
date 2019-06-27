@@ -8,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyWriteTransaction;
+@class SignalServiceAddress;
 @class TSContactThread;
 @class TSGroupThread;
 
@@ -35,8 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
  *    When the message was created in milliseconds since epoch
  *  @param thread
  *    Thread to which the message belongs
- *  @param authorId
- *    Signal ID (i.e. e164) of the user who sent the message
+ *  @param authorAddress
+ *    SignalServiceAddress of the user who sent the message
  *  @param sourceDeviceId
  *    Numeric ID of the device used to send the message. Used to detect duplicate messages.
  *  @param body
@@ -52,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initIncomingMessageWithTimestamp:(uint64_t)timestamp
                                         inThread:(TSThread *)thread
-                                        authorId:(NSString *)authorId
+                                   authorAddress:(SignalServiceAddress *)authorAddress
                                   sourceDeviceId:(uint32_t)sourceDeviceId
                                      messageBody:(nullable NSString *)body
                                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -90,12 +91,14 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
        perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
-                        authorId:(NSString *)authorId
+               authorPhoneNumber:(nullable NSString *)authorPhoneNumber
+                      authorUUID:(nullable NSString *)authorUUID
+    incomingMessageSchemaVersion:(NSUInteger)incomingMessageSchemaVersion
                             read:(BOOL)read
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:authorId:read:serverTimestamp:sourceDeviceId:wasReceivedByUD:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:authorPhoneNumber:authorUUID:incomingMessageSchemaVersion:read:serverTimestamp:sourceDeviceId:wasReceivedByUD:));
 
 // clang-format on
 
@@ -119,7 +122,9 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // This will be 0 for messages created before we were tracking sourceDeviceId
 @property (nonatomic, readonly) UInt32 sourceDeviceId;
 
-@property (nonatomic, readonly) NSString *authorId;
+@property (nonatomic, readonly) SignalServiceAddress *authorAddress;
+@property (nonatomic, readonly, nullable) NSString *authorPhoneNumber;
+@property (nonatomic, readonly, nullable) NSString *authorUUID;
 
 // convenience method for expiring a message which was just read
 - (void)markAsReadNowWithSendReadReceipt:(BOOL)sendReadReceipt transaction:(SDSAnyWriteTransaction *)transaction;

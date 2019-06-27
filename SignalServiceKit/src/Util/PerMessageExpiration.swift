@@ -351,7 +351,7 @@ public class PerMessageExpiration: NSObject {
     private class func senderId(forMessage message: TSMessage) -> String? {
 
         if let incomingMessage = message as? TSIncomingMessage {
-            return incomingMessage.authorId
+            return incomingMessage.authorAddress.transitional_phoneNumber
         } else if message as? TSOutgoingMessage != nil {
             guard let localNumber = tsAccountManager.localNumber() else {
                 owsFailDebug("Could not process sync message; no local number.")

@@ -85,6 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSIncomingMessage (SDS)
 
 @property (nonatomic, getter=wasRead) BOOL read;
+@property (nonatomic, readonly) NSUInteger incomingMessageSchemaVersion;
 
 @end
 

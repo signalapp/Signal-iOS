@@ -22,10 +22,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, getter=wasRead) BOOL read;
 
 @property (nonatomic, nullable) NSNumber *serverTimestamp;
+@property (nonatomic, readonly) NSUInteger incomingMessageSchemaVersion;
 
 @end
 
 #pragma mark -
+
+const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
 @implementation TSIncomingMessage
 
@@ -36,16 +39,21 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    if (_authorId == nil) {
-        _authorId = [TSContactThread legacyContactPhoneNumberFromThreadId:self.uniqueThreadId];
+    if (_incomingMessageSchemaVersion < 1) {
+        _authorPhoneNumber = [coder decodeObjectForKey:@"authorId"];
+        if (_authorPhoneNumber == nil) {
+            _authorPhoneNumber = [TSContactThread legacyContactPhoneNumberFromThreadId:self.uniqueThreadId];
+        }
     }
+
+    _incomingMessageSchemaVersion = TSIncomingMessageSchemaVersion;
 
     return self;
 }
 
 - (instancetype)initIncomingMessageWithTimestamp:(uint64_t)timestamp
                                         inThread:(TSThread *)thread
-                                        authorId:(NSString *)authorId
+                                   authorAddress:(SignalServiceAddress *)authorAddress
                                   sourceDeviceId:(uint32_t)sourceDeviceId
                                      messageBody:(nullable NSString *)body
                                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -74,7 +82,9 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _authorId = authorId;
+    _authorPhoneNumber = authorAddress.phoneNumber;
+    _authorUUID = authorAddress.uuidString;
+
     _sourceDeviceId = sourceDeviceId;
     _read = NO;
     _serverTimestamp = serverTimestamp;
@@ -107,7 +117,9 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
        perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
-                        authorId:(NSString *)authorId
+               authorPhoneNumber:(nullable NSString *)authorPhoneNumber
+                      authorUUID:(nullable NSString *)authorUUID
+    incomingMessageSchemaVersion:(NSUInteger)incomingMessageSchemaVersion
                             read:(BOOL)read
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
@@ -136,7 +148,9 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return self;
     }
 
-    _authorId = authorId;
+    _authorPhoneNumber = authorPhoneNumber;
+    _authorUUID = authorUUID;
+    _incomingMessageSchemaVersion = incomingMessageSchemaVersion;
     _read = read;
     _serverTimestamp = serverTimestamp;
     _sourceDeviceId = sourceDeviceId;
@@ -166,9 +180,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                  if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
                                      TSIncomingMessage *message = (TSIncomingMessage *)interaction;
 
-                                     OWSAssertDebug(message.authorId > 0);
+                                     OWSAssertDebug(message.authorAddress.isValid);
 
-                                     if ([message.authorId isEqualToString:authorId]) {
+                                     if ([message.authorAddress
+                                             matchesAddress:authorId.transitional_signalServiceAddress]) {
                                          foundMessage = message;
                                      }
                                  }
@@ -248,6 +263,11 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     if (sendReadReceipt) {
         [OWSReadReceiptManager.sharedManager messageWasReadLocally:self];
     }
+}
+
+- (SignalServiceAddress *)authorAddress
+{
+    return [[SignalServiceAddress alloc] initWithUuidString:self.authorUUID phoneNumber:self.authorPhoneNumber];
 }
 
 @end

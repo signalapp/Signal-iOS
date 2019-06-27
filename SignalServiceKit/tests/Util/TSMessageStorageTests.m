@@ -54,7 +54,7 @@
     TSIncomingMessage *newMessage =
         [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
                                                            inThread:self.thread
-                                                           authorId:[self.thread contactIdentifier]
+                                                      authorAddress:self.thread.contactAddress
                                                      sourceDeviceId:1
                                                         messageBody:body
                                                       attachmentIds:@[]
@@ -89,7 +89,7 @@
         TSIncomingMessage *newMessage =
             [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i
                                                                inThread:self.thread
-                                                               authorId:[self.thread contactIdentifier]
+                                                          authorAddress:self.thread.contactAddress
                                                          sourceDeviceId:1
                                                             messageBody:body
                                                           attachmentIds:@[]
@@ -142,9 +142,10 @@
 
     NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
     for (uint64_t i = 0; i < 10; i++) {
+        SignalServiceAddress *authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+fakephone"];
         TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i
                                                                                            inThread:thread
-                                                                                           authorId:@"Ed"
+                                                                                      authorAddress:authorAddress
                                                                                      sourceDeviceId:1
                                                                                         messageBody:body
                                                                                       attachmentIds:@[]

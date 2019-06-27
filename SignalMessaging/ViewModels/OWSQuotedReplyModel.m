@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
         if ([message isKindOfClass:[TSOutgoingMessage class]]) {
             return [TSAccountManager localNumber];
         } else if ([message isKindOfClass:[TSIncomingMessage class]]) {
-            return [(TSIncomingMessage *)message authorId];
+            return [(TSIncomingMessage *)message authorAddress].transitional_phoneNumber;
         } else {
             OWSFailDebug(@"Unexpected message type: %@", message.class);
             return (NSString * _Nullable) nil;
