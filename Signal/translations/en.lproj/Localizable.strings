@@ -645,16 +645,16 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Make Profile Visible";
 
 /* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Make Your Profile Visible";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Make My Profile Visible";
 
 /* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Make Your Profile Visible";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Make My Profile Visible";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Add to Contacts";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Make Your Profile Visible To This User";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Make My Profile Visible To This User";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "This user is not in your contacts";
@@ -1554,7 +1554,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid number";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Signal profiles are end-to-end encrypted, so even the Signal service never has access to your profile information.";
+"ONBOARDING_PROFILE_EXPLANATION" = "Your Signal Profile will be visible only to people who are in your contact list, to people who you intitiated a conversation with, and to people for who you explicitly gave permission by tapping the option \'Make My Profile Visible\'. Signal profiles are end-to-end encrypted, so even the Signal service never has access to your profile information.";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Your Name";
@@ -1755,7 +1755,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible only to people who are in your contact list, to people who you intitiated a conversation with, and to people for who you explicitly gave permission. Signal profiles are end-to-end encrypted, so even the Signal service never has access to your profile information.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible only to people who are in your contact list, to people who you intitiated a conversation with, and to people for who you explicitly gave permission by tapping the option \'Make My Profile Visible\'. Signal profiles are end-to-end encrypted, so even the Signal service never has access to your profile information.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
