@@ -107,7 +107,9 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
        perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
-                        authorId:(NSString *)authorId
+               authorPhoneNumber:(nullable NSString *)authorPhoneNumber
+                      authorUUID:(nullable NSString *)authorUUID
+    incomingMessageSchemaVersion:(NSUInteger)incomingMessageSchemaVersion
                             read:(BOOL)read
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
@@ -136,7 +138,9 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return self;
     }
 
-    _authorId = authorId;
+    _authorPhoneNumber = authorPhoneNumber;
+    _authorUUID = authorUUID;
+    _incomingMessageSchemaVersion = incomingMessageSchemaVersion;
     _read = read;
     _serverTimestamp = serverTimestamp;
     _sourceDeviceId = sourceDeviceId;
