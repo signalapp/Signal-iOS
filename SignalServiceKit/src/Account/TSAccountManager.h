@@ -61,12 +61,6 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 // A variant of localNumber that never opens a "sneaky" transaction.
 - (nullable NSString *)storedOrCachedLocalNumber:(SDSAnyReadTransaction *)transaction;
 
-#ifdef DEBUG
-// This method is exposed for testing purposes only.
-// TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.contactUUID in production
-- (void)storeLocalNumber:(NSString *)localNumber uuid:(nullable NSUUID *)uuid;
-#endif
-
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,
  *

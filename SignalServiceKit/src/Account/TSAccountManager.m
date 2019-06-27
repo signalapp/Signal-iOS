@@ -191,8 +191,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         OWSFail(@"phoneNumber was unexpectedly nil");
     }
 
-    // UUID TODO: pass in uuid returned from registration verification
-    [self storeLocalNumber:phoneNumber uuid:nil];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        // UUID TODO: pass in uuid returned from registration verification
+        [self storeLocalNumber:phoneNumber uuid:nil transaction:transaction];
+    }];
 
     // Warm these cached values.
     [self isRegistered];
