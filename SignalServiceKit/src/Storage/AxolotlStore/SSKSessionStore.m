@@ -34,6 +34,11 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     return self;
 }
 
+- (OWSAccountIdFinder *)accountIdFinder
+{
+    return [OWSAccountIdFinder new];
+}
+
 #pragma mark -
 
 - (SessionRecord *)loadSession:(NSString *)contactIdentifier
@@ -43,17 +48,31 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
     SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
 
-    return [self loadSession:contactIdentifier deviceId:deviceId transaction:transaction];
+    return [self loadSessionForAccountId:contactIdentifier deviceId:deviceId transaction:transaction];
 }
 
-- (SessionRecord *)loadSession:(NSString *)contactIdentifier
-                      deviceId:(int)deviceId
-                   transaction:(SDSAnyReadTransaction *)transaction
+- (SessionRecord *)loadSessionForAddress:(SignalServiceAddress *)address
+                                deviceId:(int)deviceId
+                             transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(contactIdentifier.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(deviceId >= 0);
 
-    NSDictionary *_Nullable dictionary = [self.keyValueStore getObject:contactIdentifier transaction:transaction];
+    NSString *accountId = [self.accountIdFinder accountIdForAddress:address transaction:transaction];
+    OWSAssertDebug(accountId);
+
+    return [self loadSessionForAccountId:accountId deviceId:deviceId transaction:transaction];
+}
+
+- (SessionRecord *)loadSessionForAccountId:(NSString *)accountId
+                                  deviceId:(int)deviceId
+                               transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(accountId.length > 0);
+    OWSAssertDebug(deviceId > 0);
+    OWSAssertDebug([transaction isKindOfClass:[SDSAnyReadTransaction class]]);
+
+    NSDictionary *_Nullable dictionary = [self.keyValueStore getObject:accountId transaction:transaction];
 
     SessionRecord *record;
 
@@ -76,17 +95,29 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
     SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
 
-    return [self subDevicesSessions:contactIdentifier transaction:transaction];
+    return [self subDevicesSessionsForAccountId:contactIdentifier transaction:transaction];
 }
 
-- (NSArray *)subDevicesSessions:(NSString *)contactIdentifier transaction:(SDSAnyReadTransaction *)transaction
+- (NSArray *)subDevicesSessionsForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(contactIdentifier.length > 0);
+    OWSAssertDebug(address.isValid > 0);
+
+    NSString *accountId = [self.accountIdFinder accountIdForAddress:address transaction:transaction];
+    OWSAssertDebug(accountId.length > 0);
+
+    return [self subDevicesSessionsForAccountId:accountId transaction:transaction];
+}
+
+- (NSArray *)subDevicesSessionsForAccountId:(NSString *)accountId transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(accountId.length > 0);
+
     // Deprecated. We aren't currently using this anywhere, but it's "required" by the SessionStore protocol.
     // If we are going to start using it I'd want to re-verify it works as intended.
     OWSFailDebug(@"subDevicesSessions is deprecated");
 
-    NSDictionary *_Nullable dictionary = [self.keyValueStore getObject:contactIdentifier transaction:transaction];
+    NSDictionary *_Nullable dictionary = [self.keyValueStore getObject:accountId transaction:transaction];
 
     return dictionary ? dictionary.allKeys : @[];
 }
@@ -100,15 +131,28 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
     SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
 
-    [self storeSession:contactIdentifier deviceId:deviceId session:session transaction:transaction];
+    [self storeSessionForAccountId:contactIdentifier deviceId:deviceId session:session transaction:transaction];
 }
 
-- (void)storeSession:(NSString *)contactIdentifier
-            deviceId:(int)deviceId
-             session:(SessionRecord *)session
-         transaction:(SDSAnyWriteTransaction *)transaction
+- (void)storeSessionForAddress:(SignalServiceAddress *)address
+                      deviceId:(int)deviceId
+                       session:(SessionRecord *)session
+                   transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(contactIdentifier.length > 0);
+    OWSAssertDebug(address.isValid > 0);
+
+    NSString *accountId = [self.accountIdFinder ensureAccountIdForAddress:address transaction:transaction];
+    OWSAssertDebug(accountId.length > 0);
+
+    [self storeSessionForAccountId:accountId deviceId:deviceId session:session transaction:transaction];
+}
+
+- (void)storeSessionForAccountId:(NSString *)accountId
+                        deviceId:(int)deviceId
+                         session:(SessionRecord *)session
+                     transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(accountId.length > 0);
     OWSAssertDebug(deviceId >= 0);
 
     // We need to ensure subsequent usage of this SessionRecord does not consider this session as "fresh". Normally this
@@ -119,15 +163,14 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     // NOTE: this may no longer be necessary now that we have a non-caching session db connection.
     [session markAsUnFresh];
 
-    NSDictionary *immutableDictionary = [self.keyValueStore getObject:contactIdentifier transaction:transaction];
+    NSDictionary *immutableDictionary = [self.keyValueStore getObject:accountId transaction:transaction];
 
     NSMutableDictionary *dictionary
         = (immutableDictionary ? [immutableDictionary mutableCopy] : [NSMutableDictionary new]);
 
     [dictionary setObject:session forKey:@(deviceId)];
 
-
-    [self.keyValueStore setObject:[dictionary copy] key:contactIdentifier transaction:transaction];
+    [self.keyValueStore setObject:[dictionary copy] key:accountId transaction:transaction];
 }
 
 - (BOOL)containsSession:(NSString *)contactIdentifier
@@ -137,17 +180,31 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyReadTransaction class]]);
     SDSAnyReadTransaction *transaction = (SDSAnyReadTransaction *)protocolContext;
 
-    return [self containsSession:contactIdentifier deviceId:deviceId transaction:transaction];
+    return [self containsSessionForAccountId:contactIdentifier deviceId:deviceId transaction:transaction];
 }
 
-- (BOOL)containsSession:(NSString *)contactIdentifier
-               deviceId:(int)deviceId
-            transaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)containsSessionForAddress:(SignalServiceAddress *)address
+                         deviceId:(int)deviceId
+                      transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(contactIdentifier.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(deviceId >= 0);
 
-    return [self loadSession:contactIdentifier deviceId:deviceId transaction:transaction].sessionState.hasSenderChain;
+    NSString *accountId = [self.accountIdFinder accountIdForAddress:address transaction:transaction];
+    OWSAssertDebug(accountId.length > 0);
+
+    return [self containsSessionForAccountId:accountId deviceId:deviceId transaction:transaction];
+}
+
+- (BOOL)containsSessionForAccountId:(NSString *)accountId
+                           deviceId:(int)deviceId
+                        transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(accountId.length > 0);
+    OWSAssertDebug(deviceId >= 0);
+
+    return
+        [self loadSessionForAccountId:accountId deviceId:deviceId transaction:transaction].sessionState.hasSenderChain;
 }
 
 - (void)deleteSessionForContact:(NSString *)contactIdentifier
@@ -158,26 +215,39 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
     SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
 
-    [self deleteSessionForContact:contactIdentifier deviceId:deviceId transaction:transaction];
+    [self deleteSessionForAccountId:contactIdentifier deviceId:deviceId transaction:transaction];
 }
 
-- (void)deleteSessionForContact:(NSString *)contactIdentifier
+- (void)deleteSessionForAddress:(SignalServiceAddress *)address
                        deviceId:(int)deviceId
                     transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(contactIdentifier.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(deviceId >= 0);
 
-    OWSLogInfo(@"deleting session for contact: %@ device: %d", contactIdentifier, deviceId);
+    NSString *accountId = [self.accountIdFinder ensureAccountIdForAddress:address transaction:transaction];
+    OWSAssertDebug(accountId.length > 0);
 
-    NSDictionary *immutableDictionary = [self.keyValueStore getObject:contactIdentifier transaction:transaction];
+    return [self deleteSessionForAccountId:accountId deviceId:deviceId transaction:transaction];
+}
+
+- (void)deleteSessionForAccountId:(NSString *)accountId
+                         deviceId:(int)deviceId
+                      transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(accountId.length > 0);
+    OWSAssertDebug(deviceId >= 0);
+
+    OWSLogInfo(@"deleting session for contact: %@ device: %d", accountId, deviceId);
+
+    NSDictionary *immutableDictionary = [self.keyValueStore getObject:accountId transaction:transaction];
 
     NSMutableDictionary *dictionary
         = (immutableDictionary ? [immutableDictionary mutableCopy] : [NSMutableDictionary new]);
 
     [dictionary removeObjectForKey:@(deviceId)];
 
-    [self.keyValueStore setObject:[dictionary copy] key:contactIdentifier transaction:transaction];
+    [self.keyValueStore setObject:[dictionary copy] key:accountId transaction:transaction];
 }
 
 - (void)deleteAllSessionsForContact:(NSString *)contactIdentifier
@@ -186,16 +256,26 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
     SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
 
-    [self deleteAllSessionsForContact:contactIdentifier transaction:transaction];
+    [self deleteAllSessionsForAccountId:contactIdentifier transaction:transaction];
 }
 
-- (void)deleteAllSessionsForContact:(NSString *)contactIdentifier transaction:(SDSAnyWriteTransaction *)transaction
+- (void)deleteAllSessionsForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(contactIdentifier.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    OWSLogInfo(@"deleting all sessions for contact:%@", contactIdentifier);
+    NSString *accountId = [self.accountIdFinder ensureAccountIdForAddress:address transaction:transaction];
+    OWSAssertDebug(accountId.length > 0);
 
-    [self.keyValueStore removeValueForKey:contactIdentifier transaction:transaction];
+    [self deleteAllSessionsForAccountId:accountId transaction:transaction];
+}
+
+- (void)deleteAllSessionsForAccountId:(NSString *)accountId transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(accountId.length > 0);
+
+    OWSLogInfo(@"deleting all sessions for contact: %@", accountId);
+
+    [self.keyValueStore removeValueForKey:accountId transaction:transaction];
 }
 
 - (void)archiveAllSessionsForContact:(NSString *)contactIdentifier
@@ -204,17 +284,27 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     OWSAssertDebug([protocolContext isKindOfClass:[SDSAnyWriteTransaction class]]);
     SDSAnyWriteTransaction *transaction = (SDSAnyWriteTransaction *)protocolContext;
 
-    [self archiveAllSessionsForContact:contactIdentifier transaction:transaction];
+    [self archiveAllSessionsForAccountId:contactIdentifier transaction:transaction];
 }
 
-- (void)archiveAllSessionsForContact:(NSString *)contactIdentifier transaction:(SDSAnyWriteTransaction *)transaction
+- (void)archiveAllSessionsForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(contactIdentifier.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    OWSLogInfo(@"archiving all sessions for contact: %@", contactIdentifier);
+    NSString *accountId = [self.accountIdFinder ensureAccountIdForAddress:address transaction:transaction];
+    OWSAssertDebug(accountId.length > 0);
 
-    __block NSDictionary<NSNumber *, SessionRecord *> *sessionRecords =
-        [self.keyValueStore getObject:contactIdentifier transaction:transaction];
+    [self archiveAllSessionsForAccountId:accountId transaction:transaction];
+}
+
+- (void)archiveAllSessionsForAccountId:(NSString *)accountId transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(accountId.length > 0);
+
+    OWSLogInfo(@"archiving all sessions for contact: %@", accountId);
+
+    __block NSDictionary<NSNumber *, SessionRecord *> *sessionRecords = [self.keyValueStore getObject:accountId
+                                                                                          transaction:transaction];
 
     for (id deviceId in sessionRecords) {
         id object = sessionRecords[deviceId];
@@ -227,7 +317,7 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
         [sessionRecord archiveCurrentState];
     }
 
-    [self.keyValueStore setObject:sessionRecords key:contactIdentifier transaction:transaction];
+    [self.keyValueStore setObject:sessionRecords key:accountId transaction:transaction];
 }
 
 #pragma mark - debug

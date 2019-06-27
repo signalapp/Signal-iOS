@@ -1277,7 +1277,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     NSError *error;
-    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.recipientId];
+    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.address.transitional_phoneNumber];
     if (error || !dataMessage) {
         OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;

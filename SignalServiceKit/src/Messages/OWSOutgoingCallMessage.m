@@ -116,8 +116,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(recipient);
 
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
-    [builder setCallMessage:[self buildCallMessage:recipient.recipientId]];
-    
+    [builder setCallMessage:[self buildCallMessage:recipient.address.transitional_phoneNumber]];
+
     NSError *error;
     NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];
     if (error || !data) {

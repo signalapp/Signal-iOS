@@ -61,12 +61,12 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         write { transaction in
             try! self.runner.initialize(senderClient: self.bobClient,
                                         recipientClient: self.localClient,
-                                        protocolContext: transaction)
+                                        transaction: transaction)
         }
 
         let expectMessageProcessed = expectation(description: "message processed")
 
-        self.read { transaction in
+        read { transaction in
             XCTAssertEqual(0, TSMessage.anyCount(transaction: transaction))
             XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
         }
@@ -115,12 +115,12 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         write { transaction in
             try! self.runner.initialize(senderClient: self.bobClient,
                                         recipientClient: self.localClient,
-                                        protocolContext: transaction)
+                                        transaction: transaction)
         }
 
         let expectMessageProcessed = expectation(description: "message processed")
 
-        self.read { transaction in
+        read { transaction in
             XCTAssertEqual(0, TSMessage.anyCount(transaction: transaction))
             XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
         }
@@ -190,7 +190,7 @@ struct FakeService {
         let cipherMessage: CipherMessage = databaseStorage.writeReturningResult { transaction in
             return try! self.runner.encrypt(plaintext: plaintext,
                                             senderClient: senderClient,
-                                            recipientE164: self.localClient.e164Identifier,
+                                            recipientAccountId: self.localClient.accountId(transaction: transaction),
                                             protocolContext: transaction)
         }
 

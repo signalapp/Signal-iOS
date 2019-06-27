@@ -109,10 +109,12 @@ NS_ASSUME_NONNULL_BEGIN
             for (NSString *recipientId in recipientIdsToLookup) {
                 if ([registeredRecipientIds containsObject:recipientId]) {
                     SignalRecipient *recipient =
-                        [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
+                        [SignalRecipient markRecipientAsRegisteredAndGet:recipientId.transitional_signalServiceAddress
+                                                             transaction:transaction];
                     [recipients addObject:recipient];
                 } else {
-                    [SignalRecipient markRecipientAsUnregistered:recipientId transaction:transaction];
+                    [SignalRecipient markRecipientAsUnregistered:recipientId.transitional_signalServiceAddress
+                                                     transaction:transaction];
                 }
             }
         }];

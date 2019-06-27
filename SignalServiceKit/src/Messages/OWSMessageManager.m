@@ -1037,7 +1037,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      inThread:thread
                                   messageType:TSInfoMessageTypeSessionDidEnd] anyInsertWithTransaction:transaction];
 
-    [self.sessionStore deleteAllSessionsForContact:envelope.sourceE164 transaction:transaction];
+    [self.sessionStore deleteAllSessionsForAddress:envelope.sourceAddress transaction:transaction];
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope
@@ -1672,15 +1672,16 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(envelope);
     OWSAssertDebug(transaction);
 
-    NSString *localNumber = self.tsAccountManager.localNumber;
-    if (![localNumber isEqualToString:envelope.sourceE164]) {
+    SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
+    if (![localAddress.transitional_phoneNumber isEqualToString:envelope.sourceE164]) {
         return;
     }
 
     // Consult the device list cache we use for message sending
     // whether or not we know about this linked device.
-    SignalRecipient *_Nullable recipient =
-        [SignalRecipient registeredRecipientForRecipientId:localNumber mustHaveDevices:NO transaction:transaction];
+    SignalRecipient *_Nullable recipient = [SignalRecipient registeredRecipientForAddress:localAddress
+                                                                          mustHaveDevices:NO
+                                                                              transaction:transaction];
     if (!recipient) {
         OWSFailDebug(@"No local SignalRecipient.");
     } else {

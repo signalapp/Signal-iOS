@@ -281,7 +281,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                  createdAt:[NSDate new]
                                          verificationState:verificationState] anyInsertWithTransaction:transaction];
 
-        [self.sessionStore archiveAllSessionsForContact:recipientId transaction:transaction];
+        [self.sessionStore archiveAllSessionsForAddress:recipientId.transitional_signalServiceAddress
+                                            transaction:transaction];
 
         // Cancel any pending verification state sync messages for this recipient.
         [self clearSyncMessageForRecipientId:recipientId transaction:transaction];

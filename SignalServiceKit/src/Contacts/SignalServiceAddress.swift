@@ -28,6 +28,14 @@ public class SignalServiceAddress: NSObject {
     }
 
     @objc
+    public init(uuid: UUID?, phoneNumber: String?) {
+        self.uuid = uuid
+        self.phoneNumber = phoneNumber
+
+        super.init()
+    }
+
+    @objc
     public init(uuidString: String?, phoneNumber: String?) {
         if let uuidString = uuidString, let uuid = UUID(uuidString: uuidString) {
             self.uuid = uuid
@@ -49,9 +57,22 @@ public class SignalServiceAddress: NSObject {
 
         super.init()
 
-        if self.uuid == nil && self.phoneNumber == nil {
+        if !isValid {
             owsFailDebug("Unexpectedly initialized address with no identifier")
         }
+    }
+
+    @objc
+    public var isValid: Bool {
+        if uuid != nil {
+            return true
+        }
+
+        if let phoneNumber = phoneNumber {
+            return !phoneNumber.isEmpty
+        }
+
+        return false
     }
 
     @objc

@@ -233,7 +233,7 @@ public class ProfileFetcherJob: NSObject {
         primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
             if self.identityManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, transaction: transaction.asAnyWrite) {
                 Logger.info("updated identity key with fetched profile for recipient: \(recipientId)")
-                self.sessionStore.archiveAllSessions(forContact: recipientId, transaction: transaction.asAnyWrite)
+                self.sessionStore.archiveAllSessions(for: recipientId.transitional_signalServiceAddress, transaction: transaction.asAnyWrite)
             } else {
                 // no change in identity.
             }

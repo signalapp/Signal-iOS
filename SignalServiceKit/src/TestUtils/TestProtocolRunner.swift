@@ -10,31 +10,38 @@ public struct TestProtocolRunner {
 
     public init() { }
 
-    public func initialize(senderClient: SignalClient, recipientClient: SignalClient, protocolContext: SPKProtocolWriteContext?) throws {
+    let accountIdentifierFinder  = OWSAccountIdFinder()
+
+    public func initialize(senderClient: SignalClient, recipientClient: SignalClient, transaction: SDSAnyWriteTransaction) throws {
+
+        let senderIdentifier = accountIdentifierFinder.ensureAccountId(forAddress: senderClient.address, transaction: transaction)
+        let recipientIdentifier = accountIdentifierFinder.ensureAccountId(forAddress: recipientClient.address, transaction: transaction)
+
         try SignalProtocolHelper.sessionInitialization(withAliceSessionStore: senderClient.sessionStore,
                                                        aliceIdentityKeyStore: senderClient.identityKeyStore,
-                                                       aliceIdentifier: senderClient.e164Identifier,
+                                                       aliceIdentifier: senderIdentifier,
                                                        aliceIdentityKeyPair: senderClient.identityKeyPair,
                                                        bobSessionStore: recipientClient.sessionStore,
                                                        bobIdentityKeyStore: recipientClient.identityKeyStore,
-                                                       bobIdentifier: recipientClient.e164Identifier,
+                                                       bobIdentifier: recipientIdentifier,
                                                        bobIdentityKeyPair: recipientClient.identityKeyPair,
-                                                       protocolContext: protocolContext)
+                                                       protocolContext: transaction)
     }
 
-    public func encrypt(plaintext: Data, senderClient: SignalClient, recipientE164: SignalE164Identifier, protocolContext: SPKProtocolWriteContext?) throws -> CipherMessage {
-        let sessionCipher = try senderClient.sessionCipher(for: recipientE164)
+    public func encrypt(plaintext: Data, senderClient: SignalClient, recipientAccountId: SignalAccountIdentifier, protocolContext: SPKProtocolWriteContext?) throws -> CipherMessage {
+        let sessionCipher = try senderClient.sessionCipher(for: recipientAccountId)
         return try sessionCipher.encryptMessage(plaintext, protocolContext: protocolContext)
     }
 
-    public func decrypt(cipherMessage: CipherMessage, recipientClient: SignalClient, senderE164: SignalE164Identifier, protocolContext: SPKProtocolWriteContext?) throws -> Data {
-        let sessionCipher = try recipientClient.sessionCipher(for: senderE164)
+    public func decrypt(cipherMessage: CipherMessage, recipientClient: SignalClient, senderAccountId: SignalAccountIdentifier, protocolContext: SPKProtocolWriteContext?) throws -> Data {
+        let sessionCipher = try recipientClient.sessionCipher(for: senderAccountId)
         return try sessionCipher.decrypt(cipherMessage, protocolContext: protocolContext)
     }
 }
 
 public typealias SignalE164Identifier = String
 public typealias SignalUUIDIdentifier = String
+public typealias SignalAccountIdentifier = String
 
 /// Represents a Signal installation, it can represent the local client or
 /// a remote client.
@@ -45,13 +52,14 @@ public protocol SignalClient {
     var uuidIdentifier: SignalUUIDIdentifier { get }
     var uuid: UUID { get }
     var deviceId: UInt32 { get }
+    var address: SignalServiceAddress { get }
 
     var sessionStore: SessionStore { get }
     var preKeyStore: PreKeyStore { get }
     var signedPreKeyStore: SignedPreKeyStore { get }
     var identityKeyStore: IdentityKeyStore { get }
 
-    func sessionCipher(for e164Identifier: SignalE164Identifier) throws -> SessionCipher
+    func sessionCipher(for accountId: SignalAccountIdentifier) throws -> SessionCipher
 }
 
 public extension SignalClient {
@@ -63,6 +71,14 @@ public extension SignalClient {
         return uuid.uuidString
     }
 
+    var address: SignalServiceAddress {
+        if FeatureFlags.contactUUID {
+            return SignalServiceAddress(uuid: uuid, phoneNumber: e164Identifier)
+        } else {
+            return SignalServiceAddress(phoneNumber: e164Identifier)
+        }
+    }
+
     func sessionCipher(for e164Identifier: SignalE164Identifier) throws -> SessionCipher {
         return SessionCipher(sessionStore: sessionStore,
                              preKeyStore: preKeyStore,
@@ -70,6 +86,14 @@ public extension SignalClient {
                              identityKeyStore: identityKeyStore,
                              recipientId: e164Identifier,
                              deviceId: 1)
+    }
+
+    var accountIdFinder: OWSAccountIdFinder {
+        return OWSAccountIdFinder()
+    }
+
+    func accountId(transaction: SDSAnyWriteTransaction) -> String {
+        return accountIdFinder.ensureAccountId(forAddress: address, transaction: transaction)
     }
 }
 

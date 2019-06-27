@@ -41,12 +41,11 @@ public class NewAccountDiscovery: NSObject {
             return
         }
 
-        let localNumber = TSAccountManager.localNumber()
         databaseStorage.asyncWrite { transaction in
             // Don't spam inbox with a ton of these
             for recipient in newRecipients.prefix(3) {
 
-                guard recipient.recipientId != localNumber else {
+                guard !recipient.address.isLocalAddress else {
                     owsFailDebug("unexpectedly found localNumber")
                     continue
                 }
@@ -54,13 +53,13 @@ public class NewAccountDiscovery: NSObject {
                 // Typically we'd never want to create a "new user" notification if the thread already existed
                 // but for testing we disabled the `forNewThreadsOnly` flag.
                 if forNewThreadsOnly {
-                    guard TSContactThread.getWithContactId(recipient.recipientId, anyTransaction: transaction) == nil else {
+                    guard TSContactThread.getWithContactId(recipient.address.transitional_phoneNumber, anyTransaction: transaction) == nil else {
                         owsFailDebug("not creating notification for 'new' user in existing thread.")
                         continue
                     }
                 }
 
-                let thread = TSContactThread.getOrCreateThread(withContactId: recipient.recipientId, anyTransaction: transaction)
+                let thread = TSContactThread.getOrCreateThread(withContactId: recipient.address.transitional_phoneNumber, anyTransaction: transaction)
                 let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                             in: thread,
                                             messageType: .userJoinedSignal)

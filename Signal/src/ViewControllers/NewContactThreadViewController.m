@@ -1077,10 +1077,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     BOOL didUpdate = NO;
     for (SignalRecipient *recipient in recipients) {
-        if ([self.nonContactAccountSet containsObject:recipient.recipientId]) {
+        if ([self.nonContactAccountSet containsObject:recipient.address.transitional_phoneNumber]) {
             continue;
         }
-        [self.nonContactAccountSet addObject:recipient.recipientId];
+        [self.nonContactAccountSet addObject:recipient.address.transitional_phoneNumber];
         didUpdate = YES;
     }
     if (didUpdate) {

@@ -521,18 +521,19 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         for (Contact *contact in contacts) {
             NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.uniqueId];
             for (SignalRecipient *signalRecipient in [signalRecipients sortedArrayUsingSelector:@selector((compare:))]) {
-                if ([seenPhoneNumbers containsObject:signalRecipient.recipientId]) {
-                    OWSLogDebug(@"Ignoring duplicate contact: %@, %@", signalRecipient.recipientId, contact.fullName);
+                if ([seenPhoneNumbers containsObject:signalRecipient.address.transitional_phoneNumber]) {
+                    OWSLogDebug(@"Ignoring duplicate contact: %@, %@", signalRecipient.address, contact.fullName);
                     continue;
                 }
-                [seenPhoneNumbers addObject:signalRecipient.recipientId];
+                [seenPhoneNumbers addObject:signalRecipient.address.transitional_phoneNumber];
 
                 SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
                 signalAccount.contact = contact;
                 if (signalRecipients.count > 1) {
                     signalAccount.hasMultipleAccountContact = YES;
                     signalAccount.multipleAccountLabelText =
-                        [[self class] accountLabelForContact:contact phoneNumber:signalRecipient.recipientId];
+                        [[self class] accountLabelForContact:contact
+                                                 phoneNumber:signalRecipient.address.transitional_phoneNumber];
                 }
                 [signalAccounts addObject:signalAccount];
             }

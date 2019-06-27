@@ -221,10 +221,11 @@ NS_ASSUME_NONNULL_BEGIN
     __block NSMutableArray *result = [NSMutableArray array];
 
     for (PhoneNumber *number in [self.parsedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)]) {
+        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:number.toE164];
         SignalRecipient *_Nullable signalRecipient =
-            [SignalRecipient registeredRecipientForRecipientId:number.toE164
-                                               mustHaveDevices:YES
-                                                   transaction:transaction.asAnyRead];
+            [SignalRecipient registeredRecipientForAddress:address
+                                           mustHaveDevices:YES
+                                               transaction:transaction.asAnyRead];
         if (signalRecipient) {
             [result addObject:signalRecipient];
         }
@@ -238,7 +239,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         for (PhoneNumber *number in self.parsedPhoneNumbers) {
-            if ([SignalRecipient isRegisteredRecipient:number.toE164 transaction:transaction.asAnyRead]) {
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:number.toE164];
+            if ([SignalRecipient isRegisteredRecipient:address transaction:transaction.asAnyRead]) {
                 [identifiers addObject:number.toE164];
             }
         }

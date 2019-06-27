@@ -8,16 +8,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
+@class SignalServiceAddress;
 
-// SignalRecipient serves two purposes:
-//
-// a) It serves as a cache of "known" Signal accounts.  When the service indicates
-//    that an account exists, we make sure that an instance of SignalRecipient exists
-//    for that recipient id (using mark as registered) and has at least one device.
-//    When the service indicates that an account does not exist, we remove any devices
-//    from that SignalRecipient - but do not remove it from the database.
-//    Note that SignalRecipients without any devices are not considered registered.
-//// b) We hang the "known device list" for known signal accounts on this entity.
+/// SignalRecipient serves two purposes:
+///
+/// a) It serves as a cache of "known" Signal accounts.  When the service indicates
+///    that an account exists, we make sure that an instance of SignalRecipient exists
+///    for that recipient id (using mark as registered) and has at least one device.
+///    When the service indicates that an account does not exist, we remove any devices
+///    from that SignalRecipient - but do not remove it from the database.
+///    Note that SignalRecipients without any devices are not considered registered.
+/// b) We hang the "known device list" for known signal accounts on this entity.
 @interface SignalRecipient : BaseModel
 
 @property (nonatomic, readonly) NSOrderedSet *devices;
@@ -33,34 +34,44 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                          devices:(NSOrderedSet *)devices
-NS_SWIFT_NAME(init(uniqueId:devices:));
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+          recipientSchemaVersion:(NSUInteger)recipientSchemaVersion
+                   recipientUUID:(nullable NSString *)recipientUUID
+NS_SWIFT_NAME(init(uniqueId:devices:recipientPhoneNumber:recipientSchemaVersion:recipientUUID:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
 
-+ (nullable instancetype)registeredRecipientForRecipientId:(NSString *)recipientId
-                                           mustHaveDevices:(BOOL)mustHaveDevices
-                                               transaction:(SDSAnyReadTransaction *)transaction;
-+ (instancetype)getOrBuildUnsavedRecipientForRecipientId:(NSString *)recipientId
-                                             transaction:(SDSAnyReadTransaction *)transaction;
++ (nullable instancetype)registeredRecipientForAddress:(SignalServiceAddress *)address
+                                       mustHaveDevices:(BOOL)mustHaveDevices
+                                           transaction:(SDSAnyReadTransaction *)transaction;
+
++ (instancetype)getOrBuildUnsavedRecipientForAddress:(SignalServiceAddress *)address
+                                         transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray *)devicesToAdd
                                   devicesToRemove:(nullable NSArray *)devicesToRemove
                                       transaction:(SDSAnyWriteTransaction *)transaction;
 
-@property (nonatomic, readonly) NSString *recipientId;
+@property (nonatomic, readonly, nullable) NSString *recipientPhoneNumber;
+@property (nonatomic, readonly, nullable) NSString *recipientUUID;
+
+@property (nonatomic, readonly) SignalServiceAddress *address;
+- (NSString *)ensureAccountIdWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 - (NSComparisonResult)compare:(SignalRecipient *)other;
 
-+ (BOOL)isRegisteredRecipient:(NSString *)recipientId transaction:(SDSAnyReadTransaction *)transaction;
++ (BOOL)isRegisteredRecipient:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
-+ (SignalRecipient *)markRecipientAsRegisteredAndGet:(NSString *)recipientId
++ (SignalRecipient *)markRecipientAsRegisteredAndGet:(SignalServiceAddress *)address
                                          transaction:(SDSAnyWriteTransaction *)transaction;
-+ (void)markRecipientAsRegistered:(NSString *)recipientId
+
++ (void)markRecipientAsRegistered:(SignalServiceAddress *)address
                          deviceId:(UInt32)deviceId
                       transaction:(SDSAnyWriteTransaction *)transaction;
-+ (void)markRecipientAsUnregistered:(NSString *)recipientId transaction:(SDSAnyWriteTransaction *)transaction;
+
++ (void)markRecipientAsUnregistered:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

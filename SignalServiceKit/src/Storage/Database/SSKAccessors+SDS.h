@@ -160,4 +160,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface SignalRecipient (SDS)
+
+@property (nonatomic, readonly) NSUInteger recipientSchemaVersion;
+
+@end
+
 NS_ASSUME_NONNULL_END
