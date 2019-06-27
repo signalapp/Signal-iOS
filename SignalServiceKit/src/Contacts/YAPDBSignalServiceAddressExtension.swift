@@ -4,30 +4,22 @@
 
 import Foundation
 
-protocol YAPDBSignalServiceAddressIndexable {
-    static var indexablePhoneNumberColumnName: String { get }
-    static var indexableUUIDColumnName: String { get }
+protocol YAPDBSignalServiceAddressIndexable: class {
     var indexableUUIDValue: String? { get }
     var indexablePhoneNumberValue: String? { get }
 }
 
 extension SignalAccount: YAPDBSignalServiceAddressIndexable {
-    static var indexablePhoneNumberColumnName = "recipient_phone_number"
-    static var indexableUUIDColumnName = "recipient_uuid"
     var indexableUUIDValue: String? { return recipientUUID }
     var indexablePhoneNumberValue: String? { return recipientPhoneNumber }
 }
 
 extension SignalRecipient: YAPDBSignalServiceAddressIndexable {
-    static var indexablePhoneNumberColumnName = "recipient_phone_number"
-    static var indexableUUIDColumnName = "recipient_uuid"
     var indexableUUIDValue: String? { return recipientUUID }
     var indexablePhoneNumberValue: String? { return recipientPhoneNumber }
 }
 
 extension TSContactThread: YAPDBSignalServiceAddressIndexable {
-    static var indexablePhoneNumberColumnName = "contact_phone_number"
-    static var indexableUUIDColumnName = "contact_uuid"
     var indexableUUIDValue: String? { return contactUUID }
     var indexablePhoneNumberValue: String? { return contactPhoneNumber }
 }
@@ -39,6 +31,10 @@ class YAPDBSignalServiceAddressIndex: NSObject {
         SignalRecipient.self,
         TSContactThread.self
     ]
+
+    private static let uuidKey = "uuidKey"
+    private static let phoneNumberKey = "phoneNumberKey"
+    private static let classNameKey = "classNameKey"
 
     private static let phoneNumberIndexName = "index_on_recipientPhoneNumber"
     private static let uuidIndexName = "index_on_recipientUUID"
@@ -61,7 +57,13 @@ class YAPDBSignalServiceAddressIndex: NSObject {
             return nil
         }
 
-        let queryFormat = String(format: "WHERE %@ = \"%@\"", T.indexableUUIDColumnName, uuidString)
+        let queryFormat = String(
+            format: "WHERE %@ = \"%@\" AND %@ = \"%@\"",
+            YAPDBSignalServiceAddressIndex.uuidKey,
+            uuidString,
+            YAPDBSignalServiceAddressIndex.classNameKey,
+            NSStringFromClass(T.self)
+        )
         let query = YapDatabaseQuery(string: queryFormat, parameters: [])
 
         var matchedAccount: T?
@@ -85,7 +87,13 @@ class YAPDBSignalServiceAddressIndex: NSObject {
             return nil
         }
 
-        let queryFormat = String(format: "WHERE %@ = \"%@\"", T.indexablePhoneNumberColumnName, phoneNumber)
+        let queryFormat = String(
+            format: "WHERE %@ = \"%@\" AND %@ = \"%@\"",
+            YAPDBSignalServiceAddressIndex.phoneNumberKey,
+            phoneNumber,
+            YAPDBSignalServiceAddressIndex.classNameKey,
+            NSStringFromClass(T.self)
+        )
         let query = YapDatabaseQuery(string: queryFormat, parameters: [])
 
         var matchedAccount: T?
@@ -109,17 +117,16 @@ class YAPDBSignalServiceAddressIndex: NSObject {
 
     private static func indexUUIDExtension() -> YapDatabaseSecondaryIndex {
         let setup = YapDatabaseSecondaryIndexSetup()
-
-        for columnName in Set(indexableTypes.map { $0.indexableUUIDColumnName }) {
-            setup.addColumn(columnName, with: .text)
-        }
+        setup.addColumn(uuidKey, with: .text)
+        setup.addColumn(classNameKey, with: .text)
 
         let handler = YapDatabaseSecondaryIndexHandler.withObjectBlock { _, dict, _, _, object in
             guard let indexableObject = object as? YAPDBSignalServiceAddressIndexable else {
                 return
             }
 
-            dict[type(of: indexableObject).indexableUUIDColumnName] = indexableObject.indexableUUIDValue
+            dict[uuidKey] = indexableObject.indexableUUIDValue
+            dict[classNameKey] = NSStringFromClass(type(of: indexableObject))
         }
 
         return YapDatabaseSecondaryIndex(setup: setup, handler: handler, versionTag: "1")
@@ -127,17 +134,16 @@ class YAPDBSignalServiceAddressIndex: NSObject {
 
     private static func indexPhoneNumberExtension() -> YapDatabaseSecondaryIndex {
         let setup = YapDatabaseSecondaryIndexSetup()
-
-        for columnName in Set(indexableTypes.map { $0.indexablePhoneNumberColumnName }) {
-            setup.addColumn(columnName, with: .text)
-        }
+        setup.addColumn(phoneNumberKey, with: .text)
+        setup.addColumn(classNameKey, with: .text)
 
         let handler = YapDatabaseSecondaryIndexHandler.withObjectBlock { _, dict, _, _, object in
             guard let indexableObject = object as? YAPDBSignalServiceAddressIndexable else {
                 return
             }
 
-            dict[type(of: indexableObject).indexablePhoneNumberColumnName] = indexableObject.indexablePhoneNumberValue
+            dict[phoneNumberKey] = indexableObject.indexablePhoneNumberValue
+            dict[classNameKey] = NSStringFromClass(type(of: indexableObject))
         }
 
         return YapDatabaseSecondaryIndex(setup: setup, handler: handler, versionTag: "1")

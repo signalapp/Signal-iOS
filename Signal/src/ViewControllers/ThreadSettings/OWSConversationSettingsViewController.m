@@ -177,11 +177,15 @@ const CGFloat kIconViewLength = 24;
 - (NSString *)threadName
 {
     NSString *threadName = self.thread.name;
-    if ([self.thread isKindOfClass:[TSContactThread class]] &&
-        [threadName isEqualToString:((TSContactThread *)self.thread).contactAddress.phoneNumber]) {
+
+    TSContactThread *_Nullable contactThread;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        contactThread = (TSContactThread *)self.thread;
+    }
+
+    if (contactThread && [threadName isEqualToString:contactThread.contactAddress.phoneNumber]) {
         threadName = [PhoneNumber
-            bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:((TSContactThread *)self.thread)
-                                                                               .contactAddress.phoneNumber];
+            bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:contactThread.contactAddress.phoneNumber];
     } else if (threadName.length == 0 && [self isGroupThread]) {
         threadName = [MessageStrings newGroupDefaultTitle];
     }
@@ -1473,8 +1477,13 @@ const CGFloat kIconViewLength = 24;
     NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     OWSAssertDebug(recipientId.length > 0);
 
-    if (recipientId.length > 0 && [self.thread isKindOfClass:[TSContactThread class]] &&
-        [((TSContactThread *)self.thread).contactAddress.transitional_phoneNumber isEqualToString:recipientId]) {
+    TSContactThread *_Nullable contactThread;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        contactThread = (TSContactThread *)self.thread;
+    }
+
+    if (recipientId.length > 0 && contactThread &&
+        [contactThread.contactAddress.transitional_phoneNumber isEqualToString:recipientId]) {
         [self updateTableContents];
     }
 }

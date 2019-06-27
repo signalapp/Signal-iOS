@@ -1720,7 +1720,12 @@ typedef enum : NSUInteger {
 
 - (BOOL)canCall
 {
-    return !(self.isGroupConversation || ((TSContactThread *)self.thread).contactAddress.isLocalAddress);
+    TSContactThread *_Nullable contactThread;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        contactThread = (TSContactThread *)self.thread;
+    }
+
+    return !(self.isGroupConversation || contactThread.contactAddress.isLocalAddress);
 }
 
 #pragma mark - Dynamic Text

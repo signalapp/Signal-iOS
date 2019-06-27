@@ -25,10 +25,10 @@ extension AnyContactThreadFinder {
 @objc
 class GRDBContactThreadFinder: NSObject {
     func contactThread(for address: SignalServiceAddress, transaction: GRDBReadTransaction) -> TSContactThread? {
-        if let account = contactThreadForUUID(address.uuid, transaction: transaction) {
-            return account
-        } else if let account = contactThreadForPhoneNumber(address.phoneNumber, transaction: transaction) {
-            return account
+        if let thread = contactThreadForUUID(address.uuid, transaction: transaction) {
+            return thread
+        } else if let thread = contactThreadForPhoneNumber(address.phoneNumber, transaction: transaction) {
+            return thread
         } else {
             return nil
         }

@@ -84,7 +84,11 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     if (self) {
         _creationDate    = [NSDate date];
         _messageDraft    = nil;
-        _conversationColorName = [self.class stableColorNameForNewConversationWithString:self.colorSeed];
+
+        // This is overriden in TSContactThread to use the phone number when available
+        // We can't use self.colorSeed here because the subclass hasn't done its
+        // initializing work yet to set it up.
+        _conversationColorName = [self.class stableColorNameForNewConversationWithString:uniqueId];
     }
 
     return self;

@@ -21,6 +21,9 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
 @property (nonatomic, nullable, readonly) NSString *contactUUID;
 @property (nonatomic, readonly) NSUInteger contactThreadSchemaVersion;
 
+// From TSThread
+@property (nonatomic) NSString *conversationColorName;
+
 @end
 
 @implementation TSContactThread
@@ -104,12 +107,17 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 - (instancetype)initWithContactAddress:(SignalServiceAddress *)contactAddress
 {
-    OWSAssertDebug(contactAddress);
+    OWSAssertDebug(contactAddress.isValid);
 
     if (self = [super init]) {
         _contactUUID = contactAddress.uuidString;
         _contactPhoneNumber = contactAddress.phoneNumber;
         _contactThreadSchemaVersion = TSContactThreadSchemaVersion;
+
+        // Reset the conversation color to use our phone number, if available. The super initializer just uses the
+        // uniqueId
+        self.conversationColorName =
+            [[self class] stableColorNameForNewConversationWithString:contactAddress.stringForDisplay];
     }
 
     return self;
@@ -118,7 +126,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 + (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
                                         transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(contactAddress);
+    OWSAssertDebug(contactAddress.isValid);
 
     TSContactThread *thread = [self.threadFinder contactThreadForAddress:contactAddress transaction:transaction];
 
@@ -132,7 +140,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 + (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
 {
-    OWSAssertDebug(contactAddress);
+    OWSAssertDebug(contactAddress.isValid);
 
     __block TSContactThread *thread;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -173,11 +181,12 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 - (NSString *)colorSeed
 {
-    if (SSKFeatureFlags.contactUUID) {
-        return self.contactAddress.stringForDisplay;
-    } else {
-        return [[self class] legacyContactPhoneNumberFromThreadId:self.uniqueId];
+    NSString *_Nullable phoneNumber = self.contactAddress.phoneNumber;
+    if (!phoneNumber) {
+        phoneNumber = [[self class] legacyContactPhoneNumberFromThreadId:self.uniqueId];
     }
+
+    return phoneNumber ?: self.uniqueId;
 }
 
 - (BOOL)hasSafetyNumbers

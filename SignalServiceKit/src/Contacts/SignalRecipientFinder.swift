@@ -25,10 +25,10 @@ extension AnySignalRecipientFinder {
 @objc
 class GRDBSignalRecipientFinder: NSObject {
     func signalRecipient(for address: SignalServiceAddress, transaction: GRDBReadTransaction) -> SignalRecipient? {
-        if let account = signalRecipientForUUID(address.uuid, transaction: transaction) {
-            return account
-        } else if let account = signalRecipientForPhoneNumber(address.phoneNumber, transaction: transaction) {
-            return account
+        if let recipient = signalRecipientForUUID(address.uuid, transaction: transaction) {
+            return recipient
+        } else if let recipient = signalRecipientForPhoneNumber(address.phoneNumber, transaction: transaction) {
+            return recipient
         } else {
             return nil
         }

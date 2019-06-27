@@ -557,7 +557,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSFailDebug(@"Message send recipients should not include self.");
         }
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
-        SignalServiceAddress *recipientAddress = ((TSContactThread *)thread).contactAddress;
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        SignalServiceAddress *recipientAddress = contactThread.contactAddress;
 
         // Treat 1:1 sends to blocked contacts as failures.
         // If we block a user, don't send 1:1 messages to them. The UI
@@ -715,8 +716,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return failureHandler(error);
     }
 
+    TSContactThread *_Nullable contactThread;
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        contactThread = (TSContactThread *)thread;
+    }
+
     // In the "self-send" special case, we ony need to send a sync message with a delivery receipt.
-    if ([thread isKindOfClass:[TSContactThread class]] && ((TSContactThread *)thread).contactAddress.isLocalAddress) {
+    if (contactThread && contactThread.contactAddress.isLocalAddress) {
         // Send to self.
         OWSAssertDebug(message.recipientIds.count == 1);
         // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
@@ -1410,8 +1416,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     dispatch_block_t success = ^{
         TSThread *_Nullable thread = message.thread;
-        if (thread && [thread isKindOfClass:[TSContactThread class]]
-            && ((TSContactThread *)thread).contactAddress.isLocalAddress) {
+
+        TSContactThread *_Nullable contactThread;
+        if ([thread isKindOfClass:[TSContactThread class]]) {
+            contactThread = (TSContactThread *)thread;
+        }
+
+        if (contactThread && contactThread.contactAddress.isLocalAddress) {
             OWSAssertDebug(message.recipientIds.count == 1);
             // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {

@@ -506,14 +506,14 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             // Signal Recipient Indices
             try db.create(
                 index: "index_signal_recipients_on_recipientPhoneNumber",
-                on: SignalAccountRecord.databaseTableName,
-                columns: [SignalAccountRecord.columnName(.recipientPhoneNumber)]
+                on: SignalRecipientRecord.databaseTableName,
+                columns: [SignalRecipientRecord.columnName(.recipientPhoneNumber)]
             )
 
             try db.create(
                 index: "index_signal_recipients_on_recipientUUID",
-                on: SignalAccountRecord.databaseTableName,
-                columns: [SignalAccountRecord.columnName(.recipientUUID)]
+                on: SignalRecipientRecord.databaseTableName,
+                columns: [SignalRecipientRecord.columnName(.recipientUUID)]
             )
 
             // Thread Indices
