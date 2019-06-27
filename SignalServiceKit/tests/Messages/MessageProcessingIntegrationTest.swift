@@ -114,7 +114,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     }
 
     func test_contactMessage_UUIDEnvelope() {
-        guard FeatureFlags.contactUUID else {
+        guard FeatureFlags.allowUUIDOnlyContacts else {
             // This test is known to be failing.
             // It's intended as TDD for the upcoming UUID work.
             return
@@ -172,54 +172,6 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 }
 
 // MARK: - Helpers
-
-struct FakeService {
-    let localClient: LocalSignalClient
-    let runner: TestProtocolRunner
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    func envelopeBuilder(fromSenderClient senderClient: SignalClient) throws -> SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
-        let now = NSDate.ows_millisecondTimeStamp()
-        let builder = SSKProtoEnvelope.builder(timestamp: now)
-        builder.setType(.ciphertext)
-        builder.setSourceDevice(senderClient.deviceId)
-
-        let content = try buildEncryptedContentData(fromSenderClient: senderClient)
-        builder.setContent(content)
-
-        // builder.setServerTimestamp(serverTimestamp)
-        // builder.setServerGuid(serverGuid)
-
-        return builder
-    }
-
-    func buildEncryptedContentData(fromSenderClient senderClient: SignalClient) throws -> Data {
-        let plaintext = try buildContentData()
-        let cipherMessage: CipherMessage = databaseStorage.writeReturningResult { transaction in
-            return try! self.runner.encrypt(plaintext: plaintext,
-                                            senderClient: senderClient,
-                                            recipientAccountId: self.localClient.accountId(transaction: transaction),
-                                            protocolContext: transaction)
-        }
-
-        XCTAssert(cipherMessage is WhisperMessage)
-        return cipherMessage.serialized()
-    }
-
-    func buildContentData() throws -> Data {
-        let messageText = "Those who stands for nothing will fall for anything"
-        let dataMessageBuilder = SSKProtoDataMessage.builder()
-        dataMessageBuilder.setBody(messageText)
-
-        let contentBuilder = SSKProtoContent.builder()
-        contentBuilder.setDataMessage(try dataMessageBuilder.build())
-
-        return try contentBuilder.buildSerializedData()
-    }
-}
 
 class DatabaseSnapshotBlockDelegate {
     let block: (Database) -> Void

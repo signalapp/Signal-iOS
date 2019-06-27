@@ -119,7 +119,7 @@ public class ContactThreadFactory: NSObject, Factory {
     // MARK: Generators
 
     public func generateContactThreadId() -> String {
-        return CommonGenerator.contactId
+        return CommonGenerator.e164()
     }
 }
 
@@ -303,11 +303,11 @@ public class IncomingMessageFactory: NSObject, Factory {
         case let contactThread as TSContactThread:
             return contactThread.contactAddress
         case let groupThread as TSGroupThread:
-            let randomE164 = groupThread.recipientIdentifiers.ows_randomElement() ?? CommonGenerator.contactId
+            let randomE164 = groupThread.recipientIdentifiers.ows_randomElement() ?? CommonGenerator.e164()
             return SignalServiceAddress(phoneNumber: randomE164)
         default:
             owsFailDebug("unexpected thread type")
-            return SignalServiceAddress(phoneNumber: CommonGenerator.contactId)
+            return SignalServiceAddress(phoneNumber: CommonGenerator.e164())
         }
     }
 
@@ -419,7 +419,7 @@ class GroupThreadFactory: NSObject, Factory {
     @objc
     public var memberIdsBuilder: () -> [RecipientIdentifier] = {
         let groupSize = arc4random_uniform(10)
-        return (0..<groupSize).map { _ in CommonGenerator.contactId }
+        return (0..<groupSize).map { _ in CommonGenerator.e164() }
     }
 }
 
@@ -517,7 +517,7 @@ extension Array {
 
 public struct CommonGenerator {
 
-    static public var contactId: String {
+    static public func e164() -> String {
         let digits = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
         let randomDigits = (0..<10).map { _ in return digits.ows_randomElement()! }

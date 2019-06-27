@@ -14,7 +14,7 @@ public class OWSAccountIdFinder: NSObject {
 
     @objc
     public func accountId(forAddress address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> AccountId? {
-        guard FeatureFlags.contactUUID else {
+        guard FeatureFlags.allowUUIDOnlyContacts else {
             return address.transitional_phoneNumber
         }
 
@@ -35,7 +35,7 @@ public class OWSAccountIdFinder: NSObject {
 
     @objc
     public func ensureAccountId(forAddress address: SignalServiceAddress, transaction: SDSAnyWriteTransaction) -> AccountId {
-        guard FeatureFlags.contactUUID else {
+        guard FeatureFlags.allowUUIDOnlyContacts else {
             return address.transitional_phoneNumber
         }
 

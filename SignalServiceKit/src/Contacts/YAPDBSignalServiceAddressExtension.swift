@@ -129,7 +129,7 @@ class YAPDBSignalServiceAddressIndex: NSObject {
             dict[classNameKey] = NSStringFromClass(type(of: indexableObject))
         }
 
-        return YapDatabaseSecondaryIndex(setup: setup, handler: handler, versionTag: "1")
+        return YapDatabaseSecondaryIndex(setup: setup, handler: handler, versionTag: "2")
     }
 
     private static func indexPhoneNumberExtension() -> YapDatabaseSecondaryIndex {
@@ -146,6 +146,6 @@ class YAPDBSignalServiceAddressIndex: NSObject {
             dict[classNameKey] = NSStringFromClass(type(of: indexableObject))
         }
 
-        return YapDatabaseSecondaryIndex(setup: setup, handler: handler, versionTag: "1")
+        return YapDatabaseSecondaryIndex(setup: setup, handler: handler, versionTag: "2")
     }
 }

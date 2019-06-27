@@ -1466,7 +1466,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSContact *_Nullable contact;
     OWSLinkPreview *_Nullable linkPreview;
-    if (transaction.transitional_yapWriteTransaction) {
+    if (transaction.transitional_yapWriteTransaction && !SSKFeatureFlags.allowUUIDOnlyContacts) {
         [[OWSDisappearingMessagesJob sharedJob]
             becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                               thread:thread

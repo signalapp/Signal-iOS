@@ -238,9 +238,12 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         }
     }();
 
-    self.avatarView.image =
-        [[[OWSContactAvatarBuilder alloc] initWithSignalId:recipientId colorName:colorName diameter:kStandardAvatarSize]
-            build];
+    OWSContactAvatarBuilder *avatarBuilder =
+        [[OWSContactAvatarBuilder alloc] initWithAddress:recipientId.transitional_signalServiceAddress
+                                               colorName:colorName
+                                                diameter:kStandardAvatarSize];
+
+    self.avatarView.image = [avatarBuilder build];
 }
 
 - (void)updateProfileName

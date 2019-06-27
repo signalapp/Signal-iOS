@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSContactAvatarBuilder ()
 
-@property (nonatomic, readonly) NSString *signalId;
+@property (nonatomic, readonly, nullable) SignalServiceAddress *address;
 @property (nonatomic, readonly) NSString *contactName;
 @property (nonatomic, readonly) ConversationColorName colorName;
 @property (nonatomic, readonly) NSUInteger diameter;
@@ -27,10 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Initializers
 
-- (instancetype)initWithContactId:(NSString *)contactId
-                             name:(NSString *)name
-                        colorName:(ConversationColorName)colorName
-                         diameter:(NSUInteger)diameter
+- (instancetype)initWithAddress:(nullable SignalServiceAddress *)address
+                           name:(NSString *)name
+                      colorName:(ConversationColorName)colorName
+                       diameter:(NSUInteger)diameter
 {
     self = [super init];
     if (!self) {
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertDebug(colorName.length > 0);
 
-    _signalId = contactId;
+    _address = address;
     _contactName = name;
     _colorName = colorName;
     _diameter = diameter;
@@ -47,21 +47,21 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithSignalId:(NSString *)signalId
-                       colorName:(ConversationColorName)colorName
-                        diameter:(NSUInteger)diameter
+- (instancetype)initWithAddress:(SignalServiceAddress *)address
+                      colorName:(ConversationColorName)colorName
+                       diameter:(NSUInteger)diameter
 {
     // Name for avatar initials.
-    NSString *_Nullable name = [OWSContactAvatarBuilder.contactsManager
-        nameFromSystemContactsForAddress:signalId.transitional_signalServiceAddress];
+    NSString *_Nullable name = [OWSContactAvatarBuilder.contactsManager nameFromSystemContactsForAddress:address];
+
     if (name.length == 0) {
-        name =
-            [OWSContactAvatarBuilder.contactsManager profileNameForAddress:signalId.transitional_signalServiceAddress];
+        name = [OWSContactAvatarBuilder.contactsManager profileNameForAddress:address];
     }
     if (name.length == 0) {
-        name = signalId;
+        name = address.stringForDisplay;
     }
-    return [self initWithContactId:signalId name:name colorName:colorName diameter:diameter];
+
+    return [self initWithAddress:address name:name colorName:colorName diameter:diameter];
 }
 
 - (instancetype)initWithNonSignalName:(NSString *)nonSignalName
@@ -69,16 +69,16 @@ NS_ASSUME_NONNULL_BEGIN
                              diameter:(NSUInteger)diameter
 {
     ConversationColorName colorName = [TSThread stableColorNameForNewConversationWithString:colorSeed];
-    return [self initWithContactId:colorSeed name:nonSignalName colorName:(NSString *)colorName diameter:diameter];
+    return [self initWithAddress:nil name:nonSignalName colorName:colorName diameter:diameter];
 }
 
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
 {
-    NSString *localNumber = [TSAccountManager localNumber];
-    OWSAssertDebug(localNumber.length > 0);
     OWSAssertDebug(diameter > 0);
 
-    return [self initWithSignalId:localNumber colorName:kConversationColorName_Default diameter:diameter];
+    return [self initWithAddress:TSAccountManager.sharedInstance.localAddress
+                       colorName:kConversationColorName_Default
+                        diameter:diameter];
 }
 
 #pragma mark - Dependencies
@@ -92,7 +92,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
-    if ([self.signalId isEqualToString:TSAccountManager.localNumber]) {
+    if (self.address.isLocalAddress) {
         NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self", self.cacheKey];
         UIImage *_Nullable cachedAvatar =
             [OWSContactAvatarBuilder.contactsManager.avatarCache imageForKey:noteToSelfCacheKey
@@ -113,12 +113,12 @@ NS_ASSUME_NONNULL_BEGIN
         return image;
     }
 
-    return [OWSContactAvatarBuilder.contactsManager imageForAddress:self.signalId.transitional_signalServiceAddress];
+    return [OWSContactAvatarBuilder.contactsManager imageForAddress:self.address];
 }
 
 - (id)cacheKey
 {
-    return [NSString stringWithFormat:@"%@-%d", self.signalId, Theme.isDarkThemeEnabled];
+    return [NSString stringWithFormat:@"%@-%d", self.address.stringForDisplay, Theme.isDarkThemeEnabled];
 }
 
 - (nullable UIImage *)buildDefaultImage

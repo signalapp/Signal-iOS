@@ -6,6 +6,18 @@ import Foundation
 
 public extension DebugUIMessages {
 
+    // MARK: - Dependencies
+
+    static var messageReceiver: OWSMessageReceiver {
+        return SSKEnvironment.shared.messageReceiver
+    }
+
+    static var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     @objc
     class func deleteRandomMessages(count: UInt, thread: TSThread, transaction: SDSAnyWriteTransaction) {
         Logger.info("deleteRandomMessages: \(count)")
@@ -35,5 +47,26 @@ public extension DebugUIMessages {
         for interaction in interactions {
             interaction.anyRemove(transaction: transaction)
         }
+    }
+
+    @objc
+    class func receiveUUIDEnvelopeInNewThread() {
+        assert(FeatureFlags.allowUUIDOnlyContacts)
+
+        let senderClient = FakeSignalClient.generate()
+        let localClient = LocalSignalClient()
+        let runner = TestProtocolRunner()
+        let fakeService = FakeService(localClient: localClient, runner: runner)
+
+        databaseStorage.write { transaction in
+            try! runner.initialize(senderClient: senderClient,
+                                   recipientClient: localClient,
+                                   transaction: transaction)
+        }
+
+        let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: senderClient)
+        envelopeBuilder.setSourceUuid(senderClient.uuidIdentifier)
+        let envelopeData = try! envelopeBuilder.buildSerializedData()
+        messageReceiver.handleReceivedEnvelopeData(envelopeData)
     }
 }

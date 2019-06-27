@@ -306,9 +306,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
     UIImage *_Nullable authorAvatarImage =
-        [[[OWSContactAvatarBuilder alloc] initWithSignalId:incomingMessage.authorAddress.transitional_phoneNumber
-                                                 colorName:self.viewItem.authorConversationColorName
-                                                  diameter:self.avatarSize] build];
+        [[[OWSContactAvatarBuilder alloc] initWithAddress:incomingMessage.authorAddress
+                                                colorName:self.viewItem.authorConversationColorName
+                                                 diameter:self.avatarSize] build];
     self.avatarView.image = authorAvatarImage;
     [self.swipeableContentView addSubview:self.avatarView];
 

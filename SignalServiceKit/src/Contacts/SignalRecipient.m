@@ -72,7 +72,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 {
     // Before removing this feature flag, we need to be sure no callers use `recipient.uniqueId`
     // as a way to get the recipients phone number.
-    if (SSKFeatureFlags.contactUUID) {
+    if (SSKFeatureFlags.allowUUIDOnlyContacts) {
         self = [super init];
     } else {
         self = [super initWithUniqueId:address.transitional_phoneNumber];

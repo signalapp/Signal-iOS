@@ -49,6 +49,11 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
         if ([object isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
 
+            // UUID TODO
+            if (SSKFeatureFlags.allowUUIDOnlyContacts) {
+                return;
+            }
+
             // On new messages authorId should be set on all incoming messages, but there was a time when authorId was
             // only set on incoming group messages.
             NSObject *authorIdOrNull = incomingMessage.authorAddress.transitional_phoneNumber
