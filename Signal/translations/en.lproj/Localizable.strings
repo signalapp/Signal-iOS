@@ -1755,7 +1755,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Avatar";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible to your contacts, when you initiate new conversations, and when you explicitly make it visible to other users and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible only to people who are in your contact list, to people who you intitiated a conversation with, and to people for who you explicitly gave permission. Signal profiles are end-to-end encrypted, so even the Signal service never has access to your profile information.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap here to learn more.";
