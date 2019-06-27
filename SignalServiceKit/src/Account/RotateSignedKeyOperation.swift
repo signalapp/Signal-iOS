@@ -27,7 +27,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             return
         }
         
-        // Loki: Doing this on the global queue because they do it at the bottom
+        // Loki: Doing this on the global queue to match Signal
         DispatchQueue.global().async {
             let signedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
             signedPreKeyRecord.markAsAcceptedByService()
@@ -37,7 +37,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()
             
-            print("[Loki] Rotate signed pre key operation done.")
+            print("[Loki] Pre keys rotated successfully.")
             self.reportSuccess()
         }
 

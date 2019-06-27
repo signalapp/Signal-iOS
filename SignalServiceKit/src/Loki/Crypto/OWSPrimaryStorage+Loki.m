@@ -89,7 +89,16 @@
     
     ECKeyPair *_Nullable keyPair = self.identityManager.identityKeyPair;
     OWSAssertDebug(keyPair);
-    
+
+    // Refresh the signed pre key if needed
+    if (self.currentSignedPreKey == nil) {
+        SignedPreKeyRecord *signedPreKeyRecord = [self generateRandomSignedRecord];
+        [signedPreKeyRecord markAsAcceptedByService];
+        [self storeSignedPreKey:signedPreKeyRecord.Id signedPreKeyRecord:signedPreKeyRecord];
+        [self setCurrentSignedPrekeyId:signedPreKeyRecord.Id];
+        NSLog(@"[Loki] Pre keys refreshed successfully.");
+    }
+
     SignedPreKeyRecord *_Nullable signedPreKey = self.currentSignedPreKey;
     if (!signedPreKey) {
         OWSFailDebug(@"Signed prekey is null");

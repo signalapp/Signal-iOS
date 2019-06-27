@@ -36,12 +36,11 @@ public class RefreshPreKeysOperation: OWSOperation {
             return
         }
         
-        // Loki: Doing this on the global queue because they do it at the bottom
+        // Loki: Doing this on the global queue to match Signal
         DispatchQueue.global().async {
             guard self.primaryStorage.currentSignedPrekeyId() == nil else {
-                Logger.debug("Already have a signed prekey set")
-                self.reportSuccess()
-                return
+                print("[Loki] Using existing signed pre key.")
+                return self.reportSuccess()
             }
             
             let signedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
@@ -52,7 +51,7 @@ public class RefreshPreKeysOperation: OWSOperation {
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()
             
-            print("[Loki] Pre key refresh operation done.")
+            print("[Loki] Pre keys refreshed successfully.")
             self.reportSuccess()
         }
         
