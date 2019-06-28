@@ -71,11 +71,26 @@ NS_ASSUME_NONNULL_BEGIN
     [sentBuilder setDestination:self.sentRecipientId];
     [sentBuilder setIsRecipientUpdate:self.isRecipientUpdate];
 
-    SSKProtoDataMessage *_Nullable dataMessage = [self.message buildDataMessage:self.sentRecipientId];
+    SSKProtoDataMessage *_Nullable dataMessage;
+    if (self.message.hasPerMessageExpiration) {
+        // Create data message without renderable content.
+        SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
+        [dataBuilder setTimestamp:self.message.timestamp];
+
+        NSError *error;
+        dataMessage = [dataBuilder buildAndReturnError:&error];
+        if (error || !dataMessage) {
+            OWSFailDebug(@"could not build protobuf: %@", error);
+            return nil;
+        }
+    } else {
+        dataMessage = [self.message buildDataMessage:self.sentRecipientId];
+    }
     if (!dataMessage) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
     }
+
     [sentBuilder setMessage:dataMessage];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
