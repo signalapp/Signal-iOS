@@ -287,6 +287,10 @@ extension StickerPackCollectionView: UICollectionViewDataSource {
         cell.contentView.addSubview(stickerView)
         stickerView.autoPinEdgesToSuperviewEdges()
 
+        let accessibilityName = "sticker." + stickerInfo.asKey()
+        cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: accessibilityName + ".cell")
+        stickerView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: accessibilityName + ".item")
+
         return cell
     }
 }

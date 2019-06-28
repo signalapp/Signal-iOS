@@ -162,6 +162,7 @@ public class StickerKeyboard: UIStackView {
                 self?.searchButtonWasTapped()
             }
             headerView.addArrangedSubview(searchButton)
+            searchButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "searchButton")
         }
 
         packsCollectionView.backgroundColor = keyboardBackgroundColor
@@ -171,6 +172,7 @@ public class StickerKeyboard: UIStackView {
             self?.manageButtonWasTapped()
         }
         headerView.addArrangedSubview(manageButton)
+        manageButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "manageButton")
 
         updateHeaderView()
     }
