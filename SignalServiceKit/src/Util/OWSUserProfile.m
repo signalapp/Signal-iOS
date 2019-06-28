@@ -63,7 +63,9 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
-                     recipientId:(NSString *)recipientId
+            recipientPhoneNumber:(NSString *)recipientPhoneNumber
+                   recipientUUID:(NSString *)recipientUUID
+        userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -75,7 +77,9 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     _avatarUrlPath = avatarUrlPath;
     _profileKey = profileKey;
     _profileName = profileName;
-    _recipientId = recipientId;
+    _recipientPhoneNumber = recipientPhoneNumber;
+    _recipientUUID = recipientUUID;
+    _userProfileSchemaVersion = userProfileSchemaVersion;
 
     return self;
 }

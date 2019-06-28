@@ -30,7 +30,9 @@ public struct UserProfileRecord: SDSRecord {
     public let avatarUrlPath: String?
     public let profileKey: Data?
     public let profileName: String?
-    public let recipientId: String
+    public let recipientPhoneNumber: String
+    public let recipientUUID: String
+    public let userProfileSchemaVersion: UInt
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -40,7 +42,9 @@ public struct UserProfileRecord: SDSRecord {
         case avatarUrlPath
         case profileKey
         case profileName
-        case recipientId
+        case recipientPhoneNumber
+        case recipientUUID
+        case userProfileSchemaVersion
     }
 
     public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -81,14 +85,18 @@ extension OWSUserProfile {
             let profileKeySerialized: Data? = record.profileKey
             let profileKey: OWSAES256Key? = try SDSDeserialization.optionalUnarchive(profileKeySerialized, name: "profileKey")
             let profileName: String? = record.profileName
-            let recipientId: String = record.recipientId
+            let recipientPhoneNumber: String = record.recipientPhoneNumber
+            let recipientUUID: String = record.recipientUUID
+            let userProfileSchemaVersion: UInt = record.userProfileSchemaVersion
 
             return OWSUserProfile(uniqueId: uniqueId,
                                   avatarFileName: avatarFileName,
                                   avatarUrlPath: avatarUrlPath,
                                   profileKey: profileKey,
                                   profileName: profileName,
-                                  recipientId: recipientId)
+                                  recipientPhoneNumber: recipientPhoneNumber,
+                                  recipientUUID: recipientUUID,
+                                  userProfileSchemaVersion: userProfileSchemaVersion)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -129,7 +137,9 @@ extension OWSUserProfileSerializer {
     static let avatarUrlPathColumn = SDSColumnMetadata(columnName: "avatarUrlPath", columnType: .unicodeString, isOptional: true, columnIndex: 4)
     static let profileKeyColumn = SDSColumnMetadata(columnName: "profileKey", columnType: .blob, isOptional: true, columnIndex: 5)
     static let profileNameColumn = SDSColumnMetadata(columnName: "profileName", columnType: .unicodeString, isOptional: true, columnIndex: 6)
-    static let recipientIdColumn = SDSColumnMetadata(columnName: "recipientId", columnType: .unicodeString, columnIndex: 7)
+    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, columnIndex: 7)
+    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, columnIndex: 8)
+    static let userProfileSchemaVersionColumn = SDSColumnMetadata(columnName: "userProfileSchemaVersion", columnType: .int64, columnIndex: 9)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -141,7 +151,9 @@ extension OWSUserProfileSerializer {
         avatarUrlPathColumn,
         profileKeyColumn,
         profileNameColumn,
-        recipientIdColumn
+        recipientPhoneNumberColumn,
+        recipientUUIDColumn,
+        userProfileSchemaVersionColumn
         ])
 }
 
@@ -471,8 +483,10 @@ class OWSUserProfileSerializer: SDSSerializer {
         let avatarUrlPath: String? = model.avatarUrlPath
         let profileKey: Data? = optionalArchive(model.profileKey)
         let profileName: String? = model.profileName
-        let recipientId: String = model.recipientId
+        let recipientPhoneNumber: String = model.recipientPhoneNumber
+        let recipientUUID: String = model.recipientUUID
+        let userProfileSchemaVersion: UInt = model.userProfileSchemaVersion
 
-        return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientId: recipientId)
+        return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, userProfileSchemaVersion: userProfileSchemaVersion)
     }
 }
