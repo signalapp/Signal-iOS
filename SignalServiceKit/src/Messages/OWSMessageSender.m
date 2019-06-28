@@ -625,8 +625,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
             OWSUDAccess *_Nullable theirUDAccess;
             if (senderCertificate != nil && !recipient.address.isLocalAddress) {
-                theirUDAccess = [self.udManager udAccessForRecipientId:recipient.address.transitional_phoneNumber
-                                                     requireSyncAccess:YES];
+                theirUDAccess = [self.udManager udAccessForAddress:recipient.address requireSyncAccess:YES];
             }
 
             OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:message

@@ -146,7 +146,7 @@ public class RequestMaker: NSObject {
                         if isUDRequest && (statusCode == 401 || statusCode == 403) {
                             // If a UD request fails due to service response (as opposed to network
                             // failure), mark address as _not_ in UD mode, then retry.
-                            self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.address.transitional_phoneNumber)
+                            self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
                             self.profileManager.fetchProfile(for: self.address)
                             self.udAuthFailureBlock()
 
@@ -195,7 +195,7 @@ public class RequestMaker: NSObject {
                         if isUDRequest && (statusCode == 401 || statusCode == 403) {
                             // If a UD request fails due to service response (as opposed to network
                             // failure), mark recipient as _not_ in UD mode, then retry.
-                            self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.address.transitional_phoneNumber)
+                            self.udManager.setUnidentifiedAccessMode(.disabled, address: self.address)
                             self.profileManager.fetchProfile(for: self.address)
                             self.udAuthFailureBlock()
 
@@ -235,11 +235,11 @@ public class RequestMaker: NSObject {
         if udAccess.isRandomKey {
             // If a UD request succeeds for an unknown user with a random key,
             // mark address as .unrestricted.
-            udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: address.transitional_phoneNumber)
+            udManager.setUnidentifiedAccessMode(.unrestricted, address: address)
         } else {
             // If a UD request succeeds for an unknown user with a non-random key,
             // mark address as .enabled.
-            udManager.setUnidentifiedAccessMode(.enabled, recipientId: address.transitional_phoneNumber)
+            udManager.setUnidentifiedAccessMode(.enabled, address: address)
         }
         DispatchQueue.main.async {
             self.profileManager.fetchProfile(for: self.address)

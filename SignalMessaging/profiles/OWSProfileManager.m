@@ -1014,7 +1014,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                               completion:^{
                                   dispatch_async(dispatch_get_main_queue(), ^{
                                       [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
-                                                                    recipientId:address.transitional_phoneNumber];
+                                                                        address:address];
                                       [self fetchProfileForAddress:address];
                                   });
                               }];

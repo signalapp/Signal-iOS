@@ -154,7 +154,7 @@ public class ProfileFetcherJob: NSObject {
         // Don't use UD for "self" profile fetches.
         var udAccess: OWSUDAccess?
         if !address.isLocalAddress {
-            udAccess = udManager.udAccess(forRecipientId: address.transitional_phoneNumber,
+            udAccess = udManager.udAccess(forAddress: address,
                                           requireSyncAccess: false)
         }
 
