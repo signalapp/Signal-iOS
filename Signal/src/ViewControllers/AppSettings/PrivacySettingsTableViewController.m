@@ -325,24 +325,24 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                         UIView *spacer = [UIView new];
                         [spacer setContentHuggingHorizontalLow];
 
-                        UISwitch *cellSwitch = [UISwitch new];
-                        cell.accessoryView = cellSwitch;
-                        [cellSwitch setOn:Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators];
-                        [cellSwitch addTarget:weakSelf
-                                       action:@selector(didToggleUDShowIndicatorsSwitch:)
-                             forControlEvents:UIControlEventValueChanged];
-                        [cellSwitch setContentHuggingHorizontalHigh];
-                        cellSwitch.accessibilityIdentifier =
-                            [NSString stringWithFormat:@"settings.privacy.%@", @"sealed_sender"];
-
                         UIStackView *stackView =
-                            [[UIStackView alloc] initWithArrangedSubviews:@[ label, iconView, spacer, cellSwitch ]];
+                            [[UIStackView alloc] initWithArrangedSubviews:@[ label, iconView, spacer ]];
                         stackView.axis = UILayoutConstraintAxisHorizontal;
                         stackView.spacing = 10;
                         stackView.alignment = UIStackViewAlignmentCenter;
 
                         [cell.contentView addSubview:stackView];
                         [stackView ows_autoPinToSuperviewMargins];
+
+                        UISwitch *cellSwitch = [UISwitch new];
+                        [cellSwitch setOn:Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators];
+                        [cellSwitch addTarget:weakSelf
+                                       action:@selector(didToggleUDShowIndicatorsSwitch:)
+                             forControlEvents:UIControlEventValueChanged];
+                        cell.accessoryView = cellSwitch;
+                        cellSwitch.accessibilityIdentifier =
+                            [NSString stringWithFormat:@"settings.privacy.%@", @"sealed_sender"];
+
                         return cell;
                     }
                     customRowHeight:UITableViewAutomaticDimension

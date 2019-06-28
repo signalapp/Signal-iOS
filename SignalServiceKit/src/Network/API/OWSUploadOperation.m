@@ -112,7 +112,11 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
             .catchInBackground(^(NSError *error) {
                 OWSLogError(@"Failed: %@", error);
 
-                error.isRetryable = YES;
+                if (error.code == kCFURLErrorSecureConnectionFailed) {
+                    error.isRetryable = NO;
+                } else {
+                    error.isRetryable = YES;
+                }
 
                 [self reportError:error];
             }) retainUntilComplete];
