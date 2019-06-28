@@ -545,10 +545,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldAllowReply
 {
-    if (self.viewItem.messageCellType == OWSMessageCellType_PerMessageExpiration) {
-        // Don't allow "reply" messages with per-message expiration.
-        return NO;
-    } else if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
             // Don't allow "delete" or "reply" on "failed" outgoing messages.
