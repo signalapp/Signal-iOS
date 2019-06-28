@@ -70,7 +70,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
 - (void)setUp
 {
     [super setUp];
-    [self.tsAccountManager registerForTestsWithLocalNumber:kAliceRecipientId uuid:[NSUUID new]];
+    [self.tsAccountManager registerForTestsWithLocalNumber:kAliceRecipientId];
     [self.messageSenderJobQueue setup];
 }
 
@@ -97,7 +97,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
     SSKProtoEnvelopeBuilder *envelopeBuilder =
         [SSKProtoEnvelope builderWithTimestamp:12345];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
-    [envelopeBuilder setSourceE164:kAliceRecipientId];
+    [envelopeBuilder setSource:kAliceRecipientId];
     [envelopeBuilder setSourceDevice:1];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {

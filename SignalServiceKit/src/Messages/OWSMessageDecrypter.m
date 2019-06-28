@@ -151,7 +151,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 {
     OWSAssertDebug(envelope);
 
-    return [self.blockingManager.blockedPhoneNumbers containsObject:envelope.sourceE164];
+    return [self.blockingManager.blockedPhoneNumbers containsObject:envelope.source];
 }
 
 #pragma mark - Decryption
@@ -182,7 +182,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     DecryptSuccessBlock successBlock = ^(OWSMessageDecryptResult *result, SDSAnyWriteTransaction *transaction) {
         // Ensure all blocked messages are discarded.
         if ([self isEnvelopeSenderBlocked:envelope]) {
-            OWSLogInfo(@"Ignoring blocked envelope: %@", envelope.sourceE164);
+            OWSLogInfo(@"Ignoring blocked envelope: %@", envelope.source);
             return failureBlock();
         }
 
@@ -212,7 +212,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         }
 
         if (envelope.unwrappedType != SSKProtoEnvelopeTypeUnidentifiedSender) {
-            if (!envelope.hasSourceE164 || envelope.sourceE164.length < 1 || !envelope.sourceE164.isValidE164) {
+            if (!envelope.hasSource || envelope.source.length < 1 || !envelope.source.isValidE164) {
                 OWSFailDebug(@"incoming envelope has invalid source");
                 return failureBlock();
             }
@@ -223,7 +223,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
             // We block UD messages later, after they are decrypted.
             if ([self isEnvelopeSenderBlocked:envelope]) {
-                OWSLogInfo(@"ignoring blocked envelope: %@", envelope.sourceE164);
+                OWSLogInfo(@"ignoring blocked envelope: %@", envelope.source);
                 return failureBlock();
             }
         }
@@ -272,7 +272,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                     OWSMessageDecryptResult *result =
                         [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                           plaintextData:nil
-                                                                 source:envelope.sourceE164
+                                                                 source:envelope.source
                                                            sourceDevice:envelope.sourceDevice
                                                             isUDMessage:NO];
                     successBlock(result, transaction);
@@ -372,7 +372,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
-    NSString *recipientId = envelope.sourceE164;
+    NSString *recipientId = envelope.source;
     int deviceId = envelope.sourceDevice;
 
     // DEPRECATED - Remove `legacyMessage` after all clients have been upgraded.
@@ -399,7 +399,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                     [[cipher throws_decrypt:cipherMessage protocolContext:transaction] removePadding];
                 OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                                                     plaintextData:plaintextData
-                                                                                           source:envelope.sourceE164
+                                                                                           source:envelope.source
                                                                                      sourceDevice:envelope.sourceDevice
                                                                                       isUDMessage:NO];
                 successBlock(result, transaction);
@@ -501,7 +501,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 OWSAssert(senderDeviceId);
 
                 SSKProtoEnvelopeBuilder *identifiedEnvelopeBuilder = envelope.asBuilder;
-                identifiedEnvelopeBuilder.sourceE164 = senderRecipientId;
+                identifiedEnvelopeBuilder.source = senderRecipientId;
                 identifiedEnvelopeBuilder.sourceDevice = senderDeviceId.unsignedIntValue;
                 NSError *identifiedEnvelopeBuilderError;
 
@@ -569,7 +569,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         NSData *plaintextData = [decryptResult.paddedPayload removePadding];
 
         SSKProtoEnvelopeBuilder *envelopeBuilder = [envelope asBuilder];
-        [envelopeBuilder setSourceE164:source];
+        [envelopeBuilder setSource:source];
         [envelopeBuilder setSourceDevice:(uint32_t)sourceDeviceId];
         NSError *envelopeBuilderError;
         NSData *_Nullable newEnvelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&envelopeBuilderError];
@@ -596,7 +596,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSErrorMessage *errorMessage;
 
-        if (envelope.sourceE164.length == 0) {
+        if (envelope.source.length == 0) {
             TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                 transaction:transaction];
@@ -652,8 +652,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                          envelope:(SSKProtoEnvelope *)envelope
                       transaction:(SDSAnyWriteTransaction *)transaction
 {
-    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.sourceE164
-                                                               anyTransaction:transaction];
+    TSThread *contactThread =
+        [TSContactThread getOrCreateThreadWithContactId:envelope.source anyTransaction:transaction];
     [SSKEnvironment.shared.notificationsManager notifyUserForErrorMessage:errorMessage
                                                                    thread:contactThread
                                                               transaction:transaction];

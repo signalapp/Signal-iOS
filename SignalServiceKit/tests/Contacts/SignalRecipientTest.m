@@ -25,7 +25,7 @@
     [super setUp];
 
     self.localNumber = @"+13231231234";
-    [[TSAccountManager sharedInstance] storeLocalNumber:self.localNumber uuid:[NSUUID new]];
+    [[TSAccountManager sharedInstance] storeLocalNumber:self.localNumber];
 }
 
 - (void)tearDown

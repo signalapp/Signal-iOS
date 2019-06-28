@@ -41,8 +41,8 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
                                   withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:envelope.sourceE164
-                                                                         transaction:transaction];
+    TSContactThread *contactThread =
+    [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
 
     // Legit usage of senderTimestamp, references message which failed to decrypt
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
@@ -67,9 +67,9 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
         OWSFailDebug(@"failure: envelope data failed with error: %@", error);
         return nil;
     }
-
-    _authorId = envelope.sourceE164;
-
+    
+    _authorId = envelope.source;
+    
     return self;
 }
 #endif
@@ -171,7 +171,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return;
     }
 
-    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey recipientId:self.envelope.sourceE164];
+    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey recipientId:self.envelope.source];
 
     // Decrypt this and any old messages for the newly accepted key
     NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *messagesToDecrypt =
@@ -218,7 +218,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return self.authorId;
     } else {
         // for existing messages before we were storing author id.
-        return self.envelope.sourceE164;
+        return self.envelope.source;
     }
 }
 

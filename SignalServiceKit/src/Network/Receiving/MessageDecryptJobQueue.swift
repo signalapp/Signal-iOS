@@ -180,7 +180,7 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
 
     private func wasReceivedByUD(envelope: SSKProtoEnvelope) -> Bool {
         let hasSenderSource: Bool
-        if let sourceE164 = envelope.sourceE164, sourceE164.count > 0 {
+        if let source = envelope.source, source.count > 0 {
             hasSenderSource = true
         } else {
             hasSenderSource = false

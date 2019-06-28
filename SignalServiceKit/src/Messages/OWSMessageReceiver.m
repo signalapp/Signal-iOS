@@ -383,7 +383,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return NO;
     }
     return (envelope.unwrappedType == SSKProtoEnvelopeTypeUnidentifiedSender
-        && (!envelope.hasSourceE164 || envelope.sourceE164.length < 1));
+        && (!envelope.hasSource || envelope.source.length < 1));
 }
 
 - (void)processJob:(OWSMessageDecryptJob *)job completion:(void (^)(BOOL))completion
@@ -447,7 +447,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @property (nonatomic, readonly) YAPDBMessageDecryptQueue *yapProcessingQueue;
 @property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-
+@property (nonatomic, readonly) SSKMessageDecryptJobQueue *processingQueue;
 @end
 
 #pragma mark -
@@ -471,6 +471,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     _yapProcessingQueue = yapProcessingQueue;
 
+    _processingQueue = [SSKMessageDecryptJobQueue new];
+
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (CurrentAppContext().isMainApp) {
             [self.yapProcessingQueue drainQueue];
@@ -478,13 +480,6 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     }];
 
     return self;
-}
-
-#pragma mark - Dependencies
-
-- (SSKMessageDecryptJobQueue *)messageDecryptJobQueue
-{
-    return SSKEnvironment.shared.messageDecryptJobQueue;
 }
 
 #pragma mark - class methods
@@ -526,7 +521,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
     if (SSKFeatureFlags.useGRDB) {
         // We *could* use this processing Queue for Yap *and* GRDB
-        [self.messageDecryptJobQueue enqueueEnvelopeData:envelopeData];
+        [self.processingQueue enqueueEnvelopeData:envelopeData];
     } else {
         [self.yapProcessingQueue enqueueEnvelopeData:envelopeData];
         [self.yapProcessingQueue drainQueue];

@@ -23,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSPrimaryStorage;
 @class OWSReadReceiptManager;
 @class SDSDatabaseStorage;
-@class SSKMessageDecryptJobQueue;
 @class SSKPreKeyStore;
 @class SSKSessionStore;
 @class SSKSignedPreKeyStore;
@@ -60,7 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
                             preKeyStore:(SSKPreKeyStore *)preKeyStore
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
-                 messageDecryptJobQueue:(SSKMessageDecryptJobQueue *)messageDecryptJobQueue
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
                         messageReceiver:(OWSMessageReceiver *)messageReceiver
                           socketManager:(TSSocketManager *)socketManager
@@ -103,7 +101,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SSKPreKeyStore *preKeyStore;
 @property (nonatomic, readonly) id<OWSUDManager> udManager;
 @property (nonatomic, readonly) OWSMessageDecrypter *messageDecrypter;
-@property (nonatomic, readonly) SSKMessageDecryptJobQueue *messageDecryptJobQueue;
 @property (nonatomic, readonly) OWSBatchMessageProcessor *batchMessageProcessor;
 @property (nonatomic, readonly) OWSMessageReceiver *messageReceiver;
 @property (nonatomic, readonly) TSSocketManager *socketManager;

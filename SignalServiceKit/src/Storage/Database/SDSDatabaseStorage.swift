@@ -545,16 +545,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         }
     }
 
-    func testing_tearDownUIDatabase() {
-        // UIDatabaseObserver is a general purpose observer, whose delegates
-        // are notified when things change, but are not given any specific details
-        // about the changes.
-        self.uiDatabaseObserver = nil
-        self.homeViewDatabaseObserver = nil
-        self.conversationViewDatabaseObserver = nil
-        self.mediaGalleryDatabaseObserver = nil
-    }
-
     func setup() throws {
         GRDBMediaGalleryFinder.setup(storage: self)
     }

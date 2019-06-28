@@ -224,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)drainQueue
 {
-    OWSAssertDebugUnlessRunningTests(AppReadiness.isAppReady);
+    OWSAssertDebug(AppReadiness.isAppReady);
 
     // Don't process incoming messages in app extensions.
     if (!CurrentAppContext().isMainApp) {

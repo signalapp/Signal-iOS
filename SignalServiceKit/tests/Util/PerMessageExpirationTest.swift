@@ -18,7 +18,7 @@ class PerMessageExpirationTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
 
-        tsAccountManager.storeLocalNumber("+13334445555", uuid: UUID())
+        tsAccountManager.storeLocalNumber("+13334445555")
     }
 
     override func tearDown() {

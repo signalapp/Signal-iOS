@@ -35,7 +35,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
         // `encodedData` was derived thus:
         //     let builder = SSKProtoEnvelopeBuilder()
         //     builder.setTimestamp(NSDate.ows_millisecondTimeStamp())
-        //     builder.setSourceE164("+15551231234")
+        //     builder.setSource("+15551231234")
         //     builder.setSourceDevice(1)
         //     builder.setType(SSKProtoEnvelopeType.ciphertext)
         //     let encodedData = builder.build().data()!.base64EncodedString()
@@ -69,7 +69,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
     func testParse_roundtrip() {
         let builder = SSKProtoEnvelope.builder(timestamp: 123)
         builder.setType(SSKProtoEnvelope.SSKProtoEnvelopeType.prekeyBundle)
-        builder.setSourceE164("+13213214321")
+        builder.setSource("+13213214321")
         builder.setSourceDevice(1)
 
         let phonyContent = "phony data".data(using: .utf8)!
@@ -94,7 +94,7 @@ class SSKProtoEnvelopeTest: SignalBaseTest {
 
         XCTAssertEqual(envelope.type, SSKProtoEnvelope.SSKProtoEnvelopeType.prekeyBundle)
         XCTAssertEqual(envelope.timestamp, 123)
-        XCTAssertEqual(envelope.sourceE164, "+13213214321")
+        XCTAssertEqual(envelope.source, "+13213214321")
         XCTAssertEqual(envelope.sourceDevice, 1)
         XCTAssertTrue(envelope.hasContent)
         XCTAssertEqual(envelope.content, phonyContent)

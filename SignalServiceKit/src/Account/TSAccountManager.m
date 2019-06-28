@@ -31,7 +31,6 @@ NSString *const TSRemoteAttestationAuthErrorKey = @"TSRemoteAttestationAuth";
 NSString *const kNSNotificationName_LocalNumberDidChange = @"kNSNotificationName_LocalNumberDidChange";
 
 NSString *const TSAccountManager_RegisteredNumberKey = @"TSStorageRegisteredNumberKey";
-NSString *const TSAccountManager_RegisteredUUIDKey = @"TSStorageRegisteredUUIDKey";
 NSString *const TSAccountManager_IsDeregisteredKey = @"TSAccountManager_IsDeregisteredKey";
 NSString *const TSAccountManager_ReregisteringPhoneNumberKey = @"TSAccountManager_ReregisteringPhoneNumberKey";
 NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegistrationId";
@@ -182,8 +181,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         OWSFail(@"phoneNumber was unexpectedly nil");
     }
 
-    // UUID TODO: pass in uuid returned from registration verification
-    [self storeLocalNumber:phoneNumber uuid:nil];
+    [self storeLocalNumber:phoneNumber];
 
     // Warm these cached values.
     [self isRegistered];
@@ -238,19 +236,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
 }
 
-// TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.contactUUID in production
-- (void)storeLocalNumber:(NSString *)localNumber uuid:(nullable NSUUID *)uuid
+- (void)storeLocalNumber:(NSString *)localNumber
 {
     @synchronized (self) {
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
-
-            if (SSKFeatureFlags.contactUUID) {
-                OWSAssert(uuid);
-                [self.keyValueStore setString:uuid.UUIDString
-                                          key:TSAccountManager_RegisteredUUIDKey
-                                  transaction:transaction];
-            }
 
             [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringPhoneNumberKey transaction:transaction];
         }];
@@ -676,14 +666,12 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }];
 }
 
-- (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid
+- (void)registerForTestsWithLocalNumber:(NSString *)localNumber
 {
     OWSAssertDebug(localNumber.length > 0);
-    OWSAssertDebug(uuid != nil);
-
-    [self storeLocalNumber:localNumber uuid:uuid];
+    
+    [self storeLocalNumber:localNumber];
 }
-
 
 #pragma mark - Account Attributes
 
