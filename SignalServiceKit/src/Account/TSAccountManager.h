@@ -58,8 +58,8 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 @property (readonly, nullable) NSUUID *uuid;
 @property (readonly) SignalServiceAddress *localAddress;
 
-// A variant of localNumber that never opens a "sneaky" transaction.
-- (nullable NSString *)storedOrCachedLocalNumber:(SDSAnyReadTransaction *)transaction;
+// A variant of localAddress that never opens a "sneaky" transaction.
+- (SignalServiceAddress *)storedOrCachedLocalAddress:(SDSAnyReadTransaction *)transaction;
 
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,

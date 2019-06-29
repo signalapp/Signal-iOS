@@ -161,7 +161,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 return
             }
 
-            SignalApp.shared().presentConversation(forRecipientId: searchResult.recipientId, action: .compose, animated: true)
+            SignalApp.shared().presentConversation(for: searchResult.recipientAddress, action: .compose, animated: true)
 
         case .messages:
             let sectionResults = searchResultSet.messages

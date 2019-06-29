@@ -260,7 +260,14 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     // acceptable.
     [TSOutgoingMessage.dbMigrationConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         TSThread *thread = [self threadWithTransaction:transaction.asAnyRead];
-        recipientIds = [thread recipientIdentifiers];
+        NSMutableArray<NSString *> *idsFromAddresses = [NSMutableArray new];
+        for (SignalServiceAddress *address in [thread recipientAddresses]) {
+            if (!address.phoneNumber) {
+                continue;
+            }
+            [idsFromAddresses addObject:address.phoneNumber];
+        }
+        recipientIds = [idsFromAddresses copy];
         isGroupThread = [thread isGroupThread];
     }];
 
@@ -460,7 +467,14 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
             localNumber,
         ];
     } else {
-        recipientIds = [thread recipientIdentifiers];
+        NSMutableArray<NSString *> *idsFromAddresses = [NSMutableArray new];
+        for (SignalServiceAddress *address in [thread recipientAddresses]) {
+            if (!address.phoneNumber) {
+                continue;
+            }
+            [idsFromAddresses addObject:address.phoneNumber];
+        }
+        recipientIds = [idsFromAddresses copy];
     }
     for (NSString *recipientId in recipientIds) {
         TSOutgoingMessageRecipientState *recipientState = [TSOutgoingMessageRecipientState new];

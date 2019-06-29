@@ -224,8 +224,9 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return [NSData dataFromBase64String:[threadId substringWithRange:NSMakeRange(1, threadId.length - 1)]];
 }
 
-- (NSArray<NSString *> *)recipientIdentifiers
+- (NSArray<SignalServiceAddress *> *)recipientAddresses
 {
+    NSMutableArray<SignalServiceAddress *> *groupMemberAddresses = [NSMutableArray new];
     NSMutableArray<NSString *> *groupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
     if (groupMemberIds == nil) {
         return @[];
@@ -233,7 +234,11 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
     [groupMemberIds removeObject:[TSAccountManager localNumber]];
 
-    return [groupMemberIds copy];
+    for (NSString *phoneNumber in groupMemberIds) {
+        [groupMemberAddresses addObject:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
+    }
+
+    return [groupMemberAddresses copy];
 }
 
 // @returns all threads to which the recipient is a member.

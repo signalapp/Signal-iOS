@@ -162,7 +162,7 @@ public class FullTextSearchFinder: NSObject {
         let groupName = groupThread.groupModel.groupName ?? ""
 
         let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
-            recipientIndexer.index(recipientId, transaction: transaction)
+            recipientIndexer.index(recipientId.transitional_signalServiceAddress, transaction: transaction)
         }.joined(separator: " ")
 
         return "\(groupName) \(memberStrings)"
@@ -170,12 +170,10 @@ public class FullTextSearchFinder: NSObject {
 
     private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread, transaction: YapDatabaseReadTransaction) in
         let recipientAddress = contactThread.contactAddress
-        var result = recipientIndexer.index(recipientAddress.transitional_phoneNumber, transaction: transaction)
+        var result = recipientIndexer.index(recipientAddress, transaction: transaction)
+        let localAddress = tsAccountManager.storedOrCachedLocalAddress(transaction.asAnyRead)
 
-        if IsNoteToSelfEnabled(),
-            let localNumber = tsAccountManager.storedOrCachedLocalNumber(transaction.asAnyRead),
-            localNumber == recipientAddress.transitional_phoneNumber {
-
+        if IsNoteToSelfEnabled(), localAddress.matchesAddress(recipientAddress) {
             let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
             result += " \(noteToSelfLabel)"
         }
@@ -183,10 +181,11 @@ public class FullTextSearchFinder: NSObject {
         return result
     }
 
-    private static let recipientIndexer: SearchIndexer<String> = SearchIndexer { (recipientId: String, transaction: YapDatabaseReadTransaction) in
-        let displayName = contactsManager.displayName(for: recipientId.transitional_signalServiceAddress, transaction: transaction)
+    private static let recipientIndexer: SearchIndexer<SignalServiceAddress> = SearchIndexer { recipientAddress, transaction in
+        let displayName = contactsManager.displayName(for: recipientAddress, transaction: transaction)
 
-        let nationalNumber: String = { (recipientId: String) -> String in
+        let nationalNumber: String? = { (recipientId: String?) -> String? in
+            guard let recipientId = recipientId else { return nil }
 
             guard let phoneNumber = PhoneNumber(fromE164: recipientId) else {
                 owsFailDebug("unexpected unparseable recipientId: \(recipientId)")
@@ -199,9 +198,9 @@ public class FullTextSearchFinder: NSObject {
             }
 
             return String(String.UnicodeScalarView(digitScalars))
-        }(recipientId)
+        }(recipientAddress.phoneNumber)
 
-        return "\(recipientId) \(nationalNumber) \(displayName)"
+        return "\(recipientAddress.phoneNumber ?? "") \(nationalNumber ?? "") \(displayName)"
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in
@@ -229,7 +228,7 @@ public class FullTextSearchFinder: NSObject {
             }
             return self.messageIndexer.index(message, transaction: transaction)
         } else if let signalAccount = object as? SignalAccount {
-            return self.recipientIndexer.index(signalAccount.recipientAddress.transitional_phoneNumber, transaction: transaction)
+            return self.recipientIndexer.index(signalAccount.recipientAddress, transaction: transaction)
         } else {
             return nil
         }

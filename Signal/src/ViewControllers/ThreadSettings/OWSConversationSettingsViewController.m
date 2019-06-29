@@ -1115,10 +1115,10 @@ const CGFloat kIconViewLength = 24;
 {
     OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    NSString *recipientId = contactThread.contactAddress.transitional_phoneNumber;
-    OWSAssertDebug(recipientId.length > 0);
+    SignalServiceAddress *contactAddress = contactThread.contactAddress;
+    OWSAssertDebug(contactAddress.isValid);
 
-    [FingerprintViewController presentFromViewController:self recipientId:recipientId];
+    [FingerprintViewController presentFromViewController:self address:contactAddress];
 }
 
 - (void)showGroupMembersView
@@ -1151,10 +1151,9 @@ const CGFloat kIconViewLength = 24;
     }
 
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper
-        presentContactViewControllerForRecipientId:contactThread.contactAddress.transitional_phoneNumber
-                                fromViewController:self
-                                   editImmediately:YES];
+    [self.contactsViewHelper presentContactViewControllerForAddress:contactThread.contactAddress
+                                                 fromViewController:self
+                                                    editImmediately:YES];
 }
 
 - (void)presentAddToContactViewControllerWithRecipientId:(NSString *)recipientId
@@ -1474,16 +1473,15 @@ const CGFloat kIconViewLength = 24;
 {
     OWSAssertIsOnMainThread();
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    OWSAssertDebug(recipientId.length > 0);
+    SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    OWSAssertDebug(address.isValid);
 
     TSContactThread *_Nullable contactThread;
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         contactThread = (TSContactThread *)self.thread;
     }
 
-    if (recipientId.length > 0 && contactThread &&
-        [contactThread.contactAddress.transitional_phoneNumber isEqualToString:recipientId]) {
+    if (address.isValid && contactThread && [contactThread.contactAddress matchesAddress:address]) {
         [self updateTableContents];
     }
 }

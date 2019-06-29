@@ -73,15 +73,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)warmNonSignalContactsCacheAsync;
 - (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText;
 
-- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
-                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                                   editImmediately:(BOOL)shouldEditImmediately;
+- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
+                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                               editImmediately:(BOOL)shouldEditImmediately;
 
 // This method can be used to edit existing contacts.
-- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
-                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                                   editImmediately:(BOOL)shouldEditImmediately
-                            addToExistingCnContact:(CNContact *_Nullable)cnContact;
+- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
+                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                               editImmediately:(BOOL)shouldEditImmediately
+                        addToExistingCnContact:(CNContact *_Nullable)cnContact;
 
 + (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 

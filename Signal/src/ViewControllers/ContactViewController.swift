@@ -541,17 +541,17 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
                 actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_SEND_MESSAGE",
                                                                              comment: "Label for 'send message' button in contact view."),
                                                     style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .compose, animated: true)
+                                                        SignalApp.shared().presentConversation(for: e164.transitional_signalServiceAddress, action: .compose, animated: true)
                 })
                 actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_AUDIO_CALL",
                                                                              comment: "Label for 'audio call' button in contact view."),
                                                     style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .audioCall, animated: true)
+                                                        SignalApp.shared().presentConversation(for: e164.transitional_signalServiceAddress, action: .audioCall, animated: true)
                 })
                 actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_VIDEO_CALL",
                                                                              comment: "Label for 'video call' button in contact view."),
                                                     style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(forRecipientId: e164, action: .videoCall, animated: true)
+                                                        SignalApp.shared().presentConversation(for: e164.transitional_signalServiceAddress, action: .videoCall, animated: true)
                 })
             } else {
                 // TODO: We could offer callPhoneNumberWithSystemCall.

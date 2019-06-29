@@ -51,7 +51,7 @@ public class RequestMaker: NSObject {
     private let requestFactoryBlock: RequestFactoryBlock
     private let udAuthFailureBlock: UDAuthFailureBlock
     private let websocketFailureBlock: WebsocketFailureBlock
-    private let recipientId: String
+    private let address: SignalServiceAddress
     private let udAccess: OWSUDAccess?
     private let canFailoverUDAuth: Bool
 
@@ -60,14 +60,14 @@ public class RequestMaker: NSObject {
                 requestFactoryBlock : @escaping RequestFactoryBlock,
                 udAuthFailureBlock : @escaping UDAuthFailureBlock,
                 websocketFailureBlock : @escaping WebsocketFailureBlock,
-                recipientId: String,
+                address: SignalServiceAddress,
                 udAccess: OWSUDAccess?,
                 canFailoverUDAuth: Bool) {
         self.label = label
         self.requestFactoryBlock = requestFactoryBlock
         self.udAuthFailureBlock = udAuthFailureBlock
         self.websocketFailureBlock = websocketFailureBlock
-        self.recipientId = recipientId
+        self.address = address
         self.udAccess = udAccess
         self.canFailoverUDAuth = canFailoverUDAuth
     }
@@ -145,9 +145,9 @@ public class RequestMaker: NSObject {
                     case RequestMakerError.websocketRequestError(let statusCode, _, _):
                         if isUDRequest && (statusCode == 401 || statusCode == 403) {
                             // If a UD request fails due to service response (as opposed to network
-                            // failure), mark recipient as _not_ in UD mode, then retry.
-                            self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.recipientId)
-                            self.profileManager.fetchProfile(forRecipientId: self.recipientId)
+                            // failure), mark address as _not_ in UD mode, then retry.
+                            self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.address.transitional_phoneNumber)
+                            self.profileManager.fetchProfile(for: self.address)
                             self.udAuthFailureBlock()
 
                             if self.canFailoverUDAuth {
@@ -195,8 +195,8 @@ public class RequestMaker: NSObject {
                         if isUDRequest && (statusCode == 401 || statusCode == 403) {
                             // If a UD request fails due to service response (as opposed to network
                             // failure), mark recipient as _not_ in UD mode, then retry.
-                            self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.recipientId)
-                            self.profileManager.fetchProfile(forRecipientId: self.recipientId)
+                            self.udManager.setUnidentifiedAccessMode(.disabled, recipientId: self.address.transitional_phoneNumber)
+                            self.profileManager.fetchProfile(for: self.address)
                             self.udAuthFailureBlock()
 
                             if self.canFailoverUDAuth {
@@ -234,15 +234,15 @@ public class RequestMaker: NSObject {
 
         if udAccess.isRandomKey {
             // If a UD request succeeds for an unknown user with a random key,
-            // mark recipient as .unrestricted.
-            udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: recipientId)
+            // mark address as .unrestricted.
+            udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: address.transitional_phoneNumber)
         } else {
             // If a UD request succeeds for an unknown user with a non-random key,
-            // mark recipient as .enabled.
-            udManager.setUnidentifiedAccessMode(.enabled, recipientId: recipientId)
+            // mark address as .enabled.
+            udManager.setUnidentifiedAccessMode(.enabled, recipientId: address.transitional_phoneNumber)
         }
         DispatchQueue.main.async {
-            self.profileManager.fetchProfile(forRecipientId: self.recipientId)
+            self.profileManager.fetchProfile(for: self.address)
         }
     }
 }

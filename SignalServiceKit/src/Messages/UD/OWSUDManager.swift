@@ -253,7 +253,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // if we have a valid profile key for them.
     @objc
     public func udAccessKey(forRecipientId recipientId: RecipientIdentifier) -> SMKUDAccessKey? {
-        guard let profileKey = profileManager.profileKeyData(forRecipientId: recipientId) else {
+        guard let profileKey = profileManager.profileKeyData(for: recipientId.transitional_signalServiceAddress) else {
             // Mark as "not a UD recipient".
             return nil
         }

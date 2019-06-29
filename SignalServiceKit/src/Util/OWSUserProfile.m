@@ -23,10 +23,12 @@ NSString *const kNSNotificationName_LocalProfileDidChange = @"kNSNotificationNam
 NSString *const kNSNotificationName_OtherUsersProfileWillChange = @"kNSNotificationName_OtherUsersProfileWillChange";
 NSString *const kNSNotificationName_OtherUsersProfileDidChange = @"kNSNotificationName_OtherUsersProfileDidChange";
 
-NSString *const kNSNotificationKey_ProfileRecipientId = @"kNSNotificationKey_ProfileRecipientId";
+NSString *const kNSNotificationKey_ProfileAddress = @"kNSNotificationKey_ProfileAddress";
 NSString *const kNSNotificationKey_ProfileGroupId = @"kNSNotificationKey_ProfileGroupId";
 
 NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
+
+NSUInteger const kUserProfileSchemaVersion = 1;
 
 @interface OWSUserProfile ()
 
@@ -34,6 +36,10 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 @property (atomic, nullable) NSString *profileName;
 @property (atomic, nullable) NSString *avatarUrlPath;
 @property (atomic, nullable) NSString *avatarFileName;
+
+@property (atomic, readonly) NSUInteger userProfileSchemaVersion;
+@property (atomic, readonly) NSString *recipientPhoneNumber;
+@property (atomic, readonly) NSString *recipientUUID;
 
 @end
 
@@ -84,20 +90,30 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     return @"UserProfile";
 }
 
-+ (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId
-                                           dbConnection:(YapDatabaseConnection *)dbConnection
++ (AnyUserProfileFinder *)userProfileFinder
 {
-    OWSAssertDebug(recipientId.length > 0);
+    return [AnyUserProfileFinder new];
+}
+
++ (SignalServiceAddress *)localProfileAddress
+{
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:kLocalProfileUniqueId];
+}
+
++ (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)address
+                                       dbConnection:(YapDatabaseConnection *)dbConnection
+{
+    OWSAssertDebug(address.isValid);
 
     __block OWSUserProfile *userProfile;
     [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        userProfile = [OWSUserProfile fetchObjectWithUniqueID:recipientId transaction:transaction];
+        userProfile = [self.userProfileFinder userProfileForAddress:address transaction:transaction.asAnyRead];
     }];
 
     if (!userProfile) {
-        userProfile = [[OWSUserProfile alloc] initWithRecipientId:recipientId];
+        userProfile = [[OWSUserProfile alloc] initWithAddress:address];
 
-        if ([recipientId isEqualToString:kLocalProfileUniqueId]) {
+        if ([address.phoneNumber isEqualToString:kLocalProfileUniqueId]) {
             [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
                                  dbConnection:dbConnection
                                    completion:nil];
@@ -113,22 +129,40 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 {
     __block BOOL result = NO;
     [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        result = [OWSUserProfile fetchObjectWithUniqueID:kLocalProfileUniqueId transaction:transaction] != nil;
+        result = [self.userProfileFinder userProfileForAddress:self.localProfileAddress
+                                                   transaction:transaction.asAnyRead]
+            != nil;
     }];
 
     return result;
 }
 
-- (instancetype)initWithRecipientId:(NSString *)recipientId
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    self = [super initWithUniqueId:recipientId];
+    if (self = [super initWithCoder:coder]) {
+        if (_userProfileSchemaVersion < 1) {
+            _recipientPhoneNumber = [coder decodeObjectForKey:@"recipientId"];
+            OWSAssertDebug(_recipientPhoneNumber);
+        }
+
+        _userProfileSchemaVersion = kUserProfileSchemaVersion;
+    }
+
+    return self;
+}
+
+- (instancetype)initWithAddress:(SignalServiceAddress *)address
+{
+    self = [super init];
 
     if (!self) {
         return self;
     }
 
-    OWSAssertDebug(recipientId.length > 0);
-    _recipientId = recipientId;
+    OWSAssertDebug(address.isValid);
+    _recipientPhoneNumber = address.phoneNumber;
+    _recipientUUID = address.uuidString;
+    _userProfileSchemaVersion = kUserProfileSchemaVersion;
 
     return self;
 }
@@ -148,6 +182,11 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
 }
 
 #pragma mark -
+
+- (SignalServiceAddress *)address
+{
+    return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID phoneNumber:self.recipientPhoneNumber];
+}
 
 - (nullable NSString *)avatarUrlPath
 {
@@ -252,7 +291,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
         return;
     }
 
-    BOOL isLocalUserProfile = [self.recipientId isEqualToString:kLocalProfileUniqueId];
+    BOOL isLocalUserProfile = [self.address.phoneNumber isEqualToString:kLocalProfileUniqueId];
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if (isLocalUserProfile) {
@@ -270,14 +309,14 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
             [[NSNotificationCenter defaultCenter]
                 postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
                                    object:nil
-                                 userInfo:@{
-                                     kNSNotificationKey_ProfileRecipientId : self.recipientId,
+                                 userInfo:@ {
+                                     kNSNotificationKey_ProfileAddress : self.address,
                                  }];
             [[NSNotificationCenter defaultCenter]
                 postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
                                    object:nil
-                                 userInfo:@{
-                                     kNSNotificationKey_ProfileRecipientId : self.recipientId,
+                                 userInfo:@ {
+                                     kNSNotificationKey_ProfileAddress : self.address,
                                  }];
         }
     });
@@ -416,7 +455,7 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
     return [NSString stringWithFormat:@"%@ %p %@ %lu %@ %@ %@",
                      self.logTag,
                      self,
-                     self.recipientId,
+                     self.address,
                      (unsigned long)self.profileKey.keyData.length,
                      self.profileName,
                      self.avatarUrlPath,

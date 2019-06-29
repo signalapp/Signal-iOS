@@ -750,9 +750,9 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     BOOL hasUnwhitelistedMember = NO;
     NSArray<NSString *> *blockedPhoneNumbers = [blockingManager blockedPhoneNumbers];
-    for (NSString *recipientId in thread.recipientIdentifiers) {
-        if (![blockedPhoneNumbers containsObject:recipientId]
-            && ![OWSProfileManager.sharedManager isUserInProfileWhitelist:recipientId]) {
+    for (SignalServiceAddress *address in thread.recipientAddresses) {
+        if (![blockedPhoneNumbers containsObject:address.transitional_phoneNumber]
+            && ![OWSProfileManager.sharedManager isUserInProfileWhitelist:address]) {
             hasUnwhitelistedMember = YES;
             break;
         }

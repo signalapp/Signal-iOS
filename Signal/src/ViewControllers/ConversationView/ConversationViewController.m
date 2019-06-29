@@ -421,9 +421,9 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    OWSAssertDebug(recipientId.length > 0);
-    if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
+    SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    OWSAssertDebug(address.isValid);
+    if (address.isValid && [self.thread.recipientAddresses containsObject:address]) {
         if ([self.thread isKindOfClass:[TSContactThread class]]) {
             // update title with profile name
             [self updateNavigationTitle];
@@ -442,9 +442,9 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     // If profile whitelist just changed, we may want to hide a profile whitelist offer.
-    NSString *_Nullable recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
+    SignalServiceAddress *_Nullable address = notification.userInfo[kNSNotificationKey_ProfileAddress];
     NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
-    if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
+    if (address.isValid && [self.thread.recipientAddresses containsObject:address]) {
         [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
     } else if (groupId.length > 0 && self.thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
@@ -905,10 +905,10 @@ typedef enum : NSUInteger {
 - (NSArray<NSString *> *)noLongerVerifiedRecipientIds
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+    for (SignalServiceAddress *address in self.thread.recipientAddresses) {
+        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.transitional_phoneNumber]
             == OWSVerificationStateNoLongerVerified) {
-            [result addObject:recipientId];
+            [result addObject:address.transitional_phoneNumber];
         }
     }
     return [result copy];
@@ -1591,8 +1591,8 @@ typedef enum : NSUInteger {
     }
 
     BOOL isVerified = YES;
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+    for (SignalServiceAddress *address in self.thread.recipientAddresses) {
+        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.transitional_phoneNumber]
             != OWSVerificationStateVerified) {
             isVerified = NO;
             break;
@@ -1635,7 +1635,12 @@ typedef enum : NSUInteger {
 - (BOOL)showSafetyNumberConfirmationIfNecessaryWithConfirmationText:(NSString *)confirmationText
                                                          completion:(void (^)(BOOL didConfirmIdentity))completionHandler
 {
-    return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:self.thread.recipientIdentifiers
+    NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
+    for (SignalServiceAddress *address in self.thread.recipientAddresses) {
+        [phoneNumbers addObject:address.transitional_phoneNumber];
+    }
+
+    return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:[phoneNumbers copy]
         confirmationText:confirmationText
         contactsManager:self.contactsManager
         completion:^(BOOL didShowAlert) {
@@ -1666,7 +1671,7 @@ typedef enum : NSUInteger {
     // return from FingerprintViewController.
     [self dismissKeyBoard];
 
-    [FingerprintViewController presentFromViewController:self recipientId:recipientId];
+    [FingerprintViewController presentFromViewController:self address:recipientId.transitional_signalServiceAddress];
 }
 
 #pragma mark - Calls
@@ -2304,7 +2309,8 @@ typedef enum : NSUInteger {
                                  style:UIAlertActionStyleDestructive
                                handler:^(UIAlertAction *action) {
                                    OWSLogInfo(@"Blocking an unknown user.");
-                                   [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
+                                   [self.blockingManager
+                                       addBlockedAddress:interaction.recipientId.transitional_signalServiceAddress];
                                    // Delete the offers.
                                    [self.editingDatabaseConnection
                                        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -2330,10 +2336,9 @@ typedef enum : NSUInteger {
         return;
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper
-        presentContactViewControllerForRecipientId:contactThread.contactAddress.transitional_phoneNumber
-                                fromViewController:self
-                                   editImmediately:YES];
+    [self.contactsViewHelper presentContactViewControllerForAddress:contactThread.contactAddress
+                                                 fromViewController:self
+                                                    editImmediately:YES];
 
     // Delete the offers.
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

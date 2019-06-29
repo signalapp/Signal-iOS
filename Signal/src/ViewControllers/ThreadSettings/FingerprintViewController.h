@@ -1,14 +1,16 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 @interface FingerprintViewController : OWSViewController
 
-+ (void)presentFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId;
++ (void)presentFromViewController:(UIViewController *)viewController address:(SignalServiceAddress *)address;
 
 @end
 

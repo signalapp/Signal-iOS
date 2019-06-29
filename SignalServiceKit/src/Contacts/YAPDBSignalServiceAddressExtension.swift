@@ -24,6 +24,11 @@ extension TSContactThread: YAPDBSignalServiceAddressIndexable {
     var indexablePhoneNumberValue: String? { return contactPhoneNumber }
 }
 
+extension OWSUserProfile: YAPDBSignalServiceAddressIndexable {
+    var indexableUUIDValue: String? { return recipientUUID }
+    var indexablePhoneNumberValue: String? { return recipientPhoneNumber }
+}
+
 @objc
 class YAPDBSignalServiceAddressIndex: NSObject {
     private static let indexableTypes: [YAPDBSignalServiceAddressIndexable.Type] = [

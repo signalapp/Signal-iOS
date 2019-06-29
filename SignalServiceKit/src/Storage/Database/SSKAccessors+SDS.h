@@ -179,4 +179,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface OWSUserProfile (SDS)
+
+@property (atomic, readonly) NSUInteger userProfileSchemaVersion;
+@property (atomic, readonly) NSString *recipientPhoneNumber;
+@property (atomic, readonly) NSString *recipientUUID;
+
+@end
+
+#pragma mark -
+
 NS_ASSUME_NONNULL_END

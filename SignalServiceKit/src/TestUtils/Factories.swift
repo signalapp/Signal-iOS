@@ -303,7 +303,7 @@ public class IncomingMessageFactory: NSObject, Factory {
         case let contactThread as TSContactThread:
             return contactThread.contactAddress
         case let groupThread as TSGroupThread:
-            let randomE164 = groupThread.recipientIdentifiers.ows_randomElement() ?? CommonGenerator.e164()
+            let randomE164 = groupThread.recipientAddresses.ows_randomElement()?.transitional_phoneNumber ?? CommonGenerator.e164()
             return SignalServiceAddress(phoneNumber: randomE164)
         default:
             owsFailDebug("unexpected thread type")

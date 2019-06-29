@@ -365,22 +365,22 @@ NS_ASSUME_NONNULL_BEGIN
     [viewController presentAlert:alert];
 }
 
-- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
-                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                                   editImmediately:(BOOL)shouldEditImmediately
+- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
+                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                               editImmediately:(BOOL)shouldEditImmediately
 {
-    [self presentContactViewControllerForRecipientId:recipientId
-                                  fromViewController:fromViewController
-                                     editImmediately:shouldEditImmediately
-                              addToExistingCnContact:nil];
+    [self presentContactViewControllerForAddress:address
+                              fromViewController:fromViewController
+                                 editImmediately:shouldEditImmediately
+                          addToExistingCnContact:nil];
 }
 
-- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
-                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                                   editImmediately:(BOOL)shouldEditImmediately
-                            addToExistingCnContact:(CNContact *_Nullable)existingContact
+- (void)presentContactViewControllerForAddress:(SignalServiceAddress *)address
+                            fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
+                               editImmediately:(BOOL)shouldEditImmediately
+                        addToExistingCnContact:(CNContact *_Nullable)existingContact
 {
-    SignalAccount *signalAccount = [self fetchSignalAccountForAddress:recipientId.transitional_signalServiceAddress];
+    SignalAccount *signalAccount = [self fetchSignalAccountForAddress:address];
 
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
@@ -402,27 +402,30 @@ NS_ASSUME_NONNULL_BEGIN
         // Only add recipientId as a phone number for the existing contact
         // if its not already present.
         BOOL hasPhoneNumber = NO;
-        for (CNLabeledValue *existingPhoneNumber in phoneNumbers) {
-            CNPhoneNumber *phoneNumber = existingPhoneNumber.value;
-            if ([phoneNumber.stringValue isEqualToString:recipientId]) {
-                OWSFailDebug(@"We currently only should the 'add to existing contact' UI for phone numbers that don't "
-                             @"correspond to an existing user.");
-                hasPhoneNumber = YES;
-                break;
+        if (address.phoneNumber) {
+            for (CNLabeledValue *existingPhoneNumber in phoneNumbers) {
+                CNPhoneNumber *phoneNumber = existingPhoneNumber.value;
+                if ([phoneNumber.stringValue isEqualToString:address.phoneNumber]) {
+                    OWSFailDebug(
+                        @"We currently only should the 'add to existing contact' UI for phone numbers that don't "
+                        @"correspond to an existing user.");
+                    hasPhoneNumber = YES;
+                    break;
+                }
             }
-        }
-        if (!hasPhoneNumber) {
-            CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:recipientId];
-            CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
-                [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
-            [phoneNumbers addObject:labeledPhoneNumber];
-            updatedContact.phoneNumbers = phoneNumbers;
+            if (!hasPhoneNumber) {
+                CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:address.phoneNumber];
+                CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
+                    [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
+                [phoneNumbers addObject:labeledPhoneNumber];
+                updatedContact.phoneNumbers = phoneNumbers;
 
-            // When adding a phone number to an existing contact, immediately enter
-            // "edit" mode.
-            shouldEditImmediately = YES;
+                // When adding a phone number to an existing contact, immediately enter
+                // "edit" mode.
+                shouldEditImmediately = YES;
+            }
+            cnContact = updatedContact;
         }
-        cnContact = updatedContact;
     }
     if (signalAccount && !cnContact) {
         cnContact = [self.contactsManager cnContactWithId:signalAccount.contact.cnContactId];
@@ -443,12 +446,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (!contactViewController) {
         CNMutableContact *newContact = [CNMutableContact new];
-        CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:recipientId];
-        CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
-            [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
-        newContact.phoneNumbers = @[ labeledPhoneNumber ];
+        if (address.phoneNumber) {
+            CNPhoneNumber *phoneNumber = [CNPhoneNumber phoneNumberWithStringValue:address.phoneNumber];
+            CNLabeledValue<CNPhoneNumber *> *labeledPhoneNumber =
+                [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
+            newContact.phoneNumbers = @[ labeledPhoneNumber ];
+        }
 
-        newContact.givenName = [self.profileManager profileNameForRecipientId:recipientId];
+        newContact.givenName = [self.profileManager profileNameForAddress:address];
 
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }

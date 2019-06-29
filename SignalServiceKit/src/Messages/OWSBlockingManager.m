@@ -95,7 +95,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        return [self isRecipientIdBlocked:contactThread.contactAddress.transitional_phoneNumber];
+        return [self isAddressBlocked:contactThread.contactAddress];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         return [self isGroupIdBlocked:groupThread.groupModel.groupId];
@@ -107,43 +107,47 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 #pragma mark - Contact Blocking
 
-- (void)addBlockedPhoneNumber:(NSString *)phoneNumber
+- (void)addBlockedAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    OWSLogInfo(@"addBlockedPhoneNumber: %@", phoneNumber);
+    OWSLogInfo(@"addBlockedAddress: %@", address);
+
+    // TODO UUID
 
     @synchronized(self)
     {
         [self ensureLazyInitialization];
 
-        if ([_blockedPhoneNumberSet containsObject:phoneNumber]) {
+        if ([_blockedPhoneNumberSet containsObject:address.transitional_phoneNumber]) {
             // Ignore redundant changes.
             return;
         }
 
-        [_blockedPhoneNumberSet addObject:phoneNumber];
+        [_blockedPhoneNumberSet addObject:address.transitional_phoneNumber];
     }
 
     [self handleUpdate];
 }
 
-- (void)removeBlockedPhoneNumber:(NSString *)phoneNumber
+- (void)removeBlockedAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    OWSLogInfo(@"removeBlockedPhoneNumber: %@", phoneNumber);
+    OWSLogInfo(@"removeBlockedAddress: %@", address);
+
+    // TODO UUID
 
     @synchronized(self)
     {
         [self ensureLazyInitialization];
 
-        if (![_blockedPhoneNumberSet containsObject:phoneNumber]) {
+        if (![_blockedPhoneNumberSet containsObject:address.transitional_phoneNumber]) {
             // Ignore redundant changes.
             return;
         }
 
-        [_blockedPhoneNumberSet removeObject:phoneNumber];
+        [_blockedPhoneNumberSet removeObject:address.transitional_phoneNumber];
     }
 
     [self handleUpdate];
@@ -180,9 +184,15 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 }
 
-- (BOOL)isRecipientIdBlocked:(NSString *)recipientId
+- (NSArray<NSString *> *)blockedUUIDs
 {
-    return [self.blockedPhoneNumbers containsObject:recipientId];
+    // TODO UUID
+    return @[];
+}
+
+- (BOOL)isAddressBlocked:(SignalServiceAddress *)address
+{
+    return [self.blockedPhoneNumbers containsObject:address.transitional_phoneNumber];
 }
 
 #pragma mark - Group Blocking

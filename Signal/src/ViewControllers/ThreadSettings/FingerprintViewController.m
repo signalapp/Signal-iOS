@@ -89,12 +89,12 @@ typedef void (^CustomLayoutBlock)(void);
 
 @implementation FingerprintViewController
 
-+ (void)presentFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId
++ (void)presentFromViewController:(UIViewController *)viewController address:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:address.transitional_phoneNumber];
     if (!recipientIdentity) {
         [OWSAlerts showAlertWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
                                           @"Title for alert explaining that a user cannot be verified.")
@@ -104,7 +104,7 @@ typedef void (^CustomLayoutBlock)(void);
     }
 
     FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
-    [fingerprintViewController configureWithRecipientId:recipientId];
+    [fingerprintViewController configureWithRecipientId:address.transitional_phoneNumber];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:fingerprintViewController];
     [viewController presentViewController:navigationController animated:YES completion:nil];

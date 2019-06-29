@@ -9,15 +9,14 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSUserProfileCompletion)(void);
 
 @class OWSAES256Key;
+@class SignalServiceAddress;
 
 extern NSString *const kNSNotificationName_LocalProfileDidChange;
 extern NSString *const kNSNotificationName_OtherUsersProfileWillChange;
 extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 
-extern NSString *const kNSNotificationKey_ProfileRecipientId;
+extern NSString *const kNSNotificationKey_ProfileAddress;
 extern NSString *const kNSNotificationKey_ProfileGroupId;
-
-extern NSString *const kLocalProfileUniqueId;
 
 // This class should be completely thread-safe.
 //
@@ -25,7 +24,7 @@ extern NSString *const kLocalProfileUniqueId;
 // class should be done on OWSProfileManager's dbConnection.
 @interface OWSUserProfile : TSYapDatabaseObject
 
-@property (atomic, readonly) NSString *recipientId;
+@property (atomic, readonly) SignalServiceAddress *address;
 @property (atomic, readonly, nullable) OWSAES256Key *profileKey;
 @property (atomic, readonly, nullable) NSString *profileName;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
@@ -53,8 +52,10 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
 
 // --- CODE GENERATION MARKER
 
-+ (OWSUserProfile *)getOrBuildUserProfileForRecipientId:(NSString *)recipientId
-                                           dbConnection:(YapDatabaseConnection *)dbConnection;
++ (SignalServiceAddress *)localProfileAddress;
+
++ (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)recipientId
+                                       dbConnection:(YapDatabaseConnection *)dbConnection;
 
 + (BOOL)localUserProfileExists:(YapDatabaseConnection *)dbConnection;
 

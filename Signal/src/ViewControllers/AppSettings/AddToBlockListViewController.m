@@ -50,15 +50,15 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(phoneNumber.length > 0);
 
     __weak AddToBlockListViewController *weakSelf = self;
-    [BlockListUIUtils showBlockPhoneNumberActionSheet:phoneNumber
-                                   fromViewController:self
-                                      blockingManager:self.contactsViewHelper.blockingManager
-                                      contactsManager:self.contactsViewHelper.contactsManager
-                                      completionBlock:^(BOOL isBlocked) {
-                                          if (isBlocked) {
-                                              [weakSelf.navigationController popViewControllerAnimated:YES];
-                                          }
-                                      }];
+    [BlockListUIUtils showBlockAddressActionSheet:phoneNumber.transitional_signalServiceAddress
+                               fromViewController:self
+                                  blockingManager:self.contactsViewHelper.blockingManager
+                                  contactsManager:self.contactsViewHelper.contactsManager
+                                  completionBlock:^(BOOL isBlocked) {
+                                      if (isBlocked) {
+                                          [weakSelf.navigationController popViewControllerAnimated:YES];
+                                      }
+                                  }];
 }
 
 - (BOOL)canSignalAccountBeSelected:(SignalAccount *)signalAccount

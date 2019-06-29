@@ -57,8 +57,8 @@ public class ContactSearchResult: NSObject, Comparable {
     public let signalAccount: SignalAccount
     public let contactsManager: ContactsManagerProtocol
 
-    public var recipientId: String {
-        return signalAccount.recipientAddress.transitional_phoneNumber
+    public var recipientAddress: SignalServiceAddress {
+        return signalAccount.recipientAddress
     }
 
     init(signalAccount: SignalAccount, contactsManager: ContactsManagerProtocol) {
@@ -75,7 +75,7 @@ public class ContactSearchResult: NSObject, Comparable {
     // MARK: Equatable
 
     public static func == (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.recipientId == rhs.recipientId
+        return lhs.recipientAddress.matchesAddress(rhs.recipientAddress)
     }
 }
 
@@ -281,7 +281,7 @@ public class FullTextSearcher: NSObject {
         var contacts: [ContactSearchResult] = []
         var messages: [ConversationSearchResult<MessageSortKey>] = []
 
-        var existingConversationRecipientIds: Set<String> = Set()
+        var existingConversationAddresses: Set<SignalServiceAddress> = Set()
 
         self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
 
@@ -292,8 +292,7 @@ public class FullTextSearcher: NSObject {
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
 
                 if let contactThread = thread as? TSContactThread {
-                    let recipientId = contactThread.contactAddress.transitional_phoneNumber!
-                    existingConversationRecipientIds.insert(recipientId)
+                    existingConversationAddresses.insert(contactThread.contactAddress)
                 }
 
                 conversations.append(searchResult)
@@ -318,7 +317,7 @@ public class FullTextSearcher: NSObject {
         }
 
         // Only show contacts which were not included in an existing 1:1 conversation.
-        var otherContacts: [ContactSearchResult] = contacts.filter { !existingConversationRecipientIds.contains($0.recipientId) }
+        var otherContacts: [ContactSearchResult] = contacts.filter { !existingConversationAddresses.contains($0.recipientAddress) }
 
         // Order the conversation and message results in reverse chronological order.
         // The contact results are pre-sorted by display name.

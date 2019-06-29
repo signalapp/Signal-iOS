@@ -53,20 +53,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - View Convenience Methods
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId animated:(BOOL)isAnimated
+- (void)presentConversationForAddress:(SignalServiceAddress *)address animated:(BOOL)isAnimated
 {
-    [self presentConversationForRecipientId:recipientId action:ConversationViewActionNone animated:(BOOL)isAnimated];
+    [self presentConversationForAddress:address action:ConversationViewActionNone animated:(BOOL)isAnimated];
 }
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId
-                                   action:(ConversationViewAction)action
-                                 animated:(BOOL)isAnimated
+- (void)presentConversationForAddress:(SignalServiceAddress *)address
+                               action:(ConversationViewAction)action
+                             animated:(BOOL)isAnimated
 {
     __block TSThread *thread = nil;
     [OWSPrimaryStorage.dbReadWriteConnection
         readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            thread = [TSContactThread getOrCreateThreadWithContactAddress:recipientId.transitional_signalServiceAddress
-                                                              transaction:transaction.asAnyWrite];
+            thread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction.asAnyWrite];
         }];
     [self presentConversationForThread:thread action:action animated:(BOOL)isAnimated];
 }

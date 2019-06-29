@@ -4035,15 +4035,15 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     // Try to use an arbitrary member of the current thread that isn't
     // ourselves as the sender.
-    NSString *_Nullable recipientId = [[thread recipientIdentifiers] firstObject];
+    SignalServiceAddress *_Nullable address = [[thread recipientAddresses] firstObject];
     // This might be an "empty" group with no other members.  If so, use a fake
     // sender id.
-    if (!recipientId) {
-        recipientId = @"+12345678901";
+    if (!address) {
+        address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12345678901"];
     }
 
     uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
-    NSString *source = recipientId;
+    NSString *source = address.transitional_phoneNumber;
     uint32_t sourceDevice = 1;
     SSKProtoEnvelopeType envelopeType = SSKProtoEnvelopeTypeCiphertext;
     NSData *content = plaintextData;
@@ -4345,30 +4345,32 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         @(now - 1 * (long long)kMonthInMs),
         @(now - 2 * (long long)kMonthInMs),
     ];
-    NSMutableArray<NSString *> *recipientIds = [thread.recipientIdentifiers mutableCopy];
-    [recipientIds removeObject:[TSAccountManager localNumber]];
-    NSString *recipientId = (recipientIds.count > 0 ? recipientIds.firstObject : @"+19174054215");
+    NSMutableArray<SignalServiceAddress *> *addresses = [thread.recipientAddresses mutableCopy];
+    [addresses removeObject:TSAccountManager.sharedInstance.localAddress];
+    SignalServiceAddress *address
+        = (addresses.count > 0 ? addresses.firstObject
+                               : [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]);
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (NSNumber *timestamp in timestamps) {
             NSString *randomText = [self randomText];
             {
                 // Legit usage of SenderTimestamp to backdate incoming sent messages for Debug
-                TSIncomingMessage *message = [[TSIncomingMessage alloc]
-                       initIncomingMessageWithTimestamp:timestamp.unsignedLongLongValue
-                                               inThread:thread
-                                          authorAddress:recipientId.transitional_signalServiceAddress
-                                         sourceDeviceId:0
-                                            messageBody:randomText
-                                          attachmentIds:[NSMutableArray new]
-                                       expiresInSeconds:0
-                                          quotedMessage:nil
-                                           contactShare:nil
-                                            linkPreview:nil
-                                         messageSticker:nil
-                                        serverTimestamp:nil
-                                        wasReceivedByUD:NO
-                    perMessageExpirationDurationSeconds:0];
+                TSIncomingMessage *message =
+                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp.unsignedLongLongValue
+                                                                       inThread:thread
+                                                                  authorAddress:address
+                                                                 sourceDeviceId:0
+                                                                    messageBody:randomText
+                                                                  attachmentIds:[NSMutableArray new]
+                                                               expiresInSeconds:0
+                                                                  quotedMessage:nil
+                                                                   contactShare:nil
+                                                                    linkPreview:nil
+                                                                 messageSticker:nil
+                                                                serverTimestamp:nil
+                                                                wasReceivedByUD:NO
+                                            perMessageExpirationDurationSeconds:0];
                 [message anyInsertWithTransaction:transaction];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
             }
@@ -4390,12 +4392,14 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                             perMessageExpirationDurationSeconds:0];
                 [message anyInsertWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
-                [message updateWithSentRecipient:recipientId wasSentByUD:NO transaction:transaction];
+                [message updateWithSentRecipient:address.transitional_phoneNumber
+                                     wasSentByUD:NO
+                                     transaction:transaction];
                 if (transaction.transitional_yapWriteTransaction) {
-                    [message updateWithDeliveredRecipient:recipientId
+                    [message updateWithDeliveredRecipient:address.transitional_phoneNumber
                                         deliveryTimestamp:timestamp
                                               transaction:transaction.transitional_yapWriteTransaction];
-                    [message updateWithReadRecipientId:recipientId
+                    [message updateWithReadRecipientId:address.transitional_phoneNumber
                                          readTimestamp:timestamp.unsignedLongLongValue
                                            transaction:transaction];
                 } else {
@@ -4411,7 +4415,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     // MJK TODO - should be safe to remove this senderTimestamp
     uint64_t now = [NSDate ows_millisecondTimeStamp];
 
-    SignalServiceAddress *address = thread.recipientIdentifiers.firstObject.transitional_signalServiceAddress;
+    SignalServiceAddress *address = thread.recipientAddresses.firstObject;
     TSIncomingMessage *message = [[TSIncomingMessage alloc]
            initIncomingMessageWithTimestamp:now
                                    inThread:thread
@@ -4737,10 +4741,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     [message anyInsertWithTransaction:transaction];
     [message updateWithFakeMessageState:messageState transaction:transaction];
     if (isDelivered) {
-        NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
-        OWSAssertDebug(recipientId.length > 0);
+        SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
+        OWSAssertDebug(address.isValid);
         if (transaction.transitional_yapWriteTransaction) {
-            [message updateWithDeliveredRecipient:recipientId
+            [message updateWithDeliveredRecipient:address.transitional_phoneNumber
                                 deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
                                       transaction:transaction.transitional_yapWriteTransaction];
         } else {
@@ -4748,10 +4752,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         }
     }
     if (isRead) {
-        NSString *_Nullable recipientId = thread.recipientIdentifiers.lastObject;
-        OWSAssertDebug(recipientId.length > 0);
+        SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
+        OWSAssertDebug(address.isValid);
         if (transaction.transitional_yapWriteTransaction) {
-            [message updateWithReadRecipientId:recipientId
+            [message updateWithReadRecipientId:address.transitional_phoneNumber
                                  readTimestamp:[NSDate ows_millisecondTimeStamp]
                                    transaction:transaction];
         } else {

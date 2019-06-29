@@ -81,8 +81,7 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
         [contactBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];
     }
 
-    if ([OWSBlockingManager.sharedManager
-            isRecipientIdBlocked:signalAccount.recipientAddress.transitional_phoneNumber]) {
+    if ([OWSBlockingManager.sharedManager isAddressBlocked:signalAccount.recipientAddress]) {
         [contactBuilder setBlocked:YES];
     }
 

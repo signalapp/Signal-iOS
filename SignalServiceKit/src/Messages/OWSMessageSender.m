@@ -566,7 +566,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // you might, for example, have a pending outgoing message when
         // you block them.
         OWSAssertDebug(recipientAddress);
-        if ([self.blockingManager isRecipientIdBlocked:recipientAddress.transitional_phoneNumber]) {
+        if ([self.blockingManager isAddressBlocked:recipientAddress]) {
             OWSLogInfo(@"skipping 1:1 send to blocked contact: %@", recipientAddress);
             NSError *error = OWSErrorMakeMessageSendFailedDueToBlockListError();
             [error setIsRetryable:NO];
@@ -1155,7 +1155,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // to this recipient also use REST.
             messageSend.hasWebsocketSendFailed = YES;
         }
-        recipientId:recipient.address.transitional_phoneNumber
+        address:recipient.address
         udAccess:messageSend.udAccess
         canFailoverUDAuth:NO];
     [[requestMaker makeRequestObjc]
@@ -1684,7 +1684,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // to this recipient also use REST.
             messageSend.hasWebsocketSendFailed = YES;
         }
-        recipientId:recipientAddress.transitional_phoneNumber
+        address:recipientAddress
         udAccess:messageSend.udAccess
         canFailoverUDAuth:YES];
     [[requestMaker makeRequestObjc]

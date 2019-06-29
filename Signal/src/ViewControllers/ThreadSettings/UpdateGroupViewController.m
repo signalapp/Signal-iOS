@@ -362,15 +362,15 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(recipientId.length > 0);
 
     __weak UpdateGroupViewController *weakSelf = self;
-    [BlockListUIUtils showUnblockPhoneNumberActionSheet:recipientId
-                                     fromViewController:self
-                                        blockingManager:self.contactsViewHelper.blockingManager
-                                        contactsManager:self.contactsViewHelper.contactsManager
-                                        completionBlock:^(BOOL isBlocked) {
-                                            if (!isBlocked) {
-                                                [weakSelf updateTableContents];
-                                            }
-                                        }];
+    [BlockListUIUtils showUnblockAddressActionSheet:recipientId.transitional_signalServiceAddress
+                                 fromViewController:self
+                                    blockingManager:self.contactsViewHelper.blockingManager
+                                    contactsManager:self.contactsViewHelper.contactsManager
+                                    completionBlock:^(BOOL isBlocked) {
+                                        if (!isBlocked) {
+                                            [weakSelf updateTableContents];
+                                        }
+                                    }];
 }
 
 - (void)removeRecipientId:(NSString *)recipientId

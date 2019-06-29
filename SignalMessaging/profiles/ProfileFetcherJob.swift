@@ -11,7 +11,7 @@ import SignalMetadataKit
 public class ProfileFetcherJob: NSObject {
 
     // This property is only accessed on the main queue.
-    static var fetchDateMap = [String: Date]()
+    static var fetchDateMap = [SignalServiceAddress: Date]()
 
     let ignoreThrottling: Bool
 
@@ -23,16 +23,16 @@ public class ProfileFetcherJob: NSObject {
             return
         }
 
-        ProfileFetcherJob().run(recipientIds: thread.recipientIdentifiers)
+        ProfileFetcherJob().run(addresses: thread.recipientAddresses)
     }
 
     @objc
-    public class func run(recipientId: String, ignoreThrottling: Bool) {
+    public class func run(address: SignalServiceAddress, ignoreThrottling: Bool) {
         guard CurrentAppContext().isMainApp else {
             return
         }
 
-        ProfileFetcherJob(ignoreThrottling: ignoreThrottling).run(recipientIds: [recipientId])
+        ProfileFetcherJob(ignoreThrottling: ignoreThrottling).run(addresses: [address])
     }
 
     public init(ignoreThrottling: Bool = false) {
@@ -80,7 +80,7 @@ public class ProfileFetcherJob: NSObject {
 
     // MARK: -
 
-    public func run(recipientIds: [String]) {
+    public func run(addresses: [SignalServiceAddress]) {
         AssertIsOnMainThread()
 
         guard CurrentAppContext().isMainApp else {
@@ -103,8 +103,8 @@ public class ProfileFetcherJob: NSObject {
         })
 
         DispatchQueue.global().async {
-            for recipientId in recipientIds {
-                self.getAndUpdateProfile(recipientId: recipientId)
+            for address in addresses {
+                self.getAndUpdateProfile(address: address)
             }
         }
     }
@@ -113,8 +113,8 @@ public class ProfileFetcherJob: NSObject {
         case throttled(lastTimeInterval: TimeInterval)
     }
 
-    public func getAndUpdateProfile(recipientId: String, remainingRetries: Int = 3) {
-        self.getProfile(recipientId: recipientId).map(on: DispatchQueue.global()) { profile in
+    public func getAndUpdateProfile(address: SignalServiceAddress, remainingRetries: Int = 3) {
+        self.getProfile(address: address).map(on: DispatchQueue.global()) { profile in
             self.updateProfile(signalServiceProfile: profile)
         }.catch(on: DispatchQueue.global()) { error in
             switch error {
@@ -122,10 +122,10 @@ public class ProfileFetcherJob: NSObject {
                 // skipping
                 break
             case let error as SignalServiceProfile.ValidationError:
-                Logger.warn("skipping updateProfile retry. Invalid profile for: \(recipientId) error: \(error)")
+                Logger.warn("skipping updateProfile retry. Invalid profile for: \(address) error: \(error)")
             default:
                 if remainingRetries > 0 {
-                    self.getAndUpdateProfile(recipientId: recipientId, remainingRetries: remainingRetries - 1)
+                    self.getAndUpdateProfile(address: address, remainingRetries: remainingRetries - 1)
                 } else {
                     Logger.error("failed to get profile with error: \(error)")
                 }
@@ -133,9 +133,9 @@ public class ProfileFetcherJob: NSObject {
         }.retainUntilComplete()
     }
 
-    public func getProfile(recipientId: String) -> Promise<SignalServiceProfile> {
+    public func getProfile(address: SignalServiceAddress) -> Promise<SignalServiceProfile> {
         if !ignoreThrottling {
-            if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
+            if let lastDate = ProfileFetcherJob.fetchDateMap[address] {
                 let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
                 // Don't check a profile more often than every N seconds.
                 //
@@ -147,93 +147,93 @@ public class ProfileFetcherJob: NSObject {
                 }
             }
         }
-        ProfileFetcherJob.fetchDateMap[recipientId] = Date()
+        ProfileFetcherJob.fetchDateMap[address] = Date()
 
-        Logger.error("getProfile: \(recipientId)")
+        Logger.error("getProfile: \(address)")
 
         // Don't use UD for "self" profile fetches.
         var udAccess: OWSUDAccess?
-        if recipientId != tsAccountManager.localNumber() {
-            udAccess = udManager.udAccess(forRecipientId: recipientId,
+        if !address.isLocalAddress {
+            udAccess = udManager.udAccess(forRecipientId: address.transitional_phoneNumber,
                                           requireSyncAccess: false)
         }
 
-        return requestProfile(recipientId: recipientId,
+        return requestProfile(address: address,
                               udAccess: udAccess,
                               canFailoverUDAuth: true)
     }
 
-    private func requestProfile(recipientId: String,
+    private func requestProfile(address: SignalServiceAddress,
                                 udAccess: OWSUDAccess?,
                                 canFailoverUDAuth: Bool) -> Promise<SignalServiceProfile> {
         let requestMaker = RequestMaker(label: "Profile Fetch",
                                         requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest in
-            return OWSRequestFactory.getProfileRequest(recipientId: recipientId, udAccessKey: udAccessKeyForRequest)
+            return OWSRequestFactory.getProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
         }, udAuthFailureBlock: {
             // Do nothing
         }, websocketFailureBlock: {
             // Do nothing
-        }, recipientId: recipientId,
+        }, address: address,
            udAccess: udAccess,
            canFailoverUDAuth: canFailoverUDAuth)
         return requestMaker.makeRequest()
             .map(on: DispatchQueue.global()) { (result: RequestMakerResult) -> SignalServiceProfile in
-                try SignalServiceProfile(recipientId: recipientId, responseObject: result.responseObject)
+                try SignalServiceProfile(address: address, responseObject: result.responseObject)
         }
     }
 
     private func updateProfile(signalServiceProfile: SignalServiceProfile) {
-        let recipientId = signalServiceProfile.recipientId
-        verifyIdentityUpToDateAsync(recipientId: recipientId, latestIdentityKey: signalServiceProfile.identityKey)
+        let address = signalServiceProfile.address
+        verifyIdentityUpToDateAsync(address: address, latestIdentityKey: signalServiceProfile.identityKey)
 
-        profileManager.updateProfile(forRecipientId: recipientId,
+        profileManager.updateProfile(for: address,
                                      profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
                                      avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
-        updateUnidentifiedAccess(recipientId: recipientId,
+        updateUnidentifiedAccess(address: address,
                                  verifier: signalServiceProfile.unidentifiedAccessVerifier,
                                  hasUnrestrictedAccess: signalServiceProfile.hasUnrestrictedUnidentifiedAccess)
     }
 
-    private func updateUnidentifiedAccess(recipientId: String, verifier: Data?, hasUnrestrictedAccess: Bool) {
+    private func updateUnidentifiedAccess(address: SignalServiceAddress, verifier: Data?, hasUnrestrictedAccess: Bool) {
         guard let verifier = verifier else {
             // If there is no verifier, at least one of this user's devices
             // do not support UD.
-            udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
+            udManager.setUnidentifiedAccessMode(.disabled, address: address)
             return
         }
 
         if hasUnrestrictedAccess {
-            udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: recipientId)
+            udManager.setUnidentifiedAccessMode(.unrestricted, address: address)
             return
         }
 
-        guard let udAccessKey = udManager.udAccessKey(forRecipientId: recipientId) else {
-            udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
+        guard let udAccessKey = udManager.udAccessKey(forAddress: address) else {
+            udManager.setUnidentifiedAccessMode(.disabled, address: address)
             return
         }
 
         let dataToVerify = Data(count: 32)
         guard let expectedVerifier = Cryptography.computeSHA256HMAC(dataToVerify, withHMACKey: udAccessKey.keyData) else {
             owsFailDebug("could not compute verification")
-            udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
+            udManager.setUnidentifiedAccessMode(.disabled, address: address)
             return
         }
 
         guard expectedVerifier.ows_constantTimeIsEqual(to: verifier) else {
             Logger.verbose("verifier mismatch, new profile key?")
-            udManager.setUnidentifiedAccessMode(.disabled, recipientId: recipientId)
+            udManager.setUnidentifiedAccessMode(.disabled, address: address)
             return
         }
 
-        udManager.setUnidentifiedAccessMode(.enabled, recipientId: recipientId)
+        udManager.setUnidentifiedAccessMode(.enabled, address: address)
     }
 
-    private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
+    private func verifyIdentityUpToDateAsync(address: SignalServiceAddress, latestIdentityKey: Data) {
         primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
-            if self.identityManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, transaction: transaction.asAnyWrite) {
-                Logger.info("updated identity key with fetched profile for recipient: \(recipientId)")
-                self.sessionStore.archiveAllSessions(for: recipientId.transitional_signalServiceAddress, transaction: transaction.asAnyWrite)
+            if self.identityManager.saveRemoteIdentity(latestIdentityKey, recipientId: address.transitional_phoneNumber, transaction: transaction.asAnyWrite) {
+                Logger.info("updated identity key with fetched profile for recipient: \(address)")
+                self.sessionStore.archiveAllSessions(for: address, transaction: transaction.asAnyWrite)
             } else {
                 // no change in identity.
             }

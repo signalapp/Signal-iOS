@@ -274,15 +274,15 @@ NS_ASSUME_NONNULL_BEGIN
                                     [weakSelf removeRecipientId:recipientId];
                                 } else if (isBlocked) {
                                     [BlockListUIUtils
-                                        showUnblockPhoneNumberActionSheet:recipientId
-                                                       fromViewController:weakSelf
-                                                          blockingManager:contactsViewHelper.blockingManager
-                                                          contactsManager:contactsViewHelper.contactsManager
-                                                          completionBlock:^(BOOL isStillBlocked) {
-                                                              if (!isStillBlocked) {
-                                                                  [weakSelf addRecipientId:recipientId];
-                                                              }
-                                                          }];
+                                        showUnblockAddressActionSheet:recipientId.transitional_signalServiceAddress
+                                                   fromViewController:weakSelf
+                                                      blockingManager:contactsViewHelper.blockingManager
+                                                      contactsManager:contactsViewHelper.contactsManager
+                                                      completionBlock:^(BOOL isStillBlocked) {
+                                                          if (!isStillBlocked) {
+                                                              [weakSelf addRecipientId:recipientId];
+                                                          }
+                                                      }];
                                 } else {
 
                                     BOOL didShowSNAlert = [SafetyNumberConfirmationAlert

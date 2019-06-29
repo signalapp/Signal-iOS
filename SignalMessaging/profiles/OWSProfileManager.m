@@ -37,7 +37,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kNSNotificationName_ProfileWhitelistDidChange = @"kNSNotificationName_ProfileWhitelistDidChange";
 
-NSString *const kOWSProfileManager_UserWhitelistCollection = @"kOWSProfileManager_UserWhitelistCollection";
+NSString *const kOWSProfileManager_UserPhoneNumberWhitelistCollection = @"kOWSProfileManager_UserWhitelistCollection";
+NSString *const kOWSProfileManager_UserUUIDWhitelistCollection = @"kOWSProfileManager_UserUUIDWhitelistCollection";
 NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
 
 NSString *const kNSNotificationName_ProfileKeyDidChange = @"kNSNotificationName_ProfileKeyDidChange";
@@ -46,6 +47,9 @@ NSString *const kNSNotificationName_ProfileKeyDidChange = @"kNSNotificationName_
 // Before encrypting and submitting we NULL pad the name data to this length.
 const NSUInteger kOWSProfileManager_NameDataLength = 26;
 const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
+
+NSString *const kOWSProfileManager_SchemaKey = @"kOWSProfileManager_SchemaKey";
+const NSUInteger kOWSProfileManager_SchemaVersion = 1;
 
 typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
@@ -60,7 +64,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 @property (atomic, readonly) NSCache<NSString *, UIImage *> *profileAvatarImageCache;
 
 // This property can be accessed on any thread, while synchronized on self.
-@property (atomic, readonly) NSMutableSet<NSString *> *currentAvatarDownloads;
+@property (atomic, readonly) NSMutableSet<SignalServiceAddress *> *currentAvatarDownloads;
 
 @end
 
@@ -181,8 +185,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     @synchronized(self)
     {
         if (!_localUserProfile) {
-            _localUserProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:kLocalProfileUniqueId
-                                                                       dbConnection:self.dbConnection];
+            _localUserProfile = [OWSUserProfile getOrBuildUserProfileForAddress:OWSUserProfile.localProfileAddress
+                                                                   dbConnection:self.dbConnection];
         }
     }
 
@@ -459,18 +463,18 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSAssertIsOnMainThread();
 
-    NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
-    if (!localNumber) {
+    SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
+    if (!localAddress.isValid) {
         return;
     }
-    [self fetchProfileForRecipientId:localNumber];
+    [self fetchProfileForAddress:localAddress];
 }
 
-- (void)fetchProfileForRecipientId:(NSString *)recipientId
+- (void)fetchProfileForAddress:(SignalServiceAddress *)address
 {
     OWSAssertIsOnMainThread();
 
-    [ProfileFetcherJob runWithRecipientId:recipientId ignoreThrottling:YES];
+    [ProfileFetcherJob runWithAddress:address ignoreThrottling:YES];
 }
 
 #pragma mark - Profile Key Rotation
@@ -509,11 +513,15 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSMutableSet<NSString *> *whitelistedRecipientIds = [NSMutableSet new];
+        NSMutableSet<NSString *> *whitelistedPhoneNumbers = [NSMutableSet new];
+        NSMutableSet<NSString *> *whitelistedUUIDS = [NSMutableSet new];
         NSMutableSet<NSData *> *whitelistedGroupIds = [NSMutableSet new];
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [whitelistedRecipientIds
-                addObjectsFromArray:[transaction allKeysInCollection:kOWSProfileManager_UserWhitelistCollection]];
+            [whitelistedPhoneNumbers
+                addObjectsFromArray:[transaction
+                                        allKeysInCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection]];
+            [whitelistedUUIDS
+                addObjectsFromArray:[transaction allKeysInCollection:kOWSProfileManager_UserUUIDWhitelistCollection]];
 
             NSArray<NSString *> *whitelistedGroupKeys =
                 [transaction allKeysInCollection:kOWSProfileManager_GroupWhitelistCollection];
@@ -549,36 +557,50 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         NSString *_Nullable localNumber = [TSAccountManager localNumber];
         if (localNumber) {
-            [whitelistedRecipientIds removeObject:localNumber];
+            [whitelistedPhoneNumbers removeObject:localNumber];
         } else {
             OWSFailDebug(@"Missing localNumber");
         }
 
-        NSSet<NSString *> *blockedRecipientIds = [NSSet setWithArray:self.blockingManager.blockedPhoneNumbers];
+        NSString *_Nullable localUUID = [[TSAccountManager sharedInstance] uuid].UUIDString;
+        if (localUUID) {
+            [whitelistedUUIDS removeObject:localUUID];
+        } else {
+            OWSFailDebug(@"Missing localUUID");
+        }
+
+        NSSet<NSString *> *blockedPhoneNumbers = [NSSet setWithArray:self.blockingManager.blockedPhoneNumbers];
+        NSSet<NSString *> *blockedUUIDs = [NSSet setWithArray:self.blockingManager.blockedUUIDs];
         NSSet<NSData *> *blockedGroupIds = [NSSet setWithArray:self.blockingManager.blockedGroupIds];
 
         // Find the users and groups which are both a) blocked b) may have our current profile key.
-        NSMutableSet<NSString *> *intersectingRecipientIds = [blockedRecipientIds mutableCopy];
-        [intersectingRecipientIds intersectSet:whitelistedRecipientIds];
+        NSMutableSet<NSString *> *intersectingPhoneNumbers = [blockedPhoneNumbers mutableCopy];
+        [intersectingPhoneNumbers intersectSet:whitelistedPhoneNumbers];
+        NSMutableSet<NSString *> *intersectingUUIDS = [blockedUUIDs mutableCopy];
+        [intersectingUUIDS intersectSet:whitelistedUUIDS];
         NSMutableSet<NSData *> *intersectingGroupIds = [blockedGroupIds mutableCopy];
         [intersectingGroupIds intersectSet:whitelistedGroupIds];
 
-        BOOL isProfileKeySharedWithBlocked = (intersectingRecipientIds.count > 0 || intersectingGroupIds.count > 0);
+        BOOL isProfileKeySharedWithBlocked
+            = (intersectingPhoneNumbers.count > 0 || intersectingUUIDS.count > 0 || intersectingGroupIds.count > 0);
         if (!isProfileKeySharedWithBlocked) {
             // No need to rotate the profile key.
             return success();
         }
-        [self rotateProfileKeyWithIntersectingRecipientIds:intersectingRecipientIds
+        [self rotateProfileKeyWithIntersectingPhoneNumbers:intersectingPhoneNumbers
+                                         intersectingUUIDs:intersectingUUIDS
                                       intersectingGroupIds:intersectingGroupIds
                                                    success:success
                                                    failure:failure];
     });
 }
 
-- (void)rotateProfileKeyWithIntersectingRecipientIds:(NSSet<NSString *> *)intersectingRecipientIds
+- (void)rotateProfileKeyWithIntersectingPhoneNumbers:(NSSet<NSString *> *)intersectingPhoneNumbers
+                                   intersectingUUIDs:(NSSet<NSString *> *)intersectingUUIDs
                                 intersectingGroupIds:(NSSet<NSData *> *)intersectingGroupIds
                                              success:(dispatch_block_t)success
-                                             failure:(ProfileManagerFailureBlock)failure {
+                                             failure:(ProfileManagerFailureBlock)failure
+{
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Rotate the profile key
         OWSLogInfo(@"Rotating the profile key.");
@@ -587,7 +609,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSUserProfile *localUserProfile = self.localUserProfile;
         NSString *_Nullable oldProfileName = localUserProfile.profileName;
         NSString *_Nullable oldAvatarFileName = localUserProfile.avatarFileName;
-        NSData *_Nullable oldAvatarData = [self profileAvatarDataForRecipientId:self.tsAccountManager.localNumber];
+        NSData *_Nullable oldAvatarData = [self profileAvatarDataForAddress:self.tsAccountManager.localAddress];
 
         // Rotate the stored profile key.
         AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
@@ -664,8 +686,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             //
             // This will always succeed.
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [transaction removeObjectsForKeys:intersectingRecipientIds.allObjects
-                                     inCollection:kOWSProfileManager_UserWhitelistCollection];
+                [transaction removeObjectsForKeys:intersectingPhoneNumbers.allObjects
+                                     inCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
+                [transaction removeObjectsForKeys:intersectingUUIDs.allObjects
+                                     inCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
                 for (NSData *groupId in intersectingGroupIds) {
                     NSString *groupIdKey = [self groupKeyForGroupId:groupId];
                     [transaction removeObjectForKey:groupIdKey
@@ -719,9 +743,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSLogWarn(@"Clearing the profile whitelist.");
 
     [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeAllObjectsInCollection:kOWSProfileManager_UserWhitelistCollection];
+        [transaction removeAllObjectsInCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
+        [transaction removeAllObjectsInCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
         [transaction removeAllObjectsInCollection:kOWSProfileManager_GroupWhitelistCollection];
-        OWSAssertDebug(0 == [transaction numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
+        OWSAssertDebug(
+            0 == [transaction numberOfKeysInCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection]);
+        OWSAssertDebug(0 == [transaction numberOfKeysInCollection:kOWSProfileManager_UserUUIDWhitelistCollection]);
         OWSAssertDebug(0 == [transaction numberOfKeysInCollection:kOWSProfileManager_GroupWhitelistCollection]);
     }];
 }
@@ -729,11 +756,18 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (void)logProfileWhitelist
 {
     [self.dbConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        OWSLogError(@"kOWSProfileManager_UserWhitelistCollection: %lu",
-            (unsigned long)[transaction numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
-        [transaction enumerateKeysInCollection:kOWSProfileManager_UserWhitelistCollection
+        OWSLogError(@"kOWSProfileManager_UserPhoneNumberWhitelistCollection: %lu",
+            (unsigned long)[transaction
+                numberOfKeysInCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection]);
+        [transaction enumerateKeysInCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection
                                     usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
-                                        OWSLogError(@"\t profile whitelist user: %@", key);
+                                        OWSLogError(@"\t profile whitelist user phone number: %@", key);
+                                    }];
+        OWSLogError(@"kOWSProfileManager_UserUUIDWhitelistCollection: %lu",
+            (unsigned long)[transaction numberOfKeysInCollection:kOWSProfileManager_UserUUIDWhitelistCollection]);
+        [transaction enumerateKeysInCollection:kOWSProfileManager_UserUUIDWhitelistCollection
+                                    usingBlock:^(NSString *_Nonnull key, BOOL *_Nonnull stop) {
+                                        OWSLogError(@"\t profile whitelist user uuid: %@", key);
                                     }];
         OWSLogError(@"kOWSProfileManager_GroupWhitelistCollection: %lu",
             (unsigned long)[transaction numberOfKeysInCollection:kOWSProfileManager_GroupWhitelistCollection]);
@@ -751,61 +785,95 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
 }
 
-- (void)addUserToProfileWhitelist:(NSString *)recipientId
+- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [self addUsersToProfileWhitelist:@[ recipientId ]];
+    [self addUsersToProfileWhitelist:@[ address ]];
 }
 
-- (void)addUsersToProfileWhitelist:(NSArray<NSString *> *)recipientIds
+- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
 {
-    OWSAssertDebug(recipientIds);
+    OWSAssertDebug(addresses);
 
-    NSMutableSet<NSString *> *newRecipientIds = [NSMutableSet new];
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        for (NSString *recipientId in recipientIds) {
-            NSNumber *_Nullable oldValue =
-                [transaction objectForKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
-            if (oldValue && oldValue.boolValue) {
-                continue;
+    NSMutableSet<SignalServiceAddress *> *newAddresses = [NSMutableSet new];
+    [self.dbConnection
+        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            for (SignalServiceAddress *address in addresses) {
+
+                // Normally we add all system contacts to the whitelist, but we don't want to do that for
+                // blocked contacts.
+                if ([self.blockingManager isAddressBlocked:address]) {
+                    continue;
+                }
+
+                BOOL updatedCollection = NO;
+
+                // We want to add both the UUID and the phone number to the white list.
+                // It's possible we white listed one but not both, so we check each.
+
+                if (address.uuidString) {
+                    NSNumber *oldValue = [transaction objectForKey:address.uuidString
+                                                      inCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
+                    if (!oldValue.boolValue) {
+                        [transaction setObject:@(YES)
+                                        forKey:address.uuidString
+                                  inCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
+                        updatedCollection = YES;
+                    }
+                }
+
+                if (address.phoneNumber) {
+                    NSNumber *_Nullable oldValue =
+                        [transaction objectForKey:address.phoneNumber
+                                     inCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
+                    if (!oldValue.boolValue) {
+                        [transaction setObject:@(YES)
+                                        forKey:address.phoneNumber
+                                  inCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
+                        updatedCollection = YES;
+                    }
+                }
+
+                if (updatedCollection) {
+                    [newAddresses addObject:address];
+                }
             }
-
-            // Normally we add all system contacts to the whitelist, but we don't want to do that for
-            // blocked contacts.
-            if ([self.blockingManager isRecipientIdBlocked:recipientId]) {
-                continue;
-            }
-
-            [transaction setObject:@(YES) forKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
-            [newRecipientIds addObject:recipientId];
         }
-    }
         completionBlock:^{
-            for (NSString *recipientId in newRecipientIds) {
+            for (SignalServiceAddress *address in newAddresses) {
                 [[NSNotificationCenter defaultCenter]
                     postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
                                        object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileRecipientId : recipientId,
+                                     userInfo:@ {
+                                         kNSNotificationKey_ProfileAddress : address,
                                      }];
             }
         }];
 }
 
-- (BOOL)isUserInProfileWhitelist:(NSString *)recipientId
+- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    if ([self.blockingManager isRecipientIdBlocked:recipientId]) {
+    if ([self.blockingManager isAddressBlocked:address]) {
         return NO;
     }
 
     __block BOOL result = NO;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        NSNumber *_Nullable oldValue =
-            [transaction objectForKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
-        result = (oldValue && oldValue.boolValue);
+        if (address.uuidString) {
+            NSNumber *_Nullable oldValue = [transaction objectForKey:address.uuidString
+                                                        inCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
+            result = (oldValue && oldValue.boolValue);
+        }
+
+        if (!result && address.phoneNumber) {
+            NSNumber *_Nullable oldValue =
+                [transaction objectForKey:address.phoneNumber
+                             inCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
+            result = (oldValue && oldValue.boolValue);
+        }
     }];
     return result;
 }
@@ -852,13 +920,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // also add all current members to the profile whitelist
         // individually as well just in case delivery of the profile key
         // fails.
-        for (NSString *recipientId in groupThread.recipientIdentifiers) {
-            [self addUserToProfileWhitelist:recipientId];
+        for (SignalServiceAddress *address in groupThread.recipientAddresses) {
+            [self addUserToProfileWhitelist:address];
         }
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        NSString *recipientId = contactThread.contactAddress.transitional_phoneNumber;
-        [self addUserToProfileWhitelist:recipientId];
+        [self addUserToProfileWhitelist:contactThread.contactAddress];
     }
 }
 
@@ -891,16 +958,15 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         return [self isGroupIdInProfileWhitelist:groupId];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        NSString *recipientId = contactThread.contactAddress.transitional_phoneNumber;
-        return [self isUserInProfileWhitelist:recipientId];
+        return [self isUserInProfileWhitelist:contactThread.contactAddress];
     }
 }
 
-- (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds
+- (void)setContactAddresses:(NSArray<SignalServiceAddress *> *)contactAddresses
 {
-    OWSAssertDebug(contactRecipientIds);
+    OWSAssertDebug(contactAddresses);
 
-    [self addUsersToProfileWhitelist:contactRecipientIds];
+    [self addUsersToProfileWhitelist:contactAddresses];
 }
 
 #pragma mark - Other User's Profiles
@@ -916,7 +982,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                                          OWSUserProfile *userProfile = object;
                                          OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
                                                      @"avatar file: %d, name: %@",
-                                             userProfile.recipientId,
+                                             userProfile.address,
                                              userProfile.profileKey != nil,
                                              userProfile.avatarUrlPath != nil,
                                              userProfile.avatarFileName != nil,
@@ -925,7 +991,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }];
 }
 
-- (void)setProfileKeyData:(NSData *)profileKeyData forRecipientId:(NSString *)recipientId
+- (void)setProfileKeyData:(NSData *)profileKeyData forAddress:(SignalServiceAddress *)address
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OWSAES256Key *_Nullable profileKey = [OWSAES256Key keyWithData:profileKeyData];
@@ -934,8 +1000,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             return;
         }
 
-        OWSUserProfile *userProfile =
-            [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+        OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address
+                                                                         dbConnection:self.dbConnection];
 
         OWSAssertDebug(userProfile);
         if (userProfile.profileKey && [userProfile.profileKey.keyData isEqual:profileKey.keyData]) {
@@ -948,51 +1014,51 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                               completion:^{
                                   dispatch_async(dispatch_get_main_queue(), ^{
                                       [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
-                                                                    recipientId:recipientId];
-                                      [self fetchProfileForRecipientId:recipientId];
+                                                                    recipientId:address.transitional_phoneNumber];
+                                      [self fetchProfileForAddress:address];
                                   });
                               }];
     });
 }
 
-- (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId
+- (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
 {
-    return [self profileKeyForRecipientId:recipientId].keyData;
+    return [self profileKeyForAddress:address].keyData;
 }
 
-- (nullable OWSAES256Key *)profileKeyForRecipientId:(NSString *)recipientId
+- (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
-    
+    OWSAssertDebug(address.isValid);
+
     // For "local reads", use the local user profile.
-    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
-                                   ? self.localUserProfile
-                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
+    OWSUserProfile *userProfile = (address.isLocalAddress
+            ? self.localUserProfile
+            : [OWSUserProfile getOrBuildUserProfileForAddress:address dbConnection:self.dbConnection]);
     OWSAssertDebug(userProfile);
 
     return userProfile.profileKey;
 }
 
-- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId
+- (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
     // For "local reads", use the local user profile.
-    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
-                                   ? self.localUserProfile
-                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
+    OWSUserProfile *userProfile = (address.isLocalAddress
+            ? self.localUserProfile
+            : [OWSUserProfile getOrBuildUserProfileForAddress:address dbConnection:self.dbConnection]);
 
     return userProfile.profileName;
 }
 
-- (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId
+- (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
     // For "local reads", use the local user profile.
-    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
-                                   ? self.localUserProfile
-                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
+    OWSUserProfile *userProfile = (address.isLocalAddress
+            ? self.localUserProfile
+            : [OWSUserProfile getOrBuildUserProfileForAddress:address dbConnection:self.dbConnection]);
 
     if (userProfile.avatarFileName.length > 0) {
         return [self loadProfileAvatarWithFilename:userProfile.avatarFileName];
@@ -1005,14 +1071,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return nil;
 }
 
-- (nullable NSData *)profileAvatarDataForRecipientId:(NSString *)recipientId
+- (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
     // For "local reads", use the local user profile.
-    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
-                                   ? self.localUserProfile
-                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
+    OWSUserProfile *userProfile = (address.isLocalAddress
+            ? self.localUserProfile
+            : [OWSUserProfile getOrBuildUserProfileForAddress:address dbConnection:self.dbConnection]);
 
     if (userProfile.avatarFileName.length > 0) {
         return [self loadProfileDataWithFilename:userProfile.avatarFileName];
@@ -1050,11 +1116,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         @synchronized(self.currentAvatarDownloads)
         {
-            if ([self.currentAvatarDownloads containsObject:userProfile.recipientId]) {
+            if ([self.currentAvatarDownloads containsObject:userProfile.address]) {
                 // Download already in flight; ignore.
                 return;
             }
-            [self.currentAvatarDownloads addObject:userProfile.recipientId];
+            [self.currentAvatarDownloads addObject:userProfile.address];
         }
 
         OWSLogVerbose(@"downloading profile avatar: %@", userProfile.uniqueId);
@@ -1078,12 +1144,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
                 @synchronized(self.currentAvatarDownloads)
                 {
-                    [self.currentAvatarDownloads removeObject:userProfile.recipientId];
+                    [self.currentAvatarDownloads removeObject:userProfile.address];
                 }
 
-                OWSUserProfile *latestUserProfile =
-                    [OWSUserProfile getOrBuildUserProfileForRecipientId:userProfile.recipientId
-                                                           dbConnection:self.dbConnection];
+                OWSUserProfile *latestUserProfile = [OWSUserProfile getOrBuildUserProfileForAddress:userProfile.address
+                                                                                       dbConnection:self.dbConnection];
                 if (latestUserProfile.profileKey.keyData.length < 1
                     || ![latestUserProfile.profileKey isEqual:userProfile.profileKey]) {
                     OWSLogWarn(@"Ignoring avatar download for obsolete user profile.");
@@ -1093,14 +1158,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                         [self downloadAvatarForUserProfile:latestUserProfile];
                     }
                 } else if (error) {
-                    OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.recipientId, error);
+                    OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.address, error);
                 } else if (!encryptedData) {
-                    OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.recipientId);
+                    OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.address);
                 } else if (!decryptedData) {
-                    OWSLogError(@"avatar data for %@ could not be decrypted.", userProfile.recipientId);
+                    OWSLogError(@"avatar data for %@ could not be decrypted.", userProfile.address);
                 } else if (!image) {
-                    OWSLogError(
-                        @"avatar image for %@ could not be loaded with error: %@", userProfile.recipientId, error);
+                    OWSLogError(@"avatar image for %@ could not be loaded with error: %@", userProfile.address, error);
                 } else {
                     [self updateProfileAvatarCache:image filename:fileName];
 
@@ -1109,8 +1173,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
                 // If we're updating the profile that corresponds to our local number,
                 // update the local profile as well.
-                NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
-                if (localNumber && [localNumber isEqualToString:userProfile.recipientId]) {
+                if (userProfile.address.isLocalAddress) {
                     OWSUserProfile *localUserProfile = self.localUserProfile;
                     OWSAssertDebug(localUserProfile);
 
@@ -1137,8 +1200,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         __block NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
             progress:^(NSProgress *_Nonnull downloadProgress) {
-                OWSLogVerbose(
-                    @"Downloading avatar for %@ %f", userProfile.recipientId, downloadProgress.fractionCompleted);
+                OWSLogVerbose(@"Downloading avatar for %@ %f", userProfile.address, downloadProgress.fractionCompleted);
             }
             destination:^NSURL *_Nonnull(NSURL *_Nonnull targetPath, NSURLResponse *_Nonnull response) {
                 return [NSURL fileURLWithPath:tempFilePath];
@@ -1148,23 +1210,22 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     });
 }
 
-- (void)updateProfileForRecipientId:(NSString *)recipientId
-               profileNameEncrypted:(nullable NSData *)profileNameEncrypted
-                      avatarUrlPath:(nullable NSString *)avatarUrlPath
+- (void)updateProfileForAddress:(SignalServiceAddress *)address
+           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                  avatarUrlPath:(nullable NSString *)avatarUrlPath
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    OWSLogDebug(@"update profile for: %@ name: %@ avatar: %@", recipientId, profileNameEncrypted, avatarUrlPath);
+    OWSLogDebug(@"update profile for: %@ name: %@ avatar: %@", address, profileNameEncrypted, avatarUrlPath);
 
     // Ensure decryption, etc. off main thread.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        OWSUserProfile *userProfile =
-            [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection];
+        OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address
+                                                                         dbConnection:self.dbConnection];
 
-        NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
         // If we're updating the profile that corresponds to our local number,
         // make sure we're using the latest key.
-        if (localNumber && [localNumber isEqualToString:recipientId]) {
+        if (address.isLocalAddress) {
             [userProfile updateWithProfileKey:self.localUserProfile.profileKey
                                  dbConnection:self.dbConnection
                                    completion:nil];
@@ -1184,7 +1245,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         // If we're updating the profile that corresponds to our local number,
         // update the local profile as well.
-        if (localNumber && [localNumber isEqualToString:recipientId]) {
+        if (address.isLocalAddress) {
             OWSUserProfile *localUserProfile = self.localUserProfile;
             OWSAssertDebug(localUserProfile);
 

@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Once we've shared our profile key with a user (perhaps due to being
         // a member of a whitelisted group), make sure they're whitelisted.
         id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-        [profileManager addUserToProfileWhitelist:recipientId];
+        [profileManager addUserToProfileWhitelist:recipientId.transitional_signalServiceAddress];
     }
 
     NSError *error;

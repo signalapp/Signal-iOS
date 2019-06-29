@@ -138,12 +138,19 @@ NS_ASSUME_NONNULL_BEGIN
     return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/messages"] method:@"GET" parameters:@{}];
 }
 
-+ (TSRequest *)getProfileRequestWithRecipientId:(NSString *)recipientId
-                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
++ (TSRequest *)getProfileRequestWithAddress:(SignalServiceAddress *)address
+                                udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    NSString *path = [NSString stringWithFormat:textSecureProfileAPIFormat, recipientId];
+    NSString *identifier;
+    if (SSKFeatureFlags.allowUUIDOnlyContacts) {
+        identifier = address.uuidString ?: address.phoneNumber;
+    } else {
+        identifier = address.transitional_phoneNumber;
+    }
+
+    NSString *path = [NSString stringWithFormat:textSecureProfileAPIFormat, identifier];
     TSRequest *request = [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
     if (udAccessKey != nil) {
         [self useUDAuthWithRequest:request accessKey:udAccessKey];

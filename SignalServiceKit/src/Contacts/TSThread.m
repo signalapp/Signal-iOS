@@ -258,7 +258,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return nil;
 }
 
-- (NSArray<NSString *> *)recipientIdentifiers
+- (NSArray<SignalServiceAddress *> *)recipientAddresses
 {
     OWSAbstractMethod();
 

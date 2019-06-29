@@ -470,8 +470,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    if (recipientId.length == 0) {
+    SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    if (!address.isValid) {
         return;
     }
 
@@ -479,7 +479,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (![self.thread.contactAddress.transitional_phoneNumber isEqualToString:recipientId]) {
+    if (![self.thread.contactAddress matchesAddress:address]) {
         return;
     }
 

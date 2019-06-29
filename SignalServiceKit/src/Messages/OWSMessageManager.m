@@ -194,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(envelope);
 
-    return [self.blockingManager isRecipientIdBlocked:envelope.sourceE164];
+    return [self.blockingManager isAddressBlocked:envelope.sourceAddress];
 }
 
 - (BOOL)isDataMessageBlocked:(SSKProtoDataMessage *)dataMessage envelope:(SSKProtoEnvelope *)envelope
@@ -497,7 +497,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *profileKey = [dataMessage profileKey];
         NSString *recipientId = envelope.sourceE164;
         if (profileKey.length == kAES256_KeyByteLength) {
-            [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+            [self.profileManager setProfileKeyData:profileKey forAddress:recipientId.transitional_signalServiceAddress];
         } else {
             OWSFailDebug(
                 @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, recipientId);
@@ -648,8 +648,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([callMessage hasProfileKey]) {
         NSData *profileKey = [callMessage profileKey];
-        NSString *recipientId = envelope.sourceE164;
-        [self.profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+        SignalServiceAddress *address = envelope.sourceAddress;
+        [self.profileManager setProfileKeyData:profileKey forAddress:address];
     }
 
     // By dispatching async, we introduce the possibility that these messages might be lost
@@ -697,7 +697,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([localNumber isEqualToString:envelope.sourceE164]) {
         OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
         return;
-    } else if ([self.blockingManager isRecipientIdBlocked:envelope.sourceE164]
+    } else if ([self.blockingManager isAddressBlocked:envelope.sourceAddress]
         || (typingMessage.hasGroupID && [self.blockingManager isGroupIdBlocked:typingMessage.groupID])) {
         NSString *logMessage =
             [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceE164];
@@ -909,7 +909,7 @@ NS_ASSUME_NONNULL_BEGIN
             if (dataMessage.group) {
                 [self.profileManager addGroupIdToProfileWhitelist:dataMessage.group.id];
             } else {
-                [self.profileManager addUserToProfileWhitelist:destination];
+                [self.profileManager addUserToProfileWhitelist:destination.transitional_signalServiceAddress];
             }
         }
 
@@ -1105,7 +1105,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *recipientId = envelope.sourceE164;
+    SignalServiceAddress *address = envelope.sourceAddress;
     if (!dataMessage.hasProfileKey) {
         OWSFailDebug(@"received profile key message without profile key from: %@", envelopeAddress(envelope));
         return;
@@ -1119,7 +1119,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-    [profileManager setProfileKeyData:profileKey forRecipientId:recipientId];
+    [profileManager setProfileKeyData:profileKey forAddress:address];
 }
 
 - (void)handleReceivedTextMessageWithEnvelope:(SSKProtoEnvelope *)envelope

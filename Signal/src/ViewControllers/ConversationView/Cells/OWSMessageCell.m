@@ -341,13 +341,13 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    if (recipientId.length == 0) {
+    SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    if (!address.isValid) {
         return;
     }
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
 
-    if (![incomingMessage.authorAddress matchesAddress:recipientId.transitional_signalServiceAddress]) {
+    if (![incomingMessage.authorAddress matchesAddress:address]) {
         return;
     }
 

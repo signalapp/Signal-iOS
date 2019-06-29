@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSRecipientIdentity *_Nullable recipientIdentity = [self.identityManager
             recipientIdentityForRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
         NSData *_Nullable profileKeyData =
-            [self.profileManager profileKeyDataForRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
+            [self.profileManager profileKeyDataForAddress:signalAccount.recipientAddress];
 
         OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration;
         NSString *conversationColorName;
