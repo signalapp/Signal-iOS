@@ -301,6 +301,7 @@ message SyncMessage {
   message Blocked {
     repeated string numbers = 1;
     repeated bytes groupIds = 2;
+    repeated string uuids = 3;
   }
 
   message Request {

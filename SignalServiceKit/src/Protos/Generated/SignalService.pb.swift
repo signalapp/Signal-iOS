@@ -1808,6 +1808,8 @@ struct SignalServiceProtos_SyncMessage {
 
     var groupIds: [Data] = []
 
+    var uuids: [String] = []
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
@@ -4562,6 +4564,7 @@ extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftP
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "numbers"),
     2: .same(proto: "groupIds"),
+    3: .same(proto: "uuids"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4569,6 +4572,7 @@ extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftP
       switch fieldNumber {
       case 1: try decoder.decodeRepeatedStringField(value: &self.numbers)
       case 2: try decoder.decodeRepeatedBytesField(value: &self.groupIds)
+      case 3: try decoder.decodeRepeatedStringField(value: &self.uuids)
       default: break
       }
     }
@@ -4581,12 +4585,16 @@ extension SignalServiceProtos_SyncMessage.Blocked: SwiftProtobuf.Message, SwiftP
     if !self.groupIds.isEmpty {
       try visitor.visitRepeatedBytesField(value: self.groupIds, fieldNumber: 2)
     }
+    if !self.uuids.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.uuids, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Blocked, rhs: SignalServiceProtos_SyncMessage.Blocked) -> Bool {
     if lhs.numbers != rhs.numbers {return false}
     if lhs.groupIds != rhs.groupIds {return false}
+    if lhs.uuids != rhs.uuids {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

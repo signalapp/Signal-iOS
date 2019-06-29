@@ -4263,6 +4263,7 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
         let builder = SSKProtoSyncMessageBlockedBuilder()
         builder.setNumbers(numbers)
         builder.setGroupIds(groupIds)
+        builder.setUuids(uuids)
         return builder
     }
 
@@ -4292,6 +4293,16 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
             proto.groupIds = wrappedItems
         }
 
+        @objc public func addUuids(_ valueParam: String) {
+            var items = proto.uuids
+            items.append(valueParam)
+            proto.uuids = items
+        }
+
+        @objc public func setUuids(_ wrappedItems: [String]) {
+            proto.uuids = wrappedItems
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessageBlocked {
             return try SSKProtoSyncMessageBlocked.parseProto(proto)
         }
@@ -4309,6 +4320,10 @@ extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
 
     @objc public var groupIds: [Data] {
         return proto.groupIds
+    }
+
+    @objc public var uuids: [String] {
+        return proto.uuids
     }
 
     private init(proto: SignalServiceProtos_SyncMessage.Blocked) {
