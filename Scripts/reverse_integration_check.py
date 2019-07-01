@@ -7,6 +7,7 @@
 import subprocess
 from distutils.version import LooseVersion
 import logging
+import argparse 
 
 #logging.basicConfig(level=logging.DEBUG)
 
@@ -16,6 +17,12 @@ def is_on_master():
     return output == "master"
 
 def main():
+    parser = argparse.ArgumentParser(description='Check for unmerged tags.')
+    parser.add_argument('--current-branch', action='store_true', help='if unspecified, the check is only run when on the master branch')
+
+    args = parser.parse_args()
+    
+
     if not is_on_master():
         # Don't interfere while on a feature or hotfix branch
         logging.debug("not on master branch")
@@ -23,7 +30,7 @@ def main():
 
     logging.debug("on master branch")
 
-    unmerged_tags_output = subprocess.check_output(["git", "tag", "--no-merged", "master"])
+    unmerged_tags_output = subprocess.check_output(["git", "tag", "--no-merged", "HEAD"])
     unmerged_tags = [line.strip() for line in unmerged_tags_output.split("\n") if len(line) > 0]
 
     logging.debug("All unmerged tags: %s" % unmerged_tags)
