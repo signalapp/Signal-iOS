@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 // * Backup exports can reuse fragments from previous Backup exports even if they
 //   don't complete (i.e. backup export resume).
 // * Backup exports can reuse fragments from the backup import, if any.
-@interface OWSBackupFragment : TSYapDatabaseObject
+@interface OWSBackupFragment : BaseModel
 
 @property (nonatomic) NSString *recordName;
 
