@@ -75,6 +75,12 @@ def main():
         '2.38.0.12',
         '2.38.0.13',
         '2.38.0.14',
+        # Looks like this tag was erroneously applied before rebasing. 
+        # After rebasing, HEAD was retagged with 2.40.0.20
+        '2.40.0.19',
+        # Looks like this tag was erroneously applied before rebasing. 
+        # After rebasing, HEAD was retagged with 2.41.0.2
+        '2.41.0.1',
         # 
     ]
     tags_of_concern = [tag for tag in tags_of_concern if tag not in tags_to_ignore]
