@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +25,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, SSKJobRecordStatus){
 
 #pragma mark -
 
-@interface SSKJobRecord : TSYapDatabaseObject
+@interface SSKJobRecord : BaseModel
 
 @property (nonatomic) NSUInteger failureCount;
 @property (nonatomic) NSString *label;
