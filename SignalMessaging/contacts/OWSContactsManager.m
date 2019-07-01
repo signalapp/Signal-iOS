@@ -805,6 +805,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
 {
+    // UUID TODO
+    if (SSKFeatureFlags.allowUUIDOnlyContacts && address.phoneNumber == nil) {
+        return nil;
+    }
     return [self.profileManager profileNameForRecipientId:address.transitional_phoneNumber];
 }
 
@@ -1026,7 +1030,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
-    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:address.transitional_phoneNumber];
+
+    NSString *_Nullable profileName;
+    if (!SSKFeatureFlags.allowUUIDOnlyContacts) {
+        profileName = [self.profileManager profileNameForRecipientId:address.transitional_phoneNumber];
+    }
     if (profileName.length > 0) {
         NSAttributedString *result = [[NSAttributedString alloc] initWithString:phoneNumber ?: address.stringForDisplay
                                                                      attributes:primaryAttributes];
@@ -1127,6 +1135,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (nullable UIImage *)profileImageForAddress:(nullable SignalServiceAddress *)address
 {
     if (address == nil) {
+        return nil;
+    }
+    // UUID TODO
+    if (SSKFeatureFlags.allowUUIDOnlyContacts && address.phoneNumber == nil) {
         return nil;
     }
 

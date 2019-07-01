@@ -7,25 +7,25 @@ import Foundation
 @objc
 public class SignalServiceAddress: NSObject {
     @objc
-    let phoneNumber: String?
+    public let phoneNumber: String?
 
     @objc
-    let uuid: UUID? // TODO UUID: eventually this can be not optional
+    public let uuid: UUID? // TODO UUID: eventually this can be not optional
 
     @objc
-    var uuidString: String? {
+    public var uuidString: String? {
         return uuid?.uuidString
     }
 
     // MARK: - Initializers
 
     @objc
-    convenience init(uuidString: String) {
+    public convenience init(uuidString: String) {
         self.init(uuidString: uuidString, phoneNumber: nil)
     }
 
     @objc
-    convenience init(phoneNumber: String) {
+    public convenience init(phoneNumber: String) {
         self.init(uuidString: nil, phoneNumber: phoneNumber)
     }
 

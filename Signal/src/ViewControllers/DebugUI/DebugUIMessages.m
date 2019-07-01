@@ -128,6 +128,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendNTextMessagesInThread:thread];
                         }],
+        [OWSTableItem itemWithTitle:@"👷 Receive UUID message"
+                        actionBlock:^{
+                            [DebugUIMessages receiveUUIDEnvelopeInNewThread];
+                        }],
         [OWSTableItem itemWithTitle:@"Send Media Gallery"
                         actionBlock:^{
                             [DebugUIMessages sendMediaAlbumInThread:thread];
@@ -156,7 +160,6 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages selectBackDatedAction:thread];
                         }],
-
 
 #pragma mark - Misc.
 
@@ -200,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:1000 thread:thread];
                         }],
-        [OWSTableItem itemWithTitle:@"👷 Create 10 fake text messages"
+        [OWSTableItem itemWithTitle:@"Create 10 fake text messages"
                         actionBlock:^{
                             [DebugUIMessages sendFakeMessages:10 thread:thread isTextOnly:YES];
                         }],

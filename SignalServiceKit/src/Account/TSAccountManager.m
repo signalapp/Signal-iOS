@@ -280,6 +280,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             NSString *_Nullable storedString = [self.keyValueStore getString:TSAccountManager_RegisteredUUIDKey
                                                                  transaction:transaction];
+
             if (storedString != nil) {
                 result = [[NSUUID alloc] initWithUUIDString:storedString];
                 OWSAssert(result);
@@ -305,7 +306,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return [[SignalServiceAddress alloc] initWithUuidString:self.uuid.UUIDString phoneNumber:self.localNumber];
 }
 
-// TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.contactUUID in production
+// TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.allowUUIDOnlyContacts in production
 - (void)storeLocalNumber:(NSString *)localNumber
                     uuid:(nullable NSUUID *)uuid
              transaction:(SDSAnyWriteTransaction *)transaction
@@ -313,8 +314,9 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     @synchronized (self) {
         [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
 
-        if (SSKFeatureFlags.contactUUID) {
-            OWSAssert(uuid);
+        if (uuid == nil) {
+            OWSAssert(!SSKFeatureFlags.allowUUIDOnlyContacts);
+        } else {
             [self.keyValueStore setString:uuid.UUIDString
                                       key:TSAccountManager_RegisteredUUIDKey
                               transaction:transaction];

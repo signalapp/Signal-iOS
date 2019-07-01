@@ -85,6 +85,10 @@ public class BlockListCache: NSObject {
     public func isBlocked(thread: TSThread) -> Bool {
         switch thread {
         case let contactThread as TSContactThread:
+            guard contactThread.contactAddress.phoneNumber != nil else {
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return false
+            }
             return serialQueue.sync {
                 blockedRecipientIds.contains(contactThread.contactAddress.transitional_phoneNumber)
             }

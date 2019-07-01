@@ -27,7 +27,7 @@ public extension SSKProtoEnvelope {
         let phoneNumber: String? = {
             guard hasSourceE164 else {
                 // Shouldn't happen in prod yet
-                assert(CurrentAppContext().isRunningTests)
+                assert(FeatureFlags.allowUUIDOnlyContacts)
                 return nil
             }
 

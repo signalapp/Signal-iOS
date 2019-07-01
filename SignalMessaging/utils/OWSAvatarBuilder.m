@@ -31,10 +31,9 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         ConversationColorName colorName = thread.conversationColorName;
-        avatarBuilder =
-            [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactAddress.transitional_phoneNumber
-                                                    colorName:colorName
-                                                     diameter:diameter];
+        avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:contactThread.contactAddress
+                                                               colorName:colorName
+                                                                diameter:diameter];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread diameter:diameter];
     } else {

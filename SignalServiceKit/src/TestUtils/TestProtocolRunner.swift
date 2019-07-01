@@ -4,6 +4,7 @@
 
 import Foundation
 
+#if DEBUG
 /// A helper for tests which can initializes Signal Protocol sessions
 /// and then encrypt and decrypt messages for those sessions.
 public struct TestProtocolRunner {
@@ -72,7 +73,7 @@ public extension SignalClient {
     }
 
     var address: SignalServiceAddress {
-        if FeatureFlags.contactUUID {
+        if FeatureFlags.allowUUIDOnlyContacts {
             return SignalServiceAddress(uuid: uuid, phoneNumber: e164Identifier)
         } else {
             return SignalServiceAddress(phoneNumber: e164Identifier)
@@ -111,6 +112,14 @@ public struct FakeSignalClient: SignalClient {
     public let deviceId: UInt32
     public let identityKeyPair: ECKeyPair
     public let protocolStore: AxolotlStore
+
+    public static func generate() -> FakeSignalClient {
+        return FakeSignalClient(e164Identifier: CommonGenerator.e164(),
+                                uuid: UUID(),
+                                deviceId: 1,
+                                identityKeyPair: Curve25519.generateKeyPair(),
+                                protocolStore: SPKMockProtocolStore())
+    }
 
     public static func generate(e164Identifier: SignalE164Identifier) -> FakeSignalClient {
         return FakeSignalClient(e164Identifier: e164Identifier,
@@ -161,3 +170,58 @@ public struct LocalSignalClient: SignalClient {
         return SSKEnvironment.shared.identityManager
     }
 }
+
+public struct FakeService {
+    public let localClient: LocalSignalClient
+    public let runner: TestProtocolRunner
+
+    public init(localClient: LocalSignalClient, runner: TestProtocolRunner) {
+        self.localClient = localClient
+        self.runner = runner
+    }
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    public func envelopeBuilder(fromSenderClient senderClient: SignalClient) throws -> SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
+        let now = NSDate.ows_millisecondTimeStamp()
+        let builder = SSKProtoEnvelope.builder(timestamp: now)
+        builder.setType(.ciphertext)
+        builder.setSourceDevice(senderClient.deviceId)
+
+        let content = try buildEncryptedContentData(fromSenderClient: senderClient)
+        builder.setContent(content)
+
+        // builder.setServerTimestamp(serverTimestamp)
+        // builder.setServerGuid(serverGuid)
+
+        return builder
+    }
+
+    public func buildEncryptedContentData(fromSenderClient senderClient: SignalClient) throws -> Data {
+        let plaintext = try buildContentData()
+        let cipherMessage: CipherMessage = databaseStorage.writeReturningResult { transaction in
+            return try! self.runner.encrypt(plaintext: plaintext,
+                                            senderClient: senderClient,
+                                            recipientAccountId: self.localClient.accountId(transaction: transaction),
+                                            protocolContext: transaction)
+        }
+
+        assert(cipherMessage is WhisperMessage)
+        return cipherMessage.serialized()
+    }
+
+    public func buildContentData() throws -> Data {
+        let messageText = "Those who stands for nothing will fall for anything"
+        let dataMessageBuilder = SSKProtoDataMessage.builder()
+        dataMessageBuilder.setBody(messageText)
+
+        let contentBuilder = SSKProtoContent.builder()
+        contentBuilder.setDataMessage(try dataMessageBuilder.build())
+
+        return try contentBuilder.buildSerializedData()
+    }
+}
+
+#endif

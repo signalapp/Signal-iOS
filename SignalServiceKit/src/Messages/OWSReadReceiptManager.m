@@ -412,7 +412,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     OWSAssertDebug(message);
     OWSAssertDebug(transaction);
-    if (SSKFeatureFlags.contactUUID) {
+    if (SSKFeatureFlags.allowUUIDOnlyContacts) {
         // UUID TODO
         return;
     }
