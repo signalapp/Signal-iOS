@@ -563,7 +563,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         if (localUUID) {
             [whitelistedUUIDS removeObject:localUUID];
         } else {
-            OWSFailDebug(@"Missing localUUID");
+            if (SSKFeatureFlags.allowUUIDOnlyContacts) {
+                OWSFailDebug(@"Missing localUUID");
+            }
         }
 
         NSSet<NSString *> *blockedPhoneNumbers = [NSSet setWithArray:self.blockingManager.blockedPhoneNumbers];
