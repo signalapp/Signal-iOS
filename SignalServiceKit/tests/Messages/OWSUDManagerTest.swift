@@ -39,6 +39,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     // MARK: registration
     let aliceRecipientId = "+13213214321"
     let aliceUUID = UUID()
+    lazy var aliceAddress = SignalServiceAddress(uuid: aliceUUID, phoneNumber: aliceRecipientId)
 
     override func setUp() {
         super.setUp()
@@ -46,7 +47,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         tsAccountManager.registerForTests(withLocalNumber: aliceRecipientId, uuid: aliceUUID)
 
         // Configure UDManager
-        profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, forRecipientId: aliceRecipientId)
+        profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, for: aliceAddress)
 
         udManager.certificateValidator = MockCertificateValidator()
 
@@ -77,27 +78,27 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         var udAccess: OWSUDAccess!
 
-        XCTAssertEqual(.enabled, udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
-        udAccess = udManager.udAccess(forRecipientId: aliceRecipientId, requireSyncAccess: false)
+        XCTAssertEqual(.enabled, udManager.unidentifiedAccessMode(forAddress: aliceAddress))
+        udAccess = udManager.udAccess(forAddress: aliceAddress, requireSyncAccess: false)
         XCTAssertFalse(udAccess.isRandomKey)
 
-        udManager.setUnidentifiedAccessMode(.unknown, recipientId: aliceRecipientId)
-        XCTAssertEqual(.unknown, udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
-        udAccess = udManager.udAccess(forRecipientId: aliceRecipientId, requireSyncAccess: false)!
+        udManager.setUnidentifiedAccessMode(.unknown, address: aliceAddress)
+        XCTAssertEqual(.unknown, udManager.unidentifiedAccessMode(forAddress: aliceAddress))
+        udAccess = udManager.udAccess(forAddress: aliceAddress, requireSyncAccess: false)!
         XCTAssertFalse(udAccess.isRandomKey)
 
-        udManager.setUnidentifiedAccessMode(.disabled, recipientId: aliceRecipientId)
-        XCTAssertEqual(.disabled, udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: aliceRecipientId, requireSyncAccess: false))
+        udManager.setUnidentifiedAccessMode(.disabled, address: aliceAddress)
+        XCTAssertEqual(.disabled, udManager.unidentifiedAccessMode(forAddress: aliceAddress))
+        XCTAssertNil(udManager.udAccess(forAddress: aliceAddress, requireSyncAccess: false))
 
-        udManager.setUnidentifiedAccessMode(.enabled, recipientId: aliceRecipientId)
-        XCTAssert(UnidentifiedAccessMode.enabled == udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
-        udAccess = udManager.udAccess(forRecipientId: aliceRecipientId, requireSyncAccess: false)!
+        udManager.setUnidentifiedAccessMode(.enabled, address: aliceAddress)
+        XCTAssert(UnidentifiedAccessMode.enabled == udManager.unidentifiedAccessMode(forAddress: aliceAddress))
+        udAccess = udManager.udAccess(forAddress: aliceAddress, requireSyncAccess: false)!
         XCTAssertFalse(udAccess.isRandomKey)
 
-        udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: aliceRecipientId)
-        XCTAssertEqual(.unrestricted, udManager.unidentifiedAccessMode(forRecipientId: aliceRecipientId))
-        udAccess = udManager.udAccess(forRecipientId: aliceRecipientId, requireSyncAccess: false)!
+        udManager.setUnidentifiedAccessMode(.unrestricted, address: aliceAddress)
+        XCTAssertEqual(.unrestricted, udManager.unidentifiedAccessMode(forAddress: aliceAddress))
+        udAccess = udManager.udAccess(forAddress: aliceAddress, requireSyncAccess: false)!
         XCTAssert(udAccess.isRandomKey)
     }
 
@@ -105,38 +106,38 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         XCTAssert(udManager.hasSenderCertificate())
         XCTAssert(tsAccountManager.isRegistered)
-        XCTAssertNotNil(tsAccountManager.localNumber())
+        XCTAssertNotNil(tsAccountManager.localAddress.isValid)
         XCTAssert(tsAccountManager.localNumber()!.count > 0)
 
         // Ensure UD is enabled by setting our own access level to enabled.
-        udManager.setUnidentifiedAccessMode(.enabled, recipientId: tsAccountManager.localNumber()!)
+        udManager.setUnidentifiedAccessMode(.enabled, address: tsAccountManager.localAddress)
 
-        let bobRecipientId = "+13213214322"
-        XCTAssertNotEqual(bobRecipientId, tsAccountManager.localNumber()!)
+        let bobRecipientAddress = SignalServiceAddress(phoneNumber: "+13213214322")
+        XCTAssertFalse(bobRecipientAddress.isLocalAddress)
 
         var udAccess: OWSUDAccess!
 
-        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        udAccess = udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false)!
+        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forAddress: bobRecipientAddress))
+        udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
         XCTAssert(udAccess.isRandomKey)
 
-        udManager.setUnidentifiedAccessMode(.unknown, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        udAccess = udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false)!
+        udManager.setUnidentifiedAccessMode(.unknown, address: bobRecipientAddress)
+        XCTAssertEqual(UnidentifiedAccessMode.unknown, udManager.unidentifiedAccessMode(forAddress: bobRecipientAddress))
+        udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
         XCTAssert(udAccess.isRandomKey)
 
-        udManager.setUnidentifiedAccessMode(.disabled, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.disabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        udManager.setUnidentifiedAccessMode(.disabled, address: bobRecipientAddress)
+        XCTAssertEqual(UnidentifiedAccessMode.disabled, udManager.unidentifiedAccessMode(forAddress: bobRecipientAddress))
+        XCTAssertNil(udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false))
 
-        udManager.setUnidentifiedAccessMode(.enabled, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.enabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        udManager.setUnidentifiedAccessMode(.enabled, address: bobRecipientAddress)
+        XCTAssertEqual(UnidentifiedAccessMode.enabled, udManager.unidentifiedAccessMode(forAddress: bobRecipientAddress))
+        XCTAssertNil(udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false))
 
         // Bob should work in unrestricted mode, even if he doesn't have a profile key.
-        udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: bobRecipientId)
-        XCTAssertEqual(UnidentifiedAccessMode.unrestricted, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        udAccess = udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false)!
+        udManager.setUnidentifiedAccessMode(.unrestricted, address: bobRecipientAddress)
+        XCTAssertEqual(UnidentifiedAccessMode.unrestricted, udManager.unidentifiedAccessMode(forAddress: bobRecipientAddress))
+        udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
         XCTAssert(udAccess.isRandomKey)
     }
 
@@ -147,35 +148,35 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         XCTAssert(tsAccountManager.localNumber()!.count > 0)
 
         // Ensure UD is enabled by setting our own access level to enabled.
-        udManager.setUnidentifiedAccessMode(.enabled, recipientId: tsAccountManager.localNumber()!)
+        udManager.setUnidentifiedAccessMode(.enabled, address: tsAccountManager.localAddress)
 
-        let bobRecipientId = "+13213214322"
-        XCTAssertNotEqual(bobRecipientId, tsAccountManager.localNumber()!)
-        profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, forRecipientId: bobRecipientId)
+        let bobRecipientAddress = SignalServiceAddress(phoneNumber: "+13213214322")
+        XCTAssertFalse(bobRecipientAddress.isLocalAddress)
+        profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, for: bobRecipientAddress)
 
         var udAccess: OWSUDAccess!
 
-        XCTAssertEqual(.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        udAccess = udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false)!
+        XCTAssertEqual(.unknown, udManager.unidentifiedAccessMode(forAddress: bobRecipientAddress))
+        udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
         XCTAssertFalse(udAccess.isRandomKey)
 
-        udManager.setUnidentifiedAccessMode(.unknown, recipientId: bobRecipientId)
-        XCTAssertEqual(.unknown, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        udAccess = udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false)!
+        udManager.setUnidentifiedAccessMode(.unknown, address: bobRecipientAddress)
+        XCTAssertEqual(.unknown, udManager.unidentifiedAccessMode(forAddress: bobRecipientAddress))
+        udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
         XCTAssertFalse(udAccess.isRandomKey)
 
-        udManager.setUnidentifiedAccessMode(.disabled, recipientId: bobRecipientId)
-        XCTAssertEqual(.disabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        XCTAssertNil(udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false))
+        udManager.setUnidentifiedAccessMode(.disabled, address: bobRecipientAddress)
+        XCTAssertEqual(.disabled, udManager.unidentifiedAccessMode(forAddress: bobRecipientAddress))
+        XCTAssertNil(udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false))
 
-        udManager.setUnidentifiedAccessMode(.enabled, recipientId: bobRecipientId)
-        XCTAssertEqual(.enabled, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        udAccess = udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false)!
+        udManager.setUnidentifiedAccessMode(.enabled, address: bobRecipientAddress)
+        XCTAssertEqual(.enabled, udManager.unidentifiedAccessMode(forAddress: bobRecipientAddress))
+        udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
         XCTAssertFalse(udAccess.isRandomKey)
 
-        udManager.setUnidentifiedAccessMode(.unrestricted, recipientId: bobRecipientId)
-        XCTAssertEqual(.unrestricted, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
-        udAccess = udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false)!
+        udManager.setUnidentifiedAccessMode(.unrestricted, address: bobRecipientAddress)
+        XCTAssertEqual(.unrestricted, udManager.unidentifiedAccessMode(forAddress: bobRecipientAddress))
+        udAccess = udManager.udAccess(forAddress: bobRecipientAddress, requireSyncAccess: false)!
         XCTAssert(udAccess.isRandomKey)
     }
 }

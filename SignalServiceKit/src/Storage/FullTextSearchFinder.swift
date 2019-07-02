@@ -171,9 +171,8 @@ public class FullTextSearchFinder: NSObject {
     private static let contactThreadIndexer: SearchIndexer<TSContactThread> = SearchIndexer { (contactThread: TSContactThread, transaction: YapDatabaseReadTransaction) in
         let recipientAddress = contactThread.contactAddress
         var result = recipientIndexer.index(recipientAddress, transaction: transaction)
-        let localAddress = tsAccountManager.storedOrCachedLocalAddress(transaction.asAnyRead)
 
-        if IsNoteToSelfEnabled(), localAddress.matchesAddress(recipientAddress) {
+        if let localAddress = tsAccountManager.storedOrCachedLocalAddress(transaction.asAnyRead), IsNoteToSelfEnabled(), localAddress.matchesAddress(recipientAddress) {
             let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
             result += " \(noteToSelfLabel)"
         }

@@ -290,7 +290,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 }
 
-- (SignalServiceAddress *)storedOrCachedLocalAddress:(SDSAnyReadTransaction *)transaction
+- (nullable SignalServiceAddress *)storedOrCachedLocalAddress:(SDSAnyReadTransaction *)transaction
 {
     @synchronized(self) {
         NSString *_Nullable localNumber = self.cachedLocalNumber;
@@ -302,6 +302,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
         if (uuidString == nil) {
             uuidString = [self.keyValueStore getString:TSAccountManager_RegisteredUUIDKey transaction:transaction];
+        }
+
+        if (uuidString == nil && localNumber == nil) {
+            return nil;
         }
 
         return [[SignalServiceAddress alloc] initWithUuidString:uuidString phoneNumber:localNumber];

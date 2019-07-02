@@ -233,13 +233,16 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         let existingValue: UnidentifiedAccessMode?
 
-        // If UUID and Phone Number setting don't align, defer to UUID and update phone number
-        if let existingUUIDValue = existingUUIDValue, let existingPhoneNumberValue = existingPhoneNumberValue, existingPhoneNumberValue != existingUUIDValue {
-            owsFailDebug("UUID and Phone Number unexpectedly have different UD values")
-            Logger.info("Unexpeted UD value mismatch, migrating phone number value: \(existingPhoneNumberValue) to uuid value: \(existingUUIDValue)")
+        if let existingUUIDValue = existingUUIDValue, let existingPhoneNumberValue = existingPhoneNumberValue {
+
+            // If UUID and Phone Number setting don't align, defer to UUID and update phone number
+            if existingPhoneNumberValue != existingUUIDValue {
+                owsFailDebug("UUID and Phone Number unexpectedly have different UD values")
+                Logger.info("Unexpeted UD value mismatch, migrating phone number value: \(existingPhoneNumberValue) to uuid value: \(existingUUIDValue)")
+                transaction.setObject(existingUUIDValue, forKey: address.phoneNumber!, inCollection: kUnidentifiedAccessPhoneNumberCollection)
+            }
 
             existingValue = existingUUIDValue
-            transaction.setObject(existingUUIDValue, forKey: address.phoneNumber!, inCollection: kUnidentifiedAccessPhoneNumberCollection)
         } else if let existingPhoneNumberValue = existingPhoneNumberValue {
             existingValue = existingPhoneNumberValue
 
