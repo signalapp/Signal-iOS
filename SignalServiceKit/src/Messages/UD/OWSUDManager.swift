@@ -238,7 +238,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             // If UUID and Phone Number setting don't align, defer to UUID and update phone number
             if existingPhoneNumberValue != existingUUIDValue {
                 owsFailDebug("UUID and Phone Number unexpectedly have different UD values")
-                Logger.info("Unexpeted UD value mismatch, migrating phone number value: \(existingPhoneNumberValue) to uuid value: \(existingUUIDValue)")
+                Logger.info("Unexpected UD value mismatch, migrating phone number value: \(existingPhoneNumberValue) to uuid value: \(existingUUIDValue)")
                 transaction.setObject(existingUUIDValue, forKey: address.phoneNumber!, inCollection: kUnidentifiedAccessPhoneNumberCollection)
             }
 
