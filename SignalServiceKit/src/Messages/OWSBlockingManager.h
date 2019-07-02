@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSPrimaryStorage;
+@class SignalServiceAddress;
 @class TSGroupModel;
 @class TSThread;
 
@@ -20,16 +21,16 @@ extern NSString *const kOWSBlockingManager_BlockListCollection;
 
 + (instancetype)sharedManager;
 
-- (void)addBlockedPhoneNumber:(NSString *)phoneNumber;
+- (void)addBlockedAddress:(SignalServiceAddress *)address;
 
-- (void)removeBlockedPhoneNumber:(NSString *)phoneNumber;
+- (void)removeBlockedAddress:(SignalServiceAddress *)address;
 
 // When updating the block list from a sync message, we don't
 // want to fire a sync message.
 - (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers sendSyncMessage:(BOOL)sendSyncMessage;
 
-// TODO convert to property
-- (NSArray<NSString *> *)blockedPhoneNumbers;
+@property (readonly) NSArray<NSString *> *blockedPhoneNumbers;
+@property (readonly) NSArray<NSString *> *blockedUUIDs;
 
 @property (readonly) NSArray<NSData *> *blockedGroupIds;
 @property (readonly) NSArray<TSGroupModel *> *blockedGroups;
@@ -38,7 +39,7 @@ extern NSString *const kOWSBlockingManager_BlockListCollection;
 - (void)removeBlockedGroupId:(NSData *)groupId;
 - (nullable TSGroupModel *)cachedGroupDetailsWithGroupId:(NSData *)groupId;
 
-- (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
+- (BOOL)isAddressBlocked:(SignalServiceAddress *)address;
 - (BOOL)isGroupIdBlocked:(NSData *)groupId;
 - (BOOL)isThreadBlocked:(TSThread *)thread;
 

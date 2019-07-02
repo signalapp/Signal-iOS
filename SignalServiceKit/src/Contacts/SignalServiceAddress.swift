@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class SignalServiceAddress: NSObject {
+public class SignalServiceAddress: NSObject, NSCopying {
     @objc
     public let phoneNumber: String?
 
@@ -62,6 +62,25 @@ public class SignalServiceAddress: NSObject {
         if !isValid {
             owsFailDebug("Unexpectedly initialized address with no identifier")
         }
+    }
+
+    @objc
+    public func copy(with zone: NSZone? = nil) -> Any {
+        return SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
+    }
+
+    // MARK: -
+
+    public override func isEqual(_ object: Any?) -> Bool {
+        guard let otherAddress = object as? SignalServiceAddress else {
+            return false
+        }
+
+        return otherAddress.phoneNumber == phoneNumber && otherAddress.uuid == uuid
+    }
+
+    public override var hash: Int {
+        return (phoneNumber?.hashValue ?? 0) ^ (uuid?.hashValue ?? 0)
     }
 
     // MARK: -

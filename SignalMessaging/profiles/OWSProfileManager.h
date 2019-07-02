@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/ProfileManagerProtocol.h>
@@ -15,6 +15,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 @class OWSAES256Key;
 @class OWSMessageSender;
 @class OWSPrimaryStorage;
+@class SignalServiceAddress;
 @class TSNetworkManager;
 @class TSThread;
 
@@ -63,23 +64,23 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread;
 
-- (void)setContactRecipientIds:(NSArray<NSString *> *)contactRecipientIds;
+- (void)setContactAddresses:(NSArray<SignalServiceAddress *> *)contactAddresses;
 
 #pragma mark - Other User's Profiles
 
 // This method is for debugging.
 - (void)logUserProfiles;
 
-- (nullable OWSAES256Key *)profileKeyForRecipientId:(NSString *)recipientId;
+- (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address;
 
-- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
+- (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address;
 
-- (nullable UIImage *)profileAvatarForRecipientId:(NSString *)recipientId;
-- (nullable NSData *)profileAvatarDataForRecipientId:(NSString *)recipientId;
+- (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address;
+- (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address;
 
-- (void)updateProfileForRecipientId:(NSString *)recipientId
-               profileNameEncrypted:(nullable NSData *)profileNameEncrypted
-                      avatarUrlPath:(nullable NSString *)avatarUrlPath;
+- (void)updateProfileForAddress:(SignalServiceAddress *)address
+           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                  avatarUrlPath:(nullable NSString *)avatarUrlPath;
 
 #pragma mark - User Interface
 

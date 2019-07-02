@@ -11,6 +11,7 @@ BOOL IsNoteToSelfEnabled(void);
 @class OWSDisappearingMessagesConfiguration;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
+@class SignalServiceAddress;
 @class TSInteraction;
 @class TSInvalidIdentityKeyReceivingErrorMessage;
 
@@ -86,7 +87,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 /**
  * @returns recipientId for each recipient in the thread
  */
-@property (nonatomic, readonly) NSArray<NSString *> *recipientIdentifiers;
+@property (nonatomic, readonly) NSArray<SignalServiceAddress *> *recipientAddresses;
 
 - (BOOL)isNoteToSelf;
 

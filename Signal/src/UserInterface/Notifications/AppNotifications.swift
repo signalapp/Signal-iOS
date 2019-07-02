@@ -427,8 +427,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         if (!FeatureFlags.allowUUIDOnlyContacts) {
             // Don't reply from lockscreen if anyone in this conversation is
             // "no longer verified".
-            for recipientId in thread.recipientIdentifiers {
-                if self.identityManager.verificationState(forRecipientId: recipientId) == .noLongerVerified {
+            for address in thread.recipientAddresses {
+                if self.identityManager.verificationState(forRecipientId: address.transitional_phoneNumber) == .noLongerVerified {
                     category = AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity
                     break
                 }

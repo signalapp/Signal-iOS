@@ -92,25 +92,26 @@ NS_ASSUME_NONNULL_BEGIN
             @"BLOCK_LIST_BLOCKED_USERS_SECTION", @"Section header for users that have been blocked");
 
         for (NSString *phoneNumber in blockedPhoneNumbers) {
-            [blockedContactsSection addItem:[OWSTableItem
-                                                itemWithCustomCellBlock:^{
-                                                    ContactTableViewCell *cell = [ContactTableViewCell new];
-                                                    [cell configureWithRecipientId:phoneNumber];
-                                                    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                        BlockListViewController, @"user");
-                                                    return cell;
-                                                }
-                                                customRowHeight:UITableViewAutomaticDimension
-                                                actionBlock:^{
-                                                    [BlockListUIUtils
-                                                        showUnblockPhoneNumberActionSheet:phoneNumber
-                                                                       fromViewController:weakSelf
-                                                                          blockingManager:helper.blockingManager
-                                                                          contactsManager:helper.contactsManager
-                                                                          completionBlock:^(BOOL isBlocked) {
-                                                                              [weakSelf updateTableContents];
-                                                                          }];
-                                                }]];
+            [blockedContactsSection
+                addItem:[OWSTableItem
+                            itemWithCustomCellBlock:^{
+                                ContactTableViewCell *cell = [ContactTableViewCell new];
+                                [cell configureWithRecipientId:phoneNumber];
+                                cell.accessibilityIdentifier
+                                    = ACCESSIBILITY_IDENTIFIER_WITH_NAME(BlockListViewController, @"user");
+                                return cell;
+                            }
+                            customRowHeight:UITableViewAutomaticDimension
+                            actionBlock:^{
+                                [BlockListUIUtils
+                                    showUnblockAddressActionSheet:phoneNumber.transitional_signalServiceAddress
+                                               fromViewController:weakSelf
+                                                  blockingManager:helper.blockingManager
+                                                  contactsManager:helper.contactsManager
+                                                  completionBlock:^(BOOL isBlocked) {
+                                                      [weakSelf updateTableContents];
+                                                  }];
+                            }]];
         }
         [contents addSection:blockedContactsSection];
     }

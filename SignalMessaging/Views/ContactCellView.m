@@ -293,10 +293,10 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 {
     OWSAssertIsOnMainThread();
 
-    NSString *recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
-    OWSAssertDebug(recipientId.length > 0);
+    SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
+    OWSAssertDebug(address.isValid);
 
-    if (recipientId.length > 0 && [self.recipientId isEqualToString:recipientId]) {
+    if (address.isValid && [self.recipientId isEqualToString:address.transitional_phoneNumber]) {
         [self updateProfileName];
         [self updateAvatar];
     }

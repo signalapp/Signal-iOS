@@ -528,6 +528,19 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 on: ThreadRecord.databaseTableName,
                 columns: [ThreadRecord.columnName(.contactUUID)]
             )
+
+            // User Profile
+            try db.create(
+                index: "index_user_profiles_on_recipientPhoneNumber",
+                on: UserProfileRecord.databaseTableName,
+                columns: [UserProfileRecord.columnName(.recipientPhoneNumber)]
+            )
+
+            try db.create(
+                index: "index_user_profiles_on_recipientUUID",
+                on: UserProfileRecord.databaseTableName,
+                columns: [UserProfileRecord.columnName(.recipientUUID)]
+            )
         }
         return migrator
     }()

@@ -89,7 +89,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                     XCTAssertEqual(message.body, "Those who stands for nothing will fall for anything")
                     XCTAssertEqual(1, TSThread.anyCount(transaction: transaction))
                     guard let thread = TSThread.anyFetchAll(transaction: transaction).first as? TSContactThread else {
-                        XCTFail("thread was unexpetedly nil")
+                        XCTFail("thread was unexpectedly nil")
                         return
                     }
                     XCTAssert(thread.contactAddress.matchesAddress(self.bobClient.address))
@@ -146,7 +146,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                     XCTAssertEqual(message.body, "Those who stands for nothing will fall for anything")
                     XCTAssertEqual(1, TSThread.anyCount(transaction: transaction))
                     guard let thread = TSThread.anyFetchAll(transaction: transaction).first as? TSContactThread else {
-                        XCTFail("thread was unexpetedly nil")
+                        XCTFail("thread was unexpectedly nil")
                         return
                     }
                     XCTAssert(thread.contactAddress.matchesAddress(self.bobClient.address))

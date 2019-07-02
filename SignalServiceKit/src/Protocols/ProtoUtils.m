@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ProtoUtils.h"
@@ -35,7 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // For Group threads, we want to include the profile key IFF the
     // recipient OR the group is in the whitelist.
-    if (recipientId.length > 0 && [self.profileManager isUserInProfileWhitelist:recipientId]) {
+    if (recipientId.length > 0 &&
+        [self.profileManager isUserInProfileWhitelist:recipientId.transitional_signalServiceAddress]) {
         return YES;
     } else if ([self.profileManager isThreadInProfileWhitelist:thread]) {
         return YES;
@@ -59,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
             // a member of a whitelisted group), make sure they're whitelisted.
             // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.profileManager addUserToProfileWhitelist:recipientId];
+                [self.profileManager addUserToProfileWhitelist:recipientId.transitional_signalServiceAddress];
             });
         }
     }
@@ -87,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
         // a member of a whitelisted group), make sure they're whitelisted.
         // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.profileManager addUserToProfileWhitelist:recipientId];
+            [self.profileManager addUserToProfileWhitelist:recipientId.transitional_signalServiceAddress];
         });
     }
 }

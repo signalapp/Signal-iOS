@@ -161,9 +161,9 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return [[SignalServiceAddress alloc] initWithUuidString:self.contactUUID phoneNumber:self.contactPhoneNumber];
 }
 
-- (NSArray<NSString *> *)recipientIdentifiers
+- (NSArray<SignalServiceAddress *> *)recipientAddresses
 {
-    return @[ self.contactAddress.transitional_phoneNumber ];
+    return @[ self.contactAddress ];
 }
 
 - (BOOL)isGroupThread {

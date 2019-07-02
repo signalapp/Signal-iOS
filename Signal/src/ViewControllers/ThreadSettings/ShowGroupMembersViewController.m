@@ -208,9 +208,9 @@ NS_ASSUME_NONNULL_BEGIN
                              customRowHeight:UITableViewAutomaticDimension
                              actionBlock:^{
                                  if (useVerifyAction) {
-                                     [weakSelf showSafetyNumberView:recipientId];
+                                     [weakSelf showSafetyNumberView:recipientId.transitional_signalServiceAddress];
                                  } else {
-                                     [weakSelf didSelectRecipientId:recipientId];
+                                     [weakSelf didSelectAddress:recipientId.transitional_signalServiceAddress];
                                  }
                              }]];
     }
@@ -267,22 +267,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray<NSString *> *)noLongerVerifiedRecipientIds
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+    for (SignalServiceAddress *address in self.thread.recipientAddresses) {
+        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.transitional_phoneNumber]
             == OWSVerificationStateNoLongerVerified) {
-            [result addObject:recipientId];
+            [result addObject:address.transitional_phoneNumber];
         }
     }
     return [result copy];
 }
 
-- (void)didSelectRecipientId:(NSString *)recipientId
+- (void)didSelectAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    SignalAccount *_Nullable signalAccount =
-        [helper fetchSignalAccountForAddress:recipientId.transitional_signalServiceAddress];
+    SignalAccount *_Nullable signalAccount = [helper fetchSignalAccountForAddress:address];
 
     UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -297,7 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_contact_info")
                                                style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showContactInfoViewForRecipientId:recipientId];
+                                                 [self showContactInfoViewForAddress:address];
                                              }]];
     }
 
@@ -338,39 +337,37 @@ NS_ASSUME_NONNULL_BEGIN
                                                  }]];
         }
     } else {
-        isBlocked = [helper isSignalServiceAddressBlocked:recipientId.transitional_signalServiceAddress];
+        isBlocked = [helper isSignalServiceAddressBlocked:address];
         if (isBlocked) {
-            [actionSheet
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
-                                                             @"Button label for the 'unblock' button")
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
-                                                   style:UIAlertActionStyleDefault
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [BlockListUIUtils
-                                                         showUnblockPhoneNumberActionSheet:recipientId
-                                                                        fromViewController:self
-                                                                           blockingManager:helper.blockingManager
-                                                                           contactsManager:helper.contactsManager
-                                                                           completionBlock:^(BOOL ignore) {
-                                                                               [self updateTableContents];
-                                                                           }];
-                                                 }]];
+            [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_UNBLOCK_BUTTON",
+                                                                      @"Button label for the 'unblock' button")
+                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
+                                                            style:UIAlertActionStyleDefault
+                                                          handler:^(UIAlertAction *_Nonnull action) {
+                                                              [BlockListUIUtils
+                                                                  showUnblockAddressActionSheet:address
+                                                                             fromViewController:self
+                                                                                blockingManager:helper.blockingManager
+                                                                                contactsManager:helper.contactsManager
+                                                                                completionBlock:^(BOOL ignore) {
+                                                                                    [self updateTableContents];
+                                                                                }];
+                                                          }]];
         } else {
-            [actionSheet
-                addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
-                                                             @"Button label for the 'block' button")
-                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
-                                                   style:UIAlertActionStyleDestructive
-                                                 handler:^(UIAlertAction *_Nonnull action) {
-                                                     [BlockListUIUtils
-                                                         showBlockPhoneNumberActionSheet:recipientId
-                                                                      fromViewController:self
-                                                                         blockingManager:helper.blockingManager
-                                                                         contactsManager:helper.contactsManager
-                                                                         completionBlock:^(BOOL ignore) {
-                                                                             [self updateTableContents];
-                                                                         }];
-                                                 }]];
+            [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_LIST_BLOCK_BUTTON",
+                                                                      @"Button label for the 'block' button")
+                                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
+                                                            style:UIAlertActionStyleDestructive
+                                                          handler:^(UIAlertAction *_Nonnull action) {
+                                                              [BlockListUIUtils
+                                                                  showBlockAddressActionSheet:address
+                                                                           fromViewController:self
+                                                                              blockingManager:helper.blockingManager
+                                                                              contactsManager:helper.contactsManager
+                                                                              completionBlock:^(BOOL ignore) {
+                                                                                  [self updateTableContents];
+                                                                              }];
+                                                          }]];
         }
     }
 
@@ -381,14 +378,14 @@ NS_ASSUME_NONNULL_BEGIN
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_message")
                                                style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showConversationViewForRecipientId:recipientId];
+                                                 [self showConversationViewForAddress:address];
                                              }]];
         [actionSheet addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"GROUP_MEMBERS_CALL",
                                                                   @"Button label for the 'call group member' button")
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call")
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction *_Nonnull action) {
-                                                          [self callMember:recipientId];
+                                                          [self callMember:address];
                                                       }]];
         [actionSheet
             addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"VERIFY_PRIVACY",
@@ -397,7 +394,7 @@ NS_ASSUME_NONNULL_BEGIN
                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"safety_numbers")
                                                style:UIAlertActionStyleDefault
                                              handler:^(UIAlertAction *_Nonnull action) {
-                                                 [self showSafetyNumberView:recipientId];
+                                                 [self showSafetyNumberView:address];
                                              }]];
     }
 
@@ -406,36 +403,30 @@ NS_ASSUME_NONNULL_BEGIN
     [self presentAlert:actionSheet];
 }
 
-- (void)showContactInfoViewForRecipientId:(NSString *)recipientId
+- (void)showContactInfoViewForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:recipientId
-                                                     fromViewController:self
-                                                        editImmediately:NO];
+    [self.contactsViewHelper presentContactViewControllerForAddress:address fromViewController:self editImmediately:NO];
 }
 
-- (void)showConversationViewForRecipientId:(NSString *)recipientId
+- (void)showConversationViewForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [SignalApp.sharedApp presentConversationForRecipientId:recipientId
-                                                    action:ConversationViewActionCompose
-                                                  animated:YES];
+    [SignalApp.sharedApp presentConversationForAddress:address action:ConversationViewActionCompose animated:YES];
 }
 
-- (void)callMember:(NSString *)recipientId
+- (void)callMember:(SignalServiceAddress *)address
 {
-    [SignalApp.sharedApp presentConversationForRecipientId:recipientId
-                                                    action:ConversationViewActionAudioCall
-                                                  animated:YES];
+    [SignalApp.sharedApp presentConversationForAddress:address action:ConversationViewActionAudioCall animated:YES];
 }
 
-- (void)showSafetyNumberView:(NSString *)recipientId
+- (void)showSafetyNumberView:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [FingerprintViewController presentFromViewController:self recipientId:recipientId];
+    [FingerprintViewController presentFromViewController:self address:address];
 }
 
 #pragma mark - ContactsViewHelperDelegate

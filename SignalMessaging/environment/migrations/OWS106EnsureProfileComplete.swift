@@ -89,19 +89,20 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         }
 
         func ensureProfileComplete() -> Promise<Void> {
-            guard let localRecipientId = TSAccountManager.localNumber() else {
+            let localAddress = TSAccountManager.sharedInstance().localAddress
+            guard localAddress.isValid else {
                 // local app doesn't think we're registered, so nothing to worry about.
                 return Promise.value(())
             }
 
             return firstly {
-                ProfileFetcherJob().getProfile(recipientId: localRecipientId)
+                ProfileFetcherJob().getProfile(address: localAddress)
             }.done { _ in
-                Logger.info("verified recipient profile is in good shape: \(localRecipientId)")
+                Logger.info("verified recipient profile is in good shape: \(localAddress)")
             }.recover { error -> Promise<Void> in
                 switch error {
                 case SignalServiceProfile.ValidationError.invalidIdentityKey(let description):
-                    Logger.warn("detected incomplete profile for \(localRecipientId) error: \(description)")
+                    Logger.warn("detected incomplete profile for \(localAddress) error: \(description)")
 
                     let (promise, resolver) = Promise<Void>.pending()
                     // This is the error condition we're looking for. Update prekeys to properly set the identity key, completing registration.

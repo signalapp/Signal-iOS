@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSDevice;
 @class PreKeyRecord;
 @class SMKUDAccessKey;
+@class SignalServiceAddress;
 @class SignedPreKeyRecord;
 @class TSRequest;
 
@@ -40,9 +41,9 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)getMessagesRequest;
 
-+ (TSRequest *)getProfileRequestWithRecipientId:(NSString *)recipientId
-                                    udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
-    NS_SWIFT_NAME(getProfileRequest(recipientId:udAccessKey:));
++ (TSRequest *)getProfileRequestWithAddress:(SignalServiceAddress *)address
+                                udAccessKey:(nullable SMKUDAccessKey *)udAccessKey
+    NS_SWIFT_NAME(getProfileRequest(address:udAccessKey:));
 
 + (TSRequest *)turnServerInfoRequest;
 

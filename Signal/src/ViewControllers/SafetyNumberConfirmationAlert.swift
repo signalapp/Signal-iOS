@@ -106,7 +106,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
             Logger.info("Missing frontmostViewController")
             return
         }
-        FingerprintViewController.present(from: fromViewController, recipientId: theirRecipientId)
+        FingerprintViewController.present(from: fromViewController, address: theirRecipientId.transitional_signalServiceAddress)
     }
 
     private func untrustedIdentityForSending(recipientIds: [String]) -> OWSRecipientIdentity? {

@@ -129,7 +129,7 @@ public class ConversationAvatarImageView: AvatarImageView {
     @objc func handleOtherUsersProfileChanged(notification: Notification) {
         Logger.debug("")
 
-        guard let changedRecipientId = notification.userInfo?[kNSNotificationKey_ProfileRecipientId] as? String else {
+        guard let changedAddress = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress else {
             owsFailDebug("recipientId was unexpectedly nil")
             return
         }
@@ -140,7 +140,7 @@ public class ConversationAvatarImageView: AvatarImageView {
             return
         }
 
-        guard recipientId == changedRecipientId else {
+        guard recipientId == changedAddress.transitional_phoneNumber else {
             // not this avatar
             return
         }

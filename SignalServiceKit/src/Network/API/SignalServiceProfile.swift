@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,15 +13,15 @@ public class SignalServiceProfile: NSObject {
         case invalidProfileName(description: String)
     }
 
-    public let recipientId: String
+    public let address: SignalServiceAddress
     public let identityKey: Data
     public let profileNameEncrypted: Data?
     public let avatarUrlPath: String?
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
 
-    public init(recipientId: String, responseObject: Any?) throws {
-        self.recipientId = recipientId
+    public init(address: SignalServiceAddress, responseObject: Any?) throws {
+        self.address = address
 
         guard let params = ParamParser(responseObject: responseObject) else {
             throw ValidationError.invalid(description: "invalid response: \(String(describing: responseObject))")

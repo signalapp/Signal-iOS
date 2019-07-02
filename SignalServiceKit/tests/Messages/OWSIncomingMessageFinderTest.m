@@ -2,8 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSIncomingMessageFinder.h"
 #import "OWSDevice.h"
+#import "OWSIncomingMessageFinder.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
@@ -97,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Different authorId
     [self createIncomingMessageWithTimestamp:timestamp
-                               authorAddress:self.sourceAddress
+                               authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"some-other-address"]
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {

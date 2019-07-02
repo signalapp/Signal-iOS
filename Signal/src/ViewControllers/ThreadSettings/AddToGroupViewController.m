@@ -54,15 +54,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     ContactsViewHelper *helper = self.contactsViewHelper;
     if ([helper isSignalServiceAddressBlocked:phoneNumber.transitional_signalServiceAddress]) {
-        [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
-                                         fromViewController:self
-                                            blockingManager:helper.blockingManager
-                                            contactsManager:helper.contactsManager
-                                            completionBlock:^(BOOL isBlocked) {
-                                                if (!isBlocked) {
-                                                    [weakSelf addToGroup:phoneNumber];
-                                                }
-                                            }];
+        [BlockListUIUtils showUnblockAddressActionSheet:phoneNumber.transitional_signalServiceAddress
+                                     fromViewController:self
+                                        blockingManager:helper.blockingManager
+                                        contactsManager:helper.contactsManager
+                                        completionBlock:^(BOOL isBlocked) {
+                                            if (!isBlocked) {
+                                                [weakSelf addToGroup:phoneNumber];
+                                            }
+                                        }];
         return;
     }
 

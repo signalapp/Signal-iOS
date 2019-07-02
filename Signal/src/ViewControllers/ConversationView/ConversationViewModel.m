@@ -1120,8 +1120,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     BOOL hasLocalProfile = [self.profileManager hasLocalProfile];
     BOOL isThreadInProfileWhitelist = [self.profileManager isThreadInProfileWhitelist:self.thread];
     BOOL hasUnwhitelistedMember = NO;
-    for (NSString *recipientId in self.thread.recipientIdentifiers) {
-        if (![self.profileManager isUserInProfileWhitelist:recipientId]) {
+    for (SignalServiceAddress *address in self.thread.recipientAddresses) {
+        if (![self.profileManager isUserInProfileWhitelist:address]) {
             hasUnwhitelistedMember = YES;
             break;
         }

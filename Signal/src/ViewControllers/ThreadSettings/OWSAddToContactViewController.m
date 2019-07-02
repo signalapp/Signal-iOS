@@ -8,6 +8,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -200,10 +201,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Could not load system contact.");
         return;
     }
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId
-                                                     fromViewController:self
-                                                        editImmediately:YES
-                                                 addToExistingCnContact:cnContact];
+    [self.contactsViewHelper presentContactViewControllerForAddress:self.recipientId.transitional_signalServiceAddress
+                                                 fromViewController:self
+                                                    editImmediately:YES
+                                             addToExistingCnContact:cnContact];
 }
 
 @end

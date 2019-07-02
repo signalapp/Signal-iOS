@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSNavigationController;
 @class OWSWebRTCCallMessageHandler;
 @class OutboundCallInitiator;
+@class SignalServiceAddress;
 @class TSThread;
 
 @interface SignalApp : NSObject
@@ -29,11 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Conversation Presentation
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId animated:(BOOL)isAnimated;
+- (void)presentConversationForAddress:(SignalServiceAddress *)address animated:(BOOL)isAnimated;
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId
-                                   action:(ConversationViewAction)action
-                                 animated:(BOOL)isAnimated;
+- (void)presentConversationForAddress:(SignalServiceAddress *)address
+                               action:(ConversationViewAction)action
+                             animated:(BOOL)isAnimated;
 
 - (void)presentConversationForThreadId:(NSString *)threadId animated:(BOOL)isAnimated;
 

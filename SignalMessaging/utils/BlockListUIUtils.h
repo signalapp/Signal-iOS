@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSContactsManager;
 @class OWSMessageSender;
 @class SignalAccount;
+@class SignalServiceAddress;
 @class TSGroupModel;
 @class TSThread;
 
@@ -29,11 +30,11 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
                      messageSender:(OWSMessageSender *)messageSender
                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
-+ (void)showBlockPhoneNumberActionSheet:(NSString *)phoneNumber
-                     fromViewController:(UIViewController *)fromViewController
-                        blockingManager:(OWSBlockingManager *)blockingManager
-                        contactsManager:(OWSContactsManager *)contactsManager
-                        completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
++ (void)showBlockAddressActionSheet:(SignalServiceAddress *)address
+                 fromViewController:(UIViewController *)fromViewController
+                    blockingManager:(OWSBlockingManager *)blockingManager
+                    contactsManager:(OWSContactsManager *)contactsManager
+                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
 + (void)showBlockSignalAccountActionSheet:(SignalAccount *)signalAccount
                        fromViewController:(UIViewController *)fromViewController
@@ -49,11 +50,11 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
                      contactsManager:(OWSContactsManager *)contactsManager
                      completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
-+ (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
-                       fromViewController:(UIViewController *)fromViewController
-                          blockingManager:(OWSBlockingManager *)blockingManager
-                          contactsManager:(OWSContactsManager *)contactsManager
-                          completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
++ (void)showUnblockAddressActionSheet:(SignalServiceAddress *)address
+                   fromViewController:(UIViewController *)fromViewController
+                      blockingManager:(OWSBlockingManager *)blockingManager
+                      contactsManager:(OWSContactsManager *)contactsManager
+                      completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
 + (void)showUnblockSignalAccountActionSheet:(SignalAccount *)signalAccount
                          fromViewController:(UIViewController *)fromViewController

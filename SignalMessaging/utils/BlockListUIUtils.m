@@ -29,11 +29,11 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        [self showBlockPhoneNumberActionSheet:contactThread.contactAddress.transitional_phoneNumber
-                           fromViewController:fromViewController
-                              blockingManager:blockingManager
-                              contactsManager:contactsManager
-                              completionBlock:completionBlock];
+        [self showBlockAddressActionSheet:contactThread.contactAddress
+                       fromViewController:fromViewController
+                          blockingManager:blockingManager
+                          contactsManager:contactsManager
+                          completionBlock:completionBlock];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         [self showBlockGroupActionSheet:groupThread
@@ -46,18 +46,18 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     }
 }
 
-+ (void)showBlockPhoneNumberActionSheet:(NSString *)phoneNumber
-                     fromViewController:(UIViewController *)fromViewController
-                        blockingManager:(OWSBlockingManager *)blockingManager
-                        contactsManager:(OWSContactsManager *)contactsManager
-                        completionBlock:(nullable BlockActionCompletionBlock)completionBlock
++ (void)showBlockAddressActionSheet:(SignalServiceAddress *)address
+                 fromViewController:(UIViewController *)fromViewController
+                    blockingManager:(OWSBlockingManager *)blockingManager
+                    contactsManager:(OWSContactsManager *)contactsManager
+                    completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [contactsManager displayNameForAddress:phoneNumber.transitional_signalServiceAddress];
-    [self showBlockPhoneNumbersActionSheet:@[ phoneNumber ]
-                               displayName:displayName
-                        fromViewController:fromViewController
-                           blockingManager:blockingManager
-                           completionBlock:completionBlock];
+    NSString *displayName = [contactsManager displayNameForAddress:address];
+    [self showBlockAddressesActionSheet:@[ address ]
+                            displayName:displayName
+                     fromViewController:fromViewController
+                        blockingManager:blockingManager
+                        completionBlock:completionBlock];
 }
 
 + (void)showBlockSignalAccountActionSheet:(SignalAccount *)signalAccount
@@ -67,30 +67,28 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
     NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
-    [self showBlockPhoneNumbersActionSheet:@[ signalAccount.recipientAddress.transitional_phoneNumber ]
-                               displayName:displayName
-                        fromViewController:fromViewController
-                           blockingManager:blockingManager
-                           completionBlock:completionBlock];
+    [self showBlockAddressesActionSheet:@[ signalAccount.recipientAddress.transitional_phoneNumber ]
+                            displayName:displayName
+                     fromViewController:fromViewController
+                        blockingManager:blockingManager
+                        completionBlock:completionBlock];
 }
 
-+ (void)showBlockPhoneNumbersActionSheet:(NSArray<NSString *> *)phoneNumbers
-                             displayName:(NSString *)displayName
-                      fromViewController:(UIViewController *)fromViewController
-                         blockingManager:(OWSBlockingManager *)blockingManager
-                         completionBlock:(nullable BlockActionCompletionBlock)completionBlock
++ (void)showBlockAddressesActionSheet:(NSArray<SignalServiceAddress *> *)addresses
+                          displayName:(NSString *)displayName
+                   fromViewController:(UIViewController *)fromViewController
+                      blockingManager:(OWSBlockingManager *)blockingManager
+                      completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    OWSAssertDebug(phoneNumbers.count > 0);
+    OWSAssertDebug(addresses.count > 0);
     OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
     OWSAssertDebug(blockingManager);
 
-    NSString *localContactId = [TSAccountManager localNumber];
-    OWSAssertDebug(localContactId.length > 0);
-    for (NSString *phoneNumber in phoneNumbers) {
-        OWSAssertDebug(phoneNumber.length > 0);
+    for (SignalServiceAddress *address in addresses) {
+        OWSAssertDebug(address.isValid);
 
-        if ([localContactId isEqualToString:phoneNumber]) {
+        if (address.isLocalAddress) {
             [self showOkAlertWithTitle:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE",
                                            @"The title of the 'You can't block yourself' alert.")
                                message:NSLocalizedString(@"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE",
@@ -121,15 +119,15 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block")
                           style:UIAlertActionStyleDestructive
                         handler:^(UIAlertAction *_Nonnull action) {
-                            [self blockPhoneNumbers:phoneNumbers
-                                        displayName:displayName
-                                 fromViewController:fromViewController
-                                    blockingManager:blockingManager
-                                    completionBlock:^(UIAlertAction *ignore) {
-                                        if (completionBlock) {
-                                            completionBlock(YES);
-                                        }
-                                    }];
+                            [self blockAddresses:addresses
+                                       displayName:displayName
+                                fromViewController:fromViewController
+                                   blockingManager:blockingManager
+                                   completionBlock:^(UIAlertAction *ignore) {
+                                       if (completionBlock) {
+                                           completionBlock(YES);
+                                       }
+                                   }];
                         }];
     [actionSheet addAction:blockAction];
 
@@ -196,20 +194,20 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     [fromViewController presentAlert:actionSheet];
 }
 
-+ (void)blockPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
-              displayName:(NSString *)displayName
-       fromViewController:(UIViewController *)fromViewController
-          blockingManager:(OWSBlockingManager *)blockingManager
-          completionBlock:(BlockAlertCompletionBlock)completionBlock
++ (void)blockAddresses:(NSArray<SignalServiceAddress *> *)addresses
+           displayName:(NSString *)displayName
+    fromViewController:(UIViewController *)fromViewController
+       blockingManager:(OWSBlockingManager *)blockingManager
+       completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
-    OWSAssertDebug(phoneNumbers.count > 0);
+    OWSAssertDebug(addresses.count > 0);
     OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
     OWSAssertDebug(blockingManager);
 
-    for (NSString *phoneNumber in phoneNumbers) {
-        OWSAssertDebug(phoneNumber.length > 0);
-        [blockingManager addBlockedPhoneNumber:phoneNumber];
+    for (SignalServiceAddress *address in addresses) {
+        OWSAssertDebug(address.isValid);
+        [blockingManager addBlockedAddress:address];
     }
 
     [self showOkAlertWithTitle:NSLocalizedString(
@@ -267,11 +265,11 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 {
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        [self showUnblockPhoneNumberActionSheet:contactThread.contactAddress.transitional_phoneNumber
-                             fromViewController:fromViewController
-                                blockingManager:blockingManager
-                                contactsManager:contactsManager
-                                completionBlock:completionBlock];
+        [self showUnblockAddressActionSheet:contactThread.contactAddress
+                         fromViewController:fromViewController
+                            blockingManager:blockingManager
+                            contactsManager:contactsManager
+                            completionBlock:completionBlock];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         NSString *groupName = groupThread.name.length > 0 ? groupThread.name : TSGroupThread.defaultGroupName;
@@ -285,18 +283,18 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     }
 }
 
-+ (void)showUnblockPhoneNumberActionSheet:(NSString *)phoneNumber
-                       fromViewController:(UIViewController *)fromViewController
-                          blockingManager:(OWSBlockingManager *)blockingManager
-                          contactsManager:(OWSContactsManager *)contactsManager
-                          completionBlock:(nullable BlockActionCompletionBlock)completionBlock
++ (void)showUnblockAddressActionSheet:(SignalServiceAddress *)address
+                   fromViewController:(UIViewController *)fromViewController
+                      blockingManager:(OWSBlockingManager *)blockingManager
+                      contactsManager:(OWSContactsManager *)contactsManager
+                      completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    NSString *displayName = [contactsManager displayNameForAddress:phoneNumber.transitional_signalServiceAddress];
-    [self showUnblockPhoneNumbersActionSheet:@[ phoneNumber ]
-                                 displayName:displayName
-                          fromViewController:fromViewController
-                             blockingManager:blockingManager
-                             completionBlock:completionBlock];
+    NSString *displayName = [contactsManager displayNameForAddress:address];
+    [self showUnblockAddressesActionSheet:@[ address ]
+                              displayName:displayName
+                       fromViewController:fromViewController
+                          blockingManager:blockingManager
+                          completionBlock:completionBlock];
 }
 
 + (void)showUnblockSignalAccountActionSheet:(SignalAccount *)signalAccount
@@ -306,20 +304,20 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                             completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
     NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
-    [self showUnblockPhoneNumbersActionSheet:@[ signalAccount.recipientAddress.transitional_phoneNumber ]
-                                 displayName:displayName
-                          fromViewController:fromViewController
-                             blockingManager:blockingManager
-                             completionBlock:completionBlock];
+    [self showUnblockAddressesActionSheet:@[ signalAccount.recipientAddress.transitional_phoneNumber ]
+                              displayName:displayName
+                       fromViewController:fromViewController
+                          blockingManager:blockingManager
+                          completionBlock:completionBlock];
 }
 
-+ (void)showUnblockPhoneNumbersActionSheet:(NSArray<NSString *> *)phoneNumbers
-                               displayName:(NSString *)displayName
-                        fromViewController:(UIViewController *)fromViewController
-                           blockingManager:(OWSBlockingManager *)blockingManager
-                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
++ (void)showUnblockAddressesActionSheet:(NSArray<SignalServiceAddress *> *)addresses
+                            displayName:(NSString *)displayName
+                     fromViewController:(UIViewController *)fromViewController
+                        blockingManager:(OWSBlockingManager *)blockingManager
+                        completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    OWSAssertDebug(phoneNumbers.count > 0);
+    OWSAssertDebug(addresses.count > 0);
     OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
     OWSAssertDebug(blockingManager);
@@ -339,15 +337,15 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"unblock")
                                  style:UIAlertActionStyleDestructive
                                handler:^(UIAlertAction *_Nonnull action) {
-                                   [BlockListUIUtils unblockPhoneNumbers:phoneNumbers
-                                                             displayName:displayName
-                                                      fromViewController:fromViewController
-                                                         blockingManager:blockingManager
-                                                         completionBlock:^(UIAlertAction *ignore) {
-                                                             if (completionBlock) {
-                                                                 completionBlock(NO);
-                                                             }
-                                                         }];
+                                   [BlockListUIUtils unblockAddresses:addresses
+                                                          displayName:displayName
+                                                   fromViewController:fromViewController
+                                                      blockingManager:blockingManager
+                                                      completionBlock:^(UIAlertAction *ignore) {
+                                                          if (completionBlock) {
+                                                              completionBlock(NO);
+                                                          }
+                                                      }];
                                }];
     [actionSheet addAction:unblockAction];
 
@@ -363,20 +361,20 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     [fromViewController presentAlert:actionSheet];
 }
 
-+ (void)unblockPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
-                displayName:(NSString *)displayName
-         fromViewController:(UIViewController *)fromViewController
-            blockingManager:(OWSBlockingManager *)blockingManager
-            completionBlock:(BlockAlertCompletionBlock)completionBlock
++ (void)unblockAddresses:(NSArray<SignalServiceAddress *> *)addresses
+             displayName:(NSString *)displayName
+      fromViewController:(UIViewController *)fromViewController
+         blockingManager:(OWSBlockingManager *)blockingManager
+         completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
-    OWSAssertDebug(phoneNumbers.count > 0);
+    OWSAssertDebug(addresses.count > 0);
     OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
     OWSAssertDebug(blockingManager);
 
-    for (NSString *phoneNumber in phoneNumbers) {
-        OWSAssertDebug(phoneNumber.length > 0);
-        [blockingManager removeBlockedPhoneNumber:phoneNumber];
+    for (SignalServiceAddress *address in addresses) {
+        OWSAssertDebug(address.isValid);
+        [blockingManager removeBlockedAddress:address];
     }
 
     NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",

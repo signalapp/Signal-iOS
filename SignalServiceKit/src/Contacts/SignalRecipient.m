@@ -217,7 +217,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     dispatch_async(dispatch_get_main_queue(), ^{
         // Device changes can affect the UD access mode for a recipient,
         // so we need to fetch the profile for this user to update UD access mode.
-        [self.profileManager fetchProfileForRecipientId:self.address.transitional_phoneNumber];
+        [self.profileManager fetchProfileForAddress:self.address];
 
         if (self.address.isLocalAddress) {
             [self.socketManager cycleSocket];
