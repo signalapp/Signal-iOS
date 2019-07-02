@@ -30,10 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 linkedDeviceReadReceiptSchemaVersion:(NSUInteger)linkedDeviceReadReceiptSchemaVersion
               messageIdTimestamp:(uint64_t)messageIdTimestamp
                    readTimestamp:(uint64_t)readTimestamp
-                   senderAddress:(SignalServiceAddress *)senderAddress
                senderPhoneNumber:(nullable NSString *)senderPhoneNumber
                       senderUUID:(nullable NSString *)senderUUID
-NS_SWIFT_NAME(init(uniqueId:linkedDeviceReadReceiptSchemaVersion:messageIdTimestamp:readTimestamp:senderAddress:senderPhoneNumber:senderUUID:));
+NS_SWIFT_NAME(init(uniqueId:linkedDeviceReadReceiptSchemaVersion:messageIdTimestamp:readTimestamp:senderPhoneNumber:senderUUID:));
 
 // clang-format on
 

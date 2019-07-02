@@ -12,35 +12,35 @@ class AnyLinkedDeviceReadReceiptFinder: NSObject {
 
 extension AnyLinkedDeviceReadReceiptFinder {
     @objc(linkedDeviceReadReceiptForAddress:messageIdTimestamp:transaction:)
-    func linkedDeviceReadReceipt(for address: SignalServiceAddress, and timestamp: UInt64, transaction: SDSAnyReadTransaction) -> OWSLinkedDeviceReadReceipt? {
+    func linkedDeviceReadReceipt(for address: SignalServiceAddress, andMessageIdTimestamp timestamp: UInt64, transaction: SDSAnyReadTransaction) -> OWSLinkedDeviceReadReceipt? {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
-            return grdbAdapter.linkedDeviceReadReceipt(for: address, and: timestamp, transaction: transaction)
+            return grdbAdapter.linkedDeviceReadReceipt(for: address, andMessageIdTimestamp: timestamp, transaction: transaction)
         case .yapRead(let transaction):
-            return yapdbAdapter.linkedDeviceReadReceipt(for: address, and: timestamp, transaction: transaction)
+            return yapdbAdapter.linkedDeviceReadReceipt(for: address, andMessageIdTimestamp: timestamp, transaction: transaction)
         }
     }
 }
 
 @objc
 class GRDBLinkedDeviceReadReceiptFinder: NSObject {
-    func linkedDeviceReadReceipt(for address: SignalServiceAddress, and timestamp: UInt64, transaction: GRDBReadTransaction) -> OWSLinkedDeviceReadReceipt? {
-        if let thread = linkedDeviceReadReceiptForUUID(address.uuid, and: timestamp, transaction: transaction) {
+    func linkedDeviceReadReceipt(for address: SignalServiceAddress, andMessageIdTimestamp timestamp: UInt64, transaction: GRDBReadTransaction) -> OWSLinkedDeviceReadReceipt? {
+        if let thread = linkedDeviceReadReceiptForUUID(address.uuid, andMessageIdTimestamp: timestamp, transaction: transaction) {
             return thread
-        } else if let thread = linkedDeviceReadReceiptForPhoneNumber(address.phoneNumber, and: timestamp, transaction: transaction) {
+        } else if let thread = linkedDeviceReadReceiptForPhoneNumber(address.phoneNumber, andMessageIdTimestamp: timestamp, transaction: transaction) {
             return thread
         } else {
             return nil
         }
     }
 
-    private func linkedDeviceReadReceiptForUUID(_ uuid: UUID?, and timestamp: UInt64, transaction: GRDBReadTransaction) -> OWSLinkedDeviceReadReceipt? {
+    private func linkedDeviceReadReceiptForUUID(_ uuid: UUID?, andMessageIdTimestamp timestamp: UInt64, transaction: GRDBReadTransaction) -> OWSLinkedDeviceReadReceipt? {
         guard let uuidString = uuid?.uuidString else { return nil }
         let sql = "SELECT * FROM \(LinkedDeviceReadReceiptRecord.databaseTableName) WHERE \(linkedDeviceReadReceiptColumn: .senderUUID) = ? AND \(linkedDeviceReadReceiptColumn: .messageIdTimestamp) = ?"
         return OWSLinkedDeviceReadReceipt.grdbFetchOne(sql: sql, arguments: [uuidString, timestamp], transaction: transaction)
     }
 
-    private func linkedDeviceReadReceiptForPhoneNumber(_ phoneNumber: String?, and timestamp: UInt64, transaction: GRDBReadTransaction) -> OWSLinkedDeviceReadReceipt? {
+    private func linkedDeviceReadReceiptForPhoneNumber(_ phoneNumber: String?, andMessageIdTimestamp timestamp: UInt64, transaction: GRDBReadTransaction) -> OWSLinkedDeviceReadReceipt? {
         guard let phoneNumber = phoneNumber else { return nil }
         let sql = "SELECT * FROM \(LinkedDeviceReadReceiptRecord.databaseTableName) WHERE \(linkedDeviceReadReceiptColumn: .senderPhoneNumber) = ? AND \(linkedDeviceReadReceiptColumn: .messageIdTimestamp) = ?"
         return OWSLinkedDeviceReadReceipt.grdbFetchOne(sql: sql, arguments: [phoneNumber, timestamp], transaction: transaction)
@@ -56,17 +56,17 @@ class YAPDBLinkedDeviceReadReceiptFinder: NSObject {
     private static let phoneNumberIndexName = "index_linkedDeviceReadReceipt_on_senderPhoneNumberAndTimestamp"
     private static let uuidIndexName = "index_linkedDeviceReadReceipt_on_senderUUIDAndTimestamp"
 
-    func linkedDeviceReadReceipt(for address: SignalServiceAddress, and timestamp: UInt64, transaction: YapDatabaseReadTransaction) -> OWSLinkedDeviceReadReceipt? {
-        if let result = linkedDeviceReadReceiptForUUID(address.uuid, and: timestamp, transaction: transaction) {
+    func linkedDeviceReadReceipt(for address: SignalServiceAddress, andMessageIdTimestamp timestamp: UInt64, transaction: YapDatabaseReadTransaction) -> OWSLinkedDeviceReadReceipt? {
+        if let result = linkedDeviceReadReceiptForUUID(address.uuid, andMessageIdTimestamp: timestamp, transaction: transaction) {
             return result
-        } else if let result = linkedDeviceReadReceiptForPhoneNumber(address.phoneNumber, and: timestamp, transaction: transaction) {
+        } else if let result = linkedDeviceReadReceiptForPhoneNumber(address.phoneNumber, andMessageIdTimestamp: timestamp, transaction: transaction) {
             return result
         } else {
             return nil
         }
     }
 
-    private func linkedDeviceReadReceiptForUUID(_ uuid: UUID?, and timestamp: UInt64, transaction: YapDatabaseReadTransaction) -> OWSLinkedDeviceReadReceipt? {
+    private func linkedDeviceReadReceiptForUUID(_ uuid: UUID?, andMessageIdTimestamp timestamp: UInt64, transaction: YapDatabaseReadTransaction) -> OWSLinkedDeviceReadReceipt? {
         guard let uuidString = uuid?.uuidString else { return nil }
 
         guard let ext = transaction.ext(YAPDBLinkedDeviceReadReceiptFinder.uuidIndexName) as? YapDatabaseSecondaryIndexTransaction else {
@@ -96,7 +96,7 @@ class YAPDBLinkedDeviceReadReceiptFinder: NSObject {
         return matchedRecord
     }
 
-    private func linkedDeviceReadReceiptForPhoneNumber(_ phoneNumber: String?, and timestamp: UInt64, transaction: YapDatabaseReadTransaction) -> OWSLinkedDeviceReadReceipt? {
+    private func linkedDeviceReadReceiptForPhoneNumber(_ phoneNumber: String?, andMessageIdTimestamp timestamp: UInt64, transaction: YapDatabaseReadTransaction) -> OWSLinkedDeviceReadReceipt? {
         guard let phoneNumber = phoneNumber else { return nil }
 
         guard let ext = transaction.ext(YAPDBLinkedDeviceReadReceiptFinder.phoneNumberIndexName) as? YapDatabaseSecondaryIndexTransaction else {

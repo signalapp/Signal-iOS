@@ -82,7 +82,6 @@ NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
 linkedDeviceReadReceiptSchemaVersion:(NSUInteger)linkedDeviceReadReceiptSchemaVersion
               messageIdTimestamp:(uint64_t)messageIdTimestamp
                    readTimestamp:(uint64_t)readTimestamp
-                   senderAddress:(SignalServiceAddress *)senderAddress
                senderPhoneNumber:(nullable NSString *)senderPhoneNumber
                       senderUUID:(nullable NSString *)senderUUID
 {
@@ -95,7 +94,6 @@ linkedDeviceReadReceiptSchemaVersion:(NSUInteger)linkedDeviceReadReceiptSchemaVe
     _linkedDeviceReadReceiptSchemaVersion = linkedDeviceReadReceiptSchemaVersion;
     _messageIdTimestamp = messageIdTimestamp;
     _readTimestamp = readTimestamp;
-    _senderAddress = senderAddress;
     _senderPhoneNumber = senderPhoneNumber;
     _senderUUID = senderUUID;
 
@@ -105,6 +103,11 @@ linkedDeviceReadReceiptSchemaVersion:(NSUInteger)linkedDeviceReadReceiptSchemaVe
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (SignalServiceAddress *)senderAddress
+{
+    return [[SignalServiceAddress alloc] initWithUuidString:self.senderUUID phoneNumber:self.senderPhoneNumber];
+}
 
 + (AnyLinkedDeviceReadReceiptFinder *)finder
 {

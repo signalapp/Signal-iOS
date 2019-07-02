@@ -29,7 +29,6 @@ public struct LinkedDeviceReadReceiptRecord: SDSRecord {
     public let linkedDeviceReadReceiptSchemaVersion: UInt
     public let messageIdTimestamp: UInt64
     public let readTimestamp: UInt64
-    public let senderAddress: Data
     public let senderPhoneNumber: String?
     public let senderUUID: String?
 
@@ -40,7 +39,6 @@ public struct LinkedDeviceReadReceiptRecord: SDSRecord {
         case linkedDeviceReadReceiptSchemaVersion
         case messageIdTimestamp
         case readTimestamp
-        case senderAddress
         case senderPhoneNumber
         case senderUUID
     }
@@ -81,8 +79,6 @@ extension OWSLinkedDeviceReadReceipt {
             let linkedDeviceReadReceiptSchemaVersion: UInt = record.linkedDeviceReadReceiptSchemaVersion
             let messageIdTimestamp: UInt64 = record.messageIdTimestamp
             let readTimestamp: UInt64 = record.readTimestamp
-            let senderAddressSerialized: Data = record.senderAddress
-            let senderAddress: SignalServiceAddress = try SDSDeserialization.unarchive(senderAddressSerialized, name: "senderAddress")
             let senderPhoneNumber: String? = record.senderPhoneNumber
             let senderUUID: String? = record.senderUUID
 
@@ -90,7 +86,6 @@ extension OWSLinkedDeviceReadReceipt {
                                               linkedDeviceReadReceiptSchemaVersion: linkedDeviceReadReceiptSchemaVersion,
                                               messageIdTimestamp: messageIdTimestamp,
                                               readTimestamp: readTimestamp,
-                                              senderAddress: senderAddress,
                                               senderPhoneNumber: senderPhoneNumber,
                                               senderUUID: senderUUID)
 
@@ -132,9 +127,8 @@ extension OWSLinkedDeviceReadReceiptSerializer {
     static let linkedDeviceReadReceiptSchemaVersionColumn = SDSColumnMetadata(columnName: "linkedDeviceReadReceiptSchemaVersion", columnType: .int64, columnIndex: 3)
     static let messageIdTimestampColumn = SDSColumnMetadata(columnName: "messageIdTimestamp", columnType: .int64, columnIndex: 4)
     static let readTimestampColumn = SDSColumnMetadata(columnName: "readTimestamp", columnType: .int64, columnIndex: 5)
-    static let senderAddressColumn = SDSColumnMetadata(columnName: "senderAddress", columnType: .blob, columnIndex: 6)
-    static let senderPhoneNumberColumn = SDSColumnMetadata(columnName: "senderPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 7)
-    static let senderUUIDColumn = SDSColumnMetadata(columnName: "senderUUID", columnType: .unicodeString, isOptional: true, columnIndex: 8)
+    static let senderPhoneNumberColumn = SDSColumnMetadata(columnName: "senderPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let senderUUIDColumn = SDSColumnMetadata(columnName: "senderUUID", columnType: .unicodeString, isOptional: true, columnIndex: 7)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -145,7 +139,6 @@ extension OWSLinkedDeviceReadReceiptSerializer {
         linkedDeviceReadReceiptSchemaVersionColumn,
         messageIdTimestampColumn,
         readTimestampColumn,
-        senderAddressColumn,
         senderPhoneNumberColumn,
         senderUUIDColumn
         ])
@@ -476,10 +469,9 @@ class OWSLinkedDeviceReadReceiptSerializer: SDSSerializer {
         let linkedDeviceReadReceiptSchemaVersion: UInt = model.linkedDeviceReadReceiptSchemaVersion
         let messageIdTimestamp: UInt64 = model.messageIdTimestamp
         let readTimestamp: UInt64 = model.readTimestamp
-        let senderAddress: Data = requiredArchive(model.senderAddress)
         let senderPhoneNumber: String? = model.senderPhoneNumber
         let senderUUID: String? = model.senderUUID
 
-        return LinkedDeviceReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, linkedDeviceReadReceiptSchemaVersion: linkedDeviceReadReceiptSchemaVersion, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp, senderAddress: senderAddress, senderPhoneNumber: senderPhoneNumber, senderUUID: senderUUID)
+        return LinkedDeviceReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, linkedDeviceReadReceiptSchemaVersion: linkedDeviceReadReceiptSchemaVersion, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp, senderPhoneNumber: senderPhoneNumber, senderUUID: senderUUID)
     }
 }

@@ -575,7 +575,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         // TODO UUID
-        if (!SSKFeatureFlags.allowUUIDOnlyContacts || recipientAddress.phoneNumber) {
+        if (recipientAddress.phoneNumber) {
             [recipientIds addObject:recipientAddress.phoneNumber];
         }
 

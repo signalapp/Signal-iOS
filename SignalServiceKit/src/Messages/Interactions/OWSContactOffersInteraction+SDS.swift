@@ -84,7 +84,7 @@ class OWSContactOffersInteractionSerializer: SDSSerializer {
         let protocolVersion: UInt? = nil
         let quotedMessage: Data? = nil
         let read: Bool? = nil
-        let recipientId: String? = model.recipientId
+        let recipientId: String? = nil
         let recipientStateMap: Data? = nil
         let schemaVersion: UInt? = nil
         let senderId: String? = nil

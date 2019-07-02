@@ -27,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
                               hasBlockOffer:(BOOL)hasBlockOffer
                       hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
               hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-                                recipientId:(NSString *)recipientId
                         beforeInteractionId:(NSString *)beforeInteractionId
 {
     self = [super initWithUniqueId:uniqueId timestamp:timestamp inThread:thread];
@@ -39,8 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
     _hasBlockOffer = hasBlockOffer;
     _hasAddToContactsOffer = hasAddToContactsOffer;
     _hasAddToProfileWhitelistOffer = hasAddToProfileWhitelistOffer;
-    OWSAssertDebug(recipientId.length > 0);
-    _recipientId = recipientId;
     _beforeInteractionId = beforeInteractionId;
 
     return self;
@@ -61,7 +58,6 @@ NS_ASSUME_NONNULL_BEGIN
            hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
    hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
                    hasBlockOffer:(BOOL)hasBlockOffer
-                     recipientId:(NSString *)recipientId
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -77,7 +73,6 @@ NS_ASSUME_NONNULL_BEGIN
     _hasAddToContactsOffer = hasAddToContactsOffer;
     _hasAddToProfileWhitelistOffer = hasAddToProfileWhitelistOffer;
     _hasBlockOffer = hasBlockOffer;
-    _recipientId = recipientId;
 
     return self;
 }

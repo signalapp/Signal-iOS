@@ -1261,13 +1261,13 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         shouldHaveAddToProfileWhitelistOffer = NO;
     }
 
-    BOOL shouldHaveContactOffers
-        = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
-
     // We can't add a user to contacts that doesn't have a phone number
     if (recipientAddress.phoneNumber == nil) {
-        shouldHaveContactOffers = NO;
+        shouldHaveAddToContactsOffer = NO;
     }
+
+    BOOL shouldHaveContactOffers
+        = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
 
     if (!shouldHaveContactOffers) {
         return nil;
@@ -1289,7 +1289,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                 hasBlockOffer:shouldHaveBlockOffer
                                         hasAddToContactsOffer:shouldHaveAddToContactsOffer
                                 hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                                  recipientId:recipientAddress.phoneNumber
                                           beforeInteractionId:firstCallOrMessage.uniqueId];
 
     OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.sortId);
@@ -1586,8 +1585,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // We can skip the "incoming message status" footer in a cluster if the next message
                 // has the same footer and no "date break" separates us.
                 // ...but always show the "disappearing messages" animation.
-                shouldHideFooter = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.hasCellHeader &&
-                    [incomingSenderAddress matchesAddress:nextIncomingSenderAddress] && !isDisappearingMessage);
+                shouldHideFooter = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.hasCellHeader
+                    && ((!incomingSenderAddress && !nextIncomingSenderAddress) ||
+                        [incomingSenderAddress matchesAddress:nextIncomingSenderAddress])
+                    && !isDisappearingMessage);
             }
 
             // clustering
@@ -1624,7 +1625,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                     SignalServiceAddress *previousIncomingSenderAddress = previousIncomingMessage.authorAddress;
                     OWSAssertDebug(previousIncomingSenderAddress.isValid);
 
-                    shouldShowSenderName = (![incomingSenderAddress matchesAddress:previousIncomingSenderAddress]
+                    shouldShowSenderName = ((!incomingSenderAddress && !previousIncomingSenderAddress)
+                        || ![incomingSenderAddress matchesAddress:previousIncomingSenderAddress]
                         || viewItem.hasCellHeader);
                 }
                 if (shouldShowSenderName) {
@@ -1639,7 +1641,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // no "date break" separates us.
                 shouldShowSenderAvatar = YES;
                 if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
-                    shouldShowSenderAvatar = (![incomingSenderAddress matchesAddress:nextIncomingSenderAddress]
+                    shouldShowSenderAvatar = ((!incomingSenderAddress && !nextIncomingSenderAddress)
+                        || ![incomingSenderAddress matchesAddress:nextIncomingSenderAddress]
                         || nextViewItem.hasCellHeader);
                 }
             }
