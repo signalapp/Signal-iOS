@@ -189,4 +189,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface OWSLinkedDeviceReadReceipt (SDS)
+
+@property (nonatomic, nullable, readonly) NSString *senderPhoneNumber;
+@property (nonatomic, nullable, readonly) NSString *senderUUID;
+@property (nonatomic, readonly) NSUInteger linkedDeviceReadReceiptSchemaVersion;
+
+@end
+
+#pragma mark -
+
 NS_ASSUME_NONNULL_END

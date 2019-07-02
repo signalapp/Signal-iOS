@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSPrimaryStorage;
 @class SSKProtoEnvelope;
+@class SignalServiceAddress;
 
 @interface OWSOutgoingReceiptManager : NSObject
 
@@ -15,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope;
 
-- (void)enqueueReadReceiptForEnvelope:(NSString *)messageAuthorId timestamp:(uint64_t)timestamp;
+- (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)messageAuthorAddress timestamp:(uint64_t)timestamp;
 
 @end
 

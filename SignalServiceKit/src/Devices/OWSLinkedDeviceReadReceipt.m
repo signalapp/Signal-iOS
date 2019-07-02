@@ -7,24 +7,34 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
+
+@interface OWSLinkedDeviceReadReceipt ()
+
+@property (nonatomic, nullable, readonly) NSString *senderPhoneNumber;
+@property (nonatomic, nullable, readonly) NSString *senderUUID;
+@property (nonatomic, readonly) NSUInteger linkedDeviceReadReceiptSchemaVersion;
+
+@end
+
 @implementation OWSLinkedDeviceReadReceipt
 
-- (instancetype)initWithSenderId:(NSString *)senderId
-              messageIdTimestamp:(uint64_t)messageIdTimestamp
-                   readTimestamp:(uint64_t)readTimestamp
+- (instancetype)initWithSenderAddress:(SignalServiceAddress *)address
+                   messageIdTimestamp:(uint64_t)messageIdTimestamp
+                        readTimestamp:(uint64_t)readTimestamp
 {
-    OWSAssertDebug(senderId.length > 0 && messageIdTimestamp > 0);
+    OWSAssertDebug(address.isValid && messageIdTimestamp > 0);
 
-    NSString *receiptId =
-        [OWSLinkedDeviceReadReceipt uniqueIdForSenderId:senderId messageIdTimestamp:messageIdTimestamp];
-    self = [super initWithUniqueId:receiptId];
+    self = [super init];
     if (!self) {
         return self;
     }
 
-    _senderId = senderId;
+    _senderPhoneNumber = address.phoneNumber;
+    _senderUUID = address.uuidString;
     _messageIdTimestamp = messageIdTimestamp;
     _readTimestamp = readTimestamp;
+    _linkedDeviceReadReceiptSchemaVersion = OWSLinkedDeviceReadReceiptSchemaVersion;
 
     return self;
 }
@@ -51,6 +61,13 @@ NS_ASSUME_NONNULL_BEGIN
         _readTimestamp = _messageIdTimestamp;
     }
 
+    if (_linkedDeviceReadReceiptSchemaVersion < 1) {
+        _senderPhoneNumber = [coder decodeObjectForKey:@"senderId"];
+        OWSAssertDebug(_senderPhoneNumber);
+    }
+
+    _linkedDeviceReadReceiptSchemaVersion = OWSLinkedDeviceReadReceiptSchemaVersion;
+
     return self;
 }
 
@@ -62,9 +79,12 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+linkedDeviceReadReceiptSchemaVersion:(NSUInteger)linkedDeviceReadReceiptSchemaVersion
               messageIdTimestamp:(uint64_t)messageIdTimestamp
                    readTimestamp:(uint64_t)readTimestamp
-                        senderId:(NSString *)senderId
+                   senderAddress:(SignalServiceAddress *)senderAddress
+               senderPhoneNumber:(nullable NSString *)senderPhoneNumber
+                      senderUUID:(nullable NSString *)senderUUID
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -72,9 +92,12 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
+    _linkedDeviceReadReceiptSchemaVersion = linkedDeviceReadReceiptSchemaVersion;
     _messageIdTimestamp = messageIdTimestamp;
     _readTimestamp = readTimestamp;
-    _senderId = senderId;
+    _senderAddress = senderAddress;
+    _senderPhoneNumber = senderPhoneNumber;
+    _senderUUID = senderUUID;
 
     return self;
 }
@@ -83,21 +106,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 // --- CODE GENERATION MARKER
 
-+ (NSString *)uniqueIdForSenderId:(NSString *)senderId messageIdTimestamp:(uint64_t)messageIdTimestamp
++ (AnyLinkedDeviceReadReceiptFinder *)finder
 {
-    OWSAssertDebug(senderId.length > 0 && messageIdTimestamp > 0);
-
-    return [NSString stringWithFormat:@"%@-%llu", senderId, messageIdTimestamp];
+    return [AnyLinkedDeviceReadReceiptFinder new];
 }
 
-+ (nullable OWSLinkedDeviceReadReceipt *)findLinkedDeviceReadReceiptWithSenderId:(NSString *)senderId
-                                                              messageIdTimestamp:(uint64_t)messageIdTimestamp
-                                                                     transaction:(SDSAnyReadTransaction *)transaction
++ (nullable OWSLinkedDeviceReadReceipt *)findLinkedDeviceReadReceiptWithAddress:(SignalServiceAddress *)address
+                                                             messageIdTimestamp:(uint64_t)messageIdTimestamp
+                                                                    transaction:(SDSAnyReadTransaction *)transaction
 {
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
-    NSString *receiptId =
-        [OWSLinkedDeviceReadReceipt uniqueIdForSenderId:senderId messageIdTimestamp:messageIdTimestamp];
-    return [OWSLinkedDeviceReadReceipt anyFetchWithUniqueId:receiptId transaction:transaction];
+
+    return [self.finder linkedDeviceReadReceiptForAddress:address
+                                       messageIdTimestamp:messageIdTimestamp
+                                              transaction:transaction];
 }
 
 @end
