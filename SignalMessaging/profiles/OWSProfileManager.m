@@ -48,9 +48,6 @@ NSString *const kNSNotificationName_ProfileKeyDidChange = @"kNSNotificationName_
 const NSUInteger kOWSProfileManager_NameDataLength = 26;
 const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
 
-NSString *const kOWSProfileManager_SchemaKey = @"kOWSProfileManager_SchemaKey";
-const NSUInteger kOWSProfileManager_SchemaVersion = 1;
-
 typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 @interface OWSProfileManager ()
@@ -813,9 +810,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 // It's possible we white listed one but not both, so we check each.
 
                 if (address.uuidString) {
-                    NSNumber *oldValue = [transaction objectForKey:address.uuidString
-                                                      inCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
-                    if (!oldValue.boolValue) {
+                    NSNumber *currentlyBlocked =
+                        [transaction objectForKey:address.uuidString
+                                     inCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
+                    if (currentlyBlocked != nil && !currentlyBlocked.boolValue) {
                         [transaction setObject:@(YES)
                                         forKey:address.uuidString
                                   inCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
@@ -824,10 +822,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 }
 
                 if (address.phoneNumber) {
-                    NSNumber *_Nullable oldValue =
+                    NSNumber *_Nullable currentlyBlocked =
                         [transaction objectForKey:address.phoneNumber
                                      inCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
-                    if (!oldValue.boolValue) {
+                    if (currentlyBlocked != nil && !currentlyBlocked.boolValue) {
                         [transaction setObject:@(YES)
                                         forKey:address.phoneNumber
                                   inCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];

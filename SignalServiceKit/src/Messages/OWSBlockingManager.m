@@ -116,8 +116,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
     OWSLogInfo(@"addBlockedAddress: %@", address);
 
-    // TODO UUID
-
     @synchronized(self)
     {
         [self ensureLazyInitialization];
@@ -352,11 +350,11 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     NSArray<NSString *> *blockedPhoneNumbers =
         [self.dbConnection objectForKey:kOWSBlockingManager_BlockedPhoneNumbersKey
                            inCollection:kOWSBlockingManager_BlockListCollection];
-    _blockedPhoneNumberSet = [[NSMutableSet alloc] initWithArray:(blockedPhoneNumbers ?: [NSArray new])];
+    _blockedPhoneNumberSet = [[NSMutableSet alloc] initWithArray:(blockedPhoneNumbers ?: @[])];
 
     NSArray<NSString *> *blockedUUIDs = [self.dbConnection objectForKey:kOWSBlockingManager_BlockedUUIDsKey
                                                            inCollection:kOWSBlockingManager_BlockListCollection];
-    _blockedUUIDSet = [[NSMutableSet alloc] initWithArray:(blockedUUIDs ?: [NSArray new])];
+    _blockedUUIDSet = [[NSMutableSet alloc] initWithArray:(blockedUUIDs ?: @[])];
 
     NSDictionary<NSData *, TSGroupModel *> *storedBlockedGroupMap =
         [self.dbConnection objectForKey:kOWSBlockingManager_BlockedGroupMapKey
@@ -392,17 +390,16 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     NSArray<NSString *> *syncedBlockedPhoneNumbers =
         [self.dbConnection objectForKey:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
                            inCollection:kOWSBlockingManager_BlockListCollection];
-    NSSet<NSString *> *syncedBlockedPhoneNumberSet =
-        [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: [NSArray new])];
+    NSSet<NSString *> *syncedBlockedPhoneNumberSet = [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: @[])];
 
     NSArray<NSString *> *syncedBlockedUUIDs = [self.dbConnection objectForKey:kOWSBlockingManager_SyncedBlockedUUIDsKey
                                                                  inCollection:kOWSBlockingManager_BlockListCollection];
-    NSSet<NSString *> *syncedBlockedUUIDsSet = [[NSSet alloc] initWithArray:(syncedBlockedUUIDs ?: [NSArray new])];
+    NSSet<NSString *> *syncedBlockedUUIDsSet = [[NSSet alloc] initWithArray:(syncedBlockedUUIDs ?: @[])];
 
     NSArray<NSData *> *syncedBlockedGroupIds =
         [self.dbConnection objectForKey:kOWSBlockingManager_SyncedBlockedGroupIdsKey
                            inCollection:kOWSBlockingManager_BlockListCollection];
-    NSSet<NSData *> *syncedBlockedGroupIdSet = [[NSSet alloc] initWithArray:(syncedBlockedGroupIds ?: [NSArray new])];
+    NSSet<NSData *> *syncedBlockedGroupIdSet = [[NSSet alloc] initWithArray:(syncedBlockedGroupIds ?: @[])];
 
     NSArray<NSData *> *localBlockedGroupIds = self.blockedGroupIds;
     NSSet<NSData *> *localBlockedGroupIdSet = [[NSSet alloc] initWithArray:localBlockedGroupIds];

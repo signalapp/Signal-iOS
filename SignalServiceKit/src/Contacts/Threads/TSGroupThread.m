@@ -238,6 +238,8 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
         [groupMemberAddresses addObject:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
     }
 
+    // TODO UUID
+
     return [groupMemberAddresses copy];
 }
 

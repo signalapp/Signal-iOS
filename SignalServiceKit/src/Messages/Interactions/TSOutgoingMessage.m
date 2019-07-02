@@ -472,7 +472,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
             if (!address.phoneNumber) {
                 continue;
             }
-            [idsFromAddresses addObject:address.phoneNumber];
+            [idsFromAddresses addObject:address.transitional_phoneNumber];
         }
         recipientIds = [idsFromAddresses copy];
     }
