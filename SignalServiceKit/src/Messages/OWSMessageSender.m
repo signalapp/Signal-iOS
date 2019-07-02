@@ -574,7 +574,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return nil;
         }
 
-        [recipientIds addObject:recipientAddress.transitional_phoneNumber];
+        // TODO UUID
+        if (!SSKFeatureFlags.allowUUIDOnlyContacts || recipientAddress.phoneNumber) {
+            [recipientIds addObject:recipientAddress.phoneNumber];
+        }
 
         if ([recipientIds containsObject:self.tsAccountManager.localNumber]) {
             OWSFailDebug(@"Message send recipients should not include self.");

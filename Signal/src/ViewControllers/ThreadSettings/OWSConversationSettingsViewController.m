@@ -183,9 +183,10 @@ const CGFloat kIconViewLength = 24;
         contactThread = (TSContactThread *)self.thread;
     }
 
-    if (contactThread && [threadName isEqualToString:contactThread.contactAddress.phoneNumber]) {
-        threadName = [PhoneNumber
-            bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:contactThread.contactAddress.phoneNumber];
+    NSString *_Nullable phoneNumber = contactThread.contactAddress.phoneNumber;
+
+    if (phoneNumber && [threadName isEqualToString:phoneNumber]) {
+        threadName = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
     } else if (threadName.length == 0 && [self isGroupThread]) {
         threadName = [MessageStrings newGroupDefaultTitle];
     }

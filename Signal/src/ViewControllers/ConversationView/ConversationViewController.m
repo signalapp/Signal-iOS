@@ -906,9 +906,12 @@ typedef enum : NSUInteger {
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.transitional_phoneNumber]
-            == OWSVerificationStateNoLongerVerified) {
-            [result addObject:address.transitional_phoneNumber];
+        // TODO UUID
+        if (!SSKFeatureFlags.allowUUIDOnlyContacts || address.phoneNumber) {
+            if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.phoneNumber]
+                == OWSVerificationStateNoLongerVerified) {
+                [result addObject:address.transitional_phoneNumber];
+            }
         }
     }
     return [result copy];
@@ -1592,10 +1595,13 @@ typedef enum : NSUInteger {
 
     BOOL isVerified = YES;
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.transitional_phoneNumber]
-            != OWSVerificationStateVerified) {
-            isVerified = NO;
-            break;
+        // TODO UUID
+        if (!SSKFeatureFlags.allowUUIDOnlyContacts || address.phoneNumber) {
+            if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.phoneNumber]
+                != OWSVerificationStateVerified) {
+                isVerified = NO;
+                break;
+            }
         }
     }
     if (isVerified) {

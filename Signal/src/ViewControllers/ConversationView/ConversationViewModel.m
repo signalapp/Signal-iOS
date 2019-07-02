@@ -1215,7 +1215,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         // Don't bother adding self to profile whitelist.
         shouldHaveAddToProfileWhitelistOffer = NO;
     } else {
-        if ([[self.blockingManager blockedPhoneNumbers] containsObject:recipientAddress.transitional_phoneNumber]) {
+        if ([self.blockingManager isAddressBlocked:recipientAddress]) {
             // Only create "add to contacts" offers for users which are not already blocked.
             shouldHaveAddToContactsOffer = NO;
             // Only create block offers for users which are not already blocked.
@@ -1263,6 +1263,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     BOOL shouldHaveContactOffers
         = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
+
+    // We can't add a user to contacts that doesn't have a phone number
+    if (recipientAddress.phoneNumber == nil) {
+        shouldHaveContactOffers = NO;
+    }
+
     if (!shouldHaveContactOffers) {
         return nil;
     }
@@ -1283,7 +1289,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                 hasBlockOffer:shouldHaveBlockOffer
                                         hasAddToContactsOffer:shouldHaveAddToContactsOffer
                                 hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer
-                                                  recipientId:recipientAddress.transitional_phoneNumber
+                                                  recipientId:recipientAddress.phoneNumber
                                           beforeInteractionId:firstCallOrMessage.uniqueId];
 
     OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.sortId);
@@ -1564,15 +1570,15 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         } else if (interactionType == OWSInteractionType_IncomingMessage) {
 
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)viewItem.interaction;
-            NSString *incomingSenderId = incomingMessage.authorAddress.transitional_phoneNumber;
-            OWSAssertDebug(incomingSenderId.length > 0);
+            SignalServiceAddress *incomingSenderAddress = incomingMessage.authorAddress;
+            OWSAssertDebug(incomingSenderAddress.isValid);
             BOOL isDisappearingMessage = incomingMessage.hasPerConversationExpiration;
 
-            NSString *_Nullable nextIncomingSenderId = nil;
+            SignalServiceAddress *_Nullable nextIncomingSenderAddress = nil;
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                 TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
-                nextIncomingSenderId = nextIncomingMessage.authorAddress.transitional_phoneNumber;
-                OWSAssertDebug(nextIncomingSenderId.length > 0);
+                nextIncomingSenderAddress = nextIncomingMessage.authorAddress;
+                OWSAssertDebug(nextIncomingSenderAddress.isValid);
             }
 
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
@@ -1581,8 +1587,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // has the same footer and no "date break" separates us.
                 // ...but always show the "disappearing messages" animation.
                 shouldHideFooter = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.hasCellHeader &&
-                    [NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
-                    && !isDisappearingMessage);
+                    [incomingSenderAddress matchesAddress:nextIncomingSenderAddress] && !isDisappearingMessage);
             }
 
             // clustering
@@ -1594,8 +1599,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 isFirstInCluster = YES;
             } else {
                 TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
-                isFirstInCluster
-                    = ![incomingSenderId isEqual:previousIncomingMessage.authorAddress.transitional_phoneNumber];
+                isFirstInCluster = ![incomingSenderAddress matchesAddress:previousIncomingMessage.authorAddress];
             }
 
             if (nextViewItem == nil) {
@@ -1606,8 +1610,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 isLastInCluster = YES;
             } else {
                 TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
-                isLastInCluster
-                    = ![incomingSenderId isEqual:nextIncomingMessage.authorAddress.transitional_phoneNumber];
+                isLastInCluster = ![incomingSenderAddress matchesAddress:nextIncomingMessage.authorAddress];
             }
 
             if (viewItem.isGroupThread) {
@@ -1618,16 +1621,15 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 if (previousViewItem && previousViewItem.interaction.interactionType == interactionType) {
 
                     TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
-                    NSString *previousIncomingSenderId = previousIncomingMessage.authorAddress.transitional_phoneNumber;
-                    OWSAssertDebug(previousIncomingSenderId.length > 0);
+                    SignalServiceAddress *previousIncomingSenderAddress = previousIncomingMessage.authorAddress;
+                    OWSAssertDebug(previousIncomingSenderAddress.isValid);
 
-                    shouldShowSenderName
-                        = (![NSObject isNullableObject:previousIncomingSenderId equalTo:incomingSenderId]
-                            || viewItem.hasCellHeader);
+                    shouldShowSenderName = (![incomingSenderAddress matchesAddress:previousIncomingSenderAddress]
+                        || viewItem.hasCellHeader);
                 }
                 if (shouldShowSenderName) {
                     senderName = [self.contactsManager
-                        attributedContactOrProfileNameForAddress:incomingSenderId.transitional_signalServiceAddress
+                        attributedContactOrProfileNameForAddress:incomingSenderAddress
                                                primaryAttributes:[OWSMessageBubbleView senderNamePrimaryAttributes]
                                              secondaryAttributes:[OWSMessageBubbleView senderNameSecondaryAttributes]];
                 }
@@ -1637,7 +1639,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // no "date break" separates us.
                 shouldShowSenderAvatar = YES;
                 if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
-                    shouldShowSenderAvatar = (![NSObject isNullableObject:nextIncomingSenderId equalTo:incomingSenderId]
+                    shouldShowSenderAvatar = (![incomingSenderAddress matchesAddress:nextIncomingSenderAddress]
                         || nextViewItem.hasCellHeader);
                 }
             }
