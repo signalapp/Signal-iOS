@@ -438,7 +438,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
         self.shouldThreadBeVisible = YES;
         [self saveWithTransaction:transaction];
     } else {
-        [self touchWithTransaction:transaction];
+        [self.databaseStorage touchThread:self transaction:transaction.asAnyWrite];
     }
 }
 

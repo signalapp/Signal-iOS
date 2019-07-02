@@ -40,6 +40,7 @@ extern ConversationColorName const kConversationColorName_Default;
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly, nullable) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting;
+@property (nonatomic, readonly) int64_t rowId;
 
 // --- CODE GENERATION MARKER
 

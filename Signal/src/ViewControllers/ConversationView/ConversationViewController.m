@@ -2582,26 +2582,22 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
-            message:message
-            success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                OWSAssertDebug(attachmentStreams.count == 1);
-                TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                [self.editingDatabaseConnection
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
-                        [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
-                        [message saveWithTransaction:postSuccessTransaction];
-                    }];
-            }
-            failure:^(NSError *error) {
-                OWSLogWarn(@"Failed to redownload thumbnail with error: %@", error);
-                [self.editingDatabaseConnection
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
-                        [message touchWithTransaction:postSuccessTransaction];
-                    }];
+    [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
+        message:message
+        success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
+            OWSAssertDebug(attachmentStreams.count == 1);
+            TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
+            [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+                [message saveWithTransaction:transaction];
             }];
-    }];
+        }
+        failure:^(NSError *error) {
+            OWSLogWarn(@"Failed to redownload thumbnail with error: %@", error);
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                [self.databaseStorage touchInteraction:message transaction:transaction];
+            }];
+        }];
 }
 
 - (void)didTapConversationItem:(id<ConversationViewItem>)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply

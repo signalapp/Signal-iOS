@@ -71,7 +71,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
  * When an interaction is updated, it often affects the UI for it's containing thread. Touching it's thread will notify
  * any observers so they can redraw any related UI.
  */
-- (void)touchThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)touchThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark Utility Method
 

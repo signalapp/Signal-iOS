@@ -29,8 +29,12 @@ public class HomeViewDatabaseObserver: NSObject {
     }
 
     private typealias RowId = Int64
-    private var _pendingThreadChanges: Set<RowId> = Set()
-    private var pendingThreadChanges: Set<RowId> {
+    private struct CollectionChanges {
+        var rowIds: Set<RowId> = Set()
+        var uniqueIds: Set<String> = Set()
+    }
+    private var _pendingThreadChanges = CollectionChanges()
+    private var pendingThreadChanges: CollectionChanges {
         get {
             AssertIsOnUIDatabaseObserverSerialQueue()
             return _pendingThreadChanges
@@ -55,16 +59,20 @@ public class HomeViewDatabaseObserver: NSObject {
         }
     }
 
-    private func threadUniqueIds(forRowIds rowIds: Set<RowId>, db: Database) throws -> Set<String> {
-        guard rowIds.count > 0 else {
-            return Set()
-        }
-
-        guard rowIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+    private func threadUniqueIds(forChanges changes: CollectionChanges, db: Database) throws -> Set<String> {
+        guard changes.rowIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge
         }
 
-        let commaSeparatedRowIds = rowIds.map { String($0) }.joined(separator: ", ")
+        guard changes.uniqueIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+            throw DatabaseObserverError.changeTooLarge
+        }
+
+        guard changes.rowIds.count > 0 else {
+            return changes.uniqueIds
+        }
+
+        let commaSeparatedRowIds = changes.rowIds.map { String($0) }.joined(separator: ", ")
         let rowIdsSQL = "(\(commaSeparatedRowIds))"
 
         let sql = """
@@ -73,8 +81,37 @@ public class HomeViewDatabaseObserver: NSObject {
         WHERE rowid IN \(rowIdsSQL)
         """
 
-        let threadUniqueIds = try String.fetchAll(db, sql: sql)
-        return Set(threadUniqueIds)
+        let fetchedUniqueIds = try String.fetchAll(db, sql: sql)
+        var result = changes.uniqueIds.union(fetchedUniqueIds)
+
+        guard result.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+            throw DatabaseObserverError.changeTooLarge
+        }
+
+        return result
+    }
+
+    @objc
+    public func touch(thread: TSThread, transaction: GRDBWriteTransaction) {
+        // Note: We don't actually use the `transaction` param, but touching must happen within
+        // a write transaction in order for the touch machinery to notify it's observers
+        // in the expected way.
+
+        UIDatabaseObserver.serializedSync {
+            let rowId = RowId(thread.rowId)
+            pendingThreadChanges.rowIds.insert(rowId)
+        }
+    }
+
+    @objc
+    public func touch(threadId: String, transaction: GRDBWriteTransaction) {
+        // Note: We don't actually use the `transaction` param, but touching must happen within
+        // a write transaction in order for the touch machinery to notify it's observers
+        // in the expected way.
+
+        UIDatabaseObserver.serializedSync {
+            pendingThreadChanges.uniqueIds.insert(threadId)
+        }
     }
 }
 
@@ -87,7 +124,7 @@ extension HomeViewDatabaseObserver: TransactionObserver {
     public func databaseDidChange(with event: DatabaseEvent) {
         Logger.verbose("")
         UIDatabaseObserver.serializedSync {
-            _ = pendingThreadChanges.insert(event.rowID)
+            _ = pendingThreadChanges.rowIds.insert(event.rowID)
         }
     }
 
@@ -106,7 +143,7 @@ extension HomeViewDatabaseObserver: TransactionObserver {
     public func databaseDidRollback(_ db: Database) {
         owsFailDebug("test this if we ever use it")
         UIDatabaseObserver.serializedSync {
-            pendingThreadChanges = Set()
+            pendingThreadChanges = CollectionChanges()
         }
     }
 }
@@ -116,9 +153,9 @@ extension HomeViewDatabaseObserver: DatabaseSnapshotDelegate {
         AssertIsOnUIDatabaseObserverSerialQueue()
         do {
             let pendingThreadChanges = self.pendingThreadChanges
-            self.pendingThreadChanges = Set()
+            self.pendingThreadChanges = CollectionChanges()
 
-            let committedThreadChanges = try threadUniqueIds(forRowIds: pendingThreadChanges, db: db)
+            let committedThreadChanges = try threadUniqueIds(forChanges: pendingThreadChanges, db: db)
             DispatchQueue.main.async {
                 self.committedThreadChanges = committedThreadChanges
             }
