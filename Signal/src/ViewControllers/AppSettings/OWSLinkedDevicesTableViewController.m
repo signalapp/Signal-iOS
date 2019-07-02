@@ -39,6 +39,15 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark - UIViewController overrides
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -109,10 +118,12 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [self.pollingRefreshTimer invalidate];
 }
 
+#pragma mark -
+
 // Don't show edit button for an empty table
 - (void)setupEditButton
 {
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         if ([OWSDevice hasSecondaryDevicesWithTransaction:transaction]) {
             self.navigationItem.rightBarButtonItem = self.editButtonItem;
         } else {
@@ -380,7 +391,9 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
             touchedUnlinkControlForDevice:device
                                   success:^{
                                       OWSLogInfo(@"Removing unlinked device with deviceId: %ld", (long)device.deviceId);
-                                      [device remove];
+                                      [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                          [device anyRemoveWithTransaction:transaction];
+                                      }];
                                   }];
     }
 }

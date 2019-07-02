@@ -30,7 +30,6 @@
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/TSYapDatabaseObject.h>
 #import <SignalServiceKit/UIImage+OWS.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
