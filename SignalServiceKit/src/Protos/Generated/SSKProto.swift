@@ -4508,13 +4508,19 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
 
     // MARK: - SSKProtoSyncMessageReadBuilder
 
-    @objc public class func builder(sender: String, timestamp: UInt64) -> SSKProtoSyncMessageReadBuilder {
-        return SSKProtoSyncMessageReadBuilder(sender: sender, timestamp: timestamp)
+    @objc public class func builder(timestamp: UInt64) -> SSKProtoSyncMessageReadBuilder {
+        return SSKProtoSyncMessageReadBuilder(timestamp: timestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoSyncMessageReadBuilder {
-        let builder = SSKProtoSyncMessageReadBuilder(sender: sender, timestamp: timestamp)
+        let builder = SSKProtoSyncMessageReadBuilder(timestamp: timestamp)
+        if let _value = senderE164 {
+            builder.setSenderE164(_value)
+        }
+        if let _value = senderUuid {
+            builder.setSenderUuid(_value)
+        }
         return builder
     }
 
@@ -4524,15 +4530,18 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(sender: String, timestamp: UInt64) {
+        @objc fileprivate init(timestamp: UInt64) {
             super.init()
 
-            setSender(sender)
             setTimestamp(timestamp)
         }
 
-        @objc public func setSender(_ valueParam: String) {
-            proto.sender = valueParam
+        @objc public func setSenderE164(_ valueParam: String) {
+            proto.senderE164 = valueParam
+        }
+
+        @objc public func setSenderUuid(_ valueParam: String) {
+            proto.senderUuid = valueParam
         }
 
         @objc public func setTimestamp(_ valueParam: UInt64) {
@@ -4550,15 +4559,31 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
 
     fileprivate let proto: SignalServiceProtos_SyncMessage.Read
 
-    @objc public let sender: String
-
     @objc public let timestamp: UInt64
 
+    @objc public var senderE164: String? {
+        guard proto.hasSenderE164 else {
+            return nil
+        }
+        return proto.senderE164
+    }
+    @objc public var hasSenderE164: Bool {
+        return proto.hasSenderE164
+    }
+
+    @objc public var senderUuid: String? {
+        guard proto.hasSenderUuid else {
+            return nil
+        }
+        return proto.senderUuid
+    }
+    @objc public var hasSenderUuid: Bool {
+        return proto.hasSenderUuid
+    }
+
     private init(proto: SignalServiceProtos_SyncMessage.Read,
-                 sender: String,
                  timestamp: UInt64) {
         self.proto = proto
-        self.sender = sender
         self.timestamp = timestamp
     }
 
@@ -4573,11 +4598,6 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.Read) throws -> SSKProtoSyncMessageRead {
-        guard proto.hasSender else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sender")
-        }
-        let sender = proto.sender
-
         guard proto.hasTimestamp else {
             throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: timestamp")
         }
@@ -4588,7 +4608,6 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
         // MARK: - End Validation Logic for SSKProtoSyncMessageRead -
 
         let result = SSKProtoSyncMessageRead(proto: proto,
-                                             sender: sender,
                                              timestamp: timestamp)
         return result
     }

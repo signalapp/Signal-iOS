@@ -317,8 +317,8 @@ message SyncMessage {
   }
 
   message Read {
-    // @required
-    optional string sender    = 1;
+    optional string senderE164 = 1;
+    optional string senderUuid = 3;
     // @required
     optional uint64 timestamp = 2;
   }

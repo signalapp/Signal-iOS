@@ -53,3 +53,53 @@ public extension SSKProtoEnvelope {
         return address
     }
 }
+
+@objc
+public extension SSKProtoSyncMessageRead {
+    var hasValidSender: Bool {
+        return senderAddress != nil
+    }
+
+    var senderAddress: SignalServiceAddress? {
+        let uuidString: String? = {
+            guard hasSenderUuid else {
+                return nil
+            }
+
+            guard let senderUuid = senderUuid else {
+                owsFailDebug("senderUuid was unexpectedly nil")
+                return nil
+            }
+
+            return senderUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasSenderE164 else {
+                // Shouldn't happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let senderE164 = senderE164 else {
+                owsFailDebug("senderE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard senderE164.count > 0 else {
+                owsFailDebug("senderE164 was unexpectedly empty")
+                return nil
+            }
+
+            return senderE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
+    }
+}
