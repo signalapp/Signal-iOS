@@ -469,7 +469,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             return nil;
         }
         TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)object;
-        if (attachmentPointer.lazyRestoreFragment) {
+        if ([attachmentPointer lazyRestoreFragmentWithTransaction:transaction.asAnyRead]) {
             return TSLazyRestoreAttachmentsGroup;
         } else {
             return nil;

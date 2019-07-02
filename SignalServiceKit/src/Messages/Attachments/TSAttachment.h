@@ -84,7 +84,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent downloaded incoming attachments.
-- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer;
+- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer transaction:(SDSAnyReadTransaction *)transaction;
 
 // --- CODE GENERATION MARKER
 

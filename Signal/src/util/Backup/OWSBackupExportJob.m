@@ -862,7 +862,7 @@ NS_ASSUME_NONNULL_BEGIN
                 backupFragment.attachmentId = attachmentExport.attachmentId;
                 backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [backupFragment saveWithTransaction:transaction];
+                    [backupFragment anyInsertWithTransaction:transaction.asAnyWrite];
                 }];
 
                 OWSLogVerbose(@"saved attachment: %@ as %@",
@@ -899,7 +899,12 @@ NS_ASSUME_NONNULL_BEGIN
     // * That this record does in fact exist in our CloudKit database.
     NSString *recordName =
         [OWSBackupAPI recordNameForPersistentFileWithRecipientId:self.recipientId fileId:attachmentExport.attachmentId];
-    OWSBackupFragment *_Nullable lastBackupFragment = [OWSBackupFragment fetchObjectWithUniqueID:recordName];
+
+    __block OWSBackupFragment *_Nullable lastBackupFragment;
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        lastBackupFragment = [OWSBackupFragment anyFetchWithUniqueId:recordName transaction:transaction.asAnyRead];
+    }];
+
     if (!lastBackupFragment || ![self.lastValidRecordNames containsObject:recordName]) {
         return NO;
     }
