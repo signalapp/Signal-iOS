@@ -91,10 +91,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return self;
 }
 
-- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
+- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer transaction:(SDSAnyReadTransaction *)transaction
+
 {
     // Once saved, this AttachmentStream will replace the AttachmentPointer in the attachments collection.
-    self = [super initWithPointer:pointer];
+    self = [super initWithPointer:pointer transaction:transaction];
     if (!self) {
         return self;
     }

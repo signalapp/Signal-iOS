@@ -541,7 +541,10 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         return;
     }
 
-    TSAttachmentStream *stream = [[TSAttachmentStream alloc] initWithPointer:attachmentPointer];
+    __block TSAttachmentStream *stream;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        stream = [[TSAttachmentStream alloc] initWithPointer:attachmentPointer transaction:transaction];
+    }];
 
     NSError *writeError;
     [stream writeData:plaintext error:&writeError];

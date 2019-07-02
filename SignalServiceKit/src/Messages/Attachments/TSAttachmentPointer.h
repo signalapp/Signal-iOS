@@ -40,7 +40,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 @property (nonatomic, readonly) CGSize mediaSize;
 
 // Non-nil for attachments which need "lazy backup restore."
-- (nullable OWSBackupFragment *)lazyRestoreFragment;
+- (nullable OWSBackupFragment *)lazyRestoreFragmentWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

@@ -259,13 +259,13 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable OWSBackupFragment *)lazyRestoreFragment
+- (nullable OWSBackupFragment *)lazyRestoreFragmentWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (!self.lazyRestoreFragmentId) {
         return nil;
     }
-    OWSBackupFragment *_Nullable backupFragment =
-        [OWSBackupFragment fetchObjectWithUniqueID:self.lazyRestoreFragmentId];
+    OWSBackupFragment *_Nullable backupFragment = [OWSBackupFragment anyFetchWithUniqueId:self.lazyRestoreFragmentId
+                                                                              transaction:transaction];
     OWSAssertDebug(backupFragment);
     return backupFragment;
 }
