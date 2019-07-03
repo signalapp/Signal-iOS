@@ -120,7 +120,13 @@ public class AccountManager: NSObject {
 
         Logger.debug("registering with signal server")
         let registrationPromise: Promise<Void> = firstly {
-            return self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
+            self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
+        }.then {
+            self.accountServiceClient.updateAttributes()
+        }.then {
+            self.createPreKeys()
+        }.done {
+            self.profileManager.fetchLocalUsersProfile()
         }.then { _ -> Promise<Void> in
             return self.syncPushTokens().recover { (error) -> Promise<Void> in
                 switch error {
@@ -143,13 +149,19 @@ public class AccountManager: NSObject {
         return registrationPromise
     }
 
-    private func registerForTextSecure(verificationCode: String,
-                                       pin: String?) -> Promise<Void> {
+    private func registerForTextSecure(verificationCode: String, pin: String?) -> Promise<Void> {
         return Promise { resolver in
             tsAccountManager.verifyAccount(withCode: verificationCode,
                                            pin: pin,
                                            success: { resolver.fulfill(()) },
                                            failure: resolver.reject)
+        }
+    }
+
+    private func createPreKeys() -> Promise<Void> {
+        return Promise { resolver in
+            TSPreKeyManager.createPreKeys(success: { resolver.fulfill(()) },
+                                          failure: resolver.reject)
         }
     }
 

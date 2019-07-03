@@ -444,29 +444,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                     OWSLogInfo(@"Verification code accepted.");
 
                     [self setStoredServerAuthToken:authToken];
-
-                    [[[SignalServiceRestClient new] updateAccountAttributesObjC]
-                            .thenInBackground(^{
-                                return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-                                    [TSPreKeyManager
-                                        createPreKeysWithSuccess:^{
-                                            resolve(@(1));
-                                        }
-                                        failure:^(NSError *error) {
-                                            resolve(error);
-                                        }];
-                                }];
-                            })
-                            .then(^{
-                                [self.profileManager fetchLocalUsersProfile];
-                            })
-                            .then(^{
-                                successBlock();
-                            })
-                            .catchInBackground(^(NSError *error) {
-                                OWSLogError(@"Error: %@", error);
-                                failureBlock(error);
-                            }) retainUntilComplete];
+                    successBlock();
 
                     break;
                 }
