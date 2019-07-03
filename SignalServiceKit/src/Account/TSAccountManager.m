@@ -182,7 +182,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return self.registrationState == OWSRegistrationState_Registered;
 }
 
-- (void)didRegister
+- (void)didRegisterWithUUID:(nullable NSUUID *)uuid
 {
     OWSLogInfo(@"didRegister");
     NSString *phoneNumber = self.phoneNumberAwaitingVerification;
@@ -192,8 +192,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        // UUID TODO: pass in uuid returned from registration verification
-        [self storeLocalNumber:phoneNumber uuid:nil transaction:transaction];
+        [self storeLocalNumber:phoneNumber uuid:uuid transaction:transaction];
     }];
 
     // Warm these cached values.
@@ -419,7 +418,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin
-                      success:(void (^)(void))successBlock
+                      success:(void (^)(_Nullable id responseObject))successBlock
                       failure:(void (^)(NSError *error))failureBlock
 {
     NSString *authToken = [[self class] generateNewAccountAuthenticationToken];
@@ -444,29 +443,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                     OWSLogInfo(@"Verification code accepted.");
 
                     [self setStoredServerAuthToken:authToken];
-
-                    [[[SignalServiceRestClient new] updateAccountAttributesObjC]
-                            .thenInBackground(^{
-                                return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-                                    [TSPreKeyManager
-                                        createPreKeysWithSuccess:^{
-                                            resolve(@(1));
-                                        }
-                                        failure:^(NSError *error) {
-                                            resolve(error);
-                                        }];
-                                }];
-                            })
-                            .then(^{
-                                [self.profileManager fetchLocalUsersProfile];
-                            })
-                            .then(^{
-                                successBlock();
-                            })
-                            .catchInBackground(^(NSError *error) {
-                                OWSLogError(@"Error: %@", error);
-                                failureBlock(error);
-                            }) retainUntilComplete];
+                    successBlock(responseObject);
 
                     break;
                 }

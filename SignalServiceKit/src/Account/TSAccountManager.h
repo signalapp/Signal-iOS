@@ -87,14 +87,14 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin
-                      success:(void (^)(void))successBlock
+                      success:(void (^)(_Nullable id responseObject))successBlock
                       failure:(void (^)(NSError *error))failureBlock;
 
 // Called once registration is complete - meaning the following have succeeded:
 // - obtained signal server credentials
 // - uploaded pre-keys
 // - uploaded push tokens
-- (void)didRegister;
+- (void)didRegisterWithUUID:(nullable NSUUID *)uuid NS_SWIFT_NAME(didRegister(uuid:));
 
 #if TARGET_OS_IPHONE
 
