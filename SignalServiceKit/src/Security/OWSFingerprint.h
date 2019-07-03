@@ -1,8 +1,10 @@
-//  Created by Michael Kirk on 9/14/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
 @class UIImage;
 
 @interface OWSFingerprint : NSObject
@@ -11,32 +13,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithMyStableId:(NSString *)myStableId
-                     myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
-                     theirStableId:(NSString *)theirStableId
-                  theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
-                         theirName:(NSString *)theirName
-                    hashIterations:(uint32_t)hashIterations NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMyStableAddress:(SignalServiceAddress *)myStableAddress
+                          myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
+                     theirStableAddress:(SignalServiceAddress *)theirStableAddress
+                       theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
+                              theirName:(NSString *)theirName
+                         hashIterations:(uint32_t)hashIterations NS_DESIGNATED_INITIALIZER;
 
-+ (instancetype)fingerprintWithMyStableId:(NSString *)myStableId
-                            myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
-                            theirStableId:(NSString *)theirStableId
-                         theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
-                                theirName:(NSString *)theirName
-                           hashIterations:(uint32_t)hashIterations;
++ (instancetype)fingerprintWithMyStableAddress:(SignalServiceAddress *)myStableAddress
+                                 myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
+                            theirStableAddress:(SignalServiceAddress *)theirStableAddress
+                              theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
+                                     theirName:(NSString *)theirName
+                                hashIterations:(uint32_t)hashIterations;
 
-+ (instancetype)fingerprintWithMyStableId:(NSString *)myStableId
-                            myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
-                            theirStableId:(NSString *)theirStableId
-                         theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
-                                theirName:(NSString *)theirName;
++ (instancetype)fingerprintWithMyStableAddress:(SignalServiceAddress *)myStableAddress
+                                 myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
+                            theirStableAddress:(SignalServiceAddress *)theirStableAddress
+                              theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
+                                     theirName:(NSString *)theirName;
 
 #pragma mark - Properties
 
-@property (nonatomic, readonly) NSData *myStableIdData;
+@property (nonatomic, readonly) NSData *myStableAddressData;
 @property (nonatomic, readonly) NSData *myIdentityKey;
-@property (nonatomic, readonly) NSString *theirStableId;
-@property (nonatomic, readonly) NSData *theirStableIdData;
+@property (nonatomic, readonly) SignalServiceAddress *theirStableAddress;
+@property (nonatomic, readonly) NSData *theirStableAddressData;
 @property (nonatomic, readonly) NSData *theirIdentityKey;
 @property (nonatomic, readonly) NSString *displayableText;
 @property (nullable, nonatomic, readonly) UIImage *image;

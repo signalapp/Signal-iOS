@@ -72,7 +72,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 @interface FingerprintViewController () <OWSCompareSafetyNumbersActivityDelegate>
 
-@property (nonatomic) NSString *recipientId;
+@property (nonatomic) SignalServiceAddress *address;
 @property (nonatomic) NSData *identityKey;
 @property (nonatomic) TSAccountManager *accountManager;
 @property (nonatomic) OWSFingerprint *fingerprint;
@@ -104,7 +104,7 @@ typedef void (^CustomLayoutBlock)(void);
     }
 
     FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
-    [fingerprintViewController configureWithRecipientId:address.transitional_phoneNumber];
+    [fingerprintViewController configureWithAddress:address];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:fingerprintViewController];
     [viewController presentViewController:navigationController animated:YES completion:nil];
@@ -138,17 +138,17 @@ typedef void (^CustomLayoutBlock)(void);
                                                object:nil];
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId
+- (void)configureWithAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    self.recipientId = recipientId;
+    self.address = address;
 
     OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-    self.contactName = [contactsManager displayNameForAddress:recipientId.transitional_signalServiceAddress];
+    self.contactName = [contactsManager displayNameForAddress:address];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:recipientId.transitional_signalServiceAddress];
+        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
     OWSAssertDebug(recipientIdentity);
     // By capturing the identity key when we enter these views, we prevent the edge case
     // where the user verifies a key that we learned about while this view was open.
@@ -156,8 +156,8 @@ typedef void (^CustomLayoutBlock)(void);
 
     OWSFingerprintBuilder *builder =
         [[OWSFingerprintBuilder alloc] initWithAccountManager:self.accountManager contactsManager:contactsManager];
-    self.fingerprint =
-        [builder fingerprintWithTheirSignalId:recipientId theirIdentityKey:recipientIdentity.identityKey];
+    self.fingerprint = [builder fingerprintWithTheirSignalAddress:address
+                                                 theirIdentityKey:recipientIdentity.identityKey];
 }
 
 - (void)loadView
@@ -347,11 +347,10 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (void)updateVerificationStateLabel
 {
-    OWSAssertDebug(self.recipientId.length > 0);
+    OWSAssertDebug(self.address.isValid);
 
-    BOOL isVerified = [[OWSIdentityManager sharedManager]
-                          verificationStateForAddress:self.recipientId.transitional_signalServiceAddress]
-        == OWSVerificationStateVerified;
+    BOOL isVerified =
+        [[OWSIdentityManager sharedManager] verificationStateForAddress:self.address] == OWSVerificationStateVerified;
 
     if (isVerified) {
         NSMutableAttributedString *labelText = [NSMutableAttributedString new];
@@ -458,7 +457,7 @@ typedef void (^CustomLayoutBlock)(void);
 {
     [FingerprintViewScanController showVerificationSucceeded:self
                                                  identityKey:self.identityKey
-                                                 recipientId:self.recipientId
+                                            recipientAddress:self.address
                                                  contactName:self.contactName
                                                          tag:self.logTag];
 }
@@ -490,7 +489,7 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)showScanner
 {
     FingerprintViewScanController *scanView = [FingerprintViewScanController new];
-    [scanView configureWithRecipientId:self.recipientId];
+    [scanView configureWithRecipientAddress:self.address];
     [self.navigationController pushViewController:scanView animated:YES];
 }
 
@@ -522,19 +521,18 @@ typedef void (^CustomLayoutBlock)(void);
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
         [OWSPrimaryStorage.sharedManager.newDatabaseConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                BOOL isVerified = [[OWSIdentityManager sharedManager]
-                                      verificationStateForAddress:self.recipientId.transitional_signalServiceAddress
-                                                      transaction:transaction.asAnyWrite]
+                BOOL isVerified =
+                    [[OWSIdentityManager sharedManager] verificationStateForAddress:self.address
+                                                                        transaction:transaction.asAnyWrite]
                     == OWSVerificationStateVerified;
 
                 OWSVerificationState newVerificationState
                     = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
-                [[OWSIdentityManager sharedManager]
-                     setVerificationState:newVerificationState
-                              identityKey:self.identityKey
-                                  address:self.recipientId.transitional_signalServiceAddress
-                    isUserInitiatedChange:YES
-                              transaction:transaction.asAnyWrite];
+                [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
+                                                             identityKey:self.identityKey
+                                                                 address:self.address
+                                                   isUserInitiatedChange:YES
+                                                             transaction:transaction.asAnyWrite];
             }];
 
         [self dismissViewControllerAnimated:YES completion:nil];

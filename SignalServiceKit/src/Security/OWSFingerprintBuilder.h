@@ -1,12 +1,15 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSAccountManager;
 @class OWSFingerprint;
+@class TSAccountManager;
+
 @protocol ContactsManagerProtocol;
+
+@class SignalServiceAddress;
 
 @interface OWSFingerprintBuilder : NSObject
 
@@ -17,13 +20,14 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Builds a fingerprint combining your current credentials with their most recently accepted credentials.
  */
-- (nullable OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId;
+- (nullable OWSFingerprint *)fingerprintWithTheirSignalAddress:(SignalServiceAddress *)theirSignalAddress;
 
 /**
  * Builds a fingerprint combining your current credentials with the specified identity key.
  * You can use this to present a new identity key for verification.
  */
-- (OWSFingerprint *)fingerprintWithTheirSignalId:(NSString *)theirSignalId theirIdentityKey:(NSData *)theirIdentityKey;
+- (OWSFingerprint *)fingerprintWithTheirSignalAddress:(SignalServiceAddress *)theirSignalAddress
+                                     theirIdentityKey:(NSData *)theirIdentityKey;
 
 @end
 

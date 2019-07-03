@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFingerprint.h"
@@ -30,62 +30,67 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 @implementation OWSFingerprint
 
-- (instancetype)initWithMyStableId:(NSString *)myStableId
-                     myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
-                     theirStableId:(NSString *)theirStableId
-                  theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
-                         theirName:(NSString *)theirName
-                    hashIterations:(uint32_t)hashIterations
+- (instancetype)initWithMyStableAddress:(SignalServiceAddress *)myStableAddress
+                          myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
+                     theirStableAddress:(nonnull SignalServiceAddress *)theirStableAddress
+                       theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
+                              theirName:(NSString *)theirName
+                         hashIterations:(uint32_t)hashIterations
 {
     OWSAssertDebug(theirIdentityKeyWithoutKeyType.length == 32);
     OWSAssertDebug(myIdentityKeyWithoutKeyType.length == 32);
+    OWSAssertDebug(myStableAddress.isValid);
+    OWSAssertDebug(theirStableAddress.isValid);
 
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _myStableIdData = [myStableId dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *myStableIdString = myStableAddress.uuidString ?: myStableAddress.phoneNumber;
+    NSString *theirStableIdString = theirStableAddress.uuidString ?: theirStableAddress.phoneNumber;
+
+    _myStableAddressData = [myStableIdString dataUsingEncoding:NSUTF8StringEncoding];
     _myIdentityKey = [myIdentityKeyWithoutKeyType prependKeyType];
-    _theirStableId = theirStableId;
-    _theirStableIdData = [theirStableId dataUsingEncoding:NSUTF8StringEncoding];
+    _theirStableAddress = theirStableAddress;
+    _theirStableAddressData = [theirStableIdString dataUsingEncoding:NSUTF8StringEncoding];
     _theirIdentityKey = [theirIdentityKeyWithoutKeyType prependKeyType];
     _theirName = theirName;
     _hashIterations = hashIterations;
 
-    _myFingerprintData = [self dataForStableId:_myStableIdData publicKey:_myIdentityKey];
-    _theirFingerprintData = [self dataForStableId:_theirStableIdData publicKey:_theirIdentityKey];
+    _myFingerprintData = [self dataForStableAddress:_myStableAddressData publicKey:_myIdentityKey];
+    _theirFingerprintData = [self dataForStableAddress:_theirStableAddressData publicKey:_theirIdentityKey];
 
     return self;
 }
 
-+ (instancetype)fingerprintWithMyStableId:(NSString *)myStableId
-                            myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
-                            theirStableId:(NSString *)theirStableId
-                         theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
-                                theirName:(NSString *)theirName
-                           hashIterations:(uint32_t)hashIterations
++ (instancetype)fingerprintWithMyStableAddress:(SignalServiceAddress *)myStableAddress
+                                 myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
+                            theirStableAddress:(nonnull SignalServiceAddress *)theirStableAddress
+                              theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
+                                     theirName:(NSString *)theirName
+                                hashIterations:(uint32_t)hashIterations
 {
-    return [[self alloc] initWithMyStableId:myStableId
-                              myIdentityKey:myIdentityKeyWithoutKeyType
-                              theirStableId:theirStableId
-                           theirIdentityKey:theirIdentityKeyWithoutKeyType
-                                  theirName:theirName
-                             hashIterations:hashIterations];
+    return [[self alloc] initWithMyStableAddress:myStableAddress
+                                   myIdentityKey:myIdentityKeyWithoutKeyType
+                              theirStableAddress:theirStableAddress
+                                theirIdentityKey:theirIdentityKeyWithoutKeyType
+                                       theirName:theirName
+                                  hashIterations:hashIterations];
 }
 
-+ (instancetype)fingerprintWithMyStableId:(NSString *)myStableId
-                            myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
-                            theirStableId:(NSString *)theirStableId
-                         theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
-                                theirName:(NSString *)theirName
++ (instancetype)fingerprintWithMyStableAddress:(SignalServiceAddress *)myStableAddress
+                                 myIdentityKey:(NSData *)myIdentityKeyWithoutKeyType
+                            theirStableAddress:(nonnull SignalServiceAddress *)theirStableAddress
+                              theirIdentityKey:(NSData *)theirIdentityKeyWithoutKeyType
+                                     theirName:(NSString *)theirName
 {
-    return [[self alloc] initWithMyStableId:myStableId
-                              myIdentityKey:myIdentityKeyWithoutKeyType
-                              theirStableId:theirStableId
-                           theirIdentityKey:theirIdentityKeyWithoutKeyType
-                                  theirName:theirName
-                             hashIterations:OWSFingerprintDefaultHashIterations];
+    return [[self alloc] initWithMyStableAddress:myStableAddress
+                                   myIdentityKey:myIdentityKeyWithoutKeyType
+                              theirStableAddress:theirStableAddress
+                                theirIdentityKey:theirIdentityKeyWithoutKeyType
+                                       theirName:theirName
+                                  hashIterations:OWSFingerprintDefaultHashIterations];
 }
 
 - (BOOL)matchesLogicalFingerprintsData:(NSData *)data error:(NSError **)error
@@ -197,22 +202,22 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
  *
  * This method is intended to be somewhat expensive to produce in order to be brute force adverse.
  *
- * @param stableIdData
+ * @param stableAddressData
  *      Immutable global identifier e.g. Signal Identifier, an e164 formatted phone number encoded as UTF-8 data
  * @param publicKey
- *      The current public key for <stableId>
+ *      The current public key for <stableAddress>
  * @return
  *      All-number textual representation
  */
-- (NSData *)dataForStableId:(NSData *)stableIdData publicKey:(NSData *)publicKey
+- (NSData *)dataForStableAddress:(NSData *)stableAddressData publicKey:(NSData *)publicKey
 {
-    OWSAssertDebug(stableIdData);
+    OWSAssertDebug(stableAddressData);
     OWSAssertDebug(publicKey);
 
     NSData *versionData = [self dataFromShort:OWSFingerprintHashingVersion];
     NSMutableData *hash = [versionData mutableCopy];
     [hash appendData:publicKey];
-    [hash appendData:stableIdData];
+    [hash appendData:stableAddressData];
 
     NSMutableData *_Nullable digestData = [[NSMutableData alloc] initWithLength:CC_SHA512_DIGEST_LENGTH];
     if (!digestData) {

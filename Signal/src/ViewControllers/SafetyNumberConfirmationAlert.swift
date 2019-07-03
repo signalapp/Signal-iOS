@@ -80,7 +80,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
             Logger.info("Opted to show Safety Number for identity: \(untrustedIdentity)")
 
             self.presentSafetyNumberViewController(theirIdentityKey: untrustedIdentity.identityKey,
-                                                   theirRecipientId: untrustedAddress.transitional_phoneNumber,
+                                                   theirRecipientAddress: untrustedAddress,
                                                    theirDisplayName: displayName,
                                                    completion: { completion(false) })
 
@@ -101,12 +101,12 @@ public class SafetyNumberConfirmationAlert: NSObject {
         return true
     }
 
-    public func presentSafetyNumberViewController(theirIdentityKey: Data, theirRecipientId: String, theirDisplayName: String, completion: (() -> Void)? = nil) {
+    public func presentSafetyNumberViewController(theirIdentityKey: Data, theirRecipientAddress: SignalServiceAddress, theirDisplayName: String, completion: (() -> Void)? = nil) {
         guard let fromViewController = UIApplication.shared.frontmostViewController else {
             Logger.info("Missing frontmostViewController")
             return
         }
-        FingerprintViewController.present(from: fromViewController, address: theirRecipientId.transitional_signalServiceAddress)
+        FingerprintViewController.present(from: fromViewController, address: theirRecipientAddress)
     }
 
     private func untrustedIdentityForSending(addresses: [SignalServiceAddress]) -> (SignalServiceAddress, OWSRecipientIdentity)? {

@@ -193,8 +193,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 - (BOOL)hasSafetyNumbers
 {
-    return !!
-            [[OWSIdentityManager sharedManager] identityKeyForRecipientId:self.contactAddress.transitional_phoneNumber];
+    return !![[OWSIdentityManager sharedManager] identityKeyForAddress:self.contactAddress];
 }
 
 // TODO deprecate this? seems weird to access the displayName in the DB model
