@@ -168,7 +168,7 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     } else if (syncMessage.read.count > 0) {
         return @"ReadReceipt";
     } else if (syncMessage.verified) {
-        return [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destination];
+        return [NSString stringWithFormat:@"Verification for: %@", syncMessage.verified.destinationAddress];
     } else if (syncMessage.stickerPackOperation) {
         NSMutableString *description = [NSMutableString new];
         NSMutableArray<NSString *> *operationTypes = [NSMutableArray new];

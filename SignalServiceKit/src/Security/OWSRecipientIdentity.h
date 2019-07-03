@@ -14,16 +14,17 @@ typedef NS_ENUM(NSUInteger, OWSVerificationState) {
 
 @class SDSAnyWriteTransaction;
 @class SSKProtoVerified;
+@class SignalServiceAddress;
 
 NSString *OWSVerificationStateToString(OWSVerificationState verificationState);
-SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinationRecipientId,
+SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *destinationAddress,
     NSData *identityKey,
     OWSVerificationState verificationState,
     NSUInteger paddingBytesLength);
 
 @interface OWSRecipientIdentity : BaseModel
 
-@property (nonatomic, readonly) NSString *recipientId;
+@property (nonatomic, readonly) NSString *accountId;
 @property (nonatomic, readonly) NSData *identityKey;
 @property (nonatomic, readonly) NSDate *createdAt;
 @property (nonatomic, readonly) BOOL isFirstKnownKey;
@@ -41,11 +42,11 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithRecipientId:(NSString *)recipientId
-                        identityKey:(NSData *)identityKey
-                    isFirstKnownKey:(BOOL)isFirstKnownKey
-                          createdAt:(NSDate *)createdAt
-                  verificationState:(OWSVerificationState)verificationState NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAccountId:(NSString *)accountId
+                      identityKey:(NSData *)identityKey
+                  isFirstKnownKey:(BOOL)isFirstKnownKey
+                        createdAt:(NSDate *)createdAt
+                verificationState:(OWSVerificationState)verificationState NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSVerificationStateSyncMessage.h"
@@ -24,10 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithVerificationState:(OWSVerificationState)verificationState
                               identityKey:(NSData *)identityKey
-               verificationForRecipientId:(NSString *)verificationForRecipientId
+          verificationForRecipientAddress:(SignalServiceAddress *)address
 {
     OWSAssertDebug(identityKey.length == kIdentityKeyLength);
-    OWSAssertDebug(verificationForRecipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
     // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
     // will figure that out on it's own.
@@ -40,8 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     _verificationState = verificationState;
     _identityKey = identityKey;
-    _verificationForRecipientId = verificationForRecipientId;
-    
+    _verificationForRecipientAddress = address;
+
     // This sync message should be 1-512 bytes longer than the corresponding NullMessage
     // we store this values so the corresponding NullMessage can subtract it from the total length.
     _paddingBytesLength = arc4random_uniform(512) + 1;
@@ -51,13 +51,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    if (_verificationForRecipientAddress == nil) {
+        _verificationForRecipientAddress =
+            [[SignalServiceAddress alloc] initWithPhoneNumber:[coder decodeObjectForKey:@"verificationForRecipientId"]];
+        OWSAssertDebug(_verificationForRecipientAddress.isValid);
+    }
+
+    return self;
 }
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     OWSAssertDebug(self.identityKey.length == kIdentityKeyLength);
-    OWSAssertDebug(self.verificationForRecipientId.length > 0);
+    OWSAssertDebug(self.verificationForRecipientAddress.isValid);
 
     // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
     // will figure that out on it's own.
@@ -70,8 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
     // verification sync which is ~1-512 bytes larger then that.
     OWSAssertDebug(self.paddingBytesLength != 0);
 
-    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithRecipientId(
-        self.verificationForRecipientId, self.identityKey, self.verificationState, self.paddingBytesLength);
+    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithAddress(
+        self.verificationForRecipientAddress, self.identityKey, self.verificationState, self.paddingBytesLength);
     if (!verifiedProto) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
@@ -85,14 +96,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (size_t)unpaddedVerifiedLength
 {
     OWSAssertDebug(self.identityKey.length == kIdentityKeyLength);
-    OWSAssertDebug(self.verificationForRecipientId.length > 0);
+    OWSAssertDebug(self.verificationForRecipientAddress.isValid);
 
     // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
     // will figure that out on it's own.
     OWSAssertDebug(self.verificationState != OWSVerificationStateNoLongerVerified);
 
-    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithRecipientId(
-        self.verificationForRecipientId, self.identityKey, self.verificationState, 0);
+    SSKProtoVerified *_Nullable verifiedProto = BuildVerifiedProtoWithAddress(
+        self.verificationForRecipientAddress, self.identityKey, self.verificationState, 0);
     if (!verifiedProto) {
         OWSFailDebug(@"could not build protobuf.");
         return 0;

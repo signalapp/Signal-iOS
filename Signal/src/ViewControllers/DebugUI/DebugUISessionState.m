@@ -59,9 +59,9 @@ NS_ASSUME_NONNULL_BEGIN
                                 OWSLogError(@"Flipping identity Key. Flip again to return.");
 
                                 OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
-                                NSString *recipientId = thread.contactAddress.transitional_phoneNumber;
+                                SignalServiceAddress *address = thread.contactAddress;
 
-                                NSData *currentKey = [identityManager identityKeyForRecipientId:recipientId];
+                                NSData *currentKey = [identityManager identityKeyForAddress:address];
                                 NSMutableData *flippedKey = [NSMutableData new];
                                 const char *currentKeyBytes = currentKey.bytes;
                                 for (NSUInteger i = 0; i < currentKey.length; i++) {
@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     [flippedKey appendBytes:&xorByte length:1];
                                 }
                                 OWSAssertDebug(flippedKey.length == currentKey.length);
-                                [identityManager saveRemoteIdentity:flippedKey recipientId:recipientId];
+                                [identityManager saveRemoteIdentity:flippedKey address:address];
                             }],
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{

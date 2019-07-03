@@ -4,6 +4,7 @@
 
 #import "OWSVerificationStateChangeMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,21 +12,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
-                      recipientId:(NSString *)recipientId
+                 recipientAddress:(SignalServiceAddress *)recipientAddress
                 verificationState:(OWSVerificationState)verificationState
                     isLocalChange:(BOOL)isLocalChange
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(recipientAddress.isValid);
 
     self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageVerificationStateChange];
     if (!self) {
         return self;
     }
 
-    _recipientId = recipientId;
+    _recipientAddress = recipientAddress;
     _verificationState = verificationState;
     _isLocalChange = isLocalChange;
 
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        if (_recipientAddress == nil) {
+            NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"recipientId"];
+            _recipientAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            OWSAssertDebug(_recipientAddress.isValid);
+        }
+    }
     return self;
 }
 

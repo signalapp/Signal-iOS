@@ -249,8 +249,8 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 //
 // @note If this becomes a hotspot we can extract into a YapDB View.
 // As is, the number of groups should be small (dozens, *maybe* hundreds), and we only enumerate them upon SN changes.
-+ (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId
-                                              transaction:(SDSAnyReadTransaction *)transaction
++ (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction
 {
 
     if (!transaction.transitional_yapReadTransaction) {
@@ -258,7 +258,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
         return @[];
     }
 
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
 
     NSMutableArray<TSGroupThread *> *groupThreads = [NSMutableArray new];
@@ -268,7 +268,10 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
                                        usingBlock:^(id obj, BOOL *stop) {
                                            if ([obj isKindOfClass:[TSGroupThread class]]) {
                                                TSGroupThread *groupThread = (TSGroupThread *)obj;
-                                               if ([groupThread.groupModel.groupMemberIds containsObject:recipientId]) {
+                                               // TODO UUID
+                                               if (address.phoneNumber &&
+                                                   [groupThread.groupModel.groupMemberIds
+                                                       containsObject:address.phoneNumber]) {
                                                    [groupThreads addObject:groupThread];
                                                }
                                            }

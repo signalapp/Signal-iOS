@@ -995,7 +995,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    readTimestamp:envelope.timestamp
                                                                      transaction:transaction];
     } else if (syncMessage.verified) {
-        OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destination);
+        OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destinationAddress);
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else if (syncMessage.stickerPackOperation.count > 0) {
         OWSLogInfo(@"Received sticker pack operation(s): %d", (int)syncMessage.stickerPackOperation.count);

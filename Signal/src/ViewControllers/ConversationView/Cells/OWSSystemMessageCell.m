@@ -435,7 +435,7 @@ typedef void (^SystemMessageActionBlock)(void);
                                             @"Label for button to verify a user's safety number.")
                                   block:^{
                                       [weakSelf.delegate
-                                          tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
+                                          tappedNonBlockingIdentityChangeForAddress:message.recipientAddress];
                                   }
                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"verify_safety_number")];
         case TSErrorMessageWrongTrustedIdentityKey:
@@ -533,9 +533,8 @@ typedef void (^SystemMessageActionBlock)(void);
                         actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
                                   block:^{
                                       [weakSelf.delegate
-                                          showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)
-                                                                                 infoMessage)
-                                                                             .recipientId];
+                                          showFingerprintWithAddress:((OWSVerificationStateChangeMessage *)infoMessage)
+                                                                         .recipientAddress];
                                   }
                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")];
         case TSInfoMessageUserJoinedSignal:

@@ -17,23 +17,23 @@ public class SafetyNumberConfirmationAlert: NSObject {
     }
 
     @objc
-    public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
-        return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
+    public class func presentAlertIfNecessary(address: SignalServiceAddress, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
+        return self.presentAlertIfNecessary(addresses: [address], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
     }
 
     @objc
-    public class func presentAlertIfNecessary(recipientId: String, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
-        return self.presentAlertIfNecessary(recipientIds: [recipientId], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: beforePresentationHandler)
+    public class func presentAlertIfNecessary(address: SignalServiceAddress, confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
+        return self.presentAlertIfNecessary(addresses: [address], confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: beforePresentationHandler)
     }
 
     @objc
-    public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
-        return self.presentAlertIfNecessary(recipientIds: recipientIds, confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
+    public class func presentAlertIfNecessary(addresses: [SignalServiceAddress], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void) -> Bool {
+        return self.presentAlertIfNecessary(addresses: addresses, confirmationText: confirmationText, contactsManager: contactsManager, completion: completion, beforePresentationHandler: nil)
     }
 
     @objc
-    public class func presentAlertIfNecessary(recipientIds: [String], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
-        return SafetyNumberConfirmationAlert(contactsManager: contactsManager).presentIfNecessary(recipientIds: recipientIds,
+    public class func presentAlertIfNecessary(addresses: [SignalServiceAddress], confirmationText: String, contactsManager: OWSContactsManager, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
+        return SafetyNumberConfirmationAlert(contactsManager: contactsManager).presentIfNecessary(addresses: addresses,
                                                                                                   confirmationText: confirmationText,
                                                                                                   completion: completion,
                                                                                                   beforePresentationHandler: beforePresentationHandler)
@@ -45,14 +45,14 @@ public class SafetyNumberConfirmationAlert: NSObject {
      * @returns true  if an alert was shown
      *          false if there were no unconfirmed identities
      */
-    public func presentIfNecessary(recipientIds: [String], confirmationText: String, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
+    public func presentIfNecessary(addresses: [SignalServiceAddress], confirmationText: String, completion: @escaping (Bool) -> Void, beforePresentationHandler: (() -> Void)? = nil) -> Bool {
 
-        guard let untrustedIdentity = untrustedIdentityForSending(recipientIds: recipientIds) else {
+        guard let (untrustedAddress, untrustedIdentity) = untrustedIdentityForSending(addresses: addresses) else {
             // No identities to confirm, no alert to present.
             return false
         }
 
-        let displayName = contactsManager.displayName(for: untrustedIdentity.recipientId.transitional_signalServiceAddress)
+        let displayName = contactsManager.displayName(for: untrustedAddress)
 
         let titleFormat = NSLocalizedString("CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT",
                                             comment: "Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}}")
@@ -68,7 +68,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
             Logger.info("Confirmed identity: \(untrustedIdentity)")
 
         self.primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
-            OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, recipientId: untrustedIdentity.recipientId, isUserInitiatedChange: true, transaction: transaction.asAnyWrite)
+            OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, address: untrustedAddress, isUserInitiatedChange: true, transaction: transaction.asAnyWrite)
                 DispatchQueue.main.async {
                     completion(true)
                 }
@@ -80,7 +80,7 @@ public class SafetyNumberConfirmationAlert: NSObject {
             Logger.info("Opted to show Safety Number for identity: \(untrustedIdentity)")
 
             self.presentSafetyNumberViewController(theirIdentityKey: untrustedIdentity.identityKey,
-                                                   theirRecipientId: untrustedIdentity.recipientId,
+                                                   theirRecipientId: untrustedAddress.transitional_phoneNumber,
                                                    theirDisplayName: displayName,
                                                    completion: { completion(false) })
 
@@ -109,9 +109,12 @@ public class SafetyNumberConfirmationAlert: NSObject {
         FingerprintViewController.present(from: fromViewController, address: theirRecipientId.transitional_signalServiceAddress)
     }
 
-    private func untrustedIdentityForSending(recipientIds: [String]) -> OWSRecipientIdentity? {
-        return recipientIds.compactMap {
-            OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: $0)
+    private func untrustedIdentityForSending(addresses: [SignalServiceAddress]) -> (SignalServiceAddress, OWSRecipientIdentity)? {
+        return addresses.compactMap {
+            guard let identity = OWSIdentityManager.shared().untrustedIdentityForSending(to: $0) else {
+                return nil
+            }
+            return ($0, identity)
         }.first
     }
 }

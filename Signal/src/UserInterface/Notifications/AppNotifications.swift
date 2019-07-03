@@ -424,14 +424,12 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         var category = AppNotificationCategory.incomingMessage
 
-        if (!FeatureFlags.allowUUIDOnlyContacts) {
-            // Don't reply from lockscreen if anyone in this conversation is
-            // "no longer verified".
-            for address in thread.recipientAddresses {
-                if self.identityManager.verificationState(forRecipientId: address.transitional_phoneNumber) == .noLongerVerified {
-                    category = AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity
-                    break
-                }
+        // Don't reply from lockscreen if anyone in this conversation is
+        // "no longer verified".
+        for address in thread.recipientAddresses {
+            if self.identityManager.verificationState(for: address) == .noLongerVerified {
+                category = AppNotificationCategory.incomingMessageFromNoLongerVerifiedIdentity
+                break
             }
         }
 

@@ -114,7 +114,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return;
     }
 
-    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:self.recipientId];
+    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey address:self.recipientAddress];
 }
 
 - (nullable NSData *)throws_newIdentityKey
@@ -122,9 +122,9 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     return [self.preKeyBundle.identityKey throws_removeKeyType];
 }
 
-- (NSString *)theirSignalId
+- (SignalServiceAddress *)theirSignalAddress
 {
-    return self.recipientId;
+    return self.recipientAddress;
 }
 
 @end

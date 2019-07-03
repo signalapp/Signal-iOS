@@ -703,7 +703,7 @@ private class SignalCallData: NSObject {
 
         Logger.info("receivedCallOffer: \(newCall.identifiersForLogs)")
 
-        let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(toRecipientId: thread.contactAddress.transitional_phoneNumber)
+        let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(to: thread.contactAddress)
 
         guard untrustedIdentity == nil else {
             Logger.warn("missed a call due to untrusted identity: \(newCall.identifiersForLogs)")

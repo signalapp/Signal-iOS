@@ -60,7 +60,7 @@ import SignalMessaging
             return false
         }
 
-        let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(recipientId: address.transitional_phoneNumber,
+        let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(address: address,
                                                                                 confirmationText: CallStrings.confirmAndCallButtonTitle,
                                                                                 contactsManager: self.contactsManager,
                                                                                 completion: { didConfirmIdentity in

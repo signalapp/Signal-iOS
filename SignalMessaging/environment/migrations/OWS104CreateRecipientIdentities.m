@@ -48,11 +48,11 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
         NSString *_Nonnull recipientId, NSData *_Nonnull identityKey, BOOL *_Nonnull stop) {
         OWSLogInfo(@"Migrating identity key for recipient: %@", recipientId);
         OWSRecipientIdentity *recipientIdentity =
-            [[OWSRecipientIdentity alloc] initWithRecipientId:recipientId
-                                                  identityKey:identityKey
-                                              isFirstKnownKey:NO
-                                                    createdAt:[NSDate dateWithTimeIntervalSince1970:0]
-                                            verificationState:OWSVerificationStateDefault];
+            [[OWSRecipientIdentity alloc] initWithAccountId:recipientId
+                                                identityKey:identityKey
+                                            isFirstKnownKey:NO
+                                                  createdAt:[NSDate dateWithTimeIntervalSince1970:0]
+                                          verificationState:OWSVerificationStateDefault];
         // All pre-GRDB migrations should be YAP-only.
         [recipientIdentity ydb_saveWithTransaction:transaction];
     }];

@@ -33,18 +33,20 @@ SSKProtoVerifiedState OWSVerificationStateToProtoState(OWSVerificationState veri
     }
 }
 
-SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinationRecipientId,
+SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *address,
     NSData *identityKey,
     OWSVerificationState verificationState,
     NSUInteger paddingBytesLength)
 {
     OWSCAssertDebug(identityKey.length == kIdentityKeyLength);
-    OWSCAssertDebug(destinationRecipientId.length > 0);
+    OWSCAssertDebug(address.isValid);
     // we only sync user's marking as un/verified. Never sync the conflicted state, the sibling device
     // will figure that out on it's own.
     OWSCAssertDebug(verificationState != OWSVerificationStateNoLongerVerified);
 
-    SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerified builderWithDestination:destinationRecipientId];
+    SSKProtoVerifiedBuilder *verifiedBuilder = [SSKProtoVerified builder];
+    verifiedBuilder.destinationE164 = address.phoneNumber;
+    verifiedBuilder.destinationUuid = address.uuidString;
     verifiedBuilder.identityKey = identityKey;
     verifiedBuilder.state = OWSVerificationStateToProtoState(verificationState);
 
@@ -66,9 +68,12 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
     return verifiedProto;
 }
 
+NSUInteger const RecipientIdentitySchemaVersion = 1;
+
 @interface OWSRecipientIdentity ()
 
 @property (atomic) OWSVerificationState verificationState;
+@property (nonatomic, readonly) NSUInteger recipientIdentitySchemaVersion;
 
 @end
 
@@ -102,27 +107,35 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
         if (![coder decodeObjectForKey:@"verificationState"]) {
             _verificationState = OWSVerificationStateDefault;
         }
+
+        if (_recipientIdentitySchemaVersion < 1) {
+            _accountId = [coder decodeObjectForKey:@"recipientId"];
+            OWSCAssertDebug(_accountId);
+        }
+
+        _recipientIdentitySchemaVersion = RecipientIdentitySchemaVersion;
     }
 
     return self;
 }
 
-- (instancetype)initWithRecipientId:(NSString *)recipientId
-                        identityKey:(NSData *)identityKey
-                    isFirstKnownKey:(BOOL)isFirstKnownKey
-                          createdAt:(NSDate *)createdAt
-                  verificationState:(OWSVerificationState)verificationState
+- (instancetype)initWithAccountId:(NSString *)accountId
+                      identityKey:(NSData *)identityKey
+                  isFirstKnownKey:(BOOL)isFirstKnownKey
+                        createdAt:(NSDate *)createdAt
+                verificationState:(OWSVerificationState)verificationState
 {
-    self = [super initWithUniqueId:recipientId];
+    self = [super initWithUniqueId:accountId];
     if (!self) {
         return self;
     }
-    
-    _recipientId = recipientId;
+
+    _accountId = accountId;
     _identityKey = identityKey;
     _isFirstKnownKey = isFirstKnownKey;
     _createdAt = createdAt;
     _verificationState = verificationState;
+    _recipientIdentitySchemaVersion = RecipientIdentitySchemaVersion;
 
     return self;
 }

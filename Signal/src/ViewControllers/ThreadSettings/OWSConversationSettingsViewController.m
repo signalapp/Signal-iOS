@@ -972,13 +972,13 @@ const CGFloat kIconViewLength = 24;
         };
 
         SignalServiceAddress *recipientAddress = thread.contactAddress;
-        NSString *recipientId = recipientAddress.transitional_phoneNumber;
+        NSString *_Nullable phoneNumber = recipientAddress.phoneNumber;
 
-        BOOL hasName = ![self.thread.name isEqualToString:recipientId];
-        if (hasName) {
+        BOOL hasName = ![self.thread.name isEqualToString:phoneNumber];
+        if (hasName && phoneNumber) {
             NSAttributedString *subtitle = [[NSAttributedString alloc]
                 initWithString:[PhoneNumber
-                                   bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId]];
+                                   bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber]];
             addSubtitle(subtitle);
         } else {
             NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForAddress:recipientAddress];
@@ -987,7 +987,7 @@ const CGFloat kIconViewLength = 24;
             }
         }
 
-        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId]
+        BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForAddress:recipientAddress]
             == OWSVerificationStateVerified;
         if (isVerified) {
             NSMutableAttributedString *subtitle = [NSMutableAttributedString new];

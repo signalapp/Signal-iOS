@@ -94,7 +94,7 @@ typedef void (^CustomLayoutBlock)(void);
     OWSAssertDebug(address.isValid);
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:address.transitional_phoneNumber];
+        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
     if (!recipientIdentity) {
         [OWSAlerts showAlertWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
                                           @"Title for alert explaining that a user cannot be verified.")
@@ -148,7 +148,7 @@ typedef void (^CustomLayoutBlock)(void);
     self.contactName = [contactsManager displayNameForAddress:recipientId.transitional_signalServiceAddress];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:recipientId.transitional_signalServiceAddress];
     OWSAssertDebug(recipientIdentity);
     // By capturing the identity key when we enter these views, we prevent the edge case
     // where the user verifies a key that we learned about while this view was open.
@@ -349,7 +349,8 @@ typedef void (^CustomLayoutBlock)(void);
 {
     OWSAssertDebug(self.recipientId.length > 0);
 
-    BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
+    BOOL isVerified = [[OWSIdentityManager sharedManager]
+                          verificationStateForAddress:self.recipientId.transitional_signalServiceAddress]
         == OWSVerificationStateVerified;
 
     if (isVerified) {
@@ -521,18 +522,19 @@ typedef void (^CustomLayoutBlock)(void);
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
         [OWSPrimaryStorage.sharedManager.newDatabaseConnection
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                BOOL isVerified =
-                    [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId
-                                                                            transaction:transaction.asAnyWrite]
+                BOOL isVerified = [[OWSIdentityManager sharedManager]
+                                      verificationStateForAddress:self.recipientId.transitional_signalServiceAddress
+                                                      transaction:transaction.asAnyWrite]
                     == OWSVerificationStateVerified;
 
                 OWSVerificationState newVerificationState
                     = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
-                [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
-                                                             identityKey:self.identityKey
-                                                             recipientId:self.recipientId
-                                                   isUserInitiatedChange:YES
-                                                             transaction:transaction.asAnyWrite];
+                [[OWSIdentityManager sharedManager]
+                     setVerificationState:newVerificationState
+                              identityKey:self.identityKey
+                                  address:self.recipientId.transitional_signalServiceAddress
+                    isUserInitiatedChange:YES
+                              transaction:transaction.asAnyWrite];
             }];
 
         [self dismissViewControllerAnimated:YES completion:nil];

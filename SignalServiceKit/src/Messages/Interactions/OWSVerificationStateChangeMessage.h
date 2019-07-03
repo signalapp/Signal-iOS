@@ -7,17 +7,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
 @class TSThread;
 
 @interface OWSVerificationStateChangeMessage : TSInfoMessage
 
-@property (nonatomic, readonly) NSString *recipientId;
+@property (nonatomic, readonly) SignalServiceAddress *recipientAddress;
 @property (nonatomic, readonly) OWSVerificationState verificationState;
 @property (nonatomic, readonly) BOOL isLocalChange;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
-                      recipientId:(NSString *)recipientId
+                 recipientAddress:(SignalServiceAddress *)recipientAddress
                 verificationState:(OWSVerificationState)verificationState
                     isLocalChange:(BOOL)isLocalChange;
 

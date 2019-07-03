@@ -177,8 +177,8 @@ NS_ASSUME_NONNULL_BEGIN
                                  OWSCAssertDebug(strongSelf);
 
                                  ContactTableViewCell *cell = [ContactTableViewCell new];
-                                 OWSVerificationState verificationState =
-                                     [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId];
+                                 OWSVerificationState verificationState = [[OWSIdentityManager sharedManager]
+                                     verificationStateForAddress:recipientId.transitional_signalServiceAddress];
                                  BOOL isVerified = verificationState == OWSVerificationStateVerified;
                                  BOOL isNoLongerVerified = verificationState == OWSVerificationStateNoLongerVerified;
                                  BOOL isBlocked = [helper
@@ -246,7 +246,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSIdentityManager *identityManger = [OWSIdentityManager sharedManager];
     NSArray<NSString *> *recipientIds = [self noLongerVerifiedRecipientIds];
     for (NSString *recipientId in recipientIds) {
-        OWSVerificationState verificationState = [identityManger verificationStateForRecipientId:recipientId];
+        OWSVerificationState verificationState =
+            [identityManger verificationStateForAddress:recipientId.transitional_signalServiceAddress];
         if (verificationState == OWSVerificationStateNoLongerVerified) {
             NSData *identityKey = [identityManger identityKeyForRecipientId:recipientId];
             if (identityKey.length < 1) {
@@ -255,7 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             [identityManger setVerificationState:OWSVerificationStateDefault
                                      identityKey:identityKey
-                                     recipientId:recipientId
+                                         address:recipientId.transitional_signalServiceAddress
                            isUserInitiatedChange:YES];
         }
     }
@@ -268,7 +269,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.transitional_phoneNumber]
+        if ([[OWSIdentityManager sharedManager] verificationStateForAddress:address]
             == OWSVerificationStateNoLongerVerified) {
             [result addObject:address.transitional_phoneNumber];
         }
