@@ -135,10 +135,11 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       accountId:(NSString *)accountId
                        createdAt:(NSDate *)createdAt
                      identityKey:(NSData *)identityKey
                  isFirstKnownKey:(BOOL)isFirstKnownKey
-                     recipientId:(NSString *)recipientId
+  recipientIdentitySchemaVersion:(NSUInteger)recipientIdentitySchemaVersion
                verificationState:(OWSVerificationState)verificationState
 {
     self = [super initWithUniqueId:uniqueId];
@@ -147,10 +148,11 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
         return self;
     }
 
+    _accountId = accountId;
     _createdAt = createdAt;
     _identityKey = identityKey;
     _isFirstKnownKey = isFirstKnownKey;
-    _recipientId = recipientId;
+    _recipientIdentitySchemaVersion = recipientIdentitySchemaVersion;
     _verificationState = verificationState;
 
     return self;

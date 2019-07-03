@@ -55,12 +55,13 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       accountId:(NSString *)accountId
                        createdAt:(NSDate *)createdAt
                      identityKey:(NSData *)identityKey
                  isFirstKnownKey:(BOOL)isFirstKnownKey
-                     recipientId:(NSString *)recipientId
+  recipientIdentitySchemaVersion:(NSUInteger)recipientIdentitySchemaVersion
                verificationState:(OWSVerificationState)verificationState
-NS_SWIFT_NAME(init(uniqueId:createdAt:identityKey:isFirstKnownKey:recipientId:verificationState:));
+NS_SWIFT_NAME(init(uniqueId:accountId:createdAt:identityKey:isFirstKnownKey:recipientIdentitySchemaVersion:verificationState:));
 
 // clang-format on
 

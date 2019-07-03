@@ -46,10 +46,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
-                     recipientId:(nullable NSString *)recipientId
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:messageId:preKeyBundle:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientAddress:messageId:preKeyBundle:));
 
 // clang-format on
 

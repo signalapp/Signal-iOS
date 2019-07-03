@@ -199,4 +199,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface OWSRecipientIdentity (SDS)
+
+@property (nonatomic, readonly) NSUInteger recipientIdentitySchemaVersion;
+
+@end
+
+#pragma mark -
+
 NS_ASSUME_NONNULL_END

@@ -8,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SSKProtoEnvelope;
+@class SignalServiceAddress;
 
 typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageNoSession,
@@ -51,7 +52,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
-                      recipientId:(nullable NSString *)recipientId NS_DESIGNATED_INITIALIZER;
+                          address:(nullable SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -80,8 +81,8 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
-                     recipientId:(nullable NSString *)recipientId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientId:));
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:errorMessageSchemaVersion:errorType:read:recipientAddress:));
 
 // clang-format on
 
@@ -101,10 +102,10 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 + (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-+ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread recipientId:(NSString *)recipientId;
++ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
 
 @property (nonatomic, readonly) TSErrorMessageType errorType;
-@property (nullable, nonatomic, readonly) NSString *recipientId;
+@property (nullable, nonatomic, readonly) SignalServiceAddress *recipientAddress;
 
 @end
 

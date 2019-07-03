@@ -59,7 +59,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                    isLocalChange:(BOOL)isLocalChange
-                     recipientId:(NSString *)recipientId
+                recipientAddress:(SignalServiceAddress *)recipientAddress
                verificationState:(OWSVerificationState)verificationState
 {
     self = [super initWithUniqueId:uniqueId
@@ -91,7 +91,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     }
 
     _isLocalChange = isLocalChange;
-    _recipientId = recipientId;
+    _recipientAddress = recipientAddress;
     _verificationState = verificationState;
 
     return self;

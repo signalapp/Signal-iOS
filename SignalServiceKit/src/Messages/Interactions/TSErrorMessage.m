@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSUInteger TSErrorMessageSchemaVersion = 1;
+NSUInteger TSErrorMessageSchemaVersion = 2;
 
 @interface TSErrorMessage ()
 
@@ -39,6 +39,14 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
         _read = YES;
     }
 
+    if (self.errorMessageSchemaVersion == 1) {
+        NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"recipientId"];
+        if (phoneNumber) {
+            _recipientAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            OWSAssertDebug(_recipientAddress.isValid);
+        }
+    }
+
     _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
 
     if (self.isDynamicInteraction) {
@@ -51,7 +59,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
-                      recipientId:(nullable NSString *)recipientId
+                          address:(nullable SignalServiceAddress *)address
 {
     self = [super initMessageWithTimestamp:timestamp
                                    inThread:thread
@@ -70,7 +78,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     }
 
     _errorType = errorMessageType;
-    _recipientId = recipientId;
+    _recipientAddress = address;
     _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
 
     if (self.isDynamicInteraction) {
@@ -84,7 +92,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
                          inThread:(nullable TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
 {
-    return [self initWithTimestamp:timestamp inThread:thread failedMessageType:errorMessageType recipientId:nil];
+    return [self initWithTimestamp:timestamp inThread:thread failedMessageType:errorMessageType address:nil];
 }
 
 - (instancetype)initWithEnvelope:(SSKProtoEnvelope *)envelope
@@ -126,7 +134,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
-                     recipientId:(nullable NSString *)recipientId
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -154,7 +162,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     _errorMessageSchemaVersion = errorMessageSchemaVersion;
     _errorType = errorType;
     _read = read;
-    _recipientId = recipientId;
+    _recipientAddress = recipientAddress;
 
     return self;
 }
@@ -184,18 +192,18 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         case TSErrorMessageWrongTrustedIdentityKey:
             return NSLocalizedString(@"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY", @"");
         case TSErrorMessageNonBlockingIdentityChange: {
-            if (self.recipientId) {
+            if (self.recipientAddress) {
                 if (transaction.transitional_yapReadTransaction) {
                     NSString *messageFormat = NSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT",
                         @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
 
                     NSString *recipientDisplayName = [SSKEnvironment.shared.contactsManager
-                        displayNameForAddress:self.recipientId.transitional_signalServiceAddress
+                        displayNameForAddress:self.recipientAddress
                                   transaction:transaction.transitional_yapReadTransaction];
                     return [NSString stringWithFormat:messageFormat, recipientDisplayName];
                 }
             } else {
-                // recipientId will be nil for legacy errors
+                // address will be nil for legacy errors
                 return NSLocalizedString(
                     @"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE", @"Shown when signal users safety numbers changed");
             }
@@ -252,13 +260,13 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         [[self alloc] initWithEnvelope:envelope withTransaction:transaction failedMessageType:TSErrorMessageNoSession];
 }
 
-+ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread recipientId:(NSString *)recipientId
++ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address
 {
     // MJK TODO - should be safe to remove this senderTimestamp
     return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                   inThread:thread
                          failedMessageType:TSErrorMessageNonBlockingIdentityChange
-                               recipientId:recipientId];
+                                   address:address];
 }
 
 #pragma mark - OWSReadTracking

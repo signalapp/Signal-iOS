@@ -51,9 +51,9 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                    isLocalChange:(BOOL)isLocalChange
-                     recipientId:(NSString *)recipientId
+                recipientAddress:(SignalServiceAddress *)recipientAddress
                verificationState:(OWSVerificationState)verificationState
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:isLocalChange:recipientId:verificationState:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:isLocalChange:recipientAddress:verificationState:));
 
 // clang-format on
 
