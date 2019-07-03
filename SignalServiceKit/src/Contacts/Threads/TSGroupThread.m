@@ -43,6 +43,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
+                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                       groupModel:(TSGroupModel *)groupModel
 {
@@ -55,6 +56,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
                    lastMessageDate:lastMessageDate
                       messageDraft:messageDraft
                     mutedUntilDate:mutedUntilDate
+                             rowId:rowId
              shouldThreadBeVisible:shouldThreadBeVisible];
 
     if (!self) {

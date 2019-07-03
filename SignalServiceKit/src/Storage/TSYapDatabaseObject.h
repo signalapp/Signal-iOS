@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSPrimaryStorage;
 @class SDSAnyWriteTransaction;
+@class SDSDatabaseStorage;
 @class YapDatabaseConnection;
 @class YapDatabaseReadTransaction;
 @class YapDatabaseReadWriteTransaction;
@@ -75,6 +76,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSPrimaryStorage *)primaryStorage;
 + (OWSPrimaryStorage *)primaryStorage;
 
+@property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
+@property (class, nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
+
 /**
  *  Fetches the object with the provided identifier
  *
@@ -118,12 +122,6 @@ NS_ASSUME_NONNULL_BEGIN
  *  @param transaction Database transaction
  */
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-/**
- * `touch` is a cheap way to fire a YapDatabaseModified notification to redraw anythign depending on the model.
- */
-- (void)touch;
-- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
  *  The unique identifier of the stored object
@@ -195,8 +193,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing;
 - (void)ydb_saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock;
 - (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)ydb_touch;
-- (void)ydb_touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)ydb_remove;
 - (void)ydb_applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction

@@ -568,13 +568,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     // TODO: Remove by making unread indicator a view model concern.
     id<ConversationViewItem> _Nullable oldIndicatorItem = [self.viewState unreadIndicatorViewItem];
-    if (oldIndicatorItem) {
+    if (oldIndicatorItem.interaction != nil) {
         // TODO ideally this would be happening within the *same* transaction that caused the unreadMessageIndicator
         // to be cleared.
-        [self.editingDatabaseConnection
-            asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [oldIndicatorItem.interaction touchWithTransaction:transaction];
-            }];
+        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [self.databaseStorage touchInteraction:oldIndicatorItem.interaction transaction:transaction];
+        }];
     }
 
     if (self.hasClearedUnreadMessagesIndicator) {

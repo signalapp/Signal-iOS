@@ -5,6 +5,7 @@
 #import "TSYapDatabaseObject.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -58,18 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
                                           completionBlock:completionBlock];
 }
 
-- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [transaction touchObjectForKey:self.uniqueId inCollection:[self.class collection]];
-}
-
-- (void)touch
-{
-    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self touchWithTransaction:transaction];
-    }];
-}
-
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [transaction removeObjectForKey:self.uniqueId inCollection:[[self class] collection]];
@@ -121,6 +110,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (OWSPrimaryStorage *)primaryStorage
 {
     return [OWSPrimaryStorage sharedManager];
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
 }
 
 + (NSString *)collection
@@ -340,16 +339,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [self saveWithTransaction:transaction];
-}
-
-- (void)ydb_touch
-{
-    [self touch];
-}
-
-- (void)ydb_touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [self touchWithTransaction:transaction];
 }
 
 - (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

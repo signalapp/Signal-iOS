@@ -104,6 +104,7 @@ extension TSThread {
             let lastMessageDate: Date? = record.lastMessageDate
             let messageDraft: String? = record.messageDraft
             let mutedUntilDate: Date? = record.mutedUntilDate
+            let rowId: Int64 = Int64(recordId)
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
             let contactPhoneNumber: String? = record.contactPhoneNumber
             let contactThreadSchemaVersion: UInt = try SDSDeserialization.required(record.contactThreadSchemaVersion, name: "contactThreadSchemaVersion")
@@ -119,6 +120,7 @@ extension TSThread {
                                    lastMessageDate: lastMessageDate,
                                    messageDraft: messageDraft,
                                    mutedUntilDate: mutedUntilDate,
+                                   rowId: rowId,
                                    shouldThreadBeVisible: shouldThreadBeVisible,
                                    contactPhoneNumber: contactPhoneNumber,
                                    contactThreadSchemaVersion: contactThreadSchemaVersion,
@@ -136,6 +138,7 @@ extension TSThread {
             let lastMessageDate: Date? = record.lastMessageDate
             let messageDraft: String? = record.messageDraft
             let mutedUntilDate: Date? = record.mutedUntilDate
+            let rowId: Int64 = Int64(recordId)
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
             let groupModelSerialized: Data? = record.groupModel
             let groupModel: TSGroupModel = try SDSDeserialization.unarchive(groupModelSerialized, name: "groupModel")
@@ -149,6 +152,7 @@ extension TSThread {
                                  lastMessageDate: lastMessageDate,
                                  messageDraft: messageDraft,
                                  mutedUntilDate: mutedUntilDate,
+                                 rowId: rowId,
                                  shouldThreadBeVisible: shouldThreadBeVisible,
                                  groupModel: groupModel)
 
@@ -163,6 +167,7 @@ extension TSThread {
             let lastMessageDate: Date? = record.lastMessageDate
             let messageDraft: String? = record.messageDraft
             let mutedUntilDate: Date? = record.mutedUntilDate
+            let rowId: Int64 = Int64(recordId)
             let shouldThreadBeVisible: Bool = record.shouldThreadBeVisible
 
             return TSThread(uniqueId: uniqueId,
@@ -174,6 +179,7 @@ extension TSThread {
                             lastMessageDate: lastMessageDate,
                             messageDraft: messageDraft,
                             mutedUntilDate: mutedUntilDate,
+                            rowId: rowId,
                             shouldThreadBeVisible: shouldThreadBeVisible)
 
         default:

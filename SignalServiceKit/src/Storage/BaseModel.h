@@ -38,8 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
                 ignoreMissing:(BOOL)ignoreMissing NS_UNAVAILABLE;
 - (void)saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock NS_UNAVAILABLE;
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction NS_UNAVAILABLE;
-- (void)touch NS_UNAVAILABLE;
-- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction NS_UNAVAILABLE;
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction NS_UNAVAILABLE;
 - (void)remove NS_UNAVAILABLE;
 - (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction

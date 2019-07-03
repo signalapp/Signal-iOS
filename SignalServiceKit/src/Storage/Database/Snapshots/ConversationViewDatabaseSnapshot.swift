@@ -26,6 +26,18 @@ public class ConversationViewDatabaseObserver: NSObject {
         _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
     }
 
+    @objc
+    public func touch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
+        // Note: We don't actually use the `transaction` param, but touching must happen within
+        // a write transaction in order for the touch machinery to notify it's observers
+        // in the expected way.
+
+        UIDatabaseObserver.serializedSync {
+            let rowId = RowId(interaction.sortId)
+            pendingInteractionChanges.insert(rowId)
+        }
+    }
+
     private typealias RowId = Int64
 
     private var _pendingInteractionChanges: Set<RowId> = Set()

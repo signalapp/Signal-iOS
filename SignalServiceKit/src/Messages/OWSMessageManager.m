@@ -1575,11 +1575,7 @@ NS_ASSUME_NONNULL_BEGIN
                     } else {
                         // We touch the message to trigger redraw of any views displaying it,
                         // since the attachment might be a contact avatar, etc.
-                        if (transaction.transitional_yapWriteTransaction) {
-                            [incomingMessage touchWithTransaction:transaction.transitional_yapWriteTransaction];
-                        } else {
-                            OWSFailDebug(@"GRDB TODO");
-                        }
+                        [self.databaseStorage touchInteraction:incomingMessage transaction:transaction];
                     }
                 }];
             }
@@ -1594,12 +1590,7 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
                                                                       transaction:transaction];
 
-    if (transaction.transitional_yapWriteTransaction) {
-        // Update thread preview in inbox
-        [thread touchWithTransaction:transaction.transitional_yapWriteTransaction];
-    } else {
-        OWSLogWarn(@"GRDB TODO");
-    }
+    [self.databaseStorage touchThread:thread transaction:transaction];
 
     [PerMessageExpiration applyEarlyReadReceiptsForIncomingMessage:incomingMessage transaction:transaction];
 

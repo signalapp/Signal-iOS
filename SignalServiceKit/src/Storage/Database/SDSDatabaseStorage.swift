@@ -271,6 +271,58 @@ public class SDSDatabaseStorage: NSObject {
         return value
     }
 
+    // MARK: - Touch
+
+    @objc(touchInteraction:transaction:)
+    public func touch(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let yap):
+            guard let uniqueId = interaction.uniqueId else {
+                owsFailDebug("uniqueId was unexpectedly nil")
+                return
+            }
+            yap.touchObject(forKey: uniqueId, inCollection: TSInteraction.collection())
+        case .grdbWrite(let grdb):
+            guard let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver else {
+                owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
+                return
+            }
+            conversationViewDatabaseObserver.touch(interaction: interaction, transaction: grdb)
+        }
+    }
+
+    @objc(touchThread:transaction:)
+    public func touch(thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let yap):
+            guard let uniqueId = thread.uniqueId else {
+                owsFailDebug("uniqueId was unexpectedly nil")
+                return
+            }
+            yap.touchObject(forKey: uniqueId, inCollection: TSThread.collection())
+        case .grdbWrite(let grdb):
+            guard let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver else {
+                owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
+                return
+            }
+            homeViewDatabaseObserver.touch(thread: thread, transaction: grdb)
+        }
+    }
+
+    @objc(touchThreadId:transaction:)
+    public func touch(threadId: String, transaction: SDSAnyWriteTransaction) {
+        switch transaction.writeTransaction {
+        case .yapWrite(let yap):
+            yap.touchObject(forKey: threadId, inCollection: TSThread.collection())
+        case .grdbWrite(let grdb):
+            guard let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver else {
+                owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
+                return
+            }
+            homeViewDatabaseObserver.touch(threadId: threadId, transaction: grdb)
+        }
+    }
+
     // MARK: - Cross Process Notifications
 
     private func handleCrossProcessWrite() {

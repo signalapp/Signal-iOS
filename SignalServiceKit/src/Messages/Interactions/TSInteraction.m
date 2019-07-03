@@ -188,9 +188,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return [TSThread anyFetchWithUniqueId:self.uniqueThreadId transaction:transaction];
 }
 
-- (void)touchThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)touchThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [transaction touchObjectForKey:self.uniqueThreadId inCollection:[TSThread collection]];
+    [self.databaseStorage touchThreadId:self.uniqueThreadId transaction:transaction];
 }
 
 - (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
@@ -199,7 +199,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     OWSAssertDebug(transaction);
 
     [super applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
-    [self touchThreadWithTransaction:transaction];
+    [self touchThreadWithTransaction:transaction.asAnyWrite];
 }
 
 #pragma mark Date operations
@@ -271,7 +271,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     [super removeWithTransaction:transaction];
 
-    [self touchThreadWithTransaction:transaction];
+    [self touchThreadWithTransaction:transaction.asAnyWrite];
 }
 
 - (BOOL)isDynamicInteraction

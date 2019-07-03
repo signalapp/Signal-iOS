@@ -109,6 +109,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                  lastMessageDate:(nullable NSDate *)lastMessageDate
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
+                           rowId:(int64_t)rowId
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
 {
     self = [super initWithUniqueId:uniqueId];
@@ -125,6 +126,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     _lastMessageDate = lastMessageDate;
     _messageDraft = messageDraft;
     _mutedUntilDate = mutedUntilDate;
+    _rowId = rowId;
     _shouldThreadBeVisible = shouldThreadBeVisible;
 
     return self;
@@ -436,7 +438,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
         self.shouldThreadBeVisible = YES;
         [self saveWithTransaction:transaction];
     } else {
-        [self touchWithTransaction:transaction];
+        [self.databaseStorage touchThread:self transaction:transaction.asAnyWrite];
     }
 }
 

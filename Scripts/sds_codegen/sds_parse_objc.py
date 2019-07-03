@@ -525,6 +525,7 @@ def process_objc_property(clazz, prefix, file_path, line, remainder):
         'NSInteger',
         'NSUInteger',
         'uint64_t',
+        'int64_t'
     )
     if property_type_1 in primitive_types:
         property_type = property_type_1

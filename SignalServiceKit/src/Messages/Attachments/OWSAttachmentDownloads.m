@@ -337,9 +337,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                                   }];
 
             if (job.message) {
-                if (transaction.transitional_yapWriteTransaction) {
-                    [job.message touchWithTransaction:transaction.transitional_yapWriteTransaction];
-                }
+                [self.databaseStorage touchInteraction:job.message transaction:transaction];
             }
         }];
 
@@ -370,9 +368,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     [attachmentStream anyInsertWithTransaction:transaction];
 
                     if (job.message) {
-                        if (transaction.transitional_yapWriteTransaction) {
-                            [job.message touchWithTransaction:transaction.transitional_yapWriteTransaction];
-                        }
+                        [self.databaseStorage touchInteraction:job.message transaction:transaction];
                     }
                 }];
 
@@ -408,9 +404,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                            }];
 
                     if (job.message) {
-                        if (transaction.transitional_yapWriteTransaction) {
-                            [job.message touchWithTransaction:transaction.transitional_yapWriteTransaction];
-                        }
+                        [self.databaseStorage touchInteraction:job.message transaction:transaction];
                     }
                 }];
 
