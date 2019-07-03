@@ -906,9 +906,12 @@ typedef enum : NSUInteger {
 {
     NSMutableArray<NSString *> *result = [NSMutableArray new];
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.transitional_phoneNumber]
-            == OWSVerificationStateNoLongerVerified) {
-            [result addObject:address.transitional_phoneNumber];
+        // TODO UUID
+        if (address.phoneNumber) {
+            if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.phoneNumber]
+                == OWSVerificationStateNoLongerVerified) {
+                [result addObject:address.transitional_phoneNumber];
+            }
         }
     }
     return [result copy];
@@ -1592,10 +1595,13 @@ typedef enum : NSUInteger {
 
     BOOL isVerified = YES;
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.transitional_phoneNumber]
-            != OWSVerificationStateVerified) {
-            isVerified = NO;
-            break;
+        // TODO UUID
+        if (address.phoneNumber) {
+            if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.phoneNumber]
+                != OWSVerificationStateVerified) {
+                isVerified = NO;
+                break;
+            }
         }
     }
     if (isVerified) {
@@ -2289,8 +2295,7 @@ typedef enum : NSUInteger {
     }
     TSContactThread *contactThread = (TSContactThread *)self.thread;
 
-    NSString *displayName =
-        [self.contactsManager displayNameForAddress:interaction.recipientId.transitional_signalServiceAddress];
+    NSString *displayName = [self.contactsManager displayNameForAddress:contactThread.contactAddress];
     NSString *title =
         [NSString stringWithFormat:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT",
                                        @"Title format for action sheet that offers to block an unknown user."
@@ -2309,8 +2314,7 @@ typedef enum : NSUInteger {
                                  style:UIAlertActionStyleDestructive
                                handler:^(UIAlertAction *action) {
                                    OWSLogInfo(@"Blocking an unknown user.");
-                                   [self.blockingManager
-                                       addBlockedAddress:interaction.recipientId.transitional_signalServiceAddress];
+                                   [self.blockingManager addBlockedAddress:contactThread.contactAddress];
                                    // Delete the offers.
                                    [self.editingDatabaseConnection
                                        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

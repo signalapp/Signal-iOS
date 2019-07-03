@@ -312,7 +312,6 @@ extension TSInteraction {
             let hasAddToContactsOffer: Bool = try SDSDeserialization.required(record.hasAddToContactsOffer, name: "hasAddToContactsOffer")
             let hasAddToProfileWhitelistOffer: Bool = try SDSDeserialization.required(record.hasAddToProfileWhitelistOffer, name: "hasAddToProfileWhitelistOffer")
             let hasBlockOffer: Bool = try SDSDeserialization.required(record.hasBlockOffer, name: "hasBlockOffer")
-            let recipientId: String = try SDSDeserialization.required(record.recipientId, name: "recipientId")
 
             return OWSContactOffersInteraction(uniqueId: uniqueId,
                                                receivedAtTimestamp: receivedAtTimestamp,
@@ -322,8 +321,7 @@ extension TSInteraction {
                                                beforeInteractionId: beforeInteractionId,
                                                hasAddToContactsOffer: hasAddToContactsOffer,
                                                hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer,
-                                               hasBlockOffer: hasBlockOffer,
-                                               recipientId: recipientId)
+                                               hasBlockOffer: hasBlockOffer)
 
         case .disappearingConfigurationUpdateInfoMessage:
 

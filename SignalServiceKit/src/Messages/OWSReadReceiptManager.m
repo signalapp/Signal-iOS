@@ -303,13 +303,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             NSString *threadUniqueId = message.uniqueThreadId;
             OWSAssertDebug(threadUniqueId.length > 0);
 
-            NSString *messageAuthorId = message.authorAddress.transitional_phoneNumber;
-            OWSAssertDebug(messageAuthorId.length > 0);
+            SignalServiceAddress *messageAuthorAddress = message.authorAddress;
+            OWSAssertDebug(messageAuthorAddress.isValid);
 
             OWSLinkedDeviceReadReceipt *newReadReceipt =
-                [[OWSLinkedDeviceReadReceipt alloc] initWithSenderId:messageAuthorId
-                                                  messageIdTimestamp:message.timestamp
-                                                       readTimestamp:[NSDate ows_millisecondTimeStamp]];
+                [[OWSLinkedDeviceReadReceipt alloc] initWithSenderAddress:messageAuthorAddress
+                                                       messageIdTimestamp:message.timestamp
+                                                            readTimestamp:[NSDate ows_millisecondTimeStamp]];
 
             OWSLinkedDeviceReadReceipt *_Nullable oldReadReceipt = self.toLinkedDevicesReadReceiptMap[threadUniqueId];
             if (oldReadReceipt && oldReadReceipt.messageIdTimestamp > newReadReceipt.messageIdTimestamp) {
@@ -328,7 +328,8 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
             if ([self areReadReceiptsEnabled]) {
                 OWSLogVerbose(@"Enqueuing read receipt for sender.");
-                [self.outgoingReceiptManager enqueueReadReceiptForEnvelope:messageAuthorId timestamp:message.timestamp];
+                [self.outgoingReceiptManager enqueueReadReceiptForAddress:messageAuthorAddress
+                                                                timestamp:message.timestamp];
             }
 
             [self scheduleProcessing];
@@ -412,10 +413,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     OWSAssertDebug(message);
     OWSAssertDebug(transaction);
-    if (SSKFeatureFlags.allowUUIDOnlyContacts) {
-        // UUID TODO
-        return;
-    }
 
     SignalServiceAddress *senderAddress = message.authorAddress;
     uint64_t timestamp = message.timestamp;
@@ -425,9 +422,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     }
 
     OWSLinkedDeviceReadReceipt *_Nullable readReceipt =
-        [OWSLinkedDeviceReadReceipt findLinkedDeviceReadReceiptWithSenderId:senderAddress.transitional_phoneNumber
-                                                         messageIdTimestamp:timestamp
-                                                                transaction:transaction];
+        [OWSLinkedDeviceReadReceipt findLinkedDeviceReadReceiptWithAddress:senderAddress
+                                                        messageIdTimestamp:timestamp
+                                                               transaction:transaction];
     if (!readReceipt) {
         return;
     }
@@ -444,13 +441,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(transaction);
 
     for (SSKProtoSyncMessageRead *readReceiptProto in readReceiptProtos) {
-        NSString *_Nullable senderId = readReceiptProto.sender;
+        SignalServiceAddress *_Nullable senderAddress = readReceiptProto.senderAddress;
         uint64_t messageIdTimestamp = readReceiptProto.timestamp;
 
-        if (senderId.length == 0) {
-            OWSFailDebug(@"senderId was unexpectedly nil");
-            continue;
-        }
+        OWSAssertDebug(senderAddress.isValid);
 
         if (messageIdTimestamp == 0) {
             OWSFailDebug(@"messageIdTimestamp was unexpectedly 0");
@@ -475,9 +469,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             // Received read receipt for unknown incoming message.
             // Persist in case we receive the incoming message later.
             OWSLinkedDeviceReadReceipt *readReceipt =
-                [[OWSLinkedDeviceReadReceipt alloc] initWithSenderId:senderId
-                                                  messageIdTimestamp:messageIdTimestamp
-                                                       readTimestamp:readTimestamp];
+                [[OWSLinkedDeviceReadReceipt alloc] initWithSenderAddress:senderAddress
+                                                       messageIdTimestamp:messageIdTimestamp
+                                                            readTimestamp:readTimestamp];
             [readReceipt anyInsertWithTransaction:transaction];
         }
     }

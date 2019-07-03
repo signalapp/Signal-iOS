@@ -74,7 +74,7 @@ public class ConversationAvatarImageView: AvatarImageView {
     let contactsManager: OWSContactsManager
 
     // nil if group avatar
-    let recipientId: String?
+    let recipientAddress: SignalServiceAddress?
 
     // nil if contact avatar
     let groupThreadId: String?
@@ -86,20 +86,20 @@ public class ConversationAvatarImageView: AvatarImageView {
 
         switch thread {
         case let contactThread as TSContactThread:
-            self.recipientId = contactThread.contactAddress.transitional_phoneNumber
+            self.recipientAddress = contactThread.contactAddress
             self.groupThreadId = nil
         case let groupThread as TSGroupThread:
-            self.recipientId = nil
+            self.recipientAddress = nil
             self.groupThreadId = groupThread.uniqueId
         default:
             owsFailDebug("unexpected thread type: \(thread)")
-            self.recipientId = nil
+            self.recipientAddress = nil
             self.groupThreadId = nil
         }
 
         super.init(frame: .zero)
 
-        if recipientId != nil {
+        if recipientAddress != nil {
             NotificationCenter.default.addObserver(self, selector: #selector(handleOtherUsersProfileChanged(notification:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
 
             NotificationCenter.default.addObserver(self, selector: #selector(handleSignalAccountsChanged(notification:)), name: NSNotification.Name.OWSContactsManagerSignalAccountsDidChange, object: nil)
@@ -130,17 +130,17 @@ public class ConversationAvatarImageView: AvatarImageView {
         Logger.debug("")
 
         guard let changedAddress = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress else {
-            owsFailDebug("recipientId was unexpectedly nil")
+            owsFailDebug("changedAddress was unexpectedly nil")
             return
         }
 
-        guard let recipientId = self.recipientId else {
+        guard let recipientAddress = self.recipientAddress else {
             // shouldn't call this for group threads
-            owsFailDebug("contactId was unexpectedly nil")
+            owsFailDebug("recipientAddress was unexpectedly nil")
             return
         }
 
-        guard recipientId == changedAddress.transitional_phoneNumber else {
+        guard recipientAddress == changedAddress else {
             // not this avatar
             return
         }

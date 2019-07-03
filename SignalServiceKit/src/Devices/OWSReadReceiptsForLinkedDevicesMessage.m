@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
@@ -38,7 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
     for (OWSLinkedDeviceReadReceipt *readReceipt in self.readReceipts) {
         SSKProtoSyncMessageReadBuilder *readProtoBuilder =
-            [SSKProtoSyncMessageRead builderWithSender:readReceipt.senderId timestamp:readReceipt.messageIdTimestamp];
+            [SSKProtoSyncMessageRead builderWithTimestamp:readReceipt.messageIdTimestamp];
+
+        [readProtoBuilder setSenderE164:readReceipt.senderAddress.phoneNumber];
+        [readProtoBuilder setSenderUuid:readReceipt.senderAddress.uuidString];
 
         NSError *error;
         SSKProtoSyncMessageRead *_Nullable readProto = [readProtoBuilder buildAndReturnError:&error];

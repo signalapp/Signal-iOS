@@ -1876,15 +1876,23 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// @required
-    var sender: String {
-      get {return _sender ?? String()}
-      set {_sender = newValue}
+    var senderE164: String {
+      get {return _senderE164 ?? String()}
+      set {_senderE164 = newValue}
     }
-    /// Returns true if `sender` has been explicitly set.
-    var hasSender: Bool {return self._sender != nil}
-    /// Clears the value of `sender`. Subsequent reads from it will return its default value.
-    mutating func clearSender() {self._sender = nil}
+    /// Returns true if `senderE164` has been explicitly set.
+    var hasSenderE164: Bool {return self._senderE164 != nil}
+    /// Clears the value of `senderE164`. Subsequent reads from it will return its default value.
+    mutating func clearSenderE164() {self._senderE164 = nil}
+
+    var senderUuid: String {
+      get {return _senderUuid ?? String()}
+      set {_senderUuid = newValue}
+    }
+    /// Returns true if `senderUuid` has been explicitly set.
+    var hasSenderUuid: Bool {return self._senderUuid != nil}
+    /// Clears the value of `senderUuid`. Subsequent reads from it will return its default value.
+    mutating func clearSenderUuid() {self._senderUuid = nil}
 
     /// @required
     var timestamp: UInt64 {
@@ -1900,7 +1908,8 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _sender: String? = nil
+    fileprivate var _senderE164: String? = nil
+    fileprivate var _senderUuid: String? = nil
     fileprivate var _timestamp: UInt64? = nil
   }
 
@@ -4642,32 +4651,38 @@ extension SignalServiceProtos_SyncMessage.Request.TypeEnum: SwiftProtobuf._Proto
 extension SignalServiceProtos_SyncMessage.Read: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Read"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "sender"),
+    1: .same(proto: "senderE164"),
+    3: .same(proto: "senderUuid"),
     2: .same(proto: "timestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._sender)
+      case 1: try decoder.decodeSingularStringField(value: &self._senderE164)
       case 2: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
+      case 3: try decoder.decodeSingularStringField(value: &self._senderUuid)
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._sender {
+    if let v = self._senderE164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     }
     if let v = self._timestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
     }
+    if let v = self._senderUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Read, rhs: SignalServiceProtos_SyncMessage.Read) -> Bool {
-    if lhs._sender != rhs._sender {return false}
+    if lhs._senderE164 != rhs._senderE164 {return false}
+    if lhs._senderUuid != rhs._senderUuid {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

@@ -14,9 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL hasAddToContactsOffer;
 @property (nonatomic, readonly) BOOL hasAddToProfileWhitelistOffer;
 
-// TODO - remove this recipientId param
-// it's redundant with the interaction's TSContactThread
-@property (nonatomic, readonly) NSString *recipientId;
 @property (nonatomic, readonly) NSString *beforeInteractionId;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
@@ -30,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
                               hasBlockOffer:(BOOL)hasBlockOffer
                       hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
               hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
-                                recipientId:(NSString *)recipientId
                         beforeInteractionId:(NSString *)beforeInteractionId NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
@@ -48,8 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
            hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
    hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
                    hasBlockOffer:(BOOL)hasBlockOffer
-                     recipientId:(NSString *)recipientId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:beforeInteractionId:hasAddToContactsOffer:hasAddToProfileWhitelistOffer:hasBlockOffer:recipientId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:beforeInteractionId:hasAddToContactsOffer:hasAddToProfileWhitelistOffer:hasBlockOffer:));
 
 // clang-format on
 

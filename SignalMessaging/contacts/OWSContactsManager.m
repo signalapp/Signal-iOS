@@ -1032,11 +1032,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
+    NSString *_Nullable profileName = [self.profileManager profileNameForAddress:address];
 
-    NSString *_Nullable profileName;
-    if (!SSKFeatureFlags.allowUUIDOnlyContacts) {
-        profileName = [self.profileManager profileNameForAddress:address];
-    }
     if (profileName.length > 0) {
         NSAttributedString *result = [[NSAttributedString alloc] initWithString:phoneNumber ?: address.stringForDisplay
                                                                      attributes:primaryAttributes];

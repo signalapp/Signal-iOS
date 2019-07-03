@@ -26,17 +26,21 @@ public struct LinkedDeviceReadReceiptRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
+    public let linkedDeviceReadReceiptSchemaVersion: UInt
     public let messageIdTimestamp: UInt64
     public let readTimestamp: UInt64
-    public let senderId: String
+    public let senderPhoneNumber: String?
+    public let senderUUID: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
         case recordType
         case uniqueId
+        case linkedDeviceReadReceiptSchemaVersion
         case messageIdTimestamp
         case readTimestamp
-        case senderId
+        case senderPhoneNumber
+        case senderUUID
     }
 
     public static func columnName(_ column: LinkedDeviceReadReceiptRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -72,14 +76,18 @@ extension OWSLinkedDeviceReadReceipt {
         case .linkedDeviceReadReceipt:
 
             let uniqueId: String = record.uniqueId
+            let linkedDeviceReadReceiptSchemaVersion: UInt = record.linkedDeviceReadReceiptSchemaVersion
             let messageIdTimestamp: UInt64 = record.messageIdTimestamp
             let readTimestamp: UInt64 = record.readTimestamp
-            let senderId: String = record.senderId
+            let senderPhoneNumber: String? = record.senderPhoneNumber
+            let senderUUID: String? = record.senderUUID
 
             return OWSLinkedDeviceReadReceipt(uniqueId: uniqueId,
+                                              linkedDeviceReadReceiptSchemaVersion: linkedDeviceReadReceiptSchemaVersion,
                                               messageIdTimestamp: messageIdTimestamp,
                                               readTimestamp: readTimestamp,
-                                              senderId: senderId)
+                                              senderPhoneNumber: senderPhoneNumber,
+                                              senderUUID: senderUUID)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -116,9 +124,11 @@ extension OWSLinkedDeviceReadReceiptSerializer {
     static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let messageIdTimestampColumn = SDSColumnMetadata(columnName: "messageIdTimestamp", columnType: .int64, columnIndex: 3)
-    static let readTimestampColumn = SDSColumnMetadata(columnName: "readTimestamp", columnType: .int64, columnIndex: 4)
-    static let senderIdColumn = SDSColumnMetadata(columnName: "senderId", columnType: .unicodeString, columnIndex: 5)
+    static let linkedDeviceReadReceiptSchemaVersionColumn = SDSColumnMetadata(columnName: "linkedDeviceReadReceiptSchemaVersion", columnType: .int64, columnIndex: 3)
+    static let messageIdTimestampColumn = SDSColumnMetadata(columnName: "messageIdTimestamp", columnType: .int64, columnIndex: 4)
+    static let readTimestampColumn = SDSColumnMetadata(columnName: "readTimestamp", columnType: .int64, columnIndex: 5)
+    static let senderPhoneNumberColumn = SDSColumnMetadata(columnName: "senderPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 6)
+    static let senderUUIDColumn = SDSColumnMetadata(columnName: "senderUUID", columnType: .unicodeString, isOptional: true, columnIndex: 7)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -126,9 +136,11 @@ extension OWSLinkedDeviceReadReceiptSerializer {
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,
+        linkedDeviceReadReceiptSchemaVersionColumn,
         messageIdTimestampColumn,
         readTimestampColumn,
-        senderIdColumn
+        senderPhoneNumberColumn,
+        senderUUIDColumn
         ])
 }
 
@@ -454,10 +466,12 @@ class OWSLinkedDeviceReadReceiptSerializer: SDSSerializer {
         }
 
         // Base class properties
+        let linkedDeviceReadReceiptSchemaVersion: UInt = model.linkedDeviceReadReceiptSchemaVersion
         let messageIdTimestamp: UInt64 = model.messageIdTimestamp
         let readTimestamp: UInt64 = model.readTimestamp
-        let senderId: String = model.senderId
+        let senderPhoneNumber: String? = model.senderPhoneNumber
+        let senderUUID: String? = model.senderUUID
 
-        return LinkedDeviceReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp, senderId: senderId)
+        return LinkedDeviceReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, linkedDeviceReadReceiptSchemaVersion: linkedDeviceReadReceiptSchemaVersion, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp, senderPhoneNumber: senderPhoneNumber, senderUUID: senderUUID)
     }
 }
