@@ -251,6 +251,11 @@ NS_ASSUME_NONNULL_BEGIN
                           parameters:accountAttributes];
 }
 
++ (TSRequest *)accountWhoAmIRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/accounts/whoami"] method:@"GET" parameters:@{}];
+}
+
 + (TSRequest *)unregisterAccountRequest
 {
     NSString *path = [NSString stringWithFormat:@"%@/%@", textSecureAccountsAPI, @"apn"];

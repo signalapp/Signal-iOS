@@ -95,6 +95,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 // - uploaded pre-keys
 // - uploaded push tokens
 - (void)didRegisterWithUUID:(nullable NSUUID *)uuid NS_SWIFT_NAME(didRegister(uuid:));
+- (void)recordUuidForLegacyUser:(NSUUID *)uuid NS_SWIFT_NAME(recordUuidForLegacyUser(_:));
 
 #if TARGET_OS_IPHONE
 
