@@ -266,11 +266,11 @@ message Verified {
     UNVERIFIED = 2;
   }
 
-  // @required
-  optional string destination = 1;
-  optional bytes  identityKey = 2;
-  optional State  state       = 3;
-  optional bytes  nullMessage = 4;
+  optional string destinationE164 = 1;
+  optional string destinationUuid = 5;
+  optional bytes  identityKey     = 2;
+  optional State  state           = 3;
+  optional bytes  nullMessage     = 4;
 }
 
 message SyncMessage {
@@ -403,8 +403,8 @@ message ContactDetails {
     optional uint32 length      = 2;
   }
 
-  // @required
   optional string   number      = 1;
+  optional string   uuid        = 9;
   optional string   name        = 2;
   optional Avatar   avatar      = 3;
   optional string   color       = 4;

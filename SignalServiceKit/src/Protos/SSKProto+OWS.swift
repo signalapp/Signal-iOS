@@ -103,3 +103,53 @@ public extension SSKProtoSyncMessageRead {
         return address
     }
 }
+
+@objc
+public extension SSKProtoVerified {
+    var hasValidDestination: Bool {
+        return destinationAddress != nil
+    }
+
+    var destinationAddress: SignalServiceAddress? {
+        let uuidString: String? = {
+            guard hasDestinationUuid else {
+                return nil
+            }
+
+            guard let destinationUuid = destinationUuid else {
+                owsFailDebug("destinationUuid was unexpectedly nil")
+                return nil
+            }
+
+            return destinationUuid
+        }()
+
+        let phoneNumber: String? = {
+            guard hasDestinationE164 else {
+                // Shouldn't happen in prod yet
+                assert(FeatureFlags.allowUUIDOnlyContacts)
+                return nil
+            }
+
+            guard let destinationE164 = destinationE164 else {
+                owsFailDebug("destinationE164 was unexpectedly nil")
+                return nil
+            }
+
+            guard destinationE164.count > 0 else {
+                owsFailDebug("destinationE164 was unexpectedly empty")
+                return nil
+            }
+
+            return destinationE164
+        }()
+
+        let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)
+        guard address.isValid else {
+            owsFailDebug("address was unexpectedly invalid")
+            return nil
+        }
+
+        return address
+    }
+}
