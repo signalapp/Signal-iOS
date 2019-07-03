@@ -119,10 +119,12 @@ public class AccountManager: NSObject {
         }
 
         Logger.debug("registering with signal server")
-        let registrationPromise: Promise<Void> = firstly {
+        var pendingUuid: UUID?
+        let registrationPromise: Promise<Void> = firstly { () -> Promise<UUID?> in
             self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
-        }.then {
-            self.accountServiceClient.updateAttributes()
+        }.then { (uuid: UUID?) -> Promise<Void> in
+            pendingUuid = uuid
+            return self.accountServiceClient.updateAttributes()
         }.then {
             self.createPreKeys()
         }.done {
@@ -141,7 +143,8 @@ public class AccountManager: NSObject {
                 }
             }
         }.done { (_) -> Void in
-            self.completeRegistration()
+            assert(!FeatureFlags.allowUUIDOnlyContacts || pendingUuid != nil)
+            self.completeRegistration(uuid: pendingUuid)
         }
 
         registrationPromise.retainUntilComplete()
@@ -149,12 +152,35 @@ public class AccountManager: NSObject {
         return registrationPromise
     }
 
-    private func registerForTextSecure(verificationCode: String, pin: String?) -> Promise<Void> {
-        return Promise { resolver in
+    private func registerForTextSecure(verificationCode: String, pin: String?) -> Promise<UUID?> {
+        let promise = Promise<Any?> { resolver in
             tsAccountManager.verifyAccount(withCode: verificationCode,
                                            pin: pin,
-                                           success: { resolver.fulfill(()) },
+                                           success: { responseObject in resolver.fulfill((responseObject)) },
                                            failure: resolver.reject)
+        }
+
+        // UUID TODO: this UUID param should be non-optional when the production service is updated
+        return promise.map { responseObject throws -> UUID? in
+            guard let responseObject = responseObject else {
+                return nil
+            }
+
+            guard let params = ParamParser(responseObject: responseObject) else {
+                owsFailDebug("params was unexpectedly nil")
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+
+            guard let uuidString: String = try params.optional(key: "uuid") else {
+                return nil
+            }
+
+            guard let uuid = UUID(uuidString: uuidString) else {
+                owsFailDebug("invalid uuidString: \(uuidString)")
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+
+            return uuid
         }
     }
 
@@ -172,9 +198,9 @@ public class AccountManager: NSObject {
         return job.run()
     }
 
-    private func completeRegistration() {
+    private func completeRegistration(uuid: UUID?) {
         Logger.info("")
-        tsAccountManager.didRegister()
+        tsAccountManager.didRegister(uuid: uuid)
     }
 
     // MARK: Message Delivery
