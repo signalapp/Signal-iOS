@@ -90,6 +90,8 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     _serverTimestamp = serverTimestamp;
     _wasReceivedByUD = wasReceivedByUD;
 
+    _incomingMessageSchemaVersion = TSIncomingMessageSchemaVersion;
+
     return self;
 }
 
