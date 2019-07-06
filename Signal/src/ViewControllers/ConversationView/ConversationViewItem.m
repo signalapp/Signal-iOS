@@ -13,6 +13,7 @@
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSContact.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -154,6 +155,15 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
     return self;
 }
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (void)replaceInteraction:(TSInteraction *)interaction transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -1382,7 +1392,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)deleteAction
 {
-    [self.interaction remove];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.interaction anyRemoveWithTransaction:transaction];
+    }];
 }
 
 - (BOOL)hasBodyTextActionContent

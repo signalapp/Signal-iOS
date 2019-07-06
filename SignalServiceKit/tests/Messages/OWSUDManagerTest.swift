@@ -73,8 +73,11 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         XCTAssert(udManager.hasSenderCertificate())
         XCTAssert(tsAccountManager.isRegistered)
-        XCTAssertNotNil(tsAccountManager.localNumber())
-        XCTAssert(tsAccountManager.localNumber()!.count > 0)
+        guard let localAddress = tsAccountManager.localAddress else {
+            XCTFail("localAddress was unexpectedly nil")
+            return
+        }
+        XCTAssert(localAddress.isValid)
 
         var udAccess: OWSUDAccess!
 
@@ -106,11 +109,14 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         XCTAssert(udManager.hasSenderCertificate())
         XCTAssert(tsAccountManager.isRegistered)
-        XCTAssertNotNil(tsAccountManager.localAddress.isValid)
-        XCTAssert(tsAccountManager.localNumber()!.count > 0)
+        guard let localAddress = tsAccountManager.localAddress else {
+            XCTFail("localAddress was unexpectedly nil")
+            return
+        }
+        XCTAssert(localAddress.isValid)
 
         // Ensure UD is enabled by setting our own access level to enabled.
-        udManager.setUnidentifiedAccessMode(.enabled, address: tsAccountManager.localAddress)
+        udManager.setUnidentifiedAccessMode(.enabled, address: localAddress)
 
         let bobRecipientAddress = SignalServiceAddress(phoneNumber: "+13213214322")
         XCTAssertFalse(bobRecipientAddress.isLocalAddress)
@@ -144,11 +150,14 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     func testMode_withProfileKey() {
         XCTAssert(udManager.hasSenderCertificate())
         XCTAssert(tsAccountManager.isRegistered)
-        XCTAssertNotNil(tsAccountManager.localNumber())
-        XCTAssert(tsAccountManager.localNumber()!.count > 0)
+        guard let localAddress = tsAccountManager.localAddress else {
+            XCTFail("localAddress was unexpectedly nil")
+            return
+        }
+        XCTAssert(localAddress.isValid)
 
         // Ensure UD is enabled by setting our own access level to enabled.
-        udManager.setUnidentifiedAccessMode(.enabled, address: tsAccountManager.localAddress)
+        udManager.setUnidentifiedAccessMode(.enabled, address: localAddress)
 
         let bobRecipientAddress = SignalServiceAddress(phoneNumber: "+13213214322")
         XCTAssertFalse(bobRecipientAddress.isLocalAddress)
