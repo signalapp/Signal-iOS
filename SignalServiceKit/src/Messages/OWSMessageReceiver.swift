@@ -34,10 +34,12 @@ public extension OWSMessageDecryptJobFinder {
     }
 
     private func nextJob(grdbTransaction transaction: GRDBReadTransaction) -> OWSMessageDecryptJob? {
+        owsFailDebug("We should be using SSKMessageDecryptJobQueue instead of this method.")
+
         let sql = """
         SELECT *
         FROM \(MessageDecryptJobRecord.databaseTableName)
-        ORDER BY \(messageDecryptJobColumn: .createdAt) DESC
+        ORDER BY \(messageDecryptJobColumn: .createdAt)
         LIMIT 1
         """
         let arguments: StatementArguments = []
