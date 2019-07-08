@@ -48,7 +48,9 @@ public class AccountManager: NSObject {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            self.recordUuidIfNecessary()
+            if self.tsAccountManager.isRegistered {
+                self.recordUuidIfNecessary()
+            }
         }
     }
 
