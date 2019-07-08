@@ -209,8 +209,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
  */
 - (BOOL)shouldSyncTranscript;
 
-- (BOOL)shouldBeSaved;
-
 // All recipients of this message.
 - (NSArray<SignalServiceAddress *> *)recipientAddresses;
 

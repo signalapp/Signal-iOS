@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (BOOL)shouldBeSaved
+- (BOOL)anyCanBeSaved
 {
     return NO;
 }

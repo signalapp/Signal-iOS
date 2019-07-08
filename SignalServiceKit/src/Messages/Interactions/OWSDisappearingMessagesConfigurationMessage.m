@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDisappearingMessagesConfigurationMessage
 
-- (BOOL)shouldBeSaved
+- (BOOL)anyCanBeSaved
 {
     return NO;
 }

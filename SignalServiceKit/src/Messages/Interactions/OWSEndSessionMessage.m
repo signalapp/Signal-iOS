@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
                perMessageExpirationDurationSeconds:0];
 }
 
-- (BOOL)shouldBeSaved
+- (BOOL)anyCanBeSaved
 {
     return NO;
 }

@@ -507,11 +507,11 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 // Each message has the responsibility for eagerly cleaning up its attachments.
 // Normally this is done in [TSMessage removeWithTransaction], but that doesn't
-// apply for "transient", unsaved messages (i.e. shouldBeSaved == NO).  These
+// apply for "transient", unsaved messages (i.e. anyCanBeSaved == NO).  These
 // messages should clean up their attachments upon deallocation.
 - (void)removeTemporaryAttachments
 {
-    if (self.shouldBeSaved) {
+    if (self.anyCanBeSaved) {
         // Message is not transient; no need to clean up attachments.
         return;
     }
@@ -588,31 +588,23 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     return TSOutgoingMessageStateSent;
 }
 
-- (BOOL)shouldBeSaved
+- (BOOL)anyCanBeSaved
 {
     if (self.groupMetaMessage == TSGroupMetaMessageDeliver || self.groupMetaMessage == TSGroupMetaMessageUnspecified) {
         return YES;
     }
 
+    // There's no need to save this message, since it's not displayed to the user.
+    //
+    // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
+    OWSLogDebug(@"Skipping save for transient outgoing message.");
     return NO;
-}
-
-- (BOOL)anyCanBeSaved
-{
-    if (!self.shouldBeSaved) {
-        // There's no need to save this message, since it's not displayed to the user.
-        //
-        // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
-        OWSLogDebug(@"Skipping save for transient outgoing message.");
-        return NO;
-    }
-    return YES;
 }
 
 // GRDB TODO: Remove this override.
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    if (!self.shouldBeSaved) {
+    if (!self.anyCanBeSaved) {
         // There's no need to save this message, since it's not displayed to the user.
         //
         // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
