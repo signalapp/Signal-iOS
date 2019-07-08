@@ -16,7 +16,7 @@ extern NSString *const OWSPrimaryStorageSessionStoreCollection;
 
 - (SessionRecord *)loadSessionForAddress:(SignalServiceAddress *)address
                                 deviceId:(int)deviceId
-                             transaction:(SDSAnyReadTransaction *)transaction;
+                             transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (NSArray *)subDevicesSessionsForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
@@ -28,7 +28,7 @@ extern NSString *const OWSPrimaryStorageSessionStoreCollection;
 
 - (BOOL)containsSessionForAddress:(SignalServiceAddress *)address
                          deviceId:(int)deviceId
-                      transaction:(SDSAnyReadTransaction *)transaction;
+                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)deleteSessionForAddress:(SignalServiceAddress *)address
                        deviceId:(int)deviceId

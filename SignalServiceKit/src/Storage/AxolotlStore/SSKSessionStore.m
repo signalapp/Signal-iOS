@@ -53,12 +53,12 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
 
 - (SessionRecord *)loadSessionForAddress:(SignalServiceAddress *)address
                                 deviceId:(int)deviceId
-                             transaction:(SDSAnyReadTransaction *)transaction
+                             transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(deviceId >= 0);
 
-    NSString *accountId = [self.accountIdFinder accountIdForAddress:address transaction:transaction];
+    NSString *accountId = [self.accountIdFinder ensureAccountIdForAddress:address transaction:transaction];
     OWSAssertDebug(accountId);
 
     return [self loadSessionForAccountId:accountId deviceId:deviceId transaction:transaction];
@@ -185,12 +185,12 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
 
 - (BOOL)containsSessionForAddress:(SignalServiceAddress *)address
                          deviceId:(int)deviceId
-                      transaction:(SDSAnyReadTransaction *)transaction
+                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(deviceId >= 0);
 
-    NSString *accountId = [self.accountIdFinder accountIdForAddress:address transaction:transaction];
+    NSString *accountId = [self.accountIdFinder ensureAccountIdForAddress:address transaction:transaction];
     OWSAssertDebug(accountId.length > 0);
 
     return [self containsSessionForAccountId:accountId deviceId:deviceId transaction:transaction];
