@@ -239,7 +239,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             if existingPhoneNumberValue != existingUUIDValue {
                 owsFailDebug("UUID and Phone Number unexpectedly have different UD values")
                 Logger.info("Unexpected UD value mismatch, migrating phone number value: \(existingPhoneNumberValue) to uuid value: \(existingUUIDValue)")
-                transaction.setObject(existingUUIDValue, forKey: address.phoneNumber!, inCollection: kUnidentifiedAccessPhoneNumberCollection)
+                transaction.setObject(existingUUIDValue.rawValue, forKey: address.phoneNumber!, inCollection: kUnidentifiedAccessPhoneNumberCollection)
             }
 
             existingValue = existingUUIDValue
@@ -248,14 +248,14 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
             // We had phone number entry but not UUID, update UUID value
             if let uuidString = address.uuidString {
-                transaction.setObject(existingPhoneNumberValue, forKey: uuidString, inCollection: kUnidentifiedAccessUUIDCollection)
+                transaction.setObject(existingPhoneNumberValue.rawValue, forKey: uuidString, inCollection: kUnidentifiedAccessUUIDCollection)
             }
         } else if let existingUUIDValue = existingUUIDValue {
             existingValue = existingUUIDValue
 
             // We had UUID entry but not phone number, update phone number value
             if let phoneNumber = address.phoneNumber {
-                transaction.setObject(existingPhoneNumberValue, forKey: phoneNumber, inCollection: kUnidentifiedAccessPhoneNumberCollection)
+                transaction.setObject(existingUUIDValue.rawValue, forKey: phoneNumber, inCollection: kUnidentifiedAccessPhoneNumberCollection)
             }
         } else {
             existingValue = nil
