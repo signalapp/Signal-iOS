@@ -37,6 +37,7 @@ extern NSString *const OWSPrimaryStorageSessionStoreCollection;
 - (void)deleteAllSessionsForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)archiveAllSessionsForAddress:(SignalServiceAddress *)address transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)archiveAllSessionsForAccountId:(NSString *)accountId transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Debug
 

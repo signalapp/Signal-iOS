@@ -286,20 +286,20 @@ NS_ASSUME_NONNULL_BEGIN
                                 } else {
 
                                     BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
-                                        presentAlertIfNecessaryWithRecipientId:recipientId
-                                                              confirmationText:NSLocalizedString(
-                                                                                   @"SAFETY_NUMBER_CHANGED_CONFIRM_"
-                                                                                   @"ADD_TO_GROUP_ACTION",
-                                                                                   @"button title to confirm adding "
-                                                                                   @"a recipient to a group when "
-                                                                                   @"their safety "
-                                                                                   @"number has recently changed")
-                                                               contactsManager:contactsViewHelper.contactsManager
-                                                                    completion:^(BOOL didConfirmIdentity) {
-                                                                        if (didConfirmIdentity) {
-                                                                            [weakSelf addRecipientId:recipientId];
-                                                                        }
-                                                                    }];
+                                        presentAlertIfNecessaryWithAddress:recipientId.transitional_signalServiceAddress
+                                                          confirmationText:NSLocalizedString(
+                                                                               @"SAFETY_NUMBER_CHANGED_CONFIRM_"
+                                                                               @"ADD_TO_GROUP_ACTION",
+                                                                               @"button title to confirm adding "
+                                                                               @"a recipient to a group when "
+                                                                               @"their safety "
+                                                                               @"number has recently changed")
+                                                           contactsManager:contactsViewHelper.contactsManager
+                                                                completion:^(BOOL didConfirmIdentity) {
+                                                                    if (didConfirmIdentity) {
+                                                                        [weakSelf addRecipientId:recipientId];
+                                                                    }
+                                                                }];
                                     if (didShowSNAlert) {
                                         return;
                                     }
@@ -382,21 +382,21 @@ NS_ASSUME_NONNULL_BEGIN
                                                             }];
                                 } else {
                                     BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
-                                        presentAlertIfNecessaryWithRecipientId:signalAccount.recipientAddress
-                                                                                   .transitional_phoneNumber
-                                                              confirmationText:NSLocalizedString(
-                                                                                   @"SAFETY_NUMBER_CHANGED_CONFIRM_"
-                                                                                   @"ADD_TO_GROUP_ACTION",
-                                                                                   @"button title to confirm adding "
-                                                                                   @"a recipient to a group when "
-                                                                                   @"their safety "
-                                                                                   @"number has recently changed")
-                                                               contactsManager:contactsViewHelper.contactsManager
-                                                                    completion:^(BOOL didConfirmIdentity) {
-                                                                        if (didConfirmIdentity) {
-                                                                            [weakSelf addRecipientId:recipientId];
-                                                                        }
-                                                                    }];
+                                        presentAlertIfNecessaryWithAddress:signalAccount.recipientAddress
+
+                                                          confirmationText:NSLocalizedString(
+                                                                               @"SAFETY_NUMBER_CHANGED_CONFIRM_"
+                                                                               @"ADD_TO_GROUP_ACTION",
+                                                                               @"button title to confirm adding "
+                                                                               @"a recipient to a group when "
+                                                                               @"their safety "
+                                                                               @"number has recently changed")
+                                                           contactsManager:contactsViewHelper.contactsManager
+                                                                completion:^(BOOL didConfirmIdentity) {
+                                                                    if (didConfirmIdentity) {
+                                                                        [weakSelf addRecipientId:recipientId];
+                                                                    }
+                                                                }];
                                     if (didShowSNAlert) {
                                         return;
                                     }

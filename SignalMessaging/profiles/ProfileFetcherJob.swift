@@ -231,7 +231,7 @@ public class ProfileFetcherJob: NSObject {
 
     private func verifyIdentityUpToDateAsync(address: SignalServiceAddress, latestIdentityKey: Data) {
         primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
-            if self.identityManager.saveRemoteIdentity(latestIdentityKey, recipientId: address.transitional_phoneNumber, transaction: transaction.asAnyWrite) {
+            if self.identityManager.saveRemoteIdentity(latestIdentityKey, address: address, transaction: transaction.asAnyWrite) {
                 Logger.info("updated identity key with fetched profile for recipient: \(address)")
                 self.sessionStore.archiveAllSessions(for: address, transaction: transaction.asAnyWrite)
             } else {

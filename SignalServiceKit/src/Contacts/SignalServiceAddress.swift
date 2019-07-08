@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class SignalServiceAddress: NSObject, NSCopying {
+public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
     @objc
     public let phoneNumber: String?
 
@@ -64,12 +64,24 @@ public class SignalServiceAddress: NSObject, NSCopying {
         }
     }
 
+    // MARK: -
+
+    public func encode(with aCoder: NSCoder) {
+        aCoder.encode(uuid, forKey: "uuid")
+        aCoder.encode(phoneNumber, forKey: "phoneNumber")
+    }
+
+    public required init?(coder aDecoder: NSCoder) {
+        uuid = aDecoder.decodeObject(forKey: "uuid") as? UUID
+        phoneNumber = aDecoder.decodeObject(forKey: "phoneNumber") as? String
+    }
+
+    // MARK: -
+
     @objc
     public func copy(with zone: NSZone? = nil) -> Any {
         return SignalServiceAddress(uuid: uuid, phoneNumber: phoneNumber)
     }
-
-    // MARK: -
 
     public override func isEqual(_ object: Any?) -> Bool {
         guard let otherAddress = object as? SignalServiceAddress else {

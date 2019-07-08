@@ -3613,13 +3613,19 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
 
     // MARK: - SSKProtoVerifiedBuilder
 
-    @objc public class func builder(destination: String) -> SSKProtoVerifiedBuilder {
-        return SSKProtoVerifiedBuilder(destination: destination)
+    @objc public class func builder() -> SSKProtoVerifiedBuilder {
+        return SSKProtoVerifiedBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoVerifiedBuilder {
-        let builder = SSKProtoVerifiedBuilder(destination: destination)
+        let builder = SSKProtoVerifiedBuilder()
+        if let _value = destinationE164 {
+            builder.setDestinationE164(_value)
+        }
+        if let _value = destinationUuid {
+            builder.setDestinationUuid(_value)
+        }
         if let _value = identityKey {
             builder.setIdentityKey(_value)
         }
@@ -3638,14 +3644,12 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(destination: String) {
-            super.init()
-
-            setDestination(destination)
+        @objc public func setDestinationE164(_ valueParam: String) {
+            proto.destinationE164 = valueParam
         }
 
-        @objc public func setDestination(_ valueParam: String) {
-            proto.destination = valueParam
+        @objc public func setDestinationUuid(_ valueParam: String) {
+            proto.destinationUuid = valueParam
         }
 
         @objc public func setIdentityKey(_ valueParam: Data) {
@@ -3671,7 +3675,25 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
 
     fileprivate let proto: SignalServiceProtos_Verified
 
-    @objc public let destination: String
+    @objc public var destinationE164: String? {
+        guard proto.hasDestinationE164 else {
+            return nil
+        }
+        return proto.destinationE164
+    }
+    @objc public var hasDestinationE164: Bool {
+        return proto.hasDestinationE164
+    }
+
+    @objc public var destinationUuid: String? {
+        guard proto.hasDestinationUuid else {
+            return nil
+        }
+        return proto.destinationUuid
+    }
+    @objc public var hasDestinationUuid: Bool {
+        return proto.hasDestinationUuid
+    }
 
     @objc public var identityKey: Data? {
         guard proto.hasIdentityKey else {
@@ -3711,10 +3733,8 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
         return proto.hasNullMessage
     }
 
-    private init(proto: SignalServiceProtos_Verified,
-                 destination: String) {
+    private init(proto: SignalServiceProtos_Verified) {
         self.proto = proto
-        self.destination = destination
     }
 
     @objc
@@ -3728,17 +3748,11 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_Verified) throws -> SSKProtoVerified {
-        guard proto.hasDestination else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: destination")
-        }
-        let destination = proto.destination
-
         // MARK: - Begin Validation Logic for SSKProtoVerified -
 
         // MARK: - End Validation Logic for SSKProtoVerified -
 
-        let result = SSKProtoVerified(proto: proto,
-                                      destination: destination)
+        let result = SSKProtoVerified(proto: proto)
         return result
     }
 
@@ -5892,13 +5906,19 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
 
     // MARK: - SSKProtoContactDetailsBuilder
 
-    @objc public class func builder(number: String) -> SSKProtoContactDetailsBuilder {
-        return SSKProtoContactDetailsBuilder(number: number)
+    @objc public class func builder() -> SSKProtoContactDetailsBuilder {
+        return SSKProtoContactDetailsBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoContactDetailsBuilder {
-        let builder = SSKProtoContactDetailsBuilder(number: number)
+        let builder = SSKProtoContactDetailsBuilder()
+        if let _value = number {
+            builder.setNumber(_value)
+        }
+        if let _value = uuid {
+            builder.setUuid(_value)
+        }
         if let _value = name {
             builder.setName(_value)
         }
@@ -5929,14 +5949,12 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(number: String) {
-            super.init()
-
-            setNumber(number)
-        }
-
         @objc public func setNumber(_ valueParam: String) {
             proto.number = valueParam
+        }
+
+        @objc public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
         }
 
         @objc public func setName(_ valueParam: String) {
@@ -5978,11 +5996,29 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
 
     fileprivate let proto: SignalServiceProtos_ContactDetails
 
-    @objc public let number: String
-
     @objc public let avatar: SSKProtoContactDetailsAvatar?
 
     @objc public let verified: SSKProtoVerified?
+
+    @objc public var number: String? {
+        guard proto.hasNumber else {
+            return nil
+        }
+        return proto.number
+    }
+    @objc public var hasNumber: Bool {
+        return proto.hasNumber
+    }
+
+    @objc public var uuid: String? {
+        guard proto.hasUuid else {
+            return nil
+        }
+        return proto.uuid
+    }
+    @objc public var hasUuid: Bool {
+        return proto.hasUuid
+    }
 
     @objc public var name: String? {
         guard proto.hasName else {
@@ -6029,11 +6065,9 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
     }
 
     private init(proto: SignalServiceProtos_ContactDetails,
-                 number: String,
                  avatar: SSKProtoContactDetailsAvatar?,
                  verified: SSKProtoVerified?) {
         self.proto = proto
-        self.number = number
         self.avatar = avatar
         self.verified = verified
     }
@@ -6049,11 +6083,6 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_ContactDetails) throws -> SSKProtoContactDetails {
-        guard proto.hasNumber else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: number")
-        }
-        let number = proto.number
-
         var avatar: SSKProtoContactDetailsAvatar? = nil
         if proto.hasAvatar {
             avatar = try SSKProtoContactDetailsAvatar.parseProto(proto.avatar)
@@ -6069,7 +6098,6 @@ extension SSKProtoContactDetailsAvatar.SSKProtoContactDetailsAvatarBuilder {
         // MARK: - End Validation Logic for SSKProtoContactDetails -
 
         let result = SSKProtoContactDetails(proto: proto,
-                                            number: number,
                                             avatar: avatar,
                                             verified: verified)
         return result

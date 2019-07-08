@@ -48,7 +48,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
-                     recipientId:(nullable NSString *)recipientId
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                        contactId:(NSString *)contactId
 {
     self = [super initWithUniqueId:uniqueId
@@ -72,7 +72,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
          errorMessageSchemaVersion:errorMessageSchemaVersion
                          errorType:errorType
                               read:read
-                       recipientId:recipientId];
+                  recipientAddress:recipientAddress];
 
     if (!self) {
         return self;

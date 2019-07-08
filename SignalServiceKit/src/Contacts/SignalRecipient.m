@@ -70,13 +70,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
 - (instancetype)initWithAddress:(SignalServiceAddress *)address
 {
-    // Before removing this feature flag, we need to be sure no callers use `recipient.uniqueId`
-    // as a way to get the recipients phone number.
-    if (SSKFeatureFlags.allowUUIDOnlyContacts) {
-        self = [super init];
-    } else {
-        self = [super initWithUniqueId:address.transitional_phoneNumber];
-    }
+    self = [super init];
 
     if (!self) {
         return self;
@@ -114,7 +108,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     // Since we use device count to determine whether a user is registered or not,
     // ensure the local user always has at least *this* device.
     if (![_devices containsObject:@(OWSDevicePrimaryDeviceId)]) {
-        if ([self.uniqueId isEqualToString:self.tsAccountManager.localNumber]) {
+        if (self.address.isLocalAddress) {
             DDLogInfo(@"Adding primary device to self recipient.");
             [self addDevices:[NSSet setWithObject:@(OWSDevicePrimaryDeviceId)]];
         }
@@ -256,11 +250,6 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 - (SignalServiceAddress *)address
 {
     return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID phoneNumber:self.recipientPhoneNumber];
-}
-
-- (NSString *)ensureAccountIdWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    return [[OWSAccountIdFinder new] ensureAccountIdForAddress:self.address transaction:transaction];
 }
 
 #pragma mark -

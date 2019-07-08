@@ -902,16 +902,13 @@ typedef enum : NSUInteger {
 }
 
 // Returns a collection of the group members who are "no longer verified".
-- (NSArray<NSString *> *)noLongerVerifiedRecipientIds
+- (NSArray<SignalServiceAddress *> *)noLongerVerifiedAddresses
 {
-    NSMutableArray<NSString *> *result = [NSMutableArray new];
+    NSMutableArray<SignalServiceAddress *> *result = [NSMutableArray new];
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        // TODO UUID
-        if (address.phoneNumber) {
-            if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.phoneNumber]
-                == OWSVerificationStateNoLongerVerified) {
-                [result addObject:address.transitional_phoneNumber];
-            }
+        if ([[OWSIdentityManager sharedManager] verificationStateForAddress:address]
+            == OWSVerificationStateNoLongerVerified) {
+            [result addObject:address];
         }
     }
     return [result copy];
@@ -928,17 +925,16 @@ typedef enum : NSUInteger {
         return;
     }
 
-    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
+    NSArray<SignalServiceAddress *> *noLongerVerifiedAddresses = [self noLongerVerifiedAddresses];
 
-    if (noLongerVerifiedRecipientIds.count > 0) {
+    if (noLongerVerifiedAddresses.count > 0) {
         NSString *message;
-        if (noLongerVerifiedRecipientIds.count > 1) {
+        if (noLongerVerifiedAddresses.count > 1) {
             message = NSLocalizedString(@"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED",
                 @"Indicates that more than one member of this group conversation is no longer verified.");
         } else {
-            NSString *recipientId = [noLongerVerifiedRecipientIds firstObject];
-            NSString *displayName =
-                [self.contactsManager displayNameForAddress:recipientId.transitional_signalServiceAddress];
+            SignalServiceAddress *address = [noLongerVerifiedAddresses firstObject];
+            NSString *displayName = [self.contactsManager displayNameForAddress:address];
             NSString *format
                 = (self.isGroupConversation ? NSLocalizedString(@"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
                                                   @"Indicates that one member of this group conversation is no longer "
@@ -1090,11 +1086,11 @@ typedef enum : NSUInteger {
 - (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
-        NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
-        if (noLongerVerifiedRecipientIds.count < 1) {
+        NSArray<SignalServiceAddress *> *noLongerVerifiedAddresses = [self noLongerVerifiedAddresses];
+        if (noLongerVerifiedAddresses.count < 1) {
             return;
         }
-        BOOL hasMultiple = noLongerVerifiedRecipientIds.count > 1;
+        BOOL hasMultiple = noLongerVerifiedAddresses.count > 1;
 
         UIAlertController *actionSheet = [UIAlertController alertControllerWithTitle:nil
                                                                              message:nil
@@ -1132,12 +1128,12 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
-    for (NSString *recipientId in noLongerVerifiedRecipientIds) {
-        OWSAssertDebug(recipientId.length > 0);
+    NSArray<SignalServiceAddress *> *noLongerVerifiedAddresses = [self noLongerVerifiedAddresses];
+    for (SignalServiceAddress *address in noLongerVerifiedAddresses) {
+        OWSAssertDebug(address.isValid);
 
         OWSRecipientIdentity *_Nullable recipientIdentity =
-            [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+            [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
         OWSAssertDebug(recipientIdentity);
 
         NSData *identityKey = recipientIdentity.identityKey;
@@ -1148,7 +1144,7 @@ typedef enum : NSUInteger {
 
         [OWSIdentityManager.sharedManager setVerificationState:OWSVerificationStateDefault
                                                    identityKey:identityKey
-                                                   recipientId:recipientId
+                                                       address:address
                                          isUserInitiatedChange:YES];
     }
 }
@@ -1595,13 +1591,9 @@ typedef enum : NSUInteger {
 
     BOOL isVerified = YES;
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        // TODO UUID
-        if (address.phoneNumber) {
-            if ([[OWSIdentityManager sharedManager] verificationStateForRecipientId:address.phoneNumber]
-                != OWSVerificationStateVerified) {
-                isVerified = NO;
-                break;
-            }
+        if ([[OWSIdentityManager sharedManager] verificationStateForAddress:address] != OWSVerificationStateVerified) {
+            isVerified = NO;
+            break;
         }
     }
     if (isVerified) {
@@ -1641,12 +1633,7 @@ typedef enum : NSUInteger {
 - (BOOL)showSafetyNumberConfirmationIfNecessaryWithConfirmationText:(NSString *)confirmationText
                                                          completion:(void (^)(BOOL didConfirmIdentity))completionHandler
 {
-    NSMutableArray<NSString *> *phoneNumbers = [NSMutableArray new];
-    for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        [phoneNumbers addObject:address.transitional_phoneNumber];
-    }
-
-    return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithRecipientIds:[phoneNumbers copy]
+    return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithAddresses:self.thread.recipientAddresses
         confirmationText:confirmationText
         contactsManager:self.contactsManager
         completion:^(BOOL didShowAlert) {
@@ -1671,13 +1658,13 @@ typedef enum : NSUInteger {
         }];
 }
 
-- (void)showFingerprintWithRecipientId:(NSString *)recipientId
+- (void)showFingerprintWithAddress:(SignalServiceAddress *)address
 {
     // Ensure keyboard isn't hiding the "safety numbers changed" interaction when we
     // return from FingerprintViewController.
     [self dismissKeyBoard];
 
-    [FingerprintViewController presentFromViewController:self address:recipientId.transitional_signalServiceAddress];
+    [FingerprintViewController presentFromViewController:self address:address];
 }
 
 #pragma mark - Calls
@@ -1759,13 +1746,13 @@ typedef enum : NSUInteger {
 
 - (void)showNoLongerVerifiedUI
 {
-    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
-    if (noLongerVerifiedRecipientIds.count > 1) {
+    NSArray<SignalServiceAddress *> *noLongerVerifiedAddresses = [self noLongerVerifiedAddresses];
+    if (noLongerVerifiedAddresses.count > 1) {
         [self showConversationSettingsAndShowVerification:YES];
-    } else if (noLongerVerifiedRecipientIds.count == 1) {
+    } else if (noLongerVerifiedAddresses.count == 1) {
         // Pick one in an arbitrary but deterministic manner.
-        NSString *recipientId = noLongerVerifiedRecipientIds.lastObject;
-        [self showFingerprintWithRecipientId:recipientId];
+        SignalServiceAddress *address = noLongerVerifiedAddresses.lastObject;
+        [self showFingerprintWithAddress:address];
     }
 }
 
@@ -1906,9 +1893,9 @@ typedef enum : NSUInteger {
     [self presentAlert:actionSheet];
 }
 
-- (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalIdParam
+- (void)tappedNonBlockingIdentityChangeForAddress:(nullable SignalServiceAddress *)address
 {
-    if (signalIdParam == nil) {
+    if (address == nil) {
         if (self.thread.isGroupThread) {
             // Before 2.13 we didn't track the recipient id in the identity change error.
             OWSLogWarn(@"Ignoring tap on legacy nonblocking identity change since it has no signal id");
@@ -1918,13 +1905,11 @@ typedef enum : NSUInteger {
             TSContactThread *thread = (TSContactThread *)self.thread;
             OWSLogInfo(@"Assuming tap on legacy nonblocking identity change corresponds to current contact thread: %@",
                 thread.contactAddress);
-            signalIdParam = thread.contactAddress.transitional_phoneNumber;
+            address = thread.contactAddress;
         }
     }
-    
-    NSString *signalId = signalIdParam;
 
-    [self showFingerprintWithRecipientId:signalId];
+    [self showFingerprintWithAddress:address];
 }
 
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message
@@ -1962,8 +1947,7 @@ typedef enum : NSUInteger {
 
 - (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage
 {
-    NSString *keyOwner =
-        [self.contactsManager displayNameForAddress:errorMessage.theirSignalId.transitional_signalServiceAddress];
+    NSString *keyOwner = [self.contactsManager displayNameForAddress:errorMessage.theirSignalAddress];
     NSString *titleFormat = NSLocalizedString(@"SAFETY_NUMBERS_ACTIONSHEET_TITLE", @"Action sheet heading");
     NSString *titleText = [NSString stringWithFormat:titleFormat, keyOwner];
 
@@ -1979,7 +1963,7 @@ typedef enum : NSUInteger {
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *action) {
                                    OWSLogInfo(@"Remote Key Changed actions: Show fingerprint display");
-                                   [self showFingerprintWithRecipientId:errorMessage.theirSignalId];
+                                   [self showFingerprintWithAddress:errorMessage.theirSignalAddress];
                                }];
     [actionSheet addAction:showSafteyNumberAction];
 

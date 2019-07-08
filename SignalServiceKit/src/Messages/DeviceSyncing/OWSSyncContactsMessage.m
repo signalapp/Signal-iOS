@@ -120,8 +120,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSContactsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
     for (SignalAccount *signalAccount in signalAccounts) {
-        OWSRecipientIdentity *_Nullable recipientIdentity = [self.identityManager
-            recipientIdentityForRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
+        OWSRecipientIdentity *_Nullable recipientIdentity =
+            [self.identityManager recipientIdentityForAddress:signalAccount.recipientAddress];
         NSData *_Nullable profileKeyData =
             [self.profileManager profileKeyDataForAddress:signalAccount.recipientAddress];
 

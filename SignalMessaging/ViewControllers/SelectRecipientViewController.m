@@ -339,11 +339,13 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                       return;
                                   }
 
-                                  NSString *recipientId = recipients[0].uniqueId;
+                                  SignalServiceAddress *address = recipients[0].address;
                                   [modalActivityIndicator
                                       dismissViewControllerAnimated:NO
                                                          completion:^{
-                                                             [weakSelf.delegate phoneNumberWasSelected:recipientId];
+                                                             [weakSelf.delegate
+                                                                 phoneNumberWasSelected:address
+                                                                                            .transitional_phoneNumber];
                                                          }];
                               }
                               failure:^(NSError *error) {

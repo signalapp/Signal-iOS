@@ -101,7 +101,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
-                     recipientId:(nullable NSString *)recipientId
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                         authorId:(NSString *)authorId
                     envelopeData:(nullable NSData *)envelopeData
 {
@@ -126,7 +126,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
          errorMessageSchemaVersion:errorMessageSchemaVersion
                          errorType:errorType
                               read:read
-                       recipientId:recipientId];
+                  recipientAddress:recipientAddress];
 
     if (!self) {
         return self;
@@ -171,7 +171,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return;
     }
 
-    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey recipientId:self.envelope.sourceE164];
+    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newKey address:self.envelope.sourceAddress];
 
     // Decrypt this and any old messages for the newly accepted key
     NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *messagesToDecrypt =

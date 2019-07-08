@@ -3601,45 +3601,49 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                        messageType:TSInfoMessageTypeGroupQuit]];
 
         // MJK - should be safe to remove this senderTimestamp
-        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                                thread:thread
-                                                                           recipientId:@"+19174054215"
-                                                                     verificationState:OWSVerificationStateDefault
-                                                                         isLocalChange:YES]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                              verificationState:OWSVerificationStateDefault
+                                  isLocalChange:YES]];
 
         // MJK - should be safe to remove this senderTimestamp
-        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                                thread:thread
-                                                                           recipientId:@"+19174054215"
-                                                                     verificationState:OWSVerificationStateVerified
-                                                                         isLocalChange:YES]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                              verificationState:OWSVerificationStateVerified
+                                  isLocalChange:YES]];
         // MJK - should be safe to remove this senderTimestamp
-        [result
-            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                            thread:thread
-                                                                       recipientId:@"+19174054215"
-                                                                 verificationState:OWSVerificationStateNoLongerVerified
-                                                                     isLocalChange:YES]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                              verificationState:OWSVerificationStateNoLongerVerified
+                                  isLocalChange:YES]];
 
         // MJK - should be safe to remove this senderTimestamp
-        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                                thread:thread
-                                                                           recipientId:@"+19174054215"
-                                                                     verificationState:OWSVerificationStateDefault
-                                                                         isLocalChange:NO]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                              verificationState:OWSVerificationStateDefault
+                                  isLocalChange:NO]];
         // MJK - should be safe to remove this senderTimestamp
-        [result addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                                thread:thread
-                                                                           recipientId:@"+19174054215"
-                                                                     verificationState:OWSVerificationStateVerified
-                                                                         isLocalChange:NO]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                              verificationState:OWSVerificationStateVerified
+                                  isLocalChange:NO]];
         // MJK - should be safe to remove this senderTimestamp
-        [result
-            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                            thread:thread
-                                                                       recipientId:@"+19174054215"
-                                                                 verificationState:OWSVerificationStateNoLongerVerified
-                                                                     isLocalChange:NO]];
+        [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                         thread:thread
+                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                              verificationState:OWSVerificationStateNoLongerVerified
+                                  isLocalChange:NO]];
 
         if (transaction.transitional_yapWriteTransaction) {
             [result addObject:[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread]
@@ -3670,7 +3674,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [result addObject:[[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                            inThread:thread
                                                   failedMessageType:TSErrorMessageNonBlockingIdentityChange
-                                                        recipientId:@"+19174054215"]];
+                                                            address:@"+19174054215".transitional_signalServiceAddress]];
     }];
 
     return result;

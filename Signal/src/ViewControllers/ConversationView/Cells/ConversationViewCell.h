@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ConversationViewCell;
 @class OWSContactOffersInteraction;
 @class OWSContactsManager;
+@class SignalServiceAddress;
 @class TSAttachmentStream;
 @class TSCall;
 @class TSErrorMessage;
@@ -37,11 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - System Cell
 
-- (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalId;
+- (void)tappedNonBlockingIdentityChangeForAddress:(nullable SignalServiceAddress *)address;
 - (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage;
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message;
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message;
-- (void)showFingerprintWithRecipientId:(NSString *)recipientId;
+- (void)showFingerprintWithAddress:(SignalServiceAddress *)address;
 - (void)showConversationSettings;
 - (void)handleCallTap:(TSCall *)call;
 

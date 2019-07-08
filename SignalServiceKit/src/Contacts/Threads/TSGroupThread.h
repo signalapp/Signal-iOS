@@ -68,8 +68,8 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 - (BOOL)isLocalUserInGroup;
 
 // all group threads containing recipient as a member
-+ (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId
-                                              transaction:(SDSAnyReadTransaction *)transaction;
++ (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)leaveGroupWithSneakyTransaction;
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;

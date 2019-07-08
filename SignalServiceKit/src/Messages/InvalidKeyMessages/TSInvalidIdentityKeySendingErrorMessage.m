@@ -12,6 +12,7 @@
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSOutgoingMessage.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -60,7 +61,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
        errorMessageSchemaVersion:(NSUInteger)errorMessageSchemaVersion
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
-                     recipientId:(nullable NSString *)recipientId
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                        messageId:(NSString *)messageId
                     preKeyBundle:(PreKeyBundle *)preKeyBundle
 {
@@ -85,7 +86,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
          errorMessageSchemaVersion:errorMessageSchemaVersion
                          errorType:errorType
                               read:read
-                       recipientId:recipientId];
+                  recipientAddress:recipientAddress];
 
     if (!self) {
         return self;
@@ -113,7 +114,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return;
     }
 
-    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey recipientId:self.recipientId];
+    [[OWSIdentityManager sharedManager] saveRemoteIdentity:newIdentityKey address:self.recipientAddress];
 }
 
 - (nullable NSData *)throws_newIdentityKey
@@ -121,9 +122,9 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     return [self.preKeyBundle.identityKey throws_removeKeyType];
 }
 
-- (NSString *)theirSignalId
+- (SignalServiceAddress *)theirSignalAddress
 {
-    return self.recipientId;
+    return self.recipientAddress;
 }
 
 @end

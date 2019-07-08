@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (NSString *)theirSignalId
+- (SignalServiceAddress *)theirSignalAddress
 {
     OWSAbstractMethod();
     return nil;

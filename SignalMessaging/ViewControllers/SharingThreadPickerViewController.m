@@ -549,9 +549,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     [self.databaseStorage
         asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            OWSVerificationState verificationState =
-                [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId
-                                                                        transaction:transaction];
+            OWSVerificationState verificationState = [[OWSIdentityManager sharedManager]
+                verificationStateForAddress:recipientId.transitional_signalServiceAddress
+                                transaction:transaction];
             switch (verificationState) {
                 case OWSVerificationStateVerified: {
                     OWSFailDebug(@"Shouldn't need to confirm identity if it was already verified");
@@ -568,14 +568,16 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                 }
                 case OWSVerificationStateNoLongerVerified: {
                     OWSLogInfo(@"marked recipient: %@ as default verification status.", recipientId);
-                    NSData *identityKey = [[OWSIdentityManager sharedManager] identityKeyForRecipientId:recipientId
-                                                                                            transaction:transaction];
+                    NSData *identityKey = [[OWSIdentityManager sharedManager]
+                        identityKeyForAddress:recipientId.transitional_signalServiceAddress
+                                  transaction:transaction];
                     OWSAssertDebug(identityKey);
-                    [[OWSIdentityManager sharedManager] setVerificationState:OWSVerificationStateDefault
-                                                                 identityKey:identityKey
-                                                                 recipientId:recipientId
-                                                       isUserInitiatedChange:YES
-                                                                 transaction:transaction];
+                    [[OWSIdentityManager sharedManager]
+                         setVerificationState:OWSVerificationStateDefault
+                                  identityKey:identityKey
+                                      address:recipientId.transitional_signalServiceAddress
+                        isUserInitiatedChange:YES
+                                  transaction:transaction];
                     break;
                 }
             }

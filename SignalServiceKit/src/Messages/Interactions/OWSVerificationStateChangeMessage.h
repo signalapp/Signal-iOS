@@ -7,17 +7,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
 @class TSThread;
 
 @interface OWSVerificationStateChangeMessage : TSInfoMessage
 
-@property (nonatomic, readonly) NSString *recipientId;
+@property (nonatomic, readonly) SignalServiceAddress *recipientAddress;
 @property (nonatomic, readonly) OWSVerificationState verificationState;
 @property (nonatomic, readonly) BOOL isLocalChange;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
-                      recipientId:(NSString *)recipientId
+                 recipientAddress:(SignalServiceAddress *)recipientAddress
                 verificationState:(OWSVerificationState)verificationState
                     isLocalChange:(BOOL)isLocalChange;
 
@@ -51,9 +52,9 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                             read:(BOOL)read
          unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
                    isLocalChange:(BOOL)isLocalChange
-                     recipientId:(NSString *)recipientId
+                recipientAddress:(SignalServiceAddress *)recipientAddress
                verificationState:(OWSVerificationState)verificationState
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:isLocalChange:recipientId:verificationState:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:isLocalChange:recipientAddress:verificationState:));
 
 // clang-format on
 

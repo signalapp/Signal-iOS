@@ -31,13 +31,14 @@ disappearingMessagesConfiguration:(nullable OWSDisappearingMessagesConfiguration
     OWSAssertDebug(signalAccount.contact);
     OWSAssertDebug(contactsManager);
 
-    SSKProtoContactDetailsBuilder *contactBuilder =
-        [SSKProtoContactDetails builderWithNumber:signalAccount.recipientAddress.transitional_phoneNumber];
+    SSKProtoContactDetailsBuilder *contactBuilder = [SSKProtoContactDetails builder];
+    [contactBuilder setNumber:signalAccount.recipientAddress.phoneNumber];
+    [contactBuilder setUuid:signalAccount.recipientAddress.uuidString];
     [contactBuilder setName:signalAccount.contact.fullName];
     [contactBuilder setColor:conversationColorName];
 
     if (recipientIdentity != nil) {
-        SSKProtoVerified *_Nullable verified = BuildVerifiedProtoWithRecipientId(recipientIdentity.recipientId,
+        SSKProtoVerified *_Nullable verified = BuildVerifiedProtoWithAddress(signalAccount.recipientAddress,
             [recipientIdentity.identityKey prependKeyType],
             recipientIdentity.verificationState,
             0);

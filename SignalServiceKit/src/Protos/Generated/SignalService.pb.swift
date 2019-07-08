@@ -1471,15 +1471,23 @@ struct SignalServiceProtos_Verified {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// @required
-  var destination: String {
-    get {return _destination ?? String()}
-    set {_destination = newValue}
+  var destinationE164: String {
+    get {return _destinationE164 ?? String()}
+    set {_destinationE164 = newValue}
   }
-  /// Returns true if `destination` has been explicitly set.
-  var hasDestination: Bool {return self._destination != nil}
-  /// Clears the value of `destination`. Subsequent reads from it will return its default value.
-  mutating func clearDestination() {self._destination = nil}
+  /// Returns true if `destinationE164` has been explicitly set.
+  var hasDestinationE164: Bool {return self._destinationE164 != nil}
+  /// Clears the value of `destinationE164`. Subsequent reads from it will return its default value.
+  mutating func clearDestinationE164() {self._destinationE164 = nil}
+
+  var destinationUuid: String {
+    get {return _destinationUuid ?? String()}
+    set {_destinationUuid = newValue}
+  }
+  /// Returns true if `destinationUuid` has been explicitly set.
+  var hasDestinationUuid: Bool {return self._destinationUuid != nil}
+  /// Clears the value of `destinationUuid`. Subsequent reads from it will return its default value.
+  mutating func clearDestinationUuid() {self._destinationUuid = nil}
 
   var identityKey: Data {
     get {return _identityKey ?? SwiftProtobuf.Internal.emptyData}
@@ -1541,7 +1549,8 @@ struct SignalServiceProtos_Verified {
 
   init() {}
 
-  fileprivate var _destination: String? = nil
+  fileprivate var _destinationE164: String? = nil
+  fileprivate var _destinationUuid: String? = nil
   fileprivate var _identityKey: Data? = nil
   fileprivate var _state: SignalServiceProtos_Verified.State? = nil
   fileprivate var _nullMessage: Data? = nil
@@ -2326,7 +2335,6 @@ struct SignalServiceProtos_ContactDetails {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// @required
   var number: String {
     get {return _storage._number ?? String()}
     set {_uniqueStorage()._number = newValue}
@@ -2335,6 +2343,15 @@ struct SignalServiceProtos_ContactDetails {
   var hasNumber: Bool {return _storage._number != nil}
   /// Clears the value of `number`. Subsequent reads from it will return its default value.
   mutating func clearNumber() {_uniqueStorage()._number = nil}
+
+  var uuid: String {
+    get {return _storage._uuid ?? String()}
+    set {_uniqueStorage()._uuid = newValue}
+  }
+  /// Returns true if `uuid` has been explicitly set.
+  var hasUuid: Bool {return _storage._uuid != nil}
+  /// Clears the value of `uuid`. Subsequent reads from it will return its default value.
+  mutating func clearUuid() {_uniqueStorage()._uuid = nil}
 
   var name: String {
     get {return _storage._name ?? String()}
@@ -4109,7 +4126,8 @@ extension SignalServiceProtos_ReceiptMessage.TypeEnum: SwiftProtobuf._ProtoNameP
 extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".Verified"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "destination"),
+    1: .same(proto: "destinationE164"),
+    5: .same(proto: "destinationUuid"),
     2: .same(proto: "identityKey"),
     3: .same(proto: "state"),
     4: .same(proto: "nullMessage"),
@@ -4118,17 +4136,18 @@ extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._Me
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._destination)
+      case 1: try decoder.decodeSingularStringField(value: &self._destinationE164)
       case 2: try decoder.decodeSingularBytesField(value: &self._identityKey)
       case 3: try decoder.decodeSingularEnumField(value: &self._state)
       case 4: try decoder.decodeSingularBytesField(value: &self._nullMessage)
+      case 5: try decoder.decodeSingularStringField(value: &self._destinationUuid)
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._destination {
+    if let v = self._destinationE164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     }
     if let v = self._identityKey {
@@ -4140,11 +4159,15 @@ extension SignalServiceProtos_Verified: SwiftProtobuf.Message, SwiftProtobuf._Me
     if let v = self._nullMessage {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 4)
     }
+    if let v = self._destinationUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_Verified, rhs: SignalServiceProtos_Verified) -> Bool {
-    if lhs._destination != rhs._destination {return false}
+    if lhs._destinationE164 != rhs._destinationE164 {return false}
+    if lhs._destinationUuid != rhs._destinationUuid {return false}
     if lhs._identityKey != rhs._identityKey {return false}
     if lhs._state != rhs._state {return false}
     if lhs._nullMessage != rhs._nullMessage {return false}
@@ -5021,6 +5044,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
   static let protoMessageName: String = _protobuf_package + ".ContactDetails"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "number"),
+    9: .same(proto: "uuid"),
     2: .same(proto: "name"),
     3: .same(proto: "avatar"),
     4: .same(proto: "color"),
@@ -5032,6 +5056,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
 
   fileprivate class _StorageClass {
     var _number: String? = nil
+    var _uuid: String? = nil
     var _name: String? = nil
     var _avatar: SignalServiceProtos_ContactDetails.Avatar? = nil
     var _color: String? = nil
@@ -5046,6 +5071,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
 
     init(copying source: _StorageClass) {
       _number = source._number
+      _uuid = source._uuid
       _name = source._name
       _avatar = source._avatar
       _color = source._color
@@ -5076,6 +5102,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
         case 6: try decoder.decodeSingularBytesField(value: &_storage._profileKey)
         case 7: try decoder.decodeSingularBoolField(value: &_storage._blocked)
         case 8: try decoder.decodeSingularUInt32Field(value: &_storage._expireTimer)
+        case 9: try decoder.decodeSingularStringField(value: &_storage._uuid)
         default: break
         }
       }
@@ -5108,6 +5135,9 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
       if let v = _storage._expireTimer {
         try visitor.visitSingularUInt32Field(value: v, fieldNumber: 8)
       }
+      if let v = _storage._uuid {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 9)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5118,6 +5148,7 @@ extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtob
         let _storage = _args.0
         let rhs_storage = _args.1
         if _storage._number != rhs_storage._number {return false}
+        if _storage._uuid != rhs_storage._uuid {return false}
         if _storage._name != rhs_storage._name {return false}
         if _storage._avatar != rhs_storage._avatar {return false}
         if _storage._color != rhs_storage._color {return false}

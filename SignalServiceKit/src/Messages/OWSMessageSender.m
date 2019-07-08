@@ -936,8 +936,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             NSData *newIdentityKey = [newIdentityKeyWithVersion throws_removeKeyType];
-            [self.identityManager saveRemoteIdentity:newIdentityKey
-                                         recipientId:recipient.address.transitional_phoneNumber];
+            [self.identityManager saveRemoteIdentity:newIdentityKey address:recipient.address];
 
             return nil;
         }
@@ -975,7 +974,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSLogInfo(@"attempting to send message: %@, timestamp: %llu, recipient: %@",
         message.class,
         message.timestamp,
-        recipient.uniqueId);
+        recipient.address);
     AssertIsOnSendingQueue();
 
     if ([TSPreKeyManager isAppLockedDueToPreKeyUpdateFailures]) {
@@ -1227,7 +1226,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     dispatch_async([OWSDispatch sendingQueue], ^{
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [messageSend.message updateWithSentRecipient:messageSend.recipient.uniqueId
+            [messageSend.message updateWithSentRecipient:messageSend.recipient.address.transitional_phoneNumber
                                              wasSentByUD:wasSentByUD
                                              transaction:transaction];
 
@@ -1257,7 +1256,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSLogInfo(@"failed to send message: %@, timestamp: %llu, to recipient: %@",
         message.class,
         message.timestamp,
-        recipient.uniqueId);
+        recipient.address);
 
     void (^retrySend)(void) = ^void() {
         if (messageSend.remainingAttempts <= 0) {
@@ -1271,7 +1270,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     };
 
     void (^handle404)(void) = ^{
-        OWSLogWarn(@"Unregistered recipient: %@", recipient.uniqueId);
+        OWSLogWarn(@"Unregistered recipient: %@", recipient.address);
 
         dispatch_async([OWSDispatch sendingQueue], ^{
             if (![messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
@@ -1308,7 +1307,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         case 409: {
             // Mismatched devices
-            OWSLogWarn(@"Mismatched devices for recipient: %@ (%zd)", recipient.uniqueId, deviceMessages.count);
+            OWSLogWarn(@"Mismatched devices for recipient: %@ (%zd)", recipient.address, deviceMessages.count);
 
             NSError *_Nullable error = nil;
             NSDictionary *_Nullable responseJson = nil;
@@ -1339,7 +1338,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         case 410: {
             // Stale devices
-            OWSLogWarn(@"Stale devices for recipient: %@", recipient.uniqueId);
+            OWSLogWarn(@"Stale devices for recipient: %@", recipient.address);
 
             NSError *_Nullable error = nil;
             NSDictionary *_Nullable responseJson = nil;
@@ -1353,7 +1352,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 return messageSend.failure(error);
             }
 
-            [self handleStaleDevicesWithResponseJson:responseJson recipientId:recipient.uniqueId completion:retrySend];
+            [self handleStaleDevicesWithResponseJson:responseJson
+                                         recipientId:recipient.address.transitional_phoneNumber
+                                          completion:retrySend];
 
             if (messageSend.isLocalNumber) {
                 // Don't use websocket; it may have obsolete cached state.
@@ -1380,8 +1381,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSArray *missingDevices = responseJson[@"missingDevices"];
 
     if (missingDevices.count > 0) {
-        NSString *localNumber = self.tsAccountManager.localNumber;
-        if ([localNumber isEqualToString:recipient.uniqueId]) {
+        if (recipient.address.isLocalAddress) {
             [OWSDeviceManager.sharedManager setMayHaveLinkedDevices];
         }
     }
@@ -1580,19 +1580,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (void)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend deviceId:(NSNumber *)deviceId
 {
     OWSAssertDebug(messageSend);
+    OWSAssertDebug(messageSend.recipient);
     OWSAssertDebug(deviceId);
 
     SignalServiceAddress *recipientAddress = messageSend.recipient.address;
     OWSAssertDebug(recipientAddress.isValid);
 
+    NSString *accountId = messageSend.recipient.accountId;
+
     __block BOOL hasSession;
-    __block NSString *accountId;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         hasSession = [self.sessionStore containsSessionForAddress:recipientAddress
                                                          deviceId:[deviceId intValue]
                                                       transaction:transaction];
-        OWSAssertDebug(messageSend.recipient);
-        accountId = [messageSend.recipient ensureAccountIdWithTransaction:transaction];
     }];
     if (hasSession) {
         return;
@@ -1718,6 +1718,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                      transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(messageSend);
+    OWSAssertDebug(messageSend.recipient);
     OWSAssertDebug(deviceId);
     OWSAssertDebug(plainText);
     OWSAssertDebug(transaction);
@@ -1736,13 +1737,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             deviceId);
     }
 
-    OWSAssertDebug(messageSend.recipient);
-    NSString *accountId = [messageSend.recipient ensureAccountIdWithTransaction:transaction];
     SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:self.sessionStore
                                                             preKeyStore:self.preKeyStore
                                                       signedPreKeyStore:self.signedPreKeyStore
                                                        identityKeyStore:self.identityManager
-                                                            recipientId:accountId
+                                                            recipientId:messageSend.recipient.accountId
                                                                deviceId:[deviceId intValue]];
 
     NSData *_Nullable serializedMessage;
@@ -1758,9 +1757,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (error || !secretCipher) {
             OWSRaiseException(@"SecretSessionCipherFailure", @"Can't create secret session cipher.");
         }
-        OWSAssertDebug(messageSend.recipient);
-        NSString *accountId = [messageSend.recipient ensureAccountIdWithTransaction:transaction];
-        serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:accountId
+        serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:messageSend.recipient.accountId
                                                                              deviceId:deviceId.intValue
                                                                       paddedPlaintext:[plainText paddedMessageBody]
                                                                     senderCertificate:messageSend.senderCertificate
