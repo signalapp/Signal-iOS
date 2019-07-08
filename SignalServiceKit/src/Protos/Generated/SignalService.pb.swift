@@ -2266,9 +2266,12 @@ struct SignalServiceProtos_GroupContext {
   /// Clears the value of `name`. Subsequent reads from it will return its default value.
   mutating func clearName() {_uniqueStorage()._name = nil}
 
-  var members: [String] {
-    get {return _storage._members}
-    set {_uniqueStorage()._members = newValue}
+  /// A list of known phone numbers in the group, only maintained 
+  /// to support legacy apps that don't know about UUIDs. We may want 
+  /// to eventually stop populating this.
+  var membersE164: [String] {
+    get {return _storage._membersE164}
+    set {_uniqueStorage()._membersE164 = newValue}
   }
 
   var avatar: SignalServiceProtos_AttachmentPointer {
@@ -2279,6 +2282,11 @@ struct SignalServiceProtos_GroupContext {
   var hasAvatar: Bool {return _storage._avatar != nil}
   /// Clears the value of `avatar`. Subsequent reads from it will return its default value.
   mutating func clearAvatar() {_uniqueStorage()._avatar = nil}
+
+  var members: [SignalServiceProtos_GroupContext.Member] {
+    get {return _storage._members}
+    set {_uniqueStorage()._members = newValue}
+  }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2315,6 +2323,37 @@ struct SignalServiceProtos_GroupContext {
       }
     }
 
+  }
+
+  struct Member {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var uuid: String {
+      get {return _uuid ?? String()}
+      set {_uuid = newValue}
+    }
+    /// Returns true if `uuid` has been explicitly set.
+    var hasUuid: Bool {return self._uuid != nil}
+    /// Clears the value of `uuid`. Subsequent reads from it will return its default value.
+    mutating func clearUuid() {self._uuid = nil}
+
+    var e164: String {
+      get {return _e164 ?? String()}
+      set {_e164 = newValue}
+    }
+    /// Returns true if `e164` has been explicitly set.
+    var hasE164: Bool {return self._e164 != nil}
+    /// Clears the value of `e164`. Subsequent reads from it will return its default value.
+    mutating func clearE164() {self._e164 = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _uuid: String? = nil
+    fileprivate var _e164: String? = nil
   }
 
   init() {}
@@ -2478,9 +2517,12 @@ struct SignalServiceProtos_GroupDetails {
   /// Clears the value of `name`. Subsequent reads from it will return its default value.
   mutating func clearName() {_uniqueStorage()._name = nil}
 
-  var members: [String] {
-    get {return _storage._members}
-    set {_uniqueStorage()._members = newValue}
+  /// A list of known phone numbers in the group, only maintained 
+  /// to support legacy apps that don't know about UUIDs. We may want 
+  /// to eventually stop populating this.
+  var membersE164: [String] {
+    get {return _storage._membersE164}
+    set {_uniqueStorage()._membersE164 = newValue}
   }
 
   var avatar: SignalServiceProtos_GroupDetails.Avatar {
@@ -2528,6 +2570,11 @@ struct SignalServiceProtos_GroupDetails {
   /// Clears the value of `blocked`. Subsequent reads from it will return its default value.
   mutating func clearBlocked() {_uniqueStorage()._blocked = nil}
 
+  var members: [SignalServiceProtos_GroupDetails.Member] {
+    get {return _storage._members}
+    set {_uniqueStorage()._members = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Avatar {
@@ -2559,6 +2606,37 @@ struct SignalServiceProtos_GroupDetails {
 
     fileprivate var _contentType: String? = nil
     fileprivate var _length: UInt32? = nil
+  }
+
+  struct Member {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    var uuid: String {
+      get {return _uuid ?? String()}
+      set {_uuid = newValue}
+    }
+    /// Returns true if `uuid` has been explicitly set.
+    var hasUuid: Bool {return self._uuid != nil}
+    /// Clears the value of `uuid`. Subsequent reads from it will return its default value.
+    mutating func clearUuid() {self._uuid = nil}
+
+    var e164: String {
+      get {return _e164 ?? String()}
+      set {_e164 = newValue}
+    }
+    /// Returns true if `e164` has been explicitly set.
+    var hasE164: Bool {return self._e164 != nil}
+    /// Clears the value of `e164`. Subsequent reads from it will return its default value.
+    mutating func clearE164() {self._e164 = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _uuid: String? = nil
+    fileprivate var _e164: String? = nil
   }
 
   init() {}
@@ -4943,16 +5021,18 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
     1: .same(proto: "id"),
     2: .same(proto: "type"),
     3: .same(proto: "name"),
-    4: .same(proto: "members"),
+    4: .same(proto: "membersE164"),
     5: .same(proto: "avatar"),
+    6: .same(proto: "members"),
   ]
 
   fileprivate class _StorageClass {
     var _id: Data? = nil
     var _type: SignalServiceProtos_GroupContext.TypeEnum? = nil
     var _name: String? = nil
-    var _members: [String] = []
+    var _membersE164: [String] = []
     var _avatar: SignalServiceProtos_AttachmentPointer? = nil
+    var _members: [SignalServiceProtos_GroupContext.Member] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -4962,8 +5042,9 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
       _id = source._id
       _type = source._type
       _name = source._name
-      _members = source._members
+      _membersE164 = source._membersE164
       _avatar = source._avatar
+      _members = source._members
     }
   }
 
@@ -4982,8 +5063,9 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
         case 1: try decoder.decodeSingularBytesField(value: &_storage._id)
         case 2: try decoder.decodeSingularEnumField(value: &_storage._type)
         case 3: try decoder.decodeSingularStringField(value: &_storage._name)
-        case 4: try decoder.decodeRepeatedStringField(value: &_storage._members)
+        case 4: try decoder.decodeRepeatedStringField(value: &_storage._membersE164)
         case 5: try decoder.decodeSingularMessageField(value: &_storage._avatar)
+        case 6: try decoder.decodeRepeatedMessageField(value: &_storage._members)
         default: break
         }
       }
@@ -5001,11 +5083,14 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
       if let v = _storage._name {
         try visitor.visitSingularStringField(value: v, fieldNumber: 3)
       }
-      if !_storage._members.isEmpty {
-        try visitor.visitRepeatedStringField(value: _storage._members, fieldNumber: 4)
+      if !_storage._membersE164.isEmpty {
+        try visitor.visitRepeatedStringField(value: _storage._membersE164, fieldNumber: 4)
       }
       if let v = _storage._avatar {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
+      }
+      if !_storage._members.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._members, fieldNumber: 6)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -5019,8 +5104,9 @@ extension SignalServiceProtos_GroupContext: SwiftProtobuf.Message, SwiftProtobuf
         if _storage._id != rhs_storage._id {return false}
         if _storage._type != rhs_storage._type {return false}
         if _storage._name != rhs_storage._name {return false}
-        if _storage._members != rhs_storage._members {return false}
+        if _storage._membersE164 != rhs_storage._membersE164 {return false}
         if _storage._avatar != rhs_storage._avatar {return false}
+        if _storage._members != rhs_storage._members {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -5038,6 +5124,41 @@ extension SignalServiceProtos_GroupContext.TypeEnum: SwiftProtobuf._ProtoNamePro
     3: .same(proto: "QUIT"),
     4: .same(proto: "REQUEST_INFO"),
   ]
+}
+
+extension SignalServiceProtos_GroupContext.Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_GroupContext.protoMessageName + ".Member"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "uuid"),
+    2: .same(proto: "e164"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self._uuid)
+      case 2: try decoder.decodeSingularStringField(value: &self._e164)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._uuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
+    if let v = self._e164 {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_GroupContext.Member, rhs: SignalServiceProtos_GroupContext.Member) -> Bool {
+    if lhs._uuid != rhs._uuid {return false}
+    if lhs._e164 != rhs._e164 {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
 }
 
 extension SignalServiceProtos_ContactDetails: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -5205,23 +5326,25 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
     2: .same(proto: "name"),
-    3: .same(proto: "members"),
+    3: .same(proto: "membersE164"),
     4: .same(proto: "avatar"),
     5: .same(proto: "active"),
     6: .same(proto: "expireTimer"),
     7: .same(proto: "color"),
     8: .same(proto: "blocked"),
+    9: .same(proto: "members"),
   ]
 
   fileprivate class _StorageClass {
     var _id: Data? = nil
     var _name: String? = nil
-    var _members: [String] = []
+    var _membersE164: [String] = []
     var _avatar: SignalServiceProtos_GroupDetails.Avatar? = nil
     var _active: Bool? = nil
     var _expireTimer: UInt32? = nil
     var _color: String? = nil
     var _blocked: Bool? = nil
+    var _members: [SignalServiceProtos_GroupDetails.Member] = []
 
     static let defaultInstance = _StorageClass()
 
@@ -5230,12 +5353,13 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
     init(copying source: _StorageClass) {
       _id = source._id
       _name = source._name
-      _members = source._members
+      _membersE164 = source._membersE164
       _avatar = source._avatar
       _active = source._active
       _expireTimer = source._expireTimer
       _color = source._color
       _blocked = source._blocked
+      _members = source._members
     }
   }
 
@@ -5253,12 +5377,13 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
         switch fieldNumber {
         case 1: try decoder.decodeSingularBytesField(value: &_storage._id)
         case 2: try decoder.decodeSingularStringField(value: &_storage._name)
-        case 3: try decoder.decodeRepeatedStringField(value: &_storage._members)
+        case 3: try decoder.decodeRepeatedStringField(value: &_storage._membersE164)
         case 4: try decoder.decodeSingularMessageField(value: &_storage._avatar)
         case 5: try decoder.decodeSingularBoolField(value: &_storage._active)
         case 6: try decoder.decodeSingularUInt32Field(value: &_storage._expireTimer)
         case 7: try decoder.decodeSingularStringField(value: &_storage._color)
         case 8: try decoder.decodeSingularBoolField(value: &_storage._blocked)
+        case 9: try decoder.decodeRepeatedMessageField(value: &_storage._members)
         default: break
         }
       }
@@ -5273,8 +5398,8 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
       if let v = _storage._name {
         try visitor.visitSingularStringField(value: v, fieldNumber: 2)
       }
-      if !_storage._members.isEmpty {
-        try visitor.visitRepeatedStringField(value: _storage._members, fieldNumber: 3)
+      if !_storage._membersE164.isEmpty {
+        try visitor.visitRepeatedStringField(value: _storage._membersE164, fieldNumber: 3)
       }
       if let v = _storage._avatar {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
@@ -5291,6 +5416,9 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
       if let v = _storage._blocked {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 8)
       }
+      if !_storage._members.isEmpty {
+        try visitor.visitRepeatedMessageField(value: _storage._members, fieldNumber: 9)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -5302,12 +5430,13 @@ extension SignalServiceProtos_GroupDetails: SwiftProtobuf.Message, SwiftProtobuf
         let rhs_storage = _args.1
         if _storage._id != rhs_storage._id {return false}
         if _storage._name != rhs_storage._name {return false}
-        if _storage._members != rhs_storage._members {return false}
+        if _storage._membersE164 != rhs_storage._membersE164 {return false}
         if _storage._avatar != rhs_storage._avatar {return false}
         if _storage._active != rhs_storage._active {return false}
         if _storage._expireTimer != rhs_storage._expireTimer {return false}
         if _storage._color != rhs_storage._color {return false}
         if _storage._blocked != rhs_storage._blocked {return false}
+        if _storage._members != rhs_storage._members {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -5347,6 +5476,41 @@ extension SignalServiceProtos_GroupDetails.Avatar: SwiftProtobuf.Message, SwiftP
   static func ==(lhs: SignalServiceProtos_GroupDetails.Avatar, rhs: SignalServiceProtos_GroupDetails.Avatar) -> Bool {
     if lhs._contentType != rhs._contentType {return false}
     if lhs._length != rhs._length {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_GroupDetails.Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_GroupDetails.protoMessageName + ".Member"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "uuid"),
+    2: .same(proto: "e164"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularStringField(value: &self._uuid)
+      case 2: try decoder.decodeSingularStringField(value: &self._e164)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._uuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    }
+    if let v = self._e164 {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_GroupDetails.Member, rhs: SignalServiceProtos_GroupDetails.Member) -> Bool {
+    if lhs._uuid != rhs._uuid {return false}
+    if lhs._e164 != rhs._e164 {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

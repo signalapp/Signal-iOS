@@ -5591,6 +5591,117 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
 
 #endif
 
+// MARK: - SSKProtoGroupContextMember
+
+@objc public class SSKProtoGroupContextMember: NSObject {
+
+    // MARK: - SSKProtoGroupContextMemberBuilder
+
+    @objc public class func builder() -> SSKProtoGroupContextMemberBuilder {
+        return SSKProtoGroupContextMemberBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoGroupContextMemberBuilder {
+        let builder = SSKProtoGroupContextMemberBuilder()
+        if let _value = uuid {
+            builder.setUuid(_value)
+        }
+        if let _value = e164 {
+            builder.setE164(_value)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoGroupContextMemberBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_GroupContext.Member()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
+        }
+
+        @objc public func setE164(_ valueParam: String) {
+            proto.e164 = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoGroupContextMember {
+            return try SSKProtoGroupContextMember.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoGroupContextMember.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_GroupContext.Member
+
+    @objc public var uuid: String? {
+        guard proto.hasUuid else {
+            return nil
+        }
+        return proto.uuid
+    }
+    @objc public var hasUuid: Bool {
+        return proto.hasUuid
+    }
+
+    @objc public var e164: String? {
+        guard proto.hasE164 else {
+            return nil
+        }
+        return proto.e164
+    }
+    @objc public var hasE164: Bool {
+        return proto.hasE164
+    }
+
+    private init(proto: SignalServiceProtos_GroupContext.Member) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoGroupContextMember {
+        let proto = try SignalServiceProtos_GroupContext.Member(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_GroupContext.Member) throws -> SSKProtoGroupContextMember {
+        // MARK: - Begin Validation Logic for SSKProtoGroupContextMember -
+
+        // MARK: - End Validation Logic for SSKProtoGroupContextMember -
+
+        let result = SSKProtoGroupContextMember(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoGroupContextMember {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoGroupContextMember.SSKProtoGroupContextMemberBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoGroupContextMember? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoGroupContext
 
 @objc public class SSKProtoGroupContext: NSObject {
@@ -5640,10 +5751,11 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         if let _value = name {
             builder.setName(_value)
         }
-        builder.setMembers(members)
+        builder.setMembersE164(membersE164)
         if let _value = avatar {
             builder.setAvatar(_value)
         }
+        builder.setMembers(members)
         return builder
     }
 
@@ -5671,18 +5783,28 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
             proto.name = valueParam
         }
 
-        @objc public func addMembers(_ valueParam: String) {
-            var items = proto.members
+        @objc public func addMembersE164(_ valueParam: String) {
+            var items = proto.membersE164
             items.append(valueParam)
-            proto.members = items
+            proto.membersE164 = items
         }
 
-        @objc public func setMembers(_ wrappedItems: [String]) {
-            proto.members = wrappedItems
+        @objc public func setMembersE164(_ wrappedItems: [String]) {
+            proto.membersE164 = wrappedItems
         }
 
         @objc public func setAvatar(_ valueParam: SSKProtoAttachmentPointer) {
             proto.avatar = valueParam.proto
+        }
+
+        @objc public func addMembers(_ valueParam: SSKProtoGroupContextMember) {
+            var items = proto.members
+            items.append(valueParam.proto)
+            proto.members = items
+        }
+
+        @objc public func setMembers(_ wrappedItems: [SSKProtoGroupContextMember]) {
+            proto.members = wrappedItems.map { $0.proto }
         }
 
         @objc public func build() throws -> SSKProtoGroupContext {
@@ -5699,6 +5821,8 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
     @objc public let id: Data
 
     @objc public let avatar: SSKProtoAttachmentPointer?
+
+    @objc public let members: [SSKProtoGroupContextMember]
 
     public var type: SSKProtoGroupContextType? {
         guard proto.hasType else {
@@ -5728,16 +5852,18 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
         return proto.hasName
     }
 
-    @objc public var members: [String] {
-        return proto.members
+    @objc public var membersE164: [String] {
+        return proto.membersE164
     }
 
     private init(proto: SignalServiceProtos_GroupContext,
                  id: Data,
-                 avatar: SSKProtoAttachmentPointer?) {
+                 avatar: SSKProtoAttachmentPointer?,
+                 members: [SSKProtoGroupContextMember]) {
         self.proto = proto
         self.id = id
         self.avatar = avatar
+        self.members = members
     }
 
     @objc
@@ -5761,13 +5887,17 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
             avatar = try SSKProtoAttachmentPointer.parseProto(proto.avatar)
         }
 
+        var members: [SSKProtoGroupContextMember] = []
+        members = try proto.members.map { try SSKProtoGroupContextMember.parseProto($0) }
+
         // MARK: - Begin Validation Logic for SSKProtoGroupContext -
 
         // MARK: - End Validation Logic for SSKProtoGroupContext -
 
         let result = SSKProtoGroupContext(proto: proto,
                                           id: id,
-                                          avatar: avatar)
+                                          avatar: avatar,
+                                          members: members)
         return result
     }
 
@@ -6232,6 +6362,117 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
 
 #endif
 
+// MARK: - SSKProtoGroupDetailsMember
+
+@objc public class SSKProtoGroupDetailsMember: NSObject {
+
+    // MARK: - SSKProtoGroupDetailsMemberBuilder
+
+    @objc public class func builder() -> SSKProtoGroupDetailsMemberBuilder {
+        return SSKProtoGroupDetailsMemberBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoGroupDetailsMemberBuilder {
+        let builder = SSKProtoGroupDetailsMemberBuilder()
+        if let _value = uuid {
+            builder.setUuid(_value)
+        }
+        if let _value = e164 {
+            builder.setE164(_value)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoGroupDetailsMemberBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_GroupDetails.Member()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
+        }
+
+        @objc public func setE164(_ valueParam: String) {
+            proto.e164 = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoGroupDetailsMember {
+            return try SSKProtoGroupDetailsMember.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoGroupDetailsMember.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_GroupDetails.Member
+
+    @objc public var uuid: String? {
+        guard proto.hasUuid else {
+            return nil
+        }
+        return proto.uuid
+    }
+    @objc public var hasUuid: Bool {
+        return proto.hasUuid
+    }
+
+    @objc public var e164: String? {
+        guard proto.hasE164 else {
+            return nil
+        }
+        return proto.e164
+    }
+    @objc public var hasE164: Bool {
+        return proto.hasE164
+    }
+
+    private init(proto: SignalServiceProtos_GroupDetails.Member) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoGroupDetailsMember {
+        let proto = try SignalServiceProtos_GroupDetails.Member(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_GroupDetails.Member) throws -> SSKProtoGroupDetailsMember {
+        // MARK: - Begin Validation Logic for SSKProtoGroupDetailsMember -
+
+        // MARK: - End Validation Logic for SSKProtoGroupDetailsMember -
+
+        let result = SSKProtoGroupDetailsMember(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoGroupDetailsMember {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoGroupDetailsMember.SSKProtoGroupDetailsMemberBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoGroupDetailsMember? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoGroupDetails
 
 @objc public class SSKProtoGroupDetails: NSObject {
@@ -6248,7 +6489,7 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         if let _value = name {
             builder.setName(_value)
         }
-        builder.setMembers(members)
+        builder.setMembersE164(membersE164)
         if let _value = avatar {
             builder.setAvatar(_value)
         }
@@ -6264,6 +6505,7 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         if hasBlocked {
             builder.setBlocked(blocked)
         }
+        builder.setMembers(members)
         return builder
     }
 
@@ -6287,14 +6529,14 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
             proto.name = valueParam
         }
 
-        @objc public func addMembers(_ valueParam: String) {
-            var items = proto.members
+        @objc public func addMembersE164(_ valueParam: String) {
+            var items = proto.membersE164
             items.append(valueParam)
-            proto.members = items
+            proto.membersE164 = items
         }
 
-        @objc public func setMembers(_ wrappedItems: [String]) {
-            proto.members = wrappedItems
+        @objc public func setMembersE164(_ wrappedItems: [String]) {
+            proto.membersE164 = wrappedItems
         }
 
         @objc public func setAvatar(_ valueParam: SSKProtoGroupDetailsAvatar) {
@@ -6317,6 +6559,16 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
             proto.blocked = valueParam
         }
 
+        @objc public func addMembers(_ valueParam: SSKProtoGroupDetailsMember) {
+            var items = proto.members
+            items.append(valueParam.proto)
+            proto.members = items
+        }
+
+        @objc public func setMembers(_ wrappedItems: [SSKProtoGroupDetailsMember]) {
+            proto.members = wrappedItems.map { $0.proto }
+        }
+
         @objc public func build() throws -> SSKProtoGroupDetails {
             return try SSKProtoGroupDetails.parseProto(proto)
         }
@@ -6332,6 +6584,8 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
 
     @objc public let avatar: SSKProtoGroupDetailsAvatar?
 
+    @objc public let members: [SSKProtoGroupDetailsMember]
+
     @objc public var name: String? {
         guard proto.hasName else {
             return nil
@@ -6342,8 +6596,8 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         return proto.hasName
     }
 
-    @objc public var members: [String] {
-        return proto.members
+    @objc public var membersE164: [String] {
+        return proto.membersE164
     }
 
     @objc public var active: Bool {
@@ -6379,10 +6633,12 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
 
     private init(proto: SignalServiceProtos_GroupDetails,
                  id: Data,
-                 avatar: SSKProtoGroupDetailsAvatar?) {
+                 avatar: SSKProtoGroupDetailsAvatar?,
+                 members: [SSKProtoGroupDetailsMember]) {
         self.proto = proto
         self.id = id
         self.avatar = avatar
+        self.members = members
     }
 
     @objc
@@ -6406,13 +6662,17 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
             avatar = try SSKProtoGroupDetailsAvatar.parseProto(proto.avatar)
         }
 
+        var members: [SSKProtoGroupDetailsMember] = []
+        members = try proto.members.map { try SSKProtoGroupDetailsMember.parseProto($0) }
+
         // MARK: - Begin Validation Logic for SSKProtoGroupDetails -
 
         // MARK: - End Validation Logic for SSKProtoGroupDetails -
 
         let result = SSKProtoGroupDetails(proto: proto,
                                           id: id,
-                                          avatar: avatar)
+                                          avatar: avatar,
+                                          members: members)
         return result
     }
 
