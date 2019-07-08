@@ -110,7 +110,7 @@ NSUInteger const RecipientIdentitySchemaVersion = 1;
 
         if (_recipientIdentitySchemaVersion < 1) {
             _accountId = [coder decodeObjectForKey:@"recipientId"];
-            OWSCAssertDebug(_accountId);
+            OWSAssertDebug(_accountId);
         }
 
         _recipientIdentitySchemaVersion = RecipientIdentitySchemaVersion;
