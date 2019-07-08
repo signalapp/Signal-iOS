@@ -35,10 +35,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Properties
 
-@property (nonatomic, readonly) NSData *myStableAddressData;
+@property (nonatomic, readonly) SignalServiceAddress *myStableAddress;
 @property (nonatomic, readonly) NSData *myIdentityKey;
 @property (nonatomic, readonly) SignalServiceAddress *theirStableAddress;
-@property (nonatomic, readonly) NSData *theirStableAddressData;
 @property (nonatomic, readonly) NSData *theirIdentityKey;
 @property (nonatomic, readonly) NSString *displayableText;
 @property (nullable, nonatomic, readonly) UIImage *image;

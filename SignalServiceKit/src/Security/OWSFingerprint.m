@@ -13,7 +13,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static uint32_t const OWSFingerprintHashingVersion = 0;
-static uint32_t const OWSFingerprintScannableFormatVersion = 1;
+static uint32_t const OWSFingerprintPreUUIDScannableFormatVersion = 1;
+static uint32_t const OWSFingerprintScannableFormatVersion = 2;
 static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 @interface OWSFingerprint ()
@@ -47,19 +48,18 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         return self;
     }
 
-    NSString *myStableIdString = myStableAddress.uuidString ?: myStableAddress.phoneNumber;
-    NSString *theirStableIdString = theirStableAddress.uuidString ?: theirStableAddress.phoneNumber;
-
-    _myStableAddressData = [myStableIdString dataUsingEncoding:NSUTF8StringEncoding];
+    _myStableAddress = myStableAddress;
     _myIdentityKey = [myIdentityKeyWithoutKeyType prependKeyType];
     _theirStableAddress = theirStableAddress;
-    _theirStableAddressData = [theirStableIdString dataUsingEncoding:NSUTF8StringEncoding];
     _theirIdentityKey = [theirIdentityKeyWithoutKeyType prependKeyType];
     _theirName = theirName;
     _hashIterations = hashIterations;
 
-    _myFingerprintData = [self dataForStableAddress:_myStableAddressData publicKey:_myIdentityKey];
-    _theirFingerprintData = [self dataForStableAddress:_theirStableAddressData publicKey:_theirIdentityKey];
+    NSData *myStableAddressData = [self stableDataForAddress:_myStableAddress];
+    _myFingerprintData = [self dataForStableAddress:myStableAddressData publicKey:_myIdentityKey];
+
+    NSData *theirStableAddressData = [self stableDataForAddress:_theirStableAddress];
+    _theirFingerprintData = [self dataForStableAddress:theirStableAddressData publicKey:_theirIdentityKey];
 
     return self;
 }
@@ -93,6 +93,33 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
                                   hashIterations:OWSFingerprintDefaultHashIterations];
 }
 
+- (uint32_t)scannableFingerprintVersion
+{
+    if (!SSKFeatureFlags.allowUUIDOnlyContacts) {
+        return OWSFingerprintPreUUIDScannableFormatVersion;
+    }
+
+    return OWSFingerprintScannableFormatVersion;
+}
+
+- (NSData *)stableDataForAddress:(SignalServiceAddress *)address
+{
+    NSString *stableString;
+
+    // For now, leave safety number based on phone number unless the feature flag is enabled.
+    // This prevents mismatch from occuring against old apps until we formally roll out the feature.
+    if (SSKFeatureFlags.allowUUIDOnlyContacts) {
+        // TODO UUID: Right now, uuid is nullable, but safety numbers require us to always have
+        // the UUID for a user. This will need to be updated once we change this field to nonnull.
+        OWSAssertDebug(address.uuid);
+        stableString = address.uuidString;
+    } else {
+        stableString = address.transitional_phoneNumber;
+    }
+
+    return [stableString dataUsingEncoding:NSUTF8StringEncoding];
+}
+
 - (BOOL)matchesLogicalFingerprintsData:(NSData *)data error:(NSError **)error
 {
     OWSAssertDebug(data.length > 0);
@@ -109,7 +136,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         return NO;
     }
 
-    if (logicalFingerprints.version < OWSFingerprintScannableFormatVersion) {
+    if (logicalFingerprints.version < self.scannableFingerprintVersion) {
         OWSLogWarn(@"Verification failed. They're running an old version.");
         NSString *description
             = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION", @"alert body");
@@ -117,7 +144,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
         return NO;
     }
 
-    if (logicalFingerprints.version > OWSFingerprintScannableFormatVersion) {
+    if (logicalFingerprints.version > self.scannableFingerprintVersion) {
         OWSLogWarn(@"Verification failed. We're running an old version.");
         NSString *description = NSLocalizedString(@"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION", @"alert body");
         *error = OWSErrorWithCodeDescription(OWSErrorCodePrivacyVerificationFailure, description);
@@ -301,7 +328,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     }
 
     FingerprintProtoLogicalFingerprintsBuilder *logicalFingerprintsBuilder =
-        [FingerprintProtoLogicalFingerprints builderWithVersion:OWSFingerprintScannableFormatVersion
+        [FingerprintProtoLogicalFingerprints builderWithVersion:self.scannableFingerprintVersion
                                                localFingerprint:localFingerprint
                                               remoteFingerprint:remoteFingerprint];
 
