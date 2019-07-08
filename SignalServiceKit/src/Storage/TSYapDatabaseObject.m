@@ -276,6 +276,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSUInteger)ydb_numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     return [self numberOfKeysInCollectionWithTransaction:transaction];
 }
 
@@ -297,12 +299,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)ydb_enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
                                            usingBlock:(void (^)(id object, BOOL *stop))block
 {
+    OWSAssertDebug(transaction);
+
     return [self enumerateCollectionObjectsWithTransaction:transaction usingBlock:block];
 }
 
 + (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID
                                          transaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     return [self fetchObjectWithUniqueID:uniqueID transaction:transaction];
 }
 
@@ -323,11 +329,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     [self reloadWithTransaction:transaction];
 }
 
 - (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing
 {
+    OWSAssertDebug(transaction);
+
     [self reloadWithTransaction:transaction ignoreMissing:ignoreMissing];
 }
 
@@ -338,11 +348,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     [self saveWithTransaction:transaction];
 }
 
 - (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     [self removeWithTransaction:transaction];
 }
 
@@ -354,6 +368,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ydb_applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
                                changeBlock:(void (^)(id))changeBlock
 {
+    OWSAssertDebug(transaction);
+
     [self applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
 }
 

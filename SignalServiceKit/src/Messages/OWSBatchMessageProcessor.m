@@ -266,8 +266,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<OWSMessageContentJob *> *processedJobs = [self processJobs:batchJobs];
 
+    __block NSUInteger jobCount;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.finder removeJobsWithUniqueIds:processedJobs.uniqueIds transaction:transaction];
+
+        jobCount = [self.finder jobCountWithTransaction:transaction];
     }];
 
     OWSAssertDebug(backgroundTask);
@@ -276,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogVerbose(@"completed %lu/%lu jobs. %lu jobs left.",
         (unsigned long)processedJobs.count,
         (unsigned long)batchJobs.count,
-        (unsigned long)[OWSMessageContentJob numberOfKeysInCollection]);
+        (unsigned long)jobCount);
 
     // Wait a bit in hopes of increasing the batch size.
     // This delay won't affect the first message to arrive when this queue is idle,

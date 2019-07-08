@@ -5,6 +5,7 @@
 #import "YAPDBMessageContentJobFinder.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSPrimaryStorage.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
@@ -49,7 +50,7 @@ NSString *const YAPDBMessageContentJobFinderExtensionGroup = @"OWSMessageContent
     OWSMessageContentJob *job = [[OWSMessageContentJob alloc] initWithEnvelopeData:envelopeData
                                                                      plaintextData:plaintextData
                                                                    wasReceivedByUD:wasReceivedByUD];
-    [job saveWithTransaction:transaction];
+    [job anyInsertWithTransaction:transaction.asAnyWrite];
 }
 
 - (void)removeJobsWithIds:(NSArray<NSString *> *)uniqueIds transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -103,7 +104,6 @@ NSString *const YAPDBMessageContentJobFinderExtensionGroup = @"OWSMessageContent
 
     return [[YapDatabaseAutoView alloc] initWithGrouping:grouping sorting:sorting versionTag:@"1" options:options];
 }
-
 
 + (void)asyncRegisterDatabaseExtension:(OWSStorage *)storage
 {
