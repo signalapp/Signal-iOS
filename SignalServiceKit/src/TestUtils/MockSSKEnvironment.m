@@ -71,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
     SSKMessageDecryptJobQueue *messageDecryptJobQueue = [SSKMessageDecryptJobQueue new];
     OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
-    OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
+    OWSMessageReceiver *messageReceiver = [OWSMessageReceiver new];
     TSSocketManager *socketManager = [[TSSocketManager alloc] init];
     TSAccountManager *tsAccountManager = [TSAccountManager new];
     OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];

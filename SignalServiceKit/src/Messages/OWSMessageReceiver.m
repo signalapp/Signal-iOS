@@ -99,23 +99,18 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const OWSMessageDecryptJobFinderExtensionName = @"OWSMessageProcessingJobFinderExtensionName2";
 NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessingJobFinderExtensionGroup2";
 
-@interface OWSMessageDecryptJobFinder : NSObject
-
-@end
-
-#pragma mark -
-
-@interface OWSMessageDecryptJobFinder ()
-
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
-
-@end
-
-#pragma mark -
-
 @implementation OWSMessageDecryptJobFinder
 
-- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
+- (instancetype)init
 {
     OWSSingletonAssert();
 
@@ -124,38 +119,62 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return self;
     }
 
-    _dbConnection = dbConnection;
-
     [OWSMessageDecryptJobFinder registerLegacyClasses];
 
     return self;
 }
 
+- (NSString *)databaseExtensionName
+{
+    return OWSMessageDecryptJobFinderExtensionName;
+}
+
+- (NSString *)databaseExtensionGroup
+{
+    return OWSMessageDecryptJobFinderExtensionGroup;
+}
+
 - (OWSMessageDecryptJob *_Nullable)nextJob
 {
-    __block OWSMessageDecryptJob *_Nullable job = nil;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        YapDatabaseViewTransaction *viewTransaction = [transaction ext:OWSMessageDecryptJobFinderExtensionName];
-        OWSAssertDebug(viewTransaction != nil);
-        job = [viewTransaction firstObjectInGroup:OWSMessageDecryptJobFinderExtensionGroup];
-    }];
+    // GRDB TODO: Remove this queue & finder entirely.
+    if (SSKFeatureFlags.useGRDB) {
+        OWSLogWarn(@"Not processing queue; obsolete.");
+        return nil;
+    }
 
+    __block OWSMessageDecryptJob *_Nullable job = nil;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        job = [self nextJobWithTransaction:transaction];
+    }];
     return job;
 }
 
 - (void)addJobForEnvelopeData:(NSData *)envelopeData
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelopeData:envelopeData];
-        [job saveWithTransaction:transaction];
+        [job anyInsertWithTransaction:transaction];
     }];
 }
 
 - (void)removeJobWithId:(NSString *)uniqueId
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [transaction removeObjectForKey:uniqueId inCollection:[OWSMessageDecryptJob collection]];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSMessageDecryptJob *_Nullable job =
+            [OWSMessageDecryptJob anyFetchWithUniqueId:uniqueId transaction:transaction];
+        if (job) {
+            [job anyRemoveWithTransaction:transaction];
+        }
     }];
+}
+
+- (NSUInteger)queuedJobCount
+{
+    __block NSUInteger result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [OWSMessageDecryptJob anyCountWithTransaction:transaction];
+    }];
+    return result;
 }
 
 + (YapDatabaseView *)databaseExtension
@@ -234,12 +253,10 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @interface YAPDBMessageDecryptQueue : NSObject
 
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) OWSMessageDecryptJobFinder *finder;
 @property (nonatomic) BOOL isDrainingQueue;
 
-- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection
-                              finder:(OWSMessageDecryptJobFinder *)finder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFinder:(OWSMessageDecryptJobFinder *)finder NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
@@ -248,7 +265,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @implementation YAPDBMessageDecryptQueue
 
-- (instancetype)initWithDBConnection:(YapDatabaseConnection *)dbConnection finder:(OWSMessageDecryptJobFinder *)finder
+- (instancetype)initWithFinder:(OWSMessageDecryptJobFinder *)finder
 {
     OWSSingletonAssert();
 
@@ -257,7 +274,6 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return self;
     }
 
-    _dbConnection = dbConnection;
     _finder = finder;
     _isDrainingQueue = NO;
 
@@ -296,6 +312,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
 
     return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
 }
 
 #pragma mark - Notifications
@@ -369,7 +390,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
               [self.finder removeJobWithId:job.uniqueId];
               OWSLogVerbose(@"%@ job. %lu jobs left.",
                   success ? @"decrypted" : @"failed to decrypt",
-                  (unsigned long)[OWSMessageDecryptJob numberOfKeysInCollection]);
+                  (unsigned long)[self.finder queuedJobCount]);
               [self drainQueueWorkStep];
               OWSAssertDebug(backgroundTask);
               backgroundTask = nil;
@@ -396,10 +417,10 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Could not parse proto.");
         // TODO: Add analytics.
 
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                transaction:transaction.asAnyWrite];
+                                                                                transaction:transaction];
         }];
 
         dispatch_async(self.serialQueue, ^{
@@ -454,7 +475,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 @implementation OWSMessageReceiver
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)init
 {
     OWSSingletonAssert();
 
@@ -464,10 +485,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     }
 
     // For coherency we use the same dbConnection to persist and read the unprocessed envelopes
-    YapDatabaseConnection *dbConnection = [primaryStorage newDatabaseConnection];
-    OWSMessageDecryptJobFinder *finder = [[OWSMessageDecryptJobFinder alloc] initWithDBConnection:dbConnection];
-    YAPDBMessageDecryptQueue *yapProcessingQueue =
-        [[YAPDBMessageDecryptQueue alloc] initWithDBConnection:dbConnection finder:finder];
+    OWSMessageDecryptJobFinder *finder = [OWSMessageDecryptJobFinder new];
+    YAPDBMessageDecryptQueue *yapProcessingQueue = [[YAPDBMessageDecryptQueue alloc] initWithFinder:finder];
 
     _yapProcessingQueue = yapProcessingQueue;
 
