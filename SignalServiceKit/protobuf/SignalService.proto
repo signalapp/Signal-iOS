@@ -131,8 +131,8 @@ message DataMessage {
 
     // @required
     optional uint64            id          = 1;
-    // @required
-    optional string            author      = 2;
+    optional string            authorE164  = 2;
+    optional string            authorUuid  = 5;
     optional string            text        = 3;
     repeated QuotedAttachment  attachments = 4;
   }
@@ -276,10 +276,12 @@ message Verified {
 message SyncMessage {
   message Sent {
     message UnidentifiedDeliveryStatus {
-      optional string destination  = 1;
-      optional bool   unidentified = 2;
+      optional string destinationE164 = 1;
+      optional string destinationUuid = 3;
+      optional bool   unidentified    = 2;
     }
-    optional string                     destination              = 1;
+    optional string                     destinationE164          = 1;
+    optional string                     destinationUuid          = 7;
     optional uint64                     timestamp                = 2;
     optional DataMessage                message                  = 3;
     optional uint64                     expirationStartTimestamp = 4;
@@ -343,10 +345,10 @@ message SyncMessage {
   }
 
   message MessageTimerRead {
+    optional string senderE164 = 1;
+    optional string senderUuid = 3;
     // @required
-    optional string sender    = 1;
-    // @required
-    optional uint64 timestamp = 2;
+    optional uint64 timestamp  = 2;
   }
 
   optional Sent                 sent                 =  1;

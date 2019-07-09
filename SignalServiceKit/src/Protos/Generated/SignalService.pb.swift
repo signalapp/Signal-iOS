@@ -747,15 +747,23 @@ struct SignalServiceProtos_DataMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
-    /// @required
-    var author: String {
-      get {return _author ?? String()}
-      set {_author = newValue}
+    var authorE164: String {
+      get {return _authorE164 ?? String()}
+      set {_authorE164 = newValue}
     }
-    /// Returns true if `author` has been explicitly set.
-    var hasAuthor: Bool {return self._author != nil}
-    /// Clears the value of `author`. Subsequent reads from it will return its default value.
-    mutating func clearAuthor() {self._author = nil}
+    /// Returns true if `authorE164` has been explicitly set.
+    var hasAuthorE164: Bool {return self._authorE164 != nil}
+    /// Clears the value of `authorE164`. Subsequent reads from it will return its default value.
+    mutating func clearAuthorE164() {self._authorE164 = nil}
+
+    var authorUuid: String {
+      get {return _authorUuid ?? String()}
+      set {_authorUuid = newValue}
+    }
+    /// Returns true if `authorUuid` has been explicitly set.
+    var hasAuthorUuid: Bool {return self._authorUuid != nil}
+    /// Clears the value of `authorUuid`. Subsequent reads from it will return its default value.
+    mutating func clearAuthorUuid() {self._authorUuid = nil}
 
     var text: String {
       get {return _text ?? String()}
@@ -844,7 +852,8 @@ struct SignalServiceProtos_DataMessage {
     init() {}
 
     fileprivate var _id: UInt64? = nil
-    fileprivate var _author: String? = nil
+    fileprivate var _authorE164: String? = nil
+    fileprivate var _authorUuid: String? = nil
     fileprivate var _text: String? = nil
   }
 
@@ -1667,14 +1676,23 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    var destination: String {
-      get {return _storage._destination ?? String()}
-      set {_uniqueStorage()._destination = newValue}
+    var destinationE164: String {
+      get {return _storage._destinationE164 ?? String()}
+      set {_uniqueStorage()._destinationE164 = newValue}
     }
-    /// Returns true if `destination` has been explicitly set.
-    var hasDestination: Bool {return _storage._destination != nil}
-    /// Clears the value of `destination`. Subsequent reads from it will return its default value.
-    mutating func clearDestination() {_uniqueStorage()._destination = nil}
+    /// Returns true if `destinationE164` has been explicitly set.
+    var hasDestinationE164: Bool {return _storage._destinationE164 != nil}
+    /// Clears the value of `destinationE164`. Subsequent reads from it will return its default value.
+    mutating func clearDestinationE164() {_uniqueStorage()._destinationE164 = nil}
+
+    var destinationUuid: String {
+      get {return _storage._destinationUuid ?? String()}
+      set {_uniqueStorage()._destinationUuid = newValue}
+    }
+    /// Returns true if `destinationUuid` has been explicitly set.
+    var hasDestinationUuid: Bool {return _storage._destinationUuid != nil}
+    /// Clears the value of `destinationUuid`. Subsequent reads from it will return its default value.
+    mutating func clearDestinationUuid() {_uniqueStorage()._destinationUuid = nil}
 
     var timestamp: UInt64 {
       get {return _storage._timestamp ?? 0}
@@ -1724,14 +1742,23 @@ struct SignalServiceProtos_SyncMessage {
       // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
       // methods supported on all messages.
 
-      var destination: String {
-        get {return _destination ?? String()}
-        set {_destination = newValue}
+      var destinationE164: String {
+        get {return _destinationE164 ?? String()}
+        set {_destinationE164 = newValue}
       }
-      /// Returns true if `destination` has been explicitly set.
-      var hasDestination: Bool {return self._destination != nil}
-      /// Clears the value of `destination`. Subsequent reads from it will return its default value.
-      mutating func clearDestination() {self._destination = nil}
+      /// Returns true if `destinationE164` has been explicitly set.
+      var hasDestinationE164: Bool {return self._destinationE164 != nil}
+      /// Clears the value of `destinationE164`. Subsequent reads from it will return its default value.
+      mutating func clearDestinationE164() {self._destinationE164 = nil}
+
+      var destinationUuid: String {
+        get {return _destinationUuid ?? String()}
+        set {_destinationUuid = newValue}
+      }
+      /// Returns true if `destinationUuid` has been explicitly set.
+      var hasDestinationUuid: Bool {return self._destinationUuid != nil}
+      /// Clears the value of `destinationUuid`. Subsequent reads from it will return its default value.
+      mutating func clearDestinationUuid() {self._destinationUuid = nil}
 
       var unidentified: Bool {
         get {return _unidentified ?? false}
@@ -1746,7 +1773,8 @@ struct SignalServiceProtos_SyncMessage {
 
       init() {}
 
-      fileprivate var _destination: String? = nil
+      fileprivate var _destinationE164: String? = nil
+      fileprivate var _destinationUuid: String? = nil
       fileprivate var _unidentified: Bool? = nil
     }
 
@@ -2047,15 +2075,23 @@ struct SignalServiceProtos_SyncMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// @required
-    var sender: String {
-      get {return _sender ?? String()}
-      set {_sender = newValue}
+    var senderE164: String {
+      get {return _senderE164 ?? String()}
+      set {_senderE164 = newValue}
     }
-    /// Returns true if `sender` has been explicitly set.
-    var hasSender: Bool {return self._sender != nil}
-    /// Clears the value of `sender`. Subsequent reads from it will return its default value.
-    mutating func clearSender() {self._sender = nil}
+    /// Returns true if `senderE164` has been explicitly set.
+    var hasSenderE164: Bool {return self._senderE164 != nil}
+    /// Clears the value of `senderE164`. Subsequent reads from it will return its default value.
+    mutating func clearSenderE164() {self._senderE164 = nil}
+
+    var senderUuid: String {
+      get {return _senderUuid ?? String()}
+      set {_senderUuid = newValue}
+    }
+    /// Returns true if `senderUuid` has been explicitly set.
+    var hasSenderUuid: Bool {return self._senderUuid != nil}
+    /// Clears the value of `senderUuid`. Subsequent reads from it will return its default value.
+    mutating func clearSenderUuid() {self._senderUuid = nil}
 
     /// @required
     var timestamp: UInt64 {
@@ -2071,7 +2107,8 @@ struct SignalServiceProtos_SyncMessage {
 
     init() {}
 
-    fileprivate var _sender: String? = nil
+    fileprivate var _senderE164: String? = nil
+    fileprivate var _senderUuid: String? = nil
     fileprivate var _timestamp: UInt64? = nil
   }
 
@@ -3420,7 +3457,8 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Quote"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
-    2: .same(proto: "author"),
+    2: .same(proto: "authorE164"),
+    5: .same(proto: "authorUuid"),
     3: .same(proto: "text"),
     4: .same(proto: "attachments"),
   ]
@@ -3429,9 +3467,10 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
-      case 2: try decoder.decodeSingularStringField(value: &self._author)
+      case 2: try decoder.decodeSingularStringField(value: &self._authorE164)
       case 3: try decoder.decodeSingularStringField(value: &self._text)
       case 4: try decoder.decodeRepeatedMessageField(value: &self.attachments)
+      case 5: try decoder.decodeSingularStringField(value: &self._authorUuid)
       default: break
       }
     }
@@ -3441,7 +3480,7 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     if let v = self._id {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
     }
-    if let v = self._author {
+    if let v = self._authorE164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
     if let v = self._text {
@@ -3450,12 +3489,16 @@ extension SignalServiceProtos_DataMessage.Quote: SwiftProtobuf.Message, SwiftPro
     if !self.attachments.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.attachments, fieldNumber: 4)
     }
+    if let v = self._authorUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_DataMessage.Quote, rhs: SignalServiceProtos_DataMessage.Quote) -> Bool {
     if lhs._id != rhs._id {return false}
-    if lhs._author != rhs._author {return false}
+    if lhs._authorE164 != rhs._authorE164 {return false}
+    if lhs._authorUuid != rhs._authorUuid {return false}
     if lhs._text != rhs._text {return false}
     if lhs.attachments != rhs.attachments {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -4406,7 +4449,8 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
 extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".Sent"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "destination"),
+    1: .same(proto: "destinationE164"),
+    7: .same(proto: "destinationUuid"),
     2: .same(proto: "timestamp"),
     3: .same(proto: "message"),
     4: .same(proto: "expirationStartTimestamp"),
@@ -4415,7 +4459,8 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
   ]
 
   fileprivate class _StorageClass {
-    var _destination: String? = nil
+    var _destinationE164: String? = nil
+    var _destinationUuid: String? = nil
     var _timestamp: UInt64? = nil
     var _message: SignalServiceProtos_DataMessage? = nil
     var _expirationStartTimestamp: UInt64? = nil
@@ -4427,7 +4472,8 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     private init() {}
 
     init(copying source: _StorageClass) {
-      _destination = source._destination
+      _destinationE164 = source._destinationE164
+      _destinationUuid = source._destinationUuid
       _timestamp = source._timestamp
       _message = source._message
       _expirationStartTimestamp = source._expirationStartTimestamp
@@ -4448,12 +4494,13 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
       while let fieldNumber = try decoder.nextFieldNumber() {
         switch fieldNumber {
-        case 1: try decoder.decodeSingularStringField(value: &_storage._destination)
+        case 1: try decoder.decodeSingularStringField(value: &_storage._destinationE164)
         case 2: try decoder.decodeSingularUInt64Field(value: &_storage._timestamp)
         case 3: try decoder.decodeSingularMessageField(value: &_storage._message)
         case 4: try decoder.decodeSingularUInt64Field(value: &_storage._expirationStartTimestamp)
         case 5: try decoder.decodeRepeatedMessageField(value: &_storage._unidentifiedStatus)
         case 6: try decoder.decodeSingularBoolField(value: &_storage._isRecipientUpdate)
+        case 7: try decoder.decodeSingularStringField(value: &_storage._destinationUuid)
         default: break
         }
       }
@@ -4462,7 +4509,7 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
     try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
-      if let v = _storage._destination {
+      if let v = _storage._destinationE164 {
         try visitor.visitSingularStringField(value: v, fieldNumber: 1)
       }
       if let v = _storage._timestamp {
@@ -4480,6 +4527,9 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
       if let v = _storage._isRecipientUpdate {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 6)
       }
+      if let v = _storage._destinationUuid {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 7)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -4489,7 +4539,8 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
       let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
         let _storage = _args.0
         let rhs_storage = _args.1
-        if _storage._destination != rhs_storage._destination {return false}
+        if _storage._destinationE164 != rhs_storage._destinationE164 {return false}
+        if _storage._destinationUuid != rhs_storage._destinationUuid {return false}
         if _storage._timestamp != rhs_storage._timestamp {return false}
         if _storage._message != rhs_storage._message {return false}
         if _storage._expirationStartTimestamp != rhs_storage._expirationStartTimestamp {return false}
@@ -4507,32 +4558,38 @@ extension SignalServiceProtos_SyncMessage.Sent: SwiftProtobuf.Message, SwiftProt
 extension SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.Sent.protoMessageName + ".UnidentifiedDeliveryStatus"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "destination"),
+    1: .same(proto: "destinationE164"),
+    3: .same(proto: "destinationUuid"),
     2: .same(proto: "unidentified"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._destination)
+      case 1: try decoder.decodeSingularStringField(value: &self._destinationE164)
       case 2: try decoder.decodeSingularBoolField(value: &self._unidentified)
+      case 3: try decoder.decodeSingularStringField(value: &self._destinationUuid)
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._destination {
+    if let v = self._destinationE164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     }
     if let v = self._unidentified {
       try visitor.visitSingularBoolField(value: v, fieldNumber: 2)
     }
+    if let v = self._destinationUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus, rhs: SignalServiceProtos_SyncMessage.Sent.UnidentifiedDeliveryStatus) -> Bool {
-    if lhs._destination != rhs._destination {return false}
+    if lhs._destinationE164 != rhs._destinationE164 {return false}
+    if lhs._destinationUuid != rhs._destinationUuid {return false}
     if lhs._unidentified != rhs._unidentified {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -4888,32 +4945,38 @@ extension SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum: SwiftPr
 extension SignalServiceProtos_SyncMessage.MessageTimerRead: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".MessageTimerRead"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "sender"),
+    1: .same(proto: "senderE164"),
+    3: .same(proto: "senderUuid"),
     2: .same(proto: "timestamp"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularStringField(value: &self._sender)
+      case 1: try decoder.decodeSingularStringField(value: &self._senderE164)
       case 2: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
+      case 3: try decoder.decodeSingularStringField(value: &self._senderUuid)
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._sender {
+    if let v = self._senderE164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     }
     if let v = self._timestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 2)
     }
+    if let v = self._senderUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_SyncMessage.MessageTimerRead, rhs: SignalServiceProtos_SyncMessage.MessageTimerRead) -> Bool {
-    if lhs._sender != rhs._sender {return false}
+    if lhs._senderE164 != rhs._senderE164 {return false}
+    if lhs._senderUuid != rhs._senderUuid {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
