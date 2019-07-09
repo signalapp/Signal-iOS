@@ -13,7 +13,7 @@ public class OWS106EnsureProfileComplete: YDBDatabaseMigration {
 
     // increment a similar constant for each migration.
     @objc
-    class func migrationId() -> String {
+    public override var migrationId: String {
         return "106"
     }
 

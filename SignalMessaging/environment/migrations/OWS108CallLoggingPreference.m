@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS108CallLoggingPreference.h"
@@ -14,7 +14,7 @@ static NSString *const OWS108CallLoggingPreferenceId = @"108";
 
 @implementation OWS108CallLoggingPreference
 
-+ (NSString *)migrationId
+- (NSString *)migrationId
 {
     return OWS108CallLoggingPreferenceId;
 }

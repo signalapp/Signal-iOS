@@ -93,11 +93,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableSet<NSString *> *knownMigrationIds = [NSMutableSet new];
     for (OWSDatabaseMigration *migration in self.allMigrations) {
-        [knownMigrationIds addObject:migration.uniqueId];
+        [knownMigrationIds addObject:migration.migrationId];
     }
 
     [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        NSArray<NSString *> *savedMigrationIds = [transaction allKeysInCollection:OWSDatabaseMigration.collection];
+        NSArray<NSString *> *savedMigrationIds =
+            [OWSDatabaseMigration allCompleteMigrationIdsWithTransaction:transaction.asAnyRead];
 
         NSMutableSet<NSString *> *unknownMigrationIds = [NSMutableSet new];
         [unknownMigrationIds addObjectsFromArray:savedMigrationIds];
@@ -105,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         for (NSString *unknownMigrationId in unknownMigrationIds) {
             OWSLogInfo(@"Culling unknown migration: %@", unknownMigrationId);
-            [transaction removeObjectForKey:unknownMigrationId inCollection:OWSDatabaseMigration.collection];
+            [OWSDatabaseMigration markMigrationIdAsIncomplete:unknownMigrationId transaction:transaction.asAnyWrite];
         }
     }];
 }
@@ -133,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
     [migrations removeObjectAtIndex:0];
 
     // If migration has already been run, skip it.
-    if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId] != nil) {
+    if (migration.isCompleteWithSneakyTransaction) {
         [self runMigrations:migrations completion:completion];
         return;
     }

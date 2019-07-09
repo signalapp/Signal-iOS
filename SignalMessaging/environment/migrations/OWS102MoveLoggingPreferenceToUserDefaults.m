@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS102MoveLoggingPreferenceToUserDefaults.h"
@@ -13,7 +13,7 @@ static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"
 
 @implementation OWS102MoveLoggingPreferenceToUserDefaults
 
-+ (NSString *)migrationId
+- (NSString *)migrationId
 {
     return OWS102MoveLoggingPreferenceToUserDefaultsMigrationId;
 }

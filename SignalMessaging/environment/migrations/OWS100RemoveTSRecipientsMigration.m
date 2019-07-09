@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS100RemoveTSRecipientsMigration.h"
@@ -12,7 +12,7 @@ static NSString *const OWS100RemoveTSRecipientsMigrationId = @"100";
 
 @implementation OWS100RemoveTSRecipientsMigration
 
-+ (NSString *)migrationId
+- (NSString *)migrationId
 {
     return OWS100RemoveTSRecipientsMigrationId;
 }

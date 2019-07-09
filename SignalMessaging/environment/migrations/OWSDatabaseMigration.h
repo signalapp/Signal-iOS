@@ -9,13 +9,16 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSDatabaseMigrationCompletion)(void);
 
 @class OWSPrimaryStorage;
+@class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class YapDatabaseReadWriteTransaction;
 
-@interface OWSDatabaseMigration : NSObject
+@interface OWSDatabaseMigration : TSYapDatabaseObject
 
 + (SDSKeyValueStore *)keyValueStore;
+
+@property (nonatomic, readonly) NSString *migrationId;
 
 @property (nonatomic, readonly) BOOL shouldSave;
 
@@ -33,10 +36,16 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 // the YDB-to-GRDB migration.
 - (void)markAsCompleteWithSneakyTransaction;
 
++ (void)markMigrationIdAsComplete:(NSString *)migrationId transaction:(SDSAnyWriteTransaction *)transaction;
+
++ (void)markMigrationIdAsIncomplete:(NSString *)migrationId transaction:(SDSAnyWriteTransaction *)transaction;
+
 // We use a sneaky transaction since YDBDatabaseMigration will
 // want to consult YDB and GRDBDatabaseMigration will want to
 // consult GRDB.
 - (BOOL)isCompleteWithSneakyTransaction;
+
++ (NSArray<NSString *> *)allCompleteMigrationIdsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

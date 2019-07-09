@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-+ (NSString *)migrationId
+- (NSString *)migrationId
 {
     OWSAbstractMethod();
 
@@ -53,7 +53,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"Completed migration %@", [self class]);
 
-    [OWSDatabaseMigration.keyValueStore setBool:YES key:self.class.migrationId transaction:transaction];
+    [OWSDatabaseMigration markMigrationIdAsComplete:self.migrationId transaction:transaction];
+}
+
++ (void)markMigrationIdAsComplete:(NSString *)migrationId transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSLogInfo(@"Completed migration %@", [self class]);
+
+    [self.keyValueStore setBool:YES key:migrationId transaction:transaction];
+}
+
++ (void)markMigrationIdAsIncomplete:(NSString *)migrationId transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSLogInfo(@"Completed migration %@", [self class]);
+
+    [self.keyValueStore removeValueForKey:migrationId transaction:transaction];
 }
 
 - (BOOL)isCompleteWithSneakyTransaction
@@ -65,7 +79,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isCompleteWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    return [OWSDatabaseMigration.keyValueStore getBool:self.class.migrationId defaultValue:NO transaction:transaction];
+    return [OWSDatabaseMigration.keyValueStore getBool:self.migrationId defaultValue:NO transaction:transaction];
+}
+
++ (NSArray<NSString *> *)allCompleteMigrationIdsWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.keyValueStore allKeysWithTransaction:transaction];
 }
 
 @end

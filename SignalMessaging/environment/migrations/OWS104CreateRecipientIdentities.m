@@ -19,7 +19,7 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
  */
 @implementation OWS104CreateRecipientIdentities
 
-+ (NSString *)migrationId
+- (NSString *)migrationId
 {
     return OWS104CreateRecipientIdentitiesMigrationId;
 }

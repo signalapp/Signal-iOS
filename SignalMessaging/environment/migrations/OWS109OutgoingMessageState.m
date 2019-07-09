@@ -14,7 +14,7 @@ static NSString *const OWS109OutgoingMessageStateMigrationId = @"109";
 
 @implementation OWS109OutgoingMessageState
 
-+ (NSString *)migrationId
+- (NSString *)migrationId
 {
     return OWS109OutgoingMessageStateMigrationId;
 }

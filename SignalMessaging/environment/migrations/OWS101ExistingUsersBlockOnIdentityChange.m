@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS101ExistingUsersBlockOnIdentityChange.h"
@@ -17,7 +17,7 @@ static NSString *const OWS101ExistingUsersBlockOnIdentityChangeMigrationId = @"1
  */
 @implementation OWS101ExistingUsersBlockOnIdentityChange
 
-+ (NSString *)migrationId
+- (NSString *)migrationId
 {
     return OWS101ExistingUsersBlockOnIdentityChangeMigrationId;
 }

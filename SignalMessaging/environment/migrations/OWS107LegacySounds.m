@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS107LegacySounds.h"
@@ -13,7 +13,7 @@ static NSString *const OWS107LegacySoundsMigrationId = @"107";
 
 @implementation OWS107LegacySounds
 
-+ (NSString *)migrationId
+- (NSString *)migrationId
 {
     return OWS107LegacySoundsMigrationId;
 }

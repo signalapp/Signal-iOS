@@ -14,7 +14,7 @@ public class OWS113MultiAttachmentMediaMessages: YDBDatabaseMigration {
 
     // Increment a similar constant for each migration.
     @objc
-    class func migrationId() -> String {
+    public override var migrationId: String {
         // NOTE: that we use .1 since there was a bug in the logic to
         //       set albumMessageId.
         return "113.1"
