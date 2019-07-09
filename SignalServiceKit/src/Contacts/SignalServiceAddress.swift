@@ -111,13 +111,13 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
     // MARK: -
 
     public func encode(with aCoder: NSCoder) {
-        aCoder.encode(backingUuid, forKey: "uuid")
-        aCoder.encode(backingPhoneNumber, forKey: "phoneNumber")
+        aCoder.encode(backingUuid, forKey: "backingUuid")
+        aCoder.encode(backingPhoneNumber, forKey: "backingPhoneNumber")
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        backingUuid = aDecoder.decodeObject(forKey: "uuid") as? UUID
-        backingPhoneNumber = aDecoder.decodeObject(forKey: "phoneNumber") as? String
+        backingUuid = aDecoder.decodeObject(forKey: "backingUuid") as? UUID
+        backingPhoneNumber = aDecoder.decodeObject(forKey: "backingPhoneNumber") as? String
     }
 
     // MARK: -
@@ -135,16 +135,22 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
         return isEqualToAddress(otherAddress)
     }
 
+    @objc
+    public func isEqualToAddress(_ otherAddress: SignalServiceAddress?) -> Bool {
+        guard let otherAddress = otherAddress else {
+            return false
+        }
+
+        return otherAddress.phoneNumber == phoneNumber && otherAddress.uuid == uuid
+    }
+
     public override var hash: Int {
         return (phoneNumber?.hashValue ?? 0) ^ (uuid?.hashValue ?? 0)
     }
 
     @objc
     public func compare(_ otherAddress: SignalServiceAddress) -> ComparisonResult {
-        guard let string = stringForDisplay, let otherString = otherAddress.stringForDisplay else {
-            return .orderedSame
-        }
-        return string.compare(otherString)
+        return stringForDisplay.compare(otherAddress.stringForDisplay)
     }
 
     // MARK: -
@@ -163,36 +169,21 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
     }
 
     @objc
-    public func isEqualToAddress(_ otherAddress: SignalServiceAddress?) -> Bool {
-        guard let otherAddress = otherAddress else {
-            return false
-        }
-
-        if let otherUuid = otherAddress.uuid, let thisUuid = uuid {
-            return otherUuid == thisUuid
-        }
-
-        if let otherPhone = otherAddress.phoneNumber, let thisPhone = phoneNumber {
-            return otherPhone == thisPhone
-        }
-
-        return false
-    }
-
-    @objc
     public var isLocalAddress: Bool {
         return SSKEnvironment.shared.tsAccountManager.localAddress == self
     }
 
     @objc
-    public var stringForDisplay: String? {
+    public var stringForDisplay: String {
         if let phoneNumber = phoneNumber {
             return phoneNumber
         } else if let uuid = uuid {
             return uuid.uuidString
         }
 
-        return nil
+        owsFailDebug("unexpectedly have no backing value")
+
+        return ""
     }
 
     @objc
@@ -241,7 +232,7 @@ class SignalServiceAddressCache: NSObject {
 
     override init() {
         super.init()
-        AppReadiness.runNowOrWhenAppDidBecomeReady { [weak self] in
+        AppReadiness.runNowOrWhenAppWillBecomeReady { [weak self] in
             SDSDatabaseStorage.shared.asyncRead { transaction in
                 SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
                     self?.add(address: recipient.address)

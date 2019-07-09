@@ -125,14 +125,9 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
           [UIImagePNGRepresentation(_groupImage) isEqualToData:UIImagePNGRepresentation(other.groupImage)])) {
         return NO;
     }
-    NSMutableArray *compareMyGroupMembers = [NSMutableArray arrayWithArray:_groupMembers];
-    for (SignalServiceAddress *address in other.groupMembers) {
-        [compareMyGroupMembers removeObject:address];
-    }
-    if ([compareMyGroupMembers count] > 0) {
-        return NO;
-    }
-    return YES;
+    NSSet<SignalServiceAddress *> *myGroupMembersSet = [NSSet setWithArray:_groupMembers];
+    NSSet<SignalServiceAddress *> *otherGroupMembersSet = [NSSet setWithArray:other.groupMembers];
+    return [myGroupMembersSet isEqualToSet:otherGroupMembersSet];
 }
 
 - (NSString *)getInfoStringAboutUpdateTo:(TSGroupModel *)newModel contactsManager:(id<ContactsManagerProtocol>)contactsManager {

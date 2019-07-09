@@ -74,7 +74,7 @@ public extension DebugUIMessages {
     class func createUUIDGroup() {
         assert(FeatureFlags.allowUUIDOnlyContacts)
 
-        let uuidMembers = (0...3).map { _ in CommonGenerator.address(withPhoneNumber: false) }
+        let uuidMembers = (0...3).map { _ in CommonGenerator.address(hasPhoneNumber: false) }
 
         let members = uuidMembers + [TSAccountManager.sharedInstance().localAddress!]
 

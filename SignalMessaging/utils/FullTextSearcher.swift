@@ -443,6 +443,6 @@ public class FullTextSearcher: NSObject {
         let contactName = contactsManager.displayName(for: address)
         let profileName = contactsManager.profileName(for: address)
 
-        return "\(address.stringForDisplay ?? "") \(contactName) \(profileName ?? "")"
+        return "\(address.phoneNumber ?? "") \(contactName) \(profileName ?? "")"
     }
 }

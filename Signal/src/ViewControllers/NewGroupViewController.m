@@ -351,8 +351,8 @@ NS_ASSUME_NONNULL_BEGIN
 
                                 [cell configureWithRecipientAddress:signalAccount.recipientAddress];
 
-                                NSString *cellName = [NSString
-                                    stringWithFormat:@"signal_contact.%@", address.phoneNumber ?: address.uuidString];
+                                NSString *cellName =
+                                    [NSString stringWithFormat:@"signal_contact.%@", address.stringForDisplay];
                                 cell.accessibilityIdentifier
                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewGroupViewController, cellName);
 

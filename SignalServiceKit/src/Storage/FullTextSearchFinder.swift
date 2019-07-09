@@ -199,7 +199,7 @@ public class FullTextSearchFinder: NSObject {
             return String(String.UnicodeScalarView(digitScalars))
         }(recipientAddress.phoneNumber)
 
-        return "\(recipientAddress.stringForDisplay ?? "") \(nationalNumber ?? "") \(displayName)"
+        return "\(recipientAddress.phoneNumber ?? "") \(nationalNumber ?? "") \(displayName)"
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in

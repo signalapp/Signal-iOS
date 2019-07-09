@@ -419,7 +419,7 @@ class GroupThreadFactory: NSObject, Factory {
     @objc
     public var membersBuilder: () -> [SignalServiceAddress] = {
         let groupSize = arc4random_uniform(10)
-        return (0..<groupSize).map { _ in  CommonGenerator.address(withPhoneNumber: Bool.random()) }
+        return (0..<groupSize).map { _ in  CommonGenerator.address(hasPhoneNumber: Bool.random()) }
     }
 }
 
@@ -525,8 +525,8 @@ public struct CommonGenerator {
         return "+1".appending(randomDigits.joined())
     }
 
-    static public func address(withPhoneNumber: Bool = true) -> SignalServiceAddress {
-        return SignalServiceAddress(uuid: UUID(), phoneNumber: withPhoneNumber ? e164() : nil)
+    static public func address(hasPhoneNumber: Bool = true) -> SignalServiceAddress {
+        return SignalServiceAddress(uuid: UUID(), phoneNumber: hasPhoneNumber ? e164() : nil)
     }
 
     // Body Content

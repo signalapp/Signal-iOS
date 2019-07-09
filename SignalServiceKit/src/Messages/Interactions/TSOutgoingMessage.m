@@ -1114,8 +1114,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                 [groupBuilder setAvatar:attachmentProto];
             }
 
-            NSMutableArray *membersE164 = [NSMutableArray new];
-            NSMutableArray *members = [NSMutableArray new];
+            NSMutableArray<NSString *> *membersE164 = [NSMutableArray new];
+            NSMutableArray<SSKProtoGroupContextMember *> *members = [NSMutableArray new];
 
             for (SignalServiceAddress *address in gThread.groupModel.groupMembers) {
                 // We currently include an independent group member list
