@@ -7,11 +7,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 extern const int32_t kGroupIdLength;
 
 @interface TSGroupModel : MTLModel
 
-@property (nonatomic) NSArray<NSString *> *groupMemberIds;
+@property (nonatomic) NSArray<SignalServiceAddress *> *groupMembers;
+@property (nonatomic, readonly) NSArray<NSString *> *transitional_groupMemberPhoneNumbers;
 @property (nullable, readonly, nonatomic) NSString *groupName;
 @property (readonly, nonatomic) NSData *groupId;
 
@@ -19,12 +22,12 @@ extern const int32_t kGroupIdLength;
 @property (nullable, nonatomic, strong) UIImage *groupImage;
 
 - (instancetype)initWithTitle:(nullable NSString *)title
-                    memberIds:(NSArray<NSString *> *)memberIds
+                      members:(NSArray<SignalServiceAddress *> *)members
                         image:(nullable UIImage *)image
                       groupId:(NSData *)groupId;
 
 - (instancetype)initWithGroupId:(NSData *)groupId
-                 groupMemberIds:(NSArray<NSString *> *)groupMemberIds
+                   groupMembers:(NSArray<SignalServiceAddress *> *)groupMembers
                       groupName:(nullable NSString *)groupName;
 
 - (BOOL)isEqual:(id)other;

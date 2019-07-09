@@ -1,16 +1,18 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "SelectRecipientViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 @protocol AddToGroupViewControllerDelegate <NSObject>
 
-- (void)recipientIdWasAdded:(NSString *)recipientId;
+- (void)recipientAddressWasAdded:(SignalServiceAddress *)address;
 
-- (BOOL)isRecipientGroupMember:(NSString *)recipientId;
+- (BOOL)isRecipientGroupMember:(SignalServiceAddress *)address;
 
 @end
 

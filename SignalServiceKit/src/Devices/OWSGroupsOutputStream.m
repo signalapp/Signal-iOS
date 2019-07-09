@@ -24,7 +24,34 @@ NS_ASSUME_NONNULL_BEGIN
 
     SSKProtoGroupDetailsBuilder *groupBuilder = [SSKProtoGroupDetails builderWithId:group.groupId];
     [groupBuilder setName:group.groupName];
-    [groupBuilder setMembers:group.groupMemberIds];
+
+    NSMutableArray *membersE164 = [NSMutableArray new];
+    NSMutableArray *members = [NSMutableArray new];
+
+    for (SignalServiceAddress *address in group.groupMembers) {
+        // We currently include an independent group member list
+        // of just the phone numbers to support older pre-UUID
+        // clients. Eventually we probably want to remove this.
+        if (address.phoneNumber) {
+            [membersE164 addObject:address.phoneNumber];
+        }
+
+        SSKProtoGroupContextMemberBuilder *memberBuilder = [SSKProtoGroupContextMember builder];
+        memberBuilder.uuid = address.uuidString;
+        memberBuilder.e164 = address.phoneNumber;
+
+        NSError *error;
+        SSKProtoGroupContextMember *_Nullable member = [memberBuilder buildAndReturnError:&error];
+        if (error || !member) {
+            OWSFailDebug(@"could not build members protobuf: %@", error);
+        } else {
+            [members addObject:member];
+        }
+    }
+
+    [groupBuilder setMembersE164:membersE164];
+    [groupBuilder setMembers:members];
+
     [groupBuilder setColor:groupThread.conversationColorName];
 
     if ([OWSBlockingManager.sharedManager isGroupIdBlocked:group.groupId]) {

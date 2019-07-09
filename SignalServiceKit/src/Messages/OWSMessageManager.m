@@ -1187,10 +1187,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Ensure sender is in the group.
-    if (![gThread.groupModel.groupMemberIds containsObject:envelope.sourceE164]) {
+    if (![gThread.groupModel.groupMembers containsObject:envelope.sourceAddress]) {
         OWSLogWarn(@"Ignoring 'Request Group Info' message for non-member of group. %@ not in %@",
-            envelope.sourceE164,
-            gThread.groupModel.groupMemberIds);
+            envelope.sourceAddress,
+            gThread.groupModel.groupMembers);
         return;
     }
 
@@ -1264,9 +1264,11 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
 
-        NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
-        for (NSString *recipientId in newMemberIds) {
-            if (!recipientId.isValidE164) {
+        NSMutableSet<SignalServiceAddress *> *newMembers =
+            [NSMutableSet setWithArray:dataMessage.group.memberAddresses];
+
+        for (SignalServiceAddress *address in newMembers) {
+            if (!address.isValid) {
                 OWSLogVerbose(
                     @"incoming group update has invalid group member: %@", [self descriptionForEnvelope:envelope]);
                 OWSFailDebug(@"incoming group update has invalid group member");
@@ -1282,7 +1284,7 @@ NS_ASSUME_NONNULL_BEGIN
             // Don't trust other clients; ensure all known group members remain in the
             // group unless it is a "quit" message in which case we should only remove
             // the quiting member below.
-            [newMemberIds addObjectsFromArray:oldGroupThread.groupModel.groupMemberIds];
+            [newMembers addObjectsFromArray:oldGroupThread.groupModel.groupMembers];
         }
 
         if (dataMessage.hasRequiredProtocolVersion
@@ -1302,7 +1304,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [TSGroupThread getOrCreateThreadWithGroupId:groupId anyTransaction:transaction];
 
                 TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
-                                                                        memberIds:newMemberIds.allObjects
+                                                                          members:newMembers.allObjects
                                                                             image:oldGroupThread.groupModel.groupImage
                                                                           groupId:dataMessage.group.id];
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
@@ -1336,12 +1338,12 @@ NS_ASSUME_NONNULL_BEGIN
                     OWSLogWarn(@"ignoring quit group message from unknown group.");
                     return nil;
                 }
-                [newMemberIds removeObject:envelope.sourceE164];
+                [newMembers removeObject:envelope.sourceAddress];
                 [oldGroupThread anyUpdateWithTransaction:transaction
                                                    block:^(TSThread *thread) {
                                                        TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                                       groupThread.groupModel.groupMemberIds =
-                                                           [newMemberIds.allObjects mutableCopy];
+                                                       groupThread.groupModel.groupMembers =
+                                                           [newMembers.allObjects mutableCopy];
                                                    }];
 
                 NSString *nameString =

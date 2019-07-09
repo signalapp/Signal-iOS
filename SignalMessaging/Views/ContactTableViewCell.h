@@ -1,16 +1,17 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
 @class TSThread;
 
 @interface ContactTableViewCell : UITableViewCell
 
 + (NSString *)reuseIdentifier;
 
-- (void)configureWithRecipientId:(NSString *)recipientId;
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address;
 
 - (void)configureWithThread:(TSThread *)thread;
 

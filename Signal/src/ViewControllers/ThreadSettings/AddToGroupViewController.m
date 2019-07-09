@@ -50,24 +50,26 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(phoneNumber.length > 0);
 
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+
     __weak AddToGroupViewController *weakSelf = self;
 
     ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([helper isSignalServiceAddressBlocked:phoneNumber.transitional_signalServiceAddress]) {
-        [BlockListUIUtils showUnblockAddressActionSheet:phoneNumber.transitional_signalServiceAddress
+    if ([helper isSignalServiceAddressBlocked:address]) {
+        [BlockListUIUtils showUnblockAddressActionSheet:address
                                      fromViewController:self
                                         blockingManager:helper.blockingManager
                                         contactsManager:helper.contactsManager
                                         completionBlock:^(BOOL isBlocked) {
                                             if (!isBlocked) {
-                                                [weakSelf addToGroup:phoneNumber];
+                                                [weakSelf addToGroup:address];
                                             }
                                         }];
         return;
     }
 
     BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
-        presentAlertIfNecessaryWithAddress:phoneNumber.transitional_signalServiceAddress
+        presentAlertIfNecessaryWithAddress:address
                           confirmationText:
                               NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION",
                                   @"button title to confirm adding a recipient to a group when their safety "
@@ -75,21 +77,21 @@ NS_ASSUME_NONNULL_BEGIN
                            contactsManager:helper.contactsManager
                                 completion:^(BOOL didConfirmIdentity) {
                                     if (didConfirmIdentity) {
-                                        [weakSelf addToGroup:phoneNumber];
+                                        [weakSelf addToGroup:address];
                                     }
                                 }];
     if (didShowSNAlert) {
         return;
     }
 
-    [self addToGroup:phoneNumber];
+    [self addToGroup:address];
 }
 
 - (BOOL)canSignalAccountBeSelected:(SignalAccount *)signalAccount
 {
     OWSAssertDebug(signalAccount);
 
-    return ![self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientAddress.transitional_phoneNumber];
+    return ![self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientAddress];
 }
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
@@ -98,7 +100,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak AddToGroupViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
-    if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientAddress.transitional_phoneNumber]) {
+    if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientAddress]) {
         OWSFailDebug(@"Cannot add user to group member if already a member.");
         return;
     }
@@ -110,8 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
                                               contactsManager:helper.contactsManager
                                               completionBlock:^(BOOL isBlocked) {
                                                   if (!isBlocked) {
-                                                      [weakSelf addToGroup:signalAccount.recipientAddress
-                                                                               .transitional_phoneNumber];
+                                                      [weakSelf addToGroup:signalAccount.recipientAddress];
                                                   }
                                               }];
         return;
@@ -126,21 +127,21 @@ NS_ASSUME_NONNULL_BEGIN
                            contactsManager:helper.contactsManager
                                 completion:^(BOOL didConfirmIdentity) {
                                     if (didConfirmIdentity) {
-                                        [weakSelf addToGroup:signalAccount.recipientAddress.transitional_phoneNumber];
+                                        [weakSelf addToGroup:signalAccount.recipientAddress];
                                     }
                                 }];
     if (didShowSNAlert) {
         return;
     }
 
-    [self addToGroup:signalAccount.recipientAddress.transitional_phoneNumber];
+    [self addToGroup:signalAccount.recipientAddress];
 }
 
-- (void)addToGroup:(NSString *)recipientId
+- (void)addToGroup:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [self.addToGroupDelegate recipientIdWasAdded:recipientId];
+    [self.addToGroupDelegate recipientAddressWasAdded:address];
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -163,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(signalAccount);
 
-    if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientAddress.transitional_phoneNumber]) {
+    if ([self.addToGroupDelegate isRecipientGroupMember:signalAccount.recipientAddress]) {
         return NSLocalizedString(@"NEW_GROUP_MEMBER_LABEL", @"An indicator that a user is a member of the new group.");
     }
 

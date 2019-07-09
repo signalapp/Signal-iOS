@@ -207,4 +207,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface TSGroupModel (SDS)
+
+@property (nonatomic, readonly) NSUInteger groupModelSchemaVersion;
+
+@end
+
+#pragma mark -
+
 NS_ASSUME_NONNULL_END

@@ -278,7 +278,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 cell.accessoryMessage = NSLocalizedString(
                                     @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                             }
-                            [cell configureWithRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
+                            [cell configureWithRecipientAddress:signalAccount.recipientAddress];
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension

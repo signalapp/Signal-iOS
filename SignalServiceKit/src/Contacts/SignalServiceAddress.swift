@@ -95,6 +95,14 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
         return (phoneNumber?.hashValue ?? 0) ^ (uuid?.hashValue ?? 0)
     }
 
+    @objc
+    public func compare(_ otherAddress: SignalServiceAddress) -> ComparisonResult {
+        guard let string = stringForDisplay, let otherString = otherAddress.stringForDisplay else {
+            return .orderedSame
+        }
+        return string.compare(otherString)
+    }
+
     // MARK: -
 
     @objc

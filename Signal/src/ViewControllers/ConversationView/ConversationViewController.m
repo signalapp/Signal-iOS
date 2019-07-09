@@ -1181,8 +1181,11 @@ typedef enum : NSUInteger {
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
     int blockedMemberCount = 0;
     NSArray<NSString *> *blockedPhoneNumbers = [self.blockingManager blockedPhoneNumbers];
-    for (NSString *contactIdentifier in groupThread.groupModel.groupMemberIds) {
-        if ([blockedPhoneNumbers containsObject:contactIdentifier]) {
+    NSArray<NSString *> *blockedUUIDs = [self.blockingManager blockedUUIDs];
+    for (SignalServiceAddress *address in groupThread.groupModel.groupMembers) {
+        if (address.phoneNumber && [blockedPhoneNumbers containsObject:address.phoneNumber]) {
+            blockedMemberCount++;
+        } else if (address.uuidString && [blockedUUIDs containsObject:address.uuidString]) {
             blockedMemberCount++;
         }
     }
@@ -4088,9 +4091,9 @@ typedef enum : NSUInteger {
 {
     OWSAssertDebug(groupModel);
 
-    NSMutableSet *groupMemberIds = [NSMutableSet setWithArray:groupModel.groupMemberIds];
-    [groupMemberIds addObject:self.tsAccountManager.localNumber];
-    groupModel.groupMemberIds = [NSMutableArray arrayWithArray:[groupMemberIds allObjects]];
+    NSMutableSet *groupMembers = [NSMutableSet setWithArray:groupModel.groupMembers];
+    [groupMembers addObject:self.tsAccountManager.localAddress];
+    groupModel.groupMembers = [NSMutableArray arrayWithArray:[groupMembers allObjects]];
     [self updateGroupModelTo:groupModel successCompletion:nil];
 }
 

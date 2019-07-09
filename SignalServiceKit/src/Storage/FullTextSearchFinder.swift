@@ -161,8 +161,8 @@ public class FullTextSearchFinder: NSObject {
     private static let groupThreadIndexer: SearchIndexer<TSGroupThread> = SearchIndexer { (groupThread: TSGroupThread, transaction: YapDatabaseReadTransaction) in
         let groupName = groupThread.groupModel.groupName ?? ""
 
-        let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
-            recipientIndexer.index(recipientId.transitional_signalServiceAddress, transaction: transaction)
+        let memberStrings = groupThread.groupModel.groupMembers.map { address in
+            recipientIndexer.index(address, transaction: transaction)
         }.joined(separator: " ")
 
         return "\(groupName) \(memberStrings)"
@@ -199,7 +199,7 @@ public class FullTextSearchFinder: NSObject {
             return String(String.UnicodeScalarView(digitScalars))
         }(recipientAddress.phoneNumber)
 
-        return "\(recipientAddress.phoneNumber ?? "") \(nationalNumber ?? "") \(displayName)"
+        return "\(recipientAddress.stringForDisplay ?? "") \(nationalNumber ?? "") \(displayName)"
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in

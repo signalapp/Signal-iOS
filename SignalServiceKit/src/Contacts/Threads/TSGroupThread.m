@@ -76,9 +76,9 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 {
     OWSAssertDebug(groupModel);
     OWSAssertDebug(groupModel.groupId.length > 0);
-    OWSAssertDebug(groupModel.groupMemberIds.count > 0);
-    for (NSString *recipientId in groupModel.groupMemberIds) {
-        OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(groupModel.groupMembers.count > 0);
+    for (SignalServiceAddress *address in groupModel.groupMembers) {
+        OWSAssertDebug(address.isValid);
     }
 
     NSString *uniqueIdentifier = [[self class] threadIdFromGroupId:groupModel.groupId];
@@ -96,11 +96,11 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 {
     OWSAssertDebug(groupId.length > 0);
 
-    NSString *localNumber = [TSAccountManager localNumber];
-    OWSAssertDebug(localNumber.length > 0);
+    SignalServiceAddress *localAddress = TSAccountManager.sharedInstance.localAddress;
+    OWSAssertDebug(localAddress.isValid);
 
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:nil
-                                                         memberIds:@[ localNumber ]
+                                                           members:@[ localAddress ]
                                                              image:nil
                                                            groupId:groupId];
 
@@ -228,21 +228,14 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 - (NSArray<SignalServiceAddress *> *)recipientAddresses
 {
-    NSMutableArray<SignalServiceAddress *> *groupMemberAddresses = [NSMutableArray new];
-    NSMutableArray<NSString *> *groupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
-    if (groupMemberIds == nil) {
+    NSMutableArray<SignalServiceAddress *> *groupMembers = [self.groupModel.groupMembers mutableCopy];
+    if (groupMembers == nil) {
         return @[];
     }
 
-    [groupMemberIds removeObject:[TSAccountManager localNumber]];
+    [groupMembers removeObject:TSAccountManager.sharedInstance.localAddress];
 
-    for (NSString *phoneNumber in groupMemberIds) {
-        [groupMemberAddresses addObject:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
-    }
-
-    // TODO UUID
-
-    return [groupMemberAddresses copy];
+    return [groupMembers copy];
 }
 
 // @returns all threads to which the recipient is a member.
@@ -268,10 +261,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
                                        usingBlock:^(id obj, BOOL *stop) {
                                            if ([obj isKindOfClass:[TSGroupThread class]]) {
                                                TSGroupThread *groupThread = (TSGroupThread *)obj;
-                                               // TODO UUID
-                                               if (address.phoneNumber &&
-                                                   [groupThread.groupModel.groupMemberIds
-                                                       containsObject:address.phoneNumber]) {
+                                               if ([groupThread.groupModel.groupMembers containsObject:address]) {
                                                    [groupThreads addObject:groupThread];
                                                }
                                            }
@@ -287,12 +277,12 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 - (BOOL)isLocalUserInGroup
 {
-    NSString *_Nullable localNumber = TSAccountManager.localNumber;
-    if (localNumber == nil) {
+    SignalServiceAddress *_Nullable localAddress = TSAccountManager.sharedInstance.localAddress;
+    if (localAddress == nil) {
         return NO;
     }
 
-    return [self.groupModel.groupMemberIds containsObject:localNumber];
+    return [self.groupModel.groupMembers containsObject:localAddress];
 }
 
 - (NSString *)name
@@ -318,10 +308,10 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    NSMutableArray<NSString *> *newGroupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
-    [newGroupMemberIds removeObject:[TSAccountManager localNumber]];
+    NSMutableArray<SignalServiceAddress *> *newGroupMembers = [self.groupModel.groupMembers mutableCopy];
+    [newGroupMembers removeObject:TSAccountManager.sharedInstance.localAddress];
 
-    self.groupModel.groupMemberIds = newGroupMemberIds;
+    self.groupModel.groupMembers = newGroupMembers;
     [self saveWithTransaction:transaction];
 }
 

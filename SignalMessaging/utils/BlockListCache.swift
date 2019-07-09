@@ -36,7 +36,8 @@ public protocol BlockListCacheDelegate: class {
 @objc(OWSBlockListCache)
 public class BlockListCache: NSObject {
 
-    private var blockedRecipientIds: Set<String> = Set()
+    private var blockedPhoneNumbers: Set<String> = Set()
+    private var blockedUUIDs: Set<String> = Set()
     private var blockedGroupIds: Set<Data> = Set()
     private let serialQueue: DispatchQueue = DispatchQueue(label: "BlockListCache")
     weak var delegate: BlockListCacheDelegate?
@@ -67,10 +68,17 @@ public class BlockListCache: NSObject {
         self.update()
     }
 
-    @objc(isRecipientIdBlocked:)
-    public func isBlocked(recipientId: String) -> Bool {
+    @objc(isAddressBlocked:)
+    public func isBlocked(address: SignalServiceAddress) -> Bool {
         return serialQueue.sync {
-            blockedRecipientIds.contains(recipientId)
+            var blocked = false
+            if let phoneNumber = address.phoneNumber {
+                blocked = blockedPhoneNumbers.contains(phoneNumber)
+            }
+            if !blocked, let uuidString = address.uuidString {
+                blocked = blockedUUIDs.contains(uuidString)
+            }
+            return blocked
         }
     }
 
@@ -85,17 +93,9 @@ public class BlockListCache: NSObject {
     public func isBlocked(thread: TSThread) -> Bool {
         switch thread {
         case let contactThread as TSContactThread:
-            guard contactThread.contactAddress.phoneNumber != nil else {
-                assert(FeatureFlags.allowUUIDOnlyContacts)
-                return false
-            }
-            return serialQueue.sync {
-                blockedRecipientIds.contains(contactThread.contactAddress.transitional_phoneNumber)
-            }
+            return isBlocked(address: contactThread.contactAddress)
         case let groupThread as TSGroupThread:
-            return serialQueue.sync {
-                blockedGroupIds.contains(groupThread.groupModel.groupId)
-            }
+            return isBlocked(groupId: groupThread.groupModel.groupId)
         default:
             owsFailDebug("\(self.logTag) in \(#function) unexpected thread type: \(type(of: thread))")
             return false
@@ -112,14 +112,16 @@ public class BlockListCache: NSObject {
     }
 
     private func updateWithoutNotifyingDelegate() {
-        let blockedRecipientIds = Set(blockingManager.blockedPhoneNumbers)
+        let blockedPhoneNumbers = Set(blockingManager.blockedPhoneNumbers)
+        let blockedUUIDs = Set(blockingManager.blockedUUIDs)
         let blockedGroupIds = Set(blockingManager.blockedGroupIds)
-        update(blockedRecipientIds: blockedRecipientIds, blockedGroupIds: blockedGroupIds)
+        update(blockedPhoneNumbers: blockedPhoneNumbers, blockedUUIDs: blockedUUIDs, blockedGroupIds: blockedGroupIds)
     }
 
-    private func update(blockedRecipientIds: Set<String>, blockedGroupIds: Set<Data>) {
+    private func update(blockedPhoneNumbers: Set<String>, blockedUUIDs: Set<String>, blockedGroupIds: Set<Data>) {
         serialQueue.sync {
-            self.blockedRecipientIds = blockedRecipientIds
+            self.blockedPhoneNumbers = blockedPhoneNumbers
+            self.blockedUUIDs = blockedUUIDs
             self.blockedGroupIds = blockedGroupIds
         }
     }

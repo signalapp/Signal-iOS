@@ -118,14 +118,16 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *validRecipientId = @"+19174054216";
 
     NSString *groupName = @"Partially invalid group";
-    NSMutableArray<NSString *> *recipientIds = [@[
-        unregisteredRecipientId,
-        validRecipientId,
-        [TSAccountManager localNumber],
+    NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
+        [[SignalServiceAddress alloc] initWithPhoneNumber:unregisteredRecipientId],
+        [[SignalServiceAddress alloc] initWithPhoneNumber:validRecipientId],
+        TSAccountManager.sharedInstance.localAddress,
     ] mutableCopy];
     NSData *groupId = [Randomness generateRandomBytes:16];
-    TSGroupModel *model =
-        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+    TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:groupName
+                                                      members:recipientAddresses
+                                                        image:nil
+                                                      groupId:groupId];
     TSGroupThread *thread = [TSGroupThread getOrCreateThreadWithGroupModel:model];
 
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
