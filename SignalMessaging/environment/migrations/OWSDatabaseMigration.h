@@ -55,6 +55,7 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 
 #pragma mark -
 
+// A base class for migrations run before the YDB-to-GRDB migration.
 @interface YDBDatabaseMigration : OWSDatabaseMigration
 
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
