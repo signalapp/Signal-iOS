@@ -13,7 +13,7 @@ static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"
 
 @implementation OWS102MoveLoggingPreferenceToUserDefaults
 
-- (NSString *)migrationId
++ (NSString *)migrationId
 {
     return OWS102MoveLoggingPreferenceToUserDefaultsMigrationId;
 }

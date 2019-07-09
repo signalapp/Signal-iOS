@@ -18,7 +18,7 @@ public class OWS112TypingIndicatorsMigration: YDBDatabaseMigration {
 
     // Increment a similar constant for each migration.
     @objc
-    public override var migrationId: String {
+    public override class var migrationId: String {
         return "112"
     }
 

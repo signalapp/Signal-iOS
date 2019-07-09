@@ -12,7 +12,7 @@ static NSString *const OWS100RemoveTSRecipientsMigrationId = @"100";
 
 @implementation OWS100RemoveTSRecipientsMigration
 
-- (NSString *)migrationId
++ (NSString *)migrationId
 {
     return OWS100RemoveTSRecipientsMigrationId;
 }

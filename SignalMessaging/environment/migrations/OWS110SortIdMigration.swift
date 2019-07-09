@@ -7,7 +7,7 @@ import Foundation
 public class OWS110SortIdMigration: YDBDatabaseMigration {
     // increment a similar constant for each migration.
     @objc
-    public override var migrationId: String {
+    public override class var migrationId: String {
         // append char "x" because we want to rerun on some internal devices which
         // have already run this migration.
         return "110x"

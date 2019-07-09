@@ -14,7 +14,7 @@ static NSString *const OWS108CallLoggingPreferenceId = @"108";
 
 @implementation OWS108CallLoggingPreference
 
-- (NSString *)migrationId
++ (NSString *)migrationId
 {
     return OWS108CallLoggingPreferenceId;
 }

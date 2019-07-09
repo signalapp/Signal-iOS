@@ -13,7 +13,7 @@ static NSString *const OWS105AttachmentFilePathsMigrationId = @"105";
 
 @implementation OWS105AttachmentFilePaths
 
-- (NSString *)migrationId
++ (NSString *)migrationId
 {
     return OWS105AttachmentFilePathsMigrationId;
 }

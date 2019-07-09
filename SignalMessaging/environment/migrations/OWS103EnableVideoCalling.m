@@ -24,7 +24,7 @@ static NSString *const OWS103EnableVideoCallingMigrationId = @"103";
 
 #pragma mark -
 
-- (NSString *)migrationId
++ (NSString *)migrationId
 {
     return OWS103EnableVideoCallingMigrationId;
 }

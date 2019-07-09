@@ -139,9 +139,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSLogInfo(@"Running migration: %@", migration);
+    OWSLogInfo(@"Running migration: %@ %@", migration, migration.migrationId);
+
     [migration runUpWithCompletion:^{
-        OWSLogInfo(@"Migration complete: %@", migration);
+        OWSLogInfo(@"Migration complete: %@ %@", migration, migration.migrationId);
+
         [self runMigrations:migrations completion:completion];
     }];
 }

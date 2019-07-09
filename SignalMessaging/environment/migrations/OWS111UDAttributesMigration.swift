@@ -18,7 +18,7 @@ public class OWS111UDAttributesMigration: YDBDatabaseMigration {
 
     // increment a similar constant for each migration.
     @objc
-    public override var migrationId: String {
+    public override class var migrationId: String {
         // NOTE: Changes were made to the service after this migration was initially
         // merged, so we need to re-migrate any developer devices.  
         return "111.1"

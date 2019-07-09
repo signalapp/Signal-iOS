@@ -13,7 +13,7 @@ static NSString *const OWS107LegacySoundsMigrationId = @"107";
 
 @implementation OWS107LegacySounds
 
-- (NSString *)migrationId
++ (NSString *)migrationId
 {
     return OWS107LegacySoundsMigrationId;
 }

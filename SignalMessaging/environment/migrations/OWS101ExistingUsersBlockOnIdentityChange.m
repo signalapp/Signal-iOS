@@ -17,7 +17,7 @@ static NSString *const OWS101ExistingUsersBlockOnIdentityChangeMigrationId = @"1
  */
 @implementation OWS101ExistingUsersBlockOnIdentityChange
 
-- (NSString *)migrationId
++ (NSString *)migrationId
 {
     return OWS101ExistingUsersBlockOnIdentityChangeMigrationId;
 }
