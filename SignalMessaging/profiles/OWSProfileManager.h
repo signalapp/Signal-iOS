@@ -78,10 +78,6 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address;
 - (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address;
 
-- (void)updateProfileForAddress:(SignalServiceAddress *)address
-           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
-                  avatarUrlPath:(nullable NSString *)avatarUrlPath;
-
 #pragma mark - User Interface
 
 - (void)presentAddThreadToProfileWhitelist:(TSThread *)thread

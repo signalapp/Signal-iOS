@@ -57,8 +57,8 @@ public class ProfileFetcherJob: NSObject {
         return SSKEnvironment.shared.udManager
     }
 
-    private var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
+    private var profileManager: ProfileManagerProtocol {
+        return SSKEnvironment.shared.profileManager
     }
 
     private var identityManager: OWSIdentityManager {
@@ -104,7 +104,7 @@ public class ProfileFetcherJob: NSObject {
 
         DispatchQueue.global().async {
             for address in addresses {
-                self.getAndUpdateProfile(address: address)
+                self.getAndUpdateProfile(address: address).retainUntilComplete()
             }
         }
     }
@@ -113,10 +113,10 @@ public class ProfileFetcherJob: NSObject {
         case throttled(lastTimeInterval: TimeInterval)
     }
 
-    public func getAndUpdateProfile(address: SignalServiceAddress, remainingRetries: Int = 3) {
-        self.getProfile(address: address).map(on: DispatchQueue.global()) { profile in
-            self.updateProfile(signalServiceProfile: profile)
-        }.catch(on: DispatchQueue.global()) { error in
+    public func getAndUpdateProfile(address: SignalServiceAddress, remainingRetries: Int = 3) -> Promise<Void> {
+        return self.getProfile(address: address).map(on: DispatchQueue.global()) { (profile) in
+            return self.updateProfile(signalServiceProfile: profile)
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Promise<Void> in
             switch error {
             case ProfileFetcherJobError.throttled:
                 // skipping
@@ -125,15 +125,17 @@ public class ProfileFetcherJob: NSObject {
                 Logger.warn("skipping updateProfile retry. Invalid profile for: \(address) error: \(error)")
             default:
                 if remainingRetries > 0 {
-                    self.getAndUpdateProfile(address: address, remainingRetries: remainingRetries - 1)
+                    return self.getAndUpdateProfile(address: address, remainingRetries: remainingRetries - 1)
                 } else {
                     Logger.error("failed to get profile with error: \(error)")
                 }
             }
-        }.retainUntilComplete()
+
+            throw error
+        }
     }
 
-    public func getProfile(address: SignalServiceAddress) -> Promise<SignalServiceProfile> {
+    private func getProfile(address: SignalServiceAddress) -> Promise<SignalServiceProfile> {
         if !ignoreThrottling {
             if let lastDate = ProfileFetcherJob.fetchDateMap[address] {
                 let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
