@@ -172,7 +172,7 @@ public class FullTextSearchFinder: NSObject {
         let recipientAddress = contactThread.contactAddress
         var result = recipientIndexer.index(recipientAddress, transaction: transaction)
 
-        if let localAddress = tsAccountManager.storedOrCachedLocalAddress(transaction.asAnyRead), IsNoteToSelfEnabled(), localAddress.matchesAddress(recipientAddress) {
+        if let localAddress = tsAccountManager.storedOrCachedLocalAddress(transaction.asAnyRead), IsNoteToSelfEnabled(), localAddress == recipientAddress {
             let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
             result += " \(noteToSelfLabel)"
         }

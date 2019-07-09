@@ -479,7 +479,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (![self.thread.contactAddress matchesAddress:address]) {
+    if (![self.thread.contactAddress isEqualToAddress:address]) {
         return;
     }
 

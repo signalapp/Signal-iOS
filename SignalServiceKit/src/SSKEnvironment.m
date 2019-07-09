@@ -82,6 +82,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                     attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads
                          stickerManager:(StickerManager *)stickerManager
                         databaseStorage:(SDSDatabaseStorage *)databaseStorage
+              signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
 {
     self = [super init];
     if (!self) {
@@ -119,6 +120,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(attachmentDownloads);
     OWSAssertDebug(stickerManager);
     OWSAssertDebug(databaseStorage);
+    OWSAssertDebug(signalServiceAddressCache);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -151,6 +153,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _attachmentDownloads = attachmentDownloads;
     _stickerManager = stickerManager;
     _databaseStorage = databaseStorage;
+    _signalServiceAddressCache = signalServiceAddressCache;
 
     return self;
 }

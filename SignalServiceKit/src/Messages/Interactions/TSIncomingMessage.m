@@ -185,7 +185,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                      OWSAssertDebug(message.authorAddress.isValid);
 
                                      if ([message.authorAddress
-                                             matchesAddress:authorId.transitional_signalServiceAddress]) {
+                                             isEqualToAddress:authorId.transitional_signalServiceAddress]) {
                                          foundMessage = message;
                                      }
                                  }

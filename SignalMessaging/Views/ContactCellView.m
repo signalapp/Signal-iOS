@@ -291,7 +291,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
     OWSAssertDebug(address.isValid);
 
-    if (address.isValid && [self.address matchesAddress:address]) {
+    if (address.isValid && [self.address isEqualToAddress:address]) {
         [self updateProfileName];
         [self updateAvatar];
     }

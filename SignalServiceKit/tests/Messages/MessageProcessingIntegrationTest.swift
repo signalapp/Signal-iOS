@@ -84,16 +84,16 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                 // this block is called after each one, so it must be forgiving for the prior writes.
                 if let message = TSMessage.anyFetchAll(transaction: transaction).first as? TSIncomingMessage {
                     XCTAssertEqual(1, TSMessage.anyCount(transaction: transaction))
-                    XCTAssert(message.authorAddress.matchesAddress(self.bobClient.address))
-                    XCTAssertFalse(message.authorAddress.matchesAddress(self.aliceClient.address))
+                    XCTAssertEqual(message.authorAddress, self.bobClient.address)
+                    XCTAssertNotEqual(message.authorAddress, self.aliceClient.address)
                     XCTAssertEqual(message.body, "Those who stands for nothing will fall for anything")
                     XCTAssertEqual(1, TSThread.anyCount(transaction: transaction))
                     guard let thread = TSThread.anyFetchAll(transaction: transaction).first as? TSContactThread else {
                         XCTFail("thread was unexpectedly nil")
                         return
                     }
-                    XCTAssert(thread.contactAddress.matchesAddress(self.bobClient.address))
-                    XCTAssertFalse(thread.contactAddress.matchesAddress(self.aliceClient.address))
+                    XCTAssertEqual(thread.contactAddress, self.bobClient.address)
+                    XCTAssertNotEqual(thread.contactAddress, self.aliceClient.address)
 
                     expectMessageProcessed.fulfill()
                 }
@@ -141,16 +141,16 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                 // this block is called after each one, so it must be forgiving for the prior writes.
                 if let message = TSMessage.anyFetchAll(transaction: transaction).first as? TSIncomingMessage {
                     XCTAssertEqual(1, TSMessage.anyCount(transaction: transaction))
-                    XCTAssert(message.authorAddress.matchesAddress(self.bobClient.address))
-                    XCTAssertFalse(message.authorAddress.matchesAddress(self.aliceClient.address))
+                    XCTAssertEqual(message.authorAddress, self.bobClient.address)
+                    XCTAssertNotEqual(message.authorAddress, self.aliceClient.address)
                     XCTAssertEqual(message.body, "Those who stands for nothing will fall for anything")
                     XCTAssertEqual(1, TSThread.anyCount(transaction: transaction))
                     guard let thread = TSThread.anyFetchAll(transaction: transaction).first as? TSContactThread else {
                         XCTFail("thread was unexpectedly nil")
                         return
                     }
-                    XCTAssert(thread.contactAddress.matchesAddress(self.bobClient.address))
-                    XCTAssertFalse(thread.contactAddress.matchesAddress(self.aliceClient.address))
+                    XCTAssertEqual(thread.contactAddress, self.bobClient.address)
+                    XCTAssertNotEqual(thread.contactAddress, self.aliceClient.address)
 
                     expectMessageProcessed.fulfill()
                 }

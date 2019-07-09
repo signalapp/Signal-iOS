@@ -75,7 +75,7 @@ public class ContactSearchResult: NSObject, Comparable {
     // MARK: Equatable
 
     public static func == (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.recipientAddress.matchesAddress(rhs.recipientAddress)
+        return lhs.recipientAddress == rhs.recipientAddress
     }
 }
 
