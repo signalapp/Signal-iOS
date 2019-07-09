@@ -18,6 +18,7 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 
 + (SDSKeyValueStore *)keyValueStore;
 
+@property (class, nonatomic, readonly) NSString *migrationId;
 @property (nonatomic, readonly) NSString *migrationId;
 
 @property (nonatomic, readonly) BOOL shouldSave;

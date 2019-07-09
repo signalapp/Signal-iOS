@@ -21,16 +21,26 @@ NS_ASSUME_NONNULL_BEGIN
     return keyValueStore;
 }
 
+- (instancetype)init
+{
+    return [super initWithUniqueId:[self.class migrationId]];
+}
+
 - (BOOL)shouldSave
 {
     return YES;
 }
 
-- (NSString *)migrationId
++ (NSString *)migrationId
 {
     OWSAbstractMethod();
 
     return @"";
+}
+
+- (NSString *)migrationId
+{
+    return self.class.migrationId;
 }
 
 + (NSString *)collection
