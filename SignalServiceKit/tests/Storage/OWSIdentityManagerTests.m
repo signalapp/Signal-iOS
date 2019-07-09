@@ -40,72 +40,68 @@ extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
 - (void)testNewEmptyKey
 {
     NSData *newKey = [Randomness generateRandomBytes:32];
-    NSString *recipientId = @"test@gmail.com";
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"test@gmail.com"];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-         XCTAssert([self.identityManager isTrustedIdentityKey:newKey
-                                                  recipientId:recipientId
-                                                    direction:TSMessageDirectionOutgoing
-                                                  transaction:transaction]);
-         XCTAssert([self.identityManager isTrustedIdentityKey:newKey
-                                                  recipientId:recipientId
-                                                    direction:TSMessageDirectionIncoming
-                                                  transaction:transaction]);
-     }];
+        XCTAssert([self.identityManager isTrustedIdentityKey:newKey
+                                                     address:address
+                                                   direction:TSMessageDirectionOutgoing
+                                                 transaction:transaction]);
+        XCTAssert([self.identityManager isTrustedIdentityKey:newKey
+                                                     address:address
+                                                   direction:TSMessageDirectionIncoming
+                                                 transaction:transaction]);
+    }];
 }
 
 - (void)testAlreadyRegisteredKey
 {
     NSData *newKey = [Randomness generateRandomBytes:32];
-    NSString *recipientId = @"test@gmail.com";
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"test@gmail.com"];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-         [self.identityManager saveRemoteIdentity:newKey
-                                      recipientId:recipientId
-                                      transaction:transaction];
+        [self.identityManager saveRemoteIdentity:newKey address:address transaction:transaction];
 
-         XCTAssert([self.identityManager isTrustedIdentityKey:newKey
-                                                  recipientId:recipientId
-                                                    direction:TSMessageDirectionOutgoing
-                                                  transaction:transaction]);
-         XCTAssert([self.identityManager isTrustedIdentityKey:newKey
-                                                  recipientId:recipientId
-                                                    direction:TSMessageDirectionIncoming
-                                                  transaction:transaction]);
-     }];
+        XCTAssert([self.identityManager isTrustedIdentityKey:newKey
+                                                     address:address
+                                                   direction:TSMessageDirectionOutgoing
+                                                 transaction:transaction]);
+        XCTAssert([self.identityManager isTrustedIdentityKey:newKey
+                                                     address:address
+                                                   direction:TSMessageDirectionIncoming
+                                                 transaction:transaction]);
+    }];
 }
 
 
 - (void)testChangedKey
 {
     NSData *originalKey = [Randomness generateRandomBytes:32];
-    NSString *recipientId = @"test@protonmail.com";
+    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"test@protonmail.com"];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-         [self.identityManager saveRemoteIdentity:originalKey
-                                      recipientId:recipientId
-                                      transaction:transaction];
+        [self.identityManager saveRemoteIdentity:originalKey address:address transaction:transaction];
 
-         XCTAssert([self.identityManager isTrustedIdentityKey:originalKey
-                                                  recipientId:recipientId
-                                                    direction:TSMessageDirectionOutgoing
-                                                  transaction:transaction]);
-         XCTAssert([self.identityManager isTrustedIdentityKey:originalKey
-                                                  recipientId:recipientId
-                                                    direction:TSMessageDirectionIncoming
-                                                  transaction:transaction]);
+        XCTAssert([self.identityManager isTrustedIdentityKey:originalKey
+                                                     address:address
+                                                   direction:TSMessageDirectionOutgoing
+                                                 transaction:transaction]);
+        XCTAssert([self.identityManager isTrustedIdentityKey:originalKey
+                                                     address:address
+                                                   direction:TSMessageDirectionIncoming
+                                                 transaction:transaction]);
 
-         NSData *otherKey = [Randomness generateRandomBytes:32];
+        NSData *otherKey = [Randomness generateRandomBytes:32];
 
-         XCTAssertFalse([self.identityManager isTrustedIdentityKey:otherKey
-                                                       recipientId:recipientId
-                                                         direction:TSMessageDirectionOutgoing
-                                                       transaction:transaction]);
-         XCTAssert([self.identityManager isTrustedIdentityKey:otherKey
-                                                  recipientId:recipientId
-                                                    direction:TSMessageDirectionIncoming
-                                                  transaction:transaction]);
-     }];
+        XCTAssertFalse([self.identityManager isTrustedIdentityKey:otherKey
+                                                          address:address
+                                                        direction:TSMessageDirectionOutgoing
+                                                      transaction:transaction]);
+        XCTAssert([self.identityManager isTrustedIdentityKey:otherKey
+                                                     address:address
+                                                   direction:TSMessageDirectionIncoming
+                                                 transaction:transaction]);
+    }];
 }
 
 - (void)testIdentityKey

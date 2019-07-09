@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [[OWSIdentityManager sharedManager]
         saveRemoteIdentity:[[NSMutableData alloc] initWithLength:kStoredIdentityKeyLength]
-               recipientId:self.contactThread.contactAddress.transitional_phoneNumber];
+                   address:self.contactThread.contactAddress];
     XCTAssert(self.contactThread.hasSafetyNumbers);
 }
 
