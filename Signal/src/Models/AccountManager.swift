@@ -46,6 +46,12 @@ public class AccountManager: NSObject {
         super.init()
 
         SwiftSingletons.register(self)
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            if self.tsAccountManager.isRegistered {
+                self.recordUuidIfNecessary()
+            }
+        }
     }
 
     // MARK: registration
@@ -240,6 +246,34 @@ public class AccountManager: NSObject {
                                             failure: { (_: URLSessionDataTask, error: Error) in
                                                     return resolver.reject(error)
             })
+        }
+    }
+
+    func recordUuidIfNecessary() {
+        DispatchQueue.global().async {
+            _ = self.ensureUuid().catch { error in
+                owsFailDebug("error: \(error)")
+                Logger.error("error: \(error)")
+            }.retainUntilComplete()
+        }
+    }
+
+    func ensureUuid() -> Promise<UUID> {
+        if let existingUuid = tsAccountManager.uuid {
+            return Promise.value(existingUuid)
+        }
+
+        return accountServiceClient.getUuid().map { uuid in
+            // It's possible this method could be called multiple times, so we check
+            // again if it's been set. We dont bother serializing access since it should
+            // be idempotent.
+            if let existingUuid = self.tsAccountManager.uuid {
+                assert(existingUuid == uuid)
+                return existingUuid
+            }
+            Logger.info("Recording UUID for legacy user")
+            self.tsAccountManager.recordUuidForLegacyUser(uuid)
+            return uuid
         }
     }
 }

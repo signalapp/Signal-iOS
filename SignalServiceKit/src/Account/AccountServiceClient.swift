@@ -62,4 +62,8 @@ public class AccountServiceClient: NSObject {
     public func updateAttributes() -> Promise<Void> {
         return serviceClient.updateAccountAttributes()
     }
+
+    public func getUuid() -> Promise<UUID> {
+        return serviceClient.getAccountUuid()
+    }
 }

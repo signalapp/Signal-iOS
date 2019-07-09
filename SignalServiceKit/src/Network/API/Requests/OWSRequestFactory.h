@@ -57,6 +57,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)updateAttributesRequest;
 
++ (TSRequest *)accountWhoAmIRequest;
+
 + (TSRequest *)unregisterAccountRequest;
 
 + (TSRequest *)requestPreauthChallengeRequestWithRecipientId:(NSString *)recipientId
