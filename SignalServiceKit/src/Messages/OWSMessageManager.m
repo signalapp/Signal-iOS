@@ -258,7 +258,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSAssertDebug(![self isEnvelopeSenderBlocked:envelope]);
+    if ([self isEnvelopeSenderBlocked:envelope]) {
+        OWSLogInfo(@"incoming envelope sender is blocked.");
+        return;
+    }
 
     [self checkForUnknownLinkedDevice:envelope transaction:transaction];
 
@@ -638,6 +641,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
     if (!callMessage) {
         OWSFailDebug(@"Missing callMessage.");
+        return;
+    }
+
+    if ([self isEnvelopeSenderBlocked:envelope]) {
+        OWSFailDebug(@"envelope sender is blocked. Shouldn't have gotten this far.");
         return;
     }
 
