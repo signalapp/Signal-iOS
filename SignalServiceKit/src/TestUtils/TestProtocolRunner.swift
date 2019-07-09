@@ -49,7 +49,7 @@ public typealias SignalAccountIdentifier = String
 public protocol SignalClient {
     var identityKeyPair: ECKeyPair { get }
     var identityKey: IdentityKey { get }
-    var e164Identifier: SignalE164Identifier { get }
+    var e164Identifier: SignalE164Identifier? { get }
     var uuidIdentifier: SignalUUIDIdentifier { get }
     var uuid: UUID { get }
     var deviceId: UInt32 { get }
@@ -76,7 +76,7 @@ public extension SignalClient {
         if FeatureFlags.allowUUIDOnlyContacts {
             return SignalServiceAddress(uuid: uuid, phoneNumber: e164Identifier)
         } else {
-            return SignalServiceAddress(phoneNumber: e164Identifier)
+            return SignalServiceAddress(phoneNumber: e164Identifier!)
         }
     }
 
@@ -107,7 +107,7 @@ public struct FakeSignalClient: SignalClient {
     public var signedPreKeyStore: SignedPreKeyStore { return protocolStore }
     public var identityKeyStore: IdentityKeyStore { return protocolStore }
 
-    public let e164Identifier: SignalE164Identifier
+    public let e164Identifier: SignalE164Identifier?
     public let uuid: UUID
     public let deviceId: UInt32
     public let identityKeyPair: ECKeyPair
@@ -121,7 +121,7 @@ public struct FakeSignalClient: SignalClient {
                                 protocolStore: SPKMockProtocolStore())
     }
 
-    public static func generate(e164Identifier: SignalE164Identifier) -> FakeSignalClient {
+    public static func generate(e164Identifier: SignalE164Identifier?) -> FakeSignalClient {
         return FakeSignalClient(e164Identifier: e164Identifier,
                                 uuid: UUID(),
                                 deviceId: 1,
@@ -144,8 +144,8 @@ public struct LocalSignalClient: SignalClient {
         return SSKEnvironment.shared.identityManager.identityKeyPair()!
     }
 
-    public var e164Identifier: SignalE164Identifier {
-        return TSAccountManager.localNumber()!
+    public var e164Identifier: SignalE164Identifier? {
+        return TSAccountManager.localNumber()
     }
 
     public var uuid: UUID {

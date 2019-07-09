@@ -53,7 +53,7 @@ public extension DebugUIMessages {
     class func receiveUUIDEnvelopeInNewThread() {
         assert(FeatureFlags.allowUUIDOnlyContacts)
 
-        let senderClient = FakeSignalClient.generate()
+        let senderClient = FakeSignalClient.generate(e164Identifier: nil)
         let localClient = LocalSignalClient()
         let runner = TestProtocolRunner()
         let fakeService = FakeService(localClient: localClient, runner: runner)
