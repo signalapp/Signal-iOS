@@ -11,6 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDatabaseMigration
 
+// This key-value store is used to persist completion of migrations.
+// Note that it uses the YDB collection previously used to persist migration models.
+// Since we just check "has key", this is backwards-compatible.
 + (SDSKeyValueStore *)keyValueStore
 {
     static SDSKeyValueStore *keyValueStore = nil;
@@ -61,6 +64,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)markAsCompleteWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    if (!self.shouldSave) {
+        OWSLogInfo(@"NOT Marking migration as incomplete: %@ %@", [self class], migrationId);
+        return;
+    }
+
     [OWSDatabaseMigration markMigrationIdAsComplete:self.migrationId transaction:transaction];
 }
 

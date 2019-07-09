@@ -86,9 +86,14 @@ NS_ASSUME_NONNULL_BEGIN
 // GRDB TODO: Make sure this makes sense in the following scenarios:
 //
 // * Without YDB-to-GRDB migration (YDB before GRDB enabled).
-// * Before YDB-to-GRDB migration.
-// * After YDB-to-GRDB migration.
+//   Migrations should run, reading/writing to YDB.
+// * During YDB-to-GRDB migration.
+//   Migrations should run.
+//   YDB migrations should consult YDB.
+//   GRDB migrations should consult GRDB.
 // * Without YDB-to-GRDB migration (New GRDB-only install).
+//   Migrations should not be run.
+//   All migrations should be marked as complete in GRDB.
 - (void)removeUnknownMigrations
 {
     NSMutableSet<NSString *> *knownMigrationIds = [NSMutableSet new];

@@ -14,6 +14,9 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 @class SDSKeyValueStore;
 @class YapDatabaseReadWriteTransaction;
 
+// Although OWSDatabaseMigration is still a TSYapDatabaseObject
+// to enable deserialization of legacy values, OWSDatabaseMigration
+// now uses a key-value store to persist migration completion.
 @interface OWSDatabaseMigration : TSYapDatabaseObject
 
 + (SDSKeyValueStore *)keyValueStore;
