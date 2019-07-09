@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSUInteger TSInfoMessageSchemaVersion = 1;
+NSUInteger TSInfoMessageSchemaVersion = 2;
 
 @interface TSInfoMessage ()
 
@@ -34,6 +34,10 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 
     if (self.infoMessageSchemaVersion < 1) {
         _read = YES;
+    }
+
+    if (self.infoMessageSchemaVersion < 2) {
+        _unregisteredAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:[coder decodeObjectForKey:@"unregisteredRecipientId"]];
     }
 
     _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
@@ -91,11 +95,11 @@ NSUInteger TSInfoMessageSchemaVersion = 1;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
-          unregisteredRecipientId:(NSString *)unregisteredRecipientId
+          unregisteredAddress:(SignalServiceAddress *)unregisteredAddress
 {
     self = [self initWithTimestamp:timestamp inThread:thread messageType:infoMessage];
     if (self) {
-        _unregisteredRecipientId = unregisteredRecipientId;
+        _unregisteredAddress = unregisteredAddress;
     }
     return self;
 }
@@ -175,16 +179,16 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 #pragma mark -
 
-+ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId
++ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread address:(SignalServiceAddress *)address
 {
     OWSAssertDebug(thread);
-    OWSAssertDebug(recipientId);
+    OWSAssertDebug(address.isValid);
 
     // MJK TODO - remove senderTimestamp
     return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                   inThread:thread
                                messageType:TSInfoMessageUserNotRegistered
-                   unregisteredRecipientId:recipientId];
+                   unregisteredAddress:address];
 }
 
 - (OWSInteractionType)interactionType
@@ -200,11 +204,11 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         case TSInfoMessageTypeUnsupportedMessage:
             return NSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
         case TSInfoMessageUserNotRegistered:
-            if (self.unregisteredRecipientId.length > 0) {
+            if (self.unregisteredAddress.isValid) {
                 NSString *recipientName;
                 if (transaction.transitional_yapReadTransaction != nil) {
                     recipientName = [self.contactsManager
-                        displayNameForAddress:self.unregisteredRecipientId.transitional_signalServiceAddress
+                        displayNameForAddress:self.unregisteredAddress
                                   transaction:transaction.transitional_yapReadTransaction];
                 }
                 return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",

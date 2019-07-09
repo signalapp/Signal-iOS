@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel.h>
@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 // TODO: Remove this method.
-- (NSArray<NSString *> *)textSecureIdentifiers;
+- (NSArray<NSString *> *)registeredPhoneNumbers;
 
 #if TARGET_OS_IOS
 
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable Contact *)contactWithVCardData:(NSData *)data;
 + (nullable CNContact *)cnContactWithVCardData:(NSData *)data;
 
-- (NSString *)nameForPhoneNumber:(NSString *)recipientId;
+- (NSString *)nameForPhoneNumber:(NSString *)phoneNumber;
 
 #endif // TARGET_OS_IOS
 

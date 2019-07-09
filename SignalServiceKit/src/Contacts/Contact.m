@@ -211,7 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)isSignalContact {
-    NSArray *identifiers = [self textSecureIdentifiers];
+    NSArray *identifiers = [self registeredPhoneNumbers];
 
     return [identifiers count] > 0;
 }
@@ -234,7 +234,8 @@ NS_ASSUME_NONNULL_BEGIN
     return [result copy];
 }
 
-- (NSArray<NSString *> *)textSecureIdentifiers {
+- (NSArray<NSString *> *)registeredPhoneNumbers
+{
     __block NSMutableArray *identifiers = [NSMutableArray array];
 
     [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -266,12 +267,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [CNContactFormatter stringFromContact:cnContact style:CNContactFormatterStyleFullName].ows_stripped;
 }
 
-- (NSString *)nameForPhoneNumber:(NSString *)recipientId
+- (NSString *)nameForPhoneNumber:(NSString *)phoneNumber
 {
-    OWSAssertDebug(recipientId.length > 0);
-    OWSAssertDebug([self.textSecureIdentifiers containsObject:recipientId]);
+    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug([self.registeredPhoneNumbers containsObject:phoneNumber]);
 
-    NSString *value = self.phoneNumberNameMap[recipientId];
+    NSString *value = self.phoneNumberNameMap[phoneNumber];
     if (!value) {
         return NSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN",
             @"Label used when we don't what kind of phone number it is (e.g. mobile/work/home).");

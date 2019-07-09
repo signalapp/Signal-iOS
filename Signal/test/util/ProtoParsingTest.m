@@ -33,12 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
     return @[];
 }
 
-- (BOOL)isSystemContact:(NSString *)recipientId
+- (BOOL)isSystemContact:(NSString *)phoneNumber
 {
     return YES;
 }
 
-- (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId
+- (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber
 {
     return YES;
 }

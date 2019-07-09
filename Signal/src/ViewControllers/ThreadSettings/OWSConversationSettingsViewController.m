@@ -373,8 +373,8 @@ const CGFloat kIconViewLength = 24;
                                      OWSConversationSettingsViewController *strongSelf = weakSelf;
                                      OWSCAssertDebug(strongSelf);
                                      TSContactThread *contactThread = (TSContactThread *)strongSelf.thread;
-                                     NSString *recipientId = contactThread.contactAddress.transitional_phoneNumber;
-                                     [strongSelf presentAddToContactViewControllerWithRecipientId:recipientId];
+                                     [strongSelf
+                                         presentAddToContactViewControllerWithAddress:contactThread.contactAddress];
                                  }]];
     }
 
@@ -1157,7 +1157,7 @@ const CGFloat kIconViewLength = 24;
                                                     editImmediately:YES];
 }
 
-- (void)presentAddToContactViewControllerWithRecipientId:(NSString *)recipientId
+- (void)presentAddToContactViewControllerWithAddress:(SignalServiceAddress *)address
 {
     if (!self.contactsManager.supportsContactEditing) {
         // Should not expose UI that lets the user get here.
@@ -1171,7 +1171,7 @@ const CGFloat kIconViewLength = 24;
     }
 
     OWSAddToContactViewController *viewController = [OWSAddToContactViewController new];
-    [viewController configureWithRecipientId:recipientId];
+    [viewController configureWithAddress:address];
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
