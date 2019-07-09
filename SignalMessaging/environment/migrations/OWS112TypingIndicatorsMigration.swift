@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
 
 @objc
-public class OWS112TypingIndicatorsMigration: OWSDatabaseMigration {
+public class OWS112TypingIndicatorsMigration: YDBDatabaseMigration {
 
     // MARK: - Dependencies
 
@@ -25,7 +25,7 @@ public class OWS112TypingIndicatorsMigration: OWSDatabaseMigration {
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {
         Logger.debug("")
         BenchAsync(title: "Typing Indicators Migration") { (benchCompletion) in
-            self.doMigrationAsync(completion:{
+            self.doMigrationAsync(completion: {
                 benchCompletion()
                 completion()
             })
@@ -37,12 +37,10 @@ public class OWS112TypingIndicatorsMigration: OWSDatabaseMigration {
             // Typing indicators should be disabled by default for
             // legacy users.
             self.typingIndicators.setTypingIndicatorsEnabled(value: false)
-            
+
             DispatchQueue.global().async {
-                self.dbReadWriteConnection().readWrite { transaction in
-                    self.save(with: transaction)
-                }
-                
+                self.markAsCompleteWithSneakyTransaction()
+
                 completion()
             }
         }

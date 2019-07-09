@@ -6,7 +6,7 @@ import Foundation
 import SignalServiceKit
 
 @objc
-public class OWS113MultiAttachmentMediaMessages: OWSDatabaseMigration {
+public class OWS113MultiAttachmentMediaMessages: YDBDatabaseMigration {
 
     // MARK: - Dependencies
 
@@ -34,7 +34,7 @@ public class OWS113MultiAttachmentMediaMessages: OWSDatabaseMigration {
         DispatchQueue.global().async {
             var legacyAttachments: [(attachmentId: String, messageId: String)] = []
 
-            self.dbReadWriteConnection().read { transaction in
+            self.ydbReadWriteConnection.read { transaction in
                 TSMessage.enumerateCollectionObjects(with: transaction) { object, _ in
                     autoreleasepool {
                         guard let message: TSMessage = object as? TSMessage else {
@@ -53,7 +53,7 @@ public class OWS113MultiAttachmentMediaMessages: OWSDatabaseMigration {
                     }
                 }
             }
-            self.dbReadWriteConnection().readWrite { transaction in
+            self.ydbReadWriteConnection.readWrite { transaction in
                 for (attachmentId, messageId) in legacyAttachments {
                     autoreleasepool {
                         // NOTE: Use legacy fetch.
@@ -67,7 +67,7 @@ public class OWS113MultiAttachmentMediaMessages: OWSDatabaseMigration {
                         attachment.ydb_save(with: transaction)
                     }
                 }
-                self.save(with: transaction)
+                self.markAsComplete(with: transaction.asAnyWrite)
             }
 
             completion()

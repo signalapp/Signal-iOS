@@ -7,7 +7,7 @@ import PromiseKit
 import SignalServiceKit
 
 @objc
-public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
+public class OWS106EnsureProfileComplete: YDBDatabaseMigration {
 
     private static var sharedCompleteRegistrationFixerJob: CompleteRegistrationFixerJob?
 
@@ -24,7 +24,8 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
 
             if (didSucceed) {
                 Logger.info("Completed. Saving.")
-                self.save()
+
+                self.markAsCompleteWithSneakyTransaction()
             } else {
                 Logger.error("Failed.")
             }
@@ -95,7 +96,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
             }
 
             return firstly {
-                ProfileFetcherJob().getProfile(address: localAddress)
+                ProfileFetcherJob().getAndUpdateProfile(address: localAddress)
             }.done { _ in
                 Logger.info("verified recipient profile is in good shape: \(localAddress)")
             }.recover { error -> Promise<Void> in

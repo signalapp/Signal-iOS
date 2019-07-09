@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/OWSDatabaseMigration.h>
+#import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -11,21 +11,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDatabaseMigration
 
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
++ (SDSKeyValueStore *)keyValueStore
 {
-    [super anyDidInsertWithTransaction:transaction];
-
-    OWSLogInfo(@"marking migration as complete: %@.", [self class]);
+    static SDSKeyValueStore *keyValueStore = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSDatabaseMigration.collection];
+    });
+    return keyValueStore;
 }
 
-- (instancetype)init
+- (BOOL)shouldSave
 {
-    self = [super initWithUniqueId:[self.class migrationId]];
-    if (!self) {
-        return self;
-    }
-
-    return self;
+    return YES;
 }
 
 + (NSString *)migrationId
@@ -46,12 +44,16 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAbstractMethod();
 }
 
+- (void)markAsCompleteWithSneakyTransaction
+{
+    OWSAbstractMethod();
+}
+
 - (void)markAsCompleteWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [self anyUpsertWithTransaction:transaction];
-#pragma clang diagnostic pop
+    OWSLogInfo(@"Completed migration %@", [self class]);
+
+    [OWSDatabaseMigration.keyValueStore setBool:YES key:self.class.migrationId transaction:transaction];
 }
 
 - (BOOL)isCompleteWithSneakyTransaction
@@ -59,6 +61,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAbstractMethod();
 
     return NO;
+}
+
+- (BOOL)isCompleteWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [OWSDatabaseMigration.keyValueStore getBool:self.class.migrationId defaultValue:NO transaction:transaction];
 }
 
 @end
@@ -74,15 +81,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
 
     return SSKEnvironment.shared.primaryStorage;
-}
-
-+ (MTLPropertyStorage)storageBehaviorForPropertyWithKey:(NSString *)propertyKey
-{
-    if ([propertyKey isEqualToString:@"primaryStorage"]) {
-        return MTLPropertyStorageNone;
-    } else {
-        return [super storageBehaviorForPropertyWithKey:propertyKey];
-    }
 }
 
 #pragma mark -
@@ -103,8 +101,6 @@ NS_ASSUME_NONNULL_BEGIN
             [self runUpWithTransaction:transaction];
         }
         completionBlock:^{
-            OWSLogInfo(@"Completed migration %@", self.uniqueId);
-
             [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [self markAsCompleteWithTransaction:transaction.asAnyWrite];
             }];
@@ -113,11 +109,22 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
+- (void)markAsCompleteWithSneakyTransaction
+{
+    // GRDB TODO: Which kind of transaction we should use depends on whether or not
+    //            we are pre- or post- the YDB-to-GRDB migration.
+    [self.ydbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self markAsCompleteWithTransaction:transaction.asAnyWrite];
+    }];
+}
+
 - (BOOL)isCompleteWithSneakyTransaction
 {
+    // GRDB TODO: Which kind of transaction we should use depends on whether or not
+    //            we are pre- or post- the YDB-to-GRDB migration.
     __block BOOL result;
     [self.ydbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        result = [YDBDatabaseMigration ydb_fetchObjectWithUniqueID:self.uniqueId transaction:transaction] != nil;
+        result = [self isCompleteWithTransaction:transaction.asAnyRead];
     }];
     return result;
 }

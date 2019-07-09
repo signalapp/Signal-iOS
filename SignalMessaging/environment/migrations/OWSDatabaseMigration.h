@@ -10,9 +10,14 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 
 @class OWSPrimaryStorage;
 @class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
 @class YapDatabaseReadWriteTransaction;
 
-@interface OWSDatabaseMigration : BaseModel
+@interface OWSDatabaseMigration : NSObject
+
++ (SDSKeyValueStore *)keyValueStore;
+
+@property (nonatomic, readonly) BOOL shouldSave;
 
 // Prefer nonblocking (async) migrations by overriding `runUpWithTransaction:` in a subclass.
 // Blocking migrations running too long will crash the app, effectively bricking install
@@ -20,7 +25,13 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 // If you must write a launch-blocking migration, override runUp.
 - (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion;
 
+// NOTE: We'll often want to use markAsCompleteWithSneakyTransaction.
 - (void)markAsCompleteWithTransaction:(SDSAnyWriteTransaction *)transaction;
+
+// We use a sneaky transaction since which database we should
+// update will depend on whether or not we're pre- or post-
+// the YDB-to-GRDB migration.
+- (void)markAsCompleteWithSneakyTransaction;
 
 // We use a sneaky transaction since YDBDatabaseMigration will
 // want to consult YDB and GRDBDatabaseMigration will want to

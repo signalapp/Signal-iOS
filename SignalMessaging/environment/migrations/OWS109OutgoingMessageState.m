@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS109OutgoingMessageState.h"
@@ -33,9 +33,9 @@ static NSString *const OWS109OutgoingMessageStateMigrationId = @"109";
         }
         dbConnection:dbConnection
         completion:^{
-            OWSLogInfo(@"Completed migration %@", self.uniqueId);
+            OWSLogInfo(@"Completed migration %@", [OWS109OutgoingMessageState class]);
 
-            [self save];
+            [self markAsCompleteWithSneakyTransaction];
 
             completion();
         }];

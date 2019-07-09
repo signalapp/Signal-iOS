@@ -57,11 +57,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+// GRDB TODO: Make sure this makes sense in the following scenarios:
+//
+// * Without YDB-to-GRDB migration (YDB before GRDB enabled).
+// * Before YDB-to-GRDB migration.
+// * After YDB-to-GRDB migration.
+// * Without YDB-to-GRDB migration (New GRDB-only install).
 - (void)assumeAllExistingMigrationsRun
 {
     for (OWSDatabaseMigration *migration in self.allMigrations) {
         OWSLogInfo(@"Skipping migration on new install: %@", migration);
-        [migration save];
+        [migration markAsCompleteWithSneakyTransaction];
     }
 }
 
@@ -76,6 +82,13 @@ NS_ASSUME_NONNULL_BEGIN
 // app versions.  Whenever they move "forward" in the version history, we
 // want them to re-run any new migrations. Therefore, when they move "backward"
 // in the version history, we cull any unknown migrations.
+//
+// GRDB TODO: Make sure this makes sense in the following scenarios:
+//
+// * Without YDB-to-GRDB migration (YDB before GRDB enabled).
+// * Before YDB-to-GRDB migration.
+// * After YDB-to-GRDB migration.
+// * Without YDB-to-GRDB migration (New GRDB-only install).
 - (void)removeUnknownMigrations
 {
     NSMutableSet<NSString *> *knownMigrationIds = [NSMutableSet new];
