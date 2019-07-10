@@ -3496,35 +3496,27 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             TSContactThread *contactThread = (TSContactThread *)thread;
 
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeIncoming
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeOutgoing
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeIncomingMissed
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeOutgoingIncomplete
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeIncomingIncomplete
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeIncomingDeclined
                                                        inThread:contactThread]];
             [result addObject:[[TSCall alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                 withCallNumber:@"+19174054215"
                                                        callType:RPRecentCallTypeOutgoingMissed
                                                        inThread:contactThread]];
         }

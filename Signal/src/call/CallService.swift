@@ -455,7 +455,7 @@ private class SignalCallData: NSObject {
         self.callData = callData
 
         // MJK TODO remove this timestamp param
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .outgoingIncomplete, in: call.thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), callType: .outgoingIncomplete, in: call.thread)
         callRecord.save()
         call.callRecord = callRecord
 
@@ -613,7 +613,6 @@ private class SignalCallData: NSObject {
         if call.callRecord == nil {
             // MJK TODO remove this timestamp param
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                     withCallNumber: call.thread.contactAddress.transitional_phoneNumber,
                                      callType: .incomingMissed,
                                      in: call.thread)
         }
@@ -677,7 +676,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard thread.contactAddress.transitional_phoneNumber == call.remotePhoneNumber else {
+        guard thread.contactAddress == call.remoteAddress else {
             Logger.warn("ignoring obsolete call")
             return
         }
@@ -699,7 +698,7 @@ private class SignalCallData: NSObject {
 
         BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(callId)")
 
-        let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactAddress.transitional_phoneNumber, signalingId: callId)
+        let newCall = SignalCall.incomingCall(localId: UUID(), remoteAddress: thread.contactAddress, signalingId: callId)
 
         Logger.info("receivedCallOffer: \(newCall.identifiersForLogs)")
 
@@ -722,7 +721,6 @@ private class SignalCallData: NSObject {
 
             // MJK TODO remove this timestamp param
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                    withCallNumber: thread.contactAddress.transitional_phoneNumber,
                                     callType: .incomingMissedBecauseOfChangedIdentity,
                                     in: thread)
             assert(newCall.callRecord == nil)
@@ -742,7 +740,7 @@ private class SignalCallData: NSObject {
 
             handleLocalBusyCall(newCall)
 
-            if existingCall.remotePhoneNumber == newCall.remotePhoneNumber {
+            if existingCall.remoteAddress == newCall.remoteAddress {
                 Logger.info("handling call from current call user as remote busy.: \(newCall.identifiersForLogs) but we're already in call: \(existingCall.identifiersForLogs)")
 
                 // If we're receiving a new call offer from the user we already think we have a call with,
@@ -1151,7 +1149,7 @@ private class SignalCallData: NSObject {
         Logger.info("\(call.identifiersForLogs).")
 
         // MJK TODO remove this timestamp param
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .incomingIncomplete, in: call.thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), callType: .incomingIncomplete, in: call.thread)
         callRecord.save()
         call.callRecord = callRecord
 
@@ -1241,7 +1239,7 @@ private class SignalCallData: NSObject {
             callRecord.updateCallType(.incomingDeclined)
         } else {
             // MJK TODO remove this timestamp param
-            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .incomingDeclined, in: call.thread)
+            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), callType: .incomingDeclined, in: call.thread)
             callRecord.save()
             call.callRecord = callRecord
         }

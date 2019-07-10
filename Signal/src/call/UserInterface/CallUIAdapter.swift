@@ -14,7 +14,7 @@ protocol CallUIAdaptee {
     var callService: CallService { get }
     var hasManualRinger: Bool { get }
 
-    func startOutgoingCall(handle: String) -> SignalCall
+    func startOutgoingCall(handle: SignalServiceAddress) -> SignalCall
     func reportIncomingCall(_ call: SignalCall, callerName: String)
     func reportMissedCall(_ call: SignalCall, callerName: String)
     func answerCall(localId: UUID)
@@ -28,7 +28,7 @@ protocol CallUIAdaptee {
     func failCall(_ call: SignalCall, error: CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
-    func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool)
+    func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool)
 }
 
 // Shared default implementations
@@ -63,15 +63,15 @@ extension CallUIAdaptee {
         notificationPresenter.presentMissedCall(call, callerName: callerName)
     }
 
-    internal func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool) {
+    internal func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
         guard self.callService.call == nil else {
-            owsFailDebug("unexpectedly found an existing call when trying to start outgoing call: \(recipientId)")
+            owsFailDebug("unexpectedly found an existing call when trying to start outgoing call: \(address)")
             return
         }
 
-        let call = self.startOutgoingCall(handle: recipientId)
+        let call = self.startOutgoingCall(handle: address)
         call.hasLocalVideo = hasLocalVideo
         self.showCall(call)
     }
@@ -159,12 +159,12 @@ extension CallUIAdaptee {
     internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
         AssertIsOnMainThread()
 
-        Logger.info("remotePhoneNumber: \(call.remotePhoneNumber)")
+        Logger.info("remoteAddress: \(call.remoteAddress)")
 
         // make sure we don't terminate audio session during call
         _ = audioSession.startAudioActivity(call.audioActivity)
 
-        let callerName = self.contactsManager.displayName(for: call.remotePhoneNumber.transitional_signalServiceAddress)
+        let callerName = self.contactsManager.displayName(for: call.remoteAddress)
 
         Logger.verbose("callerName: \(callerName)")
 
@@ -174,11 +174,11 @@ extension CallUIAdaptee {
     internal func reportMissedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        let callerName = self.contactsManager.displayName(for: call.remotePhoneNumber.transitional_signalServiceAddress)
+        let callerName = self.contactsManager.displayName(for: call.remoteAddress)
         adaptee.reportMissedCall(call, callerName: callerName)
     }
 
-    internal func startOutgoingCall(handle: String) -> SignalCall {
+    internal func startOutgoingCall(handle: SignalServiceAddress) -> SignalCall {
         AssertIsOnMainThread()
 
         let call = adaptee.startOutgoingCall(handle: handle)
@@ -217,10 +217,10 @@ extension CallUIAdaptee {
         }
     }
 
-    @objc public func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool) {
+    @objc public func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        adaptee.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: hasLocalVideo)
+        adaptee.startAndShowOutgoingCall(address: address, hasLocalVideo: hasLocalVideo)
     }
 
     internal func recipientAcceptedCall(_ call: SignalCall) {

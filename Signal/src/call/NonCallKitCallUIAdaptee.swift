@@ -34,10 +34,10 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
     // MARK: 
 
-    func startOutgoingCall(handle: String) -> SignalCall {
+    func startOutgoingCall(handle: SignalServiceAddress) -> SignalCall {
         AssertIsOnMainThread()
 
-        let call = SignalCall.outgoingCall(localId: UUID(), remotePhoneNumber: handle)
+        let call = SignalCall.outgoingCall(localId: UUID(), remoteAddress: handle)
 
         // make sure we don't terminate audio session during call
         let success = self.audioSession.startAudioActivity(call.audioActivity)

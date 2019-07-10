@@ -30,7 +30,6 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                   withCallNumber:(NSString *)contactNumber
                          callType:(RPRecentCallType)callType
                          inThread:(TSContactThread *)thread NS_DESIGNATED_INITIALIZER;
 

@@ -35,14 +35,23 @@ final class CallKitCallManager: NSObject {
     // MARK: Actions
 
     func startCall(_ call: SignalCall) {
-        var handle: CXHandle
+        let handle: CXHandle
 
         if showNamesOnCallScreen {
-            handle = CXHandle(type: .phoneNumber, value: call.remotePhoneNumber)
+            let type: CXHandle.HandleType
+            let value: String
+            if let phoneNumber = call.remoteAddress.phoneNumber {
+                type = .phoneNumber
+                value = phoneNumber
+            } else {
+                type = .generic
+                value = call.remoteAddress.stringForDisplay
+            }
+            handle = CXHandle(type: type, value: value)
         } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             handle = CXHandle(type: .generic, value: callKitId)
-            OWSPrimaryStorage.shared().setPhoneNumber(call.remotePhoneNumber, forCallKitId: callKitId)
+            OWSPrimaryStorage.shared().setAddress(call.remoteAddress, forCallKitId: callKitId)
         }
 
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)
