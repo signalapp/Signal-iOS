@@ -137,8 +137,9 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-               recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
+    outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
+          recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:recipientAddressStates:));
 
 // clang-format on
 

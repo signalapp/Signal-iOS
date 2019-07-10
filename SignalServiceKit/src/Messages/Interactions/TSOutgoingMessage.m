@@ -150,7 +150,8 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-               recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
+    outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
+          recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -185,7 +186,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     _legacyMessageState = legacyMessageState;
     _legacyWasDelivered = legacyWasDelivered;
     _mostRecentFailureText = mostRecentFailureText;
-    _recipientStateMap = recipientStateMap;
+    _outgoingMessageSchemaVersion = outgoingMessageSchemaVersion;
+    _recipientAddressStates = recipientAddressStates;
 
     return self;
 }
