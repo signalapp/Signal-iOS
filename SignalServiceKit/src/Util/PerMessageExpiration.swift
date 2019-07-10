@@ -37,13 +37,6 @@ public class PerMessageExpiration: NSObject {
     @objc
     public class func startPerMessageExpiration(forMessage message: TSMessage,
                                                 transaction: SDSAnyWriteTransaction) {
-        AssertIsOnMainThread()
-
-        guard message.hasPerMessageExpiration else {
-            owsFailDebug("Message does not have per-message expiration.")
-            return
-        }
-
         // Start expiration using "now" as the read time.
         startPerMessageExpiration(forMessage: message,
                                   readTimestamp: nowMs(),
@@ -55,6 +48,15 @@ public class PerMessageExpiration: NSObject {
                                                  readTimestamp: UInt64,
                                                  sendSyncMessages: Bool,
                                                  transaction: SDSAnyWriteTransaction) {
+
+        guard message.hasPerMessageExpiration else {
+            owsFailDebug("Message does not have per-message expiration.")
+            return
+        }
+        guard !isOutgoingNotYetSent(message: message) else {
+            Logger.warn("Not starting expiration for not-yet-sent outgoing message.")
+            return
+        }
 
         // Make sure that timestamp is not later than now.
         let timestamp = min(readTimestamp, nowMs())
@@ -131,13 +133,14 @@ public class PerMessageExpiration: NSObject {
             for message in messages {
                 if shouldMessageAutoExpire(message) {
                     completeExpiration(forMessage: message, transaction: transaction)
-                } else if isOutgoingSent(message: message) {
-                    completeExpiration(forMessage: message, transaction: transaction)
                 } else if message.hasPerMessageExpirationStarted {
                     if shouldResumeNormalExpiration {
                         // If expiration is started, resume countdown.
                         schedulePerMessageExpiration(forMessage: message, transaction: transaction)
                     }
+                } else if isOutgoingSent(message: message),
+                    !message.hasPerMessageExpirationStarted {
+                    startPerMessageExpiration(forMessage: message, transaction: transaction)
                 }
             }
         }
@@ -162,15 +165,16 @@ public class PerMessageExpiration: NSObject {
             return
         }
 
-        // If outgoing message and is "sent", expire.
-        guard !isOutgoingSent(message: message) else {
+        // If countdown has completed, expire.
+        guard !hasExpirationCountdownCompleted(message: message) else {
             completeExpiration(forMessage: message, transaction: transaction)
             return
         }
 
-        // If countdown has completed, expire.
-        guard !hasExpirationCountdownCompleted(message: message) else {
-            completeExpiration(forMessage: message, transaction: transaction)
+        // If outgoing message and is "sent", start expiration if necessary.
+        if isOutgoingSent(message: message),
+            !message.hasPerMessageExpirationStarted {
+            startPerMessageExpiration(forMessage: message, transaction: transaction)
             return
         }
     }
@@ -181,11 +185,26 @@ public class PerMessageExpiration: NSObject {
     }
 
     private class func isOutgoingSent(message: TSMessage) -> Bool {
+        guard message.hasPerMessageExpiration else {
+            owsFailDebug("Unexpected message.")
+            return false
+        }
         // If outgoing message and is "sent", expire.
         guard let outgoingMessage = message as? TSOutgoingMessage else {
             return false
         }
         guard outgoingMessage.messageState == .sent else {
+            return false
+        }
+        return true
+    }
+
+    private class func isOutgoingNotYetSent(message: TSMessage) -> Bool {
+        // If outgoing message and is "sent", expire.
+        guard let outgoingMessage = message as? TSOutgoingMessage else {
+            return false
+        }
+        guard outgoingMessage.messageState != .sent else {
             return false
         }
         return true

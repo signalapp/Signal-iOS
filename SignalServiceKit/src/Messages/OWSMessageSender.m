@@ -1429,12 +1429,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     };
 
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:message
+        TSInteraction *_Nullable latestCopy =
+            [TSInteraction anyFetchWithUniqueId:message.uniqueId transaction:transaction.asAnyRead];
+        if (![latestCopy isKindOfClass:[TSOutgoingMessage class]]) {
+            OWSLogWarn(@"Could not update expiration for deleted message.");
+            return;
+        }
+        TSOutgoingMessage *latestMessage = (TSOutgoingMessage *)latestCopy;
+        [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:latestMessage
                                                          expirationStartedAt:[NSDate ows_millisecondTimeStamp]
                                                                  transaction:transaction];
-        
-        [PerMessageExpiration expireIfNecessaryWithMessage:message
-                                               transaction:transaction.asAnyWrite];
+
+        [PerMessageExpiration expireIfNecessaryWithMessage:latestMessage transaction:transaction.asAnyWrite];
     }];
 
     if (!message.shouldSyncTranscript) {

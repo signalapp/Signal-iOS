@@ -32,8 +32,11 @@ typedef NS_ENUM(NSUInteger, PerMessageExpirationState) {
     PerMessageExpirationState_IncomingInvalidContent,
     PerMessageExpirationState_OutgoingSending,
     PerMessageExpirationState_OutgoingFailed,
-    PerMessageExpirationState_OutgoingSent,
+    PerMessageExpirationState_OutgoingSentAvailable,
+    PerMessageExpirationState_OutgoingSentExpired,
 };
+
+NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
 
 @class ContactShareViewModel;
 @class ConversationViewCell;
