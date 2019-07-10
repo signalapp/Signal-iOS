@@ -111,7 +111,7 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
     if (SSKFeatureFlags.allowUUIDOnlyContacts) {
         // TODO UUID: Right now, uuid is nullable, but safety numbers require us to always have
         // the UUID for a user. This will need to be updated once we change this field to nonnull.
-        OWSAssertDebug(address.uuid);
+        assert(address.uuid);
         stableString = address.uuidString;
     } else {
         stableString = address.transitional_phoneNumber;
