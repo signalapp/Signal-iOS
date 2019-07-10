@@ -84,6 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
     id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
     OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
     StickerManager *stickerManager = [[StickerManager alloc] init];
+    SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -115,7 +116,8 @@ NS_ASSUME_NONNULL_BEGIN
                          typingIndicators:typingIndicators
                       attachmentDownloads:attachmentDownloads
                            stickerManager:stickerManager
-                          databaseStorage:databaseStorage];
+                          databaseStorage:databaseStorage
+                signalServiceAddressCache:signalServiceAddressCache];
 
     if (!self) {
         return nil;

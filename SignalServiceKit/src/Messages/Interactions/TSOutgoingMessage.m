@@ -1114,7 +1114,33 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                 [groupBuilder setAvatar:attachmentProto];
             }
 
-            [groupBuilder setMembers:gThread.groupModel.groupMemberIds];
+            NSMutableArray<NSString *> *membersE164 = [NSMutableArray new];
+            NSMutableArray<SSKProtoGroupContextMember *> *members = [NSMutableArray new];
+
+            for (SignalServiceAddress *address in gThread.groupModel.groupMembers) {
+                // We currently include an independent group member list
+                // of just the phone numbers to support older pre-UUID
+                // clients. Eventually we probably want to remove this.
+                if (address.phoneNumber) {
+                    [membersE164 addObject:address.phoneNumber];
+                }
+
+                SSKProtoGroupContextMemberBuilder *memberBuilder = [SSKProtoGroupContextMember builder];
+                memberBuilder.uuid = address.uuidString;
+                memberBuilder.e164 = address.phoneNumber;
+
+                NSError *error;
+                SSKProtoGroupContextMember *_Nullable member = [memberBuilder buildAndReturnError:&error];
+                if (error || !member) {
+                    OWSFailDebug(@"could not build members protobuf: %@", error);
+                } else {
+                    [members addObject:member];
+                }
+            }
+
+            [groupBuilder setMembersE164:membersE164];
+            [groupBuilder setMembers:members];
+
             [groupBuilder setName:gThread.groupModel.groupName];
         }
         NSError *error;

@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSGroupThread *thread;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
-@property (nonatomic, nullable) NSSet<NSString *> *memberRecipientIds;
+@property (nonatomic, nullable) NSSet<SignalServiceAddress *> *memberAddresses;
 
 @end
 
@@ -88,9 +88,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertDebug(self.thread);
     OWSAssertDebug(self.thread.groupModel);
-    OWSAssertDebug(self.thread.groupModel.groupMemberIds);
+    OWSAssertDebug(self.thread.groupModel.groupMembers);
 
-    self.memberRecipientIds = [NSSet setWithArray:self.thread.groupModel.groupMemberIds];
+    self.memberAddresses = [NSSet setWithArray:self.thread.groupModel.groupMembers];
 }
 
 - (void)viewDidLoad
@@ -124,8 +124,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     // If there are "no longer verified" members of the group,
     // highlight them in a special section.
-    NSArray<NSString *> *noLongerVerifiedRecipientIds = [self noLongerVerifiedRecipientIds];
-    if (noLongerVerifiedRecipientIds.count > 0) {
+    NSArray<SignalServiceAddress *> *noLongerVerifiedRecipientAddresses = [self noLongerVerifiedRecipientAddresses];
+    if (noLongerVerifiedRecipientAddresses.count > 0) {
         OWSTableSection *noLongerVerifiedSection = [OWSTableSection new];
         noLongerVerifiedSection.headerTitle = NSLocalizedString(@"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED",
             @"Title for the 'no longer verified' section of the 'group members' view.");
@@ -140,49 +140,46 @@ NS_ASSUME_NONNULL_BEGIN
                                              actionBlock:^{
                                                  [weakSelf offerResetAllNoLongerVerified];
                                              }]];
-        [self addMembers:noLongerVerifiedRecipientIds toSection:noLongerVerifiedSection useVerifyAction:YES];
+        [self addMembers:noLongerVerifiedRecipientAddresses toSection:noLongerVerifiedSection useVerifyAction:YES];
         [contents addSection:noLongerVerifiedSection];
     }
 
-    NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
-    [memberRecipientIds removeObject:[helper localNumber]];
-    [self addMembers:memberRecipientIds.allObjects toSection:membersSection useVerifyAction:NO];
+    NSMutableSet *memberAddresses = [self.memberAddresses mutableCopy];
+    [memberAddresses removeObject:[helper localAddress]];
+    [self addMembers:memberAddresses.allObjects toSection:membersSection useVerifyAction:NO];
     [contents addSection:membersSection];
 
     self.contents = contents;
 }
 
-- (void)addMembers:(NSArray<NSString *> *)recipientIds
+- (void)addMembers:(NSArray<SignalServiceAddress *> *)addresses
           toSection:(OWSTableSection *)section
     useVerifyAction:(BOOL)useVerifyAction
 {
-    OWSAssertDebug(recipientIds);
+    OWSAssertDebug(addresses);
     OWSAssertDebug(section);
 
     __weak ShowGroupMembersViewController *weakSelf = self;
     ContactsViewHelper *helper = self.contactsViewHelper;
     // Sort the group members using contacts manager.
-    NSArray<NSString *> *sortedRecipientIds =
-        [recipientIds sortedArrayUsingComparator:^NSComparisonResult(NSString *recipientIdA, NSString *recipientIdB) {
-            SignalAccount *signalAccountA = [helper.contactsManager
-                fetchOrBuildSignalAccountForAddress:recipientIdA.transitional_signalServiceAddress];
-            SignalAccount *signalAccountB = [helper.contactsManager
-                fetchOrBuildSignalAccountForAddress:recipientIdB.transitional_signalServiceAddress];
+    NSArray<SignalServiceAddress *> *sortedAddresses = [addresses
+        sortedArrayUsingComparator:^NSComparisonResult(SignalServiceAddress *addressA, SignalServiceAddress *addressB) {
+            SignalAccount *signalAccountA = [helper.contactsManager fetchOrBuildSignalAccountForAddress:addressA];
+            SignalAccount *signalAccountB = [helper.contactsManager fetchOrBuildSignalAccountForAddress:addressB];
             return [helper.contactsManager compareSignalAccount:signalAccountA withSignalAccount:signalAccountB];
         }];
-    for (NSString *recipientId in sortedRecipientIds) {
+    for (SignalServiceAddress *address in sortedAddresses) {
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  ShowGroupMembersViewController *strongSelf = weakSelf;
                                  OWSCAssertDebug(strongSelf);
 
                                  ContactTableViewCell *cell = [ContactTableViewCell new];
-                                 OWSVerificationState verificationState = [[OWSIdentityManager sharedManager]
-                                     verificationStateForAddress:recipientId.transitional_signalServiceAddress];
+                                 OWSVerificationState verificationState =
+                                     [[OWSIdentityManager sharedManager] verificationStateForAddress:address];
                                  BOOL isVerified = verificationState == OWSVerificationStateVerified;
                                  BOOL isNoLongerVerified = verificationState == OWSVerificationStateNoLongerVerified;
-                                 BOOL isBlocked = [helper
-                                     isSignalServiceAddressBlocked:recipientId.transitional_signalServiceAddress];
+                                 BOOL isBlocked = [helper isSignalServiceAddressBlocked:address];
                                  if (isNoLongerVerified) {
                                      cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_NO_LONGER_VERIFIED",
                                          @"An indicator that a contact is no longer verified.");
@@ -191,7 +188,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                  }
 
-                                 [cell configureWithRecipientId:recipientId];
+                                 [cell configureWithRecipientAddress:address];
 
                                  if (isVerified) {
                                      [cell setAttributedSubtitle:cell.verifiedSubtitle];
@@ -199,7 +196,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      [cell setAttributedSubtitle:nil];
                                  }
 
-                                 NSString *cellName = [NSString stringWithFormat:@"user.%@", recipientId];
+                                 NSString *cellName = [NSString stringWithFormat:@"user.%@", address.stringForDisplay];
                                  cell.accessibilityIdentifier
                                      = ACCESSIBILITY_IDENTIFIER_WITH_NAME(ShowGroupMembersViewController, cellName);
 
@@ -208,9 +205,9 @@ NS_ASSUME_NONNULL_BEGIN
                              customRowHeight:UITableViewAutomaticDimension
                              actionBlock:^{
                                  if (useVerifyAction) {
-                                     [weakSelf showSafetyNumberView:recipientId.transitional_signalServiceAddress];
+                                     [weakSelf showSafetyNumberView:address];
                                  } else {
-                                     [weakSelf didSelectAddress:recipientId.transitional_signalServiceAddress];
+                                     [weakSelf didSelectAddress:address];
                                  }
                              }]];
     }
@@ -244,19 +241,18 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     OWSIdentityManager *identityManger = [OWSIdentityManager sharedManager];
-    NSArray<NSString *> *recipientIds = [self noLongerVerifiedRecipientIds];
-    for (NSString *recipientId in recipientIds) {
-        OWSVerificationState verificationState =
-            [identityManger verificationStateForAddress:recipientId.transitional_signalServiceAddress];
+    NSArray<SignalServiceAddress *> *addresses = [self noLongerVerifiedRecipientAddresses];
+    for (SignalServiceAddress *address in addresses) {
+        OWSVerificationState verificationState = [identityManger verificationStateForAddress:address];
         if (verificationState == OWSVerificationStateNoLongerVerified) {
-            NSData *identityKey = [identityManger identityKeyForAddress:recipientId.transitional_signalServiceAddress];
+            NSData *identityKey = [identityManger identityKeyForAddress:address];
             if (identityKey.length < 1) {
-                OWSFailDebug(@"Missing identity key for: %@", recipientId);
+                OWSFailDebug(@"Missing identity key for: %@", address);
                 continue;
             }
             [identityManger setVerificationState:OWSVerificationStateDefault
                                      identityKey:identityKey
-                                         address:recipientId.transitional_signalServiceAddress
+                                         address:address
                            isUserInitiatedChange:YES];
         }
     }
@@ -265,13 +261,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // Returns a collection of the group members who are "no longer verified".
-- (NSArray<NSString *> *)noLongerVerifiedRecipientIds
+- (NSArray<SignalServiceAddress *> *)noLongerVerifiedRecipientAddresses
 {
-    NSMutableArray<NSString *> *result = [NSMutableArray new];
+    NSMutableArray<SignalServiceAddress *> *result = [NSMutableArray new];
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
         if ([[OWSIdentityManager sharedManager] verificationStateForAddress:address]
             == OWSVerificationStateNoLongerVerified) {
-            [result addObject:address.transitional_phoneNumber];
+            [result addObject:address];
         }
     }
     return [result copy];

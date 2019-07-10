@@ -1482,7 +1482,7 @@ const CGFloat kIconViewLength = 24;
         contactThread = (TSContactThread *)self.thread;
     }
 
-    if (address.isValid && contactThread && [contactThread.contactAddress matchesAddress:address]) {
+    if (address.isValid && contactThread && [contactThread.contactAddress isEqualToAddress:address]) {
         [self updateTableContents];
     }
 }

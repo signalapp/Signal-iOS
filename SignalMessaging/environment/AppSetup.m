@@ -90,6 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
         OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
         StickerManager *stickerManager = [[StickerManager alloc] init];
+        SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
@@ -132,7 +133,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  typingIndicators:typingIndicators
                                                               attachmentDownloads:attachmentDownloads
                                                                    stickerManager:stickerManager
-                                                                  databaseStorage:databaseStorage]];
+                                                                  databaseStorage:databaseStorage
+                                                        signalServiceAddressCache:signalServiceAddressCache]];
 
         appSpecificSingletonBlock();
 

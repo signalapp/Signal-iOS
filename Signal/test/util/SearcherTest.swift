@@ -83,11 +83,11 @@ class FullTextSearcherTest: SignalBaseTest {
         SSKEnvironment.shared.contactsManager = FullTextSearcherContactsManager()
 
         self.dbConnection.readWrite { transaction in
-            let bookModel = TSGroupModel(title: "Book Club", memberIds: [aliceRecipientId, bobRecipientId], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
+            let bookModel = TSGroupModel(title: "Book Club", members: [aliceRecipientId.transitional_signalServiceAddress, bobRecipientId.transitional_signalServiceAddress], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
             let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction)
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyWrite)
 
-            let snackModel = TSGroupModel(title: "Snack Club", memberIds: [aliceRecipientId], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
+            let snackModel = TSGroupModel(title: "Snack Club", members: [aliceRecipientId.transitional_signalServiceAddress], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
             let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyWrite)
 

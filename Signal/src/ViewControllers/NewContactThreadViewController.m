@@ -515,12 +515,10 @@ NS_ASSUME_NONNULL_BEGIN
                                           @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                   }
 
-                                  [cell
-                                      configureWithRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
+                                  [cell configureWithRecipientAddress:signalAccount.recipientAddress];
 
-                                  NSString *cellName =
-                                      [NSString stringWithFormat:@"signal_contact.%@",
-                                                signalAccount.recipientAddress.transitional_phoneNumber];
+                                  NSString *cellName = [NSString stringWithFormat:@"signal_contact.%@",
+                                                                 signalAccount.recipientAddress.stringForDisplay];
                                   cell.accessibilityIdentifier
                                       = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewContactThreadViewController, cellName);
 
@@ -571,7 +569,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     cell.accessoryMessage = NSLocalizedString(
                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                 }
-                                [cell configureWithRecipientId:phoneNumber];
+                                [cell configureWithRecipientAddress:phoneNumber.transitional_signalServiceAddress];
 
                                 NSString *cellName = [NSString stringWithFormat:@"non_signal_contact.%@", phoneNumber];
                                 cell.accessibilityIdentifier
@@ -626,7 +624,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                             }
 
-                            [cell configureWithRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
+                            [cell configureWithRecipientAddress:signalAccount.recipientAddress];
 
                             NSString *cellName = [NSString stringWithFormat:@"signal_contact.%@",
                                                            signalAccount.recipientAddress.transitional_phoneNumber];

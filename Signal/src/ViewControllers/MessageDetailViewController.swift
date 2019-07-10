@@ -288,7 +288,7 @@ class MessageDetailViewController: OWSViewController {
                     } else {
                         cellView.accessoryMessage = shortStatusMessage
                     }
-                    cellView.configure(withRecipientId: recipientId)
+                    cellView.configure(withRecipientAddress: recipientId.transitional_signalServiceAddress)
 
                     let wrapper = UIView()
                     wrapper.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)

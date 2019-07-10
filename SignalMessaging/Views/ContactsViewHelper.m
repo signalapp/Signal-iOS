@@ -149,16 +149,16 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (NSString *)localNumber
+- (SignalServiceAddress *)localAddress
 {
-    return [TSAccountManager localNumber];
+    return TSAccountManager.sharedInstance.localAddress;
 }
 
 - (BOOL)isSignalServiceAddressBlocked:(SignalServiceAddress *)address
 {
     OWSAssertIsOnMainThread();
 
-    return [self.blockListCache isRecipientIdBlocked:address.transitional_phoneNumber];
+    return [self.blockListCache isAddressBlocked:address];
 }
 
 - (BOOL)isGroupIdBlocked:(NSData *)groupId
@@ -226,8 +226,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     // Check for matches against "Note to Self".
     NSMutableArray<SignalAccount *> *signalAccountsToSearch = [self.signalAccounts mutableCopy];
-    SignalAccount *selfAccount =
-        [[SignalAccount alloc] initWithSignalServiceAddress:self.localNumber.transitional_signalServiceAddress];
+    SignalAccount *selfAccount = [[SignalAccount alloc] initWithSignalServiceAddress:self.localAddress];
     [signalAccountsToSearch addObject:selfAccount];
     return [self.fullTextSearcher filterSignalAccounts:signalAccountsToSearch withSearchText:searchText];
 }

@@ -29,7 +29,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 @property (nonatomic) UIView *accessoryViewContainer;
 
 @property (nonatomic, nullable) TSThread *thread;
-@property (nonatomic) NSString *recipientId;
+@property (nonatomic) SignalServiceAddress *address;
 
 @end
 
@@ -127,21 +127,20 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.accessoryLabel.textColor = Theme.middleGrayColor;
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
     // Update fonts to reflect changes to dynamic type.
     [self configureFontsAndColors];
 
-    self.recipientId = recipientId;
+    self.address = address;
 
     [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        self.thread = [TSContactThread getThreadWithContactAddress:recipientId.transitional_signalServiceAddress
-                                                       transaction:transaction.asAnyRead];
+        self.thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction.asAnyRead];
     }];
 
-    BOOL isNoteToSelf = (IsNoteToSelfEnabled() && [recipientId isEqualToString:self.tsAccountManager.localNumber]);
+    BOOL isNoteToSelf = IsNoteToSelfEnabled() && address.isLocalAddress;
     if (isNoteToSelf) {
         self.nameLabel.attributedText = [[NSAttributedString alloc]
             initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
@@ -149,9 +148,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                     NSFontAttributeName : self.nameLabel.font,
                 }];
     } else {
-        self.nameLabel.attributedText =
-            [self.contactsManager formattedFullNameForAddress:recipientId.transitional_signalServiceAddress
-                                                         font:self.nameLabel.font];
+        self.nameLabel.attributedText = [self.contactsManager formattedFullNameForAddress:address
+                                                                                     font:self.nameLabel.font];
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -201,7 +199,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.nameLabel.attributedText = attributedText;
 
     if (contactThread != nil) {
-        self.recipientId = contactThread.contactAddress.transitional_phoneNumber;
+        self.address = contactThread.contactAddress;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(otherUsersProfileDidChange:)
@@ -222,9 +220,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateAvatar
 {
-    NSString *recipientId = self.recipientId;
-    if (recipientId.length == 0) {
-        OWSFailDebug(@"recipientId should not be nil");
+    SignalServiceAddress *address = self.address;
+    if (!address.isValid) {
+        OWSFailDebug(@"address should not be invalid");
         self.avatarView.image = nil;
         return;
     }
@@ -233,15 +231,13 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         if (self.thread) {
             return self.thread.conversationColorName;
         } else {
-            OWSAssertDebug(self.recipientId);
-            return [TSThread stableColorNameForNewConversationWithString:self.recipientId];
+            return [TSThread stableColorNameForNewConversationWithString:address.stringForDisplay];
         }
     }();
 
-    OWSContactAvatarBuilder *avatarBuilder =
-        [[OWSContactAvatarBuilder alloc] initWithAddress:recipientId.transitional_signalServiceAddress
-                                               colorName:colorName
-                                                diameter:kStandardAvatarSize];
+    OWSContactAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:address
+                                                                                    colorName:colorName
+                                                                                     diameter:kStandardAvatarSize];
 
     self.avatarView.image = [avatarBuilder build];
 }
@@ -255,20 +251,19 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         return;
     }
 
-    NSString *recipientId = self.recipientId;
-    if (recipientId.length == 0) {
-        OWSFailDebug(@"recipientId should not be nil");
+    SignalServiceAddress *address = self.address;
+    if (!address.isValid) {
+        OWSFailDebug(@"address should not be invalid");
         self.profileNameLabel.text = nil;
         return;
     }
 
-    if ([contactsManager hasNameInSystemContactsForAddress:recipientId.transitional_signalServiceAddress]) {
+    if ([contactsManager hasNameInSystemContactsForAddress:address]) {
         // Don't display profile name when we have a veritas name in system Contacts
         self.profileNameLabel.text = nil;
     } else {
         // Use profile name, if any is available
-        self.profileNameLabel.text =
-            [contactsManager formattedProfileNameForAddress:recipientId.transitional_signalServiceAddress];
+        self.profileNameLabel.text = [contactsManager formattedProfileNameForAddress:address];
     }
 
     [self.profileNameLabel setNeedsLayout];
@@ -296,7 +291,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
     OWSAssertDebug(address.isValid);
 
-    if (address.isValid && [self.recipientId isEqualToString:address.transitional_phoneNumber]) {
+    if (address.isValid && [self.address isEqualToAddress:address]) {
         [self updateProfileName];
         [self updateAvatar];
     }

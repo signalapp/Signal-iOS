@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKPreKeyStore;
 @class SSKSessionStore;
 @class SSKSignedPreKeyStore;
+@class SignalServiceAddressCache;
 @class StickerManager;
 @class TSAccountManager;
 @class TSNetworkManager;
@@ -74,7 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
                        typingIndicators:(id<OWSTypingIndicators>)typingIndicators
                     attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads
                          stickerManager:(StickerManager *)stickerManager
-                        databaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;
+                        databaseStorage:(SDSDatabaseStorage *)databaseStorage
+              signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -116,6 +119,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic, readonly) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic, readonly) OWSAttachmentDownloads *attachmentDownloads;
+@property (nonatomic, readonly) SignalServiceAddressCache *signalServiceAddressCache;
 
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;

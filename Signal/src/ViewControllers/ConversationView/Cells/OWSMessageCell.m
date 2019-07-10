@@ -347,7 +347,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
 
-    if (![incomingMessage.authorAddress matchesAddress:address]) {
+    if (![incomingMessage.authorAddress isEqualToAddress:address]) {
         return;
     }
 

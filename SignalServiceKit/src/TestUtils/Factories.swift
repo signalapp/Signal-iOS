@@ -303,11 +303,11 @@ public class IncomingMessageFactory: NSObject, Factory {
         case let contactThread as TSContactThread:
             return contactThread.contactAddress
         case let groupThread as TSGroupThread:
-            let randomE164 = groupThread.recipientAddresses.ows_randomElement()?.transitional_phoneNumber ?? CommonGenerator.e164()
-            return SignalServiceAddress(phoneNumber: randomE164)
+            let randomAddress = groupThread.recipientAddresses.ows_randomElement() ?? CommonGenerator.address()
+            return randomAddress
         default:
             owsFailDebug("unexpected thread type")
-            return SignalServiceAddress(phoneNumber: CommonGenerator.e164())
+            return CommonGenerator.address()
         }
     }
 
@@ -396,7 +396,7 @@ class GroupThreadFactory: NSObject, Factory {
     @objc
     public var groupModelBuilder: (GroupThreadFactory) -> TSGroupModel = { groupThreadFactory in
         return TSGroupModel(title: groupThreadFactory.titleBuilder(),
-                            memberIds: groupThreadFactory.memberIdsBuilder(),
+                            members: groupThreadFactory.membersBuilder(),
                             image: groupThreadFactory.imageBuilder(),
                             groupId: groupThreadFactory.groupIdBuilder())
     }
@@ -417,9 +417,9 @@ class GroupThreadFactory: NSObject, Factory {
     }
 
     @objc
-    public var memberIdsBuilder: () -> [RecipientIdentifier] = {
+    public var membersBuilder: () -> [SignalServiceAddress] = {
         let groupSize = arc4random_uniform(10)
-        return (0..<groupSize).map { _ in CommonGenerator.e164() }
+        return (0..<groupSize).map { _ in  CommonGenerator.address(hasPhoneNumber: Bool.random()) }
     }
 }
 
@@ -523,6 +523,10 @@ public struct CommonGenerator {
         let randomDigits = (0..<10).map { _ in return digits.ows_randomElement()! }
 
         return "+1".appending(randomDigits.joined())
+    }
+
+    static public func address(hasPhoneNumber: Bool = true) -> SignalServiceAddress {
+        return SignalServiceAddress(uuid: UUID(), phoneNumber: hasPhoneNumber ? e164() : nil)
     }
 
     // Body Content

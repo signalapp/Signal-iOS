@@ -1586,7 +1586,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // ...but always show the "disappearing messages" animation.
                 shouldHideFooter = ([timestampText isEqualToString:nextTimestampText] && !nextViewItem.hasCellHeader
                     && ((!incomingSenderAddress && !nextIncomingSenderAddress) ||
-                        [incomingSenderAddress matchesAddress:nextIncomingSenderAddress])
+                        [incomingSenderAddress isEqualToAddress:nextIncomingSenderAddress])
                     && !isDisappearingMessage);
             }
 
@@ -1599,7 +1599,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 isFirstInCluster = YES;
             } else {
                 TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousViewItem.interaction;
-                isFirstInCluster = ![incomingSenderAddress matchesAddress:previousIncomingMessage.authorAddress];
+                isFirstInCluster = ![incomingSenderAddress isEqualToAddress:previousIncomingMessage.authorAddress];
             }
 
             if (nextViewItem == nil) {
@@ -1610,7 +1610,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 isLastInCluster = YES;
             } else {
                 TSIncomingMessage *nextIncomingMessage = (TSIncomingMessage *)nextViewItem.interaction;
-                isLastInCluster = ![incomingSenderAddress matchesAddress:nextIncomingMessage.authorAddress];
+                isLastInCluster = ![incomingSenderAddress isEqualToAddress:nextIncomingMessage.authorAddress];
             }
 
             if (viewItem.isGroupThread) {
@@ -1625,7 +1625,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                     OWSAssertDebug(previousIncomingSenderAddress.isValid);
 
                     shouldShowSenderName = ((!incomingSenderAddress && !previousIncomingSenderAddress)
-                        || ![incomingSenderAddress matchesAddress:previousIncomingSenderAddress]
+                        || ![incomingSenderAddress isEqualToAddress:previousIncomingSenderAddress]
                         || viewItem.hasCellHeader);
                 }
                 if (shouldShowSenderName) {
@@ -1641,7 +1641,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 shouldShowSenderAvatar = YES;
                 if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
                     shouldShowSenderAvatar = ((!incomingSenderAddress && !nextIncomingSenderAddress)
-                        || ![incomingSenderAddress matchesAddress:nextIncomingSenderAddress]
+                        || ![incomingSenderAddress isEqualToAddress:nextIncomingSenderAddress]
                         || nextViewItem.hasCellHeader);
                 }
             }

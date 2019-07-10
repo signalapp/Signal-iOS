@@ -485,7 +485,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         && previousLayoutItem.interaction.interactionType == OWSInteractionType_IncomingMessage) {
         TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
         TSIncomingMessage *previousIncomingMessage = (TSIncomingMessage *)previousLayoutItem.interaction;
-        if ([incomingMessage.authorAddress matchesAddress:previousIncomingMessage.authorAddress]) {
+        if ([incomingMessage.authorAddress isEqualToAddress:previousIncomingMessage.authorAddress]) {
             return 2.f;
         }
     } else if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage

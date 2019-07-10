@@ -53,7 +53,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
 
         let groupId = Randomness.generateRandomBytes(Int32(kGroupIdLength))!
         let groupModel = TSGroupModel(title: "Test Group",
-                                      memberIds: [contactId ],
+                                      members: [contactId.transitional_signalServiceAddress],
                                       image: nil,
                                       groupId: groupId)
         let groupThread = TSGroupThread(groupModel: groupModel)

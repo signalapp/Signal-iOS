@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactTableViewCell.h"
@@ -53,11 +53,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.cellView.userInteractionEnabled = NO;
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address
 {
     [OWSTableItem configureCell:self];
 
-    [self.cellView configureWithRecipientId:recipientId];
+    [self.cellView configureWithRecipientAddress:address];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];

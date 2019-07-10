@@ -132,6 +132,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages receiveUUIDEnvelopeInNewThread];
                         }],
+        [OWSTableItem itemWithTitle:@"Create UUID group"
+                        actionBlock:^{
+                            [DebugUIMessages createUUIDGroup];
+                        }],
         [OWSTableItem itemWithTitle:@"Send Media Gallery"
                         actionBlock:^{
                             [DebugUIMessages sendMediaAlbumInThread:thread];
@@ -308,18 +312,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        NSString *recipientId = contactThread.contactAddress.transitional_phoneNumber;
+        SignalServiceAddress *recipientAddress = contactThread.contactAddress;
         [items addObject:[OWSTableItem itemWithTitle:@"Create 10 new groups"
                                          actionBlock:^{
-                                             [DebugUIMessages createNewGroups:10 recipientId:recipientId];
+                                             [DebugUIMessages createNewGroups:10 recipientAddress:recipientAddress];
                                          }]];
         [items addObject:[OWSTableItem itemWithTitle:@"Create 100 new groups"
                                          actionBlock:^{
-                                             [DebugUIMessages createNewGroups:100 recipientId:recipientId];
+                                             [DebugUIMessages createNewGroups:100 recipientAddress:recipientAddress];
                                          }]];
         [items addObject:[OWSTableItem itemWithTitle:@"Create 1,000 new groups"
                                          actionBlock:^{
-                                             [DebugUIMessages createNewGroups:1000 recipientId:recipientId];
+                                             [DebugUIMessages createNewGroups:1000 recipientAddress:recipientAddress];
                                          }]];
     }
     if ([thread isKindOfClass:[TSGroupThread class]]) {
@@ -383,9 +387,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSGroupThread *)groupThread
 {
-    for (NSString *recipientId in groupThread.groupModel.groupMemberIds) {
-        TSContactThread *contactThread =
-            [TSContactThread getOrCreateThreadWithContactAddress:recipientId.transitional_signalServiceAddress];
+    for (SignalServiceAddress *address in groupThread.groupModel.groupMembers) {
+        TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:address];
         [[self sendTextMessagesActionInThread:contactThread] prepareAndPerformNTimes:count];
     }
 }
@@ -3455,22 +3458,23 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     OWSAssertDebug(thread);
 
     uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
-    NSString *source = ^{
+    SignalServiceAddress *source = ^{
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *gThread = (TSGroupThread *)thread;
-            return gThread.groupModel.groupMemberIds[0];
+            return gThread.groupModel.groupMembers[0];
         } else if ([thread isKindOfClass:[TSContactThread class]]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
-            return contactThread.contactAddress.transitional_phoneNumber;
+            return contactThread.contactAddress;
         } else {
             OWSFailDebug(@"failure: unknown thread type");
-            return @"unknown-source-id";
+            return [[SignalServiceAddress alloc] initWithPhoneNumber:@"unknown-source-id"];
         }
     }();
 
     SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:timestamp];
     [envelopeBuilder setType:SSKProtoEnvelopeTypeCiphertext];
-    [envelopeBuilder setSourceE164:source];
+    [envelopeBuilder setSourceE164:source.phoneNumber];
+    [envelopeBuilder setSourceUuid:source.uuidString];
     [envelopeBuilder setSourceDevice:1];
     NSError *error;
     SSKProtoEnvelope *_Nullable envelope = [envelopeBuilder buildAndReturnError:&error];
@@ -3952,20 +3956,22 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 #pragma mark -
 
-+ (void)createNewGroups:(NSUInteger)counter recipientId:(NSString *)recipientId
++ (void)createNewGroups:(NSUInteger)counter recipientAddress:(SignalServiceAddress *)recipientAddress
 {
     if (counter < 1) {
         return;
     }
 
     NSString *groupName = [NSUUID UUID].UUIDString;
-    NSMutableArray<NSString *> *recipientIds = [@[
-        recipientId,
-        [TSAccountManager localNumber],
+    NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
+        recipientAddress,
+        TSAccountManager.sharedInstance.localAddress,
     ] mutableCopy];
     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-    TSGroupModel *groupModel =
-        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
+                                                           members:recipientAddresses
+                                                             image:nil
+                                                           groupId:groupId];
 
     __block TSGroupThread *thread;
     [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
@@ -3996,7 +4002,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                    transaction:transaction];
         }];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [self createNewGroups:counter - 1 recipientId:recipientId];
+            [self createNewGroups:counter - 1 recipientAddress:recipientAddress];
         });
     });
 }
@@ -4469,15 +4475,18 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                     transaction:transaction];
             }
             {
-                NSString *recipientId = @"+1323555555";
+                SignalServiceAddress *recipientAddress =
+                    [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
                 NSString *groupName = string;
-                NSMutableArray<NSString *> *recipientIds = [@[
-                    recipientId,
-                    [TSAccountManager localNumber],
+                NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
+                    recipientAddress,
+                    TSAccountManager.sharedInstance.localAddress,
                 ] mutableCopy];
                 NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-                TSGroupModel *groupModel =
-                    [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+                TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
+                                                                       members:recipientAddresses
+                                                                         image:nil
+                                                                       groupId:groupId];
 
                 if (transaction.transitional_yapWriteTransaction) {
                     TSGroupThread *groupThread =
@@ -4514,15 +4523,18 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                     transaction:transaction];
             }
             {
-                NSString *recipientId = @"+19174054215";
+                SignalServiceAddress *recipientAddress =
+                    [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"];
                 NSString *groupName = string;
-                NSMutableArray<NSString *> *recipientIds = [@[
-                    recipientId,
-                    [TSAccountManager localNumber],
+                NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
+                    recipientAddress,
+                    TSAccountManager.sharedInstance.localAddress,
                 ] mutableCopy];
                 NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-                TSGroupModel *groupModel =
-                    [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+                TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
+                                                                       members:recipientAddresses
+                                                                         image:nil
+                                                                       groupId:groupId];
 
                 if (transaction.transitional_yapWriteTransaction) {
                     TSGroupThread *groupThread =
@@ -4558,15 +4570,18 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                         transaction:transaction];
                 }
                 {
-                    NSString *recipientId = @"+19174054215";
+                    SignalServiceAddress *recipientAddress =
+                        [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"];
                     NSString *groupName = string;
-                    NSMutableArray<NSString *> *recipientIds = [@[
-                        recipientId,
-                        [TSAccountManager localNumber],
+                    NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
+                        recipientAddress,
+                        TSAccountManager.sharedInstance.localAddress,
                     ] mutableCopy];
                     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
-                    TSGroupModel *groupModel =
-                        [[TSGroupModel alloc] initWithTitle:groupName memberIds:recipientIds image:nil groupId:groupId];
+                    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
+                                                                           members:recipientAddresses
+                                                                             image:nil
+                                                                           groupId:groupId];
 
                     if (transaction.transitional_yapWriteTransaction) {
                         TSGroupThread *groupThread = [TSGroupThread

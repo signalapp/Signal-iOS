@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isThreadBlocked:(TSThread *)thread;
 
 // NOTE: This method uses a transaction.
-- (NSString *)localNumber;
+- (SignalServiceAddress *)localAddress;
 
 - (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText;
 

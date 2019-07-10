@@ -75,7 +75,7 @@ public class ContactSearchResult: NSObject, Comparable {
     // MARK: Equatable
 
     public static func == (lhs: ContactSearchResult, rhs: ContactSearchResult) -> Bool {
-        return lhs.recipientAddress.matchesAddress(rhs.recipientAddress)
+        return lhs.recipientAddress == rhs.recipientAddress
     }
 }
 
@@ -407,29 +407,27 @@ public class FullTextSearcher: NSObject {
 
     private lazy var groupThreadSearcher: Searcher<TSGroupThread> = Searcher { (groupThread: TSGroupThread) in
         let groupName = groupThread.groupModel.groupName
-        let memberStrings = groupThread.groupModel.groupMemberIds.map { recipientId in
-            self.indexingString(recipientId: recipientId)
+        let memberStrings = groupThread.groupModel.groupMembers.map { address in
+            self.indexingString(address: address)
         }.joined(separator: " ")
 
         return "\(memberStrings) \(groupName ?? "")"
     }
 
     private lazy var contactThreadSearcher: Searcher<TSContactThread> = Searcher { (contactThread: TSContactThread) in
-        let recipientId = contactThread.contactAddress.transitional_phoneNumber!
-        return self.conversationIndexingString(recipientId: recipientId)
+        let recipientAddress = contactThread.contactAddress
+        return self.conversationIndexingString(address: recipientAddress)
     }
 
     private lazy var signalAccountSearcher: Searcher<SignalAccount> = Searcher { (signalAccount: SignalAccount) in
-        let recipientId = signalAccount.recipientAddress.transitional_phoneNumber!
-        return self.conversationIndexingString(recipientId: recipientId)
+        let recipientAddress = signalAccount.recipientAddress
+        return self.conversationIndexingString(address: recipientAddress)
     }
 
-    private func conversationIndexingString(recipientId: String) -> String {
-        var result = self.indexingString(recipientId: recipientId)
+    private func conversationIndexingString(address: SignalServiceAddress) -> String {
+        var result = self.indexingString(address: address)
 
-        if IsNoteToSelfEnabled(),
-            let localNumber = tsAccountManager.localNumber(),
-            localNumber == recipientId {
+        if IsNoteToSelfEnabled(), address.isLocalAddress {
             let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
             result += " \(noteToSelfLabel)"
         }
@@ -441,10 +439,10 @@ public class FullTextSearcher: NSObject {
         return Environment.shared.contactsManager
     }
 
-    private func indexingString(recipientId: String) -> String {
-        let contactName = contactsManager.displayName(for: recipientId.transitional_signalServiceAddress)
-        let profileName = contactsManager.profileName(for: recipientId.transitional_signalServiceAddress)
+    private func indexingString(address: SignalServiceAddress) -> String {
+        let contactName = contactsManager.displayName(for: address)
+        let profileName = contactsManager.profileName(for: address)
 
-        return "\(recipientId) \(contactName) \(profileName ?? "")"
+        return "\(address.phoneNumber ?? "") \(contactName) \(profileName ?? "")"
     }
 }

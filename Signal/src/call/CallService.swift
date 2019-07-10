@@ -901,7 +901,7 @@ private class SignalCallData: NSObject {
                 return
             }
 
-            guard thread.contactAddress.matchesAddress(call.thread.contactAddress) else {
+            guard thread.contactAddress == call.thread.contactAddress else {
                 Logger.warn("ignoring remote ice update for thread: \(String(describing: thread.uniqueId)) due to thread mismatch. Call already ended?")
                 return
             }
@@ -1070,7 +1070,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        guard thread.contactAddress.matchesAddress(call.thread.contactAddress) else {
+        guard thread.contactAddress == call.thread.contactAddress else {
             // This can safely be ignored.
             // We don't want to fail the current call because an old call was slow to send us the hangup message.
             Logger.warn("ignoring hangup for thread: \(thread.contactAddress) which is not the current call: \(call.identifiersForLogs)")

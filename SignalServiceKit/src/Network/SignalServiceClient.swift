@@ -6,8 +6,6 @@ import Foundation
 import PromiseKit
 import SignalMetadataKit
 
-public typealias RecipientIdentifier = String
-
 @objc
 public protocol SignalServiceClientObjC {
     @objc func updateAccountAttributesObjC() -> AnyPromise
