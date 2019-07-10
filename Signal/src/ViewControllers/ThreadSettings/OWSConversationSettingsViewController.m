@@ -974,8 +974,8 @@ const CGFloat kIconViewLength = 24;
         SignalServiceAddress *recipientAddress = thread.contactAddress;
         NSString *_Nullable phoneNumber = recipientAddress.phoneNumber;
 
-        BOOL hasName = ![self.thread.name isEqualToString:phoneNumber];
-        if (hasName && phoneNumber) {
+        BOOL hasNameAndPhoneNumber = phoneNumber && ![self.thread.name isEqualToString:phoneNumber];
+        if (hasNameAndPhoneNumber) {
             NSAttributedString *subtitle = [[NSAttributedString alloc]
                 initWithString:[PhoneNumber
                                    bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber]];

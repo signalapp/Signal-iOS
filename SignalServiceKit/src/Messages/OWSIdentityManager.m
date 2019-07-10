@@ -151,7 +151,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     __block NSData *_Nullable result = nil;
     [self.databaseQueue readWithBlock:^(SDSAnyReadTransaction *transaction) {
         NSString *_Nullable accountId = [self accountIdForAddress:address transaction:transaction];
-        if (!accountId) {
+        if (accountId) {
             result = [self identityKeyForAccountId:accountId transaction:transaction];
         }
     }];

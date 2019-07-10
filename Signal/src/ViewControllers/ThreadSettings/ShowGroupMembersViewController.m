@@ -249,7 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSVerificationState verificationState =
             [identityManger verificationStateForAddress:recipientId.transitional_signalServiceAddress];
         if (verificationState == OWSVerificationStateNoLongerVerified) {
-            NSData *identityKey = [identityManger identityKeyForRecipientId:recipientId];
+            NSData *identityKey = [identityManger identityKeyForAddress:recipientId.transitional_signalServiceAddress];
             if (identityKey.length < 1) {
                 OWSFailDebug(@"Missing identity key for: %@", recipientId);
                 continue;
