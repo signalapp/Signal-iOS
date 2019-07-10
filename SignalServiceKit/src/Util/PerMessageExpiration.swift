@@ -54,7 +54,7 @@ public class PerMessageExpiration: NSObject {
             return
         }
         guard !isOutgoingNotYetSent(message: message) else {
-            Logger.warn("Not starting expiration for not-yet-sent outgoing message.")
+            owsFailDebug("Not starting expiration for not-yet-sent outgoing message.")
             return
         }
 
@@ -200,7 +200,6 @@ public class PerMessageExpiration: NSObject {
     }
 
     private class func isOutgoingNotYetSent(message: TSMessage) -> Bool {
-        // If outgoing message and is "sent", expire.
         guard let outgoingMessage = message as? TSOutgoingMessage else {
             return false
         }
