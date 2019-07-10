@@ -2589,7 +2589,7 @@ typedef enum : NSUInteger {
     OWSAssertDebug(viewItem);
     OWSAssertDebug(quotedReply);
     OWSAssertDebug(quotedReply.timestamp > 0);
-    OWSAssertDebug(quotedReply.authorId.length > 0);
+    OWSAssertDebug(quotedReply.authorAddress.isValid);
 
     __block NSIndexPath *_Nullable indexPath;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {

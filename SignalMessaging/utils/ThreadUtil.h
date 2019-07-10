@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSUnreadIndicator;
 @class SDSAnyReadTransaction;
 @class SignalAttachment;
+@class SignalServiceAddress;
 @class StickerInfo;
 @class TSContactThread;
 @class TSGroupThread;
@@ -132,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Find Content
 
 + (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
-                                                      authorId:(NSString *)authorId
+                                                 authorAddress:(SignalServiceAddress *)authorAddress
                                                 threadUniqueId:(NSString *)threadUniqueId
                                                    transaction:(YapDatabaseReadTransaction *)transaction;
 

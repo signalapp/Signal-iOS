@@ -37,7 +37,10 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     }
 
     if (self.infoMessageSchemaVersion < 2) {
-        _unregisteredAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:[coder decodeObjectForKey:@"unregisteredRecipientId"]];
+        NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"unregisteredRecipientId"];
+        if (phoneNumber) {
+            _unregisteredAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+        }
     }
 
     _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;

@@ -914,10 +914,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                              }];
 }
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientIds:(nullable NSArray<NSString *> *)udRecipientIds
-                                          nonUdRecipientIds:(nullable NSArray<NSString *> *)nonUdRecipientIds
-                                               isSentUpdate:(BOOL)isSentUpdate
-                                                transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:(nullable NSArray<NSString *> *)udRecipientIds
+                                          nonUdRecipientAddresses:(nullable NSArray<NSString *> *)nonUdRecipientIds
+                                                     isSentUpdate:(BOOL)isSentUpdate
+                                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -1249,8 +1249,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     }
     TSQuotedMessage *quotedMessage = self.quotedMessage;
 
-    SSKProtoDataMessageQuoteBuilder *quoteBuilder =
-        [SSKProtoDataMessageQuote builderWithId:quotedMessage.timestamp author:quotedMessage.authorId];
+    SSKProtoDataMessageQuoteBuilder *quoteBuilder = [SSKProtoDataMessageQuote builderWithId:quotedMessage.timestamp];
+
+    quoteBuilder.authorE164 = quotedMessage.authorAddress.phoneNumber;
+    quoteBuilder.authorUuid = quotedMessage.authorAddress.uuidString;
 
     BOOL hasQuotedText = NO;
     BOOL hasQuotedAttachment = NO;

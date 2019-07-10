@@ -834,35 +834,34 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 #pragma mark - Find Content
 
 + (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
-                                                      authorId:(NSString *)authorId
+                                                 authorAddress:(SignalServiceAddress *)authorAddress
                                                 threadUniqueId:(NSString *)threadUniqueId
                                                    transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(timestamp > 0);
-    OWSAssertDebug(authorId.length > 0);
+    OWSAssertDebug(authorAddress.isValid);
 
-    NSString *localNumber = [TSAccountManager localNumber];
-    if (localNumber.length < 1) {
-        OWSFailDebug(@"missing long number.");
+    SignalServiceAddress *localAddress = TSAccountManager.sharedInstance.localAddress;
+    if (!localAddress.isValid) {
+        OWSFailDebug(@"missing local address.");
         return nil;
     }
 
     NSArray<TSInteraction *> *interactions =
         [TSInteraction interactionsWithTimestamp:timestamp
                                           filter:^(TSInteraction *interaction) {
-                                              NSString *_Nullable messageAuthorId = nil;
+                                              SignalServiceAddress *_Nullable messageAuthorAddress = nil;
                                               if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
                                                   TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
-                                                  messageAuthorId
-                                                      = incomingMessage.authorAddress.transitional_phoneNumber;
+                                                  messageAuthorAddress = incomingMessage.authorAddress;
                                               } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                                                  messageAuthorId = localNumber;
+                                                  messageAuthorAddress = localAddress;
                                               }
-                                              if (messageAuthorId.length < 1) {
+                                              if (!messageAuthorAddress.isValid) {
                                                   return NO;
                                               }
 
-                                              if (![authorId isEqualToString:messageAuthorId]) {
+                                              if (![authorAddress isEqualToAddress:messageAuthorAddress]) {
                                                   return NO;
                                               }
                                               if (![interaction.uniqueThreadId isEqualToString:threadUniqueId]) {

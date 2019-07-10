@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoAttachmentPointer;
 @class SSKProtoDataMessage;
 @class SSKProtoSyncMessageSent;
+@class SignalServiceAddress;
 @class TSQuotedMessage;
 @class TSThread;
 @class YapDatabaseReadWriteTransaction;
@@ -23,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto
                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-@property (nonatomic, readonly) NSString *recipientId;
+@property (nonatomic, readonly) SignalServiceAddress *recipientAddress;
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t dataMessageTimestamp;
 @property (nonatomic, readonly) uint64_t expirationStartedAt;
@@ -45,8 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // If either nonUdRecipientIds or udRecipientIds is nil,
 // this is either a legacy transcript or it reflects a legacy sync message.
-@property (nonatomic, readonly, nullable) NSArray<NSString *> *nonUdRecipientIds;
-@property (nonatomic, readonly, nullable) NSArray<NSString *> *udRecipientIds;
+@property (nonatomic, readonly, nullable) NSArray<SignalServiceAddress *> *nonUdRecipientAddresses;
+@property (nonatomic, readonly, nullable) NSArray<SignalServiceAddress *> *udRecipientAddresses;
 
 @end
 

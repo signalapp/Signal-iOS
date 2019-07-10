@@ -902,14 +902,14 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Missing dataMessage.");
             return;
         }
-        NSString *destination = syncMessage.sent.destination;
-        if (dataMessage && destination.length > 0 && dataMessage.hasProfileKey) {
+        SignalServiceAddress *destination = syncMessage.sent.destinationAddress;
+        if (dataMessage && destination.isValid && dataMessage.hasProfileKey) {
             // If we observe a linked device sending our profile key to another
             // user, we can infer that that user belongs in our profile whitelist.
             if (dataMessage.group) {
                 [self.profileManager addGroupIdToProfileWhitelist:dataMessage.group.id];
             } else {
-                [self.profileManager addUserToProfileWhitelist:destination.transitional_signalServiceAddress];
+                [self.profileManager addUserToProfileWhitelist:destination];
             }
         }
 

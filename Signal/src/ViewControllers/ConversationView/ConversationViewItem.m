@@ -1023,9 +1023,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return self.quotedReply.contentType;
 }
 
-- (nullable NSString *)quotedRecipientId
+- (nullable SignalServiceAddress *)quotedAuthorAddress
 {
-    return self.quotedReply.authorId;
+    return self.quotedReply.authorAddress;
 }
 
 - (OWSMessageCellType)messageCellType

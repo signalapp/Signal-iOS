@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
  * recipientId is nil when building "sent" sync messages for messages
  * sent to groups.
  */
-- (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
+- (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address;
 
 @end
 
@@ -28,9 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) TSOutgoingMessage *message;
 
-// sentRecipientId is the recipient of message, for contact thread messages.
+// sentRecipientAddress is the recipient of message, for contact thread messages.
 // It is used to identify the thread/conversation to desktop.
-@property (nonatomic, readonly, nullable) NSString *sentRecipientId;
+@property (nonatomic, readonly, nullable) SignalServiceAddress *sentRecipientAddress;
 
 @property (nonatomic, readonly) BOOL isRecipientUpdate;
 
@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([message.thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)message.thread;
-        _sentRecipientId = contactThread.contactAddress.transitional_phoneNumber;
+        _sentRecipientAddress = contactThread.contactAddress;
     }
 
     return self;
@@ -64,17 +64,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    if (_sentRecipientAddress == nil) {
+        _sentRecipientAddress =
+            [[SignalServiceAddress alloc] initWithPhoneNumber:[coder decodeObjectForKey:@"sentRecipientId"]];
+        OWSAssertDebug(_sentRecipientAddress.isValid);
+    }
+
+    return self;
 }
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSent builder];
     [sentBuilder setTimestamp:self.timestamp];
-    [sentBuilder setDestination:self.sentRecipientId];
+    [sentBuilder setDestinationE164:self.sentRecipientAddress.phoneNumber];
+    [sentBuilder setDestinationUuid:self.sentRecipientAddress.uuidString];
     [sentBuilder setIsRecipientUpdate:self.isRecipientUpdate];
 
-    SSKProtoDataMessage *_Nullable dataMessage = [self.message buildDataMessage:self.sentRecipientId];
+    SSKProtoDataMessage *_Nullable dataMessage = [self.message buildDataMessage:self.sentRecipientAddress];
     if (!dataMessage) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
@@ -82,6 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
     [sentBuilder setMessage:dataMessage];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
+    // TODO UUID – set destinationUuid
     for (NSString *recipientId in self.message.sentRecipientIds) {
         TSOutgoingMessageRecipientState *_Nullable recipientState =
             [self.message recipientStateForRecipientId:recipientId];
@@ -97,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *error;
         SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder *statusBuilder =
             [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus builder];
-        [statusBuilder setDestination:recipientId];
+        [statusBuilder setDestinationE164:recipientId];
         [statusBuilder setUnidentified:recipientState.wasSentByUD];
         SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *_Nullable status =
             [statusBuilder buildAndReturnError:&error];

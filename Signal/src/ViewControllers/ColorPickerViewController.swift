@@ -325,7 +325,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var mediaSize: CGSize  = .zero
     var displayableQuotedText: DisplayableText?
     var quotedAttachmentMimetype: String?
-    var quotedRecipientId: String?
+    var quotedAuthorAddress: SignalServiceAddress?
     var didCellMediaFailToLoad: Bool = false
     var contactShare: ContactShareViewModel?
     var systemMessageText: String?

@@ -3,6 +3,7 @@
 //
 
 #import "OWSRecordTranscriptJob.h"
+#import "FunctionalUtil.h"
 #import "OWSAttachmentDownloads.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
@@ -84,9 +85,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogInfo(@"Recording transcript in thread: %@ timestamp: %llu", transcript.thread.uniqueId, transcript.timestamp);
 
     if (transcript.isEndSessionMessage) {
-        OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientId);
-        [self.sessionStore deleteAllSessionsForAddress:transcript.recipientId.transitional_signalServiceAddress
-                                           transaction:transaction.asAnyWrite];
+        OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientAddress);
+        [self.sessionStore deleteAllSessionsForAddress:transcript.recipientAddress transaction:transaction.asAnyWrite];
 
         // MJK TODO - we don't use this timestamp, safe to remove
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
@@ -197,9 +197,18 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    NSArray<NSString *> *transitional_udRecipientPhoneNumbers =
+        [transcript.udRecipientAddresses map:^NSString *(SignalServiceAddress *address) {
+            return address.transitional_phoneNumber;
+        }];
+    NSArray<NSString *> *transitional_nonUdRecipientPhoneNumbers =
+        [transcript.nonUdRecipientAddresses map:^NSString *(SignalServiceAddress *address) {
+            return address.transitional_phoneNumber;
+        }];
+
     [outgoingMessage saveWithTransaction:transaction];
-    [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transcript.udRecipientIds
-                                                       nonUdRecipientIds:transcript.nonUdRecipientIds
+    [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transitional_udRecipientPhoneNumbers
+                                                       nonUdRecipientIds:transitional_nonUdRecipientPhoneNumbers
                                                             isSentUpdate:NO
                                                              transaction:transaction];
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:outgoingMessage
@@ -256,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (transcript.udRecipientIds.count < 1 && transcript.nonUdRecipientIds.count < 1) {
+    if (transcript.udRecipientAddresses.count < 1 && transcript.nonUdRecipientAddresses.count < 1) {
         OWSFailDebug(@"Ignoring empty 'recipient update' transcript.");
         return;
     }
@@ -315,11 +324,20 @@ NS_ASSUME_NONNULL_BEGIN
                    @"udRecipientIds: %d.",
             thread.uniqueId,
             timestamp,
-            (int)transcript.nonUdRecipientIds.count,
-            (int)transcript.udRecipientIds.count);
+            (int)transcript.nonUdRecipientAddresses.count,
+            (int)transcript.udRecipientAddresses.count);
 
-        [message updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transcript.udRecipientIds
-                                                   nonUdRecipientIds:transcript.nonUdRecipientIds
+        NSArray<NSString *> *transitional_udRecipientPhoneNumbers =
+            [transcript.udRecipientAddresses map:^NSString *(SignalServiceAddress *address) {
+                return address.transitional_phoneNumber;
+            }];
+        NSArray<NSString *> *transitional_nonUdRecipientPhoneNumbers =
+            [transcript.nonUdRecipientAddresses map:^NSString *(SignalServiceAddress *address) {
+                return address.transitional_phoneNumber;
+            }];
+
+        [message updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transitional_udRecipientPhoneNumbers
+                                                   nonUdRecipientIds:transitional_nonUdRecipientPhoneNumbers
                                                         isSentUpdate:YES
                                                          transaction:transaction];
 

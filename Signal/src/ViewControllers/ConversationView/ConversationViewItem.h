@@ -43,6 +43,7 @@ typedef NS_ENUM(NSUInteger, PerMessageExpirationState) {
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
 @class SDSAnyReadTransaction;
+@class SignalServiceAddress;
 @class StickerInfo;
 @class TSAttachment;
 @class TSAttachmentPointer;
@@ -128,7 +129,7 @@ typedef NS_ENUM(NSUInteger, PerMessageExpirationState) {
 
 @property (nonatomic, readonly, nullable) DisplayableText *displayableQuotedText;
 @property (nonatomic, readonly, nullable) NSString *quotedAttachmentMimetype;
-@property (nonatomic, readonly, nullable) NSString *quotedRecipientId;
+@property (nonatomic, readonly, nullable) SignalServiceAddress *quotedAuthorAddress;
 
 // We don't want to try to load the media for this item (if any)
 // if a load has previously failed.
