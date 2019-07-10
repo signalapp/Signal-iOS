@@ -495,12 +495,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([dataMessage hasProfileKey]) {
         NSData *profileKey = [dataMessage profileKey];
-        NSString *recipientId = envelope.sourceE164;
+        SignalServiceAddress *address = envelope.sourceAddress;
         if (profileKey.length == kAES256_KeyByteLength) {
-            [self.profileManager setProfileKeyData:profileKey forAddress:recipientId.transitional_signalServiceAddress];
+            [self.profileManager setProfileKeyData:profileKey forAddress:address];
         } else {
             OWSFailDebug(
-                @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, recipientId);
+                @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, address);
         }
     }
 
@@ -902,14 +902,14 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Missing dataMessage.");
             return;
         }
-        NSString *destination = syncMessage.sent.destination;
-        if (dataMessage && destination.length > 0 && dataMessage.hasProfileKey) {
+        SignalServiceAddress *destination = syncMessage.sent.destinationAddress;
+        if (dataMessage && destination.isValid && dataMessage.hasProfileKey) {
             // If we observe a linked device sending our profile key to another
             // user, we can infer that that user belongs in our profile whitelist.
             if (dataMessage.group) {
                 [self.profileManager addGroupIdToProfileWhitelist:dataMessage.group.id];
             } else {
-                [self.profileManager addUserToProfileWhitelist:destination.transitional_signalServiceAddress];
+                [self.profileManager addUserToProfileWhitelist:destination];
             }
         }
 

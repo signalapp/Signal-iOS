@@ -854,8 +854,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         [SignalRecipient markRecipientAsUnregistered:recipient.address transaction:transaction];
 
-        [[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:recipient.address.transitional_phoneNumber]
-            anyInsertWithTransaction:transaction];
+        [[TSInfoMessage userNotRegisteredMessageInThread:thread
+                                                 address:recipient.address] anyInsertWithTransaction:transaction];
 
         // TODO: Should we deleteAllSessionsForContact here?
         //       If so, we'll need to avoid doing a prekey fetch every
@@ -902,7 +902,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [NSString stringWithFormat:localizedErrorDescriptionFormat,
                           [self.contactsManager displayNameForAddress:recipient.address]];
             NSError *error = OWSErrorMakeUntrustedIdentityError(
-                localizedErrorDescription, recipient.address.transitional_phoneNumber);
+                localizedErrorDescription, recipient.address);
 
             // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request
             // rate limit

@@ -218,14 +218,14 @@ public class PerMessageExpiration: NSObject {
 
     private class func sendSyncMessage(forMessage message: TSMessage,
                                        transaction: SDSAnyWriteTransaction) {
-        guard let senderId = senderId(forMessage: message) else {
+        guard let senderAddress = senderAddress(forMessage: message) else {
             owsFailDebug("Could not send sync message; no local number.")
             return
         }
         let messageIdTimestamp: UInt64 = message.timestamp
         let readTimestamp: UInt64 = nowMs()
 
-        let syncMessage = OWSPerMessageExpirationReadSyncMessage(senderId: senderId,
+        let syncMessage = OWSPerMessageExpirationReadSyncMessage(senderAddress: senderAddress,
                                                                  messageIdTimestamp: messageIdTimestamp,
                                                                  readTimestamp: readTimestamp)
         messageSenderJobQueue.add(message: syncMessage, transaction: transaction)
@@ -243,9 +243,8 @@ public class PerMessageExpiration: NSObject {
         }
 
         // Unpack and verify the proto & envelope contents.
-        let senderId: String = message.sender
-        guard senderId.count > 0 else {
-            owsFailDebug("Invalid senderId.")
+        guard let senderAddress = message.senderAddress, senderAddress.isValid else {
+            owsFailDebug("Invalid senderAddress.")
             return
         }
         let messageIdTimestamp: UInt64 = message.timestamp
@@ -260,7 +259,7 @@ public class PerMessageExpiration: NSObject {
         }
 
         // Persist this "per-message expiration read receipt".
-        let key = readReceiptKey(senderId: senderId, messageIdTimestamp: messageIdTimestamp)
+        let key = readReceiptKey(senderAddress: senderAddress, messageIdTimestamp: messageIdTimestamp)
         store.setUInt64(readTimestamp, key: key, transaction: transaction)
     }
 
@@ -268,7 +267,7 @@ public class PerMessageExpiration: NSObject {
     private class func tryToApplyIncomingSyncMessage(_ message: SSKProtoSyncMessageMessageTimerRead,
                                                      envelope: SSKProtoEnvelope,
                                                      transaction: SDSAnyWriteTransaction) -> Bool {
-        let messageSenderId: String = message.sender
+        let messageSenderAddress = message.senderAddress
         let messageIdTimestamp: UInt64 = message.timestamp
         let readTimestamp: UInt64 = envelope.timestamp
 
@@ -280,11 +279,11 @@ public class PerMessageExpiration: NSObject {
             guard let message = interaction as? TSMessage else {
                 return false
             }
-            guard let senderId = senderId(forMessage: message) else {
+            guard let senderAddress = senderAddress(forMessage: message) else {
                 owsFailDebug("Could not process sync message; no local number.")
                 return false
             }
-            guard senderId == messageSenderId else {
+            guard senderAddress == messageSenderAddress else {
                 return false
             }
             guard message.hasPerMessageExpiration else {
@@ -325,14 +324,14 @@ public class PerMessageExpiration: NSObject {
         guard message.hasPerMessageExpiration else {
             return
         }
-        guard let senderId = senderId(forMessage: message) else {
+        guard let senderAddress = senderAddress(forMessage: message) else {
             owsFailDebug("Could not apply early read receipts; no local number.")
             return
         }
         let messageIdTimestamp: UInt64 = message.timestamp
 
         // Check for persisted "per-message expiration read receipt".
-        let key = readReceiptKey(senderId: senderId, messageIdTimestamp: messageIdTimestamp)
+        let key = readReceiptKey(senderAddress: senderAddress, messageIdTimestamp: messageIdTimestamp)
         guard let readTimestamp = store.getOptionalUInt64(key, transaction: transaction) else {
             // No early read receipt applies, abort.
             return
@@ -348,18 +347,18 @@ public class PerMessageExpiration: NSObject {
                                   transaction: transaction)
     }
 
-    private class func senderId(forMessage message: TSMessage) -> String? {
+    private class func senderAddress(forMessage message: TSMessage) -> SignalServiceAddress? {
 
         if let incomingMessage = message as? TSIncomingMessage {
-            return incomingMessage.authorAddress.transitional_phoneNumber
+            return incomingMessage.authorAddress
         } else if message as? TSOutgoingMessage != nil {
-            guard let localNumber = tsAccountManager.localNumber() else {
+            guard let localAddress = tsAccountManager.localAddress else {
                 owsFailDebug("Could not process sync message; no local number.")
                 return nil
             }
             // We also need to send and receive "per-message expiration read" sync
             // messages for outgoing messages, unlike normal read receipts.
-            return localNumber
+            return localAddress
         } else {
             owsFailDebug("Unexpected message type.")
             return nil
@@ -368,9 +367,9 @@ public class PerMessageExpiration: NSObject {
 
     private static let store = SDSKeyValueStore(collection: "perMessageExpiration")
 
-    private class func readReceiptKey(senderId: String,
+    private class func readReceiptKey(senderAddress: SignalServiceAddress,
                                       messageIdTimestamp: UInt64) -> String {
-        return "\(senderId).\(messageIdTimestamp)"
+        return "\(senderAddress.stringForDisplay).\(messageIdTimestamp)"
     }
 }
 

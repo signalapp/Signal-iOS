@@ -226,12 +226,12 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     BOOL isProfileAvatar = NO;
     NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:contact.cnContactId];
-    for (NSString *recipientId in contact.textSecureIdentifiers) {
+    for (NSString *phoneNumber in contact.registeredPhoneNumbers) {
         if (avatarImageData) {
             break;
         }
         avatarImageData =
-            [self.contactsManager profileImageDataForAddress:recipientId.transitional_signalServiceAddress];
+            [self.contactsManager profileImageDataForAddress:phoneNumber.transitional_signalServiceAddress];
         if (avatarImageData) {
             isProfileAvatar = YES;
         }
@@ -472,13 +472,13 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     NSString *failureTitle = NSLocalizedString(@"SHARE_EXTENSION_SENDING_FAILURE_TITLE", @"Alert title");
 
     if ([error.domain isEqual:OWSSignalServiceKitErrorDomain] && error.code == OWSErrorCodeUntrustedIdentity) {
-        NSString *_Nullable untrustedRecipientId = error.userInfo[OWSErrorRecipientIdentifierKey];
+        SignalServiceAddress *_Nullable untrustedAddress = error.userInfo[OWSErrorRecipientAddressKey];
 
         NSString *failureFormat = NSLocalizedString(@"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
             @"alert body when sharing file failed because of untrusted/changed identity keys");
 
         NSString *displayName =
-            [self.contactsManager displayNameForAddress:untrustedRecipientId.transitional_signalServiceAddress];
+            [self.contactsManager displayNameForAddress:untrustedAddress];
         NSString *failureMessage = [NSString stringWithFormat:failureFormat, displayName];
 
         UIAlertController *failureAlert = [UIAlertController alertControllerWithTitle:failureTitle
@@ -492,13 +492,13 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                                                     }];
         [failureAlert addAction:failureCancelAction];
 
-        if (untrustedRecipientId.length > 0) {
+        if (untrustedAddress.isValid) {
             UIAlertAction *confirmAction =
                 [UIAlertAction actionWithTitle:[SafetyNumberStrings confirmSendButton]
                                          style:UIAlertActionStyleDefault
                                        handler:^(UIAlertAction *action) {
                                            [self confirmIdentityAndResendMessage:message
-                                                                     recipientId:untrustedRecipientId
+                                                                     address:untrustedAddress
                                                               fromViewController:fromViewController];
                                        }];
 
@@ -537,20 +537,20 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 }
 
 - (void)confirmIdentityAndResendMessage:(TSOutgoingMessage *)message
-                            recipientId:(NSString *)recipientId
+                            address:(SignalServiceAddress *)address
                      fromViewController:(UIViewController *)fromViewController
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(message);
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(fromViewController);
 
-    OWSLogDebug(@"Confirming identity for recipient: %@", recipientId);
+    OWSLogDebug(@"Confirming identity for recipient: %@", address);
 
     [self.databaseStorage
         asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
             OWSVerificationState verificationState = [[OWSIdentityManager sharedManager]
-                verificationStateForAddress:recipientId.transitional_signalServiceAddress
+                verificationStateForAddress:address
                                 transaction:transaction];
             switch (verificationState) {
                 case OWSVerificationStateVerified: {
@@ -567,15 +567,15 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                     break;
                 }
                 case OWSVerificationStateNoLongerVerified: {
-                    OWSLogInfo(@"marked recipient: %@ as default verification status.", recipientId);
+                    OWSLogInfo(@"marked recipient: %@ as default verification status.", address);
                     NSData *identityKey = [[OWSIdentityManager sharedManager]
-                        identityKeyForAddress:recipientId.transitional_signalServiceAddress
+                        identityKeyForAddress:address
                                   transaction:transaction];
                     OWSAssertDebug(identityKey);
                     [[OWSIdentityManager sharedManager]
                          setVerificationState:OWSVerificationStateDefault
                                   identityKey:identityKey
-                                      address:recipientId.transitional_signalServiceAddress
+                                      address:address
                         isUserInitiatedChange:YES
                                   transaction:transaction];
                     break;

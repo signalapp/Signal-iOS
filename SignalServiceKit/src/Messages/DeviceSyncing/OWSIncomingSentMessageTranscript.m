@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _dataMessage = sentProto.message;
-    _recipientId = sentProto.destination;
+    _recipientAddress = sentProto.destinationAddress;
     _timestamp = sentProto.timestamp;
     _expirationStartedAt = sentProto.expirationStartTimestamp;
     _expirationDuration = sentProto.message.expireTimer;
@@ -65,9 +65,8 @@ NS_ASSUME_NONNULL_BEGIN
         if (self.dataMessage.group) {
             _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
         } else {
-            _thread =
-                [TSContactThread getOrCreateThreadWithContactAddress:_recipientId.transitional_signalServiceAddress
-                                                         transaction:transaction.asAnyWrite];
+            _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress
+                                                               transaction:transaction.asAnyWrite];
         }
 
         _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage
@@ -94,10 +93,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (sentProto.unidentifiedStatus.count > 0) {
-        NSMutableArray<NSString *> *nonUdRecipientIds = [NSMutableArray new];
-        NSMutableArray<NSString *> *udRecipientIds = [NSMutableArray new];
+        NSMutableArray<SignalServiceAddress *> *nonUdRecipientAddresses = [NSMutableArray new];
+        NSMutableArray<SignalServiceAddress *> *udRecipientAddresses = [NSMutableArray new];
         for (SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *statusProto in sentProto.unidentifiedStatus) {
-            if (!statusProto.hasDestination || statusProto.destination.length < 1) {
+            if (!statusProto.hasValidDestination) {
                 OWSFailDebug(@"Delivery status proto is missing destination.");
                 continue;
             }
@@ -105,15 +104,15 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Delivery status proto is missing value.");
                 continue;
             }
-            NSString *recipientId = statusProto.destination;
+            SignalServiceAddress *recipientAddress = statusProto.destinationAddress;
             if (statusProto.unidentified) {
-                [udRecipientIds addObject:recipientId];
+                [udRecipientAddresses addObject:recipientAddress];
             } else {
-                [nonUdRecipientIds addObject:recipientId];
+                [nonUdRecipientAddresses addObject:recipientAddress];
             }
         }
-        _nonUdRecipientIds = [nonUdRecipientIds copy];
-        _udRecipientIds = [udRecipientIds copy];
+        _nonUdRecipientAddresses = [nonUdRecipientAddresses copy];
+        _udRecipientAddresses = [udRecipientAddresses copy];
     }
 
     return self;

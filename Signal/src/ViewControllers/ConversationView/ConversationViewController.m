@@ -2589,7 +2589,7 @@ typedef enum : NSUInteger {
     OWSAssertDebug(viewItem);
     OWSAssertDebug(quotedReply);
     OWSAssertDebug(quotedReply.timestamp > 0);
-    OWSAssertDebug(quotedReply.authorId.length > 0);
+    OWSAssertDebug(quotedReply.authorAddress.isValid);
 
     __block NSIndexPath *_Nullable indexPath;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -4744,7 +4744,7 @@ typedef enum : NSUInteger {
 
     BOOL isProfileAvatar = NO;
     NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:cnContact.identifier];
-    for (NSString *recipientId in contact.textSecureIdentifiers) {
+    for (NSString *recipientId in contact.registeredPhoneNumbers) {
         if (avatarImageData) {
             break;
         }

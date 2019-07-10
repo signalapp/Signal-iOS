@@ -526,8 +526,7 @@ NS_ASSUME_NONNULL_BEGIN
                               }
                               customRowHeight:UITableViewAutomaticDimension
                               actionBlock:^{
-                                  [weakSelf newConversationWithRecipientId:signalAccount.recipientAddress
-                                                                               .transitional_phoneNumber];
+                                  [weakSelf newConversationWithAddress:signalAccount.recipientAddress];
                               }]];
         }
 
@@ -559,19 +558,21 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAssertDebug(phoneNumber.length > 0);
 
         if ([self.nonContactAccountSet containsObject:phoneNumber]) {
+            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+
             [phoneNumbersSection
                 addItem:[OWSTableItem
                             itemWithCustomCellBlock:^{
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
-                                BOOL isBlocked = [helper
-                                    isSignalServiceAddressBlocked:phoneNumber.transitional_signalServiceAddress];
+                                BOOL isBlocked = [helper isSignalServiceAddressBlocked:address];
                                 if (isBlocked) {
                                     cell.accessoryMessage = NSLocalizedString(
                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                 }
-                                [cell configureWithRecipientAddress:phoneNumber.transitional_signalServiceAddress];
+                                [cell configureWithRecipientAddress:address];
 
-                                NSString *cellName = [NSString stringWithFormat:@"non_signal_contact.%@", phoneNumber];
+                                NSString *cellName =
+                                    [NSString stringWithFormat:@"non_signal_contact.%@", address.stringForDisplay];
                                 cell.accessibilityIdentifier
                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewContactThreadViewController, cellName);
 
@@ -579,7 +580,7 @@ NS_ASSUME_NONNULL_BEGIN
                             }
                             customRowHeight:UITableViewAutomaticDimension
                             actionBlock:^{
-                                [weakSelf newConversationWithRecipientId:phoneNumber];
+                                [weakSelf newConversationWithAddress:address];
                             }]];
         } else {
             NSString *text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
@@ -636,7 +637,7 @@ NS_ASSUME_NONNULL_BEGIN
                         customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             [weakSelf
-                                newConversationWithRecipientId:signalAccount.recipientAddress.transitional_phoneNumber];
+                                newConversationWithAddress:signalAccount.recipientAddress];
                         }]];
     }
     if (filteredSignalAccounts.count > 0) {
@@ -870,11 +871,10 @@ NS_ASSUME_NONNULL_BEGIN
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)newConversationWithRecipientId:(NSString *)recipientId
+- (void)newConversationWithAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
-    TSContactThread *thread =
-        [TSContactThread getOrCreateThreadWithContactAddress:recipientId.transitional_signalServiceAddress];
+    OWSAssertDebug(address.isValid);
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address];
     [self newConversationWithThread:thread];
 }
 
@@ -914,11 +914,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - NewNonContactConversationViewControllerDelegate
 
-- (void)recipientIdWasSelected:(NSString *)recipientId
+- (void)recipientAddressWasSelected:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [self newConversationWithRecipientId:recipientId];
+    [self newConversationWithAddress:address];
 }
 
 #pragma mark - UISearchBarDelegate

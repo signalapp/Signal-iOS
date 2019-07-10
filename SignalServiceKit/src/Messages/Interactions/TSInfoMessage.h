@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 @interface TSInfoMessage : TSMessage <OWSReadTracking>
 
 typedef NS_ENUM(NSInteger, TSInfoMessageType) {
@@ -25,11 +27,11 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageUserJoinedSignal
 };
 
-+ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId;
++ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
 
 @property (atomic, readonly) TSInfoMessageType messageType;
 @property (atomic, readonly, nullable) NSString *customMessage;
-@property (atomic, readonly, nullable) NSString *unregisteredRecipientId;
+@property (atomic, readonly, nullable) SignalServiceAddress *unregisteredAddress;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(nullable TSThread *)thread
@@ -70,8 +72,8 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
-         unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:));
+             unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:));
 
 // clang-format on
 
@@ -91,7 +93,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(TSThread *)thread
                       messageType:(TSInfoMessageType)infoMessage
-          unregisteredRecipientId:(NSString *)unregisteredRecipientId;
+          unregisteredAddress:(SignalServiceAddress *)unregisteredAddress;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                          inThread:(nullable TSThread *)thread

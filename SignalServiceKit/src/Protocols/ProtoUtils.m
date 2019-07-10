@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-+ (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread recipientId:(NSString *_Nullable)recipientId
++ (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread address:(SignalServiceAddress *_Nullable)address
 {
     OWSAssertDebug(thread);
 
@@ -35,8 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
     //
     // For Group threads, we want to include the profile key IFF the
     // recipient OR the group is in the whitelist.
-    if (recipientId.length > 0 &&
-        [self.profileManager isUserInProfileWhitelist:recipientId.transitional_signalServiceAddress]) {
+    if (address.isValid &&
+        [self.profileManager isUserInProfileWhitelist:address]) {
         return YES;
     } else if ([self.profileManager isThreadInProfileWhitelist:thread]) {
         return YES;
@@ -46,21 +46,21 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                          recipientId:(NSString *_Nullable)recipientId
+                          address:(SignalServiceAddress *_Nullable)address
                    dataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(dataMessageBuilder);
 
-    if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
+    if ([self shouldMessageHaveLocalProfileKey:thread address:address]) {
         [dataMessageBuilder setProfileKey:self.localProfileKey.keyData];
 
-        if (recipientId.length > 0) {
+        if (address.isValid) {
             // Once we've shared our profile key with a user (perhaps due to being
             // a member of a whitelisted group), make sure they're whitelisted.
             // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.profileManager addUserToProfileWhitelist:recipientId.transitional_signalServiceAddress];
+                [self.profileManager addUserToProfileWhitelist:address];
             });
         }
     }
@@ -74,21 +74,21 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                          recipientId:(NSString *)recipientId
+                          address:(SignalServiceAddress *)address
                    callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder
 {
     OWSAssertDebug(thread);
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(callMessageBuilder);
 
-    if ([self shouldMessageHaveLocalProfileKey:thread recipientId:recipientId]) {
+    if ([self shouldMessageHaveLocalProfileKey:thread address:address]) {
         [callMessageBuilder setProfileKey:self.localProfileKey.keyData];
 
         // Once we've shared our profile key with a user (perhaps due to being
         // a member of a whitelisted group), make sure they're whitelisted.
         // FIXME PERF avoid this dispatch. It's going to happen for *each* recipient in a group message.
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self.profileManager addUserToProfileWhitelist:recipientId.transitional_signalServiceAddress];
+            [self.profileManager addUserToProfileWhitelist:address];
         });
     }
 }

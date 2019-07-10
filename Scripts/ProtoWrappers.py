@@ -426,6 +426,8 @@ class MessageContext(BaseContext):
         # Prepare fields
         explict_fields = []
         implict_fields = []
+        uuid_field = None
+        e164_field = None
         for field in self.fields():
             field.type_swift = self.swift_type_for_field(field)
             field.type_swift_not_optional = self.swift_type_for_field(field, suppress_optional=True)
@@ -440,6 +442,12 @@ class MessageContext(BaseContext):
                 explict_fields.append(field)
             else:
                 implict_fields.append(field)
+
+            # See if we need to add SignalServiceAddress helpers
+            if field.name.endswith('Uuid') and field.proto_type == 'string':
+                uuid_field = field
+            elif field.name.endswith('E164') and field.proto_type == 'string':
+                e164_field = field
 
             # Ensure that no enum are required. 
             if self.is_field_an_enum(field) and field.is_required:
@@ -542,7 +550,80 @@ class MessageContext(BaseContext):
                     writer.pop_indent()
                     writer.add('}')
                     writer.newline()
-                
+              
+        if uuid_field and e164_field:
+            accessor_prefix = uuid_field.name.replace('Uuid', '')
+            address_accessor = accessor_prefix + 'Address'
+            address_has_accessor = 'hasValid' + accessor_prefix[0].upper() + accessor_prefix[1:]
+
+            # hasValidAddress
+            writer.add('@objc public var %s: Bool {' % address_has_accessor)
+            writer.push_indent()
+            writer.add('return %s != nil' % address_accessor)
+            writer.pop_indent()
+            writer.add('}')
+
+            # address accessor
+            writer.add('@objc public var %s: SignalServiceAddress? {' % address_accessor)
+            writer.push_indent()
+
+            writer.add('let uuidString: String? = {')
+            writer.push_indent()
+            writer.add('guard %s else { return nil }' % uuid_field.has_accessor_name())
+            writer.newline()
+            writer.add('guard let %s = %s else {' % (uuid_field.name_swift, uuid_field.name_swift))
+            writer.push_indent()
+            writer.add('owsFailDebug("%s was unexpectedly nil")' % uuid_field.name_swift)
+            writer.add('return nil')
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
+            writer.add('return %s' % uuid_field.name_swift)
+            writer.pop_indent()
+            writer.add('}()')
+            writer.newline()
+
+            writer.add('let phoneNumber: String? = {')
+            writer.push_indent()
+            writer.add('guard %s else {' % e164_field.has_accessor_name())
+            writer.push_indent()
+            writer.add('// Shouldn’t happen in prod yet')
+            writer.add('assert(FeatureFlags.allowUUIDOnlyContacts)')
+            writer.add('return nil')
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
+            writer.add('guard let %s = %s else {' % (e164_field.name_swift, e164_field.name_swift))
+            writer.push_indent()
+            writer.add('owsFailDebug("%s was unexpectedly nil")' % e164_field.name_swift)
+            writer.add('return nil')
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
+            writer.add('guard !%s.isEmpty else {' % e164_field.name_swift)
+            writer.push_indent()
+            writer.add('owsFailDebug("%s was unexpectedly empty")' % e164_field.name_swift)
+            writer.add('return nil')
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
+            writer.add('return %s' % e164_field.name_swift)
+            writer.pop_indent()
+            writer.add('}()')
+            writer.newline()
+
+            writer.add('let address = SignalServiceAddress(uuidString: uuidString, phoneNumber: phoneNumber)')
+            writer.add('guard address.isValid else {')
+            writer.push_indent()
+            writer.add('owsFailDebug("address was unexpectedly invalid")')
+            writer.add('return nil')
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
+            writer.add('return address')
+            writer.pop_indent()
+            writer.add('}')
+            writer.newline()
         
         # Initializer
         initializer_parameters = []

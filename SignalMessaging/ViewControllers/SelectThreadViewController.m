@@ -405,10 +405,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - NewNonContactConversationViewControllerDelegate
 
-- (void)recipientIdWasSelected:(NSString *)recipientId
+- (void)recipientAddressWasSelected:(SignalServiceAddress *)address
 {
     SignalAccount *signalAccount =
-        [self.contactsViewHelper fetchOrBuildSignalAccountForAddress:recipientId.transitional_signalServiceAddress];
+        [self.contactsViewHelper fetchOrBuildSignalAccountForAddress:address];
     [self signalAccountWasSelected:signalAccount];
 }
 

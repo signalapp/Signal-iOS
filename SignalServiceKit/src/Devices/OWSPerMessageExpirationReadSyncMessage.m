@@ -9,18 +9,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSPerMessageExpirationReadSyncMessage
 
-- (instancetype)initWithSenderId:(NSString *)senderId
-              messageIdTimestamp:(uint64_t)messageIdTimestamp
-                   readTimestamp:(uint64_t)readTimestamp
+- (instancetype)initWithSenderAddress:(SignalServiceAddress *)senderAddress
+                   messageIdTimestamp:(uint64_t)messageIdTimestamp
+                        readTimestamp:(uint64_t)readTimestamp
 {
-    OWSAssertDebug(senderId.length > 0 && messageIdTimestamp > 0);
+    OWSAssertDebug(senderAddress.isValid && messageIdTimestamp > 0);
 
     self = [super initWithTimestamp:readTimestamp];
     if (!self) {
         return self;
     }
 
-    _senderId = senderId;
+    _senderAddress = senderAddress;
     _messageIdTimestamp = messageIdTimestamp;
     _readTimestamp = readTimestamp;
 
@@ -29,7 +29,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
-    return [super initWithCoder:coder];
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    if (_senderAddress == nil) {
+        _senderAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:[coder decodeObjectForKey:@"senderId"]];
+        OWSAssertDebug(_senderAddress.isValid);
+    }
+
+    return self;
 }
 
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
@@ -37,7 +47,9 @@ NS_ASSUME_NONNULL_BEGIN
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
 
     SSKProtoSyncMessageMessageTimerReadBuilder *readProtoBuilder =
-        [SSKProtoSyncMessageMessageTimerRead builderWithSender:self.senderId timestamp:self.messageIdTimestamp];
+        [SSKProtoSyncMessageMessageTimerRead builderWithTimestamp:self.messageIdTimestamp];
+    readProtoBuilder.senderE164 = self.senderAddress.phoneNumber;
+    readProtoBuilder.senderUuid = self.senderAddress.uuidString;
     NSError *error;
     SSKProtoSyncMessageMessageTimerRead *_Nullable readProto = [readProtoBuilder buildAndReturnError:&error];
     if (error || !readProto) {

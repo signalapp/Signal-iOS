@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSQuotedMessageContentSource bodySource;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
+                    authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
                        bodySource:(TSQuotedMessageContentSource)bodySource
                    thumbnailImage:(nullable UIImage *)thumbnailImage
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Initializers
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
+                    authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
                        bodySource:(TSQuotedMessageContentSource)bodySource
                    thumbnailImage:(nullable UIImage *)thumbnailImage
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _timestamp = timestamp;
-    _authorId = authorId;
+    _authorAddress = authorAddress;
     _body = body;
     _bodySource = bodySource;
     _thumbnailImage = thumbnailImage;
@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return [[self alloc] initWithTimestamp:quotedMessage.timestamp
-                                  authorId:quotedMessage.authorId
+                             authorAddress:quotedMessage.authorAddress
                                       body:quotedMessage.body
                                 bodySource:quotedMessage.bodySource
                             thumbnailImage:thumbnailImage
@@ -132,18 +132,18 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint64_t timestamp = message.timestamp;
 
-    NSString *_Nullable authorId = ^{
+    SignalServiceAddress *_Nullable authorAddress = ^{
         if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-            return [TSAccountManager localNumber];
+            return TSAccountManager.sharedInstance.localAddress;
         } else if ([message isKindOfClass:[TSIncomingMessage class]]) {
-            return [(TSIncomingMessage *)message authorAddress].transitional_phoneNumber;
+            return [(TSIncomingMessage *)message authorAddress];
         } else {
             OWSFailDebug(@"Unexpected message type: %@", message.class);
-            return (NSString * _Nullable) nil;
+            return (SignalServiceAddress * _Nullable) nil;
         }
     }();
-    OWSAssertDebug(authorId.length > 0);
-    
+    OWSAssertDebug(authorAddress.isValid);
+
     if (conversationItem.contactShare) {
         ContactShareViewModel *contactShare = conversationItem.contactShare;
         
@@ -152,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
         // thumbnails. Until we address that we want to be consistent about neither showing nor sending the
         // contactShare avatar in the quoted reply.
         return [[self alloc] initWithTimestamp:timestamp
-                                      authorId:authorId
+                                 authorAddress:authorAddress
                                           body:[@"👤 " stringByAppendingString:contactShare.displayName]
                                     bodySource:TSQuotedMessageContentSourceLocal
                                 thumbnailImage:nil
@@ -182,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         return [[self alloc] initWithTimestamp:timestamp
-                                      authorId:authorId
+                                 authorAddress:authorAddress
                                           body:nil
                                     bodySource:TSQuotedMessageContentSourceLocal
                                 thumbnailImage:thumbnailImage
@@ -263,7 +263,7 @@ NS_ASSUME_NONNULL_BEGIN
         thumbnailImage = quotedAttachment.thumbnailImageSmallSync;
     }
     return [[self alloc] initWithTimestamp:timestamp
-                                  authorId:authorId
+                             authorAddress:authorAddress
                                       body:quotedText
                                 bodySource:TSQuotedMessageContentSourceLocal
                             thumbnailImage:thumbnailImage
@@ -282,7 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Legit usage of senderTimestamp to reference existing message
     return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
-                                             authorId:self.authorId
+                                        authorAddress:self.authorAddress
                                                  body:self.body
                           quotedAttachmentsForSending:attachments];
 }

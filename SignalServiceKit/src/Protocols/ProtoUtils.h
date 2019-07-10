@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class SSKProtoCallMessageBuilder;
 @class SSKProtoDataMessageBuilder;
+@class SignalServiceAddress;
 @class TSThread;
 
 @interface ProtoUtils : NSObject
@@ -13,13 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                          recipientId:(NSString *_Nullable)recipientId
+                              address:(SignalServiceAddress *_Nullable)address
                    dataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder;
 
 + (void)addLocalProfileKeyToDataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder;
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                          recipientId:(NSString *)recipientId
+                              address:(SignalServiceAddress *)address
                    callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder;
 
 @end

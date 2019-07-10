@@ -84,7 +84,7 @@ public struct InteractionRecord: SDSRecord {
     public let senderId: String?
     public let serverTimestamp: UInt64?
     public let sourceDeviceId: UInt32?
-    public let unregisteredRecipientId: String?
+    public let unregisteredAddress: Data?
     public let verificationState: OWSVerificationState?
     public let wasReceivedByUD: Bool?
 
@@ -148,7 +148,7 @@ public struct InteractionRecord: SDSRecord {
         case senderId
         case serverTimestamp
         case sourceDeviceId
-        case unregisteredRecipientId
+        case unregisteredAddress
         case verificationState
         case wasReceivedByUD
     }
@@ -214,7 +214,8 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
-            let unregisteredRecipientId: String? = record.unregisteredRecipientId
+            let unregisteredAddressSerialized: Data? = record.unregisteredAddress
+            let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
             let contactId: String = try SDSDeserialization.required(record.contactId, name: "contactId")
 
             return OWSAddToContactsOfferMessage(uniqueId: uniqueId,
@@ -239,7 +240,7 @@ extension TSInteraction {
                                                 infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                 messageType: messageType,
                                                 read: read,
-                                                unregisteredRecipientId: unregisteredRecipientId,
+                                                unregisteredAddress: unregisteredAddress,
                                                 contactId: contactId)
 
         case .addToProfileWhitelistOfferMessage:
@@ -273,7 +274,8 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
-            let unregisteredRecipientId: String? = record.unregisteredRecipientId
+            let unregisteredAddressSerialized: Data? = record.unregisteredAddress
+            let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
             let contactId: String = try SDSDeserialization.required(record.contactId, name: "contactId")
 
             return OWSAddToProfileWhitelistOfferMessage(uniqueId: uniqueId,
@@ -298,7 +300,7 @@ extension TSInteraction {
                                                         infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                         messageType: messageType,
                                                         read: read,
-                                                        unregisteredRecipientId: unregisteredRecipientId,
+                                                        unregisteredAddress: unregisteredAddress,
                                                         contactId: contactId)
 
         case .contactOffersInteraction:
@@ -354,7 +356,8 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
-            let unregisteredRecipientId: String? = record.unregisteredRecipientId
+            let unregisteredAddressSerialized: Data? = record.unregisteredAddress
+            let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
             let configurationDurationSeconds: UInt32 = try SDSDeserialization.required(record.configurationDurationSeconds, name: "configurationDurationSeconds")
             let configurationIsEnabled: Bool = try SDSDeserialization.required(record.configurationIsEnabled, name: "configurationIsEnabled")
             let createdByRemoteName: String? = record.createdByRemoteName
@@ -382,7 +385,7 @@ extension TSInteraction {
                                                                  infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                                  messageType: messageType,
                                                                  read: read,
-                                                                 unregisteredRecipientId: unregisteredRecipientId,
+                                                                 unregisteredAddress: unregisteredAddress,
                                                                  configurationDurationSeconds: configurationDurationSeconds,
                                                                  configurationIsEnabled: configurationIsEnabled,
                                                                  createdByRemoteName: createdByRemoteName,
@@ -477,7 +480,8 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
-            let unregisteredRecipientId: String? = record.unregisteredRecipientId
+            let unregisteredAddressSerialized: Data? = record.unregisteredAddress
+            let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
             let protocolVersion: UInt = try SDSDeserialization.required(record.protocolVersion, name: "protocolVersion")
             let senderId: String? = record.senderId
 
@@ -503,7 +507,7 @@ extension TSInteraction {
                                                     infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                     messageType: messageType,
                                                     read: read,
-                                                    unregisteredRecipientId: unregisteredRecipientId,
+                                                    unregisteredAddress: unregisteredAddress,
                                                     protocolVersion: protocolVersion,
                                                     senderId: senderId)
 
@@ -538,7 +542,8 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
-            let unregisteredRecipientId: String? = record.unregisteredRecipientId
+            let unregisteredAddressSerialized: Data? = record.unregisteredAddress
+            let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
             let isLocalChange: Bool = try SDSDeserialization.required(record.isLocalChange, name: "isLocalChange")
             let recipientAddressSerialized: Data? = record.recipientAddress
             let recipientAddress: SignalServiceAddress = try SDSDeserialization.unarchive(recipientAddressSerialized, name: "recipientAddress")
@@ -568,7 +573,7 @@ extension TSInteraction {
                                                      infoMessageSchemaVersion: infoMessageSchemaVersion,
                                                      messageType: messageType,
                                                      read: read,
-                                                     unregisteredRecipientId: unregisteredRecipientId,
+                                                     unregisteredAddress: unregisteredAddress,
                                                      isLocalChange: isLocalChange,
                                                      recipientAddress: recipientAddress,
                                                      verificationState: verificationState)
@@ -741,7 +746,8 @@ extension TSInteraction {
                throw SDSError.missingRequiredField
             }
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
-            let unregisteredRecipientId: String? = record.unregisteredRecipientId
+            let unregisteredAddressSerialized: Data? = record.unregisteredAddress
+            let unregisteredAddress: SignalServiceAddress? = try SDSDeserialization.optionalUnarchive(unregisteredAddressSerialized, name: "unregisteredAddress")
 
             return TSInfoMessage(uniqueId: uniqueId,
                                  receivedAtTimestamp: receivedAtTimestamp,
@@ -765,7 +771,7 @@ extension TSInteraction {
                                  infoMessageSchemaVersion: infoMessageSchemaVersion,
                                  messageType: messageType,
                                  read: read,
-                                 unregisteredRecipientId: unregisteredRecipientId)
+                                 unregisteredAddress: unregisteredAddress)
 
         case .interaction:
 
@@ -1233,7 +1239,7 @@ extension TSInteractionSerializer {
     static let senderIdColumn = SDSColumnMetadata(columnName: "senderId", columnType: .unicodeString, isOptional: true, columnIndex: 56)
     static let serverTimestampColumn = SDSColumnMetadata(columnName: "serverTimestamp", columnType: .int64, isOptional: true, columnIndex: 57)
     static let sourceDeviceIdColumn = SDSColumnMetadata(columnName: "sourceDeviceId", columnType: .int64, isOptional: true, columnIndex: 58)
-    static let unregisteredRecipientIdColumn = SDSColumnMetadata(columnName: "unregisteredRecipientId", columnType: .unicodeString, isOptional: true, columnIndex: 59)
+    static let unregisteredAddressColumn = SDSColumnMetadata(columnName: "unregisteredAddress", columnType: .blob, isOptional: true, columnIndex: 59)
     static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true, columnIndex: 60)
     static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true, columnIndex: 61)
 
@@ -1299,7 +1305,7 @@ extension TSInteractionSerializer {
         senderIdColumn,
         serverTimestampColumn,
         sourceDeviceIdColumn,
-        unregisteredRecipientIdColumn,
+        unregisteredAddressColumn,
         verificationStateColumn,
         wasReceivedByUDColumn
         ])
@@ -1685,10 +1691,10 @@ class TSInteractionSerializer: SDSSerializer {
         let senderId: String? = nil
         let serverTimestamp: UInt64? = nil
         let sourceDeviceId: UInt32? = nil
-        let unregisteredRecipientId: String? = nil
+        let unregisteredAddress: Data? = nil
         let verificationState: OWSVerificationState? = nil
         let wasReceivedByUD: Bool? = nil
 
-        return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentFilenameMap: attachmentFilenameMap, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, incomingMessageSchemaVersion: incomingMessageSchemaVersion, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds, perMessageExpirationHasExpired: perMessageExpirationHasExpired, perMessageExpireStartedAt: perMessageExpireStartedAt, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientStateMap: recipientStateMap, schemaVersion: schemaVersion, senderId: senderId, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, unregisteredRecipientId: unregisteredRecipientId, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
+        return InteractionRecord(id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentFilenameMap: attachmentFilenameMap, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, beforeInteractionId: beforeInteractionId, body: body, callSchemaVersion: callSchemaVersion, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactId: contactId, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorMessageSchemaVersion: errorMessageSchemaVersion, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasAddToContactsOffer: hasAddToContactsOffer, hasAddToProfileWhitelistOffer: hasAddToProfileWhitelistOffer, hasBlockOffer: hasBlockOffer, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, incomingMessageSchemaVersion: incomingMessageSchemaVersion, infoMessageSchemaVersion: infoMessageSchemaVersion, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, perMessageExpirationDurationSeconds: perMessageExpirationDurationSeconds, perMessageExpirationHasExpired: perMessageExpirationHasExpired, perMessageExpireStartedAt: perMessageExpireStartedAt, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientStateMap: recipientStateMap, schemaVersion: schemaVersion, senderId: senderId, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD)
     }
 }

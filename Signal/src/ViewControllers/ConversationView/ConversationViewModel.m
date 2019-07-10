@@ -1707,7 +1707,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     OWSAssertIsOnMainThread();
     OWSAssertDebug(quotedReply);
     OWSAssertDebug(quotedReply.timestamp > 0);
-    OWSAssertDebug(quotedReply.authorId.length > 0);
+    OWSAssertDebug(quotedReply.authorAddress.isValid);
 
     if (quotedReply.isRemotelySourced) {
         return nil;
@@ -1716,7 +1716,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     TSInteraction *_Nullable quotedInteraction;
     if (transaction.transitional_yapReadTransaction != nil) {
         quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedReply.timestamp
-                                                                  authorId:quotedReply.authorId
+                                                             authorAddress:quotedReply.authorAddress
                                                             threadUniqueId:self.thread.uniqueId
                                                                transaction:transaction.transitional_yapReadTransaction];
     }

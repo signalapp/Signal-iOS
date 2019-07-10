@@ -51,21 +51,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(phoneNumber.length > 0);
 
-    [self selectRecipient:phoneNumber];
+    [self selectRecipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
 }
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount
 {
     OWSAssertDebug(signalAccount);
 
-    [self selectRecipient:signalAccount.recipientAddress.transitional_phoneNumber];
+    [self selectRecipientAddress:signalAccount.recipientAddress];
 }
 
-- (void)selectRecipient:(NSString *)recipientId
+- (void)selectRecipientAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [self.nonContactConversationDelegate recipientIdWasSelected:recipientId];
+    [self.nonContactConversationDelegate recipientAddressWasSelected:address];
 }
 
 - (BOOL)shouldHideLocalNumber

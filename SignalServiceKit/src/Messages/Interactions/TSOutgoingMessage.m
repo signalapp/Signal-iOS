@@ -914,10 +914,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                              }];
 }
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientIds:(nullable NSArray<NSString *> *)udRecipientIds
-                                          nonUdRecipientIds:(nullable NSArray<NSString *> *)nonUdRecipientIds
-                                               isSentUpdate:(BOOL)isSentUpdate
-                                                transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:(nullable NSArray<NSString *> *)udRecipientIds
+                                          nonUdRecipientAddresses:(nullable NSArray<NSString *> *)nonUdRecipientIds
+                                                     isSentUpdate:(BOOL)isSentUpdate
+                                                      transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -1249,8 +1249,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     }
     TSQuotedMessage *quotedMessage = self.quotedMessage;
 
-    SSKProtoDataMessageQuoteBuilder *quoteBuilder =
-        [SSKProtoDataMessageQuote builderWithId:quotedMessage.timestamp author:quotedMessage.authorId];
+    SSKProtoDataMessageQuoteBuilder *quoteBuilder = [SSKProtoDataMessageQuote builderWithId:quotedMessage.timestamp];
+
+    quoteBuilder.authorE164 = quotedMessage.authorAddress.phoneNumber;
+    quoteBuilder.authorUuid = quotedMessage.authorAddress.uuidString;
 
     BOOL hasQuotedText = NO;
     BOOL hasQuotedAttachment = NO;
@@ -1294,7 +1296,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 }
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
-- (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId
+- (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address
 {
     OWSAssertDebug(self.thread);
     SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
@@ -1303,7 +1305,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return nil;
     }
 
-    [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId dataMessageBuilder:builder];
+    [ProtoUtils addLocalProfileKeyIfNecessary:self.thread address:address dataMessageBuilder:builder];
 
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
@@ -1317,7 +1319,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
     NSError *error;
-    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.address.transitional_phoneNumber];
+    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.address];
     if (error || !dataMessage) {
         OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;

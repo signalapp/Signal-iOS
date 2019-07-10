@@ -51,12 +51,12 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
-         unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
+             unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
     configurationDurationSeconds:(unsigned int)configurationDurationSeconds
           configurationIsEnabled:(BOOL)configurationIsEnabled
              createdByRemoteName:(nullable NSString *)createdByRemoteName
           createdInExistingGroup:(BOOL)createdInExistingGroup
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredRecipientId:configurationDurationSeconds:configurationIsEnabled:createdByRemoteName:createdInExistingGroup:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:configurationDurationSeconds:configurationIsEnabled:createdByRemoteName:createdInExistingGroup:));
 
 // clang-format on
 

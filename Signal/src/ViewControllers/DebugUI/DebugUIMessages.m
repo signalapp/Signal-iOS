@@ -3587,7 +3587,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                   createdInExistingGroup:NO]];
         }
 
-        [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread recipientId:@"+19174054215"]];
+        [result addObject:[TSInfoMessage
+                              userNotRegisteredMessageInThread:thread
+                                                       address:@"+19174054215".transitional_signalServiceAddress]];
 
         // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]

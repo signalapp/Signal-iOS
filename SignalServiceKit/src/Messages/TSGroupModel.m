@@ -97,7 +97,9 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
 {
     NSMutableArray *groupMemberPhoneNumbers = [NSMutableArray new];
     for (SignalServiceAddress *address in self.groupMembers) {
-        [groupMemberPhoneNumbers addObject:address.transitional_phoneNumber];
+        if (address.phoneNumber) {
+            [groupMemberPhoneNumbers addObject:address.transitional_phoneNumber];
+        }
     }
     return [groupMemberPhoneNumbers copy];
 }

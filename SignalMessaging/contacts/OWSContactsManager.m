@@ -727,9 +727,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertDebug(contact);
     OWSAssertDebug(phoneNumber.length > 0);
-    OWSAssertDebug([contact.textSecureIdentifiers containsObject:phoneNumber]);
+    OWSAssertDebug([contact.registeredPhoneNumbers containsObject:phoneNumber]);
 
-    if (contact.textSecureIdentifiers.count <= 1) {
+    if (contact.registeredPhoneNumbers.count <= 1) {
         return nil;
     }
 
@@ -738,9 +738,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     // 2. Find all phone numbers for this contact of the same type.
     NSMutableArray *phoneNumbersWithTheSameName = [NSMutableArray new];
-    for (NSString *textSecureIdentifier in contact.textSecureIdentifiers) {
-        if ([phoneNumberLabel isEqualToString:[contact nameForPhoneNumber:textSecureIdentifier]]) {
-            [phoneNumbersWithTheSameName addObject:textSecureIdentifier];
+    for (NSString *registeredPhoneNumber in contact.registeredPhoneNumbers) {
+        if ([phoneNumberLabel isEqualToString:[contact nameForPhoneNumber:registeredPhoneNumber]]) {
+            [phoneNumbersWithTheSameName addObject:registeredPhoneNumber];
         }
     }
 
