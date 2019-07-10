@@ -10,11 +10,8 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
         return SSKEnvironment.shared.signalServiceAddressCache
     }
 
-    fileprivate(set) var backingPhoneNumber: String?
-    fileprivate(set) var backingUuid: UUID?
-
-    @objc
-    public var phoneNumber: String? {
+    private(set) var backingPhoneNumber: String?
+    @objc public var phoneNumber: String? {
         guard let phoneNumber = backingPhoneNumber else {
             // If we weren't initialized with a phone number, but the phone number exists in the cache, use it
             guard let uuid = backingUuid,
@@ -30,8 +27,8 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
     }
 
     // TODO UUID: eventually this can be not optional
-    @objc
-    public var uuid: UUID? {
+    private(set) var backingUuid: UUID?
+    @objc public var uuid: UUID? {
         guard let uuid = backingUuid else {
             // If we weren't initialized with a uuid, but the uuid exists in the cache, use it
             guard let phoneNumber = backingPhoneNumber,
@@ -83,13 +80,13 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
             backingUuid = uuid
         }
 
+        backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid, phoneNumber: backingPhoneNumber)
+
         super.init()
 
         if !isValid {
             owsFailDebug("Unexpectedly initialized address with no identifier")
         }
-
-        SignalServiceAddress.cache.add(address: self)
     }
 
     @objc
@@ -118,6 +115,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
     public required init?(coder aDecoder: NSCoder) {
         backingUuid = aDecoder.decodeObject(forKey: "backingUuid") as? UUID
         backingPhoneNumber = aDecoder.decodeObject(forKey: "backingPhoneNumber") as? String
+        backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid, phoneNumber: backingPhoneNumber)
     }
 
     // MARK: -
@@ -144,9 +142,14 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
         return otherAddress.phoneNumber == phoneNumber && otherAddress.uuid == uuid
     }
 
-    public override var hash: Int {
-        return (phoneNumber?.hashValue ?? 0) ^ (uuid?.hashValue ?? 0)
-    }
+    // In order to maintain a consistent hash, we use a constant value generated
+    // by the cache that can be mapped back to the phone number OR the UUID.
+    //
+    // This allows us to dynamically update the backing values to maintain
+    // the most complete address object as we learn phone <-> UUID mapping,
+    // while also allowing addresses to live in hash tables.
+    private let backingHashValue: Int
+    public override var hash: Int { return backingHashValue }
 
     @objc
     public func compare(_ otherAddress: SignalServiceAddress) -> ComparisonResult {
@@ -230,23 +233,66 @@ class SignalServiceAddressCache: NSObject {
     private var uuidToPhoneNumberCache = [UUID: String]()
     private var phoneNumberToUUIDCache = [String: UUID]()
 
+    private var uuidToHashValueCache = [UUID: Int]()
+    private var phoneNumberToHashValueCache = [String: Int]()
+
     override init() {
         super.init()
         AppReadiness.runNowOrWhenAppWillBecomeReady { [weak self] in
             SDSDatabaseStorage.shared.asyncRead { transaction in
                 SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
-                    self?.add(address: recipient.address)
+                    let recipientUuid: UUID?
+                    if let uuidString = recipient.recipientUUID {
+                        recipientUuid = UUID(uuidString: uuidString)
+                    } else {
+                        recipientUuid = nil
+                    }
+                    self?.hashAndCache(uuid: recipientUuid, phoneNumber: recipient.recipientPhoneNumber)
                 }
             }
         }
     }
 
-    func add(address: SignalServiceAddress) {
-        serialQueue.async {
-            if let uuid = address.backingUuid, let phoneNumber = address.backingPhoneNumber {
-                self.uuidToPhoneNumberCache[uuid] = phoneNumber
-                self.phoneNumberToUUIDCache[phoneNumber] = uuid
+    /// Adds a uuid <-> phone number mapping to the cache (if necessary)
+    /// and returns a constant hash value that can be used to represent
+    /// either of these values going forward for the lifetime of the cache.
+    @discardableResult
+    func hashAndCache(uuid: UUID?, phoneNumber: String?) -> Int {
+        return serialQueue.sync {
+            // If we have a UUID and a phone number, cache the mapping.
+            if let uuid = uuid, let phoneNumber = phoneNumber {
+                uuidToPhoneNumberCache[uuid] = phoneNumber
+                phoneNumberToUUIDCache[phoneNumber] = uuid
             }
+
+            // Generate or fetch the unique hash value for this address.
+
+            let hash: Int
+
+            // If we already have a hash for the UUID, use it.
+            if let uuid = uuid, let uuidHash = uuidToHashValueCache[uuid] {
+                hash = uuidHash
+
+            // Otherwise, if we already have a hash for the phone number, use it.
+            } else if let phoneNumber = phoneNumber, let phoneNumberHash = phoneNumberToHashValueCache[phoneNumber] {
+                hash = phoneNumberHash
+
+            // Else, create a fresh hash that will be used going forward.
+            } else {
+                hash = UUID().hashValue
+            }
+
+            // Cache the hash we're using to ensure it remains constant across future addresses.
+
+            if let phoneNumber = phoneNumber {
+                phoneNumberToHashValueCache[phoneNumber] = hash
+            }
+
+            if let uuid = uuid {
+                uuidToHashValueCache[uuid] = hash
+            }
+
+            return hash
         }
     }
 
