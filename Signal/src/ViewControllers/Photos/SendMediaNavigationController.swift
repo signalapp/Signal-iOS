@@ -230,14 +230,13 @@ class SendMediaNavigationController: OWSNavigationController {
         return vc
     }()
 
-    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem],
-                                            options: AttachmentApprovalViewControllerOptions) {
+    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem]) {
         guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
             owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(options: options,
+        let approvalViewController = AttachmentApprovalViewController(options: [],
                                                                       attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
@@ -355,14 +354,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         if isInBatchSelectMode {
             updateButtons(topViewController: photoCaptureViewController)
         } else {
-            var options: AttachmentApprovalViewControllerOptions = []
-            // For now, only still images can have per-message expiration.
-            if FeatureFlags.perMessageExpiration,
-                cameraCaptureAttachment.attachmentApprovalItem.attachment.isValidImage {
-                options = [.canToggleExpiration]
-            }
-            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem],
-                                       options: options)
+            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem])
         }
     }
 
@@ -404,8 +396,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
             when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises).map { attachmentApprovalItems in
                 Logger.debug("built all attachments")
                 modal.dismiss {
-                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems,
-                                                    options: [.canAddMore])
+                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems)
                 }
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")

@@ -63,7 +63,25 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     // MARK: - Properties
 
-    private let options: AttachmentApprovalViewControllerOptions
+    private let receivedOptions: AttachmentApprovalViewControllerOptions
+
+    private var options: AttachmentApprovalViewControllerOptions {
+        var options = receivedOptions
+
+        // For now, only still images can have per-message expiration.
+        if FeatureFlags.perMessageExpiration,
+            attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
+            let firstItem = attachmentApprovalItemCollection.attachmentApprovalItems.first,
+            firstItem.attachment.isValidImage {
+            options.insert(.canToggleExpiration)
+        }
+
+        if !preferences.isPerMessageExpirationEnabled() {
+            options.insert(.canAddMore)
+        }
+
+        return options
+    }
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
 
@@ -85,15 +103,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     required public init(options: AttachmentApprovalViewControllerOptions,
                          attachmentApprovalItems: [AttachmentApprovalItem]) {
         assert(attachmentApprovalItems.count > 0)
-        self.options = options
+        self.receivedOptions = options
         self.bottomToolView = AttachmentApprovalInputAccessoryView(options: options)
 
         self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(attachmentApprovalItems: attachmentApprovalItems, isAddMoreVisible: options.contains(.canAddMore))
 
-        let options: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
+        let pageOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
-                   options: options)
+                   options: pageOptions)
         self.dataSource = self
         self.delegate = self
         bottomToolView.delegate = self
@@ -222,6 +240,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         updateInputAccessory()
 
         touchInterceptorView.isHidden = !isEditingCaptions
+
+        updateMediaRail()
+        bottomToolView.options = options
+        attachmentApprovalItemCollection.isAddMoreVisible = options.contains(.canAddMore)
     }
 
     // MARK: - Input Accessory
@@ -570,19 +592,22 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                 cell.approvalRailCellDelegate = self
                 return cell
             default:
-                owsFailDebug("unexpted rail item type: \(railItem)")
+                owsFailDebug("unexpected rail item type: \(railItem)")
                 return GalleryRailCellView()
             }
         }
 
-        galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
-                                           focusedItem: currentItem,
-                                           cellViewBuilder: cellViewBuilder)
-
+        // configureCellViews will set galleryRailView.isHidden.
         if options.contains(.canAddMore) {
-            galleryRailView.isHidden = false
+            galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
+                                               focusedItem: currentItem,
+                                               cellViewBuilder: cellViewBuilder,
+                                               animated: false)
         } else if attachmentApprovalItemCollection.attachmentApprovalItems.count > 1 {
-            galleryRailView.isHidden = false
+            galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
+                                               focusedItem: currentItem,
+                                               cellViewBuilder: cellViewBuilder,
+                                               animated: false)
         } else {
             galleryRailView.isHidden = true
         }
@@ -747,6 +772,10 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
 
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar) {
         approvalDelegate?.attachmentApproval(self, didChangeMessageText: attachmentTextToolbar.messageText)
+    }
+
+    func attachmentTextToolbarDidTogglePerMessageExpiration(_ attachmentTextToolbar: AttachmentTextToolbar) {
+        updateContents()
     }
 }
 
