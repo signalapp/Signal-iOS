@@ -135,7 +135,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
                             read:(BOOL)read
-         unregisteredRecipientId:(nullable NSString *)unregisteredRecipientId
+             unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -164,7 +164,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     _infoMessageSchemaVersion = infoMessageSchemaVersion;
     _messageType = messageType;
     _read = read;
-    _unregisteredRecipientId = unregisteredRecipientId;
+    _unregisteredAddress = unregisteredAddress;
 
     return self;
 }
