@@ -1180,12 +1180,8 @@ typedef enum : NSUInteger {
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
     int blockedMemberCount = 0;
-    NSArray<NSString *> *blockedPhoneNumbers = [self.blockingManager blockedPhoneNumbers];
-    NSArray<NSString *> *blockedUUIDs = [self.blockingManager blockedUUIDs];
     for (SignalServiceAddress *address in groupThread.groupModel.groupMembers) {
-        if (address.phoneNumber && [blockedPhoneNumbers containsObject:address.phoneNumber]) {
-            blockedMemberCount++;
-        } else if (address.uuidString && [blockedUUIDs containsObject:address.uuidString]) {
+        if ([self.blockingManager isAddressBlocked:address]) {
             blockedMemberCount++;
         }
     }
