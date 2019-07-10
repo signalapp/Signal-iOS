@@ -191,7 +191,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                   inThread:thread
                                messageType:TSInfoMessageUserNotRegistered
-                   unregisteredAddress:address];
+                       unregisteredAddress:address];
 }
 
 - (OWSInteractionType)interactionType
