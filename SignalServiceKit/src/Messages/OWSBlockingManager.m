@@ -110,6 +110,20 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 #pragma mark - Contact Blocking
 
+- (NSSet<SignalServiceAddress *> *)blockedAddresses
+{
+    NSMutableSet *blockedAddresses = [NSMutableSet new];
+    for (NSString *phoneNumber in self.blockedPhoneNumbers) {
+        [blockedAddresses addObject:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
+    }
+    for (NSUUID *uuid in self.blockedUUIDs) {
+        [blockedAddresses addObject:[[SignalServiceAddress alloc] initWithUuid:uuid phoneNumber:nil]];
+    }
+    // TODO UUID - optimize this. Maybe blocking manager should store a SignalServiceAddressSet as
+    // it's state instead of the two separate sets.
+    return blockedAddresses;
+}
+
 - (void)addBlockedAddress:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);

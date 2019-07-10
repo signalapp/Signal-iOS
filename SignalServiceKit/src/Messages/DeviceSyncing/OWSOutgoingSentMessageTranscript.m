@@ -94,23 +94,23 @@ NS_ASSUME_NONNULL_BEGIN
     [sentBuilder setMessage:dataMessage];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 
-    // TODO UUID – set destinationUuid
-    for (NSString *recipientId in self.message.sentRecipientIds) {
+    for (SignalServiceAddress *recipientAddress in self.message.sentRecipientAddresses) {
         TSOutgoingMessageRecipientState *_Nullable recipientState =
-            [self.message recipientStateForRecipientId:recipientId];
+            [self.message recipientStateForAddress:recipientAddress];
         if (!recipientState) {
-            OWSFailDebug(@"missing recipient state for: %@", recipientId);
+            OWSFailDebug(@"missing recipient state for: %@", recipientAddress);
             continue;
         }
         if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
-            OWSFailDebug(@"unexpected recipient state for: %@", recipientId);
+            OWSFailDebug(@"unexpected recipient state for: %@", recipientAddress);
             continue;
         }
 
         NSError *error;
         SSKProtoSyncMessageSentUnidentifiedDeliveryStatusBuilder *statusBuilder =
             [SSKProtoSyncMessageSentUnidentifiedDeliveryStatus builder];
-        [statusBuilder setDestinationE164:recipientId];
+        [statusBuilder setDestinationE164:recipientAddress.phoneNumber];
+        [statusBuilder setDestinationUuid:recipientAddress.uuidString];
         [statusBuilder setUnidentified:recipientState.wasSentByUD];
         SSKProtoSyncMessageSentUnidentifiedDeliveryStatus *_Nullable status =
             [statusBuilder buildAndReturnError:&error];

@@ -4404,16 +4404,14 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                             perMessageExpirationDurationSeconds:0];
                 [message anyInsertWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
-                [message updateWithSentRecipient:address.transitional_phoneNumber
-                                     wasSentByUD:NO
-                                     transaction:transaction];
+                [message updateWithSentRecipient:address wasSentByUD:NO transaction:transaction];
                 if (transaction.transitional_yapWriteTransaction) {
-                    [message updateWithDeliveredRecipient:address.transitional_phoneNumber
+                    [message updateWithDeliveredRecipient:address
                                         deliveryTimestamp:timestamp
                                               transaction:transaction.transitional_yapWriteTransaction];
-                    [message updateWithReadRecipientId:address.transitional_phoneNumber
-                                         readTimestamp:timestamp.unsignedLongLongValue
-                                           transaction:transaction];
+                    [message updateWithReadRecipient:address
+                                       readTimestamp:timestamp.unsignedLongLongValue
+                                         transaction:transaction];
                 } else {
                     OWSFailDebug(@"failure: not yet implemented for GRDB");
                 }
@@ -4765,7 +4763,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
         OWSAssertDebug(address.isValid);
         if (transaction.transitional_yapWriteTransaction) {
-            [message updateWithDeliveredRecipient:address.transitional_phoneNumber
+            [message updateWithDeliveredRecipient:address
                                 deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
                                       transaction:transaction.transitional_yapWriteTransaction];
         } else {
@@ -4776,9 +4774,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
         OWSAssertDebug(address.isValid);
         if (transaction.transitional_yapWriteTransaction) {
-            [message updateWithReadRecipientId:address.transitional_phoneNumber
-                                 readTimestamp:[NSDate ows_millisecondTimeStamp]
-                                   transaction:transaction];
+            [message updateWithReadRecipient:address
+                               readTimestamp:[NSDate ows_millisecondTimeStamp]
+                                 transaction:transaction];
         } else {
             OWSFailDebug(@"failure: not yet implemented for GRDB");
         }

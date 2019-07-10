@@ -197,20 +197,11 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSArray<NSString *> *transitional_udRecipientPhoneNumbers =
-        [transcript.udRecipientAddresses map:^NSString *(SignalServiceAddress *address) {
-            return address.transitional_phoneNumber;
-        }];
-    NSArray<NSString *> *transitional_nonUdRecipientPhoneNumbers =
-        [transcript.nonUdRecipientAddresses map:^NSString *(SignalServiceAddress *address) {
-            return address.transitional_phoneNumber;
-        }];
-
     [outgoingMessage saveWithTransaction:transaction];
-    [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transitional_udRecipientPhoneNumbers
-                                                       nonUdRecipientIds:transitional_nonUdRecipientPhoneNumbers
-                                                            isSentUpdate:NO
-                                                             transaction:transaction];
+    [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:transcript.udRecipientAddresses
+                                                       nonUdRecipientAddresses:transcript.nonUdRecipientAddresses
+                                                                  isSentUpdate:NO
+                                                                   transaction:transaction];
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:outgoingMessage
                                                      expirationStartedAt:transcript.expirationStartedAt
                                                              transaction:transaction.asAnyWrite];
@@ -327,19 +318,10 @@ NS_ASSUME_NONNULL_BEGIN
             (int)transcript.nonUdRecipientAddresses.count,
             (int)transcript.udRecipientAddresses.count);
 
-        NSArray<NSString *> *transitional_udRecipientPhoneNumbers =
-            [transcript.udRecipientAddresses map:^NSString *(SignalServiceAddress *address) {
-                return address.transitional_phoneNumber;
-            }];
-        NSArray<NSString *> *transitional_nonUdRecipientPhoneNumbers =
-            [transcript.nonUdRecipientAddresses map:^NSString *(SignalServiceAddress *address) {
-                return address.transitional_phoneNumber;
-            }];
-
-        [message updateWithWasSentFromLinkedDeviceWithUDRecipientIds:transitional_udRecipientPhoneNumbers
-                                                   nonUdRecipientIds:transitional_nonUdRecipientPhoneNumbers
-                                                        isSentUpdate:YES
-                                                         transaction:transaction];
+        [message updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:transcript.udRecipientAddresses
+                                                   nonUdRecipientAddresses:transcript.nonUdRecipientAddresses
+                                                              isSentUpdate:YES
+                                                               transaction:transaction];
 
         messageFound = YES;
     }
