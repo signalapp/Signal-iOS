@@ -632,7 +632,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 recipient:recipient
                 senderCertificate:senderCertificate
                 udAccess:theirUDAccess
-                localNumber:self.tsAccountManager.localNumber
+                localAddress:self.tsAccountManager.localAddress
                 success:^{
                     // The value doesn't matter, we just need any non-NSError value.
                     resolve(@(1));
@@ -1025,7 +1025,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return messageSend.failure(deviceMessagesError);
     }
 
-    if (messageSend.isLocalNumber) {
+    if (messageSend.isLocalAddress) {
         OWSAssertDebug([message isKindOfClass:[OWSOutgoingSyncMessage class]]);
         // Messages sent to the "local number" should be sync messages.
         //
@@ -1056,7 +1056,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 OWSFailDebug(@"Sync device message missing destination: %@", deviceMessage);
                 continue;
             }
-            if (![destination isEqualToString:messageSend.localNumber]) {
+            if (!destination.transitional_signalServiceAddress.isLocalAddress) {
                 OWSFailDebug(@"Sync device message has invalid destination: %@", deviceMessage);
                 continue;
             }
@@ -1080,8 +1080,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             dispatch_async([OWSDispatch sendingQueue], ^{
                 // This emulates the completion logic of an actual successful send (see below).
                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                    [message updateWithSkippedRecipient:messageSend.localNumber.transitional_signalServiceAddress
-                                            transaction:transaction];
+                    [message updateWithSkippedRecipient:messageSend.localAddress transaction:transaction];
                 }];
                 messageSend.success();
             });
@@ -1212,7 +1211,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSLogInfo(@"successfully sent message: %@ timestamp: %llu, wasSentByUD: %d",
                messageSend.message.class, messageSend.message.timestamp, wasSentByUD);
 
-    if (messageSend.isLocalNumber && deviceMessages.count == 0) {
+    if (messageSend.isLocalAddress && deviceMessages.count == 0) {
         OWSLogInfo(@"Sent a message with no device messages; clearing 'mayHaveLinkedDevices'.");
         // In order to avoid skipping necessary sync messages, the default value
         // for mayHaveLinkedDevices is YES.  Once we've successfully sent a
@@ -1329,7 +1328,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             [self handleMismatchedDevicesWithResponseJson:responseJson recipient:recipient completion:retrySend];
 
-            if (messageSend.isLocalNumber) {
+            if (messageSend.isLocalAddress) {
                 // Don't use websocket; it may have obsolete cached state.
                 [messageSend setHasWebsocketSendFailed:YES];
             }
@@ -1353,10 +1352,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             [self handleStaleDevicesWithResponseJson:responseJson
-                                         recipientId:recipient.address.transitional_phoneNumber
+                                    recipientAddress:recipient.address
                                           completion:retrySend];
 
-            if (messageSend.isLocalNumber) {
+            if (messageSend.isLocalAddress) {
                 // Don't use websocket; it may have obsolete cached state.
                 [messageSend setHasWebsocketSendFailed:YES];
             }
@@ -1477,11 +1476,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSOutgoingSentMessageTranscript *sentMessageTranscript =
         [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message isRecipientUpdate:isRecipientUpdate];
 
-    NSString *recipientId = self.tsAccountManager.localNumber;
+    SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
     __block SignalRecipient *recipient;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        recipient = [SignalRecipient markRecipientAsRegisteredAndGet:recipientId.transitional_signalServiceAddress
-                                                         transaction:transaction];
+        recipient = [SignalRecipient markRecipientAsRegisteredAndGet:localAddress transaction:transaction];
     }];
 
     OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:sentMessageTranscript
@@ -1489,7 +1487,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         recipient:recipient
         senderCertificate:nil
         udAccess:nil
-        localNumber:self.tsAccountManager.localNumber
+        localAddress:localAddress
         success:^{
             OWSLogInfo(@"Successfully sent sync transcript.");
 
@@ -1519,16 +1517,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSLogDebug(
         @"built message: %@ plainTextData.length: %lu", [messageSend.message class], (unsigned long)plainText.length);
 
-    OWSLogVerbose(@"building device messages for: %@ %@ (isLocalNumber: %d, isUDSend: %d)",
+    OWSLogVerbose(@"building device messages for: %@ %@ (isLocalAddress: %d, isUDSend: %d)",
         recipient.address,
         recipient.devices,
-        messageSend.isLocalNumber,
+        messageSend.isLocalAddress,
         messageSend.isUDSend);
 
     NSMutableArray<NSNumber *> *deviceIds = [recipient.devices mutableCopy];
     OWSAssertDebug(deviceIds);
 
-    if (messageSend.isLocalNumber) {
+    if (messageSend.isLocalAddress) {
         [deviceIds removeObject:@(OWSDevicePrimaryDeviceId)];
     }
 
@@ -1781,7 +1779,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     BOOL isOnline = message.isOnline;
     OWSMessageServiceParams *messageParams =
         [[OWSMessageServiceParams alloc] initWithType:messageType
-                                          recipientId:recipientAddress.transitional_phoneNumber
+                                              address:recipientAddress
                                                device:[deviceId intValue]
                                               content:serializedMessage
                                              isSilent:isSilent
@@ -1836,7 +1834,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 // Called when the server indicates that the devices no longer exist - e.g. when the remote recipient has reinstalled.
 - (void)handleStaleDevicesWithResponseJson:(NSDictionary *)responseJson
-                               recipientId:(NSString *)identifier
+                          recipientAddress:(SignalServiceAddress *)address
                                 completion:(void (^)(void))completionHandler
 {
     dispatch_async([OWSDispatch sendingQueue], ^{
@@ -1849,9 +1847,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
             for (NSUInteger i = 0; i < [devices count]; i++) {
                 int deviceNumber = [devices[i] intValue];
-                [self.sessionStore deleteSessionForAddress:identifier.transitional_signalServiceAddress
-                                                  deviceId:deviceNumber
-                                               transaction:transaction];
+                [self.sessionStore deleteSessionForAddress:address deviceId:deviceNumber transaction:transaction];
             }
         }];
         completionHandler();

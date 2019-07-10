@@ -7,6 +7,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 /**
  * Contstructs the per-device-message parameters used when submitting a message to
  * the Signal Web Service.
@@ -25,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL online;
 
 - (instancetype)initWithType:(TSWhisperMessageType)type
-                 recipientId:(NSString *)destination
+                     address:(SignalServiceAddress *)address
                       device:(int)deviceId
                      content:(NSData *)content
                     isSilent:(BOOL)isSilent

@@ -14,7 +14,6 @@ extern const int32_t kGroupIdLength;
 @interface TSGroupModel : MTLModel
 
 @property (nonatomic) NSArray<SignalServiceAddress *> *groupMembers;
-@property (nonatomic, readonly) NSArray<NSString *> *transitional_groupMemberPhoneNumbers;
 @property (nullable, readonly, nonatomic) NSString *groupName;
 @property (readonly, nonatomic) NSData *groupId;
 
