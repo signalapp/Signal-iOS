@@ -38,10 +38,10 @@ public class OWSMessageSend: NSObject {
     public var senderCertificate: SMKSenderCertificate?
 
     @objc
-    public let localNumber: String
+    public let localAddress: SignalServiceAddress
 
     @objc
-    public let isLocalNumber: Bool
+    public let isLocalAddress: Bool
 
     @objc
     public let success: () -> Void
@@ -55,22 +55,16 @@ public class OWSMessageSend: NSObject {
                 recipient: SignalRecipient,
                 senderCertificate: SMKSenderCertificate?,
                 udAccess: OWSUDAccess?,
-                localNumber: String,
+                localAddress: SignalServiceAddress,
                 success: @escaping () -> Void,
                 failure: @escaping (Error) -> Void) {
         self.message = message
         self.thread = thread
         self.recipient = recipient
-        self.localNumber = localNumber
+        self.localAddress = localAddress
         self.senderCertificate = senderCertificate
         self.udAccess = udAccess
-
-        if let recipientId = recipient.uniqueId {
-            self.isLocalNumber = localNumber == recipientId
-        } else {
-            owsFailDebug("SignalRecipient missing recipientId")
-            self.isLocalNumber = false
-        }
+        self.isLocalAddress = recipient.address.isLocalAddress
 
         self.success = success
         self.failure = failure

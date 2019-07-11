@@ -190,6 +190,25 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
     }
 
     @objc
+    public var serviceIdentifier: String? {
+        if FeatureFlags.allowUUIDOnlyContacts {
+            guard let uuidString = uuidString else {
+                owsFailDebug("uuidString was unexpectedly nil")
+                return phoneNumber
+            }
+
+            return uuidString
+        } else {
+            guard let phoneNumber = phoneNumber else {
+                owsFailDebug("phoneNumber was unexpectedly nil")
+                return uuidString
+            }
+
+            return phoneNumber
+        }
+    }
+
+    @objc
     override public var description: String {
         let redactedUUID: String?
         if let uuid = uuid {

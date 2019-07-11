@@ -5,6 +5,7 @@
 #import "OWSMessageServiceParams.h"
 #import "TSConstants.h"
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,13 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithType:(TSWhisperMessageType)type
-                 recipientId:(NSString *)destination
+                     address:(SignalServiceAddress *)address
                       device:(int)deviceId
                      content:(NSData *)content
                     isSilent:(BOOL)isSilent
                     isOnline:(BOOL)isOnline
               registrationId:(int)registrationId
 {
+    OWSAssertDebug(address.isValid);
     self = [super init];
 
     if (!self) {
@@ -30,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _type = type;
-    _destination = destination;
+    _destination = address.serviceIdentifier;
+    OWSAssertDebug(_destination != nil);
     _destinationDeviceId = deviceId;
     _destinationRegistrationId = registrationId;
     _content = [content base64EncodedString];

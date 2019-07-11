@@ -70,10 +70,10 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                                 captchaToken:(nullable NSString *)captchaToken
                                                    transport:(TSVerificationTransport)transport;
 
-+ (TSRequest *)submitMessageRequestWithRecipient:(NSString *)recipientId
-                                        messages:(NSArray *)messages
-                                       timeStamp:(uint64_t)timeStamp
-                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
++ (TSRequest *)submitMessageRequestWithAddress:(SignalServiceAddress *)recipientAddress
+                                      messages:(NSArray *)messages
+                                     timeStamp:(uint64_t)timeStamp
+                                   udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 
 + (TSRequest *)verifyCodeRequestWithVerificationCode:(NSString *)verificationCode
                                            forNumber:(NSString *)phoneNumber
@@ -86,9 +86,9 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)currentSignedPreKeyRequest;
 
-+ (TSRequest *)recipientPrekeyRequestWithRecipient:(NSString *)recipientNumber
-                                          deviceId:(NSString *)deviceId
-                                       udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
++ (TSRequest *)recipientPreKeyRequestWithAddress:(SignalServiceAddress *)recipientAddress
+                                        deviceId:(NSString *)deviceId
+                                     udAccessKey:(nullable SMKUDAccessKey *)udAccessKey;
 
 + (TSRequest *)registerSignedPrekeyRequestWithSignedPreKeyRecord:(SignedPreKeyRecord *)signedPreKey;
 
