@@ -481,8 +481,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     // recipient list from current thread state.
     NSArray<SignalServiceAddress *> *recipientAddresses;
     if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        OWSAssertDebug(TSAccountManager.sharedInstance.localAddress);
-        recipientAddresses = @[ TSAccountManager.sharedInstance.localAddress ];
+        OWSAssertDebug(TSAccountManager.localAddress);
+        recipientAddresses = @[ TSAccountManager.localAddress ];
     } else {
         recipientAddresses = thread.recipientAddresses;
     }
@@ -996,11 +996,11 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                            }];
 }
 
-- (void)updateWithSendingToSingleGroupRecipient:(NSString *)singleGroupRecipient
+- (void)updateWithSendingToSingleGroupRecipient:(SignalServiceAddress *)singleGroupRecipient
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    OWSAssertDebug(singleGroupRecipient.length > 0);
+    OWSAssertDebug(singleGroupRecipient.isValid);
 
     [self applyChangeToSelfAndLatestCopy:transaction
                              changeBlock:^(TSOutgoingMessage *message) {
@@ -1008,7 +1008,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                      [TSOutgoingMessageRecipientState new];
                                  recipientState.state = OWSOutgoingMessageRecipientStateSending;
                                  [message setRecipientAddressStates:@ {
-                                     singleGroupRecipient.transitional_signalServiceAddress : recipientState,
+                                     singleGroupRecipient : recipientState,
                                  }];
                              }];
 }

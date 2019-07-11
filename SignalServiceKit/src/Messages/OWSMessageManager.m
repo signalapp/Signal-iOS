@@ -299,25 +299,25 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Old-style delivery notices don't include a "delivery timestamp".
-    [self processDeliveryReceiptsFromRecipientId:envelope.sourceE164
-                                  sentTimestamps:@[
-                                      @(envelope.timestamp),
-                                  ]
-                               deliveryTimestamp:nil
-                                     transaction:transaction];
+    [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
+                                sentTimestamps:@[
+                                    @(envelope.timestamp),
+                                ]
+                             deliveryTimestamp:nil
+                                   transaction:transaction];
 }
 
 // deliveryTimestamp is an optional parameter, since legacy
 // delivery receipts don't have a "delivery timestamp".  Those
 // messages repurpose the "timestamp" field to indicate when the
 // corresponding message was originally sent.
-- (void)processDeliveryReceiptsFromRecipientId:(NSString *)recipientId
-                                sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
-                             deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
-                                   transaction:(SDSAnyWriteTransaction *)transaction
+- (void)processDeliveryReceiptsFromRecipient:(SignalServiceAddress *)address
+                              sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
+                           deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                                 transaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (recipientId.length < 1) {
-        OWSFailDebug(@"Empty recipientId.");
+    if (!address.isValid) {
+        OWSFailDebug(@"invalid recipient.");
         return;
     }
     if (sentTimestamps.count < 1) {
@@ -349,7 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
                     timestamp);
             }
             for (TSOutgoingMessage *outgoingMessage in messages) {
-                [outgoingMessage updateWithDeliveredRecipient:recipientId.transitional_signalServiceAddress
+                [outgoingMessage updateWithDeliveredRecipient:address
                                             deliveryTimestamp:deliveryTimestamp
                                                   transaction:transaction.transitional_yapWriteTransaction];
             }
@@ -387,9 +387,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // TODO UUID: dedupe based on sourceAddress.
     BOOL duplicateEnvelope = [InteractionFinder existsIncomingMessageWithTimestamp:envelope.timestamp
-                                                                          sourceId:envelope.sourceE164
+                                                                           address:envelope.sourceAddress
                                                                     sourceDeviceId:envelope.sourceDevice
                                                                        transaction:transaction];
 
@@ -617,16 +616,16 @@ NS_ASSUME_NONNULL_BEGIN
     switch (receiptMessage.unwrappedType) {
         case SSKProtoReceiptMessageTypeDelivery:
             OWSLogVerbose(@"Processing receipt message with delivery receipts.");
-            [self processDeliveryReceiptsFromRecipientId:envelope.sourceE164
-                                          sentTimestamps:sentTimestamps
-                                       deliveryTimestamp:@(envelope.timestamp)
-                                             transaction:transaction];
+            [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
+                                        sentTimestamps:sentTimestamps
+                                     deliveryTimestamp:@(envelope.timestamp)
+                                           transaction:transaction];
             return;
         case SSKProtoReceiptMessageTypeRead:
             OWSLogVerbose(@"Processing receipt message with read receipts.");
-            [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipientId:envelope.sourceE164
-                                                                     sentTimestamps:sentTimestamps
-                                                                      readTimestamp:envelope.timestamp];
+            [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipient:envelope.sourceAddress
+                                                                   sentTimestamps:sentTimestamps
+                                                                    readTimestamp:envelope.timestamp];
             break;
         default:
             OWSLogInfo(@"Ignoring receipt message of unknown type: %d.", (int)receiptMessage.unwrappedType);
@@ -657,18 +656,18 @@ NS_ASSUME_NONNULL_BEGIN
     // definition will end if the app exits.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (callMessage.offer) {
-            [self.callMessageHandler receivedOffer:callMessage.offer fromCallerId:envelope.sourceE164];
+            [self.callMessageHandler receivedOffer:callMessage.offer fromCaller:envelope.sourceAddress];
         } else if (callMessage.answer) {
-            [self.callMessageHandler receivedAnswer:callMessage.answer fromCallerId:envelope.sourceE164];
+            [self.callMessageHandler receivedAnswer:callMessage.answer fromCaller:envelope.sourceAddress];
         } else if (callMessage.iceUpdate.count > 0) {
             for (SSKProtoCallMessageIceUpdate *iceUpdate in callMessage.iceUpdate) {
-                [self.callMessageHandler receivedIceUpdate:iceUpdate fromCallerId:envelope.sourceE164];
+                [self.callMessageHandler receivedIceUpdate:iceUpdate fromCaller:envelope.sourceAddress];
             }
         } else if (callMessage.hangup) {
             OWSLogVerbose(@"Received CallMessage with Hangup.");
-            [self.callMessageHandler receivedHangup:callMessage.hangup fromCallerId:envelope.sourceE164];
+            [self.callMessageHandler receivedHangup:callMessage.hangup fromCaller:envelope.sourceAddress];
         } else if (callMessage.busy) {
-            [self.callMessageHandler receivedBusy:callMessage.busy fromCallerId:envelope.sourceE164];
+            [self.callMessageHandler receivedBusy:callMessage.busy fromCaller:envelope.sourceAddress];
         } else {
             OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
         }
@@ -693,8 +692,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"typingMessage has invalid timestamp.");
         return;
     }
-    NSString *localNumber = self.tsAccountManager.localNumber;
-    if ([localNumber isEqualToString:envelope.sourceE164]) {
+    if (envelope.sourceAddress.isLocalAddress) {
         OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
         return;
     } else if ([self.blockingManager isAddressBlocked:envelope.sourceAddress]
@@ -737,12 +735,12 @@ NS_ASSUME_NONNULL_BEGIN
         switch (typingMessage.unwrappedAction) {
             case SSKProtoTypingMessageActionStarted:
                 [self.typingIndicators didReceiveTypingStartedMessageInThread:thread
-                                                                  recipientId:envelope.sourceE164
+                                                                      address:envelope.sourceAddress
                                                                      deviceId:envelope.sourceDevice];
                 break;
             case SSKProtoTypingMessageActionStopped:
                 [self.typingIndicators didReceiveTypingStoppedMessageInThread:thread
-                                                                  recipientId:envelope.sourceE164
+                                                                      address:envelope.sourceAddress
                                                                      deviceId:envelope.sourceDevice];
                 break;
             default:
@@ -885,8 +883,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *localNumber = self.tsAccountManager.localNumber;
-    if (![localNumber isEqualToString:envelope.sourceE164]) {
+    if (!envelope.sourceAddress.isLocalAddress) {
         // Sync messages should only come from linked devices.
         OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
         return;
@@ -1080,7 +1077,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration anyInsertWithTransaction:transaction];
-    NSString *name = [self.contactsManager displayNameForAddress:envelope.sourceE164.transitional_signalServiceAddress
+    NSString *name = [self.contactsManager displayNameForAddress:envelope.sourceAddress
                                                      transaction:transaction.transitional_yapWriteTransaction];
 
     // MJK TODO - safe to remove senderTimestamp
@@ -1211,7 +1208,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [message updateWithCustomMessage:updateGroupInfo transaction:transaction.transitional_yapWriteTransaction];
     // Only send this group update to the requester.
-    [message updateWithSendingToSingleGroupRecipient:envelope.sourceE164
+    [message updateWithSendingToSingleGroupRecipient:envelope.sourceAddress
                                          transaction:transaction.transitional_yapWriteTransaction];
 
     if (gThread.groupModel.groupImage) {
@@ -1289,10 +1286,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (dataMessage.hasRequiredProtocolVersion
             && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
-            NSString *senderId = envelope.sourceE164;
             [self insertUnknownProtocolVersionErrorInThread:oldGroupThread
                                             protocolVersion:dataMessage.requiredProtocolVersion
-                                                   senderId:senderId
+                                                     sender:envelope.sourceAddress
                                                 transaction:transaction];
             return nil;
         }
@@ -1319,7 +1315,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [[OWSDisappearingMessagesJob sharedJob]
                         becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                           thread:newGroupThread
-                                      createdByRemoteRecipientId:nil
+                                        createdByRemoteRecipient:nil
                                           createdInExistingGroup:YES
                                                      transaction:transaction];
                 }
@@ -1346,8 +1342,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                            [newMembers.allObjects mutableCopy];
                                                    }];
 
-                NSString *nameString =
-                    [self.contactsManager displayNameForAddress:envelope.sourceE164.transitional_signalServiceAddress];
+                NSString *nameString = [self.contactsManager displayNameForAddress:envelope.sourceAddress];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
                 // MJK TODO - should be safe to remove senderTimestamp
@@ -1386,10 +1381,9 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (dataMessage.hasRequiredProtocolVersion
             && dataMessage.requiredProtocolVersion > SSKProtos.currentProtocolVersion) {
-            NSString *senderId = envelope.sourceE164;
             [self insertUnknownProtocolVersionErrorInThread:thread
                                             protocolVersion:dataMessage.requiredProtocolVersion
-                                                   senderId:senderId
+                                                     sender:envelope.sourceAddress
                                                 transaction:transaction];
             return nil;
         }
@@ -1408,7 +1402,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)insertUnknownProtocolVersionErrorInThread:(TSThread *)thread
                                   protocolVersion:(NSUInteger)protocolVersion
-                                         senderId:(NSString *)senderId
+                                           sender:(SignalServiceAddress *)sender
                                       transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(thread);
@@ -1416,7 +1410,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSFailDebug(@"Unknown protocol version: %lu", (unsigned long)protocolVersion);
 
-    if (senderId.length < 1) {
+    if (!sender.isValid) {
         OWSFailDebug(@"Missing sender.");
         return;
     }
@@ -1425,7 +1419,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSInteraction *message =
         [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                              thread:thread
-                                                           senderId:senderId
+                                                             sender:sender
                                                     protocolVersion:protocolVersion];
     [message anyInsertWithTransaction:transaction];
 }
@@ -1469,12 +1463,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSContact *_Nullable contact;
     OWSLinkPreview *_Nullable linkPreview;
     if (transaction.transitional_yapWriteTransaction && !SSKFeatureFlags.allowUUIDOnlyContacts) {
-        [[OWSDisappearingMessagesJob sharedJob]
-            becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                              thread:thread
-                          createdByRemoteRecipientId:authorAddress.transitional_phoneNumber
-                              createdInExistingGroup:NO
-                                         transaction:transaction];
+        [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
+                                                                                  thread:thread
+                                                                createdByRemoteRecipient:authorAddress
+                                                                  createdInExistingGroup:NO
+                                                                             transaction:transaction];
 
         contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
 
@@ -1535,7 +1528,7 @@ NS_ASSUME_NONNULL_BEGIN
     [incomingMessage anyInsertWithTransaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
-    if ([envelope.sourceE164 isEqualToString:self.tsAccountManager.localNumber]) {
+    if (envelope.sourceAddress.isLocalAddress) {
         // Don't send a read receipt for messages sent by ourselves.
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
     }
@@ -1606,7 +1599,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.typingIndicators didReceiveIncomingMessageInThread:thread
-                                                     recipientId:envelope.sourceE164
+                                                         address:envelope.sourceAddress
                                                         deviceId:envelope.sourceDevice];
     });
 
@@ -1668,14 +1661,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(envelope);
     OWSAssertDebug(transaction);
 
-    SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
-    if (![localAddress.transitional_phoneNumber isEqualToString:envelope.sourceE164]) {
+    if (!envelope.sourceAddress.isLocalAddress) {
         return;
     }
 
     // Consult the device list cache we use for message sending
     // whether or not we know about this linked device.
-    SignalRecipient *_Nullable recipient = [SignalRecipient registeredRecipientForAddress:localAddress
+    SignalRecipient *_Nullable recipient = [SignalRecipient registeredRecipientForAddress:envelope.sourceAddress
                                                                           mustHaveDevices:NO
                                                                               transaction:transaction];
     if (!recipient) {

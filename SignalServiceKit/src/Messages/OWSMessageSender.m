@@ -1056,7 +1056,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 OWSFailDebug(@"Sync device message missing destination: %@", deviceMessage);
                 continue;
             }
-            if (!destination.transitional_signalServiceAddress.isLocalAddress) {
+
+            SignalServiceAddress *destinationAddress;
+            if ([[NSUUID alloc] initWithUUIDString:destination]) {
+                destinationAddress = [[SignalServiceAddress alloc] initWithUuidString:destination];
+            } else {
+                destinationAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:destination];
+            }
+
+            if (destinationAddress.isLocalAddress) {
                 OWSFailDebug(@"Sync device message has invalid destination: %@", deviceMessage);
                 continue;
             }
@@ -1398,10 +1406,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             if (extraDevices && extraDevices.count > 0) {
                 OWSLogInfo(@"Deleting sessions for extra devices: %@", extraDevices);
                 for (NSNumber *extraDeviceId in extraDevices) {
-                    [self.sessionStore
-                        deleteSessionForAddress:recipient.recipientPhoneNumber.transitional_signalServiceAddress
-                                       deviceId:extraDeviceId.intValue
-                                    transaction:transaction];
+                    [self.sessionStore deleteSessionForAddress:recipient.address
+                                                      deviceId:extraDeviceId.intValue
+                                                   transaction:transaction];
                 }
             }
 

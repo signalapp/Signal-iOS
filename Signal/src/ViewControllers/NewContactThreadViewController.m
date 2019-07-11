@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This set is used to cache the set of non-contact phone numbers
 // which are known to correspond to Signal accounts.
-@property (nonatomic, readonly) NSMutableSet *nonContactAccountSet;
+@property (nonatomic, readonly) NSMutableSet<SignalServiceAddress *> *nonContactAccountSet;
 
 @property (nonatomic) BOOL isNoContactsModeActive;
 
@@ -557,9 +557,9 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSString *phoneNumber in searchPhoneNumbers) {
         OWSAssertDebug(phoneNumber.length > 0);
 
-        if ([self.nonContactAccountSet containsObject:phoneNumber]) {
-            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
 
+        if ([self.nonContactAccountSet containsObject:address]) {
             [phoneNumbersSection
                 addItem:[OWSTableItem
                             itemWithCustomCellBlock:^{
@@ -610,7 +610,9 @@ NS_ASSUME_NONNULL_BEGIN
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
         hasSearchResults = YES;
 
-        if ([searchPhoneNumbers containsObject:signalAccount.recipientAddress.transitional_phoneNumber]) {
+        NSString *_Nullable phoneNumber = signalAccount.recipientAddress.phoneNumber;
+
+        if (phoneNumber && [searchPhoneNumbers containsObject:phoneNumber]) {
             // Don't show a contact if they already appear in the "search phone numbers"
             // results.
             continue;
@@ -627,8 +629,8 @@ NS_ASSUME_NONNULL_BEGIN
 
                             [cell configureWithRecipientAddress:signalAccount.recipientAddress];
 
-                            NSString *cellName = [NSString stringWithFormat:@"signal_contact.%@",
-                                                           signalAccount.recipientAddress.transitional_phoneNumber];
+                            NSString *cellName = [NSString
+                                stringWithFormat:@"signal_contact.%@", signalAccount.recipientAddress.stringForDisplay];
                             cell.accessibilityIdentifier
                                 = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewContactThreadViewController, cellName);
 
@@ -1054,7 +1056,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSMutableArray<NSString *> *unknownPhoneNumbers = [NSMutableArray new];
     for (NSString *phoneNumber in phoneNumbers) {
-        if (![self.nonContactAccountSet containsObject:phoneNumber]) {
+        if (!
+            [self.nonContactAccountSet containsObject:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]]) {
             [unknownPhoneNumbers addObject:phoneNumber];
         }
     }
@@ -1076,10 +1079,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     BOOL didUpdate = NO;
     for (SignalRecipient *recipient in recipients) {
-        if ([self.nonContactAccountSet containsObject:recipient.address.transitional_phoneNumber]) {
+        if ([self.nonContactAccountSet containsObject:recipient.address]) {
             continue;
         }
-        [self.nonContactAccountSet addObject:recipient.address.transitional_phoneNumber];
+        [self.nonContactAccountSet addObject:recipient.address];
         didUpdate = YES;
     }
     if (didUpdate) {

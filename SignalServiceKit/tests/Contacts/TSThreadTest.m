@@ -34,29 +34,29 @@
 
 - (void)testDeletingThreadDeletesInteractions
 {
-    TSContactThread *thread =
-        [[TSContactThread alloc] initWithContactAddress:@"+13334445555".transitional_signalServiceAddress];
+    TSContactThread *thread = [[TSContactThread alloc]
+        initWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"]];
     [thread save];
 
     [self readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
         XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
     }];
 
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:10000
-                                                           inThread:thread
-                                                      authorAddress:@"+12223334444".transitional_signalServiceAddress
-                                                     sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                        messageBody:@"Incoming message body"
-                                                      attachmentIds:@[]
-                                                   expiresInSeconds:0
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                    serverTimestamp:nil
-                                                    wasReceivedByUD:NO
-                                perMessageExpirationDurationSeconds:0];
+    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc]
+           initIncomingMessageWithTimestamp:10000
+                                   inThread:thread
+                              authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"]
+                             sourceDeviceId:OWSDevicePrimaryDeviceId
+                                messageBody:@"Incoming message body"
+                              attachmentIds:@[]
+                           expiresInSeconds:0
+                              quotedMessage:nil
+                               contactShare:nil
+                                linkPreview:nil
+                             messageSticker:nil
+                            serverTimestamp:nil
+                            wasReceivedByUD:NO
+        perMessageExpirationDurationSeconds:0];
     [incomingMessage save];
 
     TSOutgoingMessage *outgoingMessage =
@@ -88,8 +88,8 @@
 
 - (void)testDeletingThreadDeletesAttachmentFiles
 {
-    TSContactThread *thread =
-        [[TSContactThread alloc] initWithContactAddress:@"+13334445555".transitional_signalServiceAddress];
+    TSContactThread *thread = [[TSContactThread alloc]
+        initWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"]];
     [thread save];
 
     // Sanity check
@@ -109,21 +109,21 @@
         [[NSFileManager defaultManager] fileExistsAtPath:[incomingAttachment originalFilePath]];
     XCTAssert(incomingFileWasCreated);
 
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:10000
-                                                           inThread:thread
-                                                      authorAddress:@"+12223334444".transitional_signalServiceAddress
-                                                     sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                        messageBody:@"incoming message body"
-                                                      attachmentIds:@[ incomingAttachment.uniqueId ]
-                                                   expiresInSeconds:0
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                    serverTimestamp:nil
-                                                    wasReceivedByUD:NO
-                                perMessageExpirationDurationSeconds:0];
+    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc]
+           initIncomingMessageWithTimestamp:10000
+                                   inThread:thread
+                              authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"]
+                             sourceDeviceId:OWSDevicePrimaryDeviceId
+                                messageBody:@"incoming message body"
+                              attachmentIds:@[ incomingAttachment.uniqueId ]
+                           expiresInSeconds:0
+                              quotedMessage:nil
+                               contactShare:nil
+                                linkPreview:nil
+                             messageSticker:nil
+                            serverTimestamp:nil
+                            wasReceivedByUD:NO
+        perMessageExpirationDurationSeconds:0];
     [incomingMessage save];
 
     __block TSAttachmentStream *outgoingAttachment;

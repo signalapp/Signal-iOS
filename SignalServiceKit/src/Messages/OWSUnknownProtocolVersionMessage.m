@@ -9,11 +9,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
+
 @interface OWSUnknownProtocolVersionMessage ()
 
 @property (nonatomic) NSUInteger protocolVersion;
 // If nil, the invalid message was sent by a linked device.
-@property (nonatomic, nullable) NSString *senderId;
+@property (nonatomic, nullable) SignalServiceAddress *sender;
+@property (nonatomic, readonly) NSUInteger unknownProtocolVersionMessageSchemaVersion;
 
 @end
 
@@ -28,17 +31,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
-                         senderId:(nullable NSString *)senderId
+                           sender:(nullable SignalServiceAddress *)sender
                   protocolVersion:(NSUInteger)protocolVersion
 {
     self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageUnknownProtocolVersion];
 
     if (self) {
-        OWSAssertDebug(senderId.length > 0);
+        OWSAssertDebug(sender.isValid);
 
         _protocolVersion = protocolVersion;
-        _senderId = senderId;
+        _sender = sender;
+        _unknownProtocolVersionMessageSchemaVersion = OWSUnknownProtocolVersionMessageSchemaVersion;
     }
+
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    if (_unknownProtocolVersionMessageSchemaVersion < 1) {
+        NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"senderId"];
+        if (phoneNumber) {
+            _sender = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+        }
+    }
+
+    _unknownProtocolVersionMessageSchemaVersion = OWSUnknownProtocolVersionMessageSchemaVersion;
 
     return self;
 }
@@ -74,7 +97,8 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                  protocolVersion:(NSUInteger)protocolVersion
-                        senderId:(nullable NSString *)senderId
+                          sender:(nullable SignalServiceAddress *)sender
+unknownProtocolVersionMessageSchemaVersion:(NSUInteger)unknownProtocolVersionMessageSchemaVersion
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -105,7 +129,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     }
 
     _protocolVersion = protocolVersion;
-    _senderId = senderId;
+    _sender = sender;
+    _unknownProtocolVersionMessageSchemaVersion = unknownProtocolVersionMessageSchemaVersion;
 
     return self;
 }
@@ -121,7 +146,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 - (NSString *)messageTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    if (self.senderId.length < 1) {
+    if (!self.sender.isValid) {
         // This was sent from a linked device.
         if (self.isProtocolVersionUnknown) {
             return NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE",
@@ -138,7 +163,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
     NSString *senderName = nil;
     if (transaction.transitional_yapReadTransaction) {
-        senderName = [self.contactsManager displayNameForAddress:self.senderId.transitional_signalServiceAddress
+        senderName = [self.contactsManager displayNameForAddress:self.sender
                                                      transaction:transaction.transitional_yapReadTransaction];
     }
 

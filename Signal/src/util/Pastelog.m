@@ -593,7 +593,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     if (![self.tsAccountManager isRegistered]) {
         return;
     }
-    SignalServiceAddress *recipientAddress = TSAccountManager.sharedInstance.localAddress;
+    SignalServiceAddress *recipientAddress = TSAccountManager.localAddress;
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;

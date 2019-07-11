@@ -89,7 +89,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         }
 
         func ensureProfileComplete() -> Promise<Void> {
-            guard let localAddress = TSAccountManager.sharedInstance().localAddress, localAddress.isValid else {
+            guard let localAddress = TSAccountManager.localAddress, localAddress.isValid else {
                 // local app doesn't think we're registered, so nothing to worry about.
                 return Promise.value(())
             }

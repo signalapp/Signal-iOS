@@ -490,13 +490,11 @@ NS_ASSUME_NONNULL_BEGIN
     SignalRecipient *successfulRecipient2 =
         [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id2" relay:nil];
 
-    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:@"group title"
-                                                         memberIds:[@[
-                                                             successfulRecipient.address.transitional_phoneNumber,
-                                                             successfulRecipient2.address.transitional_phoneNumber
-                                                         ] mutableCopy]
-                                                             image:nil
-                                                           groupId:groupIdData];
+    TSGroupModel *groupModel =
+        [[TSGroupModel alloc] initWithTitle:@"group title"
+                                    members:[@[ successfulRecipient.address, successfulRecipient2.address ] mutableCopy]
+                                      image:nil
+                                    groupId:groupIdData];
     TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel];
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
                                                                      inThread:groupThread
@@ -527,8 +525,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = self.successfulMessageSender;
 
     NSError *error;
-    NSArray<SignalRecipient *> *recipients =
-        [messageSender getRecipients:@[ recipient.address.transitional_phoneNumber ] error:&error];
+    NSArray<SignalRecipient *> *recipients = [messageSender getRecipients:@[ recipient.address ] error:&error];
 
     XCTAssertNil(error);
     XCTAssertEqualObjects(recipient, recipients.firstObject);

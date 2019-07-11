@@ -537,21 +537,22 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
         if let e164 = phoneNumber.tryToConvertToE164() {
+            let address = SignalServiceAddress(phoneNumber: e164)
             if contactShare.systemContactsWithSignalAccountPhoneNumbers(contactsManager).contains(e164) {
                 actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_SEND_MESSAGE",
                                                                              comment: "Label for 'send message' button in contact view."),
                                                     style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(for: e164.transitional_signalServiceAddress, action: .compose, animated: true)
+                                                        SignalApp.shared().presentConversation(for: address, action: .compose, animated: true)
                 })
                 actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_AUDIO_CALL",
                                                                              comment: "Label for 'audio call' button in contact view."),
                                                     style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(for: e164.transitional_signalServiceAddress, action: .audioCall, animated: true)
+                                                        SignalApp.shared().presentConversation(for: address, action: .audioCall, animated: true)
                 })
                 actionSheet.addAction(UIAlertAction(title: NSLocalizedString("ACTION_VIDEO_CALL",
                                                                              comment: "Label for 'video call' button in contact view."),
                                                     style: .default) { _ in
-                                                        SignalApp.shared().presentConversation(for: e164.transitional_signalServiceAddress, action: .videoCall, animated: true)
+                                                        SignalApp.shared().presentConversation(for: address, action: .videoCall, animated: true)
                 })
             } else {
                 // TODO: We could offer callPhoneNumberWithSystemCall.

@@ -6,16 +6,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 @interface OWSUnknownProtocolVersionMessage : TSInfoMessage
 
 @property (nonatomic, readonly) NSUInteger protocolVersion;
 
 // If nil, the invalid message was sent by a linked device.
-@property (nonatomic, nullable, readonly) NSString *senderId;
+@property (nonatomic, nullable, readonly) SignalServiceAddress *sender;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
-                         senderId:(nullable NSString *)senderId
+                           sender:(nullable SignalServiceAddress *)sender
                   protocolVersion:(NSUInteger)protocolVersion NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
@@ -49,8 +51,9 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                  protocolVersion:(NSUInteger)protocolVersion
-                        senderId:(nullable NSString *)senderId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:protocolVersion:senderId:));
+                          sender:(nullable SignalServiceAddress *)sender
+unknownProtocolVersionMessageSchemaVersion:(NSUInteger)unknownProtocolVersionMessageSchemaVersion
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:protocolVersion:sender:unknownProtocolVersionMessageSchemaVersion:));
 
 // clang-format on
 

@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceAddress.transitional_phoneNumber
+                                                 address:self.sourceAddress
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
                                              transaction:transaction];
     }];
@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceAddress.transitional_phoneNumber
+                                                 address:self.sourceAddress
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
                                              transaction:transaction];
     }];
@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceAddress.transitional_phoneNumber
+                                                 address:self.sourceAddress
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
                                              transaction:transaction];
     }];
@@ -115,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceAddress.transitional_phoneNumber
+                                                 address:self.sourceAddress
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
                                              transaction:transaction];
     }];
@@ -128,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
-                                                sourceId:self.sourceAddress.transitional_phoneNumber
+                                                 address:self.sourceAddress
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
                                              transaction:transaction];
     }];

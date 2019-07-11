@@ -57,6 +57,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (nullable NSString *)localNumber;
 
 @property (readonly, nullable) NSUUID *uuid;
+@property (class, readonly, nullable) SignalServiceAddress *localAddress;
 @property (readonly, nullable) SignalServiceAddress *localAddress;
 
 // A variant of localAddress that never opens a "sneaky" transaction.

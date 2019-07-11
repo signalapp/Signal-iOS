@@ -103,18 +103,18 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         NSSet<NSString *> *registeredRecipientIds = operation.registeredRecipientIds;
+        // TODO UUID: Get UUIDs from contact discovery
 
         NSMutableSet<SignalRecipient *> *recipients = [NSMutableSet new];
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            for (NSString *recipientId in recipientIdsToLookup) {
-                if ([registeredRecipientIds containsObject:recipientId]) {
-                    SignalRecipient *recipient =
-                        [SignalRecipient markRecipientAsRegisteredAndGet:recipientId.transitional_signalServiceAddress
-                                                             transaction:transaction];
+            for (NSString *phoneNumber in recipientIdsToLookup) {
+                SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+                if ([registeredRecipientIds containsObject:phoneNumber]) {
+                    SignalRecipient *recipient = [SignalRecipient markRecipientAsRegisteredAndGet:address
+                                                                                      transaction:transaction];
                     [recipients addObject:recipient];
                 } else {
-                    [SignalRecipient markRecipientAsUnregistered:recipientId.transitional_signalServiceAddress
-                                                     transaction:transaction];
+                    [SignalRecipient markRecipientAsUnregistered:address transaction:transaction];
                 }
             }
         }];

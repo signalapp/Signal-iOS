@@ -94,34 +94,31 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-+ (NSString *)unregisteredRecipientId
++ (SignalServiceAddress *)unregisteredRecipient
 {
     // We ensure that the phone number is invalid by appending too many digits.
     NSMutableString *recipientId = [@"+1" mutableCopy];
     for (int i = 0; i < 11; i++) {
         [recipientId appendFormat:@"%d", (int)(arc4random() % 10)];
     }
-    return [recipientId copy];
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:[recipientId copy]];
 }
 
 + (void)createUnregisteredContactThread
 {
-    NSString *recipientId = [self unregisteredRecipientId];
-    TSContactThread *thread =
-        [TSContactThread getOrCreateThreadWithContactAddress:recipientId.transitional_signalServiceAddress];
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:self.unregisteredRecipient];
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
 }
 
 + (void)createUnregisteredGroupThread
 {
-    NSString *unregisteredRecipientId = [self unregisteredRecipientId];
-    NSString *validRecipientId = @"+19174054216";
+    SignalServiceAddress *validRecipient = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054216"];
 
     NSString *groupName = @"Partially invalid group";
     NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
-        [[SignalServiceAddress alloc] initWithPhoneNumber:unregisteredRecipientId],
-        [[SignalServiceAddress alloc] initWithPhoneNumber:validRecipientId],
-        TSAccountManager.sharedInstance.localAddress,
+        self.unregisteredRecipient,
+        validRecipient,
+        TSAccountManager.localAddress,
     ] mutableCopy];
     NSData *groupId = [Randomness generateRandomBytes:16];
     TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:groupName

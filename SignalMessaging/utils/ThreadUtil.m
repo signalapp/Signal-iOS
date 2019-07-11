@@ -749,9 +749,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     }
 
     BOOL hasUnwhitelistedMember = NO;
-    NSArray<NSString *> *blockedPhoneNumbers = [blockingManager blockedPhoneNumbers];
     for (SignalServiceAddress *address in thread.recipientAddresses) {
-        if (![blockedPhoneNumbers containsObject:address.transitional_phoneNumber]
+        if (![blockingManager isAddressBlocked:address]
             && ![OWSProfileManager.sharedManager isUserInProfileWhitelist:address]) {
             hasUnwhitelistedMember = YES;
             break;
@@ -841,7 +840,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(authorAddress.isValid);
 
-    SignalServiceAddress *localAddress = TSAccountManager.sharedInstance.localAddress;
+    SignalServiceAddress *localAddress = TSAccountManager.localAddress;
     if (!localAddress.isValid) {
         OWSFailDebug(@"missing local address.");
         return nil;

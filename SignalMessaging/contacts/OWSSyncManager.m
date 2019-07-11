@@ -259,9 +259,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncLocalContact
 {
-    NSString *localNumber = self.tsAccountManager.localNumber;
     SignalAccount *signalAccount =
-        [[SignalAccount alloc] initWithSignalServiceAddress:localNumber.transitional_signalServiceAddress];
+        [[SignalAccount alloc] initWithSignalServiceAddress:self.tsAccountManager.localAddress];
     signalAccount.contact = [Contact new];
 
     return [self syncContactsForSignalAccounts:@[ signalAccount ]];

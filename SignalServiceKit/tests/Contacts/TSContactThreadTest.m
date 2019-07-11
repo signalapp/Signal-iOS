@@ -22,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super setUp];
 
-    self.contactThread =
-        [TSContactThread getOrCreateThreadWithContactAddress:@"fake-contact-id".transitional_signalServiceAddress];
+    self.contactThread = [TSContactThread
+        getOrCreateThreadWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"fake-contact-id"]];
 }
 
 - (void)testHasSafetyNumbersWithoutRemoteIdentity

@@ -17,18 +17,17 @@
 
 - (void)testDisplayableTextInsertsSpaces
 {
-    NSString *aliceStableId = @"+13231111111";
+    SignalServiceAddress *aliceStableAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+13231111111"];
     NSData *aliceIdentityKey = [Curve25519 generateKeyPair].publicKey;
-    NSString *bobStableId = @"+14152222222";
+    SignalServiceAddress *bobStableAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+14152222222"];
     NSData *bobIdentityKey = [Curve25519 generateKeyPair].publicKey;
 
-    OWSFingerprint *aliceFingerprint =
-        [OWSFingerprint fingerprintWithMyStableAddress:aliceStableId.transitional_signalServiceAddress
-                                         myIdentityKey:aliceIdentityKey
-                                    theirStableAddress:bobStableId.transitional_signalServiceAddress
-                                      theirIdentityKey:bobIdentityKey
-                                             theirName:@"Bob"
-                                        hashIterations:2];
+    OWSFingerprint *aliceFingerprint = [OWSFingerprint fingerprintWithMyStableAddress:aliceStableAddress
+                                                                        myIdentityKey:aliceIdentityKey
+                                                                   theirStableAddress:bobStableAddress
+                                                                     theirIdentityKey:bobIdentityKey
+                                                                            theirName:@"Bob"
+                                                                       hashIterations:2];
 
     NSString *displayableText = aliceFingerprint.displayableText;
     XCTAssertNotEqualObjects(@" ", [displayableText substringWithRange:NSMakeRange(0, 1)]);

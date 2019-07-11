@@ -61,6 +61,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @class SSKProtoContentBuilder;
 @class SSKProtoDataMessageBuilder;
 @class SignalRecipient;
+@class SignalServiceAddress;
 
 @interface TSOutgoingMessageRecipientState : MTLModel
 
@@ -281,7 +282,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // This method is used to rewrite the recipient list with a single recipient.
 // It is used to reply to a "group info request", which should only be
 // delivered to the requestor.
-- (void)updateWithSendingToSingleGroupRecipient:(NSString *)singleGroupRecipient
+- (void)updateWithSendingToSingleGroupRecipient:(SignalServiceAddress *)singleGroupRecipient
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method is used to record a successful "read" by one recipient.

@@ -203,9 +203,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     switch (self.interaction.interactionType) {
         case OWSInteractionType_TypingIndicator: {
             OWSTypingIndicatorInteraction *typingIndicator = (OWSTypingIndicatorInteraction *)self.interaction;
-            _authorConversationColorName = [TSContactThread
-                conversationColorNameForContactAddress:typingIndicator.recipientId.transitional_signalServiceAddress
-                                           transaction:transaction];
+            _authorConversationColorName =
+                [TSContactThread conversationColorNameForContactAddress:typingIndicator.address
+                                                            transaction:transaction];
             break;
         }
         case OWSInteractionType_IncomingMessage: {

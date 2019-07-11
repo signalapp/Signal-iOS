@@ -205,7 +205,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
 - (void)becomeConsistentWithDisappearingDuration:(uint32_t)duration
                                           thread:(TSThread *)thread
-                      createdByRemoteRecipientId:(nullable NSString *)remoteRecipientId
+                        createdByRemoteRecipient:(nullable SignalServiceAddress *)remoteRecipient
                           createdInExistingGroup:(BOOL)createdInExistingGroup
                                      transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -219,10 +219,9 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     NSString *_Nullable remoteContactName = nil;
-    if (remoteRecipientId) {
-        remoteContactName =
-            [self.contactsManager displayNameForAddress:remoteRecipientId.transitional_signalServiceAddress
-                                            transaction:transaction.transitional_yapReadTransaction];
+    if (remoteRecipient.isValid) {
+        remoteContactName = [self.contactsManager displayNameForAddress:remoteRecipient
+                                                            transaction:transaction.transitional_yapReadTransaction];
     }
 
     // Become eventually consistent in the case that the remote changed their settings at the same time.

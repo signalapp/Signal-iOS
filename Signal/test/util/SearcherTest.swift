@@ -14,9 +14,9 @@ class FullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
     }
 
     func displayName(for address: SignalServiceAddress?) -> String {
-        if address?.transitional_phoneNumber == aliceRecipientId {
+        if address == aliceRecipient {
             return "Alice"
-        } else if address?.transitional_phoneNumber == bobRecipientId {
+        } else if address == bobRecipient {
             return "Bob Barker"
         } else {
             return ""
@@ -54,8 +54,8 @@ class FullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
     }
 }
 
-private let bobRecipientId = "+49030183000"
-private let aliceRecipientId = "+12345678900"
+private let bobRecipient = SignalServiceAddress(phoneNumber: "+49030183000")
+private let aliceRecipient = SignalServiceAddress(phoneNumber: "+12345678900")
 
 class FullTextSearcherTest: SignalBaseTest {
 
@@ -83,18 +83,18 @@ class FullTextSearcherTest: SignalBaseTest {
         SSKEnvironment.shared.contactsManager = FullTextSearcherContactsManager()
 
         self.dbConnection.readWrite { transaction in
-            let bookModel = TSGroupModel(title: "Book Club", members: [aliceRecipientId.transitional_signalServiceAddress, bobRecipientId.transitional_signalServiceAddress], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
+            let bookModel = TSGroupModel(title: "Book Club", members: [aliceRecipient, bobRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
             let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction)
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyWrite)
 
-            let snackModel = TSGroupModel(title: "Snack Club", members: [aliceRecipientId.transitional_signalServiceAddress], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
+            let snackModel = TSGroupModel(title: "Snack Club", members: [aliceRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
             let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyWrite)
 
-            let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipientId.transitional_signalServiceAddress, transaction: transaction.asAnyWrite)
+            let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction.asAnyWrite)
             self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction.asAnyWrite)
 
-            let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: bobRecipientId.transitional_signalServiceAddress, transaction: transaction.asAnyWrite)
+            let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: bobRecipient, transaction: transaction.asAnyWrite)
             self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction.asAnyWrite)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
@@ -162,7 +162,7 @@ class FullTextSearcherTest: SignalBaseTest {
         XCTAssertEqual(0, threads.count)
 
         // Exact match
-        threads = searchConversations(searchText: aliceRecipientId)
+        threads = searchConversations(searchText: aliceRecipient.phoneNumber!)
         XCTAssertEqual(3, threads.count)
         XCTAssertEqual([bookClubThread, aliceThread, snackClubThread], threads)
 

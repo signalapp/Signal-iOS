@@ -40,8 +40,8 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
 
         XCTAssertEqual(0, TSThread.anyFetchAll(databaseStorage: storage).count)
 
-        let contactId = "+13213214321"
-        let contactThread = TSContactThread(contactAddress: contactId.transitional_signalServiceAddress)
+        let contactAddress = SignalServiceAddress(phoneNumber: "+13213214321")
+        let contactThread = TSContactThread(contactAddress: contactAddress)
 
         storage.write { (transaction) in
             XCTAssertEqual(0, TSThread.anyFetchAll(transaction: transaction).count)
@@ -53,7 +53,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
 
         let groupId = Randomness.generateRandomBytes(Int32(kGroupIdLength))!
         let groupModel = TSGroupModel(title: "Test Group",
-                                      members: [contactId.transitional_signalServiceAddress],
+                                      members: [contactAddress],
                                       image: nil,
                                       groupId: groupId)
         let groupThread = TSGroupThread(groupModel: groupModel)
@@ -110,8 +110,8 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
 
         XCTAssertEqual(0, TSInteraction.anyFetchAll(databaseStorage: storage).count)
 
-        let contactId = "+13213214321"
-        let contactThread = TSContactThread(contactAddress: contactId.transitional_signalServiceAddress)
+        let contactAddress = SignalServiceAddress(phoneNumber: "+13213214321")
+        let contactThread = TSContactThread(contactAddress: contactAddress)
 
         storage.write { (transaction) in
             XCTAssertEqual(0, TSThread.anyFetchAll(transaction: transaction).count)

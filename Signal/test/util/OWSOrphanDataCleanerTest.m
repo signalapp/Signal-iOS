@@ -72,17 +72,17 @@
 - (TSIncomingMessage *)createIncomingMessageWithThread:(TSThread *)thread
                                          attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:1
-                                                           inThread:thread
-                                                      authorAddress:@"fake-author-id".transitional_signalServiceAddress
-                                                     sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                        messageBody:@"footch"
-                                                      attachmentIds:attachmentIds
-                                                   expiresInSeconds:0
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                        linkPreview:nil];
+    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc]
+        initIncomingMessageWithTimestamp:1
+                                inThread:thread
+                           authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"fake-author-id"]
+                          sourceDeviceId:OWSDevicePrimaryDeviceId
+                             messageBody:@"footch"
+                           attachmentIds:attachmentIds
+                        expiresInSeconds:0
+                           quotedMessage:nil
+                            contactShare:nil
+                             linkPreview:nil];
     [incomingMessage save];
 
     return incomingMessage;

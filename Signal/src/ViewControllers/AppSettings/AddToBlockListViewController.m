@@ -45,12 +45,12 @@ NS_ASSUME_NONNULL_BEGIN
         @"Title for the 'block contact' section of the 'add to block list' view.");
 }
 
-- (void)phoneNumberWasSelected:(NSString *)phoneNumber
+- (void)addressWasSelected:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(address.isValid);
 
     __weak AddToBlockListViewController *weakSelf = self;
-    [BlockListUIUtils showBlockAddressActionSheet:phoneNumber.transitional_signalServiceAddress
+    [BlockListUIUtils showBlockAddressActionSheet:address
                                fromViewController:self
                                   blockingManager:self.contactsViewHelper.blockingManager
                                   contactsManager:self.contactsViewHelper.contactsManager

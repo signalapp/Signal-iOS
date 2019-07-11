@@ -901,7 +901,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 - (NSString *)webSocketAuthenticationString
 {
     return [NSString stringWithFormat:@"?login=%@&password=%@",
-                     [[TSAccountManager localNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
+                     [TSAccountManager.localAddress.serviceIdentifier stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
                      self.tsAccountManager.storedServerAuthToken];
 }
 

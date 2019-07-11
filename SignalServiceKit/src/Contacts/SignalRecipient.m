@@ -256,7 +256,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
 - (NSComparisonResult)compare:(SignalRecipient *)other
 {
-    return [self.address.transitional_phoneNumber compare:other.address.transitional_phoneNumber];
+    return [self.address compare:other.address];
 }
 
 // GRDB TODO: We might want will/did hooks for updates.

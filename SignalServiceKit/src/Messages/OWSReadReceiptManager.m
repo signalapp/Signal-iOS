@@ -22,6 +22,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMarkedAsReadNotification";
+NSUInteger const TSRecipientReadReceiptSchemaVersion = 1;
+
+@interface TSRecipientReadReceipt ()
+
+@property (nonatomic, readonly) NSUInteger recipientReadReceiptSchemaVersion;
+
+@end
 
 @implementation TSRecipientReadReceipt
 
@@ -39,7 +46,30 @@ NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMar
     if (self) {
         _sentTimestamp = sentTimestamp;
         _recipientMap = [NSDictionary new];
+        _recipientReadReceiptSchemaVersion = TSRecipientReadReceiptSchemaVersion;
     }
+
+    return self;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (!self) {
+        return self;
+    }
+
+    if (_recipientReadReceiptSchemaVersion < 1) {
+        NSDictionary<NSString *, NSNumber *> *legacyRecipientMap = [coder decodeObjectForKey:@"recipientMap"];
+        NSMutableDictionary<SignalServiceAddress *, NSNumber *> *recipientMap = [NSMutableDictionary new];
+        [legacyRecipientMap
+            enumerateKeysAndObjectsUsingBlock:^(NSString *phoneNumber, NSNumber *timestamp, BOOL *stop) {
+                recipientMap[[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]] = timestamp;
+            }];
+        _recipientMap = [recipientMap copy];
+    }
+
+    _recipientReadReceiptSchemaVersion = TSRecipientReadReceiptSchemaVersion;
 
     return self;
 }
@@ -51,7 +81,8 @@ NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMar
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                    recipientMap:(NSDictionary<NSString *,NSNumber *> *)recipientMap
+                    recipientMap:(NSDictionary<SignalServiceAddress *,NSNumber *> *)recipientMap
+recipientReadReceiptSchemaVersion:(NSUInteger)recipientReadReceiptSchemaVersion
                    sentTimestamp:(uint64_t)sentTimestamp
 {
     self = [super initWithUniqueId:uniqueId];
@@ -61,6 +92,7 @@ NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMar
     }
 
     _recipientMap = recipientMap;
+    _recipientReadReceiptSchemaVersion = recipientReadReceiptSchemaVersion;
     _sentTimestamp = sentTimestamp;
 
     return self;
@@ -75,20 +107,20 @@ NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMar
     return [NSString stringWithFormat:@"%llu", timestamp];
 }
 
-- (void)addRecipientId:(NSString *)recipientId timestamp:(uint64_t)timestamp
+- (void)addRecipient:(SignalServiceAddress *)address timestamp:(uint64_t)timestamp
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(timestamp > 0);
 
-    NSMutableDictionary<NSString *, NSNumber *> *recipientMapCopy = [self.recipientMap mutableCopy];
-    recipientMapCopy[recipientId] = @(timestamp);
+    NSMutableDictionary<SignalServiceAddress *, NSNumber *> *recipientMapCopy = [self.recipientMap mutableCopy];
+    recipientMapCopy[address] = @(timestamp);
     _recipientMap = [recipientMapCopy copy];
 }
 
-+ (void)addRecipientId:(NSString *)recipientId
-         sentTimestamp:(uint64_t)sentTimestamp
-         readTimestamp:(uint64_t)readTimestamp
-           transaction:(SDSAnyWriteTransaction *)transaction
++ (void)addRecipient:(SignalServiceAddress *)address
+       sentTimestamp:(uint64_t)sentTimestamp
+       readTimestamp:(uint64_t)readTimestamp
+         transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -97,19 +129,20 @@ NSString *const kIncomingMessageMarkedAsReadNotification = @"kIncomingMessageMar
         [TSRecipientReadReceipt anyFetchWithUniqueId:uniqueId transaction:transaction];
     if (!recipientReadReceipt) {
         recipientReadReceipt = [[TSRecipientReadReceipt alloc] initWithSentTimestamp:sentTimestamp];
-        [recipientReadReceipt addRecipientId:recipientId timestamp:readTimestamp];
+        [recipientReadReceipt addRecipient:address timestamp:readTimestamp];
         [recipientReadReceipt anyInsertWithTransaction:transaction];
     } else {
-        [recipientReadReceipt
-            anyUpdateWithTransaction:transaction
-                               block:^(TSRecipientReadReceipt *recipientReadReceipt) {
-                                   [recipientReadReceipt addRecipientId:recipientId timestamp:readTimestamp];
-                               }];
+        [recipientReadReceipt anyUpdateWithTransaction:transaction
+                                                 block:^(TSRecipientReadReceipt *recipientReadReceipt) {
+                                                     [recipientReadReceipt addRecipient:address
+                                                                              timestamp:readTimestamp];
+                                                 }];
     }
 }
 
-+ (nullable NSDictionary<NSString *, NSNumber *> *)recipientMapForSentTimestamp:(uint64_t)sentTimestamp
-                                                                    transaction:(SDSAnyWriteTransaction *)transaction
++ (nullable NSDictionary<SignalServiceAddress *, NSNumber *> *)recipientMapForSentTimestamp:(uint64_t)sentTimestamp
+                                                                                transaction:(SDSAnyWriteTransaction *)
+                                                                                                transaction
 {
     OWSAssertDebug(transaction);
 
@@ -339,11 +372,11 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 #pragma mark - Read Receipts From Recipient
 
-- (void)processReadReceiptsFromRecipientId:(NSString *)recipientId
-                            sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
-                             readTimestamp:(uint64_t)readTimestamp
+- (void)processReadReceiptsFromRecipient:(SignalServiceAddress *)address
+                          sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
+                           readTimestamp:(uint64_t)readTimestamp
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
     OWSAssertDebug(sentTimestamps);
 
     if (![self areReadReceiptsEnabled]) {
@@ -369,17 +402,15 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 // TODO: We might also need to "mark as read by recipient" any older messages
                 // from us in that thread.  Or maybe this state should hang on the thread?
                 for (TSOutgoingMessage *message in messages) {
-                    [message updateWithReadRecipient:recipientId.transitional_signalServiceAddress
-                                       readTimestamp:readTimestamp
-                                         transaction:transaction];
+                    [message updateWithReadRecipient:address readTimestamp:readTimestamp transaction:transaction];
                 }
             } else {
                 // Persist the read receipts so that we can apply them to outgoing messages
                 // that we learn about later through sync messages.
-                [TSRecipientReadReceipt addRecipientId:recipientId
-                                         sentTimestamp:sentTimestamp
-                                         readTimestamp:readTimestamp
-                                           transaction:transaction];
+                [TSRecipientReadReceipt addRecipient:address
+                                       sentTimestamp:sentTimestamp
+                                       readTimestamp:readTimestamp
+                                         transaction:transaction];
             }
         }
     }];
@@ -392,20 +423,18 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(transaction);
 
     uint64_t sentTimestamp = message.timestamp;
-    NSDictionary<NSString *, NSNumber *> *recipientMap =
+    NSDictionary<SignalServiceAddress *, NSNumber *> *recipientMap =
         [TSRecipientReadReceipt recipientMapForSentTimestamp:sentTimestamp transaction:transaction];
     if (!recipientMap) {
         return;
     }
     OWSAssertDebug(recipientMap.count > 0);
-    for (NSString *recipientId in recipientMap) {
-        NSNumber *nsReadTimestamp = recipientMap[recipientId];
+    for (SignalServiceAddress *address in recipientMap) {
+        NSNumber *nsReadTimestamp = recipientMap[address];
         OWSAssertDebug(nsReadTimestamp);
         uint64_t readTimestamp = [nsReadTimestamp unsignedLongLongValue];
 
-        [message updateWithReadRecipient:recipientId.transitional_signalServiceAddress
-                           readTimestamp:readTimestamp
-                             transaction:transaction];
+        [message updateWithReadRecipient:address readTimestamp:readTimestamp transaction:transaction];
     }
     [TSRecipientReadReceipt removeRecipientIdsForTimestamp:message.timestamp transaction:transaction];
 }

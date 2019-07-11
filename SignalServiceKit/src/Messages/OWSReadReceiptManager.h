@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class SSKProtoSyncMessageRead;
+@class SignalServiceAddress;
 @class TSIncomingMessage;
 @class TSOutgoingMessage;
 @class TSThread;
@@ -18,8 +19,8 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 @interface TSRecipientReadReceipt : BaseModel
 
 @property (nonatomic, readonly) uint64_t sentTimestamp;
-// Map of "recipient id"-to-"read timestamp".
-@property (nonatomic, readonly) NSDictionary<NSString *, NSNumber *> *recipientMap;
+// Map of "recipient"-to-"read timestamp".
+@property (nonatomic, readonly) NSDictionary<SignalServiceAddress *, NSNumber *> *recipientMap;
 
 // --- CODE GENERATION MARKER
 
@@ -28,9 +29,10 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                    recipientMap:(NSDictionary<NSString *,NSNumber *> *)recipientMap
+                    recipientMap:(NSDictionary<SignalServiceAddress *,NSNumber *> *)recipientMap
+recipientReadReceiptSchemaVersion:(NSUInteger)recipientReadReceiptSchemaVersion
                    sentTimestamp:(uint64_t)sentTimestamp
-NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
+NS_SWIFT_NAME(init(uniqueId:recipientMap:recipientReadReceiptSchemaVersion:sentTimestamp:));
 
 // clang-format on
 
@@ -69,9 +71,9 @@ NS_SWIFT_NAME(init(uniqueId:recipientMap:sentTimestamp:));
 // from a user to whom we have sent a message.
 //
 // This method can be called from any thread.
-- (void)processReadReceiptsFromRecipientId:(NSString *)recipientId
-                            sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
-                             readTimestamp:(uint64_t)readTimestamp;
+- (void)processReadReceiptsFromRecipient:(SignalServiceAddress *)address
+                          sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
+                           readTimestamp:(uint64_t)readTimestamp;
 
 - (void)applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:(TSOutgoingMessage *)message
                                                      transaction:(SDSAnyWriteTransaction *)transaction;

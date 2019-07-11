@@ -47,11 +47,11 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (void)phoneNumberWasSelected:(NSString *)phoneNumber
+- (void)addressWasSelected:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(phoneNumber.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    [self selectRecipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
+    [self selectRecipientAddress:address];
 }
 
 - (void)signalAccountWasSelected:(SignalAccount *)signalAccount

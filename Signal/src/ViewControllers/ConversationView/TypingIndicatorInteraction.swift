@@ -32,11 +32,11 @@ public class TypingIndicatorInteraction: TSInteraction {
     }
 
     @objc
-    public let recipientId: String
+    public let address: SignalServiceAddress
 
     @objc
-    public init(thread: TSThread, timestamp: UInt64, recipientId: String) {
-        self.recipientId = recipientId
+    public init(thread: TSThread, timestamp: UInt64, address: SignalServiceAddress) {
+        self.address = address
 
         super.init(uniqueId: TypingIndicatorInteraction.TypingIndicatorId,
             timestamp: timestamp, in: thread)

@@ -180,7 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:outgoingMessage.expiresInSeconds
                                                                               thread:transcript.thread
-                                                          createdByRemoteRecipientId:nil
+                                                            createdByRemoteRecipient:nil
                                                               createdInExistingGroup:NO
                                                                          transaction:transaction.asAnyWrite];
 
@@ -238,7 +238,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSInteraction *message =
         [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:transcript.timestamp
                                                              thread:transcript.thread
-                                                           senderId:nil
+                                                             sender:nil
                                                     protocolVersion:transcript.requiredProtocolVersion.intValue];
     [message anyInsertWithTransaction:transaction];
 }

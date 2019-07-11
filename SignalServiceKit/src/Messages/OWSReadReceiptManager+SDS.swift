@@ -27,6 +27,7 @@ public struct RecipientReadReceiptRecord: SDSRecord {
 
     // Base class properties
     public let recipientMap: Data
+    public let recipientReadReceiptSchemaVersion: UInt
     public let sentTimestamp: UInt64
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -34,6 +35,7 @@ public struct RecipientReadReceiptRecord: SDSRecord {
         case recordType
         case uniqueId
         case recipientMap
+        case recipientReadReceiptSchemaVersion
         case sentTimestamp
     }
 
@@ -71,11 +73,13 @@ extension TSRecipientReadReceipt {
 
             let uniqueId: String = record.uniqueId
             let recipientMapSerialized: Data = record.recipientMap
-            let recipientMap: [String: NSNumber] = try SDSDeserialization.unarchive(recipientMapSerialized, name: "recipientMap")
+            let recipientMap: [SignalServiceAddress: NSNumber] = try SDSDeserialization.unarchive(recipientMapSerialized, name: "recipientMap")
+            let recipientReadReceiptSchemaVersion: UInt = record.recipientReadReceiptSchemaVersion
             let sentTimestamp: UInt64 = record.sentTimestamp
 
             return TSRecipientReadReceipt(uniqueId: uniqueId,
                                           recipientMap: recipientMap,
+                                          recipientReadReceiptSchemaVersion: recipientReadReceiptSchemaVersion,
                                           sentTimestamp: sentTimestamp)
 
         default:
@@ -114,7 +118,8 @@ extension TSRecipientReadReceiptSerializer {
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let recipientMapColumn = SDSColumnMetadata(columnName: "recipientMap", columnType: .blob, columnIndex: 3)
-    static let sentTimestampColumn = SDSColumnMetadata(columnName: "sentTimestamp", columnType: .int64, columnIndex: 4)
+    static let recipientReadReceiptSchemaVersionColumn = SDSColumnMetadata(columnName: "recipientReadReceiptSchemaVersion", columnType: .int64, columnIndex: 4)
+    static let sentTimestampColumn = SDSColumnMetadata(columnName: "sentTimestamp", columnType: .int64, columnIndex: 5)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -123,6 +128,7 @@ extension TSRecipientReadReceiptSerializer {
         idColumn,
         uniqueIdColumn,
         recipientMapColumn,
+        recipientReadReceiptSchemaVersionColumn,
         sentTimestampColumn
         ])
 }
@@ -450,8 +456,9 @@ class TSRecipientReadReceiptSerializer: SDSSerializer {
 
         // Base class properties
         let recipientMap: Data = requiredArchive(model.recipientMap)
+        let recipientReadReceiptSchemaVersion: UInt = model.recipientReadReceiptSchemaVersion
         let sentTimestamp: UInt64 = model.sentTimestamp
 
-        return RecipientReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, recipientMap: recipientMap, sentTimestamp: sentTimestamp)
+        return RecipientReadReceiptRecord(id: id, recordType: recordType, uniqueId: uniqueId, recipientMap: recipientMap, recipientReadReceiptSchemaVersion: recipientReadReceiptSchemaVersion, sentTimestamp: sentTimestamp)
     }
 }

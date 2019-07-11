@@ -333,6 +333,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 }
 
++ (nullable SignalServiceAddress *)localAddress
+{
+    return [[self sharedInstance] localAddress];
+}
+
 - (nullable SignalServiceAddress *)localAddress
 {
     if (!self.uuid && !self.localNumber) {

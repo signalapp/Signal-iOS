@@ -216,4 +216,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface TSRecipientReadReceipt (SDS)
+
+@property (nonatomic, readonly) NSUInteger recipientReadReceiptSchemaVersion;
+
+@end
+
+#pragma mark -
+
+@interface OWSUnknownProtocolVersionMessage (SDS)
+
+@property (nonatomic, readonly) NSUInteger unknownProtocolVersionMessageSchemaVersion;
+
+@end
+
+#pragma mark -
+
 NS_ASSUME_NONNULL_END

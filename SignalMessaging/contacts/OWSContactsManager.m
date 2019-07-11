@@ -463,7 +463,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         SignalServiceAddress *address = notification.userInfo[kNSNotificationKey_ProfileAddress];
         OWSAssertDebug(address.isValid);
 
-        [self.avatarCache removeAllImagesForKey:address.transitional_phoneNumber];
+        [self.avatarCache removeAllImagesForKey:address.stringForDisplay];
     }];
 }
 
@@ -517,23 +517,22 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             }
         }];
 
-        NSMutableSet<NSString *> *seenPhoneNumbers = [NSMutableSet new];
+        NSMutableSet<SignalServiceAddress *> *seenAddresses = [NSMutableSet new];
         for (Contact *contact in contacts) {
             NSArray<SignalRecipient *> *signalRecipients = contactIdToSignalRecipientsMap[contact.uniqueId];
             for (SignalRecipient *signalRecipient in [signalRecipients sortedArrayUsingSelector:@selector((compare:))]) {
-                if ([seenPhoneNumbers containsObject:signalRecipient.address.transitional_phoneNumber]) {
+                if ([seenAddresses containsObject:signalRecipient.address]) {
                     OWSLogDebug(@"Ignoring duplicate contact: %@, %@", signalRecipient.address, contact.fullName);
                     continue;
                 }
-                [seenPhoneNumbers addObject:signalRecipient.address.transitional_phoneNumber];
+                [seenAddresses addObject:signalRecipient.address];
 
                 SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
                 signalAccount.contact = contact;
                 if (signalRecipients.count > 1) {
                     signalAccount.hasMultipleAccountContact = YES;
                     signalAccount.multipleAccountLabelText =
-                        [[self class] accountLabelForContact:contact
-                                                 phoneNumber:signalRecipient.address.transitional_phoneNumber];
+                        [[self class] accountLabelForContact:contact address:signalRecipient.address];
                 }
                 [signalAccounts addObject:signalAccount];
             }
@@ -723,41 +722,41 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 #pragma mark - View Helpers
 
 // TODO move into Contact class.
-+ (NSString *)accountLabelForContact:(Contact *)contact phoneNumber:(NSString *)phoneNumber
++ (NSString *)accountLabelForContact:(Contact *)contact address:(SignalServiceAddress *)address
 {
     OWSAssertDebug(contact);
-    OWSAssertDebug(phoneNumber.length > 0);
-    OWSAssertDebug([contact.registeredPhoneNumbers containsObject:phoneNumber]);
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug([contact.registeredAddresses containsObject:address]);
 
-    if (contact.registeredPhoneNumbers.count <= 1) {
+    if (contact.registeredAddresses.count <= 1) {
         return nil;
     }
 
-    // 1. Find the phone number type of this account.
-    NSString *phoneNumberLabel = [contact nameForPhoneNumber:phoneNumber];
+    // 1. Find the address type of this account.
+    NSString *addressLabel = [contact nameForAddress:address];
 
-    // 2. Find all phone numbers for this contact of the same type.
-    NSMutableArray *phoneNumbersWithTheSameName = [NSMutableArray new];
-    for (NSString *registeredPhoneNumber in contact.registeredPhoneNumbers) {
-        if ([phoneNumberLabel isEqualToString:[contact nameForPhoneNumber:registeredPhoneNumber]]) {
-            [phoneNumbersWithTheSameName addObject:registeredPhoneNumber];
+    // 2. Find all addresses for this contact of the same type.
+    NSMutableArray<SignalServiceAddress *> *addressesWithTheSameName = [NSMutableArray new];
+    for (SignalServiceAddress *registeredAddress in contact.registeredAddresses) {
+        if ([addressLabel isEqualToString:[contact nameForAddress:registeredAddress]]) {
+            [addressesWithTheSameName addObject:registeredAddress];
         }
     }
 
-    OWSAssertDebug([phoneNumbersWithTheSameName containsObject:phoneNumber]);
-    if (phoneNumbersWithTheSameName.count > 1) {
+    OWSAssertDebug([addressesWithTheSameName containsObject:address]);
+    if (addressesWithTheSameName.count > 1) {
         NSUInteger index =
-            [[phoneNumbersWithTheSameName sortedArrayUsingSelector:@selector((compare:))] indexOfObject:phoneNumber];
+            [[addressesWithTheSameName sortedArrayUsingSelector:@selector((compare:))] indexOfObject:address];
         NSString *indexText = [OWSFormat formatInt:(int)index + 1];
-        phoneNumberLabel =
+        addressLabel =
             [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
                                            @"Format for phone number label with an index. Embeds {{Phone number label "
                                            @"(e.g. 'home')}} and {{index, e.g. 2}}."),
-                      phoneNumberLabel,
+                      addressLabel,
                       indexText];
     }
 
-    return phoneNumberLabel.filterStringForDisplay;
+    return addressLabel.filterStringForDisplay;
 }
 
 - (BOOL)phoneNumber:(PhoneNumber *)phoneNumber1 matchesNumber:(PhoneNumber *)phoneNumber2
@@ -807,10 +806,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
 {
-    // TODO UUID
-    if (SSKFeatureFlags.allowUUIDOnlyContacts && address.phoneNumber == nil) {
-        return nil;
-    }
     return [self.profileManager profileNameForAddress:address];
 }
 
@@ -1134,10 +1129,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (nullable UIImage *)profileImageForAddress:(nullable SignalServiceAddress *)address
 {
     if (address == nil) {
-        return nil;
-    }
-    // TODO UUID
-    if (SSKFeatureFlags.allowUUIDOnlyContacts && address.phoneNumber == nil) {
         return nil;
     }
 

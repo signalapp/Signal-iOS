@@ -165,9 +165,9 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 // --- CODE GENERATION MARKER
 
-+ (nullable instancetype)findMessageWithAuthorId:(NSString *)authorId
-                                       timestamp:(uint64_t)timestamp
-                                     transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (nullable instancetype)findMessageWithAddress:(SignalServiceAddress *)address
+                                      timestamp:(uint64_t)timestamp
+                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -184,8 +184,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
                                      OWSAssertDebug(message.authorAddress.isValid);
 
-                                     if ([message.authorAddress
-                                             isEqualToAddress:authorId.transitional_signalServiceAddress]) {
+                                     if ([message.authorAddress isEqualToAddress:address]) {
                                          foundMessage = message;
                                      }
                                  }

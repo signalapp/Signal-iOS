@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -16,22 +16,22 @@ public protocol TypingIndicators: class {
     func didSendOutgoingMessage(inThread thread: TSThread)
 
     @objc
-    func didReceiveTypingStartedMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt)
+    func didReceiveTypingStartedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt)
 
     @objc
-    func didReceiveTypingStoppedMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt)
+    func didReceiveTypingStoppedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt)
 
     @objc
-    func didReceiveIncomingMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt)
+    func didReceiveIncomingMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt)
 
-    // Returns the recipient id of the user who should currently be shown typing for a given thread.
+    // Returns the address of the user who should currently be shown typing for a given thread.
     //
     // If no one is typing in that thread, returns nil.
     // If multiple users are typing in that thread, returns the user to show.
     //
     // TODO: Use this method.
     @objc
-    func typingRecipientId(forThread thread: TSThread) -> String?
+    func typingAddress(forThread thread: TSThread) -> SignalServiceAddress?
 
     @objc
     func setTypingIndicatorsEnabled(value: Bool)
@@ -132,38 +132,38 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     }
 
     @objc
-    public func didReceiveTypingStartedMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt) {
+    public func didReceiveTypingStartedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
         AssertIsOnMainThread()
         Logger.info("")
-        let incomingIndicators = ensureIncomingIndicators(forThread: thread, recipientId: recipientId, deviceId: deviceId)
+        let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId)
         incomingIndicators.didReceiveTypingStartedMessage()
     }
 
     @objc
-    public func didReceiveTypingStoppedMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt) {
+    public func didReceiveTypingStoppedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
         AssertIsOnMainThread()
         Logger.info("")
-        let incomingIndicators = ensureIncomingIndicators(forThread: thread, recipientId: recipientId, deviceId: deviceId)
+        let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId)
         incomingIndicators.didReceiveTypingStoppedMessage()
     }
 
     @objc
-    public func didReceiveIncomingMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt) {
+    public func didReceiveIncomingMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
         AssertIsOnMainThread()
         Logger.info("")
-        let incomingIndicators = ensureIncomingIndicators(forThread: thread, recipientId: recipientId, deviceId: deviceId)
+        let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId)
         incomingIndicators.didReceiveIncomingMessage()
     }
 
     @objc
-    public func typingRecipientId(forThread thread: TSThread) -> String? {
+    public func typingAddress(forThread thread: TSThread) -> SignalServiceAddress? {
         AssertIsOnMainThread()
 
         guard areTypingIndicatorsEnabled() else {
             return nil
         }
 
-        var firstRecipientId: String?
+        var firstAddress: SignalServiceAddress?
         var firstTimestamp: UInt64?
 
         let threadKey = incomingIndicatorsKey(forThread: thread)
@@ -185,10 +185,10 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 // prefer the one that started typing first.
                 continue
             }
-            firstRecipientId = incomingIndicators.recipientId
+            firstAddress = incomingIndicators.address
             firstTimestamp = startedTypingTimestamp
         }
-        return firstRecipientId
+        return firstAddress
     }
 
     // MARK: -
@@ -331,28 +331,32 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     // MARK: -
 
     // Map of (thread id)-to-(recipient id and device id)-to-IncomingIndicators.
-    private var incomingIndicatorsMap = [String: [String: IncomingIndicators]]()
+    private var incomingIndicatorsMap = [String: [AddressWithDeviceId: IncomingIndicators]]()
+    private struct AddressWithDeviceId: Hashable {
+        let address: SignalServiceAddress
+        let deviceId: UInt
+    }
 
     private func incomingIndicatorsKey(forThread thread: TSThread) -> String {
         return String(describing: thread.uniqueId)
     }
 
-    private func incomingIndicatorsKey(recipientId: String, deviceId: UInt) -> String {
-        return "\(recipientId) \(deviceId)"
+    private func incomingIndicatorsKey(address: SignalServiceAddress, deviceId: UInt) -> AddressWithDeviceId {
+        return AddressWithDeviceId(address: address, deviceId: deviceId)
     }
 
-    private func ensureIncomingIndicators(forThread thread: TSThread, recipientId: String, deviceId: UInt) -> IncomingIndicators {
+    private func ensureIncomingIndicators(forThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) -> IncomingIndicators {
         AssertIsOnMainThread()
 
         let threadKey = incomingIndicatorsKey(forThread: thread)
-        let deviceKey = incomingIndicatorsKey(recipientId: recipientId, deviceId: deviceId)
+        let deviceKey = incomingIndicatorsKey(address: address, deviceId: deviceId)
         guard let deviceMap = incomingIndicatorsMap[threadKey] else {
-            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, recipientId: recipientId, deviceId: deviceId)
+            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, address: address, deviceId: deviceId)
             incomingIndicatorsMap[threadKey] = [deviceKey: incomingIndicators]
             return incomingIndicators
         }
         guard let incomingIndicators = deviceMap[deviceKey] else {
-            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, recipientId: recipientId, deviceId: deviceId)
+            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, address: address, deviceId: deviceId)
             var deviceMapCopy = deviceMap
             deviceMapCopy[deviceKey] = incomingIndicators
             incomingIndicatorsMap[threadKey] = deviceMapCopy
@@ -365,7 +369,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     private class IncomingIndicators {
         private weak var delegate: TypingIndicators?
         private let thread: TSThread
-        fileprivate let recipientId: String
+        fileprivate let address: SignalServiceAddress
         private let deviceId: UInt
         private var displayTypingTimer: Timer?
         fileprivate var startedTypingTimestamp: UInt64?
@@ -384,10 +388,10 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         }
 
         init(delegate: TypingIndicators, thread: TSThread,
-             recipientId: String, deviceId: UInt) {
+             address: SignalServiceAddress, deviceId: UInt) {
             self.delegate = delegate
             self.thread = thread
-            self.recipientId = recipientId
+            self.address = address
             self.deviceId = deviceId
         }
 
