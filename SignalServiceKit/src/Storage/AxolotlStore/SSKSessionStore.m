@@ -134,10 +134,10 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     [self storeSessionForAccountId:contactIdentifier deviceId:deviceId session:session transaction:transaction];
 }
 
-- (void)storeSessionForAddress:(SignalServiceAddress *)address
-                      deviceId:(int)deviceId
-                       session:(SessionRecord *)session
-                   transaction:(SDSAnyWriteTransaction *)transaction
+- (void)storeSession:(SessionRecord *)session
+          forAddress:(SignalServiceAddress *)address
+            deviceId:(int)deviceId
+         transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(address.isValid > 0);
 

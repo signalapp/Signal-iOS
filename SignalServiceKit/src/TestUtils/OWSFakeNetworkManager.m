@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFakeNetworkManager.h"
@@ -9,6 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 #ifdef DEBUG
 
 @implementation OWSFakeNetworkManager
+
+- (instancetype)init
+{
+    return [super initDefault];
+}
 
 - (void)makeRequest:(TSRequest *)request
             success:(void (^)(NSURLSessionDataTask *task, id responseObject))success

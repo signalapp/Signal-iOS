@@ -4334,6 +4334,7 @@
 				WARNING_CFLAGS = (
 					"-Werror=incompatible-pointer-types",
 					"-Werror=protocol",
+					"-Werror=incomplete-implementation",
 				);
 			};
 			name = Debug;
@@ -4413,6 +4414,7 @@
 				WARNING_CFLAGS = (
 					"-Werror=incompatible-pointer-types",
 					"-Werror=protocol",
+					"-Werror=incomplete-implementation",
 				);
 			};
 			name = "App Store Release";

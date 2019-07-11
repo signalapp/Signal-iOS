@@ -110,7 +110,8 @@ def configure_warning_flags(installer)
       target.build_configurations.each do |build_configuration|
           build_configuration.build_settings['WARNING_CFLAGS'] = ['$(inherited)', 
                                                                   '-Werror=incompatible-pointer-types',
-                                                                  '-Werror=protocol']
+                                                                  '-Werror=protocol',
+                                                                  '-Werror=incomplete-implementation']
       end
   end
 end
