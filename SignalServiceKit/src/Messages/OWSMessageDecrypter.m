@@ -446,7 +446,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     id<SMKCertificateValidator> certificateValidator =
         [[SMKCertificateDefaultValidator alloc] initWithTrustRoot:self.udManager.trustRoot];
 
-    NSString *localRecipientId = self.tsAccountManager.localNumber;
+    SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
     uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
 
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -468,7 +468,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             [cipher throwswrapped_decryptMessageWithCertificateValidator:certificateValidator
                                                           cipherTextData:encryptedData
                                                                timestamp:serverTimestamp
-                                                        localRecipientId:localRecipientId
+                                                               localE164:localAddress.phoneNumber
+                                                               localUuid:localAddress.uuid
                                                            localDeviceId:localDeviceId
                                                          protocolContext:transaction
                                                                    error:&decryptError];
@@ -492,15 +493,18 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             } else {
                 underlyingError = decryptError.userInfo[NSUnderlyingErrorKey];
 
-                NSString *senderRecipientId
-                    = decryptError.userInfo[SecretSessionKnownSenderError.kSenderRecipientIdKey];
-                OWSAssert(senderRecipientId);
+                NSString *_Nullable senderE164 = decryptError.userInfo[SecretSessionKnownSenderError.kSenderE164Key];
+                NSUUID *_Nullable senderUuid = decryptError.userInfo[SecretSessionKnownSenderError.kSenderUuidKey];
+                SignalServiceAddress *senderAddress = [[SignalServiceAddress alloc] initWithUuid:senderUuid
+                                                                                     phoneNumber:senderE164];
+                OWSAssert(senderAddress.isValid);
 
                 NSNumber *senderDeviceId = decryptError.userInfo[SecretSessionKnownSenderError.kSenderDeviceIdKey];
                 OWSAssert(senderDeviceId);
 
                 SSKProtoEnvelopeBuilder *identifiedEnvelopeBuilder = envelope.asBuilder;
-                identifiedEnvelopeBuilder.sourceE164 = senderRecipientId;
+                identifiedEnvelopeBuilder.sourceE164 = senderAddress.phoneNumber;
+                identifiedEnvelopeBuilder.sourceUuid = senderAddress.uuidString;
                 identifiedEnvelopeBuilder.sourceDevice = senderDeviceId.unsignedIntValue;
                 NSError *identifiedEnvelopeBuilderError;
 
@@ -550,9 +554,12 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             [TSPreKeyManager checkPreKeys];
         }
 
-        NSString *sourceE164 = decryptResult.senderRecipientId;
-        if (sourceE164.length < 1 || !sourceE164.isValidE164) {
-            NSString *errorDescription = @"Invalid UD sender.";
+        NSString *_Nullable senderE164 = decryptResult.senderE164;
+        NSUUID *_Nullable senderUuid = decryptResult.senderUuid;
+        SignalServiceAddress *sourceAddress = [[SignalServiceAddress alloc] initWithUuid:senderUuid
+                                                                             phoneNumber:senderE164];
+        if (!sourceAddress.isValid) {
+            NSString *errorDescription = [NSString stringWithFormat:@"Invalid UD sender: %@", sourceAddress];
             OWSFailDebug(@"%@", errorDescription);
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
             return failureBlock(error);
@@ -568,7 +575,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         NSData *plaintextData = [decryptResult.paddedPayload removePadding];
 
         SSKProtoEnvelopeBuilder *envelopeBuilder = [envelope asBuilder];
-        [envelopeBuilder setSourceE164:sourceE164];
+        [envelopeBuilder setSourceE164:sourceAddress.phoneNumber];
+        [envelopeBuilder setSourceUuid:sourceAddress.uuidString];
         [envelopeBuilder setSourceDevice:(uint32_t)sourceDeviceId];
         NSError *envelopeBuilderError;
         NSData *_Nullable newEnvelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&envelopeBuilderError];
@@ -578,8 +586,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return failureBlock(error);
         }
 
-        // TODO UUID: pass uuid through SMK for UD delivery
-        SignalServiceAddress *sourceAddress = [[SignalServiceAddress alloc] initWithUuid:nil phoneNumber:sourceE164];
         OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:newEnvelopeData
                                                                             plaintextData:plaintextData
                                                                             sourceAddress:sourceAddress

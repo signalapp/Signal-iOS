@@ -39,14 +39,14 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
     // MARK: - Setup/Teardown
 
-    let aliceRecipientId = "+13213214321"
-    let aliceUUID = UUID()
-    lazy var aliceAddress = SignalServiceAddress(uuid: aliceUUID, phoneNumber: aliceRecipientId)
+    let aliceE164 = "+13213214321"
+    let aliceUuid = UUID()
+    lazy var aliceAddress = SignalServiceAddress(uuid: aliceUuid, phoneNumber: aliceE164)
 
     override func setUp() {
         super.setUp()
 
-        tsAccountManager.registerForTests(withLocalNumber: aliceRecipientId, uuid: aliceUUID)
+        tsAccountManager.registerForTests(withLocalNumber: aliceE164, uuid: aliceUuid)
 
         // Configure UDManager
         profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, for: aliceAddress)
@@ -203,12 +203,13 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         let expires = NSDate.ows_millisecondTimeStamp() + kWeekInMs
         let identityKey = try! Curve25519.generateKeyPair().ecPublicKey().serialized
         let signer = buildServerCertificateProto()
-        let certificateData = try! SMKProtoSenderCertificateCertificate.builder(sender: aliceRecipientId,
-                                                                                senderDevice: 1,
-                                                                                expires: expires,
-                                                                                identityKey: identityKey,
-                                                                                signer: signer)
-            .buildSerializedData()
+        let certificateBuilder = SMKProtoSenderCertificateCertificate.builder(senderDevice: 1,
+                                                                              expires: expires,
+                                                                              identityKey: identityKey,
+                                                                              signer: signer)
+        certificateBuilder.setSenderE164(aliceE164)
+        certificateBuilder.setSenderUuid(aliceUuid.uuidString)
+        let certificateData = try! certificateBuilder.buildSerializedData()
 
         let signatureData = Randomness.generateRandomBytes(ECCSignatureLength)!
 
