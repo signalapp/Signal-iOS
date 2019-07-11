@@ -173,7 +173,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
 
     @objc
     public var isLocalAddress: Bool {
-        return SSKEnvironment.shared.tsAccountManager.localAddress == self
+        return TSAccountManager.localAddress == self
     }
 
     @objc

@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.shouldHaveAuthorizationHeaders);
 
     @synchronized(self) {
-        return (_authUsername ?: TSAccountManager.sharedInstance.localAddress.serviceIdentifier);
+        return (_authUsername ?: TSAccountManager.localAddress.serviceIdentifier);
     }
 }
 

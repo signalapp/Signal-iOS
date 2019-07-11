@@ -493,14 +493,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (NSArray<SignalAccount *> *)suggestedAccountsForFirstContact
 {
     NSMutableArray<SignalAccount *> *accounts = [NSMutableArray new];
-    NSString *_Nullable localNumber = [TSAccountManager localNumber];
-    if (localNumber == nil) {
-        OWSFailDebug(@"localNumber was unexepectedly nil");
-        return @[];
-    }
 
     for (SignalAccount *account in self.contactsManager.signalAccounts) {
-        if ([localNumber isEqual:account.recipientPhoneNumber]) {
+        if (account.recipientAddress.isLocalAddress) {
             continue;
         }
         if (accounts.count >= 3) {

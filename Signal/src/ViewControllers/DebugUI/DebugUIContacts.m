@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
         [[SignalServiceAddress alloc] initWithPhoneNumber:unregisteredRecipientId],
         [[SignalServiceAddress alloc] initWithPhoneNumber:validRecipientId],
-        TSAccountManager.sharedInstance.localAddress,
+        TSAccountManager.localAddress,
     ] mutableCopy];
     NSData *groupId = [Randomness generateRandomBytes:16];
     TSGroupModel *model = [[TSGroupModel alloc] initWithTitle:groupName

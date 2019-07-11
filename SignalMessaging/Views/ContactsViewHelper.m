@@ -151,7 +151,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (SignalServiceAddress *)localAddress
 {
-    return TSAccountManager.sharedInstance.localAddress;
+    return TSAccountManager.localAddress;
 }
 
 - (BOOL)isSignalServiceAddressBlocked:(SignalServiceAddress *)address

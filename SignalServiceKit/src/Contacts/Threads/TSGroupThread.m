@@ -96,7 +96,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 {
     OWSAssertDebug(groupId.length > 0);
 
-    SignalServiceAddress *localAddress = TSAccountManager.sharedInstance.localAddress;
+    SignalServiceAddress *localAddress = TSAccountManager.localAddress;
     OWSAssertDebug(localAddress.isValid);
 
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:nil
@@ -233,7 +233,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
         return @[];
     }
 
-    [groupMembers removeObject:TSAccountManager.sharedInstance.localAddress];
+    [groupMembers removeObject:TSAccountManager.localAddress];
 
     return [groupMembers copy];
 }
@@ -277,7 +277,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 - (BOOL)isLocalUserInGroup
 {
-    SignalServiceAddress *_Nullable localAddress = TSAccountManager.sharedInstance.localAddress;
+    SignalServiceAddress *_Nullable localAddress = TSAccountManager.localAddress;
     if (localAddress == nil) {
         return NO;
     }
@@ -309,7 +309,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     NSMutableArray<SignalServiceAddress *> *newGroupMembers = [self.groupModel.groupMembers mutableCopy];
-    [newGroupMembers removeObject:TSAccountManager.sharedInstance.localAddress];
+    [newGroupMembers removeObject:TSAccountManager.localAddress];
 
     self.groupModel.groupMembers = newGroupMembers;
     [self saveWithTransaction:transaction];

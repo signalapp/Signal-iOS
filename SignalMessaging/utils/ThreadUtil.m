@@ -841,7 +841,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(authorAddress.isValid);
 
-    SignalServiceAddress *localAddress = TSAccountManager.sharedInstance.localAddress;
+    SignalServiceAddress *localAddress = TSAccountManager.localAddress;
     if (!localAddress.isValid) {
         OWSFailDebug(@"missing local address.");
         return nil;

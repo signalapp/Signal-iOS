@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(diameter > 0);
 
-    return [self initWithAddress:TSAccountManager.sharedInstance.localAddress
+    return [self initWithAddress:TSAccountManager.localAddress
                        colorName:kConversationColorName_Default
                         diameter:diameter];
 }

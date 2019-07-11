@@ -76,7 +76,7 @@ public extension DebugUIMessages {
 
         let uuidMembers = (0...3).map { _ in CommonGenerator.address(hasPhoneNumber: false) }
 
-        let members = uuidMembers + [TSAccountManager.sharedInstance().localAddress!]
+        let members = uuidMembers + [TSAccountManager.localAddress!]
 
         let groupName = "UUID Group"
         let groupId = Randomness.generateRandomBytes(kGroupIdLength)!

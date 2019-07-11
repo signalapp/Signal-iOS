@@ -318,7 +318,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     public func udAccess(forAddress address: SignalServiceAddress,
                          requireSyncAccess: Bool) -> OWSUDAccess? {
         if requireSyncAccess {
-            guard tsAccountManager.localNumber() != nil else {
+            guard tsAccountManager.localAddress != nil else {
                 if isUDVerboseLoggingEnabled() {
                     Logger.info("UD disabled for \(address), no local number.")
                 }

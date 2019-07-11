@@ -94,17 +94,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSMutableArray<SignalAccount *> *signalAccounts = [self.signalAccounts mutableCopy];
-    
-    NSString *_Nullable localNumber = self.tsAccountManager.localNumber;
-    OWSAssertDebug(localNumber);
-    if (localNumber) {
-        BOOL hasLocalNumber = NO;
+
+    SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
+    OWSAssertDebug(localAddress.isValid);
+    if (localAddress) {
+        BOOL hasLocalAddress = NO;
         for (SignalAccount *signalAccount in signalAccounts) {
-            hasLocalNumber |= signalAccount.recipientAddress.isLocalAddress;
+            hasLocalAddress |= signalAccount.recipientAddress.isLocalAddress;
         }
-        if (!hasLocalNumber) {
-            SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:localNumber];
-            SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalServiceAddress:address];
+        if (!hasLocalAddress) {
+            SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalServiceAddress:localAddress];
             // OWSContactsOutputStream requires all signalAccount to have a contact.
             signalAccount.contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
             [signalAccounts addObject:signalAccount];

@@ -727,7 +727,7 @@ static NSTimeInterval launchStartedAt;
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                OWSLogInfo(@"running post launch block for registered user: %@", [self.tsAccountManager localNumber]);
+                OWSLogInfo(@"running post launch block for registered user: %@", [self.tsAccountManager localAddress]);
 
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
@@ -1313,7 +1313,7 @@ static NSTimeInterval launchStartedAt;
     }
 
     if ([self.tsAccountManager isRegistered]) {
-        OWSLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
+        OWSLogInfo(@"localAddress: %@", TSAccountManager.localAddress);
 
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
@@ -1399,7 +1399,7 @@ static NSTimeInterval launchStartedAt;
     [self enableBackgroundRefreshIfNecessary];
 
     if ([self.tsAccountManager isRegistered]) {
-        OWSLogInfo(@"localNumber: %@", [self.tsAccountManager localNumber]);
+        OWSLogInfo(@"localAddress: %@", [self.tsAccountManager localAddress]);
 
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];

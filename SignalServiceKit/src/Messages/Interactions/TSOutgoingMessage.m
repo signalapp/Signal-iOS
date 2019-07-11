@@ -481,8 +481,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     // recipient list from current thread state.
     NSArray<SignalServiceAddress *> *recipientAddresses;
     if ([self isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        OWSAssertDebug(TSAccountManager.sharedInstance.localAddress);
-        recipientAddresses = @[ TSAccountManager.sharedInstance.localAddress ];
+        OWSAssertDebug(TSAccountManager.localAddress);
+        recipientAddresses = @[ TSAccountManager.localAddress ];
     } else {
         recipientAddresses = thread.recipientAddresses;
     }

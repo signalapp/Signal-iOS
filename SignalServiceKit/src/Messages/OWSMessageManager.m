@@ -693,8 +693,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"typingMessage has invalid timestamp.");
         return;
     }
-    NSString *localNumber = self.tsAccountManager.localNumber;
-    if ([localNumber isEqualToString:envelope.sourceE164]) {
+    if (envelope.sourceAddress.isLocalAddress) {
         OWSLogVerbose(@"Ignoring typing indicators from self or linked device.");
         return;
     } else if ([self.blockingManager isAddressBlocked:envelope.sourceAddress]
@@ -885,8 +884,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *localNumber = self.tsAccountManager.localNumber;
-    if (![localNumber isEqualToString:envelope.sourceE164]) {
+    if (!envelope.sourceAddress.isLocalAddress) {
         // Sync messages should only come from linked devices.
         OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
         return;
@@ -1535,7 +1533,7 @@ NS_ASSUME_NONNULL_BEGIN
     [incomingMessage anyInsertWithTransaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
-    if ([envelope.sourceE164 isEqualToString:self.tsAccountManager.localNumber]) {
+    if (envelope.sourceAddress.isLocalAddress) {
         // Don't send a read receipt for messages sent by ourselves.
         [incomingMessage markAsReadAtTimestamp:envelope.timestamp sendReadReceipt:NO transaction:transaction];
     }

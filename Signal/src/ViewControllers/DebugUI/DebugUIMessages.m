@@ -3959,7 +3959,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     NSString *groupName = [NSUUID UUID].UUIDString;
     NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
         recipientAddress,
-        TSAccountManager.sharedInstance.localAddress,
+        TSAccountManager.localAddress,
     ] mutableCopy];
     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
@@ -4350,7 +4350,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         @(now - 2 * (long long)kMonthInMs),
     ];
     NSMutableArray<SignalServiceAddress *> *addresses = [thread.recipientAddresses mutableCopy];
-    [addresses removeObject:TSAccountManager.sharedInstance.localAddress];
+    [addresses removeObject:TSAccountManager.localAddress];
     SignalServiceAddress *address
         = (addresses.count > 0 ? addresses.firstObject
                                : [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]);
@@ -4472,7 +4472,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 NSString *groupName = string;
                 NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
                     recipientAddress,
-                    TSAccountManager.sharedInstance.localAddress,
+                    TSAccountManager.localAddress,
                 ] mutableCopy];
                 NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
                 TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
@@ -4520,7 +4520,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 NSString *groupName = string;
                 NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
                     recipientAddress,
-                    TSAccountManager.sharedInstance.localAddress,
+                    TSAccountManager.localAddress,
                 ] mutableCopy];
                 NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
                 TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
@@ -4567,7 +4567,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                     NSString *groupName = string;
                     NSMutableArray<SignalServiceAddress *> *recipientAddresses = [@[
                         recipientAddress,
-                        TSAccountManager.sharedInstance.localAddress,
+                        TSAccountManager.localAddress,
                     ] mutableCopy];
                     NSData *groupId = [Randomness generateRandomBytes:kGroupIdLength];
                     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName

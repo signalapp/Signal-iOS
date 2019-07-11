@@ -134,7 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     SignalServiceAddress *_Nullable authorAddress = ^{
         if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-            return TSAccountManager.sharedInstance.localAddress;
+            return TSAccountManager.localAddress;
         } else if ([message isKindOfClass:[TSIncomingMessage class]]) {
             return [(TSIncomingMessage *)message authorAddress];
         } else {
