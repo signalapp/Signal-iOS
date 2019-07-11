@@ -251,7 +251,11 @@ public class AccountManager: NSObject {
     func recordUuidIfNecessary() {
         DispatchQueue.global().async {
             _ = self.ensureUuid().catch { error in
-                owsFailDebug("error: \(error)")
+                // Until we're in a UUID-only world, don't require a
+                // local UUID.
+                if FeatureFlags.allowUUIDOnlyContacts {
+                    owsFailDebug("error: \(error)")
+                }
                 Logger.error("error: \(error)")
             }.retainUntilComplete()
         }
