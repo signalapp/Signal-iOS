@@ -14,7 +14,8 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 @class OWSAES256Key;
 @class OWSMessageSender;
-@class OWSPrimaryStorage;
+@class SDSDatabaseStorage;
+@class SDSKeyValueStore;
 @class SignalServiceAddress;
 @class TSNetworkManager;
 @class TSThread;
@@ -24,9 +25,15 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
+- (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
+
+#pragma mark - Key Value Stores
+
+- (SDSKeyValueStore *)whitelistedPhoneNumbersStore;
+- (SDSKeyValueStore *)whitelistedUUIDsStore;
+- (SDSKeyValueStore *)whitelistedGroupsStore;
 
 #pragma mark - Local Profile
 
@@ -87,6 +94,10 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
                         fromViewController:(UIViewController *)fromViewController
                                    success:(void (^)(void))successHandler;
+
+#pragma mark - Clean Up
+
+- (NSSet<NSString *> *)allProfileAvatarFilePaths;
 
 @end
 

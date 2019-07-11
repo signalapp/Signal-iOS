@@ -14,8 +14,6 @@
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <YapDatabase/YapDatabaseConnection.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -105,13 +103,13 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 }
 
 + (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)address
-                                       dbConnection:(YapDatabaseConnection *)dbConnection
+                                      databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
 {
     OWSAssertDebug(address.isValid);
 
     __block OWSUserProfile *userProfile;
-    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        userProfile = [self.userProfileFinder userProfileForAddress:address transaction:transaction.asAnyRead];
+    [databaseQueue readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        userProfile = [self.userProfileFinder userProfileForAddress:address transaction:transaction];
     }];
 
     if (!userProfile) {
@@ -119,7 +117,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
         if ([address.phoneNumber isEqualToString:kLocalProfileUniqueId]) {
             [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
-                                 dbConnection:dbConnection
+                                databaseQueue:databaseQueue
                                    completion:nil];
         }
     }
@@ -129,13 +127,11 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return userProfile;
 }
 
-+ (BOOL)localUserProfileExists:(YapDatabaseConnection *)dbConnection
++ (BOOL)localUserProfileExists:(SDSAnyDatabaseQueue *)databaseQueue
 {
     __block BOOL result = NO;
-    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        result = [self.userProfileFinder userProfileForAddress:self.localProfileAddress
-                                                   transaction:transaction.asAnyRead]
-            != nil;
+    [databaseQueue readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.userProfileFinder userProfileForAddress:self.localProfileAddress transaction:transaction] != nil;
     }];
 
     return result;
@@ -252,38 +248,40 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 // * We fire "did change" notifications.
 - (void)applyChanges:(void (^)(id))changeBlock
         functionName:(const char *)functionName
-        dbConnection:(YapDatabaseConnection *)dbConnection
+       databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
           completion:(nullable OWSUserProfileCompletion)completion
 {
-    // self might be the latest instance, so take a "before" snapshot
-    // before any changes have been made.
-    __block NSDictionary *beforeSnapshot = [self.dictionaryValue copy];
+    OWSAssertDebug(databaseQueue);
 
-    changeBlock(self);
+    // This should be set to true if:
+    //
+    // * This profile has just been inserted.
+    // * Updating the profile updated this instance.
+    // * Updating the profile updated the "latest" instance.
+    __block BOOL didChange = NO;
 
-    __block BOOL didChange = YES;
-    [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        NSString *collection = [[self class] collection];
-        OWSUserProfile *_Nullable latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-        if (latestInstance) {
-            // If self is NOT the latest instance, take a new "before" snapshot
-            // before updating.
-            if (self != latestInstance) {
-                beforeSnapshot = [latestInstance.dictionaryValue copy];
-            }
+    [databaseQueue writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSUserProfile *_Nullable latestInstance =
+            [OWSUserProfile anyFetchWithUniqueId:self.uniqueId transaction:transaction];
+        if (latestInstance != nil) {
+            [self anyUpdateWithTransaction:transaction
+                                     block:^(OWSUserProfile *profile) {
+                                         // self might be the latest instance, so take a "before" snapshot
+                                         // before any changes have been made.
+                                         NSDictionary *beforeSnapshot = [profile.dictionaryValue copy];
 
-            changeBlock(latestInstance);
+                                         changeBlock(profile);
 
-            NSDictionary *afterSnapshot = [latestInstance.dictionaryValue copy];
+                                         NSDictionary *afterSnapshot = [profile.dictionaryValue copy];
 
-            if ([beforeSnapshot isEqual:afterSnapshot]) {
-                OWSLogVerbose(@"Ignoring redundant update in %s: %@", functionName, self.debugDescription);
-                didChange = NO;
-            } else {
-                [latestInstance saveWithTransaction:transaction];
-            }
+                                         if (![beforeSnapshot isEqual:afterSnapshot]) {
+                                             didChange = YES;
+                                         }
+                                     }];
         } else {
-            [self saveWithTransaction:transaction];
+            changeBlock(self);
+            [self anyInsertWithTransaction:transaction];
+            didChange = YES;
         }
     }];
 
@@ -329,128 +327,98 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                avatarFileName:(nullable NSString *)avatarFileName
-                 dbConnection:(YapDatabaseConnection *)dbConnection
+                databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                    completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setProfileName:[profileName ows_stripped]];
-            // Always setAvatarUrlPath: before you setAvatarFileName: since
-            // setAvatarUrlPath: may clear the avatar filename.
-            [userProfile setAvatarUrlPath:avatarUrlPath];
-            [userProfile setAvatarFileName:avatarFileName];
-        }
-        functionName:__PRETTY_FUNCTION__
-        dbConnection:dbConnection
-          completion:completion];
+         applyChanges:^(OWSUserProfile *userProfile) {
+             [userProfile setProfileName:[profileName ows_stripped]];
+             // Always setAvatarUrlPath: before you setAvatarFileName: since
+             // setAvatarUrlPath: may clear the avatar filename.
+             [userProfile setAvatarUrlPath:avatarUrlPath];
+             [userProfile setAvatarFileName:avatarFileName];
+         }
+         functionName:__PRETTY_FUNCTION__
+        databaseQueue:databaseQueue
+           completion:completion];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
-                 dbConnection:(YapDatabaseConnection *)dbConnection
+                databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                    completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setProfileName:[profileName ows_stripped]];
-            [userProfile setAvatarUrlPath:avatarUrlPath];
-        }
-        functionName:__PRETTY_FUNCTION__
-        dbConnection:dbConnection
-          completion:completion];
+         applyChanges:^(OWSUserProfile *userProfile) {
+             [userProfile setProfileName:[profileName ows_stripped]];
+             [userProfile setAvatarUrlPath:avatarUrlPath];
+         }
+         functionName:__PRETTY_FUNCTION__
+        databaseQueue:databaseQueue
+           completion:completion];
 }
 
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
                  avatarFileName:(nullable NSString *)avatarFileName
-                   dbConnection:(YapDatabaseConnection *)dbConnection
+                  databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                      completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            // Always setAvatarUrlPath: before you setAvatarFileName: since
-            // setAvatarUrlPath: may clear the avatar filename.
-            [userProfile setAvatarUrlPath:avatarUrlPath];
-            [userProfile setAvatarFileName:avatarFileName];
-        }
-        functionName:__PRETTY_FUNCTION__
-        dbConnection:dbConnection
-          completion:completion];
+         applyChanges:^(OWSUserProfile *userProfile) {
+             // Always setAvatarUrlPath: before you setAvatarFileName: since
+             // setAvatarUrlPath: may clear the avatar filename.
+             [userProfile setAvatarUrlPath:avatarUrlPath];
+             [userProfile setAvatarFileName:avatarFileName];
+         }
+         functionName:__PRETTY_FUNCTION__
+        databaseQueue:databaseQueue
+           completion:completion];
 }
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
-                    dbConnection:(YapDatabaseConnection *)dbConnection
+                   databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                       completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setAvatarFileName:avatarFileName];
-        }
-        functionName:__PRETTY_FUNCTION__
-        dbConnection:dbConnection
-          completion:completion];
+         applyChanges:^(OWSUserProfile *userProfile) {
+             [userProfile setAvatarFileName:avatarFileName];
+         }
+         functionName:__PRETTY_FUNCTION__
+        databaseQueue:databaseQueue
+           completion:completion];
 }
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
-               dbConnection:(YapDatabaseConnection *)dbConnection
+              databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                  completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setProfileKey:profileKey];
-            [userProfile setProfileName:nil];
-            // Always setAvatarUrlPath: before you setAvatarFileName: since
-            // setAvatarUrlPath: may clear the avatar filename.
-            [userProfile setAvatarUrlPath:nil];
-            [userProfile setAvatarFileName:nil];
-        }
-        functionName:__PRETTY_FUNCTION__
-        dbConnection:dbConnection
-          completion:completion];
+         applyChanges:^(OWSUserProfile *userProfile) {
+             [userProfile setProfileKey:profileKey];
+             [userProfile setProfileName:nil];
+             // Always setAvatarUrlPath: before you setAvatarFileName: since
+             // setAvatarUrlPath: may clear the avatar filename.
+             [userProfile setAvatarUrlPath:nil];
+             [userProfile setAvatarFileName:nil];
+         }
+         functionName:__PRETTY_FUNCTION__
+        databaseQueue:databaseQueue
+           completion:completion];
 }
 
 - (void)updateWithProfileKey:(OWSAES256Key *)profileKey
-                dbConnection:(YapDatabaseConnection *)dbConnection
+               databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                   completion:(nullable OWSUserProfileCompletion)completion
 {
     OWSAssertDebug(profileKey);
 
     [self
-        applyChanges:^(OWSUserProfile *userProfile) {
-            [userProfile setProfileKey:profileKey];
-        }
-        functionName:__PRETTY_FUNCTION__
-        dbConnection:dbConnection
-          completion:completion];
-}
-
-#pragma mark - Database Connection Accessors
-
-- (YapDatabaseConnection *)dbReadConnection
-{
-    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
-
-    return TSYapDatabaseObject.dbReadConnection;
-}
-
-+ (YapDatabaseConnection *)dbReadConnection
-{
-    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
-
-    return TSYapDatabaseObject.dbReadConnection;
-}
-
-- (YapDatabaseConnection *)dbReadWriteConnection
-{
-    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
-
-    return TSYapDatabaseObject.dbReadWriteConnection;
-}
-
-+ (YapDatabaseConnection *)dbReadWriteConnection
-{
-    OWSFailDebug(@"UserProfile should always use OWSProfileManager's database connection.");
-
-    return TSYapDatabaseObject.dbReadWriteConnection;
+         applyChanges:^(OWSUserProfile *userProfile) {
+             [userProfile setProfileKey:profileKey];
+         }
+         functionName:__PRETTY_FUNCTION__
+        databaseQueue:databaseQueue
+           completion:completion];
 }
 
 // This should only be used in verbose, developer-only logs.
@@ -532,28 +500,21 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     }
 }
 
-+ (NSSet<NSString *> *)allProfileAvatarFilePaths
++ (NSSet<NSString *> *)allProfileAvatarFilePathsWithDatabaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
 {
     NSString *profileAvatarsDirPath = self.profileAvatarsDirPath;
     NSMutableSet<NSString *> *profileAvatarFilePaths = [NSMutableSet new];
 
-    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [OWSUserProfile
-            enumerateCollectionObjectsWithTransaction:transaction
-                                           usingBlock:^(id object, BOOL *stop) {
-                                               if (![object isKindOfClass:[OWSUserProfile class]]) {
-                                                   OWSFailDebug(
-                                                       @"unexpected object in user profiles: %@", [object class]);
-                                                   return;
-                                               }
-                                               OWSUserProfile *userProfile = object;
-                                               if (!userProfile.avatarFileName) {
-                                                   return;
-                                               }
-                                               NSString *filePath = [profileAvatarsDirPath
-                                                   stringByAppendingPathComponent:userProfile.avatarFileName];
-                                               [profileAvatarFilePaths addObject:filePath];
-                                           }];
+    [databaseQueue readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [OWSUserProfile anyEnumerateWithTransaction:transaction
+                                              block:^(OWSUserProfile *userProfile, BOOL *stop) {
+                                                  if (!userProfile.avatarFileName) {
+                                                      return;
+                                                  }
+                                                  NSString *filePath = [profileAvatarsDirPath
+                                                      stringByAppendingPathComponent:userProfile.avatarFileName];
+                                                  [profileAvatarFilePaths addObject:filePath];
+                                              }];
     }];
     return [profileAvatarFilePaths copy];
 }

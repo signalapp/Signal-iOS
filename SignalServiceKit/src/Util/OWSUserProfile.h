@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSUserProfileCompletion)(void);
 
 @class OWSAES256Key;
+@class SDSAnyDatabaseQueue;
 @class SignalServiceAddress;
 
 extern NSString *const kNSNotificationName_LocalProfileDidChange;
@@ -21,7 +22,7 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
 // This class should be completely thread-safe.
 //
 // It is critical for coherency that all DB operations for this
-// class should be done on OWSProfileManager's dbConnection.
+// class should be done on OWSProfileManager's databaseQueue.
 @interface OWSUserProfile : TSYapDatabaseObject
 
 @property (atomic, readonly) SignalServiceAddress *address;
@@ -57,38 +58,38 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
 + (SignalServiceAddress *)localProfileAddress;
 
 + (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)recipientId
-                                       dbConnection:(YapDatabaseConnection *)dbConnection;
+                                      databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue;
 
-+ (BOOL)localUserProfileExists:(YapDatabaseConnection *)dbConnection;
++ (BOOL)localUserProfileExists:(SDSAnyDatabaseQueue *)databaseQueue;
 
 #pragma mark - Update With... Methods
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                avatarFileName:(nullable NSString *)avatarFileName
-                 dbConnection:(YapDatabaseConnection *)dbConnection
+                databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                    completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
-                 dbConnection:(YapDatabaseConnection *)dbConnection
+                databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                    completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
                  avatarFileName:(nullable NSString *)avatarFileName
-                   dbConnection:(YapDatabaseConnection *)dbConnection
+                  databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                      completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
-                    dbConnection:(YapDatabaseConnection *)dbConnection
+                   databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                       completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileKey:(OWSAES256Key *)profileKey
-                dbConnection:(YapDatabaseConnection *)dbConnection
+               databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                   completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
-               dbConnection:(YapDatabaseConnection *)dbConnection
+              databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                  completion:(nullable OWSUserProfileCompletion)completion;
 
 #pragma mark - Profile Avatars Directory
@@ -99,7 +100,8 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
 + (NSString *)sharedDataProfileAvatarsDirPath;
 + (NSString *)profileAvatarsDirPath;
 + (void)resetProfileStorage;
-+ (NSSet<NSString *> *)allProfileAvatarFilePaths;
+
++ (NSSet<NSString *> *)allProfileAvatarFilePathsWithDatabaseQueue:(SDSAnyDatabaseQueue *)databaseQueue;
 
 @end
 
