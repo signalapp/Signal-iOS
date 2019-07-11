@@ -67,7 +67,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                           completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
     NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
-    [self showBlockAddressesActionSheet:@[ signalAccount.recipientAddress.transitional_phoneNumber ]
+    [self showBlockAddressesActionSheet:@[ signalAccount.recipientAddress ]
                             displayName:displayName
                      fromViewController:fromViewController
                         blockingManager:blockingManager
@@ -304,7 +304,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                             completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
     NSString *displayName = [contactsManager displayNameForSignalAccount:signalAccount];
-    [self showUnblockAddressesActionSheet:@[ signalAccount.recipientAddress.transitional_phoneNumber ]
+    [self showUnblockAddressesActionSheet:@[ signalAccount.recipientAddress ]
                               displayName:displayName
                        fromViewController:fromViewController
                           blockingManager:blockingManager
