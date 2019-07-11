@@ -8,6 +8,7 @@
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -109,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.shouldHaveAuthorizationHeaders);
 
     @synchronized(self) {
-        return (_authUsername ?: [TSAccountManager localNumber]);
+        return (_authUsername ?: TSAccountManager.sharedInstance.localAddress.serviceIdentifier);
     }
 }
 

@@ -32,6 +32,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
+@property (nonatomic, nullable) NSUUID *uuidAwaitingVerification;
 
 #pragma mark - Initializers
 
@@ -94,7 +95,7 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 // - obtained signal server credentials
 // - uploaded pre-keys
 // - uploaded push tokens
-- (void)didRegisterWithUUID:(nullable NSUUID *)uuid NS_SWIFT_NAME(didRegister(uuid:));
+- (void)didRegister;
 - (void)recordUuidForLegacyUser:(NSUUID *)uuid NS_SWIFT_NAME(recordUuidForLegacyUser(_:));
 
 #if TARGET_OS_IPHONE
