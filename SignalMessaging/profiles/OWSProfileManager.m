@@ -812,10 +812,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 // It's possible we white listed one but not both, so we check each.
 
                 if (address.uuidString) {
-                    NSNumber *currentlyBlocked =
+                    NSNumber *currentlyWhitelisted =
                         [transaction objectForKey:address.uuidString
                                      inCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
-                    if (currentlyBlocked != nil && !currentlyBlocked.boolValue) {
+                    if (currentlyWhitelisted == nil || !currentlyWhitelisted.boolValue) {
                         [transaction setObject:@(YES)
                                         forKey:address.uuidString
                                   inCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
@@ -824,10 +824,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 }
 
                 if (address.phoneNumber) {
-                    NSNumber *_Nullable currentlyBlocked =
+                    NSNumber *_Nullable currentlyWhitelisted =
                         [transaction objectForKey:address.phoneNumber
                                      inCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
-                    if (currentlyBlocked != nil && !currentlyBlocked.boolValue) {
+                    if (currentlyWhitelisted == nil || !currentlyWhitelisted.boolValue) {
                         [transaction setObject:@(YES)
                                         forKey:address.phoneNumber
                                   inCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
