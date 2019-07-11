@@ -529,7 +529,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updatePreview
 {
-    if ([self.typingIndicators typingRecipientIdForThread:self.thread.threadRecord] != nil) {
+    if ([self.typingIndicators typingAddressForThread:self.thread.threadRecord] != nil) {
         // If we hide snippetLabel, our layout will break since UIStackView will remove
         // it from the layout.  Wrapping the preview views (the snippet label and the
         // typing indicator) in a UIStackView proved non-trivial since we're using

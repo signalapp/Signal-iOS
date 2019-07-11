@@ -736,12 +736,12 @@ NS_ASSUME_NONNULL_BEGIN
         switch (typingMessage.unwrappedAction) {
             case SSKProtoTypingMessageActionStarted:
                 [self.typingIndicators didReceiveTypingStartedMessageInThread:thread
-                                                                  recipientId:envelope.sourceE164
+                                                                      address:envelope.sourceAddress
                                                                      deviceId:envelope.sourceDevice];
                 break;
             case SSKProtoTypingMessageActionStopped:
                 [self.typingIndicators didReceiveTypingStoppedMessageInThread:thread
-                                                                  recipientId:envelope.sourceE164
+                                                                      address:envelope.sourceAddress
                                                                      deviceId:envelope.sourceDevice];
                 break;
             default:
@@ -1604,7 +1604,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.typingIndicators didReceiveIncomingMessageInThread:thread
-                                                     recipientId:envelope.sourceE164
+                                                         address:envelope.sourceAddress
                                                         deviceId:envelope.sourceDevice];
     });
 

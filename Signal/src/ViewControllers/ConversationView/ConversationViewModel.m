@@ -200,7 +200,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 @property (nonatomic, nullable) ThreadDynamicInteractions *dynamicInteractions;
 @property (nonatomic) BOOL hasClearedUnreadMessagesIndicator;
 @property (nonatomic, nullable) NSDate *collapseCutoffDate;
-@property (nonatomic, nullable) NSString *typingIndicatorsSender;
+@property (nonatomic, nullable) SignalServiceAddress *typingIndicatorsSender;
 
 @property (nonatomic, nullable) ConversationProfileState *conversationProfileState;
 @property (nonatomic) BOOL hasTooManyOutgoingMessagesToBlockCached;
@@ -355,7 +355,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     // We need to update the "unread indicator" _before_ we determine the initial range
     // size, since it depends on where the unread indicator is placed.
-    self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
+    self.typingIndicatorsSender = [self.typingIndicators typingAddressForThread:self.thread];
     self.collapseCutoffDate = [NSDate new];
 
     [self.primaryStorage updateUIDatabaseConnectionToLatest];
@@ -1423,7 +1423,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         OWSTypingIndicatorInteraction *typingIndicatorInteraction =
             [[OWSTypingIndicatorInteraction alloc] initWithThread:self.thread
                                                         timestamp:[NSDate ows_millisecondTimeStamp]
-                                                      recipientId:self.typingIndicatorsSender];
+                                                          address:self.typingIndicatorsSender];
         tryToAddViewItem(typingIndicatorInteraction);
     }
 
@@ -1808,10 +1808,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return;
     }
 
-    self.typingIndicatorsSender = [self.typingIndicators typingRecipientIdForThread:self.thread];
+    self.typingIndicatorsSender = [self.typingIndicators typingAddressForThread:self.thread];
 }
 
-- (void)setTypingIndicatorsSender:(nullable NSString *)typingIndicatorsSender
+- (void)setTypingIndicatorsSender:(nullable SignalServiceAddress *)typingIndicatorsSender
 {
     OWSAssertIsOnMainThread();
 
