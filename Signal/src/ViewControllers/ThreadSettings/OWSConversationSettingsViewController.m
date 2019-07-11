@@ -956,7 +956,7 @@ const CGFloat kIconViewLength = 24;
     __block UIView *lastTitleView = threadTitleLabel;
 
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *thread = (TSContactThread *)self.thread;
+        TSContactThread *contactThread = (TSContactThread *)self.thread;
 
         const CGFloat kSubtitlePointSize = 12.f;
         void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
@@ -971,10 +971,10 @@ const CGFloat kIconViewLength = 24;
             lastTitleView = subtitleLabel;
         };
 
-        SignalServiceAddress *recipientAddress = thread.contactAddress;
+        SignalServiceAddress *recipientAddress = contactThread.contactAddress;
         NSString *_Nullable phoneNumber = recipientAddress.phoneNumber;
 
-        BOOL hasNameAndPhoneNumber = phoneNumber && ![self.thread.name isEqualToString:phoneNumber];
+        BOOL hasNameAndPhoneNumber = phoneNumber && ![contactThread.name isEqualToString:phoneNumber];
         if (hasNameAndPhoneNumber) {
             NSAttributedString *subtitle = [[NSAttributedString alloc]
                 initWithString:[PhoneNumber
@@ -986,6 +986,11 @@ const CGFloat kIconViewLength = 24;
                 addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
             }
         }
+
+#if DEBUG
+        NSString *uuidText = [NSString stringWithFormat:@"UUID: %@", contactThread.contactAddress.uuid ?: @"Unknown"];
+        addSubtitle([[NSAttributedString alloc] initWithString:uuidText]);
+#endif
 
         BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForAddress:recipientAddress]
             == OWSVerificationStateVerified;
