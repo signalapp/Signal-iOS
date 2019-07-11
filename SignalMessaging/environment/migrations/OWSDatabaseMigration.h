@@ -17,6 +17,8 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 // Although OWSDatabaseMigration is still a TSYapDatabaseObject
 // to enable deserialization of legacy values, OWSDatabaseMigration
 // now uses a key-value store to persist migration completion.
+//
+// Therefore, we do _not_ need to subclass BaseModel here.
 @interface OWSDatabaseMigration : TSYapDatabaseObject
 
 + (SDSKeyValueStore *)keyValueStore;
