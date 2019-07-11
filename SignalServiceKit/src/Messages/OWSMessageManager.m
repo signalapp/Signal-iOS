@@ -470,7 +470,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
         NSString *logMessage =
-            [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceE164];
+            [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceAddress];
         if (dataMessage.group) {
             logMessage = [logMessage stringByAppendingFormat:@" in group: %@", dataMessage.group.id];
         }
@@ -480,13 +480,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (dataMessage.hasTimestamp) {
         if (dataMessage.timestamp <= 0) {
-            OWSFailDebug(@"Ignoring message with invalid data message timestamp: %@", envelope.sourceE164);
+            OWSFailDebug(@"Ignoring message with invalid data message timestamp: %@", envelope.sourceAddress);
             // TODO: Add analytics.
             return;
         }
         // This prevents replay attacks by the service.
         if (dataMessage.timestamp != envelope.timestamp) {
-            OWSFailDebug(@"Ignoring message with non-matching data message timestamp: %@", envelope.sourceE164);
+            OWSFailDebug(@"Ignoring message with non-matching data message timestamp: %@", envelope.sourceAddress);
             // TODO: Add analytics.
             return;
         }
@@ -526,7 +526,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
                 return;
             } else {
-                OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.sourceE164);
+                OWSLogInfo(@"Ignoring group message for unknown group from: %@", envelope.sourceAddress);
                 return;
             }
         }
@@ -698,7 +698,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if ([self.blockingManager isAddressBlocked:envelope.sourceAddress]
         || (typingMessage.hasGroupID && [self.blockingManager isGroupIdBlocked:typingMessage.groupID])) {
         NSString *logMessage =
-            [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceE164];
+            [NSString stringWithFormat:@"Ignoring blocked message from sender: %@", envelope.sourceAddress];
         if (typingMessage.hasGroupID) {
             logMessage = [logMessage stringByAppendingFormat:@" in group: %@", typingMessage.groupID];
         }
@@ -1174,7 +1174,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSLogInfo(@"Received 'Request Group Info' message for group: %@ from: %@", groupId, envelope.sourceE164);
+    OWSLogInfo(@"Received 'Request Group Info' message for group: %@ from: %@", groupId, envelope.sourceAddress);
 
     TSGroupThread *_Nullable gThread =
         [TSGroupThread threadWithGroupId:dataMessage.group.id anyTransaction:transaction];
