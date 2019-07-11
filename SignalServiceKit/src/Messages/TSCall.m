@@ -47,7 +47,6 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 @implementation TSCall
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                   withCallNumber:(NSString *)contactNumber
                          callType:(RPRecentCallType)callType
                          inThread:(TSContactThread *)thread
 {

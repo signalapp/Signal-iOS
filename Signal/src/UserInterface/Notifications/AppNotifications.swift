@@ -41,7 +41,7 @@ enum AppNotificationAction: CaseIterable {
 
 struct AppNotificationUserInfoKey {
     static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
-    static let callBackNumber = "Signal.AppNotificationsUserInfoKey.callBackNumber"
+    static let callBackAddress = "Signal.AppNotificationsUserInfoKey.callBackAddress"
     static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
 }
 
@@ -211,8 +211,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     func presentIncomingCall(_ call: SignalCall, callerName: String) {
 
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remotePhoneNumber.transitional_signalServiceAddress)
+        let remoteAddress = call.remoteAddress
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -249,8 +249,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     func presentMissedCall(_ call: SignalCall, callerName: String) {
 
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remotePhoneNumber.transitional_signalServiceAddress)
+        let remoteAddress = call.remoteAddress
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -269,9 +269,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
 
-        let userInfo = [
+        let userInfo: [String: Any] = [
             AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
+            AppNotificationUserInfoKey.callBackAddress: remoteAddress
         ]
 
         DispatchQueue.main.async {
@@ -288,8 +288,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     public func presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: SignalCall, callerName: String) {
 
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remotePhoneNumber.transitional_signalServiceAddress)
+        let remoteAddress = call.remoteAddress
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -326,8 +326,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
     public func presentMissedCallBecauseOfNewIdentity(call: SignalCall, callerName: String) {
 
-        let remotePhoneNumber = call.remotePhoneNumber
-        let thread = TSContactThread.getOrCreateThread(contactAddress: remotePhoneNumber.transitional_signalServiceAddress)
+        let remoteAddress = call.remoteAddress
+        let thread = TSContactThread.getOrCreateThread(contactAddress: remoteAddress)
 
         let notificationTitle: String?
         let threadIdentifier: String?
@@ -346,9 +346,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             return
         }
 
-        let userInfo = [
+        let userInfo: [String: Any] = [
             AppNotificationUserInfoKey.threadId: threadId,
-            AppNotificationUserInfoKey.callBackNumber: remotePhoneNumber
+            AppNotificationUserInfoKey.callBackAddress: remoteAddress
         ]
 
         DispatchQueue.main.async {
@@ -625,11 +625,11 @@ class NotificationActionHandler {
     }
 
     func callBack(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
-        guard let recipientId = userInfo[AppNotificationUserInfoKey.callBackNumber] as? String else {
-            throw NotificationError.failDebug("recipientId was unexpectedly nil")
+        guard let address = userInfo[AppNotificationUserInfoKey.callBackAddress] as? SignalServiceAddress else {
+            throw NotificationError.failDebug("address was unexpectedly nil")
         }
 
-        callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: false)
+        callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: false)
         return Promise.value(())
     }
 

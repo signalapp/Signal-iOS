@@ -30,23 +30,20 @@ import SignalMessaging
     // MARK: -
 
     /**
-     * |handle| is a user formatted phone number, e.g. from a system contacts entry
+     * |address| is a SignalServiceAddress
      */
     @discardableResult
     @objc
-    public func initiateCall(handle: String) -> Bool {
-        Logger.info("with handle: \(handle)")
+    public func initiateCall(address: SignalServiceAddress) -> Bool {
+        Logger.info("with address: \(address)")
 
-        guard let e164Number = PhoneNumber(fromE164: handle)?.toE164() else {
-            Logger.warn("unable to parse signalId from phone number: \(handle)")
-            return false
-        }
-        // TODO UUID: map phone number from contacts to UUID, maybe requires lookup?
-        return initiateCall(address: e164Number.transitional_signalServiceAddress, isVideo: false)
+        guard address.isValid else { return false }
+
+        return initiateCall(address: address, isVideo: false)
     }
 
     /**
-     * |recipientId| is a e164 formatted phone number.
+     * |address| is a SignalServiceAddress.
      */
     @discardableResult
     @objc
@@ -78,7 +75,7 @@ import SignalMessaging
                 OWSAlerts.showNoMicrophonePermissionAlert()
                 return
             }
-            callUIAdapter.startAndShowOutgoingCall(recipientId: address.transitional_phoneNumber, hasLocalVideo: isVideo)
+            callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: isVideo)
         }
 
         return true
