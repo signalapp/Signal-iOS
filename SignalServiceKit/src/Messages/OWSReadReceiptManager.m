@@ -369,7 +369,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 // TODO: We might also need to "mark as read by recipient" any older messages
                 // from us in that thread.  Or maybe this state should hang on the thread?
                 for (TSOutgoingMessage *message in messages) {
-                    [message updateWithReadRecipientId:recipientId readTimestamp:readTimestamp transaction:transaction];
+                    [message updateWithReadRecipient:recipientId.transitional_signalServiceAddress
+                                       readTimestamp:readTimestamp
+                                         transaction:transaction];
                 }
             } else {
                 // Persist the read receipts so that we can apply them to outgoing messages
@@ -401,7 +403,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         OWSAssertDebug(nsReadTimestamp);
         uint64_t readTimestamp = [nsReadTimestamp unsignedLongLongValue];
 
-        [message updateWithReadRecipientId:recipientId readTimestamp:readTimestamp transaction:transaction];
+        [message updateWithReadRecipient:recipientId.transitional_signalServiceAddress
+                           readTimestamp:readTimestamp
+                             transaction:transaction];
     }
     [TSRecipientReadReceipt removeRecipientIdsForTimestamp:message.timestamp transaction:transaction];
 }

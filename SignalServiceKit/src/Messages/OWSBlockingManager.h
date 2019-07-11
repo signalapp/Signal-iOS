@@ -29,6 +29,7 @@ extern NSString *const kOWSBlockingManager_BlockListCollection;
 // want to fire a sync message.
 - (void)setBlockedPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers sendSyncMessage:(BOOL)sendSyncMessage;
 
+@property (readonly) NSSet<SignalServiceAddress *> *blockedAddresses;
 @property (readonly) NSArray<NSString *> *blockedPhoneNumbers;
 @property (readonly) NSArray<NSString *> *blockedUUIDs;
 

@@ -516,12 +516,12 @@ private class MockOutgoingMessage: TSOutgoingMessage {
         }
     }
 
-    override func readRecipientIds() -> [String] {
+    override func readRecipientAddresses() -> [SignalServiceAddress] {
         // makes message appear as read
-        return ["fake-non-empty-id"]
+        return [SignalServiceAddress(phoneNumber: "+123123123123123123")]
     }
 
-    override func recipientState(forRecipientId recipientId: String) -> TSOutgoingMessageRecipientState? {
+    override func recipientState(for recipientAddress: SignalServiceAddress) -> TSOutgoingMessageRecipientState? {
         return MockOutgoingMessageRecipientState()
     }
 }

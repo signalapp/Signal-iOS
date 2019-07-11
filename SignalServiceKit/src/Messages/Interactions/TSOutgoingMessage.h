@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 // Feature flag.
 //
 // TODO: Remove.
@@ -137,8 +139,9 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
               legacyMessageState:(TSOutgoingMessageState)legacyMessageState
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
-               recipientStateMap:(nullable NSDictionary<NSString *,TSOutgoingMessageRecipientState *> *)recipientStateMap
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:recipientStateMap:));
+    outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
+          recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:recipientAddressStates:));
 
 // clang-format on
 
@@ -209,34 +212,35 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (BOOL)shouldBeSaved;
 
 // All recipients of this message.
-- (NSArray<NSString *> *)recipientIds;
+- (NSArray<SignalServiceAddress *> *)recipientAddresses;
 
 // All recipients of this message who we are currently trying to send to (queued, uploading or during send).
-- (NSArray<NSString *> *)sendingRecipientIds;
+- (NSArray<SignalServiceAddress *> *)sendingRecipientAddresses;
 
 // All recipients of this message to whom it has been sent (and possibly delivered or read).
-- (NSArray<NSString *> *)sentRecipientIds;
+- (NSArray<SignalServiceAddress *> *)sentRecipientAddresses;
 
 // All recipients of this message to whom it has been sent and delivered (and possibly read).
-- (NSArray<NSString *> *)deliveredRecipientIds;
+- (NSArray<SignalServiceAddress *> *)deliveredRecipientAddresses;
 
 // All recipients of this message to whom it has been sent, delivered and read.
-- (NSArray<NSString *> *)readRecipientIds;
+- (NSArray<SignalServiceAddress *> *)readRecipientAddresses;
 
 // Number of recipients of this message to whom it has been sent.
 - (NSUInteger)sentRecipientsCount;
 
-- (nullable TSOutgoingMessageRecipientState *)recipientStateForRecipientId:(NSString *)recipientId;
+- (nullable TSOutgoingMessageRecipientState *)recipientStateForAddress:(SignalServiceAddress *)address;
 
 #pragma mark - Update With... Methods
 
 // This method is used to record a successful send to one recipient.
-- (void)updateWithSentRecipient:(NSString *)recipientId
+- (void)updateWithSentRecipient:(SignalServiceAddress *)recipientAddress
                     wasSentByUD:(BOOL)wasSentByUD
                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method is used to record a skipped send to one recipient.
-- (void)updateWithSkippedRecipient:(NSString *)recipientId transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithSkippedRecipient:(SignalServiceAddress *)recipientAddress
+                       transaction:(SDSAnyWriteTransaction *)transaction;
 
 // On app launch, all "sending" recipients should be marked as "failed".
 - (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(YapDatabaseReadWriteTransaction *)transaction;
@@ -265,14 +269,16 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // delivery receipts don't have a "delivery timestamp".  Those
 // messages repurpose the "timestamp" field to indicate when the
 // corresponding message was originally sent.
-- (void)updateWithDeliveredRecipient:(NSString *)recipientId
+- (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
                    deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
                          transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientIds:(nullable NSArray<NSString *> *)udRecipientIds
-                                          nonUdRecipientIds:(nullable NSArray<NSString *> *)nonUdRecipientIds
-                                               isSentUpdate:(BOOL)isSentUpdate
-                                                transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:
+            (nullable NSArray<SignalServiceAddress *> *)udRecipientAddresses
+                                          nonUdRecipientAddresses:
+                                              (nullable NSArray<SignalServiceAddress *> *)nonUdRecipientAddresses
+                                                     isSentUpdate:(BOOL)isSentUpdate
+                                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method is used to rewrite the recipient list with a single recipient.
 // It is used to reply to a "group info request", which should only be
@@ -281,9 +287,9 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 // This method is used to record a successful "read" by one recipient.
-- (void)updateWithReadRecipientId:(NSString *)recipientId
-                    readTimestamp:(uint64_t)readTimestamp
-                      transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithReadRecipient:(SignalServiceAddress *)recipientAddress
+                  readTimestamp:(uint64_t)readTimestamp
+                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (nullable NSNumber *)firstRecipientReadTimestamp;
 

@@ -525,16 +525,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }];
 }
 
-- (nullable NSArray<NSString *> *)unsentRecipientsForMessage:(TSOutgoingMessage *)message
-                                                      thread:(nullable TSThread *)thread
-                                                       error:(NSError **)errorHandle
+- (nullable NSArray<SignalServiceAddress *> *)unsentRecipientsForMessage:(TSOutgoingMessage *)message
+                                                                  thread:(nullable TSThread *)thread
+                                                                   error:(NSError **)errorHandle
 {
     OWSAssertDebug(message);
     OWSAssertDebug(errorHandle);
 
-    NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
+    NSMutableSet<SignalServiceAddress *> *recipientAddresses = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        [recipientIds addObject:self.tsAccountManager.localNumber];
+        [recipientAddresses addObject:self.tsAccountManager.localAddress];
     } else if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
 
@@ -549,11 +549,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // * The recipient is still in the group.
         // * The recipient is in the "sending" state.
 
-        [recipientIds addObjectsFromArray:message.sendingRecipientIds];
+        [recipientAddresses addObjectsFromArray:message.sendingRecipientAddresses];
         // Only send to members in the latest known group member list.
-        [recipientIds intersectSet:[NSSet setWithArray:groupThread.groupModel.transitional_groupMemberPhoneNumbers]];
+        [recipientAddresses intersectSet:[NSSet setWithArray:groupThread.groupModel.groupMembers]];
 
-        if ([recipientIds containsObject:self.tsAccountManager.localNumber]) {
+        if ([recipientAddresses containsObject:self.tsAccountManager.localAddress]) {
             OWSFailDebug(@"Message send recipients should not include self.");
         }
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -574,12 +574,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return nil;
         }
 
-        // TODO UUID
-        if (recipientAddress.phoneNumber) {
-            [recipientIds addObject:recipientAddress.phoneNumber];
-        }
+        [recipientAddresses addObject:recipientAddress];
 
-        if ([recipientIds containsObject:self.tsAccountManager.localNumber]) {
+        if ([recipientAddresses containsObject:self.tsAccountManager.localAddress]) {
             OWSFailDebug(@"Message send recipients should not include self.");
         }
     } else {
@@ -591,20 +588,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return nil;
     }
 
-    [recipientIds minusSet:[NSSet setWithArray:self.blockingManager.blockedPhoneNumbers]];
-    return recipientIds.allObjects;
+    [recipientAddresses minusSet:self.blockingManager.blockedAddresses];
+    return recipientAddresses.allObjects;
 }
 
-- (NSArray<SignalRecipient *> *)recipientsForRecipientIds:(NSArray<NSString *> *)recipientIds
+- (NSArray<SignalRecipient *> *)recipientsForAddresses:(NSArray<SignalServiceAddress *> *)addresses
 {
-    OWSAssertDebug(recipientIds.count > 0);
+    OWSAssertDebug(addresses.count > 0);
 
     NSMutableArray<SignalRecipient *> *recipients = [NSMutableArray new];
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        for (NSString *recipientId in recipientIds) {
-            SignalRecipient *recipient =
-                [SignalRecipient getOrBuildUnsavedRecipientForAddress:recipientId.transitional_signalServiceAddress
-                                                          transaction:transaction];
+        for (SignalServiceAddress *address in addresses) {
+            SignalRecipient *recipient = [SignalRecipient getOrBuildUnsavedRecipientForAddress:address
+                                                                                   transaction:transaction];
             [recipients addObject:recipient];
         }
     }];
@@ -726,7 +722,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // In the "self-send" special case, we ony need to send a sync message with a delivery receipt.
     if (contactThread && contactThread.contactAddress.isLocalAddress) {
         // Send to self.
-        OWSAssertDebug(message.recipientIds.count == 1);
+        OWSAssertDebug(message.recipientAddresses.count == 1);
         // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
         successHandler();
         return;
@@ -737,8 +733,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     NSError *error;
-    NSArray<NSString *> *_Nullable recipientIds = [self unsentRecipientsForMessage:message thread:thread error:&error];
-    if (error || !recipientIds) {
+    NSArray<SignalServiceAddress *> *_Nullable recipientAddresses = [self unsentRecipientsForMessage:message
+                                                                                              thread:thread
+                                                                                               error:&error];
+    if (error || !recipientAddresses) {
         error = SSKEnsureError(
             error, OWSErrorCodeMessageSendNoValidRecipients, @"Could not build recipients list for message.");
         [error setIsRetryable:NO];
@@ -751,24 +749,25 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // * Recipient is blocked.
     //
     // Elsewhere, we skip recipient if their Signal account has been deactivated.
-    NSMutableSet<NSString *> *obsoleteRecipientIds = [NSMutableSet setWithArray:message.sendingRecipientIds];
-    [obsoleteRecipientIds minusSet:[NSSet setWithArray:recipientIds]];
-    if (obsoleteRecipientIds.count > 0) {
+    NSMutableSet<SignalServiceAddress *> *obsoleteRecipientAddresses =
+        [NSMutableSet setWithArray:message.sendingRecipientAddresses];
+    [obsoleteRecipientAddresses minusSet:[NSSet setWithArray:recipientAddresses]];
+    if (obsoleteRecipientAddresses.count > 0) {
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            for (NSString *recipientId in obsoleteRecipientIds) {
+            for (SignalServiceAddress *obsoleteAddress in obsoleteRecipientAddresses) {
                 // Mark this recipient as "skipped".
-                [message updateWithSkippedRecipient:recipientId transaction:transaction];
+                [message updateWithSkippedRecipient:obsoleteAddress transaction:transaction];
             }
         }];
     }
 
-    if (recipientIds.count < 1) {
+    if (recipientAddresses.count < 1) {
         // All recipients are already sent or can be skipped.
         successHandler();
         return;
     }
 
-    NSArray<SignalRecipient *> *recipients = [self recipientsForRecipientIds:recipientIds];
+    NSArray<SignalRecipient *> *recipients = [self recipientsForAddresses:recipientAddresses];
 
     BOOL isGroupSend = (thread && thread.isGroupThread);
     NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
@@ -845,7 +844,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if (thread.isGroupThread) {
             // Mark as "skipped" group members who no longer have signal accounts.
-            [message updateWithSkippedRecipient:recipient.address.transitional_phoneNumber transaction:transaction];
+            [message updateWithSkippedRecipient:recipient.address transaction:transaction];
         }
 
         if (![SignalRecipient isRegisteredRecipient:recipient.address transaction:transaction]) {
@@ -1081,7 +1080,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             dispatch_async([OWSDispatch sendingQueue], ^{
                 // This emulates the completion logic of an actual successful send (see below).
                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                    [message updateWithSkippedRecipient:messageSend.localNumber transaction:transaction];
+                    [message updateWithSkippedRecipient:messageSend.localNumber.transitional_signalServiceAddress
+                                            transaction:transaction];
                 }];
                 messageSend.success();
             });
@@ -1226,7 +1226,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     dispatch_async([OWSDispatch sendingQueue], ^{
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [messageSend.message updateWithSentRecipient:messageSend.recipient.address.transitional_phoneNumber
+            [messageSend.message updateWithSentRecipient:messageSend.recipient.address
                                              wasSentByUD:wasSentByUD
                                              transaction:transaction];
 
@@ -1425,13 +1425,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         if (contactThread && contactThread.contactAddress.isLocalAddress) {
-            OWSAssertDebug(message.recipientIds.count == 1);
+            OWSAssertDebug(message.recipientAddresses.count == 1);
             // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                for (NSString *recipientId in message.sendingRecipientIds) {
-                    [message updateWithReadRecipientId:recipientId
-                                         readTimestamp:message.timestamp
-                                           transaction:transaction];
+                for (SignalServiceAddress *sendingAddress in message.sendingRecipientAddresses) {
+                    [message updateWithReadRecipient:sendingAddress
+                                       readTimestamp:message.timestamp
+                                         transaction:transaction];
                 }
             }];
         }

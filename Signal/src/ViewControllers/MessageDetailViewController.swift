@@ -254,11 +254,11 @@ class MessageDetailViewController: OWSViewController {
                     groupRows.append(divider)
                 }
 
-                let messageRecipientIds = outgoingMessage.recipientIds()
+                let messageRecipientAddresses = outgoingMessage.recipientAddresses()
 
-                for recipientId in messageRecipientIds {
-                    guard let recipientState = outgoingMessage.recipientState(forRecipientId: recipientId) else {
-                        owsFailDebug("no message status for recipient: \(recipientId).")
+                for recipientAddress in messageRecipientAddresses {
+                    guard let recipientState = outgoingMessage.recipientState(for: recipientAddress) else {
+                        owsFailDebug("no message status for recipient: \(recipientAddress).")
                         continue
                     }
 
@@ -288,7 +288,7 @@ class MessageDetailViewController: OWSViewController {
                     } else {
                         cellView.accessoryMessage = shortStatusMessage
                     }
-                    cellView.configure(withRecipientAddress: recipientId.transitional_signalServiceAddress)
+                    cellView.configure(withRecipientAddress: recipientAddress)
 
                     let wrapper = UIView()
                     wrapper.layoutMargins = UIEdgeInsets(top: 8, left: 20, bottom: 8, right: 20)

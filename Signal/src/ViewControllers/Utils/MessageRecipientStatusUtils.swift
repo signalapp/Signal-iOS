@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -117,7 +117,7 @@ public class MessageRecipientStatusUtils: NSObject {
                                          comment: "message status while message is sending."))
             }
         case .sent:
-            if outgoingMessage.readRecipientIds().count > 0 {
+            if outgoingMessage.readRecipientAddresses().count > 0 {
                 return (.read, NSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages"))
             }
             if outgoingMessage.wasDeliveredToAnyRecipient {

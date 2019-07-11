@@ -106,7 +106,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
         observer.appendSnapshotDelegate(snapshotDelegate)
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient)
-        envelopeBuilder.setSourceE164(bobClient.e164Identifier)
+        envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageReceiver.handleReceivedEnvelopeData(envelopeData)
 

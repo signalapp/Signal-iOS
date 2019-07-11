@@ -349,7 +349,7 @@ NS_ASSUME_NONNULL_BEGIN
                     timestamp);
             }
             for (TSOutgoingMessage *outgoingMessage in messages) {
-                [outgoingMessage updateWithDeliveredRecipient:recipientId
+                [outgoingMessage updateWithDeliveredRecipient:recipientId.transitional_signalServiceAddress
                                             deliveryTimestamp:deliveryTimestamp
                                                   transaction:transaction.transitional_yapWriteTransaction];
             }
