@@ -134,8 +134,8 @@ NS_ASSUME_NONNULL_BEGIN
             conversationColorName = contactThread.conversationColorName;
             disappearingMessagesConfiguration = [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
         } else {
-            conversationColorName = [TSThread
-                stableColorNameForNewConversationWithString:signalAccount.recipientAddress.transitional_phoneNumber];
+            conversationColorName =
+                [TSThread stableColorNameForNewConversationWithString:signalAccount.recipientAddress.stringForDisplay];
         }
 
         [contactsOutputStream writeSignalAccount:signalAccount

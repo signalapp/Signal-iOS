@@ -14,9 +14,9 @@ class FullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
     }
 
     func displayName(for address: SignalServiceAddress?) -> String {
-        if address?.transitional_phoneNumber == aliceRecipientId {
+        if address == aliceRecipientId.transitional_signalServiceAddress {
             return "Alice"
-        } else if address?.transitional_phoneNumber == bobRecipientId {
+        } else if address == bobRecipientId.transitional_signalServiceAddress {
             return "Bob Barker"
         } else {
             return ""

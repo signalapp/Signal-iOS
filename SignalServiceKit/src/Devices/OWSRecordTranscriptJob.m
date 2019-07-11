@@ -180,7 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:outgoingMessage.expiresInSeconds
                                                                               thread:transcript.thread
-                                                          createdByRemoteRecipientId:nil
+                                                            createdByRemoteRecipient:nil
                                                               createdInExistingGroup:NO
                                                                          transaction:transaction.asAnyWrite];
 

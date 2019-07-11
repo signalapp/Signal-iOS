@@ -46,11 +46,9 @@ NS_ASSUME_NONNULL_BEGIN
         @"ADD_GROUP_MEMBER_VIEW_CONTACT_TITLE", @"Title for the 'add contact' section of the 'add group member' view.");
 }
 
-- (void)phoneNumberWasSelected:(NSString *)phoneNumber
+- (void)addressWasSelected:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(phoneNumber.length > 0);
-
-    SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+    OWSAssertDebug(address.isValid);
 
     __weak AddToGroupViewController *weakSelf = self;
 

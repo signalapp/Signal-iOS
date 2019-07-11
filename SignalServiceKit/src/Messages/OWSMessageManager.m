@@ -387,9 +387,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // TODO UUID: dedupe based on sourceAddress.
     BOOL duplicateEnvelope = [InteractionFinder existsIncomingMessageWithTimestamp:envelope.timestamp
-                                                                          sourceId:envelope.sourceE164
+                                                                           address:envelope.sourceAddress
                                                                     sourceDeviceId:envelope.sourceDevice
                                                                        transaction:transaction];
 
@@ -1317,7 +1316,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [[OWSDisappearingMessagesJob sharedJob]
                         becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                           thread:newGroupThread
-                                      createdByRemoteRecipientId:nil
+                                        createdByRemoteRecipient:nil
                                           createdInExistingGroup:YES
                                                      transaction:transaction];
                 }
@@ -1467,12 +1466,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSContact *_Nullable contact;
     OWSLinkPreview *_Nullable linkPreview;
     if (transaction.transitional_yapWriteTransaction && !SSKFeatureFlags.allowUUIDOnlyContacts) {
-        [[OWSDisappearingMessagesJob sharedJob]
-            becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                              thread:thread
-                          createdByRemoteRecipientId:authorAddress.transitional_phoneNumber
-                              createdInExistingGroup:NO
-                                         transaction:transaction];
+        [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
+                                                                                  thread:thread
+                                                                createdByRemoteRecipient:authorAddress
+                                                                  createdInExistingGroup:NO
+                                                                             transaction:transaction];
 
         contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
 
@@ -1666,14 +1664,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(envelope);
     OWSAssertDebug(transaction);
 
-    SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
-    if (![localAddress.transitional_phoneNumber isEqualToString:envelope.sourceE164]) {
+    if (!envelope.sourceAddress.isLocalAddress) {
         return;
     }
 
     // Consult the device list cache we use for message sending
     // whether or not we know about this linked device.
-    SignalRecipient *_Nullable recipient = [SignalRecipient registeredRecipientForAddress:localAddress
+    SignalRecipient *_Nullable recipient = [SignalRecipient registeredRecipientForAddress:envelope.sourceAddress
                                                                           mustHaveDevices:NO
                                                                               transaction:transaction];
     if (!recipient) {

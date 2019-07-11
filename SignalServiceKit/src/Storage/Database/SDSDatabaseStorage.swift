@@ -614,6 +614,23 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 on: LinkedDeviceReadReceiptRecord.databaseTableName,
                 columns: [LinkedDeviceReadReceiptRecord.columnName(.senderUUID), LinkedDeviceReadReceiptRecord.columnName(.messageIdTimestamp)]
             )
+
+            // Interaction Finder
+            try db.create(index: "index_interactions_on_timestamp_sourceDeviceId_and_authorUUID",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.timestamp),
+                            InteractionRecord.columnName(.sourceDeviceId),
+                            InteractionRecord.columnName(.authorUUID)
+                ])
+
+            try db.create(index: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.timestamp),
+                            InteractionRecord.columnName(.sourceDeviceId),
+                            InteractionRecord.columnName(.authorPhoneNumber)
+                ])
         }
         return migrator
     }()

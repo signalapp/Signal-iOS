@@ -350,11 +350,11 @@ NS_ASSUME_NONNULL_BEGIN
     // We don't want to show a 1:1 thread with Alice and Alice's contact,
     // so we de-duplicate by recipientId.
     NSArray<TSThread *> *threads = self.threadViewHelper.threads;
-    NSMutableSet *contactIdsToIgnore = [NSMutableSet new];
+    NSMutableSet<SignalServiceAddress *> *contactAddressesToIgnore = [NSMutableSet new];
     for (TSThread *thread in threads) {
         if ([thread isKindOfClass:[TSContactThread class]]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
-            [contactIdsToIgnore addObject:contactThread.contactAddress.transitional_phoneNumber];
+            [contactAddressesToIgnore addObject:contactThread.contactAddress];
         }
     }
 
@@ -365,7 +365,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [matchingAccounts
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return ![contactIdsToIgnore containsObject:signalAccount.recipientAddress.transitional_phoneNumber];
+            return ![contactAddressesToIgnore containsObject:signalAccount.recipientAddress];
         }]];
 }
 

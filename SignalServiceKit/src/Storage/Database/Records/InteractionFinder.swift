@@ -12,7 +12,7 @@ protocol InteractionFinderAdapter {
 
     static func mostRecentSortId(transaction: ReadTransaction) -> UInt64
 
-    static func existsIncomingMessage(timestamp: UInt64, sourceId: String, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
+    static func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
 
     func mostRecentInteraction(transaction: ReadTransaction) -> TSInteraction?
     func mostRecentInteractionForInbox(transaction: ReadTransaction) -> TSInteraction?
@@ -71,12 +71,12 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     @objc
-    public class func existsIncomingMessage(timestamp: UInt64, sourceId: String, sourceDeviceId: UInt32, transaction: SDSAnyReadTransaction) -> Bool {
+    public class func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: SDSAnyReadTransaction) -> Bool {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
-            return YAPDBInteractionFinderAdapter.existsIncomingMessage(timestamp: timestamp, sourceId: sourceId, sourceDeviceId: sourceDeviceId, transaction: yapRead)
+            return YAPDBInteractionFinderAdapter.existsIncomingMessage(timestamp: timestamp, address: address, sourceDeviceId: sourceDeviceId, transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return GRDBInteractionFinderAdapter.existsIncomingMessage(timestamp: timestamp, sourceId: sourceId, sourceDeviceId: sourceDeviceId, transaction: grdbRead)
+            return GRDBInteractionFinderAdapter.existsIncomingMessage(timestamp: timestamp, address: address, sourceDeviceId: sourceDeviceId, transaction: grdbRead)
         }
     }
 
@@ -183,8 +183,8 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return SSKIncrementingIdFinder.previousId(key: TSInteraction.collection(), transaction: transaction)
     }
 
-    static func existsIncomingMessage(timestamp: UInt64, sourceId: String, sourceDeviceId: UInt32, transaction: YapDatabaseReadTransaction) -> Bool {
-        return OWSIncomingMessageFinder().existsMessage(withTimestamp: timestamp, sourceId: sourceId, sourceDeviceId: sourceDeviceId, transaction: transaction)
+    static func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: YapDatabaseReadTransaction) -> Bool {
+        return OWSIncomingMessageFinder().existsMessage(withTimestamp: timestamp, address: address, sourceDeviceId: sourceDeviceId, transaction: transaction)
     }
 
     // MARK: - instance methods
@@ -346,19 +346,37 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
     }
 
-    static func existsIncomingMessage(timestamp: UInt64, sourceId: String, sourceDeviceId: UInt32, transaction: GRDBReadTransaction) -> Bool {
-        let sql = """
-            SELECT EXISTS(
-                SELECT 1
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .timestamp) = ?
-                  AND \(interactionColumn: .authorId) = ?
-                  AND \(interactionColumn: .sourceDeviceId) = ?
-            )
-        """
-        let arguments: StatementArguments = [timestamp, sourceId, sourceDeviceId]
+    static func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: GRDBReadTransaction) -> Bool {
+        var exists = false
+        if let uuidString = address.uuidString {
+            let sql = """
+                SELECT EXISTS(
+                    SELECT 1
+                    FROM \(InteractionRecord.databaseTableName)
+                    WHERE \(interactionColumn: .timestamp) = ?
+                    AND \(interactionColumn: .authorUUID) = ?
+                    AND \(interactionColumn: .sourceDeviceId) = ?
+                )
+            """
+            let arguments: StatementArguments = [timestamp, uuidString, sourceDeviceId]
+            exists = try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        }
 
-        return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        if !exists, let phoneNumber = address.phoneNumber {
+            let sql = """
+                SELECT EXISTS(
+                    SELECT 1
+                    FROM \(InteractionRecord.databaseTableName)
+                    WHERE \(interactionColumn: .timestamp) = ?
+                    AND \(interactionColumn: .authorPhoneNumber) = ?
+                    AND \(interactionColumn: .sourceDeviceId) = ?
+                )
+            """
+            let arguments: StatementArguments = [timestamp, phoneNumber, sourceDeviceId]
+            exists = try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+        }
+
+        return exists
     }
 
     // MARK: - instance methods

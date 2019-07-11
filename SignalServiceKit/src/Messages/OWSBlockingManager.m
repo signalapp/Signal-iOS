@@ -152,8 +152,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
     OWSLogInfo(@"removeBlockedAddress: %@", address);
 
-    // TODO UUID
-
     @synchronized(self)
     {
         [self ensureLazyInitialization];

@@ -4047,14 +4047,15 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }
 
     uint64_t timestamp = [NSDate ows_millisecondTimeStamp];
-    NSString *source = address.transitional_phoneNumber;
+    SignalServiceAddress *source = address;
     uint32_t sourceDevice = 1;
     SSKProtoEnvelopeType envelopeType = SSKProtoEnvelopeTypeCiphertext;
     NSData *content = plaintextData;
 
     SSKProtoEnvelopeBuilder *envelopeBuilder = [SSKProtoEnvelope builderWithTimestamp:timestamp];
     [envelopeBuilder setType:envelopeType];
-    [envelopeBuilder setSourceE164:source];
+    [envelopeBuilder setSourceE164:source.phoneNumber];
+    [envelopeBuilder setSourceUuid:source.uuidString];
     [envelopeBuilder setSourceDevice:sourceDevice];
     envelopeBuilder.content = content;
     NSError *error;

@@ -343,9 +343,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                   [modalActivityIndicator
                                       dismissViewControllerAnimated:NO
                                                          completion:^{
-                                                             [weakSelf.delegate
-                                                                 phoneNumberWasSelected:address
-                                                                                            .transitional_phoneNumber];
+                                                             [weakSelf.delegate addressWasSelected:address];
                                                          }];
                               }
                               failure:^(NSError *error) {
@@ -362,8 +360,8 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                               }];
                       }];
     } else {
-        NSString *recipientId = possiblePhoneNumbers[0];
-        [self.delegate phoneNumberWasSelected:recipientId];
+        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:possiblePhoneNumbers[0]];
+        [self.delegate addressWasSelected:address];
     }
 }
 

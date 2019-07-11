@@ -219,17 +219,6 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
 
         return "<SignalServiceAddress phoneNumber: \(phoneNumber ?? "nil"), uuid: \(redactedUUID ?? "nil")>"
     }
-
-    // MARK: - Transitional Methods
-
-    @objc
-    public var transitional_phoneNumber: String! {
-        guard let phoneNumber = phoneNumber else {
-            owsFailDebug("transitional_phoneNumber was unexpectedly nil")
-            return nil
-        }
-        return phoneNumber
-    }
 }
 
 @objc

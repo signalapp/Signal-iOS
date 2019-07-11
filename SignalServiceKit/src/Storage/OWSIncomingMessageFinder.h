@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSStorage;
+@class SignalServiceAddress;
 @class YapDatabaseReadTransaction;
 
 @interface OWSIncomingMessageFinder : NSObject
@@ -15,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Detects existance of a duplicate incoming message.
  */
 - (BOOL)existsMessageWithTimestamp:(uint64_t)timestamp
-                          sourceId:(NSString *)sourceId
+                           address:(SignalServiceAddress *)address
                     sourceDeviceId:(uint32_t)sourceDeviceId
                        transaction:(YapDatabaseReadTransaction *)transaction;
 
