@@ -594,19 +594,11 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         return YES;
     }
 
+    // There's no need to save this message, since it's not displayed to the user.
+    //
+    // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
+    OWSLogDebug(@"Skipping save for transient outgoing message.");
     return NO;
-}
-
-- (BOOL)anyCanBeSaved
-{
-    if (!self.shouldBeSaved) {
-        // There's no need to save this message, since it's not displayed to the user.
-        //
-        // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
-        OWSLogDebug(@"Skipping save for transient outgoing message.");
-        return NO;
-    }
-    return YES;
 }
 
 // GRDB TODO: Remove this override.

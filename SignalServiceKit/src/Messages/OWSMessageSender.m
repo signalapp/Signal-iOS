@@ -1922,7 +1922,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // All outgoing messages should be saved at the time they are enqueued.
 
     // GRDB TODO: Remove; this should be redundant.
-    if (message.anyCanBeSaved && [TSInteraction anyFetchWithUniqueId:message.uniqueId transaction:transaction] == nil) {
+    if (message.shouldBeSaved && [TSInteraction anyFetchWithUniqueId:message.uniqueId transaction:transaction] == nil) {
         OWSFailDebug(@"Message not saved.");
         [message anyInsertWithTransaction:transaction];
     }

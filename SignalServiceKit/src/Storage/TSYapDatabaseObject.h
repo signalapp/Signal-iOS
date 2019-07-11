@@ -157,6 +157,8 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // This isn't a perfect arrangement, but in practice this will prevent
 // data loss and will resolve all known issues.
+//
+// GRDB TODO: Replace with anyUpdate...
 - (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
                            changeBlock:(void (^)(id))changeBlock;
 
@@ -165,8 +167,7 @@ NS_ASSUME_NONNULL_BEGIN
 // GRDB TODO: As a perf optimization, we could only call these
 //            methods for certain kinds of models which we could
 //            detect at compile time.
-// GRDB TODO: Remove TSInteraction.shouldBeSaved in favor of this property.
-@property (nonatomic, readonly) BOOL anyCanBeSaved;
+@property (nonatomic, readonly) BOOL shouldBeSaved;
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;

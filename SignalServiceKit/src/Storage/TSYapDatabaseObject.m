@@ -242,7 +242,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Write Hooks
 
-- (BOOL)anyCanBeSaved
+- (BOOL)shouldBeSaved
 {
     return YES;
 }

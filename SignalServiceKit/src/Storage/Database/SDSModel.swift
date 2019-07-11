@@ -20,7 +20,7 @@ public protocol SDSModel: TSYapDatabaseObject {
 public extension SDSModel {
     func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
         if saveMode == .insert {
-            if !anyCanBeSaved {
+            if !shouldBeSaved {
                 Logger.info("Skipping save of: \(type(of: self))")
                 return
             }
