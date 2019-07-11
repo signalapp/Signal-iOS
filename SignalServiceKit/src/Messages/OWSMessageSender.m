@@ -1140,10 +1140,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Message Send"
         requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
-            return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.address.transitional_phoneNumber
-                                                               messages:deviceMessages
-                                                              timeStamp:message.timestamp
-                                                            udAccessKey:udAccessKey];
+            return [OWSRequestFactory submitMessageRequestWithAddress:recipient.address
+                                                             messages:deviceMessages
+                                                            timeStamp:message.timestamp
+                                                          udAccessKey:udAccessKey];
         }
         udAuthFailureBlock:^{
             // Note the UD auth failure so subsequent retries
@@ -1670,9 +1670,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Prekey Fetch"
         requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
-            return [OWSRequestFactory recipientPrekeyRequestWithRecipient:recipientAddress.transitional_phoneNumber
-                                                                 deviceId:[deviceId stringValue]
-                                                              udAccessKey:udAccessKey];
+            return [OWSRequestFactory recipientPreKeyRequestWithAddress:recipientAddress
+                                                               deviceId:[deviceId stringValue]
+                                                            udAccessKey:udAccessKey];
         }
         udAuthFailureBlock:^{
             // Note the UD auth failure so subsequent retries

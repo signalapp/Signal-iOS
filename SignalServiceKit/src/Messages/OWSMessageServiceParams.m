@@ -32,13 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _type = type;
-    if (SSKFeatureFlags.allowUUIDOnlyContacts) {
-        _destination = address.uuidString ?: address.phoneNumber;
-    } else {
-        OWSAssertDebug(address.phoneNumber != nil);
-        _destination = address.phoneNumber;
-    }
-
+    _destination = address.serviceIdentifier;
+    OWSAssertDebug(_destination != nil);
     _destinationDeviceId = deviceId;
     _destinationRegistrationId = registrationId;
     _content = [content base64EncodedString];
