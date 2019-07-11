@@ -21,8 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setUp {
     [super setUp];
-    self.thread =
-        [TSContactThread getOrCreateThreadWithContactAddress:@"fake-thread-id".transitional_signalServiceAddress];
+    self.thread = [TSContactThread
+        getOrCreateThreadWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"fake-thread-id"]];
 }
 
 - (void)tearDown {

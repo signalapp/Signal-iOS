@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CNContact;
 @class PhoneNumber;
 @class SignalRecipient;
+@class SignalServiceAddress;
 @class UIImage;
 @class YapDatabaseReadTransaction;
 
@@ -32,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(YapDatabaseReadTransaction *)transaction;
 // TODO: Remove this method.
-- (NSArray<NSString *> *)registeredPhoneNumbers;
+- (NSArray<SignalServiceAddress *> *)registeredAddresses;
 
 #if TARGET_OS_IOS
 
@@ -40,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable Contact *)contactWithVCardData:(NSData *)data;
 + (nullable CNContact *)cnContactWithVCardData:(NSData *)data;
 
-- (NSString *)nameForPhoneNumber:(NSString *)phoneNumber;
+- (NSString *)nameForAddress:(SignalServiceAddress *)address;
 
 #endif // TARGET_OS_IOS
 

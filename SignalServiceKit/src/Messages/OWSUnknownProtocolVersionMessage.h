@@ -6,16 +6,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 @interface OWSUnknownProtocolVersionMessage : TSInfoMessage
 
 @property (nonatomic, readonly) NSUInteger protocolVersion;
 
 // If nil, the invalid message was sent by a linked device.
-@property (nonatomic, nullable, readonly) NSString *senderId;
+@property (nonatomic, nullable, readonly) SignalServiceAddress *sender;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
-                         senderId:(nullable NSString *)senderId
+                           sender:(nullable SignalServiceAddress *)sender
                   protocolVersion:(NSUInteger)protocolVersion NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER

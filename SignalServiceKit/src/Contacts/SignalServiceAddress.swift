@@ -222,19 +222,6 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
 }
 
 @objc
-public extension NSString {
-    var transitional_signalServiceAddress: SignalServiceAddress {
-        return SignalServiceAddress(phoneNumber: self as String)
-    }
-}
-
-extension String {
-    var transitional_signalServiceAddress: SignalServiceAddress {
-        return SignalServiceAddress(phoneNumber: self)
-    }
-}
-
-@objc
 class SignalServiceAddressCache: NSObject {
     private let serialQueue = DispatchQueue(label: "SignalServiceAddressCache")
 

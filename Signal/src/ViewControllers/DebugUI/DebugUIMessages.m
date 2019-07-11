@@ -3579,9 +3579,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                   createdInExistingGroup:NO]];
         }
 
-        [result addObject:[TSInfoMessage
-                              userNotRegisteredMessageInThread:thread
-                                                       address:@"+19174054215".transitional_signalServiceAddress]];
+        [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread
+                                                                  address:[[SignalServiceAddress alloc]
+                                                                              initWithPhoneNumber:@"+19174054215"]]];
 
         // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -3602,7 +3602,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                               initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                          thread:thread
-                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
                               verificationState:OWSVerificationStateDefault
                                   isLocalChange:YES]];
 
@@ -3610,14 +3610,14 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                               initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                          thread:thread
-                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
                               verificationState:OWSVerificationStateVerified
                                   isLocalChange:YES]];
         // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                               initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                          thread:thread
-                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
                               verificationState:OWSVerificationStateNoLongerVerified
                                   isLocalChange:YES]];
 
@@ -3625,21 +3625,21 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                               initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                          thread:thread
-                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
                               verificationState:OWSVerificationStateDefault
                                   isLocalChange:NO]];
         // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                               initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                          thread:thread
-                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
                               verificationState:OWSVerificationStateVerified
                                   isLocalChange:NO]];
         // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                               initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                          thread:thread
-                               recipientAddress:@"+19174054215".transitional_signalServiceAddress
+                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
                               verificationState:OWSVerificationStateNoLongerVerified
                                   isLocalChange:NO]];
 
@@ -3669,10 +3669,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             OWSFailDebug(@"failure: not yet implemented for GRDB");
         }
         // MJK TODO - should be safe to remove this senderTimestamp
-        [result addObject:[[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                  failedMessageType:TSErrorMessageNonBlockingIdentityChange
-                                                            address:@"+19174054215".transitional_signalServiceAddress]];
+        [result addObject:[[TSErrorMessage alloc]
+                              initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                       inThread:thread
+                              failedMessageType:TSErrorMessageNonBlockingIdentityChange
+                                        address:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]]];
     }];
 
     return result;
@@ -3766,8 +3767,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                   OWSAssertDebug(phoneNumber);
                   OWSAssertDebug(phoneNumber.toE164);
 
-                  TSContactThread *contactThread = [TSContactThread
-                      getOrCreateThreadWithContactAddress:phoneNumber.toE164.transitional_signalServiceAddress];
+                  TSContactThread *contactThread =
+                      [TSContactThread getOrCreateThreadWithContactAddress:[[SignalServiceAddress alloc]
+                                                                               initWithPhoneNumber:phoneNumber.toE164]];
                   [self sendFakeMessages:messageCount thread:contactThread];
                   [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                       NSUInteger interactionCount = [contactThread numberOfInteractionsWithTransaction:transaction];
@@ -3842,21 +3844,22 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         switch (arc4random_uniform(isTextOnly ? 2 : 4)) {
             case 0: {
                 // MJK - should be safe to remove this senderTimestamp
-                TSIncomingMessage *message = [[TSIncomingMessage alloc]
-                       initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                               inThread:thread
-                                          authorAddress:@"+19174054215".transitional_signalServiceAddress
-                                         sourceDeviceId:0
-                                            messageBody:randomText
-                                          attachmentIds:@[]
-                                       expiresInSeconds:0
-                                          quotedMessage:nil
-                                           contactShare:nil
-                                            linkPreview:nil
-                                         messageSticker:nil
-                                        serverTimestamp:nil
-                                        wasReceivedByUD:NO
-                    perMessageExpirationDurationSeconds:0];
+                TSIncomingMessage *message =
+                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                       inThread:thread
+                                                                  authorAddress:[[SignalServiceAddress alloc]
+                                                                                    initWithPhoneNumber:@"+19174054215"]
+                                                                 sourceDeviceId:0
+                                                                    messageBody:randomText
+                                                                  attachmentIds:@[]
+                                                               expiresInSeconds:0
+                                                                  quotedMessage:nil
+                                                                   contactShare:nil
+                                                                    linkPreview:nil
+                                                                 messageSticker:nil
+                                                                serverTimestamp:nil
+                                                                wasReceivedByUD:NO
+                                            perMessageExpirationDurationSeconds:0];
                 [message anyInsertWithTransaction:transaction];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
@@ -3892,23 +3895,24 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 pointer.state = TSAttachmentPointerStateFailed;
                 [pointer anyInsertWithTransaction:transaction];
                 // MJK - should be safe to remove this senderTimestamp
-                TSIncomingMessage *message = [[TSIncomingMessage alloc]
-                       initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                               inThread:thread
-                                          authorAddress:@"+19174054215".transitional_signalServiceAddress
-                                         sourceDeviceId:0
-                                            messageBody:nil
-                                          attachmentIds:@[
-                                              pointer.uniqueId,
-                                          ]
-                                       expiresInSeconds:0
-                                          quotedMessage:nil
-                                           contactShare:nil
-                                            linkPreview:nil
-                                         messageSticker:nil
-                                        serverTimestamp:nil
-                                        wasReceivedByUD:NO
-                    perMessageExpirationDurationSeconds:0];
+                TSIncomingMessage *message =
+                    [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                       inThread:thread
+                                                                  authorAddress:[[SignalServiceAddress alloc]
+                                                                                    initWithPhoneNumber:@"+19174054215"]
+                                                                 sourceDeviceId:0
+                                                                    messageBody:nil
+                                                                  attachmentIds:@[
+                                                                      pointer.uniqueId,
+                                                                  ]
+                                                               expiresInSeconds:0
+                                                                  quotedMessage:nil
+                                                                   contactShare:nil
+                                                                    linkPreview:nil
+                                                                 messageSticker:nil
+                                                                serverTimestamp:nil
+                                                                wasReceivedByUD:NO
+                                            perMessageExpirationDurationSeconds:0];
                 [message anyInsertWithTransaction:transaction];
                 [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
                 break;
@@ -4832,21 +4836,21 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     //    uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
 
     // MJK TODO - should be safe to remove this senderTimestamp
-    TSIncomingMessage *message =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                           inThread:thread
-                                                      authorAddress:@"+19174054215".transitional_signalServiceAddress
-                                                     sourceDeviceId:0
-                                                        messageBody:messageBody
-                                                      attachmentIds:attachmentIds
-                                                   expiresInSeconds:0
-                                                      quotedMessage:quotedMessage
-                                                       contactShare:nil
-                                                        linkPreview:nil
-                                                     messageSticker:nil
-                                                    serverTimestamp:nil
-                                                    wasReceivedByUD:NO
-                                perMessageExpirationDurationSeconds:0];
+    TSIncomingMessage *message = [[TSIncomingMessage alloc]
+           initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                   inThread:thread
+                              authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                             sourceDeviceId:0
+                                messageBody:messageBody
+                              attachmentIds:attachmentIds
+                           expiresInSeconds:0
+                              quotedMessage:quotedMessage
+                               contactShare:nil
+                                linkPreview:nil
+                             messageSticker:nil
+                            serverTimestamp:nil
+                            wasReceivedByUD:NO
+        perMessageExpirationDurationSeconds:0];
     [message anyInsertWithTransaction:transaction];
     [message markAsReadNowWithSendReadReceipt:NO transaction:transaction];
     return message;

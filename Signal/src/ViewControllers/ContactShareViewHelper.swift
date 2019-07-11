@@ -61,13 +61,13 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
         guard phoneNumbers.count > 1 else {
-            let recipientId = phoneNumbers.first!
-            SignalApp.shared().presentConversation(for: recipientId.transitional_signalServiceAddress, action: action, animated: true)
+            let address = SignalServiceAddress(phoneNumber: phoneNumbers.first!)
+            SignalApp.shared().presentConversation(for: address, action: action, animated: true)
             return
         }
 
-        showPhoneNumberPicker(phoneNumbers: phoneNumbers, fromViewController: fromViewController, completion: { (recipientId) in
-            SignalApp.shared().presentConversation(for: recipientId.transitional_signalServiceAddress, action: action, animated: true)
+        showPhoneNumberPicker(phoneNumbers: phoneNumbers, fromViewController: fromViewController, completion: { phoneNumber in
+            SignalApp.shared().presentConversation(for: SignalServiceAddress(phoneNumber: phoneNumber), action: action, animated: true)
         })
     }
 

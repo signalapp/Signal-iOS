@@ -4744,12 +4744,11 @@ typedef enum : NSUInteger {
 
     BOOL isProfileAvatar = NO;
     NSData *_Nullable avatarImageData = [self.contactsManager avatarDataForCNContactId:cnContact.identifier];
-    for (NSString *recipientId in contact.registeredPhoneNumbers) {
+    for (SignalServiceAddress *address in contact.registeredAddresses) {
         if (avatarImageData) {
             break;
         }
-        avatarImageData =
-            [self.contactsManager profileImageDataForAddress:recipientId.transitional_signalServiceAddress];
+        avatarImageData = [self.contactsManager profileImageDataForAddress:address];
         if (avatarImageData) {
             isProfileAvatar = YES;
         }

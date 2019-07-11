@@ -211,9 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (BOOL)isSignalContact {
-    NSArray *identifiers = [self registeredPhoneNumbers];
-
-    return [identifiers count] > 0;
+    return self.registeredAddresses.count > 0;
 }
 
 - (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -234,19 +232,19 @@ NS_ASSUME_NONNULL_BEGIN
     return [result copy];
 }
 
-- (NSArray<NSString *> *)registeredPhoneNumbers
+- (NSArray<SignalServiceAddress *> *)registeredAddresses
 {
-    __block NSMutableArray *identifiers = [NSMutableArray array];
+    __block NSMutableArray<SignalServiceAddress *> *addresses = [NSMutableArray array];
 
     [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         for (PhoneNumber *number in self.parsedPhoneNumbers) {
             SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:number.toE164];
             if ([SignalRecipient isRegisteredRecipient:address transaction:transaction.asAnyRead]) {
-                [identifiers addObject:number.toE164];
+                [addresses addObject:address];
             }
         }
     }];
-    return [identifiers copy];
+    return [addresses copy];
 }
 
 + (NSComparator)comparatorSortingNamesByFirstThenLast:(BOOL)firstNameOrdering {
@@ -267,12 +265,17 @@ NS_ASSUME_NONNULL_BEGIN
     return [CNContactFormatter stringFromContact:cnContact style:CNContactFormatterStyleFullName].ows_stripped;
 }
 
-- (NSString *)nameForPhoneNumber:(NSString *)phoneNumber
+- (NSString *)nameForAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(phoneNumber.length > 0);
-    OWSAssertDebug([self.registeredPhoneNumbers containsObject:phoneNumber]);
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug([self.registeredAddresses containsObject:address]);
 
-    NSString *value = self.phoneNumberNameMap[phoneNumber];
+    // We don't have contacts entries for addresses without phone numbers
+    if (!address.phoneNumber) {
+        return nil;
+    }
+
+    NSString *value = self.phoneNumberNameMap[address.phoneNumber];
     if (!value) {
         return NSLocalizedString(@"PHONE_NUMBER_TYPE_UNKNOWN",
             @"Label used when we don't what kind of phone number it is (e.g. mobile/work/home).");
