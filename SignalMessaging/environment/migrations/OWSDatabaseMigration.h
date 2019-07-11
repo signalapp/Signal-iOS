@@ -24,8 +24,6 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 @property (class, nonatomic, readonly) NSString *migrationId;
 @property (nonatomic, readonly) NSString *migrationId;
 
-@property (nonatomic, readonly) BOOL shouldSave;
-
 // Prefer nonblocking (async) migrations by overriding `runUpWithTransaction:` in a subclass.
 // Blocking migrations running too long will crash the app, effectively bricking install
 // because the user will never get past it.

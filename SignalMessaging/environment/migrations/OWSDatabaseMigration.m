@@ -29,11 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithUniqueId:[self.class migrationId]];
 }
 
-- (BOOL)shouldSave
-{
-    return YES;
-}
-
 + (NSString *)migrationId
 {
     OWSAbstractMethod();
@@ -64,8 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)markAsCompleteWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    if (!self.shouldSave) {
-        OWSLogInfo(@"NOT Marking migration as incomplete: %@ %@", [self class], migrationId);
+    if (!self.shouldBeSaved) {
+        OWSLogInfo(@"NOT Marking migration as incomplete: %@ %@", [self class], self.migrationId);
         return;
     }
 

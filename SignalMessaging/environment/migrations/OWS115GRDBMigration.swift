@@ -28,7 +28,7 @@ public class OWS115GRDBMigration: YDBDatabaseMigration {
         }
     }
 
-    public override var shouldSave: Bool {
+    public override var shouldBeSaved: Bool {
         if FeatureFlags.grdbMigratesFreshDBEveryLaunch {
             // Do nothing so as to re-run every launch.
             // Useful while actively developing the migration.
