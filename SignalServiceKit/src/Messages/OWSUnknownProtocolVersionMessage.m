@@ -97,7 +97,8 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                  protocolVersion:(NSUInteger)protocolVersion
-                        senderId:(nullable NSString *)senderId
+                          sender:(nullable SignalServiceAddress *)sender
+unknownProtocolVersionMessageSchemaVersion:(NSUInteger)unknownProtocolVersionMessageSchemaVersion
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -128,7 +129,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     }
 
     _protocolVersion = protocolVersion;
-    _senderId = senderId;
+    _sender = sender;
+    _unknownProtocolVersionMessageSchemaVersion = unknownProtocolVersionMessageSchemaVersion;
 
     return self;
 }

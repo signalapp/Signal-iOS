@@ -81,7 +81,8 @@ NSUInteger const TSRecipientReadReceiptSchemaVersion = 1;
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                    recipientMap:(NSDictionary<NSString *,NSNumber *> *)recipientMap
+                    recipientMap:(NSDictionary<SignalServiceAddress *,NSNumber *> *)recipientMap
+recipientReadReceiptSchemaVersion:(NSUInteger)recipientReadReceiptSchemaVersion
                    sentTimestamp:(uint64_t)sentTimestamp
 {
     self = [super initWithUniqueId:uniqueId];
@@ -91,6 +92,7 @@ NSUInteger const TSRecipientReadReceiptSchemaVersion = 1;
     }
 
     _recipientMap = recipientMap;
+    _recipientReadReceiptSchemaVersion = recipientReadReceiptSchemaVersion;
     _sentTimestamp = sentTimestamp;
 
     return self;
