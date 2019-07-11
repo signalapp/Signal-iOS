@@ -96,13 +96,6 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
-- (void)updateProfileForAddress:(SignalServiceAddress *)address
-           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
-                  avatarUrlPath:(nullable NSString *)avatarUrlPath
-{
-    // Do nothing.
-}
-
 @end
 
 #endif

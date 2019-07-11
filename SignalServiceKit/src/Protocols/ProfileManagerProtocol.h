@@ -26,10 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)fetchProfileForAddress:(SignalServiceAddress *)address;
 
-- (void)updateProfileForAddress:(SignalServiceAddress *)address
-           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
-                  avatarUrlPath:(nullable NSString *)avatarUrlPath;
-
 @end
 
 NS_ASSUME_NONNULL_END

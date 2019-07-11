@@ -31,6 +31,7 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 - (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion;
 
 // NOTE: We'll often want to use markAsCompleteWithSneakyTransaction.
+//       See below.
 - (void)markAsCompleteWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 // We use a sneaky transaction since which database we should
@@ -54,6 +55,7 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 #pragma mark -
 
 // A base class for migrations run before the YDB-to-GRDB migration.
+// These migrations are run against the YDB store.
 @interface YDBDatabaseMigration : OWSDatabaseMigration
 
 @property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
@@ -66,5 +68,10 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 @property (nonatomic, readonly) YapDatabaseConnection *ydbReadWriteConnection;
 
 @end
+
+#pragma mark -
+
+// GRDB TODO: Add GRDBDatabaseMigration, a base class for migrations run after
+// the YDB-to-GRDB migration. These migrations are run against the GRDB store.
 
 NS_ASSUME_NONNULL_END
