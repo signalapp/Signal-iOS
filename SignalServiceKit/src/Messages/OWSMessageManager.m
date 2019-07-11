@@ -387,7 +387,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // UUID TODO: dedupe based on sourceAddress.
+    // TODO UUID: dedupe based on sourceAddress.
     BOOL duplicateEnvelope = [InteractionFinder existsIncomingMessageWithTimestamp:envelope.timestamp
                                                                           sourceId:envelope.sourceE164
                                                                     sourceDeviceId:envelope.sourceDevice

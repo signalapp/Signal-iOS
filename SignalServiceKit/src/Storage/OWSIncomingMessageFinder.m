@@ -49,7 +49,7 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
         if ([object isKindOfClass:[TSIncomingMessage class]]) {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)object;
 
-            // UUID TODO
+            // TODO UUID
             if (SSKFeatureFlags.allowUUIDOnlyContacts) {
                 return;
             }

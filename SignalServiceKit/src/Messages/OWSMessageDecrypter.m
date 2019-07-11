@@ -578,7 +578,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return failureBlock(error);
         }
 
-        // UUID TODO: pass uuid through SMK for UD delivery
+        // TODO UUID: pass uuid through SMK for UD delivery
         SignalServiceAddress *sourceAddress = [[SignalServiceAddress alloc] initWithUuid:nil phoneNumber:sourceE164];
         OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:newEnvelopeData
                                                                             plaintextData:plaintextData

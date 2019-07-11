@@ -807,7 +807,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
 {
-    // UUID TODO
+    // TODO UUID
     if (SSKFeatureFlags.allowUUIDOnlyContacts && address.phoneNumber == nil) {
         return nil;
     }
@@ -1136,7 +1136,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if (address == nil) {
         return nil;
     }
-    // UUID TODO
+    // TODO UUID
     if (SSKFeatureFlags.allowUUIDOnlyContacts && address.phoneNumber == nil) {
         return nil;
     }

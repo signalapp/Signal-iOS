@@ -166,7 +166,7 @@ public class AccountManager: NSObject {
                                            failure: resolver.reject)
         }
 
-        // UUID TODO: this UUID param should be non-optional when the production service is updated
+        // TODO UUID: this UUID param should be non-optional when the production service is updated
         return promise.map { responseObject throws -> UUID? in
             guard let responseObject = responseObject else {
                 return nil
