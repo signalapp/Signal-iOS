@@ -111,7 +111,8 @@ def configure_warning_flags(installer)
           build_configuration.build_settings['WARNING_CFLAGS'] = ['$(inherited)', 
                                                                   '-Werror=incompatible-pointer-types',
                                                                   '-Werror=protocol',
-                                                                  '-Werror=incomplete-implementation']
+                                                                  '-Werror=incomplete-implementation',
+                                                                  '-Werror=objc-literal-conversion']
       end
   end
 end

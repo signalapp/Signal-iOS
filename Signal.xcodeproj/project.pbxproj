@@ -4335,6 +4335,7 @@
 					"-Werror=incompatible-pointer-types",
 					"-Werror=protocol",
 					"-Werror=incomplete-implementation",
+					"-Werror=objc-literal-conversion",
 				);
 			};
 			name = Debug;
@@ -4415,6 +4416,7 @@
 					"-Werror=incompatible-pointer-types",
 					"-Werror=protocol",
 					"-Werror=incomplete-implementation",
+					"-Werror=objc-literal-conversion",
 				);
 			};
 			name = "App Store Release";
