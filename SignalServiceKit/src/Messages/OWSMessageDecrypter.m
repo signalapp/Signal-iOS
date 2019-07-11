@@ -151,7 +151,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 {
     OWSAssertDebug(envelope);
 
-    return [self.blockingManager.blockedPhoneNumbers containsObject:envelope.sourceE164];
+    return [self.blockingManager isAddressBlocked:envelope.sourceAddress];
 }
 
 #pragma mark - Decryption
@@ -181,7 +181,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     DecryptSuccessBlock successBlock = ^(OWSMessageDecryptResult *result, SDSAnyWriteTransaction *transaction) {
         // Ensure all blocked messages are discarded.
         if ([self isEnvelopeSenderBlocked:envelope]) {
-            OWSLogInfo(@"Ignoring blocked envelope: %@", envelope.sourceE164);
+            OWSLogInfo(@"Ignoring blocked envelope: %@", envelope.sourceAddress);
             return failureBlock();
         }
 
@@ -221,7 +221,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
             // We block UD messages later, after they are decrypted.
             if ([self isEnvelopeSenderBlocked:envelope]) {
-                OWSLogInfo(@"ignoring blocked envelope: %@", envelope.sourceE164);
+                OWSLogInfo(@"ignoring blocked envelope: %@", envelope.sourceAddress);
                 return failureBlock();
             }
         }
@@ -597,7 +597,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSErrorMessage *errorMessage;
 
-        if (envelope.sourceE164.length == 0) {
+        if (!envelope.sourceAddress.isValid) {
             TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                 transaction:transaction];

@@ -209,8 +209,8 @@ public class MessageFetcherJob: NSObject {
         let request: TSRequest
         if let serverGuid = envelope.serverGuid, serverGuid.count > 0 {
             request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withServerGuid: serverGuid)
-        } else if let sourceE164 = envelope.sourceE164, sourceE164.count > 0, envelope.timestamp > 0 {
-            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(withSource: sourceE164, timestamp: envelope.timestamp)
+        } else if let sourceAddress = envelope.sourceAddress, sourceAddress.isValid, envelope.timestamp > 0 {
+            request = OWSRequestFactory.acknowledgeMessageDeliveryRequest(with: sourceAddress, timestamp: envelope.timestamp)
         } else {
             owsFailDebug("Cannot ACK message which has neither source, nor server GUID and timestamp.")
             return

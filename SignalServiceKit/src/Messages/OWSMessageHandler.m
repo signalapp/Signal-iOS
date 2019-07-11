@@ -10,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 // used in log formatting
 NSString *envelopeAddress(SSKProtoEnvelope *envelope)
 {
-    return [NSString stringWithFormat:@"%@.%d", envelope.sourceE164, (unsigned int)envelope.sourceDevice];
+    return [NSString stringWithFormat:@"%@.%d", envelope.sourceAddress, (unsigned int)envelope.sourceDevice];
 }
 
 @implementation OWSMessageHandler
