@@ -13,6 +13,7 @@ protocol AttachmentTextToolbarDelegate: class {
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar)
+    func attachmentTextToolbarDidTogglePerMessageExpiration(_ attachmentTextToolbar: AttachmentTextToolbar)
 }
 
 // MARK: -
@@ -27,7 +28,11 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     // MARK: - Properties
 
-    private let options: AttachmentApprovalViewControllerOptions
+    var options: AttachmentApprovalViewControllerOptions {
+        didSet {
+            updateContent()
+        }
+    }
 
     weak var attachmentTextToolbarDelegate: AttachmentTextToolbarDelegate?
 
@@ -50,6 +55,8 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
             updatePlaceholderTextViewVisibility()
         }
     }
+
+    private let perMessageExpirationWrapper = UIView()
 
     // Layout Constants
 
@@ -110,7 +117,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         let sendWrapper = UIView()
         sendWrapper.addSubview(sendButton)
-        let perMessageExpirationWrapper = UIView()
         perMessageExpirationWrapper.addSubview(perMessageExpirationButton)
 
         let hStackView = UIStackView()
@@ -151,8 +157,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         layoutButtonWithinWrapper(sendButton)
         layoutButtonWithinWrapper(perMessageExpirationButton)
 
-        perMessageExpirationWrapper.isHidden = !options.contains(.canToggleExpiration)
-
         updateContent()
     }
 
@@ -181,6 +185,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         perMessageExpirationLabel.isHidden = !hasPerMessageExpiration
         textContainer.isHidden = hasPerMessageExpiration
+        perMessageExpirationWrapper.isHidden = !options.contains(.canToggleExpiration)
 
         updateHeight(textView: textView)
     }
@@ -255,6 +260,8 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         // Toggle value.
         let isPerMessageExpirationEnabled = !preferences.isPerMessageExpirationEnabled()
         preferences.setIsPerMessageExpirationEnabled(isPerMessageExpirationEnabled)
+
+        attachmentTextToolbarDelegate?.attachmentTextToolbarDidTogglePerMessageExpiration(self)
 
         updateContent()
     }
