@@ -76,5 +76,12 @@ public class FeatureFlags: NSObject {
     public static let registrationLockV2 = false
 
     @objc
-    public static let allowUUIDOnlyContacts = false
+    public static var allowUUIDOnlyContacts: Bool {
+        // TODO UUID: Remove production check once this rolls out to prod service
+        if OWSIsDebugBuild() && !IsUsingProductionService() {
+            return true
+        } else {
+            return false
+        }
+    }
 }

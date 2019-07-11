@@ -125,11 +125,11 @@ public class AccountManager: NSObject {
         }
 
         Logger.debug("registering with signal server")
-        var pendingUuid: UUID?
         let registrationPromise: Promise<Void> = firstly { () -> Promise<UUID?> in
             self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
         }.then { (uuid: UUID?) -> Promise<Void> in
-            pendingUuid = uuid
+            assert(!FeatureFlags.allowUUIDOnlyContacts || uuid != nil)
+            TSAccountManager.sharedInstance().uuidAwaitingVerification = uuid
             return self.accountServiceClient.updateAttributes()
         }.then {
             self.createPreKeys()
@@ -149,8 +149,7 @@ public class AccountManager: NSObject {
                 }
             }
         }.done { (_) -> Void in
-            assert(!FeatureFlags.allowUUIDOnlyContacts || pendingUuid != nil)
-            self.completeRegistration(uuid: pendingUuid)
+            self.completeRegistration()
         }
 
         registrationPromise.retainUntilComplete()
@@ -204,9 +203,9 @@ public class AccountManager: NSObject {
         return job.run()
     }
 
-    private func completeRegistration(uuid: UUID?) {
+    private func completeRegistration() {
         Logger.info("")
-        tsAccountManager.didRegister(uuid: uuid)
+        tsAccountManager.didRegister()
     }
 
     // MARK: Message Delivery

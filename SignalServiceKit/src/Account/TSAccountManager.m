@@ -182,13 +182,18 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return self.registrationState == OWSRegistrationState_Registered;
 }
 
-- (void)didRegisterWithUUID:(nullable NSUUID *)uuid
+- (void)didRegister
 {
     OWSLogInfo(@"didRegister");
     NSString *phoneNumber = self.phoneNumberAwaitingVerification;
+    NSUUID *uuid = self.uuidAwaitingVerification;
 
     if (!phoneNumber) {
         OWSFail(@"phoneNumber was unexpectedly nil");
+    }
+
+    if (SSKFeatureFlags.allowUUIDOnlyContacts && !uuid) {
+        OWSFail(@"uuid was unexpectedly nil");
     }
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -274,6 +279,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable NSUUID *)uuid
 {
+    NSUUID *awaitingVerif = self.uuidAwaitingVerification;
+    if (awaitingVerif) {
+        return awaitingVerif;
+    }
+
     // Cache this since we access this a lot, and once set it will not change.
     @synchronized(self) {
         if (self.cachedUuid == nil) {
@@ -351,6 +361,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringPhoneNumberKey transaction:transaction];
 
         self.phoneNumberAwaitingVerification = nil;
+        self.uuidAwaitingVerification = nil;
         self.cachedLocalNumber = localNumber;
     }
 }
@@ -671,6 +682,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         _isRegistered = NO;
         _cachedLocalNumber = nil;
         _phoneNumberAwaitingVerification = nil;
+        _cachedUuid = nil;
+        _uuidAwaitingVerification = nil;
         _cachedIsDeregistered = nil;
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [self.keyValueStore removeAllWithTransaction:transaction];
