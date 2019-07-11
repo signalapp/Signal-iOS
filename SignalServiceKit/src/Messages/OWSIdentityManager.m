@@ -57,6 +57,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 @property (nonatomic, readonly) SDSKeyValueStore *ownIdentityKeyValueStore;
 @property (nonatomic, readonly) SDSKeyValueStore *queuedVerificationStateSyncMessagesKeyValueStore;
 @property (nonatomic, readonly) SDSAnyDatabaseQueue *databaseQueue;
+
 @end
 
 #pragma mark -
