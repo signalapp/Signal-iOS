@@ -223,7 +223,7 @@ void AssertIsOnSendingQueue()
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         latestCopy = [TSInteraction anyFetchWithUniqueId:self.message.uniqueId transaction:transaction];
     }];
-    if (self.message.anyCanBeSaved && latestCopy == nil) {
+    if (self.message.shouldBeSaved && latestCopy == nil) {
         OWSLogInfo(@"aborting message send; message deleted.");
         NSError *error = OWSErrorWithCodeDescription(
             OWSErrorCodeMessageDeletedBeforeSent, @"Message was deleted before it could be sent.");
@@ -1922,7 +1922,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // All outgoing messages should be saved at the time they are enqueued.
 
     // GRDB TODO: Remove; this should be redundant.
-    if (message.anyCanBeSaved && [TSInteraction anyFetchWithUniqueId:message.uniqueId transaction:transaction] == nil) {
+    if (message.shouldBeSaved && [TSInteraction anyFetchWithUniqueId:message.uniqueId transaction:transaction] == nil) {
         OWSFailDebug(@"Message not saved.");
         [message anyInsertWithTransaction:transaction];
     }

@@ -98,7 +98,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     // MARK: TSYapDatabaseObject overrides
 
     @objc
-    public override var anyCanBeSaved: Bool {
+    public override var shouldBeSaved: Bool {
         return false
     }
 

@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (BOOL)anyCanBeSaved
+- (BOOL)shouldBeSaved
 {
     return NO;
 }

@@ -122,7 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - TSYapDatabaseObject overrides
 
-- (BOOL)anyCanBeSaved
+- (BOOL)shouldBeSaved
 {
     return NO;
 }

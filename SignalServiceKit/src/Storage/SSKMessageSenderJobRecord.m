@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    if (message.anyCanBeSaved) {
+    if (message.shouldBeSaved) {
         _messageId = message.uniqueId;
         if (_messageId == nil) {
             *outError = [NSError errorWithDomain:SSKJobRecordErrorDomain
