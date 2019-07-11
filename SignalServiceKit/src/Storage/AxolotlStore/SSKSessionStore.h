@@ -22,7 +22,7 @@ extern NSString *const OWSPrimaryStorageSessionStoreCollection;
                               transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)storeSession:(SessionRecord *)session
-             address:(SignalServiceAddress *)address
+          forAddress:(SignalServiceAddress *)address
             deviceId:(int)deviceId
          transaction:(SDSAnyWriteTransaction *)transaction;
 

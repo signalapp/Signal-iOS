@@ -60,7 +60,7 @@ extern const NSUInteger kStoredIdentityKeyLength;
 - (nullable OWSRecipientIdentity *)recipientIdentityForAddress:(SignalServiceAddress *)address;
 
 /**
- * @param   recipientId unique stable identifier for the recipient, e.g. e164 phone number
+ * @param   address of the recipient
  * @returns nil if the recipient does not exist, or is trusted for sending
  *          else returns the untrusted recipient.
  */
