@@ -267,7 +267,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     SignalServiceAddress *_Nullable localAddress = TSAccountManager.localAddress;
     OWSAssertDebug(localAddress);
 
-    [self anyUpdateGroupThreadWithTransaction:transaction.asAnyWrite
+    [self anyUpdateGroupThreadWithTransaction:transaction
                                         block:^(TSGroupThread *thread) {
                                             NSMutableArray<SignalServiceAddress *> *newGroupMembers =
                                                 [thread.groupModel.groupMembers mutableCopy];
@@ -280,7 +280,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 {
     [self removeAllThreadInteractionsWithTransaction:transaction];
 
-    [self anyUpdateGroupThreadWithTransaction:transaction.asAnyWrite
+    [self anyUpdateGroupThreadWithTransaction:transaction
                                         block:^(TSGroupThread *thread) {
                                             thread.shouldThreadBeVisible = NO;
                                         }];
