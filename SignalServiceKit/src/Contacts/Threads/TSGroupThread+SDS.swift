@@ -52,3 +52,19 @@ class TSGroupThreadSerializer: SDSSerializer {
         return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
     }
 }
+
+// MARK: - Update
+
+@objc
+public extension TSGroupThread {
+    // NOTE: This method will fail if the object has unexpected type.
+    func anyUpdateGroupThread(transaction: SDSAnyWriteTransaction, block: (TSGroupThread) -> Void) {
+        anyUpdate(transaction: transaction) { (thread) in
+            guard let groupThread = thread as? TSGroupThread else {
+                owsFailDebug("Object has unexpected type: \(type(of: thread))")
+                return
+            }
+            block(groupThread)
+        }
+    }
+}
