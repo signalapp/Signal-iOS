@@ -35,6 +35,8 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 
 #pragma mark - Views
 
+// GRDB TODO: Remove these methods?
+
 // Returns the "unseen" database view if it is ready;
 // otherwise it returns the "unread" database view.
 + (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction;

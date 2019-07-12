@@ -7,8 +7,6 @@
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <YapDatabase/YapDatabaseConnection.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -210,12 +208,6 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 + (NSArray<TSGroupThread *> *)groupThreadsWithAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
-
-    if (!transaction.transitional_yapReadTransaction) {
-        OWSFailDebug(@"GRDB TODO");
-        return @[];
-    }
-
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
 

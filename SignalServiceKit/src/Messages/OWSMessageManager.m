@@ -1199,8 +1199,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *updateGroupInfo =
         [gThread.groupModel getInfoStringAboutUpdateTo:gThread.groupModel contactsManager:self.contactsManager];
 
-    uint32_t expiresInSeconds =
-        [gThread disappearingMessagesDurationWithTransaction:transaction.transitional_yapWriteTransaction];
+    uint32_t expiresInSeconds = [gThread disappearingMessagesDurationWithTransaction:transaction];
     TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:gThread
                                                            groupMetaMessage:TSGroupMetaMessageUpdate
                                                            expiresInSeconds:expiresInSeconds];

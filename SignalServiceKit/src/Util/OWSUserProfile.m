@@ -239,7 +239,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 #pragma mark - Update With... Methods
 
-// Similar in spirit to [TSYapDatabaseObject applyChangeToSelfAndLatestCopy],
+// Similar in spirit to anyUpdateWithTransaction,
 // but with significant differences.
 //
 // * We save if this entity is not in the database.

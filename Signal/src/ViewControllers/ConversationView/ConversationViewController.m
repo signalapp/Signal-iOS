@@ -3556,7 +3556,7 @@ typedef enum : NSUInteger {
                                             gThread.groupModel = newGroupModel;
                                         }];
 
-        uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
+        uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction.asAnyRead];
         message = [TSOutgoingMessage outgoingMessageInThread:groupThread
                                             groupMetaMessage:TSGroupMetaMessageUpdate
                                             expiresInSeconds:expiresInSeconds];

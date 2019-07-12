@@ -132,7 +132,8 @@ NS_ASSUME_NONNULL_BEGIN
                                              transaction:transaction.asAnyRead];
         if (contactThread) {
             conversationColorName = contactThread.conversationColorName;
-            disappearingMessagesConfiguration = [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
+            disappearingMessagesConfiguration =
+                [contactThread disappearingMessagesConfigurationWithTransaction:transaction.asAnyRead];
         } else {
             conversationColorName =
                 [TSThread stableColorNameForNewConversationWithString:signalAccount.recipientAddress.stringForDisplay];

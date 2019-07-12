@@ -22,6 +22,7 @@ protocol InteractionFinderAdapter {
     func unreadCount(transaction: ReadTransaction) throws -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
     func enumerateInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
+    func enumerateUnseenInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
 
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 
@@ -161,6 +162,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return try yapAdapter.enumerateInteractions(transaction: yapRead, block: block)
         case .grdbRead(let grdbRead):
             return try grdbAdapter.enumerateInteractions(transaction: grdbRead, block: block)
+        }
+    }
+
+    @objc
+    public func enumerateUnseenInteractions(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return try yapAdapter.enumerateUnseenInteractions(transaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            return try grdbAdapter.enumerateUnseenInteractions(transaction: grdbRead, block: block)
         }
     }
 
@@ -316,6 +327,21 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
     }
 
+    func enumerateUnseenInteractions(transaction: YapDatabaseReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        guard let view = unseenExt(transaction) else {
+            return
+        }
+        view.safe_enumerateKeysAndObjects(inGroup: threadUniqueId,
+                                          extensionName: TSUnseenDatabaseViewExtensionName,
+                                          with: []) { (_, _, object, _, stopPtr) in
+                                            guard let interaction = object as? TSInteraction else {
+                                                owsFailDebug("unexpected interaction: \(type(of: object))")
+                                                return
+                                            }
+            block(interaction, stopPtr)
+        }
+    }
+
     func interaction(at index: UInt, transaction: YapDatabaseReadTransaction) -> TSInteraction? {
         guard let view = interactionExt(transaction) else {
             return nil
@@ -350,6 +376,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     private func interactionExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction? {
         return transaction.safeViewTransaction(TSMessageDatabaseViewExtensionName)
+    }
+
+    private func unseenExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction? {
+        return transaction.safeViewTransaction(TSUnseenDatabaseViewExtensionName)
     }
 }
 
@@ -496,22 +526,40 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     }
 
     func enumerateInteractionIds(transaction: GRDBReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
-        var stop: ObjCBool = false
 
-        try String.fetchCursor(transaction.database,
-                           sql: """
+        let cursor = try String.fetchCursor(transaction.database,
+                                        sql: """
             SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             ORDER BY \(interactionColumn: .id) DESC
-""",
-            arguments: [threadUniqueId]).forEach { (uniqueId: String) -> Void in
+            """,
+            arguments: [threadUniqueId])
+        while let uniqueId = try cursor.next() {
+            var stop: ObjCBool = false
+            try block(uniqueId, &stop)
+            if stop.boolValue {
+                return
+            }
+        }
+    }
 
-                if stop.boolValue {
-                    return
-                }
+    func enumerateUnseenInteractions(transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
 
-                try block(uniqueId, &stop)
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .read) is 0
+        """
+        let arguments: [DatabaseValueConvertible] = [threadUniqueId]
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
+        while let interaction = try cursor.next() {
+            var stop: ObjCBool = false
+            block(interaction, &stop)
+            if stop.boolValue {
+                return
+            }
         }
     }
 

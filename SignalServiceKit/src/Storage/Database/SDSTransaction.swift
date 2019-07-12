@@ -115,6 +115,7 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteCont
         super.init(transitional_yapReadTransaction: transitional_yapWriteTransaction)
     }
 
+    // GRDB TODO: Remove this method.
     @objc
     public var transitional_yapWriteTransaction: YapDatabaseReadWriteTransaction? {
         switch writeTransaction {
