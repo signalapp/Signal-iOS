@@ -178,9 +178,15 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Thread
 
+// GRDB TODO: Remove.
 - (TSThread *)thread
 {
-    return [TSThread fetchObjectWithUniqueID:self.uniqueThreadId];
+    __block TSThread *thread;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        thread = [TSThread anyFetchWithUniqueId:self.uniqueThreadId transaction:transaction];
+        OWSAssertDebug(thread);
+    }];
+    return thread;
 }
 
 - (TSThread *)threadWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -264,7 +270,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     TSThread *fetchedThread = [self threadWithTransaction:transaction.asAnyRead];
 
-    [fetchedThread updateWithLastMessage:self transaction:transaction];
+    [fetchedThread updateWithLastMessage:self transaction:transaction.asAnyWrite];
 }
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

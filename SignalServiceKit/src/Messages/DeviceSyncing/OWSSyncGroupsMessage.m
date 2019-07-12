@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncGroupsMessage.h"
@@ -66,18 +66,17 @@ NS_ASSUME_NONNULL_BEGIN
     OWSGroupsOutputStream *groupsOutputStream = [[OWSGroupsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
     [TSGroupThread
-        enumerateCollectionObjectsWithTransaction:transaction
-                                       usingBlock:^(id obj, BOOL *stop) {
-                                           if (![obj isKindOfClass:[TSGroupThread class]]) {
-                                               if (![obj isKindOfClass:[TSContactThread class]]) {
-                                                   OWSLogWarn(
-                                                       @"Ignoring non group thread in thread collection: %@", obj);
-                                               }
-                                               return;
-                                           }
-                                           TSGroupThread *groupThread = (TSGroupThread *)obj;
-                                           [groupsOutputStream writeGroup:groupThread transaction:transaction];
-                                       }];
+        anyEnumerateWithTransaction:transaction.asAnyRead
+                              block:^(TSThread *thread, BOOL *stop) {
+                                  if (![thread isKindOfClass:[TSGroupThread class]]) {
+                                      if (![thread isKindOfClass:[TSContactThread class]]) {
+                                          OWSLogWarn(@"Ignoring non group thread in thread collection: %@", thread);
+                                      }
+                                      return;
+                                  }
+                                  TSGroupThread *groupThread = (TSGroupThread *)thread;
+                                  [groupsOutputStream writeGroup:groupThread transaction:transaction];
+                              }];
 
     [dataOutputStream close];
 

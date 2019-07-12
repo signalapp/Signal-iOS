@@ -56,14 +56,15 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isRecipientUpdate) {
         // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.
         if (self.dataMessage.group) {
-            _thread = [TSGroupThread threadWithGroupId:_dataMessage.group.id transaction:transaction];
+            _thread = [TSGroupThread threadWithGroupId:_dataMessage.group.id transaction:transaction.asAnyRead];
         } else {
             OWSFailDebug(@"We should never receive a 'recipient update' for messages in contact threads.");
         }
         // Skip the other processing for recipient updates.
     } else {
         if (self.dataMessage.group) {
-            _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
+            _thread =
+                [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction.asAnyWrite];
         } else {
             _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress
                                                                transaction:transaction.asAnyWrite];

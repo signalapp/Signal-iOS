@@ -1337,9 +1337,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
             if (groupThread.isLocalUserInGroup) {
-                if (transaction.transitional_yapWriteTransaction) {
-                    [groupThread softDeleteGroupThreadWithTransaction:transaction.transitional_yapWriteTransaction];
-                }
+                [groupThread softDeleteGroupThreadWithTransaction:transaction];
                 return;
             }
         }

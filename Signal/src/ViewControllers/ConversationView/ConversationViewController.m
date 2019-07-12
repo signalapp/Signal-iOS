@@ -3590,7 +3590,7 @@ typedef enum : NSUInteger {
 
     __block NSString *draft;
     [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        draft = [self.thread currentDraftWithTransaction:transaction];
+        draft = [self.thread currentDraftWithTransaction:transaction.asAnyRead];
     }];
     [self.inputToolbar setMessageText:draft animated:NO];
 }

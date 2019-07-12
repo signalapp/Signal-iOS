@@ -27,6 +27,8 @@ protocol InteractionFinderAdapter {
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
 }
 
+// MARK: -
+
 @objc
 public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
@@ -141,6 +143,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
+    @objc
+    public func enumerateInteractionIdsObjc(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return try yapAdapter.enumerateInteractionIds(transaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            return try grdbAdapter.enumerateInteractionIds(transaction: grdbRead, block: block)
+        }
+    }
+
     public func interaction(at index: UInt, transaction: SDSAnyReadTransaction) throws -> TSInteraction? {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
@@ -164,6 +176,8 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 }
+
+// MARK: -
 
 struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
@@ -312,6 +326,8 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return transaction.safeViewTransaction(TSMessageDatabaseViewExtensionName)
     }
 }
+
+// MARK: -
 
 struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 

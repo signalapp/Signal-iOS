@@ -56,7 +56,10 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // --- CODE GENERATION MARKER
 
 @property (nonatomic, readonly) NSString *uniqueThreadId;
+
+// GRDB TODO: Remove.
 @property (nonatomic, readonly) TSThread *thread;
+
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
