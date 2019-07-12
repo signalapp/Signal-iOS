@@ -1381,6 +1381,30 @@ public extension %s {
 ''' % ( str(clazz.name), record_name, str(clazz.name), )
     
     
+    # ---- Typed Convenience Methods ----
+    
+
+    if has_sds_superclass:
+        swift_body += '''
+// MARK: - Typed Convenience Methods
+
+@objc
+public extension %s {
+    // NOTE: This method will fail if the object has unexpected type.
+    @objc
+    func anyUpdate%s(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
+        anyUpdate(transaction: transaction) { (object) in
+            guard let instance = object as? %s else {
+                owsFailDebug("Object has unexpected type: \(type(of: object))")
+                return
+            }
+            block(instance)
+        }
+    }
+}
+''' % ( str(clazz.name), str(remove_prefix_from_class_name(clazz.name)), str(clazz.name), str(clazz.name), )    
+    
+    
     # ---- SDSModel ----
 
     table_superclass = clazz.table_superclass()
