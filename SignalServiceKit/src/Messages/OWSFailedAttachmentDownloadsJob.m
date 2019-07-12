@@ -65,14 +65,13 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
     // Since we can't directly mutate the enumerated attachments, we store only their ids in hopes
     // of saving a little memory and then enumerate the (larger) TSAttachment objects one at a time.
     for (NSString *attachmentId in [self fetchAttemptingOutAttachmentIdsWithTransaction:transaction]) {
-        TSAttachment *_Nullable attachment =
-            [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction.asAnyRead];
-        if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
-            TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
-            block(pointer);
-        } else {
-            OWSLogError(@"unexpected object: %@", attachment);
+        TSAttachmentPointer *_Nullable attachment =
+            [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:attachmentId transaction:transaction.asAnyRead];
+        if (attachment == nil) {
+            OWSFailDebug(@"Missing attachment.");
+            continue;
         }
+        block(attachment);
     }
 }
 
@@ -84,15 +83,11 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
             [self enumerateAttemptingOutAttachmentsWithBlock:^(TSAttachmentPointer *attachment) {
                 // sanity check
                 if (attachment.state != TSAttachmentPointerStateFailed) {
-                    [attachment anyUpdateWithTransaction:transaction.asAnyWrite
-                                                   block:^(TSAttachment *attachment) {
-                                                       if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
-                                                           OWSFailDebug(@"unexpected object: %@", attachment);
-                                                           return;
-                                                       }
-                                                       TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
-                                                       pointer.state = TSAttachmentPointerStateFailed;
-                                                   }];
+                    [attachment anyUpdateAttachmentPointerWithTransaction:transaction.asAnyWrite
+                                                                    block:^(TSAttachmentPointer *attachment) {
+                                                                        attachment.state
+                                                                            = TSAttachmentPointerStateFailed;
+                                                                    }];
                     count++;
                 }
             }

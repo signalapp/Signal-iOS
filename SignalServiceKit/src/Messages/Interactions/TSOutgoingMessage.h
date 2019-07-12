@@ -242,7 +242,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                        transaction:(SDSAnyWriteTransaction *)transaction;
 
 // On app launch, all "sending" recipients should be marked as "failed".
-- (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(SDSAnyWriteTransaction *)transaction;
 
 // When we start a message send, all "failed" recipients should be marked as "sending".
 - (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -259,7 +259,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                    transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(update(sendingError:transaction:));
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction;
-- (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithCustomMessage:(NSString *)customMessage transaction:(SDSAnyWriteTransaction *)transaction;
 - (void)updateWithCustomMessage:(NSString *)customMessage;
 
 // This method is used to record a successful delivery to one recipient.
@@ -270,20 +270,20 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // corresponding message was originally sent.
 - (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
                    deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
-                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                         transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:
             (nullable NSArray<SignalServiceAddress *> *)udRecipientAddresses
                                           nonUdRecipientAddresses:
                                               (nullable NSArray<SignalServiceAddress *> *)nonUdRecipientAddresses
                                                      isSentUpdate:(BOOL)isSentUpdate
-                                                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method is used to rewrite the recipient list with a single recipient.
 // It is used to reply to a "group info request", which should only be
 // delivered to the requestor.
 - (void)updateWithSendingToSingleGroupRecipient:(SignalServiceAddress *)singleGroupRecipient
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This method is used to record a successful "read" by one recipient.
 - (void)updateWithReadRecipient:(SignalServiceAddress *)recipientAddress

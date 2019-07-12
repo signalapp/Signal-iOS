@@ -40,23 +40,23 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 @implementation TSInteraction
 
-+ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
-                                                ofClass:(Class)clazz
-                                        withTransaction:(YapDatabaseReadTransaction *)transaction
++ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
+                                                    ofClass:(Class)clazz
+                                            withTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(timestamp > 0);
 
     // Accept any interaction.
-    return [self interactionsWithTimestamp:timestamp
-                                    filter:^(TSInteraction *interaction) {
-                                        return [interaction isKindOfClass:clazz];
-                                    }
-                           withTransaction:transaction];
+    return [self ydb_interactionsWithTimestamp:timestamp
+                                        filter:^(TSInteraction *interaction) {
+                                            return [interaction isKindOfClass:clazz];
+                                        }
+                               withTransaction:transaction];
 }
 
-+ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
-                                                 filter:(BOOL (^_Nonnull)(TSInteraction *))filter
-                                        withTransaction:(YapDatabaseReadTransaction *)transaction
++ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
+                                                     filter:(BOOL (^_Nonnull)(TSInteraction *))filter
+                                            withTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(timestamp > 0);
 
@@ -199,13 +199,18 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     [self.databaseStorage touchThreadId:self.uniqueThreadId transaction:transaction];
 }
 
-- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                           changeBlock:(void (^)(id))changeBlock
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(transaction);
+    [super anyDidInsertWithTransaction:transaction];
 
-    [super applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
-    [self touchThreadWithTransaction:transaction.asAnyWrite];
+    [self touchThreadWithTransaction:transaction];
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
+    [self touchThreadWithTransaction:transaction];
 }
 
 #pragma mark Date operations
@@ -287,7 +292,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark - sorting migration
 
-- (void)saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (self.sortId != 0) {
         // This could happen if something else in our startup process saved the interaction
@@ -296,7 +301,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
         // we want to ignore any previously assigned sortId
         self.sortId = 0;
     }
-    [self saveWithTransaction:transaction];
+    [self ydb_saveWithTransaction:transaction];
 }
 
 @end

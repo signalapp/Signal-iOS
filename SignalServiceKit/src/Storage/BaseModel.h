@@ -40,8 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction NS_UNAVAILABLE;
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction NS_UNAVAILABLE;
 - (void)remove NS_UNAVAILABLE;
-- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                           changeBlock:(void (^)(id))changeBlock NS_UNAVAILABLE;
 
 @end
 

@@ -14,6 +14,22 @@ import SignalCoreKit
 @objc
 public extension OWSSessionResetJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
+    class func anyFetchSessionResetJobRecord(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> OWSSessionResetJobRecord? {
+        assert(uniqueId.count > 0)
+
+        guard let object = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        return nil
+        }
+        guard let instance = object as? OWSSessionResetJobRecord else {
+            owsFailDebug("Object has unexpected type: \(type(of: object))")
+            return nil
+        }
+        return instance
+    }
+
+    // NOTE: This method will fail if the object has unexpected type.
     func anyUpdateSessionResetJobRecord(transaction: SDSAnyWriteTransaction, block: (OWSSessionResetJobRecord) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSSessionResetJobRecord else {

@@ -191,28 +191,6 @@ NS_ASSUME_NONNULL_BEGIN
     return object;
 }
 
-#pragma mark - Update With...
-
-- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                           changeBlock:(void (^)(id))changeBlock
-{
-    OWSAssertDebug(transaction);
-
-    changeBlock(self);
-
-    NSString *collection = [[self class] collection];
-    id latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
-    if (latestInstance) {
-        // Don't apply changeBlock twice to the same instance.
-        // It's at least unnecessary and actually wrong for some blocks.
-        // e.g. `changeBlock: { $0 in $0.someField++ }`
-        if (latestInstance != self) {
-            changeBlock(latestInstance);
-        }
-        [latestInstance saveWithTransaction:transaction];
-    }
-}
-
 #pragma mark Reload
 
 - (void)reload
@@ -253,6 +231,16 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
+- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     // Do nothing.
 }
@@ -363,14 +351,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ydb_remove
 {
     [self remove];
-}
-
-- (void)ydb_applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                               changeBlock:(void (^)(id))changeBlock
-{
-    OWSAssertDebug(transaction);
-
-    [self applyChangeToSelfAndLatestCopy:transaction changeBlock:changeBlock];
 }
 
 @end

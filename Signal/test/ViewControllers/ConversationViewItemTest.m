@@ -53,7 +53,6 @@
 
 - (ConversationInteractionViewItem *)textViewItem
 {
-
     __block ConversationInteractionViewItem *viewItem = nil;
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSOutgoingMessage *message = [self.messageFactory createWithTransaction:transaction];
@@ -301,18 +300,11 @@
 
 - (nullable TSMessage *)fetchMessageWithUniqueId:(NSString *)uniqueId
 {
-    __block TSInteraction *_Nullable instance;
+    __block TSMessage *_Nullable instance;
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        instance = [TSInteraction anyFetchWithUniqueId:uniqueId transaction:transaction];
+        instance = [TSMessage anyFetchMessageWithUniqueId:uniqueId transaction:transaction];
     }];
-    if (!instance) {
-        return nil;
-    }
-    if (![instance isKindOfClass:[TSMessage class]]) {
-        OWSFailDebug(@"Unexpected object type: %@", [instance class]);
-        return nil;
-    }
-    return (TSMessage *)instance;
+    return instance;
 }
 
 - (nullable TSAttachment *)fetchAttachmentWithUniqueId:(NSString *)uniqueId

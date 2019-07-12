@@ -14,6 +14,22 @@ import SignalCoreKit
 @objc
 public extension TSInfoMessage {
     // NOTE: This method will fail if the object has unexpected type.
+    class func anyFetchInfoMessage(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> TSInfoMessage? {
+        assert(uniqueId.count > 0)
+
+        guard let object = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        return nil
+        }
+        guard let instance = object as? TSInfoMessage else {
+            owsFailDebug("Object has unexpected type: \(type(of: object))")
+            return nil
+        }
+        return instance
+    }
+
+    // NOTE: This method will fail if the object has unexpected type.
     func anyUpdateInfoMessage(transaction: SDSAnyWriteTransaction, block: (TSInfoMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSInfoMessage else {

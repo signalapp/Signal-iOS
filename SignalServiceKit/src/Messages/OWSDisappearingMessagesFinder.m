@@ -155,14 +155,13 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
 
     for (NSString *expiringMessageId in
         [self fetchUnstartedExpiringMessageIdsInThread:thread transaction:transaction]) {
-        TSInteraction *_Nullable interaction =
-            [TSInteraction anyFetchWithUniqueId:expiringMessageId transaction:transaction];
-        if ([interaction isKindOfClass:[TSMessage class]]) {
-            TSMessage *message = (TSMessage *)interaction;
-            block(message);
-        } else {
-            OWSFailDebug(@"unexpected object: %@", [interaction class]);
+        TSMessage *_Nullable message =
+            [TSMessage anyFetchMessageWithUniqueId:expiringMessageId transaction:transaction];
+        if (message == nil) {
+            OWSFailDebug(@"Missing interaction.");
+            continue;
         }
+        block(message);
     }
 }
 
@@ -172,13 +171,12 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
     OWSAssertDebug(transaction);
 
     for (NSString *expiringMessageId in [self fetchMessageIdsWhichFailedToStartExpiring:transaction]) {
-        TSInteraction *_Nullable interaction =
-            [TSInteraction anyFetchWithUniqueId:expiringMessageId transaction:transaction];
-        if (![interaction isKindOfClass:[TSMessage class]]) {
-            OWSFailDebug(@"unexpected object: %@", [interaction class]);
+        TSMessage *_Nullable message =
+            [TSMessage anyFetchMessageWithUniqueId:expiringMessageId transaction:transaction];
+        if (message == nil) {
+            OWSFailDebug(@"Missing interaction.");
             continue;
         }
-        TSMessage *message = (TSMessage *)interaction;
 
         if (transaction.transitional_yapReadTransaction) {
             if (![message shouldStartExpireTimerWithTransaction:transaction.transitional_yapReadTransaction]) {
@@ -219,14 +217,12 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
     // Since we can't directly mutate the enumerated expired messages, we store only their ids in hopes of saving a
     // little memory and then enumerate the (larger) TSMessage objects one at a time.
     for (NSString *expiredMessageId in [self fetchExpiredMessageIdsWithTransaction:transaction]) {
-        TSInteraction *_Nullable interaction =
-            [TSInteraction anyFetchWithUniqueId:expiredMessageId transaction:transaction];
-        if ([interaction isKindOfClass:[TSMessage class]]) {
-            TSMessage *message = (TSMessage *)interaction;
-            block(message);
-        } else {
-            OWSLogError(@"unexpected object: %@", interaction);
+        TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:expiredMessageId transaction:transaction];
+        if (message == nil) {
+            OWSFailDebug(@"Missing interaction.");
+            continue;
         }
+        block(message);
     }
 }
 

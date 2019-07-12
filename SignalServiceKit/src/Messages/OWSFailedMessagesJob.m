@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFailedMessagesJob.h"
 #import "OWSPrimaryStorage.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
@@ -65,12 +66,12 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
     // of saving a little memory and then enumerate the (larger) TSMessage objects one at a time.
     for (NSString *expiredMessageId in [self fetchAttemptingOutMessageIdsWithTransaction:transaction]) {
         TSOutgoingMessage *_Nullable message =
-            [TSOutgoingMessage fetchObjectWithUniqueID:expiredMessageId transaction:transaction];
-        if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-            block(message);
-        } else {
-            OWSLogError(@"unexpected object: %@", message);
+            [TSOutgoingMessage anyFetchOutgoingMessageWithUniqueId:expiredMessageId transaction:transaction.asAnyRead];
+        if (message == nil) {
+            OWSFailDebug(@"Missing interaction.");
+            continue;
         }
+        block(message);
     }
 }
 
@@ -89,7 +90,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                 }
 
                 OWSLogDebug(@"marking message as unsent: %@", message.uniqueId);
-                [message updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:transaction];
+                [message updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:transaction.asAnyWrite];
                 OWSAssertDebug(message.messageState == TSOutgoingMessageStateFailed);
 
                 count++;

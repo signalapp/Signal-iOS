@@ -351,7 +351,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     if (self.albumMessageId == nil) {
         return nil;
     }
-    return (TSMessage *)[TSMessage anyFetchWithUniqueId:self.albumMessageId transaction:transaction];
+    return [TSMessage anyFetchMessageWithUniqueId:self.albumMessageId transaction:transaction];
 }
 
 - (void)migrateAlbumMessageId:(NSString *)albumMesssageId

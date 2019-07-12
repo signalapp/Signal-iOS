@@ -90,7 +90,7 @@ public extension DebugUIMessages {
         databaseStorage.write { transaction in
             let thread = TSGroupThread.getOrCreateThread(with: groupModel, transaction: transaction)
             let message = TSOutgoingMessage.init(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
-            message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""), transaction: transaction.transitional_yapWriteTransaction!)
+            message.update(withCustomMessage: NSLocalizedString("GROUP_CREATED", comment: ""), transaction: transaction)
             SSKEnvironment.shared.messageSenderJobQueue.add(message: message, transaction: transaction)
         }
     }

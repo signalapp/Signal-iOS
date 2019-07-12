@@ -335,10 +335,18 @@ NS_ASSUME_NONNULL_BEGIN
     for (NSNumber *nsTimestamp in sentTimestamps) {
         uint64_t timestamp = [nsTimestamp unsignedLongLongValue];
 
-        NSArray<TSOutgoingMessage *> *messages = (NSArray<TSOutgoingMessage *> *)[TSInteraction
+        NSError *error;
+        NSArray<TSOutgoingMessage *> *messages = (NSArray<TSOutgoingMessage *> *)[InteractionFinder
             interactionsWithTimestamp:timestamp
-                              ofClass:[TSOutgoingMessage class]
-                      withTransaction:transaction.transitional_yapWriteTransaction];
+                               filter:^(TSInteraction *interaction) {
+                                   return [interaction isKindOfClass:[TSOutgoingMessage class]];
+                               }
+                          transaction:transaction
+                                error:&error];
+        if (error != nil) {
+            OWSFailDebug(@"Error loading interactions: %@", error);
+        }
+
         if (messages.count < 1) {
             // The service sends delivery receipts for "unpersisted" messages
             // like group updates, so these errors are expected to a certain extent.
@@ -354,7 +362,7 @@ NS_ASSUME_NONNULL_BEGIN
             for (TSOutgoingMessage *outgoingMessage in messages) {
                 [outgoingMessage updateWithDeliveredRecipient:address
                                             deliveryTimestamp:deliveryTimestamp
-                                                  transaction:transaction.transitional_yapWriteTransaction];
+                                                  transaction:transaction];
             }
         }
     }
@@ -937,7 +945,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              transaction:transaction];
                                        }];
                                    }
-                                         transaction:transaction.transitional_yapWriteTransaction];
+                                         transaction:transaction];
         } else {
             [OWSRecordTranscriptJob
                 processIncomingSentMessageTranscript:transcript
@@ -945,7 +953,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        OWSLogDebug(@"successfully fetched transcript attachments: %lu",
                                            (unsigned long)attachmentStreams.count);
                                    }
-                                         transaction:transaction.transitional_yapWriteTransaction];
+                                         transaction:transaction];
         }
     } else if (syncMessage.request) {
         if (!syncMessage.request.hasType) {
@@ -1211,10 +1219,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                            groupMetaMessage:TSGroupMetaMessageUpdate
                                                            expiresInSeconds:expiresInSeconds];
 
-    [message updateWithCustomMessage:updateGroupInfo transaction:transaction.transitional_yapWriteTransaction];
+    [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
     // Only send this group update to the requester.
-    [message updateWithSendingToSingleGroupRecipient:envelope.sourceAddress
-                                         transaction:transaction.transitional_yapWriteTransaction];
+    [message updateWithSendingToSingleGroupRecipient:envelope.sourceAddress transaction:transaction];
 
     if (gThread.groupModel.groupImage) {
         NSData *_Nullable data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
@@ -1310,11 +1317,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           groupId:dataMessage.group.id];
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
-                [newGroupThread anyUpdateWithTransaction:transaction
-                                                   block:^(TSThread *thread) {
-                                                       TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                                       groupThread.groupModel = newGroupModel;
-                                                   }];
+                [newGroupThread anyUpdateGroupThreadWithTransaction:transaction
+                                                              block:^(TSGroupThread *thread) {
+                                                                  thread.groupModel = newGroupModel;
+                                                              }];
 
                 if (transaction.transitional_yapWriteTransaction) {
                     [[OWSDisappearingMessagesJob sharedJob]
@@ -1340,12 +1346,11 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
                 [newMembers removeObject:envelope.sourceAddress];
-                [oldGroupThread anyUpdateWithTransaction:transaction
-                                                   block:^(TSThread *thread) {
-                                                       TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                                       groupThread.groupModel.groupMembers =
-                                                           [newMembers.allObjects mutableCopy];
-                                                   }];
+                [oldGroupThread anyUpdateGroupThreadWithTransaction:transaction
+                                                              block:^(TSGroupThread *thread) {
+                                                                  thread.groupModel.groupMembers =
+                                                                      [newMembers.allObjects mutableCopy];
+                                                              }];
 
                 NSString *nameString = [self.contactsManager displayNameForAddress:envelope.sourceAddress];
                 NSString *updateGroupInfo =
@@ -1567,11 +1572,11 @@ NS_ASSUME_NONNULL_BEGIN
                         [attachmentStream.uniqueId
                             isEqualToString:incomingMessage.quotedMessage.thumbnailAttachmentPointerId]) {
                         [incomingMessage
-                            anyUpdateWithTransaction:transaction
-                                               block:^(TSInteraction *interaction) {
-                                                   TSMessage *message = (TSMessage *)interaction;
-                                                   [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
-                                               }];
+                            anyUpdateMessageWithTransaction:transaction
+                                                      block:^(TSMessage *message) {
+                                                          [message setQuotedMessageThumbnailAttachmentStream:
+                                                                       attachmentStream];
+                                                      }];
                     } else {
                         // We touch the message to trigger redraw of any views displaying it,
                         // since the attachment might be a contact avatar, etc.

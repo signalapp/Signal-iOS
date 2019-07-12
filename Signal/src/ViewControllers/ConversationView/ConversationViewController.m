@@ -3519,23 +3519,24 @@ typedef enum : NSUInteger {
     [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeSortId:self.lastVisibleSortId thread:self.thread];
 }
 
+// GRBD TODO: Revisit this method.
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)(void))successCompletion
 {
     __block TSGroupThread *groupThread;
     __block TSOutgoingMessage *message;
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction.asAnyWrite];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
 
         NSString *updateGroupInfo =
             [groupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel contactsManager:self.contactsManager];
 
-        [groupThread anyUpdateGroupThreadWithTransaction:transaction.asAnyWrite
+        [groupThread anyUpdateGroupThreadWithTransaction:transaction
                                                    block:^(TSGroupThread *thread) {
                                                        thread.groupModel = newGroupModel;
                                                    }];
 
-        uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction.asAnyRead];
+        uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
         message = [TSOutgoingMessage outgoingMessageInThread:groupThread
                                             groupMetaMessage:TSGroupMetaMessageUpdate
                                             expiresInSeconds:expiresInSeconds];

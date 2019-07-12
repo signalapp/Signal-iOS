@@ -14,6 +14,22 @@ import SignalCoreKit
 @objc
 public extension TSGroupThread {
     // NOTE: This method will fail if the object has unexpected type.
+    class func anyFetchGroupThread(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> TSGroupThread? {
+        assert(uniqueId.count > 0)
+
+        guard let object = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        return nil
+        }
+        guard let instance = object as? TSGroupThread else {
+            owsFailDebug("Object has unexpected type: \(type(of: object))")
+            return nil
+        }
+        return instance
+    }
+
+    // NOTE: This method will fail if the object has unexpected type.
     func anyUpdateGroupThread(transaction: SDSAnyWriteTransaction, block: (TSGroupThread) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSGroupThread else {

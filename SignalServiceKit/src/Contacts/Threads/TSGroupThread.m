@@ -101,24 +101,12 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return self;
 }
 
-+ (nullable instancetype)threadWithUniqueId:(NSString *)uniqueId transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(uniqueId.length > 0);
-
-    TSThread *_Nullable thread = [self anyFetchWithUniqueId:uniqueId transaction:transaction];
-    if (thread && ![thread isKindOfClass:[TSGroupThread class]]) {
-        OWSFailDebug(@"Thread has unexpected type.");
-        return nil;
-    }
-    return (TSGroupThread *)thread;
-}
-
 + (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
 
     NSString *uniqueId = [self threadIdFromGroupId:groupId];
-    return [self threadWithUniqueId:uniqueId transaction:transaction];
+    return [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
 }
 
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction
@@ -127,7 +115,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     OWSAssertDebug(transaction);
 
     NSString *uniqueId = [self threadIdFromGroupId:groupId];
-    TSGroupThread *thread = [self threadWithUniqueId:uniqueId transaction:transaction];
+    TSGroupThread *thread = [TSGroupThread anyFetchGroupThreadWithUniqueId:uniqueId transaction:transaction];
     if (!thread) {
         thread = [[self alloc] initWithGroupId:groupId];
         [thread anyInsertWithTransaction:transaction];
@@ -301,15 +289,10 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     OWSAssertDebug(attachmentStream);
     OWSAssertDebug(transaction);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 if (![thread isKindOfClass:[TSGroupThread class]]) {
-                                     OWSFailDebug(@"Unexpected object type: %@", [thread class]);
-                                     return;
-                                 }
-                                 TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                 groupThread.groupModel.groupImage = [attachmentStream thumbnailImageSmallSync];
-                             }];
+    [self anyUpdateGroupThreadWithTransaction:transaction
+                                        block:^(TSGroupThread *thread) {
+                                            thread.groupModel.groupImage = [attachmentStream thumbnailImageSmallSync];
+                                        }];
 
     [transaction addCompletionWithBlock:^{
         [self fireAvatarChangedNotification];

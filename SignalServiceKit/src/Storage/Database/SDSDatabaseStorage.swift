@@ -288,7 +288,9 @@ public class SDSDatabaseStorage: NSObject {
             yap.touchObject(forKey: uniqueId, inCollection: TSInteraction.collection())
         case .grdbWrite(let grdb):
             guard let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver else {
-                owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
+                if !CurrentAppContext().isRunningTests {
+                    owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
+                }
                 return
             }
             conversationViewDatabaseObserver.touch(interaction: interaction, transaction: grdb)
@@ -306,7 +308,9 @@ public class SDSDatabaseStorage: NSObject {
             yap.touchObject(forKey: uniqueId, inCollection: TSThread.collection())
         case .grdbWrite(let grdb):
             guard let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver else {
-                owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
+                if !CurrentAppContext().isRunningTests {
+                    owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
+                }
                 return
             }
             homeViewDatabaseObserver.touch(thread: thread, transaction: grdb)
@@ -320,7 +324,9 @@ public class SDSDatabaseStorage: NSObject {
             yap.touchObject(forKey: threadId, inCollection: TSThread.collection())
         case .grdbWrite(let grdb):
             guard let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver else {
-                owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
+                if !CurrentAppContext().isRunningTests {
+                    owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
+                }
                 return
             }
             homeViewDatabaseObserver.touch(threadId: threadId, transaction: grdb)
@@ -657,7 +663,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     @objc
     public private(set) var mediaGalleryDatabaseObserver: MediaGalleryDatabaseObserver?
 
-    func setupUIDatabase() throws {
+    @objc
+    public func setupUIDatabase() throws {
         // UIDatabaseObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
         // about the changes.
