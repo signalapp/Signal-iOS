@@ -284,15 +284,11 @@ NS_ASSUME_NONNULL_BEGIN
 
         OWSAssertDebug(lazyRestoreFragment.uniqueId);
     }
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSAttachment *attachment) {
-                                 if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
-                                     OWSFailDebug(@"Object has unexpected type: %@", [attachment class]);
-                                     return;
-                                 }
-                                 TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
-                                 [attachmentPointer setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
-                             }];
+    [self anyUpdateAttachmentPointerWithTransaction:transaction
+                                              block:^(TSAttachmentPointer *attachmentPointer) {
+                                                  [attachmentPointer
+                                                      setLazyRestoreFragmentId:lazyRestoreFragment.uniqueId];
+                                              }];
 }
 
 // TODO: We could add a similar check to the GRDB insert logic.

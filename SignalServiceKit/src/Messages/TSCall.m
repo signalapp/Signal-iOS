@@ -179,15 +179,10 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
     OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 if (![interaction isKindOfClass:[TSCall class]]) {
-                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
-                                     return;
-                                 }
-                                 TSCall *message = (TSCall *)interaction;
-                                 message.read = YES;
-                             }];
+    [self anyUpdateCallWithTransaction:transaction
+                                 block:^(TSCall *call) {
+                                     call.read = YES;
+                                 }];
 
     // Ignore sendReadReceipt - it doesn't apply to calls.
 }

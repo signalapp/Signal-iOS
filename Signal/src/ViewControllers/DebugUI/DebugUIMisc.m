@@ -234,16 +234,10 @@ NS_ASSUME_NONNULL_BEGIN
                                          }];
             for (TSContactThread *contactThread in contactThreads) {
                 if (contactThread.hasDismissedOffers) {
-                    [contactThread
-                        anyUpdateWithTransaction:transaction.asAnyWrite
-                                           block:^(TSThread *thread) {
-                                               if (![thread isKindOfClass:[TSContactThread class]]) {
-                                                   OWSFailDebug(@"Object has unexpected type: %@", thread.class);
-                                                   return;
-                                               }
-                                               TSContactThread *cThread = (TSContactThread *)thread;
-                                               cThread.hasDismissedOffers = NO;
-                                           }];
+                    [contactThread anyUpdateContactThreadWithTransaction:transaction.asAnyWrite
+                                                                   block:^(TSContactThread *thread) {
+                                                                       thread.hasDismissedOffers = NO;
+                                                                   }];
                 }
             }
         }];

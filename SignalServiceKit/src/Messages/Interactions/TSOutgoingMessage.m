@@ -789,15 +789,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 - (void)updateWithHasSyncedTranscript:(BOOL)hasSyncedTranscript transaction:(SDSAnyWriteTransaction *)transaction
 {
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
-                                     return;
-                                 }
-                                 TSOutgoingMessage *message = (TSOutgoingMessage *)interaction;
-                                 [message setHasSyncedTranscript:hasSyncedTranscript];
-                             }];
+    [self anyUpdateOutgoingMessageWithTransaction:transaction
+                                            block:^(TSOutgoingMessage *message) {
+                                                [message setHasSyncedTranscript:hasSyncedTranscript];
+                                            }];
 }
 
 - (void)updateWithCustomMessage:(NSString *)customMessage transaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -847,21 +842,17 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(transaction);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
-                                     return;
-                                 }
-                                 TSOutgoingMessage *message = (TSOutgoingMessage *)interaction;
-                                 TSOutgoingMessageRecipientState *_Nullable recipientState
-                                     = message.recipientAddressStates[recipientAddress];
-                                 if (!recipientState) {
-                                     OWSFailDebug(@"Missing recipient state for recipient: %@", recipientAddress);
-                                     return;
-                                 }
-                                 recipientState.state = OWSOutgoingMessageRecipientStateSkipped;
-                             }];
+    [self anyUpdateOutgoingMessageWithTransaction:transaction
+                                            block:^(TSOutgoingMessage *message) {
+                                                TSOutgoingMessageRecipientState *_Nullable recipientState
+                                                    = message.recipientAddressStates[recipientAddress];
+                                                if (!recipientState) {
+                                                    OWSFailDebug(
+                                                        @"Missing recipient state for recipient: %@", recipientAddress);
+                                                    return;
+                                                }
+                                                recipientState.state = OWSOutgoingMessageRecipientStateSkipped;
+                                            }];
 }
 
 - (void)updateWithDeliveredRecipient:(SignalServiceAddress *)recipientAddress
@@ -900,26 +891,21 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     OWSAssertDebug(recipientAddress.isValid);
     OWSAssertDebug(transaction);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 if (![interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
-                                     return;
-                                 }
-                                 TSOutgoingMessage *message = (TSOutgoingMessage *)interaction;
-                                 TSOutgoingMessageRecipientState *_Nullable recipientState
-                                     = message.recipientAddressStates[recipientAddress];
-                                 if (!recipientState) {
-                                     OWSFailDebug(
-                                         @"Missing recipient state for delivered recipient: %@", recipientAddress);
-                                     return;
-                                 }
-                                 if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
-                                     OWSLogWarn(@"marking unsent message as delivered.");
-                                 }
-                                 recipientState.state = OWSOutgoingMessageRecipientStateSent;
-                                 recipientState.readTimestamp = @(readTimestamp);
-                             }];
+    [self anyUpdateOutgoingMessageWithTransaction:transaction
+                                            block:^(TSOutgoingMessage *message) {
+                                                TSOutgoingMessageRecipientState *_Nullable recipientState
+                                                    = message.recipientAddressStates[recipientAddress];
+                                                if (!recipientState) {
+                                                    OWSFailDebug(@"Missing recipient state for delivered recipient: %@",
+                                                        recipientAddress);
+                                                    return;
+                                                }
+                                                if (recipientState.state != OWSOutgoingMessageRecipientStateSent) {
+                                                    OWSLogWarn(@"marking unsent message as delivered.");
+                                                }
+                                                recipientState.state = OWSOutgoingMessageRecipientStateSent;
+                                                recipientState.readTimestamp = @(readTimestamp);
+                                            }];
 }
 
 - (void)updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:

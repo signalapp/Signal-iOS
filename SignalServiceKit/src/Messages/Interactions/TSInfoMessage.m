@@ -301,15 +301,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
     OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 if (![interaction isKindOfClass:[TSInfoMessage class]]) {
-                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
-                                     return;
-                                 }
-                                 TSInfoMessage *message = (TSInfoMessage *)interaction;
-                                 message.read = YES;
-                             }];
+    [self anyUpdateInfoMessageWithTransaction:transaction
+                                        block:^(TSInfoMessage *message) {
+                                            message.read = YES;
+                                        }];
 
     // Ignore sendReadReceipt, it doesn't apply to info messages.
 }

@@ -2299,21 +2299,15 @@ typedef enum : NSUInteger {
                                    OWSLogInfo(@"Blocking an unknown user.");
                                    [self.blockingManager addBlockedAddress:contactThread.contactAddress];
                                    // Delete the offers.
-                                   [self.editingDatabaseConnection readWriteWithBlock:^(
-                                       YapDatabaseReadWriteTransaction *transaction) {
-                                       [contactThread
-                                           anyUpdateWithTransaction:transaction.asAnyWrite
-                                                              block:^(TSThread *thread) {
-                                                                  if (![thread isKindOfClass:[TSContactThread class]]) {
-                                                                      OWSFailDebug(@"Object has unexpected type: %@",
-                                                                          thread.class);
-                                                                      return;
-                                                                  }
-                                                                  TSContactThread *cThread = (TSContactThread *)thread;
-                                                                  cThread.hasDismissedOffers = NO;
-                                                              }];
-                                       [interaction removeWithTransaction:transaction];
-                                   }];
+                                   [self.editingDatabaseConnection
+                                       readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                           [contactThread
+                                               anyUpdateContactThreadWithTransaction:transaction.asAnyWrite
+                                                                               block:^(TSContactThread *thread) {
+                                                                                   thread.hasDismissedOffers = NO;
+                                                                               }];
+                                           [interaction removeWithTransaction:transaction];
+                                       }];
                                }];
     [actionSheet addAction:blockAction];
 
@@ -2338,15 +2332,10 @@ typedef enum : NSUInteger {
 
     // Delete the offers.
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [contactThread anyUpdateWithTransaction:transaction.asAnyWrite
-                                          block:^(TSThread *thread) {
-                                              if (![thread isKindOfClass:[TSContactThread class]]) {
-                                                  OWSFailDebug(@"Object has unexpected type: %@", thread.class);
-                                                  return;
-                                              }
-                                              TSContactThread *cThread = (TSContactThread *)thread;
-                                              cThread.hasDismissedOffers = NO;
-                                          }];
+        [contactThread anyUpdateContactThreadWithTransaction:transaction.asAnyWrite
+                                                       block:^(TSContactThread *thread) {
+                                                           thread.hasDismissedOffers = NO;
+                                                       }];
         [interaction removeWithTransaction:transaction];
     }];
 }
@@ -2363,15 +2352,10 @@ typedef enum : NSUInteger {
     [self presentAddThreadToProfileWhitelistWithSuccess:^() {
         // Delete the offers.
         [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [contactThread anyUpdateWithTransaction:transaction.asAnyWrite
-                                              block:^(TSThread *thread) {
-                                                  if (![thread isKindOfClass:[TSContactThread class]]) {
-                                                      OWSFailDebug(@"Object has unexpected type: %@", thread.class);
-                                                      return;
-                                                  }
-                                                  TSContactThread *cThread = (TSContactThread *)thread;
-                                                  cThread.hasDismissedOffers = NO;
-                                              }];
+            [contactThread anyUpdateContactThreadWithTransaction:transaction.asAnyWrite
+                                                           block:^(TSContactThread *thread) {
+                                                               thread.hasDismissedOffers = NO;
+                                                           }];
             [interaction removeWithTransaction:transaction];
         }];
     }];
@@ -3546,15 +3530,10 @@ typedef enum : NSUInteger {
         NSString *updateGroupInfo =
             [groupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel contactsManager:self.contactsManager];
 
-        [groupThread anyUpdateWithTransaction:transaction.asAnyWrite
-                                        block:^(TSThread *thread) {
-                                            if (![thread isKindOfClass:[TSGroupThread class]]) {
-                                                OWSFailDebug(@"Object has unexpected type: %@", thread.class);
-                                                return;
-                                            }
-                                            TSGroupThread *gThread = (TSGroupThread *)thread;
-                                            gThread.groupModel = newGroupModel;
-                                        }];
+        [groupThread anyUpdateGroupThreadWithTransaction:transaction.asAnyWrite
+                                                   block:^(TSGroupThread *thread) {
+                                                       thread.groupModel = newGroupModel;
+                                                   }];
 
         uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction.asAnyRead];
         message = [TSOutgoingMessage outgoingMessageInThread:groupThread

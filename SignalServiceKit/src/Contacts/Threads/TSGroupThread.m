@@ -267,34 +267,23 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     SignalServiceAddress *_Nullable localAddress = TSAccountManager.localAddress;
     OWSAssertDebug(localAddress);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 if (![thread isKindOfClass:[TSGroupThread class]]) {
-                                     OWSFailDebug(@"Object has unexpected type: %@", thread.class);
-                                     return;
-                                 }
-                                 TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                 NSMutableArray<SignalServiceAddress *> *newGroupMembers =
-                                     [groupThread.groupModel.groupMembers mutableCopy];
-                                 [newGroupMembers removeObject:localAddress];
-
-                                 groupThread.groupModel.groupMembers = newGroupMembers;
-                             }];
+    [self anyUpdateGroupThreadWithTransaction:transaction.asAnyWrite
+                                        block:^(TSGroupThread *thread) {
+                                            NSMutableArray<SignalServiceAddress *> *newGroupMembers =
+                                                [thread.groupModel.groupMembers mutableCopy];
+                                            [newGroupMembers removeObject:localAddress];
+                                            thread.groupModel.groupMembers = newGroupMembers;
+                                        }];
 }
 
 - (void)softDeleteGroupThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [self removeAllThreadInteractionsWithTransaction:transaction];
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSThread *thread) {
-                                 if (![thread isKindOfClass:[TSGroupThread class]]) {
-                                     OWSFailDebug(@"Object has unexpected type: %@", thread.class);
-                                     return;
-                                 }
-                                 TSGroupThread *groupThread = (TSGroupThread *)thread;
-                                 groupThread.shouldThreadBeVisible = NO;
-                             }];
+    [self anyUpdateGroupThreadWithTransaction:transaction.asAnyWrite
+                                        block:^(TSGroupThread *thread) {
+                                            thread.shouldThreadBeVisible = NO;
+                                        }];
 }
 
 #pragma mark - Avatar
