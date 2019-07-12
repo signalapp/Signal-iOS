@@ -198,6 +198,15 @@ class ParsedClass:
             # Only write serialization extensions for SDS models.
             print 'Ignoring class (3):', self.name 
             return False
+
+         # The migration should not be persisted in the data store.
+        if self.name in ('OWSDatabaseMigration', 'YDBDatabaseMigration', 'OWSResaveCollectionDBMigration', ):
+            print 'Ignoring class (4):', self.name 
+            return False
+        if self.super_class_name in ('OWSDatabaseMigration', 'YDBDatabaseMigration', 'OWSResaveCollectionDBMigration', ):
+            print 'Ignoring class (5):', self.name 
+            return False
+
         return True
         
         
