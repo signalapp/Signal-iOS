@@ -16,6 +16,7 @@
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SSKSessionStore.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSThread.h>
@@ -233,8 +234,16 @@ NS_ASSUME_NONNULL_BEGIN
                                          }];
             for (TSContactThread *contactThread in contactThreads) {
                 if (contactThread.hasDismissedOffers) {
-                    contactThread.hasDismissedOffers = NO;
-                    [contactThread saveWithTransaction:transaction];
+                    [contactThread
+                        anyUpdateWithTransaction:transaction.asAnyWrite
+                                           block:^(TSThread *thread) {
+                                               if (![thread isKindOfClass:[TSContactThread class]]) {
+                                                   OWSFailDebug(@"Object has unexpected type: %@", thread.class);
+                                                   return;
+                                               }
+                                               TSContactThread *cThread = (TSContactThread *)thread;
+                                               cThread.hasDismissedOffers = NO;
+                                           }];
                 }
             }
         }];

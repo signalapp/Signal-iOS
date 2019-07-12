@@ -12,6 +12,7 @@
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
 
@@ -42,7 +43,14 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma mark - Singletons
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (void)setup {
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -74,7 +82,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(threadId.length > 0);
 
-    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
+    __block TSThread *_Nullable thread;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        thread = [TSThread anyFetchWithUniqueId:threadId transaction:transaction];
+    }];
     if (thread == nil) {
         OWSFailDebug(@"unable to find thread with id: %@", threadId);
         return;
@@ -129,7 +140,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"");
 
-    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
+    __block TSThread *_Nullable thread;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        thread = [TSThread anyFetchWithUniqueId:threadId transaction:transaction];
+    }];
     if (thread == nil) {
         OWSFailDebug(@"unable to find thread with id: %@", threadId);
         return;

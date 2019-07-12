@@ -609,6 +609,10 @@ class NotificationActionHandler {
         return OWSPrimaryStorage.shared().dbReadWriteConnection
     }
 
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     // MARK: -
 
     func answerCall(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
@@ -646,12 +650,18 @@ class NotificationActionHandler {
         return Promise.value(())
     }
 
+    private func threadWithSneakyTransaction(threadId: String) -> TSThread? {
+        return databaseStorage.readReturningResult { transaction in
+            return TSThread.anyFetch(uniqueId: threadId, transaction: transaction)
+        }
+    }
+
     func markAsRead(userInfo: [AnyHashable: Any]) throws -> Promise<Void> {
         guard let threadId = userInfo[AppNotificationUserInfoKey.threadId] as? String else {
             throw NotificationError.failDebug("threadId was unexpectedly nil")
         }
 
-        guard let thread = TSThread.fetch(uniqueId: threadId) else {
+        guard let thread = threadWithSneakyTransaction(threadId: threadId) else {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
 
@@ -663,7 +673,7 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("threadId was unexpectedly nil")
         }
 
-        guard let thread = TSThread.fetch(uniqueId: threadId) else {
+        guard let thread = threadWithSneakyTransaction(threadId: threadId) else {
             throw NotificationError.failDebug("unable to find thread with id: \(threadId)")
         }
 

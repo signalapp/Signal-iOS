@@ -69,6 +69,14 @@ public class AvatarImageView: UIImageView {
 @objc
 public class ConversationAvatarImageView: AvatarImageView {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     let thread: TSThread
     let diameter: UInt
     let contactsManager: OWSContactsManager
@@ -167,7 +175,9 @@ public class ConversationAvatarImageView: AvatarImageView {
             return
         }
 
-        thread.reload()
+        databaseStorage.read { transaction in
+            self.thread.anyReload(transaction: transaction)
+        }
 
         self.updateImage()
     }

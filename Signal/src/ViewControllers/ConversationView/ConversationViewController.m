@@ -2299,12 +2299,21 @@ typedef enum : NSUInteger {
                                    OWSLogInfo(@"Blocking an unknown user.");
                                    [self.blockingManager addBlockedAddress:contactThread.contactAddress];
                                    // Delete the offers.
-                                   [self.editingDatabaseConnection
-                                       readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                           contactThread.hasDismissedOffers = YES;
-                                           [contactThread saveWithTransaction:transaction];
-                                           [interaction removeWithTransaction:transaction];
-                                       }];
+                                   [self.editingDatabaseConnection readWriteWithBlock:^(
+                                       YapDatabaseReadWriteTransaction *transaction) {
+                                       [contactThread
+                                           anyUpdateWithTransaction:transaction.asAnyWrite
+                                                              block:^(TSThread *thread) {
+                                                                  if (![thread isKindOfClass:[TSContactThread class]]) {
+                                                                      OWSFailDebug(@"Object has unexpected type: %@",
+                                                                          thread.class);
+                                                                      return;
+                                                                  }
+                                                                  TSContactThread *cThread = (TSContactThread *)thread;
+                                                                  cThread.hasDismissedOffers = NO;
+                                                              }];
+                                       [interaction removeWithTransaction:transaction];
+                                   }];
                                }];
     [actionSheet addAction:blockAction];
 
@@ -2329,8 +2338,15 @@ typedef enum : NSUInteger {
 
     // Delete the offers.
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        contactThread.hasDismissedOffers = YES;
-        [contactThread saveWithTransaction:transaction];
+        [contactThread anyUpdateWithTransaction:transaction.asAnyWrite
+                                          block:^(TSThread *thread) {
+                                              if (![thread isKindOfClass:[TSContactThread class]]) {
+                                                  OWSFailDebug(@"Object has unexpected type: %@", thread.class);
+                                                  return;
+                                              }
+                                              TSContactThread *cThread = (TSContactThread *)thread;
+                                              cThread.hasDismissedOffers = NO;
+                                          }];
         [interaction removeWithTransaction:transaction];
     }];
 }
@@ -2347,8 +2363,15 @@ typedef enum : NSUInteger {
     [self presentAddThreadToProfileWhitelistWithSuccess:^() {
         // Delete the offers.
         [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            contactThread.hasDismissedOffers = YES;
-            [contactThread saveWithTransaction:transaction];
+            [contactThread anyUpdateWithTransaction:transaction.asAnyWrite
+                                              block:^(TSThread *thread) {
+                                                  if (![thread isKindOfClass:[TSContactThread class]]) {
+                                                      OWSFailDebug(@"Object has unexpected type: %@", thread.class);
+                                                      return;
+                                                  }
+                                                  TSContactThread *cThread = (TSContactThread *)thread;
+                                                  cThread.hasDismissedOffers = NO;
+                                              }];
             [interaction removeWithTransaction:transaction];
         }];
     }];
@@ -3518,13 +3541,20 @@ typedef enum : NSUInteger {
     __block TSOutgoingMessage *message;
 
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
+        groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction.asAnyWrite];
 
         NSString *updateGroupInfo =
             [groupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel contactsManager:self.contactsManager];
 
-        groupThread.groupModel = newGroupModel;
-        [groupThread saveWithTransaction:transaction];
+        [groupThread anyUpdateWithTransaction:transaction.asAnyWrite
+                                        block:^(TSThread *thread) {
+                                            if (![thread isKindOfClass:[TSGroupThread class]]) {
+                                                OWSFailDebug(@"Object has unexpected type: %@", thread.class);
+                                                return;
+                                            }
+                                            TSGroupThread *gThread = (TSGroupThread *)thread;
+                                            gThread.groupModel = newGroupModel;
+                                        }];
 
         uint32_t expiresInSeconds = [groupThread disappearingMessagesDurationWithTransaction:transaction];
         message = [TSOutgoingMessage outgoingMessageInThread:groupThread

@@ -30,7 +30,7 @@ public class OWS110SortIdMigration: YDBDatabaseMigration {
             var archivedThreads: [TSThread] = []
 
             // get archived threads before migration
-            TSThread.enumerateCollectionObjects(with: transaction) { (object, _) in
+            TSThread.ydb_enumerateCollectionObjects(with: transaction) { (object, _) in
                 guard let thread = object as? TSThread else {
                     owsFailDebug("unexpected object: \(type(of: object))")
                     return
