@@ -15,6 +15,8 @@
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
+@import SafariServices;
+
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-sender/";
@@ -266,25 +268,28 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         [contents addSection:callKitSection];
     }
 
-    OWSTableSection *twoFactorAuthSection = [OWSTableSection new];
-    twoFactorAuthSection.headerTitle = NSLocalizedString(
-        @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
-    [twoFactorAuthSection
-        addItem:
-            [OWSTableItem
-                disclosureItemWithText:NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ITEM",
-                                           @"Label for the 'two factor auth' item of the privacy settings.")
-                            detailText:
-                                ([OWS2FAManager.sharedManager is2FAEnabled]
-                                        ? NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ENABLED",
-                                              @"Indicates that 'two factor auth' is enabled in the privacy settings.")
-                                        : NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_DISABLED",
-                                              @"Indicates that 'two factor auth' is disabled in the privacy settings."))
-                            accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"2fa"]
-                           actionBlock:^{
-                               [weakSelf show2FASettings];
-                           }]];
-    [contents addSection:twoFactorAuthSection];
+    // If pins are enabled for everyone, everyone has registration lock so we don't need this section
+    if (!SSKFeatureFlags.pinsForEveryone) {
+        OWSTableSection *twoFactorAuthSection = [OWSTableSection new];
+        twoFactorAuthSection.headerTitle = NSLocalizedString(
+            @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
+        [twoFactorAuthSection
+            addItem:[OWSTableItem
+                        disclosureItemWithText:NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ITEM",
+                                                   @"Label for the 'two factor auth' item of the privacy settings.")
+                                    detailText:([OWS2FAManager.sharedManager is2FAEnabled]
+                                                       ? NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ENABLED",
+                                                           @"Indicates that 'two factor auth' is enabled in the "
+                                                           @"privacy settings.")
+                                                       : NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_DISABLED",
+                                                           @"Indicates that 'two factor auth' is disabled in the "
+                                                           @"privacy settings."))accessibilityIdentifier
+                                              :[NSString stringWithFormat:@"settings.privacy.%@", @"2fa"]
+                                   actionBlock:^{
+                                       [weakSelf show2FASettings];
+                                   }]];
+        [contents addSection:twoFactorAuthSection];
+    }
 
     OWSTableSection *historyLogsSection = [OWSTableSection new];
     historyLogsSection.headerTitle = NSLocalizedString(@"SETTINGS_HISTORYLOG_TITLE", @"Section header");
@@ -349,7 +354,8 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                     actionBlock:^{
                         NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
                         OWSCAssertDebug(url);
-                        [UIApplication.sharedApplication openURL:url];
+                        SFSafariViewController *safariVC = [[SFSafariViewController alloc] initWithURL:url];
+                        [self presentViewController:safariVC animated:YES completion:nil];
                     }]];
 
     unidentifiedDeliveryIndicatorsSection.footerTitle
@@ -382,7 +388,9 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                          actionBlock:^{
                                              NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
                                              OWSCAssertDebug(url);
-                                             [UIApplication.sharedApplication openURL:url];
+                                             SFSafariViewController *safariVC =
+                                                 [[SFSafariViewController alloc] initWithURL:url];
+                                             [self presentViewController:safariVC animated:YES completion:nil];
                                          }]];
     [contents addSection:unidentifiedDeliveryLearnMoreSection];
 

@@ -4,6 +4,7 @@
 
 import UIKit
 import PromiseKit
+import SafariServices
 
 @objc
 public class OnboardingSplashViewController: OnboardingBaseViewController {
@@ -75,7 +76,8 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
             owsFailDebug("Invalid URL.")
             return
         }
-        UIApplication.shared.openURL(url)
+        let safariVC = SFSafariViewController(url: url)
+        present(safariVC, animated: true)
     }
 
     @objc func continuePressed() {

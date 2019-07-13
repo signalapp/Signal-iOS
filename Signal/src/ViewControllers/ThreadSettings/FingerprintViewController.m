@@ -21,6 +21,8 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
 
+@import SafariServices;
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^CustomLayoutBlock)(void);
@@ -498,7 +500,10 @@ typedef void (^CustomLayoutBlock)(void);
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
         NSString *learnMoreURL = @"https://support.signal.org/hc/en-us/articles/"
                                  @"213134107";
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:learnMoreURL]];
+
+        SFSafariViewController *safariVC =
+            [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:learnMoreURL]];
+        [self presentViewController:safariVC animated:YES completion:nil];
     }
 }
 
