@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalMessaging
+import SafariServices
 
 private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgradeViewController {
 
@@ -100,6 +101,154 @@ private class IntroducingStickersExperienceUpgradeViewController: ExperienceUpgr
     }
 }
 
+private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeViewController {
+
+    var hasPinAlready: Bool {
+        return OWS2FAManager.shared().is2FAEnabled()
+    }
+
+    override var canDismissWithGesture: Bool {
+        return hasPinAlready
+    }
+
+    // MARK: - View lifecycle
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: false)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+
+    override func loadView() {
+
+        self.view = UIView.container()
+        self.view.backgroundColor = Theme.backgroundColor
+
+        let heroImageView = UIImageView()
+        heroImageView.setImage(imageName: "introducing-pins-\(Theme.isDarkThemeEnabled ? "dark" : "light")")
+        view.addSubview(heroImageView)
+
+        heroImageView.contentMode = .scaleAspectFill
+
+        heroImageView.autoPinWidthToSuperview()
+        heroImageView.autoPinTopToSuperviewMargin(withInset: 20)
+        heroImageView.autoHCenterInSuperview()
+        heroImageView.setContentHuggingLow()
+        heroImageView.setCompressionResistanceLow()
+
+        let title: String
+        let body: String
+
+        if hasPinAlready {
+            title = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE", comment: "Header for PINs migration splash screen")
+            body = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION", comment: "Body text for PINs migration splash screen")
+        } else {
+            title = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE", comment: "Header for PINs splash screen")
+            body = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION", comment: "Body text for PINs splash screen")
+        }
+
+        let hMargin: CGFloat = ScaleFromIPhone5To7Plus(16, 24)
+
+        // Title label
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.textAlignment = .center
+        titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_semiBold()
+        titleLabel.textColor = Theme.primaryColor
+        titleLabel.minimumScaleFactor = 0.5
+        titleLabel.adjustsFontSizeToFitWidth = true
+        view.addSubview(titleLabel)
+        titleLabel.autoPinWidthToSuperview(withMargin: hMargin)
+        // The title label actually overlaps the hero image because it has a long shadow
+        // and we want the text to partially sit on top of this.
+        titleLabel.autoPinEdge(.top, to: .bottom, of: heroImageView, withOffset: -25)
+        titleLabel.setContentHuggingVerticalHigh()
+
+        // Body label
+        let bodyLabel = UILabel()
+        bodyLabel.text = body
+        bodyLabel.font = UIFont.ows_dynamicTypeBody
+        bodyLabel.textColor = Theme.primaryColor
+        bodyLabel.numberOfLines = 0
+        bodyLabel.lineBreakMode = .byWordWrapping
+        bodyLabel.textAlignment = .center
+        view.addSubview(bodyLabel)
+        bodyLabel.autoPinWidthToSuperview(withMargin: hMargin)
+        bodyLabel.autoPinEdge(.top, to: .bottom, of: titleLabel, withOffset: 6)
+        bodyLabel.setContentHuggingVerticalHigh()
+
+        // Primary button
+        let primaryButton = OWSFlatButton.button(title: primaryButtonTitle(),
+                                                 font: UIFont.ows_dynamicTypeBody.ows_semiBold(),
+                                                 titleColor: .white,
+                                                 backgroundColor: .ows_materialBlue,
+                                                 target: self,
+                                                 selector: #selector(didTapPrimaryButton))
+        primaryButton.autoSetHeightUsingFont()
+        view.addSubview(primaryButton)
+
+        primaryButton.autoPinWidthToSuperview(withMargin: hMargin)
+        primaryButton.autoPinEdge(.top, to: .bottom, of: bodyLabel, withOffset: 28)
+        primaryButton.setContentHuggingVerticalHigh()
+
+        // Secondary button
+        let secondaryButton = UIButton()
+        secondaryButton.setTitle(secondaryButtonTitle(), for: .normal)
+        secondaryButton.setTitleColor(.ows_materialBlue, for: .normal)
+        secondaryButton.titleLabel?.font = .ows_dynamicTypeBody
+        secondaryButton.addTarget(self, action: #selector(didTapSecondaryButton), for: .touchUpInside)
+        view.addSubview(secondaryButton)
+
+        secondaryButton.autoPinBottomToSuperviewMargin(withInset: ScaleFromIPhone5(10))
+        secondaryButton.autoPinWidthToSuperview(withMargin: hMargin)
+        secondaryButton.autoPinEdge(.top, to: .bottom, of: primaryButton, withOffset: 15)
+        secondaryButton.setContentHuggingVerticalHigh()
+    }
+
+    @objc
+    func didTapPrimaryButton(_ sender: UIButton) {
+        if hasPinAlready {
+            dismiss(animated: true)
+        } else {
+            let vc = PinSetupViewController { [weak self] in
+                self?.dismiss(animated: true)
+            }
+            navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+
+    @objc
+    func didTapSecondaryButton(_ sender: UIButton) {
+        // TODO PINs: Open the right support center URL
+        let vc = SFSafariViewController(url: URL(string: "https://support.signal.org/hc/en-us/articles/360007059792")!)
+        present(vc, animated: true, completion: nil)
+    }
+
+    func primaryButtonTitle() -> String {
+        if hasPinAlready {
+            return NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_OKAY_BUTTON",
+                                     comment: "Button to dismiss the one time splash screen that appears after upgrading")
+        } else {
+            return NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON",
+                                     comment: "Button to start a create pin flow from the one time splash screen that appears after upgrading")
+        }
+    }
+
+    func secondaryButtonTitle() -> String {
+        if hasPinAlready {
+            return NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON",
+                                     comment: "Button to open a help document explaining more about why a PIN is required")
+        } else {
+            return NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON",
+                                     comment: "Button to open a help document explaining more about why a PIN is required")
+        }
+    }
+}
+
 @objc
 public class ExperienceUpgradeViewController: OWSViewController {
 
@@ -112,6 +261,7 @@ public class ExperienceUpgradeViewController: OWSViewController {
     // MARK: -
 
     private let experienceUpgrade: ExperienceUpgrade
+    fileprivate var canDismissWithGesture: Bool { return true }
 
     init(experienceUpgrade: ExperienceUpgrade) {
         self.experienceUpgrade = experienceUpgrade
@@ -138,6 +288,9 @@ public class ExperienceUpgradeViewController: OWSViewController {
         switch identifier {
         case .introducingStickers:
             return IntroducingStickersExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade)
+        case .introducingPins:
+            let vc = IntroducingPinsExperienceUpgradeViewController(experienceUpgrade: experienceUpgrade)
+            return OWSNavigationController(rootViewController: vc)
         @unknown default:
             owsFailDebug("Unknown identifier: \(identifier)")
             return nil
@@ -145,6 +298,10 @@ public class ExperienceUpgradeViewController: OWSViewController {
     }
 
     // MARK: - View lifecycle
+
+    override public var preferredStatusBarStyle: UIStatusBarStyle {
+        return Theme.isDarkThemeEnabled ? .lightContent : .default
+    }
 
     @objc
     public override func viewDidLoad() {
@@ -182,6 +339,8 @@ public class ExperienceUpgradeViewController: OWSViewController {
 
     @objc
     func handleDismissGesture(sender: AnyObject) {
+        guard canDismissWithGesture else { return }
+
         Logger.debug("")
         self.dismiss(animated: true)
     }

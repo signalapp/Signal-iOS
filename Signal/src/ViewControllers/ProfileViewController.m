@@ -447,7 +447,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             [self.navigationController popViewControllerAnimated:YES];
             break;
         case ProfileViewMode_Registration:
-            [self showHomeView];
+            [self showPinCreation];
             break;
     }
 }
@@ -458,6 +458,24 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     OWSLogVerbose(@"");
 
     [SignalApp.sharedApp showHomeView];
+}
+
+- (void)showPinCreation
+{
+    OWSAssertIsOnMainThread();
+    OWSLogVerbose(@"");
+
+    // If the user already has a pin, or the pins for all feature is disabled, just go home
+    if ([OWS2FAManager sharedManager].is2FAEnabled || !SSKFeatureFlags.pinsForEveryone) {
+        return [self showHomeView];
+    }
+
+    __weak ProfileViewController *weakSelf = self;
+    OWSPinSetupViewController *vc = [[OWSPinSetupViewController alloc] initWithCompletionHandler:^{
+        [weakSelf showHomeView];
+    }];
+
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark - UITextFieldDelegate

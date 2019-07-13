@@ -84,4 +84,9 @@ public class FeatureFlags: NSObject {
             return false
         }
     }
+
+    @objc
+    public static var pinsForEveryone: Bool {
+        return OWSIsDebugBuild()
+    }
 }
