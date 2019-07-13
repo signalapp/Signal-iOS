@@ -567,6 +567,9 @@ class MessageContext(BaseContext):
             writer.add('@objc public var %s: SignalServiceAddress? {' % address_accessor)
             writer.push_indent()
 
+            writer.add('guard %s || %s else { return nil }' % (e164_field.has_accessor_name(), uuid_field.has_accessor_name()))
+            writer.newline()
+
             writer.add('let uuidString: String? = {')
             writer.push_indent()
             writer.add('guard %s else { return nil }' % uuid_field.has_accessor_name())

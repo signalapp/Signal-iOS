@@ -248,6 +248,8 @@ public enum SSKProtoError: Error {
         return sourceAddress != nil
     }
     @objc public var sourceAddress: SignalServiceAddress? {
+        guard hasSourceE164 || hasSourceUuid else { return nil }
+
         let uuidString: String? = {
             guard hasSourceUuid else { return nil }
 
@@ -1693,6 +1695,8 @@ extension SSKProtoDataMessageQuoteQuotedAttachment.SSKProtoDataMessageQuoteQuote
         return authorAddress != nil
     }
     @objc public var authorAddress: SignalServiceAddress? {
+        guard hasAuthorE164 || hasAuthorUuid else { return nil }
+
         let uuidString: String? = {
             guard hasAuthorUuid else { return nil }
 
@@ -3844,6 +3848,8 @@ extension SSKProtoReceiptMessage.SSKProtoReceiptMessageBuilder {
         return destinationAddress != nil
     }
     @objc public var destinationAddress: SignalServiceAddress? {
+        guard hasDestinationE164 || hasDestinationUuid else { return nil }
+
         let uuidString: String? = {
             guard hasDestinationUuid else { return nil }
 
@@ -4013,6 +4019,8 @@ extension SSKProtoVerified.SSKProtoVerifiedBuilder {
         return destinationAddress != nil
     }
     @objc public var destinationAddress: SignalServiceAddress? {
+        guard hasDestinationE164 || hasDestinationUuid else { return nil }
+
         let uuidString: String? = {
             guard hasDestinationUuid else { return nil }
 
@@ -4232,6 +4240,8 @@ extension SSKProtoSyncMessageSentUnidentifiedDeliveryStatus.SSKProtoSyncMessageS
         return destinationAddress != nil
     }
     @objc public var destinationAddress: SignalServiceAddress? {
+        guard hasDestinationE164 || hasDestinationUuid else { return nil }
+
         let uuidString: String? = {
             guard hasDestinationUuid else { return nil }
 
@@ -4872,6 +4882,8 @@ extension SSKProtoSyncMessageRequest.SSKProtoSyncMessageRequestBuilder {
         return senderAddress != nil
     }
     @objc public var senderAddress: SignalServiceAddress? {
+        guard hasSenderE164 || hasSenderUuid else { return nil }
+
         let uuidString: String? = {
             guard hasSenderUuid else { return nil }
 
@@ -5338,6 +5350,8 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
         return senderAddress != nil
     }
     @objc public var senderAddress: SignalServiceAddress? {
+        guard hasSenderE164 || hasSenderUuid else { return nil }
+
         let uuidString: String? = {
             guard hasSenderUuid else { return nil }
 
