@@ -139,6 +139,23 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                     selector:@selector(didToggleTypingIndicatorsSwitch:)]];
     [contents addSection:typingIndicatorsSection];
 
+    // If pins are enabled for everyone, show the change pin section
+    if (SSKFeatureFlags.pinsForEveryone) {
+        OWSTableSection *pinsSection = [OWSTableSection new];
+        pinsSection.headerTitle
+            = NSLocalizedString(@"SETTINGS_PINS_TITLE", @"Title for the 'PINs' section of the privacy settings.");
+        pinsSection.footerTitle
+            = NSLocalizedString(@"SETTINGS_PINS_FOOTER", @"Footer for the 'PINs' section of the privacy settings.");
+        [pinsSection
+            addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PINS_ITEM",
+                                                             @"Label for the 'pins' item of the privacy settings.")
+                                 accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"pin"]
+                                             actionBlock:^{
+                                                 [weakSelf showChangePin];
+                                             }]];
+        [contents addSection:pinsSection];
+    }
+
     OWSTableSection *screenLockSection = [OWSTableSection new];
     screenLockSection.headerTitle = NSLocalizedString(
         @"SETTINGS_SCREEN_LOCK_SECTION_TITLE", @"Title for the 'screen lock' section of the privacy settings.");
@@ -546,6 +563,17 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
     OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
     vc.mode = OWS2FASettingsMode_Status;
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)showChangePin
+{
+    OWSLogInfo(@"");
+
+    __weak PrivacySettingsTableViewController *weakSelf = self;
+    OWSPinSetupViewController *vc = [OWSPinSetupViewController changingWithCompletionHandler:^{
+        [weakSelf.navigationController popToViewController:weakSelf animated:YES];
+    }];
     [self.navigationController pushViewController:vc animated:YES];
 }
 

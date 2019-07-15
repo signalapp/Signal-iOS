@@ -15,9 +15,18 @@ public class PinSetupViewController: OWSViewController {
 
     enum Mode {
         case creating
+        case recreating
+        case changing
         case confirming(pinToMatch: String)
+
+        var isChanging: Bool {
+            guard case .changing = self else { return false }
+            return true
+        }
     }
     private let mode: Mode
+
+    private let initialMode: Mode
 
     enum ValidationState {
         case valid
@@ -36,15 +45,25 @@ public class PinSetupViewController: OWSViewController {
 
     private let completionHandler: () -> Void
 
-    init(mode: Mode, completionHandler: @escaping () -> Void) {
+    init(mode: Mode, initialMode: Mode? = nil, completionHandler: @escaping () -> Void) {
         self.mode = mode
+        self.initialMode = initialMode ?? mode
         self.completionHandler = completionHandler
         super.init(nibName: nil, bundle: nil)
+
+        if case .confirming = self.initialMode {
+            owsFailDebug("pin setup flow should never start in the confirming state")
+        }
     }
 
     @objc
     convenience init(completionHandler: @escaping () -> Void) {
         self.init(mode: .creating, completionHandler: completionHandler)
+    }
+
+    @objc
+    class func changing(completionHandler: @escaping () -> Void) -> PinSetupViewController {
+        return .init(mode: .changing, completionHandler: completionHandler)
     }
 
     required init?(coder: NSCoder) {
@@ -53,6 +72,9 @@ public class PinSetupViewController: OWSViewController {
 
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
+        // Don't hide the nav bar when changing
+        guard !initialMode.isChanging else { return }
 
         navigationController?.setNavigationBarHidden(true, animated: false)
     }
@@ -66,6 +88,9 @@ public class PinSetupViewController: OWSViewController {
 
     override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+
+        // Don't hide the nav bar when changing
+        guard !initialMode.isChanging else { return }
 
         navigationController?.setNavigationBarHidden(false, animated: false)
     }
@@ -84,28 +109,54 @@ public class PinSetupViewController: OWSViewController {
         view.backgroundColor = Theme.backgroundColor
         view.layoutMargins = .zero
 
-        // Back button
+        let topRow: UIView?
+        let titleLabel: UILabel?
 
-        let backButton = UIButton()
-        let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-        backButton.setTemplateImage(backButtonImage, tintColor: Theme.secondaryColor)
-        backButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
-        backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
+        // We have a nav bar and use the nav bar back button + title
+        if initialMode.isChanging {
+            topRow = nil
+            titleLabel = nil
 
-        let backButtonRow = UIView()
-        backButtonRow.addSubview(backButton)
-        backButton.autoPinEdge(toSuperviewEdge: .leading)
-        backButton.autoPinHeightToSuperview()
+            title = NSLocalizedString("PIN_CREATION_CHANGING_TITLE", comment: "Title of the 'pin creation' recreation view.")
 
-        // Title
+        // We have no nav bar and build our own back button + title label
+        } else {
+            // Back button
 
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("PIN_CREATION_TITLE", comment: "Title of the 'pin creation' view.")
-        titleLabel.textColor = Theme.primaryColor
-        titleLabel.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semiBold()
-        titleLabel.numberOfLines = 0
-        titleLabel.lineBreakMode = .byWordWrapping
-        titleLabel.textAlignment = .center
+            let backButton = UIButton()
+            let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
+            backButton.setTemplateImage(backButtonImage, tintColor: Theme.secondaryColor)
+            backButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+            backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
+
+            let backButtonRow = UIView()
+            backButtonRow.addSubview(backButton)
+            backButton.autoPinEdge(toSuperviewEdge: .leading)
+            backButton.autoPinHeightToSuperview()
+
+            // Title
+
+            let label = UILabel()
+            label.textColor = Theme.primaryColor
+            label.font = UIFont.ows_dynamicTypeTitle1Clamped.ows_semiBold()
+            label.numberOfLines = 0
+            label.lineBreakMode = .byWordWrapping
+            label.textAlignment = .center
+
+            titleLabel = label
+
+            let row = UIStackView(arrangedSubviews: [backButtonRow, label, UIView.spacer(withHeight: 10)])
+            row.axis = .vertical
+            row.distribution = .fill
+            topRow = row
+        }
+
+        switch initialMode {
+        case .recreating:
+            titleLabel?.text = NSLocalizedString("PIN_CREATION_RECREATION_TITLE", comment: "Title of the 'pin creation' recreation view.")
+        default:
+            titleLabel?.text = NSLocalizedString("PIN_CREATION_TITLE", comment: "Title of the 'pin creation' view.")
+        }
 
         // Explanation
 
@@ -113,8 +164,10 @@ public class PinSetupViewController: OWSViewController {
         explanationLabel.textColor = Theme.secondaryColor
         explanationLabel.font = .ows_dynamicTypeSubheadlineClamped
 
+        let placeholderText: String
+
         switch mode {
-        case .creating:
+        case .creating, .changing:
             let explanationText = NSLocalizedString("PIN_CREATION_EXPLANATION",
                                                       comment: "The explanation in the 'pin creation' view.")
 
@@ -124,9 +177,25 @@ public class PinSetupViewController: OWSViewController {
             let attributedExplanation = NSAttributedString(string: explanationText).rtlSafeAppend(explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
 
             explanationLabel.attributedText = attributedExplanation
+
+            placeholderText = NSLocalizedString("PIN_CREATION_PIN_CREATION_PLACEHOLDER", comment: "The placeholder when creating a pin in the 'pin creation' view.")
+        case .recreating:
+            let explanationText = NSLocalizedString("PIN_CREATION_RECREATION_EXPLANATION",
+                                                    comment: "The re-creation explanation in the 'pin creation' view.")
+
+            let explanationBoldText = NSLocalizedString("PIN_CREATION_RECREATION_BOLD_EXPLANATION",
+                                                        comment: "The bold portion of the re-creation explanation in the 'pin creation' view.")
+
+            let attributedExplanation = NSAttributedString(string: explanationText).rtlSafeAppend(explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
+
+            explanationLabel.attributedText = attributedExplanation
+
+            placeholderText = NSLocalizedString("PIN_CREATION_PIN_CREATION_PLACEHOLDER", comment: "The placeholder when creating a pin in the 'pin creation' view.")
         case .confirming:
             explanationLabel.text = NSLocalizedString("PIN_CREATION_CONFIRMATION_EXPLANATION",
                                                       comment: "The explanation of confirmation in the 'pin creation' view.")
+
+            placeholderText = NSLocalizedString("PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER", comment: "The placeholder when confirming a pin in the 'pin creation' view.")
         }
 
         explanationLabel.numberOfLines = 0
@@ -139,13 +208,14 @@ public class PinSetupViewController: OWSViewController {
         pinTextField.delegate = self
         pinTextField.keyboardType = .numberPad
         pinTextField.textColor = Theme.primaryColor
-        pinTextField.font = .ows_dynamicTypeTitle2Clamped
+        pinTextField.font = .ows_dynamicTypeBodyClamped
         pinTextField.isSecureTextEntry = true
         pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
         pinTextField.keyboardAppearance = Theme.keyboardAppearance
         pinTextField.setContentHuggingHorizontalLow()
         pinTextField.setCompressionResistanceHorizontalLow()
         pinTextField.autoSetDimension(.height, toSize: 40)
+        pinTextField.attributedPlaceholder = NSAttributedString(string: placeholderText, attributes: [.foregroundColor: Theme.placeholderColor])
         pinTextField.accessibilityIdentifier = "pinCreation.pinTextField"
 
         validationWarningLabel.textColor = .ows_destructiveRed
@@ -185,17 +255,20 @@ public class PinSetupViewController: OWSViewController {
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
 
-        let stackView = UIStackView(arrangedSubviews: [
-            backButtonRow,
-            titleLabel,
-            UIView.spacer(withHeight: 10),
+        var arrangedSubviews = [
             explanationLabel,
             topSpacer,
             pinStackRow,
             bottomSpacer,
             UIView.spacer(withHeight: 10),
             nextButton
-        ])
+        ]
+
+        if let topRow = topRow {
+            arrangedSubviews.insert(topRow, at: 0)
+        }
+
+        let stackView = UIStackView(arrangedSubviews: arrangedSubviews)
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
@@ -239,8 +312,12 @@ public class PinSetupViewController: OWSViewController {
         }
 
         switch mode {
-        case .creating:
-            let confirmingVC = PinSetupViewController(mode: .confirming(pinToMatch: pin), completionHandler: completionHandler)
+        case .creating, .changing, .recreating:
+            let confirmingVC = PinSetupViewController(
+                mode: .confirming(pinToMatch: pin),
+                initialMode: initialMode,
+                completionHandler: completionHandler
+            )
             navigationController?.pushViewController(confirmingVC, animated: true)
         case .confirming:
             enable2FAAndContinue(withPin: pin)
