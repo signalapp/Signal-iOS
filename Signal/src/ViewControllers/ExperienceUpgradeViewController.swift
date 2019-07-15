@@ -130,12 +130,13 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
 
         let heroImageView = UIImageView()
         heroImageView.setImage(imageName: "introducing-pins-\(Theme.isDarkThemeEnabled ? "dark" : "light")")
+        if let heroImage = heroImageView.image {
+            heroImageView.autoPinToAspectRatio(with: heroImage.size)
+        } else {
+            owsFailDebug("Missing hero image.")
+        }
         view.addSubview(heroImageView)
-
-        heroImageView.contentMode = .scaleAspectFill
-
-        heroImageView.autoPinWidthToSuperview()
-        heroImageView.autoPinTopToSuperviewMargin(withInset: 20)
+        heroImageView.autoPinTopToSuperviewMargin(withInset: 10)
         heroImageView.autoHCenterInSuperview()
         heroImageView.setContentHuggingLow()
         heroImageView.setCompressionResistanceLow()
@@ -165,7 +166,7 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
         titleLabel.autoPinWidthToSuperview(withMargin: hMargin)
         // The title label actually overlaps the hero image because it has a long shadow
         // and we want the text to partially sit on top of this.
-        titleLabel.autoPinEdge(.top, to: .bottom, of: heroImageView, withOffset: -25)
+        titleLabel.autoPinEdge(.top, to: .bottom, of: heroImageView, withOffset: -10)
         titleLabel.setContentHuggingVerticalHigh()
 
         // Body label
