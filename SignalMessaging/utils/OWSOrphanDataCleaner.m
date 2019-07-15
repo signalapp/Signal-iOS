@@ -384,6 +384,26 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             return;
         }
 
+        [MessageSenderJobQueue
+            enumerateEnqueuedInteractionsWithTransaction:transaction.asAnyRead
+                                                   block:^(TSInteraction *interaction, BOOL *stop) {
+                                                       if (!self.isMainAppAndActive) {
+                                                           shouldAbort = YES;
+                                                           *stop = YES;
+                                                           return;
+                                                       }
+                                                       if (![interaction isKindOfClass:[TSMessage class]]) {
+                                                           return;
+                                                       }
+                                                       TSMessage *message = (TSMessage *)interaction;
+                                                       [allMessageAttachmentIds
+                                                           addObjectsFromArray:message.allAttachmentIds];
+                                                   }];
+
+        if (shouldAbort) {
+            return;
+        }
+
         [activeStickerFilePaths
             addObjectsFromArray:[StickerManager filepathsForAllInstalledStickersWithTransaction:transaction.asAnyRead]];
     }];

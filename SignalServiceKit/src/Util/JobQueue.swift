@@ -309,6 +309,7 @@ public protocol JobRecordFinder {
 
     func getNextReady(label: String, transaction: ReadTransaction) -> JobRecordType?
     func allRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction) -> [JobRecordType]
+    func enumerateJobRecords(label: String, transaction: ReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void)
     func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void)
 }
 
@@ -337,6 +338,15 @@ public class AnyJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord
 }
 
 extension AnyJobRecordFinder: JobRecordFinder {
+    public func enumerateJobRecords(label: String, transaction: SDSAnyReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbRead):
+            grdbAdapter.enumerateJobRecords(label: label, transaction: grdbRead, block: block)
+        case .yapRead(let yapRead):
+            yapAdapter.enumerateJobRecords(label: label, transaction: yapRead, block: block)
+        }
+    }
+
     public func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: SDSAnyReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
         case .grdbRead(let grdbRead):
@@ -352,6 +362,31 @@ class GRDBJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
 }
 
 extension GRDBJobRecordFinder: JobRecordFinder {
+    func enumerateJobRecords(label: String, transaction: GRDBReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
+
+        let sql = """
+        SELECT * FROM \(JobRecordRecord.databaseTableName)
+        WHERE \(jobRecordColumn: .label) = ?
+        ORDER BY \(jobRecordColumn: .id)
+        """
+
+        let cursor = JobRecordType.grdbFetchCursor(sql: sql,
+                                                   arguments: [label],
+                                                   transaction: transaction)
+        var stop: ObjCBool = false
+        // GRDB TODO make cursor.next fail hard to remove this `try!`
+        while let next = try! cursor.next() {
+            guard let jobRecord = next as? JobRecordType else {
+                owsFailDebug("expecting jobRecord but found: \(next)")
+                return
+            }
+            block(jobRecord, &stop)
+            if stop.boolValue {
+                return
+            }
+        }
+    }
+
     func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: GRDBReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
 
         let sql = """
@@ -431,6 +466,22 @@ public class YAPDBJobRecordFinder<JobRecordType> where JobRecordType: SSKJobReco
 }
 
 extension YAPDBJobRecordFinder: JobRecordFinder {
+    public func enumerateJobRecords(label: String, transaction: YapDatabaseReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let queryFormat = String(format: "WHERE %@ = ? ORDER BY %@", JobRecordField.label.rawValue, JobRecordField.sortId.rawValue)
+        let query = YapDatabaseQuery(string: queryFormat, parameters: [label])
+
+        guard let ext = self.ext(transaction: transaction) else {
+            return
+        }
+        ext.enumerateKeysAndObjects(matching: query) { _, _, object, stopPointer in
+            guard let jobRecord = object as? JobRecordType else {
+                owsFailDebug("expecting jobRecord but found: \(object)")
+                return
+            }
+            block(jobRecord, stopPointer)
+        }
+    }
+
     public func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: YapDatabaseReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
         let queryFormat = String(format: "WHERE %@ = ? AND %@ = ? ORDER BY %@", JobRecordField.status.rawValue, JobRecordField.label.rawValue, JobRecordField.sortId.rawValue)
         let query = YapDatabaseQuery(string: queryFormat, parameters: [status.rawValue, label])
