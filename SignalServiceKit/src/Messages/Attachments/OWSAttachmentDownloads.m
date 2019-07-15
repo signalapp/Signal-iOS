@@ -7,6 +7,7 @@
 #import "MIMETypeUtil.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBackgroundTask.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "OWSDispatch.h"
 #import "OWSError.h"
 #import "OWSFileSystem.h"
@@ -388,6 +389,12 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     if (job.message) {
                         if (transaction.transitional_yapWriteTransaction) {
                             [job.message touchWithTransaction:transaction.transitional_yapWriteTransaction];
+
+                            [transaction.transitional_yapWriteTransaction
+                                addCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                   completionBlock:^{
+                                       [OWSDisappearingMessagesJob.sharedJob schedulePass];
+                                   }];
                         }
                     }
                 }];
