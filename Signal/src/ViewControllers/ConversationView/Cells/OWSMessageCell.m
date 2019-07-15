@@ -140,7 +140,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
     TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-    return outgoingMessage.messageState == TSOutgoingMessageStateFailed;
+    return outgoingMessage.outgoingMessageState == TSOutgoingMessageStateFailed;
 }
 
 - (OWSMessageView *)messageView
@@ -451,10 +451,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
+        if (outgoingMessage.outgoingMessageState == TSOutgoingMessageStateFailed) {
             [self.delegate didTapFailedOutgoingMessage:outgoingMessage];
             return;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
+        } else if (outgoingMessage.outgoingMessageState == TSOutgoingMessageStateSending) {
             // Ignore taps on outgoing messages being sent.
             return;
         }
@@ -547,10 +547,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
+        if (outgoingMessage.outgoingMessageState == TSOutgoingMessageStateFailed) {
             // Don't allow "delete" or "reply" on "failed" outgoing messages.
             return NO;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
+        } else if (outgoingMessage.outgoingMessageState == TSOutgoingMessageStateSending) {
             // Don't allow "delete" or "reply" on "sending" outgoing messages.
             return NO;
         }

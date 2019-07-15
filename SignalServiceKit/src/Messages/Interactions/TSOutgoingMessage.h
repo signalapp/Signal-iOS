@@ -141,8 +141,9 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
     outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
+            outgoingMessageState:(TSOutgoingMessageState)outgoingMessageState
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:recipientAddressStates:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:outgoingMessageState:recipientAddressStates:));
 
 // clang-format on
 
@@ -171,7 +172,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
-@property (readonly) TSOutgoingMessageState messageState;
+@property (readonly) TSOutgoingMessageState outgoingMessageState;
 @property (readonly) BOOL wasDeliveredToAnyRecipient;
 @property (readonly) BOOL wasSentToAnyRecipient;
 

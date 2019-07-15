@@ -154,6 +154,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
               legacyWasDelivered:(BOOL)legacyWasDelivered
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
     outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
+            outgoingMessageState:(TSOutgoingMessageState)outgoingMessageState
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
 {
     self = [super initWithUniqueId:uniqueId
@@ -190,6 +191,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     _legacyWasDelivered = legacyWasDelivered;
     _mostRecentFailureText = mostRecentFailureText;
     _outgoingMessageSchemaVersion = outgoingMessageSchemaVersion;
+    _outgoingMessageState = outgoingMessageState;
     _recipientAddressStates = recipientAddressStates;
 
     return self;
@@ -228,6 +230,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         }
 
         _outgoingMessageSchemaVersion = TSOutgoingMessageSchemaVersion;
+
+        [self updateMessageState];
     }
 
 
@@ -535,16 +539,24 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 #pragma mark -
 
-- (TSOutgoingMessageState)messageState
+- (void)setLegacyMessageState:(TSOutgoingMessageState)legacyMessageState
+{
+    _legacyMessageState = legacyMessageState;
+
+    [self updateMessageState];
+}
+
+- (void)updateMessageState
 {
     TSOutgoingMessageState newMessageState =
         [TSOutgoingMessage messageStateForRecipientStates:self.recipientAddressStates.allValues];
     if (self.hasLegacyMessageState) {
         if (newMessageState == TSOutgoingMessageStateSent || self.legacyMessageState == TSOutgoingMessageStateSent) {
-            return TSOutgoingMessageStateSent;
+            _outgoingMessageState = TSOutgoingMessageStateSent;
+            return;
         }
     }
-    return newMessageState;
+    _outgoingMessageState = newMessageState;
 }
 
 - (BOOL)wasDeliveredToAnyRecipient
@@ -552,7 +564,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     if (self.deliveredRecipientAddresses.count > 0) {
         return YES;
     }
-    return (self.hasLegacyMessageState && self.legacyWasDelivered && self.messageState == TSOutgoingMessageStateSent);
+    return (self.hasLegacyMessageState && self.legacyWasDelivered
+        && self.outgoingMessageState == TSOutgoingMessageStateSent);
 }
 
 - (BOOL)wasSentToAnyRecipient
@@ -560,7 +573,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     if (self.sentRecipientAddresses.count > 0) {
         return YES;
     }
-    return (self.hasLegacyMessageState && self.messageState == TSOutgoingMessageStateSent);
+    return (self.hasLegacyMessageState && self.outgoingMessageState == TSOutgoingMessageStateSent);
 }
 
 + (TSOutgoingMessageState)messageStateForRecipientStates:(NSArray<TSOutgoingMessageRecipientState *> *)recipientStates
@@ -627,7 +640,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
     if (!self.hasPerConversationExpiration) {
         return NO;
-    } else if (self.messageState == TSOutgoingMessageStateSent) {
+    } else if (self.outgoingMessageState == TSOutgoingMessageStateSent) {
         return YES;
     } else {
         if (self.expireStartedAt > 0) {
@@ -748,6 +761,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                   }
                                               }
                                               [message setMostRecentFailureText:error.localizedDescription];
+                                              [message updateMessageState];
                                           }];
 }
 
@@ -765,6 +779,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                       recipientState.state = OWSOutgoingMessageRecipientStateFailed;
                                                   }
                                               }
+                                              [message updateMessageState];
                                           }];
 }
 
@@ -782,6 +797,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                       recipientState.state = OWSOutgoingMessageRecipientStateSending;
                                                   }
                                               }
+                                              [message updateMessageState];
                                           }];
 }
 
@@ -829,6 +845,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                 }
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                                 recipientState.wasSentByUD = wasSentByUD;
+                                                [message updateMessageState];
                                             }];
 }
 
@@ -848,6 +865,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                     return;
                                                 }
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSkipped;
+                                                [message updateMessageState];
                                             }];
 }
 
@@ -877,6 +895,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                 }
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                                 recipientState.deliveryTimestamp = deliveryTimestamp;
+                                                [message updateMessageState];
                                             }];
 }
 
@@ -901,6 +920,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                 }
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                                 recipientState.readTimestamp = @(readTimestamp);
+                                                [message updateMessageState];
                                             }];
 }
 
@@ -984,6 +1004,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                               if (!isSentUpdate) {
                                                   [message setIsFromLinkedDevice:YES];
                                               }
+                                              [message updateMessageState];
                                           }];
 }
 
@@ -1001,6 +1022,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                 [message setRecipientAddressStates:@{
                                                     singleGroupRecipient : recipientState,
                                                 }];
+                                                [message updateMessageState];
                                             }];
 }
 
@@ -1022,6 +1044,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                        transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
+
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
                                                 for (TSOutgoingMessageRecipientState *recipientState in message
@@ -1043,6 +1066,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                             break;
                                                     }
                                                 }
+                                                [message updateMessageState];
+                                                OWSAssertDebug(message.outgoingMessageState == messageState);
                                             }];
 }
 
@@ -1344,7 +1369,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 - (NSString *)statusDescription
 {
     NSMutableString *result = [NSMutableString new];
-    [result appendFormat:@"[status: %@", NSStringForOutgoingMessageState(self.messageState)];
+    [result appendFormat:@"[status: %@", NSStringForOutgoingMessageState(self.outgoingMessageState)];
     for (SignalServiceAddress *address in self.recipientAddressStates) {
         TSOutgoingMessageRecipientState *recipientState = self.recipientAddressStates[address];
         [result appendFormat:@", %@: %@", address, NSStringForOutgoingMessageRecipientState(recipientState.state)];

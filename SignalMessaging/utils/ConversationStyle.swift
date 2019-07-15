@@ -162,7 +162,7 @@ public class ConversationStyle: NSObject {
         if message is TSIncomingMessage {
             return ConversationStyle.defaultBubbleColorIncoming
         } else if let outgoingMessage = message as? TSOutgoingMessage {
-            switch outgoingMessage.messageState {
+            switch outgoingMessage.outgoingMessageState {
             case .failed:
                 return bubbleColorOutgoingFailed
             case .sending:

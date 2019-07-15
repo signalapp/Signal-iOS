@@ -355,7 +355,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *markedAsSent = [self expectationWithDescription:@"markedAsSent"];
     [messageSender sendMessageToService:message
         success:^() {
-            if (message.messageState == TSOutgoingMessageStateSent) {
+            if (message.outgoingMessageState == TSOutgoingMessageStateSent) {
                 [markedAsSent fulfill];
             } else {
                 XCTFail(@"Unexpected message state");
@@ -383,7 +383,7 @@ NS_ASSUME_NONNULL_BEGIN
         sourceFilename:nil
         inMessage:message
         success:^() {
-            if (message.messageState == TSOutgoingMessageStateSentToService) {
+            if (message.outgoingMessageState == TSOutgoingMessageStateSentToService) {
                 [markedAsSent fulfill];
             } else {
                 XCTFail(@"Unexpected message state");
@@ -411,7 +411,7 @@ NS_ASSUME_NONNULL_BEGIN
             XCTFail(@"sendMessage should fail.");
         }
         failure:^(NSError *error) {
-            if (message.messageState == TSOutgoingMessageStateUnsent) {
+            if (message.outgoingMessageState == TSOutgoingMessageStateUnsent) {
                 [markedAsUnsent fulfill];
             } else {
                 XCTFail(@"Unexpected message state");
@@ -440,7 +440,7 @@ NS_ASSUME_NONNULL_BEGIN
             XCTFail(@"sendMessage should fail.");
         }
         failure:^(NSError *_Nonnull error) {
-            if (message.messageState == TSOutgoingMessageStateUnsent) {
+            if (message.outgoingMessageState == TSOutgoingMessageStateUnsent) {
                 [markedAsUnsent fulfill];
             } else {
                 XCTFail(@"Unexpected message state");
@@ -469,7 +469,7 @@ NS_ASSUME_NONNULL_BEGIN
             XCTFail(@"sendMessage should fail.");
         }
         failure:^(NSError *_Nonnull error) {
-            if (message.messageState == TSOutgoingMessageStateUnsent) {
+            if (message.outgoingMessageState == TSOutgoingMessageStateUnsent) {
                 [markedAsUnsent fulfill];
             } else {
                 XCTFail(@"Unexpected message state");
@@ -503,12 +503,11 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *markedAsSent = [self expectationWithDescription:@"markedAsSent"];
     [messageSender sendMessage:message
         success:^{
-            if (message.messageState == TSOutgoingMessageStateSentToService) {
+            if (message.outgoingMessageState == TSOutgoingMessageStateSentToService) {
                 [markedAsSent fulfill];
             } else {
                 XCTFail(@"Unexpected message state");
             }
-
         }
         failure:^(NSError *_Nonnull error) {
             XCTFail(@"sendMessage should not fail.");

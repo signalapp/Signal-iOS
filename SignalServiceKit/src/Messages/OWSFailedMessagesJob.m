@@ -16,30 +16,25 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString *const OWSFailedMessagesJobMessageStateColumn = @"message_state";
 static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_messages_on_message_state";
 
-@interface OWSFailedMessagesJob ()
+@implementation OWSFailedMessagesJob
 
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
+#pragma mark - Dependencies
 
-@end
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
 
 #pragma mark -
 
-@implementation OWSFailedMessagesJob
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (NSArray<NSString *> *)fetchAttemptingOutMessageIdsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    self = [super init];
-    if (!self) {
-        return self;
-    }
+    OWSAssertDebug(transaction);
 
-    _primaryStorage = primaryStorage;
-
-    return self;
+    return [InteractionFinder attemptingOutInteractionIdsWithTransaction:transaction];
 }
 
-- (NSArray<NSString *> *)fetchAttemptingOutMessageIdsWithTransaction:
-    (YapDatabaseReadWriteTransaction *_Nonnull)transaction
++ (NSArray<NSString *> *)attemptingOutMessageIdsWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -58,7 +53,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 }
 
 - (void)enumerateAttemptingOutMessagesWithBlock:(void (^_Nonnull)(TSOutgoingMessage *message))block
-                                    transaction:(YapDatabaseReadWriteTransaction *_Nonnull)transaction
+                                    transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -66,7 +61,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
     // of saving a little memory and then enumerate the (larger) TSMessage objects one at a time.
     for (NSString *expiredMessageId in [self fetchAttemptingOutMessageIdsWithTransaction:transaction]) {
         TSOutgoingMessage *_Nullable message =
-            [TSOutgoingMessage anyFetchOutgoingMessageWithUniqueId:expiredMessageId transaction:transaction.asAnyRead];
+            [TSOutgoingMessage anyFetchOutgoingMessageWithUniqueId:expiredMessageId transaction:transaction];
         if (message == nil) {
             OWSFailDebug(@"Missing interaction.");
             continue;
@@ -79,19 +74,20 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 {
     __block uint count = 0;
 
-    [[self.primaryStorage newDatabaseConnection]
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage
+        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [self enumerateAttemptingOutMessagesWithBlock:^(TSOutgoingMessage *message) {
                 // sanity check
-                OWSAssertDebug(message.messageState == TSOutgoingMessageStateSending);
-                if (message.messageState != TSOutgoingMessageStateSending) {
-                    OWSLogError(@"Refusing to mark as unsent message with state: %d", (int)message.messageState);
+                OWSAssertDebug(message.outgoingMessageState == TSOutgoingMessageStateSending);
+                if (message.outgoingMessageState != TSOutgoingMessageStateSending) {
+                    OWSLogError(
+                        @"Refusing to mark as unsent message with state: %d", (int)message.outgoingMessageState);
                     return;
                 }
 
                 OWSLogDebug(@"marking message as unsent: %@", message.uniqueId);
-                [message updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:transaction.asAnyWrite];
-                OWSAssertDebug(message.messageState == TSOutgoingMessageStateFailed);
+                [message updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:transaction];
+                OWSAssertDebug(message.outgoingMessageState == TSOutgoingMessageStateFailed);
 
                 count++;
             }
@@ -119,20 +115,11 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
             }
             TSOutgoingMessage *message = (TSOutgoingMessage *)object;
 
-            dict[OWSFailedMessagesJobMessageStateColumn] = @(message.messageState);
+            dict[OWSFailedMessagesJobMessageStateColumn] = @(message.outgoingMessageState);
         }];
 
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
 }
-
-#ifdef DEBUG
-// Useful for tests, don't use in app startup path because it's slow.
-- (void)blockingRegisterDatabaseExtensions
-{
-    [self.primaryStorage registerExtension:[self.class indexDatabaseExtension]
-                                  withName:OWSFailedMessagesJobMessageStateIndex];
-}
-#endif
 
 + (NSString *)databaseExtensionName
 {

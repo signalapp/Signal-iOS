@@ -62,13 +62,13 @@ public class MessageRecipientStatusUtils: NSObject {
             return (status:.failed, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
         case .sending:
             if outgoingMessage.hasAttachments() {
-                assert(outgoingMessage.messageState == .sending)
+                assert(outgoingMessage.outgoingMessageState == .sending)
 
                 let statusMessage = NSLocalizedString("MESSAGE_STATUS_UPLOADING",
                                                       comment: "status message while attachment is uploading")
                 return (status:.uploading, shortStatusMessage:statusMessage, longStatusMessage:statusMessage)
             } else {
-                assert(outgoingMessage.messageState == .sending)
+                assert(outgoingMessage.outgoingMessageState == .sending)
 
                 let statusMessage = NSLocalizedString("MESSAGE_STATUS_SENDING",
                                                       comment: "message status while message is sending.")
@@ -104,7 +104,7 @@ public class MessageRecipientStatusUtils: NSObject {
     // This method is per-message.
     internal class func receiptStatusAndMessage(outgoingMessage: TSOutgoingMessage) -> (status: MessageReceiptStatus, message: String) {
 
-        switch outgoingMessage.messageState {
+        switch outgoingMessage.outgoingMessageState {
         case .failed:
             // Use the "long" version of this message here.
             return (.failed, NSLocalizedString("MESSAGE_STATUS_FAILED", comment: "status message for failed messages"))
@@ -127,7 +127,7 @@ public class MessageRecipientStatusUtils: NSObject {
             return (.sent, NSLocalizedString("MESSAGE_STATUS_SENT",
                                      comment: "status message for sent messages"))
         default:
-            owsFailDebug("Message has unexpected status: \(outgoingMessage.messageState).")
+            owsFailDebug("Message has unexpected status: \(outgoingMessage.outgoingMessageState).")
             return (.sent, NSLocalizedString("MESSAGE_STATUS_SENT",
                                      comment: "status message for sent messages"))
         }

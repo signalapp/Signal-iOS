@@ -29,6 +29,8 @@ protocol InteractionFinderAdapter {
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
 
     static func incompleteCallIds(transaction: ReadTransaction) -> [String]
+
+    static func attemptingOutInteractionIds(transaction: ReadTransaction) -> [String]
 }
 
 // MARK: -
@@ -209,6 +211,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return GRDBInteractionFinderAdapter.incompleteCallIds(transaction: grdbRead)
         }
     }
+
+    @objc
+    public class func attemptingOutInteractionIds(transaction: SDSAnyReadTransaction) -> [String] {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return YAPDBInteractionFinderAdapter.attemptingOutInteractionIds(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinderAdapter.attemptingOutInteractionIds(transaction: grdbRead)
+        }
+    }
 }
 
 // MARK: -
@@ -372,6 +384,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     static func incompleteCallIds(transaction: YapDatabaseReadTransaction) -> [String] {
         return OWSIncompleteCallsJob.ydb_incompleteCallIds(with: transaction)
+    }
+
+    static func attemptingOutInteractionIds(transaction: YapDatabaseReadTransaction) -> [String] {
+        return OWSFailedMessagesJob.attemptingOutMessageIds(with: transaction)
     }
 
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: YapDatabaseReadTransaction) throws -> [TSInteraction] {
@@ -642,6 +658,26 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
         return result
     }
+
+    static func attemptingOutInteractionIds(transaction: ReadTransaction) -> [String] {
+        let sql: String = """
+        SELECT \(interactionColumn: .uniqueId)
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .outgoingMessageState) = ?
+        """
+        var result = [String]()
+        do {
+            let cursor = try String.fetchCursor(transaction.database,
+                                                sql: sql,
+                                                arguments: [TSOutgoingMessageState.sending.rawValue])
+            while let uniqueId = try cursor.next() {
+                result.append(uniqueId)
+            }
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+        return result
+   }
 }
 
 private func assertionError(_ description: String) -> Error {

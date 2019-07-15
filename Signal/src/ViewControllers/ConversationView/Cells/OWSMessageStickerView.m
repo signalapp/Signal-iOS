@@ -484,9 +484,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
+        if (outgoingMessage.outgoingMessageState == TSOutgoingMessageStateFailed) {
             return;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
+        } else if (outgoingMessage.outgoingMessageState == TSOutgoingMessageStateSending) {
             // Ignore taps on outgoing messages being sent.
             return;
         }
