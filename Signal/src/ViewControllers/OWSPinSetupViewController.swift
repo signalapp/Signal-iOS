@@ -9,8 +9,8 @@ public class PinSetupViewController: OWSViewController {
 
     private let pinTextField = UITextField()
 
-    private var pinStrokeNormal: UIView?
-    private var pinStrokeError: UIView?
+    private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
+    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
     private let validationWarningLabel = UILabel()
 
     enum Mode {
@@ -75,7 +75,7 @@ public class PinSetupViewController: OWSViewController {
     }
 
     override public func loadView() {
-        super.loadView()
+        view = UIView()
 
         if navigationController == nil {
             owsFailDebug("This view should always be presented in a nav controller")
@@ -88,8 +88,7 @@ public class PinSetupViewController: OWSViewController {
 
         let backButton = UIButton()
         let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-        backButton.tintColor = Theme.secondaryColor
-        backButton.setImage(backButtonImage.withRenderingMode(.alwaysTemplate), for: .normal)
+        backButton.setTemplateImage(backButtonImage, tintColor: Theme.secondaryColor)
         backButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
         backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
 
@@ -116,18 +115,13 @@ public class PinSetupViewController: OWSViewController {
 
         switch mode {
         case .creating:
-            let explanationFormat = NSLocalizedString("PIN_CREATION_EXPLANATION_FORMAT",
-                                                      comment: "The explanation in the 'pin creation' view that takes in a bold string.")
+            let explanationText = NSLocalizedString("PIN_CREATION_EXPLANATION",
+                                                      comment: "The explanation in the 'pin creation' view.")
 
             let explanationBoldText = NSLocalizedString("PIN_CREATION_BOLD_EXPLANATION",
                                                         comment: "The bold portion of the explanation in the 'pin creation' view.")
 
-            let explanationString = String(format: explanationFormat, explanationBoldText)
-            let boldRange = (explanationString as NSString).range(of: explanationBoldText)
-
-            let attributedExplanation = NSMutableAttributedString(string: explanationString)
-
-            attributedExplanation.addAttribute(.font, value: UIFont.ows_dynamicTypeSubheadlineClamped.ows_bold(), range: boldRange)
+            let attributedExplanation = NSAttributedString(string: explanationText).rtlSafeAppend(explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
 
             explanationLabel.attributedText = attributedExplanation
         case .confirming:
@@ -153,9 +147,6 @@ public class PinSetupViewController: OWSViewController {
         pinTextField.setCompressionResistanceHorizontalLow()
         pinTextField.autoSetDimension(.height, toSize: 40)
         pinTextField.accessibilityIdentifier = "pinCreation.pinTextField"
-
-        pinStrokeNormal = pinTextField.addBottomStroke()
-        pinStrokeError = pinTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
 
         validationWarningLabel.textColor = .ows_destructiveRed
         validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
@@ -259,8 +250,8 @@ public class PinSetupViewController: OWSViewController {
     private func updateValidationWarnings() {
         AssertIsOnMainThread()
 
-        pinStrokeNormal?.isHidden = validationState.isInvalid
-        pinStrokeError?.isHidden = !validationState.isInvalid
+        pinStrokeNormal.isHidden = validationState.isInvalid
+        pinStrokeError.isHidden = !validationState.isInvalid
         validationWarningLabel.isHidden = !validationState.isInvalid
 
         switch validationState {
@@ -282,10 +273,14 @@ public class PinSetupViewController: OWSViewController {
 
         ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { modalVC in
             OWS2FAManager.shared().requestEnable2FA(withPin: pin, success: { [weak self] in
+                AssertIsOnMainThread()
+
                 modalVC.dismiss {
                     self?.completionHandler()
                 }
             }, failure: { error in
+                AssertIsOnMainThread()
+
                 Logger.error("Failed to enable 2FA with error: \(error)")
 
                 // The client may have fallen out of sync with the service.

@@ -355,7 +355,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                         NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
                         OWSCAssertDebug(url);
                         SFSafariViewController *safariVC = [[SFSafariViewController alloc] initWithURL:url];
-                        [self presentViewController:safariVC animated:YES completion:nil];
+                        [weakSelf presentViewController:safariVC animated:YES completion:nil];
                     }]];
 
     unidentifiedDeliveryIndicatorsSection.footerTitle
@@ -390,7 +390,7 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                              OWSCAssertDebug(url);
                                              SFSafariViewController *safariVC =
                                                  [[SFSafariViewController alloc] initWithURL:url];
-                                             [self presentViewController:safariVC animated:YES completion:nil];
+                                             [weakSelf presentViewController:safariVC animated:YES completion:nil];
                                          }]];
     [contents addSection:unidentifiedDeliveryLearnMoreSection];
 

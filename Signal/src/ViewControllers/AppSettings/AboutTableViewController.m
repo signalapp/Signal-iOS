@@ -52,6 +52,8 @@
 {
     OWSTableContents *contents = [OWSTableContents new];
 
+    __weak AboutTableViewController *weakSelf = self;
+
     OWSTableSection *informationSection = [OWSTableSection new];
     informationSection.headerTitle = NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
     [informationSection addItem:[OWSTableItem labelItemWithText:NSLocalizedString(@"SETTINGS_VERSION", @"")
@@ -65,7 +67,7 @@
                                 actionBlock:^{
                                     SFSafariViewController *safariVC = [[SFSafariViewController alloc]
                                         initWithURL:[NSURL URLWithString:kLegalTermsUrlString]];
-                                    [self presentViewController:safariVC animated:YES completion:nil];
+                                    [weakSelf presentViewController:safariVC animated:YES completion:nil];
                                 }]];
 
     [contents addSection:informationSection];
@@ -78,7 +80,7 @@
                                          actionBlock:^{
                                              SFSafariViewController *safariVC = [[SFSafariViewController alloc]
                                                  initWithURL:[NSURL URLWithString:@"https://support.signal.org"]];
-                                             [self presentViewController:safariVC animated:YES completion:nil];
+                                             [weakSelf presentViewController:safariVC animated:YES completion:nil];
                                          }]];
     [contents addSection:helpSection];
 
