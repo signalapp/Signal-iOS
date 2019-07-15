@@ -92,9 +92,9 @@ NS_ASSUME_NONNULL_BEGIN
         SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
         [dataBuilder setTimestamp:self.message.timestamp];
 
-        OWSAssertDebug(self.perMessageExpirationDurationSeconds > 0);
+        OWSAssertDebug(self.message.perMessageExpirationDurationSeconds > 0);
         OWSAssertDebug(SSKFeatureFlags.perMessageExpiration);
-        [dataBuilder setMessageTimer:self.perMessageExpirationDurationSeconds];
+        [dataBuilder setMessageTimer:self.message.perMessageExpirationDurationSeconds];
         [dataBuilder setRequiredProtocolVersion:(uint32_t)SSKProtos.perMessageExpirationProtocolVersion];
 
         NSError *error;
