@@ -177,8 +177,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - YDB Deprecation
 
-// Eventually, these ydb_ methods will only be used before and during the
-// ydb-to-grdb migration.
+// GRDB TODO: Ensure these ydb_ methods are only be used before
+// and during the ydb-to-grdb migration.
 + (NSUInteger)ydb_numberOfKeysInCollection;
 + (NSUInteger)ydb_numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction;
 + (void)ydb_removeAllObjectsInCollection;
