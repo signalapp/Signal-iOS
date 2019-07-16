@@ -84,6 +84,17 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertIsOnMainThread();
     OWSAssertDebug(databaseStorage);
 
+    NSString *const kOWSProfileManager_UserPhoneNumberWhitelistCollection
+        = @"kOWSProfileManager_UserWhitelistCollection";
+    NSString *const kOWSProfileManager_UserUUIDWhitelistCollection = @"kOWSProfileManager_UserUUIDWhitelistCollection";
+    NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
+
+    _whitelistedPhoneNumbersStore =
+        [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
+    _whitelistedUUIDsStore =
+        [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
+    _whitelistedGroupsStore = [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_GroupWhitelistCollection];
+
     _databaseQueue = [databaseStorage newDatabaseQueue];
 
     _profileAvatarImageCache = [NSCache new];
@@ -115,46 +126,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                                              selector:@selector(blockListDidChange:)
                                                  name:kNSNotificationName_BlockListDidChange
                                                object:nil];
-}
-
-#pragma mark - Key Value Stores
-
-- (SDSKeyValueStore *)whitelistedPhoneNumbersStore
-{
-    NSString *const kOWSProfileManager_UserPhoneNumberWhitelistCollection
-        = @"kOWSProfileManager_UserWhitelistCollection";
-
-    static SDSKeyValueStore *keyValueStore = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        keyValueStore =
-            [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_UserPhoneNumberWhitelistCollection];
-    });
-    return keyValueStore;
-}
-
-- (SDSKeyValueStore *)whitelistedUUIDsStore
-{
-    NSString *const kOWSProfileManager_UserUUIDWhitelistCollection = @"kOWSProfileManager_UserUUIDWhitelistCollection";
-
-    static SDSKeyValueStore *keyValueStore = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_UserUUIDWhitelistCollection];
-    });
-    return keyValueStore;
-}
-
-- (SDSKeyValueStore *)whitelistedGroupsStore
-{
-    NSString *const kOWSProfileManager_GroupWhitelistCollection = @"kOWSProfileManager_GroupWhitelistCollection";
-
-    static SDSKeyValueStore *keyValueStore = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:kOWSProfileManager_GroupWhitelistCollection];
-    });
-    return keyValueStore;
 }
 
 #pragma mark - Dependencies
@@ -842,7 +813,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                     BOOL currentlyWhitelisted =
                         [self.whitelistedUUIDsStore hasValueForKey:address.uuidString transaction:transaction];
                     if (!currentlyWhitelisted) {
-                        [self.whitelistedUUIDsStore setBool:true key:address.uuidString transaction:transaction];
+                        [self.whitelistedUUIDsStore setBool:YES key:address.uuidString transaction:transaction];
                         updatedCollection = YES;
                     }
                 }
@@ -851,9 +822,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                     BOOL currentlyWhitelisted =
                         [self.whitelistedPhoneNumbersStore hasValueForKey:address.phoneNumber transaction:transaction];
                     if (!currentlyWhitelisted) {
-                        [self.whitelistedPhoneNumbersStore setBool:true
-                                                               key:address.phoneNumber
-                                                       transaction:transaction];
+                        [self.whitelistedPhoneNumbersStore setBool:YES key:address.phoneNumber transaction:transaction];
                         updatedCollection = YES;
                     }
                 }

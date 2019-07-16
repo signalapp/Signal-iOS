@@ -23,17 +23,15 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
 
+@property (nonatomic, readonly) SDSKeyValueStore *whitelistedPhoneNumbersStore;
+@property (nonatomic, readonly) SDSKeyValueStore *whitelistedUUIDsStore;
+@property (nonatomic, readonly) SDSKeyValueStore *whitelistedGroupsStore;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
-
-#pragma mark - Key Value Stores
-
-- (SDSKeyValueStore *)whitelistedPhoneNumbersStore;
-- (SDSKeyValueStore *)whitelistedUUIDsStore;
-- (SDSKeyValueStore *)whitelistedGroupsStore;
 
 #pragma mark - Local Profile
 
