@@ -57,11 +57,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+// GRDB TODO: Make sure this makes sense in the following scenarios:
+//
+// * Without YDB-to-GRDB migration (YDB before GRDB enabled).
+// * Before YDB-to-GRDB migration.
+// * After YDB-to-GRDB migration.
+// * Without YDB-to-GRDB migration (New GRDB-only install).
 - (void)assumeAllExistingMigrationsRun
 {
     for (OWSDatabaseMigration *migration in self.allMigrations) {
         OWSLogInfo(@"Skipping migration on new install: %@", migration);
-        [migration save];
+        [migration markAsCompleteWithSneakyTransaction];
     }
 }
 
@@ -76,15 +82,28 @@ NS_ASSUME_NONNULL_BEGIN
 // app versions.  Whenever they move "forward" in the version history, we
 // want them to re-run any new migrations. Therefore, when they move "backward"
 // in the version history, we cull any unknown migrations.
+//
+// GRDB TODO: Make sure this makes sense in the following scenarios:
+//
+// * Without YDB-to-GRDB migration (YDB before GRDB enabled).
+//   Migrations should run, reading/writing to YDB.
+// * During YDB-to-GRDB migration.
+//   Migrations should run.
+//   YDB migrations should consult YDB.
+//   GRDB migrations should consult GRDB.
+// * Without YDB-to-GRDB migration (New GRDB-only install).
+//   Migrations should not be run.
+//   All migrations should be marked as complete in GRDB.
 - (void)removeUnknownMigrations
 {
     NSMutableSet<NSString *> *knownMigrationIds = [NSMutableSet new];
     for (OWSDatabaseMigration *migration in self.allMigrations) {
-        [knownMigrationIds addObject:migration.uniqueId];
+        [knownMigrationIds addObject:migration.migrationId];
     }
 
     [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        NSArray<NSString *> *savedMigrationIds = [transaction allKeysInCollection:OWSDatabaseMigration.collection];
+        NSArray<NSString *> *savedMigrationIds =
+            [OWSDatabaseMigration allCompleteMigrationIdsWithTransaction:transaction.asAnyRead];
 
         NSMutableSet<NSString *> *unknownMigrationIds = [NSMutableSet new];
         [unknownMigrationIds addObjectsFromArray:savedMigrationIds];
@@ -92,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         for (NSString *unknownMigrationId in unknownMigrationIds) {
             OWSLogInfo(@"Culling unknown migration: %@", unknownMigrationId);
-            [transaction removeObjectForKey:unknownMigrationId inCollection:OWSDatabaseMigration.collection];
+            [OWSDatabaseMigration markMigrationIdAsIncomplete:unknownMigrationId transaction:transaction.asAnyWrite];
         }
     }];
 }
@@ -120,14 +139,16 @@ NS_ASSUME_NONNULL_BEGIN
     [migrations removeObjectAtIndex:0];
 
     // If migration has already been run, skip it.
-    if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId] != nil) {
+    if (migration.isCompleteWithSneakyTransaction) {
         [self runMigrations:migrations completion:completion];
         return;
     }
 
-    OWSLogInfo(@"Running migration: %@", migration);
+    OWSLogInfo(@"Running migration: %@ %@", migration, migration.migrationId);
+
     [migration runUpWithCompletion:^{
-        OWSLogInfo(@"Migration complete: %@", migration);
+        OWSLogInfo(@"Migration complete: %@ %@", migration, migration.migrationId);
+
         [self runMigrations:migrations completion:completion];
     }];
 }

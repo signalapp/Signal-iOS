@@ -7,11 +7,11 @@ import GRDBCipher
 import SignalServiceKit
 
 @objc
-public class OWS115GRDBMigration: OWSDatabaseMigration {
+public class OWS115GRDBMigration: YDBDatabaseMigration {
 
     // Increment a similar constant for each migration.
     @objc
-    class func migrationId() -> String {
+    public override class var migrationId: String {
         return "115"
     }
 
@@ -28,13 +28,13 @@ public class OWS115GRDBMigration: OWSDatabaseMigration {
         }
     }
 
-    override public func save(with transaction: YapDatabaseReadWriteTransaction) {
+    public override var shouldBeSaved: Bool {
         if FeatureFlags.grdbMigratesFreshDBEveryLaunch {
             // Do nothing so as to re-run every launch.
             // Useful while actively developing the migration.
-            return
+            return false
         } else {
-            super.save(with: transaction)
+            return true
         }
     }
 

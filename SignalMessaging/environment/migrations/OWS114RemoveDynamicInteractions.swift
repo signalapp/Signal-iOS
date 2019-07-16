@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
 
 @objc
-public class OWS114RemoveDynamicInteractions: OWSDatabaseMigration {
+public class OWS114RemoveDynamicInteractions: YDBDatabaseMigration {
 
     // MARK: - Dependencies
 
@@ -14,7 +14,7 @@ public class OWS114RemoveDynamicInteractions: OWSDatabaseMigration {
 
     // Increment a similar constant for each migration.
     @objc
-    class func migrationId() -> String {
+    public override class var migrationId: String {
         return "114"
     }
 
@@ -30,7 +30,7 @@ public class OWS114RemoveDynamicInteractions: OWSDatabaseMigration {
 
     private func doMigrationAsync(completion : @escaping OWSDatabaseMigrationCompletion) {
         DispatchQueue.global().async {
-            self.dbReadWriteConnection().readWrite { transaction in
+            self.ydbReadWriteConnection.readWrite { transaction in
                 guard let dbView = TSDatabaseView.threadSpecialMessagesDatabaseView(transaction) as? YapDatabaseViewTransaction else {
                     owsFailDebug("Couldn't load db view.")
                     return
@@ -56,7 +56,7 @@ public class OWS114RemoveDynamicInteractions: OWSDatabaseMigration {
                     interaction.remove(with: transaction)
                 }
 
-                self.save(with: transaction)
+                self.markAsComplete(with: transaction.asAnyWrite)
             }
 
             completion()

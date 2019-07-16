@@ -7,13 +7,13 @@ import PromiseKit
 import SignalServiceKit
 
 @objc
-public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
+public class OWS106EnsureProfileComplete: YDBDatabaseMigration {
 
     private static var sharedCompleteRegistrationFixerJob: CompleteRegistrationFixerJob?
 
     // increment a similar constant for each migration.
     @objc
-    class func migrationId() -> String {
+    public override class var migrationId: String {
         return "106"
     }
 
@@ -24,7 +24,8 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
 
             if (didSucceed) {
                 Logger.info("Completed. Saving.")
-                self.save()
+
+                self.markAsCompleteWithSneakyTransaction()
             } else {
                 Logger.error("Failed.")
             }

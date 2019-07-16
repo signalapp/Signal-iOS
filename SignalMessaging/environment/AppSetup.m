@@ -143,7 +143,9 @@ NS_ASSUME_NONNULL_BEGIN
         // Register renamed classes.
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
-         
+
+        [OWS115GRDBMigration addWithKeyStore:OWSDatabaseMigration.keyValueStore label:@"OWSDatabaseMigration"];
+
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             dispatch_async(dispatch_get_main_queue(), ^{
                 // Don't start database migrations until storage is ready.

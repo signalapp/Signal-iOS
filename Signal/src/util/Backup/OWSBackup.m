@@ -54,7 +54,7 @@ NSString *NSStringForBackupImportState(OWSBackupState state)
     }
 }
 
-// TODO: Revisit after GRDB migration.
+// GRDB TODO: Revisit after GRDB migration.
 NSArray<NSString *> *MiscCollectionsToBackup(void)
 {
     return @[

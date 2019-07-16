@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDatabaseMigration.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWS101ExistingUsersBlockOnIdentityChange : OWSDatabaseMigration
+@interface OWS101ExistingUsersBlockOnIdentityChange : YDBDatabaseMigration
 
 @end
 

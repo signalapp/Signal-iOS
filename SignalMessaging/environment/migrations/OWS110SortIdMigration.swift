@@ -4,10 +4,10 @@
 
 import Foundation
 
-public class OWS110SortIdMigration: OWSDatabaseMigration {
+public class OWS110SortIdMigration: YDBDatabaseMigration {
     // increment a similar constant for each migration.
     @objc
-    class func migrationId() -> String {
+    public override class var migrationId: String {
         // append char "x" because we want to rerun on some internal devices which
         // have already run this migration.
         return "110x"
@@ -25,7 +25,7 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
 
     private func doMigration(completion: @escaping OWSDatabaseMigrationCompletion) {
         // TODO batch this?
-        self.dbReadWriteConnection().readWrite { transaction in
+        self.ydbReadWriteConnection.readWrite { transaction in
 
             var archivedThreads: [TSThread] = []
 
@@ -109,7 +109,7 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
                 archivedThread.archiveThread(with: transaction.asAnyWrite)
             }
 
-            self.save(with: transaction)
+            self.markAsComplete(with: transaction.asAnyWrite)
         }
 
         completion()

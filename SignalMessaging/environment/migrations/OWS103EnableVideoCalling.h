@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDatabaseMigration.h"
 
-@interface OWS103EnableVideoCalling : OWSDatabaseMigration
+@interface OWS103EnableVideoCalling : YDBDatabaseMigration
 
 @end

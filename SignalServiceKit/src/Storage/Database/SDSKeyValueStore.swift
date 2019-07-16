@@ -85,6 +85,13 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - Bool
 
+    public func getOptionalBool(_ key: String, transaction: SDSAnyReadTransaction) -> Bool? {
+        guard let number: NSNumber = read(key, transaction: transaction) else {
+            return nil
+        }
+        return number.boolValue
+    }
+
     @objc
     public func getBool(_ key: String, defaultValue: Bool, transaction: SDSAnyReadTransaction) -> Bool {
         if let value: NSNumber = read(key, transaction: transaction) {
