@@ -22,7 +22,9 @@ public class GRDBDatabaseQueue: NSObject, SDSDatabaseQueue {
     @objc
     public func read(block: @escaping (GRDBReadTransaction) -> Void) {
         databaseQueue.read { database in
-            block(GRDBReadTransaction(database: database))
+            autoreleasepool {
+                block(GRDBReadTransaction(database: database))
+            }
         }
     }
 
@@ -30,7 +32,9 @@ public class GRDBDatabaseQueue: NSObject, SDSDatabaseQueue {
     public func write(block: @escaping (GRDBWriteTransaction) -> Void) {
         do {
             try databaseQueue.write { database in
-                block(GRDBWriteTransaction(database: database))
+                try autoreleasepool {
+                    block(GRDBWriteTransaction(database: database))
+                }
             }
         } catch {
             owsFail("fatal error: \(error)")
@@ -100,6 +104,46 @@ public class SDSAnyDatabaseQueue: NSObject, SDSDatabaseQueue {
             yapDatabaseQueue.write { block($0.asAnyWrite) }
         case .grdb(let grdbDatabaseQueue):
             grdbDatabaseQueue.write { block($0.asAnyWrite) }
+        }
+    }
+
+    // MARK: - Async Methods
+
+    @objc
+    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
+        asyncRead(block: block, completion: { })
+    }
+
+    @objc
+    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completion: @escaping () -> Void) {
+        asyncRead(block: block, completionQueue: .main, completion: completion)
+    }
+
+    @objc
+    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
+        DispatchQueue.global().async {
+            self.read(block: block)
+
+            completionQueue.async(execute: completion)
+        }
+    }
+
+    @objc
+    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        asyncWrite(block: block, completion: { })
+    }
+
+    @objc
+    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completion: @escaping () -> Void) {
+        asyncWrite(block: block, completionQueue: .main, completion: completion)
+    }
+
+    @objc
+    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
+        DispatchQueue.global().async {
+            self.write(block: block)
+
+            completionQueue.async(execute: completion)
         }
     }
 }

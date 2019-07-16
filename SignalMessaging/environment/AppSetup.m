@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
         ContactsUpdater *contactsUpdater = [ContactsUpdater new];
         OWSMessageSender *messageSender = [OWSMessageSender new];
         MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
-        OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithDatabaseStorage:databaseStorage];
         OWSMessageManager *messageManager = [OWSMessageManager new];
         OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
@@ -145,6 +145,12 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
 
         [OWS115GRDBMigration addWithKeyStore:OWSDatabaseMigration.keyValueStore label:@"OWSDatabaseMigration"];
+        [OWS115GRDBMigration addWithKeyStore:profileManager.whitelistedPhoneNumbersStore
+                                       label:@"OWSProfileManager.whitelistedPhoneNumbersStore"];
+        [OWS115GRDBMigration addWithKeyStore:profileManager.whitelistedUUIDsStore
+                                       label:@"OWSProfileManager.whitelistedUUIDsStore"];
+        [OWS115GRDBMigration addWithKeyStore:profileManager.whitelistedGroupsStore
+                                       label:@"OWSProfileManager.whitelistedGroupsStore"];
 
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             dispatch_async(dispatch_get_main_queue(), ^{

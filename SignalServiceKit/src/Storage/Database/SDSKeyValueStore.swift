@@ -194,8 +194,15 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    public func removeValue(forKey: String, transaction: SDSAnyWriteTransaction) {
-        write(nil, forKey: forKey, transaction: transaction)
+    public func removeValue(forKey key: String, transaction: SDSAnyWriteTransaction) {
+        write(nil, forKey: key, transaction: transaction)
+    }
+
+    @objc
+    public func removeValues(forKeys keys: [String], transaction: SDSAnyWriteTransaction) {
+        for key in keys {
+            write(nil, forKey: key, transaction: transaction)
+        }
     }
 
     @objc

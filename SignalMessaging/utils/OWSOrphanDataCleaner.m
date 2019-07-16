@@ -52,6 +52,15 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 @implementation OWSOrphanDataCleaner
 
+#pragma mark - Dependencies
+
++ (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
+}
+
+#pragma mark -
+
 + (SDSKeyValueStore *)keyValueStore
 {
     static SDSKeyValueStore *keyValueStore = nil;
@@ -292,7 +301,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [allOnDiskFilePaths unionSet:allStickerFilePaths];
     [allOnDiskFilePaths addObjectsFromArray:tempFilePaths];
 
-    NSSet<NSString *> *profileAvatarFilePaths = [OWSUserProfile allProfileAvatarFilePaths];
+    NSSet<NSString *> *profileAvatarFilePaths = [self.profileManager allProfileAvatarFilePaths];
 
     if (!self.isMainAppAndActive) {
         return nil;

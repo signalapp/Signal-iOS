@@ -14,7 +14,8 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 @class OWSAES256Key;
 @class OWSMessageSender;
-@class OWSPrimaryStorage;
+@class SDSDatabaseStorage;
+@class SDSKeyValueStore;
 @class SignalServiceAddress;
 @class TSNetworkManager;
 @class TSThread;
@@ -22,9 +23,13 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // This class can be safely accessed and used from any thread.
 @interface OWSProfileManager : NSObject <ProfileManagerProtocol>
 
+@property (nonatomic, readonly) SDSKeyValueStore *whitelistedPhoneNumbersStore;
+@property (nonatomic, readonly) SDSKeyValueStore *whitelistedUUIDsStore;
+@property (nonatomic, readonly) SDSKeyValueStore *whitelistedGroupsStore;
+
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
+- (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 
@@ -87,6 +92,10 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
                         fromViewController:(UIViewController *)fromViewController
                                    success:(void (^)(void))successHandler;
+
+#pragma mark - Clean Up
+
+- (NSSet<NSString *> *)allProfileAvatarFilePaths;
 
 @end
 
