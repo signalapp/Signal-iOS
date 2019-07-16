@@ -302,6 +302,9 @@
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Select";
 
+/* Label for the 'submit' button. */
+"BUTTON_SUBMIT" = "Submit";
+
 /* Label for button that lets users call a contact again. */
 "CALL_AGAIN_BUTTON_TITLE" = "Call Again";
 
@@ -1744,6 +1747,21 @@
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+
+/* The explanation for the 'pin reminder' dialog. */
+"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+
+/* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
+"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+
+/* Label indicating that the attempted PIN does not match the user's PIN */
+"PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
+
+/* The title for the 'pin reminder' dialog. */
+"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+
+/* Label indicating that the attempted PIN is too short */
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Play Media";

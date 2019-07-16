@@ -528,6 +528,7 @@
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
 		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
+		881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */; };
 		881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
@@ -1302,6 +1303,7 @@
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
+		881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinReminderViewController.swift; sourceTree = "<group>"; };
 		881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinSetupViewController.swift; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
 		8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.test.xcconfig"; sourceTree = "<group>"; };
@@ -1971,6 +1973,7 @@
 				345BC30A2047030600257B7C /* OWS2FASettingsViewController.h */,
 				345BC30B2047030600257B7C /* OWS2FASettingsViewController.m */,
 				881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */,
+				881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */,
 				34A6C27F21E503E600B5B12E /* OWSImagePickerController.swift */,
 				34BE2F5722A7371D002C94AC /* PdfViewController.swift */,
 				3434AE1B22AEDE7D002EE04E /* PerMessageExpirationViewController.swift */,
@@ -3654,6 +3657,7 @@
 				4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */,
 				45C9DEB81DF4E35A0065CA84 /* WebRTCCallMessageHandler.swift in Sources */,
 				34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */,
+				881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */,
 				3496957421A301A100DCFE74 /* OWSBackupAPI.swift in Sources */,
 				34D99C931F2937CC00D284D6 /* OWSAnalytics.swift in Sources */,
 				340FC8B8204DAC8D007AEB0F /* AddToGroupViewController.m in Sources */,

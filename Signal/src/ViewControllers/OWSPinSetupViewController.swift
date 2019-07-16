@@ -123,16 +123,24 @@ public class PinSetupViewController: OWSViewController {
         } else {
             // Back button
 
-            let backButton = UIButton()
-            let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-            backButton.setTemplateImage(backButtonImage, tintColor: Theme.secondaryColor)
-            backButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
-            backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
+            let topButton = UIButton()
 
-            let backButtonRow = UIView()
-            backButtonRow.addSubview(backButton)
-            backButton.autoPinEdge(toSuperviewEdge: .leading)
-            backButton.autoPinHeightToSuperview()
+            let topButtonImage: UIImage
+            // If we're on the first step of recreation, the top button is an X to dismiss
+            if case .recreating = mode {
+                topButtonImage = #imageLiteral(resourceName: "x-24")
+            } else {
+                topButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
+            }
+
+            topButton.setTemplateImage(topButtonImage, tintColor: Theme.secondaryColor)
+            topButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+            topButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
+
+            let topButtonRow = UIView()
+            topButtonRow.addSubview(topButton)
+            topButton.autoPinEdge(toSuperviewEdge: .leading)
+            topButton.autoPinHeightToSuperview()
 
             // Title
 
@@ -145,7 +153,7 @@ public class PinSetupViewController: OWSViewController {
 
             titleLabel = label
 
-            let row = UIStackView(arrangedSubviews: [backButtonRow, label, UIView.spacer(withHeight: 10)])
+            let row = UIStackView(arrangedSubviews: [topButtonRow, label, UIView.spacer(withHeight: 10)])
             row.axis = .vertical
             row.distribution = .fill
             topRow = row
@@ -289,7 +297,11 @@ public class PinSetupViewController: OWSViewController {
     @objc func navigateBack() {
         Logger.info("")
 
-        navigationController?.popViewController(animated: true)
+        if case .recreating = mode {
+            dismiss(animated: true, completion: nil)
+        } else {
+            navigationController?.popViewController(animated: true)
+        }
     }
 
     @objc func nextPressed() {
