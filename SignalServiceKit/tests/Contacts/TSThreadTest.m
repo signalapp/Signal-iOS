@@ -36,9 +36,11 @@
 {
     TSContactThread *thread = [[TSContactThread alloc]
         initWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"]];
-    [thread save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyInsertWithTransaction:transaction];
+    }];
 
-    [self readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
     }];
 
@@ -57,7 +59,9 @@
                             serverTimestamp:nil
                             wasReceivedByUD:NO
         perMessageExpirationDurationSeconds:0];
-    [incomingMessage save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [incomingMessage anyInsertWithTransaction:transaction];
+    }];
 
     TSOutgoingMessage *outgoingMessage =
         [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:20000
@@ -73,15 +77,19 @@
                                                         linkPreview:nil
                                                      messageSticker:nil
                                 perMessageExpirationDurationSeconds:0];
-    [outgoingMessage save];
-
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        XCTAssertEqual(2, [thread numberOfInteractionsWithTransaction:transaction.asAnyRead]);
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [outgoingMessage anyInsertWithTransaction:transaction];
     }];
 
-    [thread remove];
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction.asAnyRead]);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(2, [thread numberOfInteractionsWithTransaction:transaction]);
+    }];
+
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyRemoveWithTransaction:transaction];
+    }];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
     }];
     XCTAssertEqual(0, [TSInteraction numberOfKeysInCollection]);
 }
@@ -90,18 +98,20 @@
 {
     TSContactThread *thread = [[TSContactThread alloc]
         initWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"]];
-    [thread save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyInsertWithTransaction:transaction];
+    }];
 
     // Sanity check
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction.asAnyRead]);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
     }];
 
     __block TSAttachmentStream *incomingAttachment;
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         incomingAttachment = [AttachmentStreamFactory createWithContentType:OWSMimeTypeImageJpeg
                                                                  dataSource:DataSourceValue.emptyDataSource
-                                                                transaction:transaction.asAnyWrite];
+                                                                transaction:transaction];
     }];
 
     // Sanity check
@@ -124,13 +134,15 @@
                             serverTimestamp:nil
                             wasReceivedByUD:NO
         perMessageExpirationDurationSeconds:0];
-    [incomingMessage save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [incomingMessage anyInsertWithTransaction:transaction];
+    }];
 
     __block TSAttachmentStream *outgoingAttachment;
-    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         outgoingAttachment = [AttachmentStreamFactory createWithContentType:OWSMimeTypeImageJpeg
                                                                  dataSource:DataSourceValue.emptyDataSource
-                                                                transaction:transaction.asAnyWrite];
+                                                                transaction:transaction];
     }];
 
     // Sanity check
@@ -152,17 +164,22 @@
                                                         linkPreview:nil
                                                      messageSticker:nil
                                 perMessageExpirationDurationSeconds:0];
-    [outgoingMessage save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [outgoingMessage anyInsertWithTransaction:transaction];
+    }];
 
     // Sanity check
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        XCTAssertEqual(2, [thread numberOfInteractionsWithTransaction:transaction.asAnyRead]);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(2, [thread numberOfInteractionsWithTransaction:transaction]);
     }];
 
     // Actual Test Follows
-    [thread remove];
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction.asAnyRead]);
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyRemoveWithTransaction:transaction];
+    }];
+
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
     }];
 
     BOOL incomingFileStillExists =

@@ -190,9 +190,9 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     [SSKPreferences setHasSavedThread:YES transaction:transaction];
 }
 
-- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [super anyWillInsertWithTransaction:transaction];
+    [super anyWillRemoveWithTransaction:transaction];
 
     [self removeAllThreadInteractionsWithTransaction:transaction];
 }
@@ -279,18 +279,11 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 {
     NSError *error;
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
-    [interactionFinder
-        enumerateInteractionIdsObjcWithTransaction:transaction
-                                             error:&error
-                                             block:^(NSString *key, BOOL *stop) {
-                                                 TSInteraction *_Nullable interaction =
-                                                     [TSInteraction anyFetchWithUniqueId:key transaction:transaction];
-                                                 if (interaction == nil) {
-                                                     OWSFailDebug(@"Missing interaction for uniqueId: %@", key);
-                                                     return;
-                                                 }
-                                                 block(interaction);
-                                             }];
+    [interactionFinder enumerateInteractionsWithTransaction:transaction
+                                                      error:&error
+                                                      block:^(TSInteraction *interaction, BOOL *stop) {
+                                                          block(interaction);
+                                                      }];
     if (error != nil) {
         OWSFailDebug(@"Error during enumeration: %@", error);
     }
