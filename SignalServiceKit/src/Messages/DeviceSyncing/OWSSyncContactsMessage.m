@@ -91,7 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSMutableArray<SignalAccount *> *signalAccounts = [self.signalAccounts mutableCopy];
 
@@ -128,12 +128,11 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *conversationColorName;
 
         TSContactThread *_Nullable contactThread =
-            [TSContactThread getThreadWithContactAddress:signalAccount.recipientAddress
-                                             transaction:transaction.asAnyRead];
+            [TSContactThread getThreadWithContactAddress:signalAccount.recipientAddress transaction:transaction];
         if (contactThread) {
             conversationColorName = contactThread.conversationColorName;
             disappearingMessagesConfiguration =
-                [contactThread disappearingMessagesConfigurationWithTransaction:transaction.asAnyRead];
+                [contactThread disappearingMessagesConfigurationWithTransaction:transaction];
         } else {
             conversationColorName =
                 [TSThread stableColorNameForNewConversationWithString:signalAccount.recipientAddress.stringForDisplay];

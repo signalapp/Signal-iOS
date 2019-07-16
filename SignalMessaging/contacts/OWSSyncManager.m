@@ -162,7 +162,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         __block NSData *_Nullable messageData;
         __block NSData *_Nullable lastMessageData;
         [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
+            messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction.asAnyRead];
             lastMessageData = [transaction objectForKey:kSyncManagerLastContactSyncKey
                                            inCollection:kSyncManagerCollection];
         }];
@@ -281,7 +281,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         dataSource = [DataSourceValue
             dataSourceWithSyncMessageData:[syncContactsMessage
-                                              buildPlainTextAttachmentDataWithTransaction:transaction]];
+                                              buildPlainTextAttachmentDataWithTransaction:transaction.asAnyRead]];
     }];
 
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {

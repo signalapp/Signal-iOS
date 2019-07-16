@@ -956,8 +956,7 @@ NS_ASSUME_NONNULL_BEGIN
             });
         } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-            NSData *_Nullable syncData = [syncGroupsMessage
-                buildPlainTextAttachmentDataWithTransaction:transaction.transitional_yapReadTransaction];
+            NSData *_Nullable syncData = [syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
             if (!syncData) {
                 OWSFailDebug(@"Failed to serialize groups sync message.");
                 return;
