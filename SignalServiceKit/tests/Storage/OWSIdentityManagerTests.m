@@ -43,6 +43,9 @@ extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
     SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:@"test@gmail.com"];
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        __unused NSString *accountId = [[OWSAccountIdFinder new] ensureAccountIdForAddress:address
+                                                                               transaction:transaction];
+
         XCTAssert([self.identityManager isTrustedIdentityKey:newKey
                                                      address:address
                                                    direction:TSMessageDirectionOutgoing

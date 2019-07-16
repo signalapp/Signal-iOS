@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
 @property (nonatomic) StickerManager *stickerManager;
 @property (nonatomic) SDSDatabaseStorage *databaseStorage;
+@property (nonatomic) AccountServiceClient *accountServiceClient;
 
 @end
 

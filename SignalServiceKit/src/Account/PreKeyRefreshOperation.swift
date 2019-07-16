@@ -17,7 +17,7 @@ public class RefreshPreKeysOperation: OWSOperation {
     }
 
     private var accountServiceClient: AccountServiceClient {
-        return AccountServiceClient.shared
+        return SSKEnvironment.shared.accountServiceClient
     }
 
     private var signedPreKeyStore: SSKSignedPreKeyStore {

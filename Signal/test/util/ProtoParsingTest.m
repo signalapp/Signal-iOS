@@ -129,17 +129,21 @@ NS_ASSUME_NONNULL_BEGIN
         [[SignalAccount alloc]
             initWithSignalServiceAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13213214321"]],
         [[SignalAccount alloc]
-            initWithSignalServiceAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13213214322"]],
+            initWithSignalServiceAddress:[[SignalServiceAddress alloc]
+                                             initWithUuidString:@"31ce1412-9a28-4e6f-b4ee-a25c3179d085"]],
         [[SignalAccount alloc]
-            initWithSignalServiceAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13213214323"]],
+            initWithSignalServiceAddress:[[SignalServiceAddress alloc]
+                                             initWithUuidString:@"1d4ab045-88fb-4c4e-9f6a-f921124bd529"
+                                                    phoneNumber:@"+13213214323"]],
     ];
     NSData *_Nullable streamData = [self dataForSyncingContacts:signalAccounts];
     XCTAssertNotNil(streamData);
 
     XCTAssertEqualObjects(streamData.hexadecimalString,
-        @"2c0a0c2b31333231333231343332311209416c69636520426f62220f66616b6520636f6c6f72206e616d6540002c0a0c2b31333231333"
-        @"231343332321209416c69636520426f62220f66616b6520636f6c6f72206e616d6540002c0a0c2b31333231333231343332331209416c"
-        @"69636520426f62220f66616b6520636f6c6f72206e616d654000");
+        @"2e0a0c2b31333231333231343332311209416c69636520426f62220f66616b6520636f6c6f72206e616d6540004a00460a001209416c6"
+        @"9636520426f62220f66616b6520636f6c6f72206e616d6540004a2433314345313431322d394132382d344536462d423445452d413235"
+        @"433331373944303835520a0c2b31333231333231343332331209416c69636520426f62220f66616b6520636f6c6f72206e616d6540004"
+        @"a2431443441423034352d383846422d344334452d394636412d463932313132344244353239");
 }
 
 - (nullable NSData *)dataForSyncingContacts:(NSArray<SignalAccount *> *)signalAccounts

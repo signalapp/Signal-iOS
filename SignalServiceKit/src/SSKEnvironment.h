@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class AccountServiceClient;
 @class ContactsUpdater;
 @class MessageSenderJobQueue;
 @class OWS2FAManager;
@@ -77,6 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
                          stickerManager:(StickerManager *)stickerManager
                         databaseStorage:(SDSDatabaseStorage *)databaseStorage
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
+                   accountServiceClient:(AccountServiceClient *)accountServiceClient
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -120,6 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic, readonly) OWSAttachmentDownloads *attachmentDownloads;
 @property (nonatomic, readonly) SignalServiceAddressCache *signalServiceAddressCache;
+@property (nonatomic, readonly) AccountServiceClient *accountServiceClient;
 
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;

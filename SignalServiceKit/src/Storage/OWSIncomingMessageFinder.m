@@ -98,7 +98,6 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
         YapDatabaseQuery *query =
             [YapDatabaseQuery queryWithFormat:queryFormat, @(timestamp), @(sourceDeviceId), address.uuidString];
 
-        NSUInteger count;
         BOOL success = [[transaction ext:OWSIncomingMessageFinderExtensionName] getNumberOfRows:&count
                                                                                   matchingQuery:query];
         if (!success) {
@@ -117,7 +116,6 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
         YapDatabaseQuery *query =
             [YapDatabaseQuery queryWithFormat:queryFormat, @(timestamp), @(sourceDeviceId), address.phoneNumber];
 
-        NSUInteger count;
         BOOL success = [[transaction ext:OWSIncomingMessageFinderExtensionName] getNumberOfRows:&count
                                                                                   matchingQuery:query];
         if (!success) {
