@@ -556,6 +556,9 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
         while let interaction = try cursor.next() {
             var stop: ObjCBool = false
+            if interaction as? OWSReadTracking == nil {
+                owsFailDebug("Interaction has unexpected type: \(type(of: interaction))")
+            }
             block(interaction, &stop)
             if stop.boolValue {
                 return
