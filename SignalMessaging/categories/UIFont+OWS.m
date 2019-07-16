@@ -216,6 +216,19 @@ NS_ASSUME_NONNULL_BEGIN
     return font ?: self;
 }
 
+- (UIFont *)ows_semiBold
+{
+    // The recommended approach of deriving "semibold" weight fonts for dynamic
+    // type fonts is:
+    //
+    // [UIFontDescriptor fontDescriptorByAddingAttributes:...]
+    //
+    // But this doesn't seem to work in practice on iOS 11 using UIFontWeightSemibold.
+
+    UIFont *derivedFont = [UIFont systemFontOfSize:self.pointSize weight:UIFontWeightSemibold];
+    return derivedFont;
+}
+
 - (UIFont *)ows_mediumWeight
 {
     // The recommended approach of deriving "medium" weight fonts for dynamic

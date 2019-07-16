@@ -11,6 +11,8 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 
+@import SafariServices;
+
 @implementation AboutTableViewController
 
 - (void)dealloc
@@ -50,30 +52,36 @@
 {
     OWSTableContents *contents = [OWSTableContents new];
 
+    __weak AboutTableViewController *weakSelf = self;
+
     OWSTableSection *informationSection = [OWSTableSection new];
     informationSection.headerTitle = NSLocalizedString(@"SETTINGS_INFORMATION_HEADER", @"");
     [informationSection addItem:[OWSTableItem labelItemWithText:NSLocalizedString(@"SETTINGS_VERSION", @"")
                                                   accessoryText:[[[NSBundle mainBundle] infoDictionary]
                                                                     objectForKey:@"CFBundleVersion"]]];
 
-    [informationSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_LEGAL_TERMS_CELL",
-                                                                         @"table cell label")
-                                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"terms")
-                                                         actionBlock:^{
-                                                             [[UIApplication sharedApplication]
-                                                                 openURL:[NSURL URLWithString:kLegalTermsUrlString]];
-                                                         }]];
+    [informationSection
+        addItem:[OWSTableItem
+                     disclosureItemWithText:NSLocalizedString(@"SETTINGS_LEGAL_TERMS_CELL", @"table cell label")
+                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"terms")
+                                actionBlock:^{
+                                    SFSafariViewController *safariVC = [[SFSafariViewController alloc]
+                                        initWithURL:[NSURL URLWithString:kLegalTermsUrlString]];
+                                    [weakSelf presentViewController:safariVC animated:YES completion:nil];
+                                }]];
 
     [contents addSection:informationSection];
 
     OWSTableSection *helpSection = [OWSTableSection new];
     helpSection.headerTitle = NSLocalizedString(@"SETTINGS_HELP_HEADER", @"");
-    [helpSection addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_SUPPORT", @"")
-                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"support")
-                                                  actionBlock:^{
-                                                      [[UIApplication sharedApplication]
-                                                          openURL:[NSURL URLWithString:@"https://support.signal.org"]];
-                                                  }]];
+    [helpSection
+        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_SUPPORT", @"")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"support")
+                                         actionBlock:^{
+                                             SFSafariViewController *safariVC = [[SFSafariViewController alloc]
+                                                 initWithURL:[NSURL URLWithString:@"https://support.signal.org"]];
+                                             [weakSelf presentViewController:safariVC animated:YES completion:nil];
+                                         }]];
     [contents addSection:helpSection];
 
     UILabel *copyrightLabel = [UILabel new];

@@ -783,10 +783,15 @@ static NSTimeInterval launchStartedAt;
                     OWSLogDebug(@"Skipping 2FA reminder since there isn't yet an initial view controller");
                 } else {
                     UIViewController *rootViewController = self.window.rootViewController;
-                    OWSNavigationController *reminderNavController =
-                        [OWS2FAReminderViewController wrappedInNavController];
 
-                    [rootViewController presentViewController:reminderNavController animated:YES completion:nil];
+                    UIViewController *reminderVC;
+                    if (SSKFeatureFlags.pinsForEveryone) {
+                        reminderVC = [OWSPinReminderViewController new];
+                    } else {
+                        reminderVC = [OWS2FAReminderViewController wrappedInNavController];
+                    }
+
+                    [rootViewController presentViewController:reminderVC animated:YES completion:nil];
                 }
             }
         });

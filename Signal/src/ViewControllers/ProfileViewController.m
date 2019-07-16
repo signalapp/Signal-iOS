@@ -21,6 +21,8 @@
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 
+@import SafariServices;
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, ProfileViewMode) {
@@ -447,7 +449,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
             [self.navigationController popViewControllerAnimated:YES];
             break;
         case ProfileViewMode_Registration:
-            [self showHomeView];
+            [self showPinCreation];
             break;
     }
 }
@@ -458,6 +460,24 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     OWSLogVerbose(@"");
 
     [SignalApp.sharedApp showHomeView];
+}
+
+- (void)showPinCreation
+{
+    OWSAssertIsOnMainThread();
+    OWSLogVerbose(@"");
+
+    // If the user already has a pin, or the pins for all feature is disabled, just go home
+    if ([OWS2FAManager sharedManager].is2FAEnabled || !SSKFeatureFlags.pinsForEveryone) {
+        return [self showHomeView];
+    }
+
+    __weak ProfileViewController *weakSelf = self;
+    OWSPinSetupViewController *vc = [[OWSPinSetupViewController alloc] initWithCompletionHandler:^{
+        [weakSelf showHomeView];
+    }];
+
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark - UITextFieldDelegate
@@ -528,8 +548,9 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 - (void)infoRowTapped:(UIGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
-        [UIApplication.sharedApplication
-            openURL:[NSURL URLWithString:@"https://support.signal.org/hc/en-us/articles/115001110511"]];
+        SFSafariViewController *safariVC = [[SFSafariViewController alloc]
+            initWithURL:[NSURL URLWithString:@"https://support.signal.org/hc/en-us/articles/115001110511"]];
+        [self presentViewController:safariVC animated:YES completion:nil];
     }
 }
 

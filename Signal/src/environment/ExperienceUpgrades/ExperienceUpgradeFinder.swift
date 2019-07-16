@@ -7,6 +7,7 @@ import SignalServiceKit
 
 enum ExperienceUpgradeId: String {
     case introducingStickers = "008"
+    case introducingPins = "009"
 }
 
 @objc public class ExperienceUpgradeFinder: NSObject {
@@ -26,15 +27,24 @@ enum ExperienceUpgradeId: String {
         return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingStickers.rawValue)
     }
 
+    var pins: ExperienceUpgrade {
+        return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingPins.rawValue)
+    }
+
     // Keep these ordered by increasing uniqueId.
     @objc
     public var allExperienceUpgrades: [ExperienceUpgrade] {
-        guard FeatureFlags.stickerSend else {
-            return []
+        var upgrades = [ExperienceUpgrade]()
+
+        if FeatureFlags.stickerSend {
+            upgrades.append(stickers)
         }
-        return [
-            stickers
-        ].compactMap { $0 }
+
+        if FeatureFlags.pinsForEveryone {
+            upgrades.append(pins)
+        }
+
+        return upgrades
     }
 
     // MARK: - Instance Methods
