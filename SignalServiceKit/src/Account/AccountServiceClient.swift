@@ -13,10 +13,8 @@ public enum AccountServiceClientError: Error {
 }
 
 /// based on libsignal-service-java's AccountManager class
-@objc(SSKAccountServiceClient)
+@objc
 public class AccountServiceClient: NSObject {
-
-    public static var shared = AccountServiceClient()
 
     private let serviceClient: SignalServiceClient
 

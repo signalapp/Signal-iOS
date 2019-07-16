@@ -91,6 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
         StickerManager *stickerManager = [[StickerManager alloc] init];
         SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
+        AccountServiceClient *accountServiceClient = [AccountServiceClient new];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
@@ -134,7 +135,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                               attachmentDownloads:attachmentDownloads
                                                                    stickerManager:stickerManager
                                                                   databaseStorage:databaseStorage
-                                                        signalServiceAddressCache:signalServiceAddressCache]];
+                                                        signalServiceAddressCache:signalServiceAddressCache
+                                                             accountServiceClient:accountServiceClient]];
 
         appSpecificSingletonBlock();
 

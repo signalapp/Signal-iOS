@@ -32,7 +32,7 @@ public class AccountManager: NSObject {
     }
 
     private var accountServiceClient: AccountServiceClient {
-        return AccountServiceClient.shared
+        return SSKEnvironment.shared.accountServiceClient
     }
 
     var pushRegistrationManager: PushRegistrationManager {
