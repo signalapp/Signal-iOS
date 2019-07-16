@@ -5,8 +5,6 @@
 #import "TSCall.h"
 #import "TSContactThread.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseConnection.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -39,6 +37,8 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 @property (nonatomic, getter=wasRead) BOOL read;
 
 @property (nonatomic, readonly) NSUInteger callSchemaVersion;
+
+@property (nonatomic) RPRecentCallType callType;
 
 @end
 
@@ -191,12 +191,12 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (void)updateCallType:(RPRecentCallType)callType
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self updateCallType:callType transaction:transaction];
     }];
 }
 
-- (void)updateCallType:(RPRecentCallType)callType transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)updateCallType:(RPRecentCallType)callType transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -206,9 +206,10 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
         self.uniqueId,
         self.timestamp);
 
-    _callType = callType;
-
-    [self saveWithTransaction:transaction];
+    [self anyUpdateCallWithTransaction:transaction
+                                 block:^(TSCall *call) {
+                                     self.callType = callType;
+                                 }];
 }
 
 @end

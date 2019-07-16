@@ -66,7 +66,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
         enumerateMessagesWithTimestamp:timestamp
                              withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
                                  TSInteraction *interaction =
-                                     [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
+                                     [TSInteraction anyFetchWithUniqueId:key transaction:transaction.asAnyRead];
                                  if (!filter(interaction)) {
                                      return;
                                  }
@@ -194,25 +194,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return [TSThread anyFetchWithUniqueId:self.uniqueThreadId transaction:transaction];
 }
 
-- (void)touchThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [self.databaseStorage touchThreadId:self.uniqueThreadId transaction:transaction];
-}
-
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidInsertWithTransaction:transaction];
-
-    [self touchThreadWithTransaction:transaction];
-}
-
-- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidUpdateWithTransaction:transaction];
-
-    [self touchThreadWithTransaction:transaction];
-}
-
 #pragma mark Date operations
 
 - (uint64_t)timestampForLegacySorting
@@ -261,7 +242,36 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                      (unsigned long)self.timestamp];
 }
 
+// GRDB TODO: Remove.
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [self ensureIdsWithTransaction:transaction];
+
+    [super saveWithTransaction:transaction];
+
+    [self updateLastMessageWithTransaction:transaction.asAnyWrite];
+}
+
+// GRDB TODO: Remove.
+- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    [super removeWithTransaction:transaction];
+
+    [self touchThreadWithTransaction:transaction.asAnyWrite];
+}
+
+#pragma mark - Any Transaction Hooks
+
+- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (transaction.transitional_yapWriteTransaction != nil) {
+        [self ensureIdsWithTransaction:transaction.transitional_yapWriteTransaction];
+    }
+
+    [super anyWillInsertWithTransaction:transaction];
+}
+
+- (void)ensureIdsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     if (!self.uniqueId) {
         OWSFailDebug(@"Missing uniqueId.");
@@ -270,20 +280,58 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     if (self.sortId == 0) {
         self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection] transaction:transaction];
     }
-
-    [super saveWithTransaction:transaction];
-
-    TSThread *fetchedThread = [self threadWithTransaction:transaction.asAnyRead];
-
-    [fetchedThread updateWithLastMessage:self transaction:transaction.asAnyWrite];
 }
 
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    [super removeWithTransaction:transaction];
+    [super anyDidInsertWithTransaction:transaction];
 
-    [self touchThreadWithTransaction:transaction.asAnyWrite];
+    // GRDB TODO: Remove this condition once we migrate interaction writes to use
+    //            any transactions.  We just don't want to do this work twice.
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        [self updateLastMessageWithTransaction:transaction];
+
+        [self touchThreadWithTransaction:transaction];
+    }
 }
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
+    // GRDB TODO: Remove this condition once we migrate interaction writes to use
+    //            any transactions.  We just don't want to do this work twice.
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        [self updateLastMessageWithTransaction:transaction];
+
+        [self touchThreadWithTransaction:transaction];
+    }
+}
+
+- (void)touchThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.databaseStorage touchThreadId:self.uniqueThreadId transaction:transaction];
+}
+
+- (void)updateLastMessageWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    TSThread *fetchedThread = [self threadWithTransaction:transaction];
+
+    [fetchedThread updateWithLastMessage:self transaction:transaction];
+}
+
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidRemoveWithTransaction:transaction];
+
+    // GRDB TODO: Remove this condition once we migrate interaction writes to use
+    //            any transactions.  We just don't want to do this work twice.
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        [self touchThreadWithTransaction:transaction];
+    }
+}
+
+#pragma mark -
 
 - (BOOL)isDynamicInteraction
 {

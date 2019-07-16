@@ -27,6 +27,8 @@ protocol InteractionFinderAdapter {
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
+
+    static func incompleteCallIds(transaction: ReadTransaction) -> [String]
 }
 
 // MARK: -
@@ -197,6 +199,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
                                                                  transaction: grdbRead)
         }
     }
+
+    @objc
+    public class func incompleteCallIds(transaction: SDSAnyReadTransaction) -> [String] {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return YAPDBInteractionFinderAdapter.incompleteCallIds(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinderAdapter.incompleteCallIds(transaction: grdbRead)
+        }
+    }
 }
 
 // MARK: -
@@ -358,6 +370,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return interaction
     }
 
+    static func incompleteCallIds(transaction: YapDatabaseReadTransaction) -> [String] {
+        return OWSIncompleteCallsJob.ydb_incompleteCallIds(with: transaction)
+    }
+
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: YapDatabaseReadTransaction) throws -> [TSInteraction] {
         return TSInteraction.ydb_interactions(withTimestamp: timestamp,
                                               filter: filter,
@@ -473,7 +489,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 AND \(interactionColumn: .messageType) IS NOT ?
                 ORDER BY \(interactionColumn: .id) DESC
                 """
-        let arguments: StatementArguments = [threadUniqueId, TSErrorMessageType.nonBlockingIdentityChange, TSInfoMessageType.verificationStateChange]
+        let arguments: StatementArguments = [threadUniqueId, TSErrorMessageType.nonBlockingIdentityChange.rawValue, TSInfoMessageType.verificationStateChange.rawValue]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 
@@ -599,6 +615,33 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
         let unfiltered = try TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction).all()
         return unfiltered.filter(filter)
+    }
+
+    static func incompleteCallIds(transaction: ReadTransaction) -> [String] {
+        let sql: String = """
+        SELECT \(interactionColumn: .uniqueId)
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .recordType) = ?
+        AND ( \(interactionColumn: .callType) = ?
+        OR \(interactionColumn: .callType) = ? )
+        """
+        let statementArguments: StatementArguments = [
+            SDSRecordType.call.rawValue,
+            RPRecentCallType.outgoingIncomplete.rawValue,
+            RPRecentCallType.incomingIncomplete.rawValue
+        ]
+        var result = [String]()
+        do {
+            let cursor = try String.fetchCursor(transaction.database,
+                                                sql: sql,
+                                                arguments: statementArguments)
+            while let uniqueId = try cursor.next() {
+                result.append(uniqueId)
+            }
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+        return result
     }
 }
 
