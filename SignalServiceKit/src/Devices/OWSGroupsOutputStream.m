@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSGroupsOutputStream
 
-- (void)writeGroup:(TSGroupThread *)groupThread transaction:(YapDatabaseReadTransaction *)transaction
+- (void)writeGroup:(TSGroupThread *)groupThread transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(groupThread);
     OWSAssertDebug(transaction);
@@ -76,8 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSDisappearingMessagesConfiguration *_Nullable disappearingMessagesConfiguration =
-        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:groupThread.uniqueId
-                                                       transaction:transaction.asAnyRead];
+        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:groupThread.uniqueId transaction:transaction];
 
     if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
         [groupBuilder setExpireTimer:disappearingMessagesConfiguration.durationSeconds];

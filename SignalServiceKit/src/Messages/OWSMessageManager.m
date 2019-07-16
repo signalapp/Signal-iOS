@@ -956,8 +956,7 @@ NS_ASSUME_NONNULL_BEGIN
             });
         } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeGroups) {
             OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
-            NSData *_Nullable syncData = [syncGroupsMessage
-                buildPlainTextAttachmentDataWithTransaction:transaction.transitional_yapReadTransaction];
+            NSData *_Nullable syncData = [syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
             if (!syncData) {
                 OWSFailDebug(@"Failed to serialize groups sync message.");
                 return;
@@ -1199,8 +1198,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *updateGroupInfo =
         [gThread.groupModel getInfoStringAboutUpdateTo:gThread.groupModel contactsManager:self.contactsManager];
 
-    uint32_t expiresInSeconds =
-        [gThread disappearingMessagesDurationWithTransaction:transaction.transitional_yapWriteTransaction];
+    uint32_t expiresInSeconds = [gThread disappearingMessagesDurationWithTransaction:transaction];
     TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:gThread
                                                            groupMetaMessage:TSGroupMetaMessageUpdate
                                                            expiresInSeconds:expiresInSeconds];

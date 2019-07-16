@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
-@class YapDatabaseReadWriteTransaction;
 
 extern NSString *const TSGroupThreadAvatarChangedNotification;
 extern NSString *const TSGroupThread_NotificationKey_UniqueId;

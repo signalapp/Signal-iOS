@@ -112,7 +112,8 @@ NS_ASSUME_NONNULL_BEGIN
     __block DataSource *dataSource;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         dataSource = [DataSourceValue
-            dataSourceWithSyncMessageData:[syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction]];
+            dataSourceWithSyncMessageData:[syncGroupsMessage
+                                              buildPlainTextAttachmentDataWithTransaction:transaction.asAnyRead]];
     }];
 
     [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage

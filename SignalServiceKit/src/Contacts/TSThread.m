@@ -5,11 +5,9 @@
 #import "TSThread.h"
 #import "NSString+SSK.h"
 #import "OWSDisappearingMessagesConfiguration.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSReadTracking.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
-#import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
 #import "TSInfoMessage.h"
 #import "TSInteraction.h"
@@ -18,7 +16,6 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -205,7 +202,6 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     // We don't want to instantiate the interactions when collecting them
     // or when deleting them.
     NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
-    __block BOOL didDetectCorruption = NO;
     NSError *error;
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
     [interactionFinder enumerateInteractionIdsObjcWithTransaction:transaction
@@ -215,10 +211,6 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                                                             }];
     if (error != nil) {
         OWSFailDebug(@"Error during enumeration: %@", error);
-    }
-    if (didDetectCorruption) {
-        OWSLogWarn(@"incrementing version of: %@", TSMessageDatabaseViewExtensionName);
-        [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
     }
 
     for (NSString *interactionId in interactionIds) {
@@ -344,28 +336,32 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] countWithTransaction:transaction];
 }
 
-- (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSMutableArray<id<OWSReadTracking>> *messages = [NSMutableArray new];
-    [[TSDatabaseView unseenDatabaseViewExtension:transaction]
-        enumerateKeysAndObjectsInGroup:self.uniqueId
-                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                                    OWSFailDebug(@"Unexpected object in unseen messages: %@", [object class]);
-                                    return;
-                                }
-                                [messages addObject:(id<OWSReadTracking>)object];
-                            }];
-
+    NSError *error;
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
+    [interactionFinder
+        enumerateUnseenInteractionsWithTransaction:transaction
+                                             error:&error
+                                             block:^(TSInteraction *interaction, BOOL *stop) {
+                                                 if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {
+                                                     OWSFailDebug(@"Unexpected object in unseen messages: %@",
+                                                         interaction.class);
+                                                     return;
+                                                 }
+                                                 [messages addObject:(id<OWSReadTracking>)interaction];
+                                             }];
+    if (error != nil) {
+        OWSFailDebug(@"Error during enumeration: %@", error);
+    }
     return [messages copy];
 }
 
-- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)markAllAsReadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
-        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
-                       sendReadReceipt:YES
-                           transaction:transaction.asAnyWrite];
+        [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp] sendReadReceipt:YES transaction:transaction];
     }
 
     // Just to be defensive, we'll also check for unread messages.
@@ -445,13 +441,12 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 #pragma mark - Disappearing Messages
 
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
-    (YapDatabaseReadTransaction *)transaction
+    (SDSAnyReadTransaction *)transaction
 {
-    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId
-                                                                     transaction:transaction.asAnyRead];
+    return [OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThreadId:self.uniqueId transaction:transaction];
 }
 
-- (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (uint32_t)disappearingMessagesDurationWithTransaction:(SDSAnyReadTransaction *)transaction
 {
 
     OWSDisappearingMessagesConfiguration *config = [self disappearingMessagesConfigurationWithTransaction:transaction];
@@ -465,15 +460,13 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 
 #pragma mark - Archival
 
-- (BOOL)isArchivedWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (BOOL)isArchivedWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (!self.archivedAsOfMessageSortId) {
         return NO;
     }
 
-    TSInteraction *_Nullable latestInteraction =
-        [self lastInteractionForInboxWithTransaction:[[SDSAnyReadTransaction alloc]
-                                                         initWithTransitional_yapReadTransaction:transaction]];
+    TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
     uint64_t latestSortIdForInbox = latestInteraction ? latestInteraction.sortId : 0;
     return self.archivedAsOfMessageSortId.unsignedLongLongValue >= latestSortIdForInbox;
 }
@@ -500,9 +493,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
                                  thread.archivedAsOfMessageSortId = @(latestId);
                              }];
 
-    if (transaction.transitional_yapWriteTransaction) {
-        [self markAllAsReadWithTransaction:transaction.transitional_yapWriteTransaction];
-    }
+    [self markAllAsReadWithTransaction:transaction];
 }
 
 - (void)unarchiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction

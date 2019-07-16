@@ -227,7 +227,7 @@ void AssertIsOnDisappearingMessagesQueue()
     // Become eventually consistent in the case that the remote changed their settings at the same time.
     // Also in case remote doesn't support expiring messages
     OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-        [thread disappearingMessagesConfigurationWithTransaction:transaction.transitional_yapReadTransaction];
+        [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
     if (duration == 0) {
         disappearingMessagesConfiguration.enabled = NO;

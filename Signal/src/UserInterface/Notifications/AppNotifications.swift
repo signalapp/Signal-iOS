@@ -705,7 +705,7 @@ class NotificationActionHandler {
 
     private func markAsRead(thread: TSThread) -> Promise<Void> {
         return dbConnection.readWritePromise { transaction in
-            thread.markAllAsRead(with: transaction)
+            thread.markAllAsRead(with: transaction.asAnyWrite)
         }
     }
 }

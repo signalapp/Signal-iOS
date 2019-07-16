@@ -109,7 +109,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 - (BOOL)hasSafetyNumbers;
 
-- (void)markAllAsReadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)markAllAsReadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 /**
  *  Returns the string that will be displayed typically in a conversations view as a preview of the last message
@@ -136,7 +136,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 /**
  * @return YES if no new messages have been sent or received since the thread was last archived.
  */
-- (BOOL)isArchivedWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (BOOL)isArchivedWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  *  Archives a thread
@@ -158,8 +158,8 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 #pragma mark Disappearing Messages
 
 - (OWSDisappearingMessagesConfiguration *)disappearingMessagesConfigurationWithTransaction:
-    (YapDatabaseReadTransaction *)transaction;
-- (uint32_t)disappearingMessagesDurationWithTransaction:(YapDatabaseReadTransaction *)transaction;
+    (SDSAnyReadTransaction *)transaction;
+- (uint32_t)disappearingMessagesDurationWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark Drafts
 

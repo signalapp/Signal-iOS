@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
     return syncMessageBuilder;
 }
 
-- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextAttachmentDataWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     // TODO use temp file stream to avoid loading everything into memory at once
     // First though, we need to re-engineer our attachment process to accept streams (encrypting with stream,
@@ -66,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSGroupsOutputStream *groupsOutputStream = [[OWSGroupsOutputStream alloc] initWithOutputStream:dataOutputStream];
 
     [TSGroupThread
-        anyEnumerateWithTransaction:transaction.asAnyRead
+        anyEnumerateWithTransaction:transaction
                               block:^(TSThread *thread, BOOL *stop) {
                                   if (![thread isKindOfClass:[TSGroupThread class]]) {
                                       if (![thread isKindOfClass:[TSContactThread class]]) {
