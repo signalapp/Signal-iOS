@@ -662,16 +662,10 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                 return;
             }
             TSAttachmentStream *latestInstance = (TSAttachmentStream *)attachment;
-            [latestInstance
-                anyUpdateWithTransaction:transaction
-                                   block:^(TSAttachment *attachment) {
-                                       if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                                           OWSFailDebug(@"Object has unexpected type: %@.", [attachment class]);
-                                           return;
-                                       }
-                                       TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
-                                       changeBlock(attachmentStream);
-                                   }];
+            [latestInstance anyUpdateAttachmentStreamWithTransaction:transaction
+                                                               block:^(TSAttachmentStream *attachmentStream) {
+                                                                   changeBlock(attachmentStream);
+                                                               }];
         }];
 
         if (completion != nil) {

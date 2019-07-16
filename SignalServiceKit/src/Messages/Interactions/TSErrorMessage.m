@@ -293,15 +293,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
     OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 if (![interaction isKindOfClass:[TSErrorMessage class]]) {
-                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
-                                     return;
-                                 }
-                                 TSErrorMessage *message = (TSErrorMessage *)interaction;
-                                 message.read = YES;
-                             }];
+    [self anyUpdateErrorMessageWithTransaction:transaction
+                                         block:^(TSErrorMessage *message) {
+                                             message.read = YES;
+                                         }];
 
     // Ignore sendReadReceipt - it doesn't apply to error messages.
 }

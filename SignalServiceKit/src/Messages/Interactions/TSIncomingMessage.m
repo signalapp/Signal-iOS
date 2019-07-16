@@ -242,15 +242,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         self.timestamp,
         secondsAgoRead);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 if (![interaction isKindOfClass:[TSIncomingMessage class]]) {
-                                     OWSFailDebug(@"Object has unexpected type: %@", [interaction class]);
-                                     return;
-                                 }
-                                 TSIncomingMessage *message = (TSIncomingMessage *)interaction;
-                                 message.read = YES;
-                             }];
+    [self anyUpdateIncomingMessageWithTransaction:transaction
+                                            block:^(TSIncomingMessage *message) {
+                                                message.read = YES;
+                                            }];
 
     [transaction addCompletionWithBlock:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kIncomingMessageMarkedAsReadNotification
