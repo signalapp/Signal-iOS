@@ -41,14 +41,14 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `type`. Subsequent reads from it will return its default value.
   mutating func clearType() {self._type = nil}
 
-  var source: String {
-    get {return _source ?? String()}
-    set {_source = newValue}
+  var sourceE164: String {
+    get {return _sourceE164 ?? String()}
+    set {_sourceE164 = newValue}
   }
-  /// Returns true if `source` has been explicitly set.
-  var hasSource: Bool {return self._source != nil}
-  /// Clears the value of `source`. Subsequent reads from it will return its default value.
-  mutating func clearSource() {self._source = nil}
+  /// Returns true if `sourceE164` has been explicitly set.
+  var hasSourceE164: Bool {return self._sourceE164 != nil}
+  /// Clears the value of `sourceE164`. Subsequent reads from it will return its default value.
+  mutating func clearSourceE164() {self._sourceE164 = nil}
 
   var sourceDevice: UInt32 {
     get {return _sourceDevice ?? 0}
@@ -118,6 +118,15 @@ struct SignalServiceProtos_Envelope {
   /// Clears the value of `serverTimestamp`. Subsequent reads from it will return its default value.
   mutating func clearServerTimestamp() {self._serverTimestamp = nil}
 
+  var sourceUuid: String {
+    get {return _sourceUuid ?? String()}
+    set {_sourceUuid = newValue}
+  }
+  /// Returns true if `sourceUuid` has been explicitly set.
+  var hasSourceUuid: Bool {return self._sourceUuid != nil}
+  /// Clears the value of `sourceUuid`. Subsequent reads from it will return its default value.
+  mutating func clearSourceUuid() {self._sourceUuid = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum TypeEnum: SwiftProtobuf.Enum {
@@ -161,7 +170,7 @@ struct SignalServiceProtos_Envelope {
   init() {}
 
   fileprivate var _type: SignalServiceProtos_Envelope.TypeEnum? = nil
-  fileprivate var _source: String? = nil
+  fileprivate var _sourceE164: String? = nil
   fileprivate var _sourceDevice: UInt32? = nil
   fileprivate var _relay: String? = nil
   fileprivate var _timestamp: UInt64? = nil
@@ -169,6 +178,7 @@ struct SignalServiceProtos_Envelope {
   fileprivate var _content: Data? = nil
   fileprivate var _serverGuid: String? = nil
   fileprivate var _serverTimestamp: UInt64? = nil
+  fileprivate var _sourceUuid: String? = nil
 }
 
 #if swift(>=4.2)
@@ -2613,7 +2623,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
   static let protoMessageName: String = _protobuf_package + ".Envelope"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "type"),
-    2: .same(proto: "source"),
+    2: .same(proto: "sourceE164"),
     7: .same(proto: "sourceDevice"),
     3: .same(proto: "relay"),
     5: .same(proto: "timestamp"),
@@ -2621,13 +2631,14 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     8: .same(proto: "content"),
     9: .same(proto: "serverGuid"),
     10: .same(proto: "serverTimestamp"),
+    11: .same(proto: "sourceUuid"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularEnumField(value: &self._type)
-      case 2: try decoder.decodeSingularStringField(value: &self._source)
+      case 2: try decoder.decodeSingularStringField(value: &self._sourceE164)
       case 3: try decoder.decodeSingularStringField(value: &self._relay)
       case 5: try decoder.decodeSingularUInt64Field(value: &self._timestamp)
       case 6: try decoder.decodeSingularBytesField(value: &self._legacyMessage)
@@ -2635,6 +2646,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
       case 8: try decoder.decodeSingularBytesField(value: &self._content)
       case 9: try decoder.decodeSingularStringField(value: &self._serverGuid)
       case 10: try decoder.decodeSingularUInt64Field(value: &self._serverTimestamp)
+      case 11: try decoder.decodeSingularStringField(value: &self._sourceUuid)
       default: break
       }
     }
@@ -2644,7 +2656,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if let v = self._type {
       try visitor.visitSingularEnumField(value: v, fieldNumber: 1)
     }
-    if let v = self._source {
+    if let v = self._sourceE164 {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
     if let v = self._relay {
@@ -2668,12 +2680,15 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if let v = self._serverTimestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 10)
     }
+    if let v = self._sourceUuid {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 11)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_Envelope, rhs: SignalServiceProtos_Envelope) -> Bool {
     if lhs._type != rhs._type {return false}
-    if lhs._source != rhs._source {return false}
+    if lhs._sourceE164 != rhs._sourceE164 {return false}
     if lhs._sourceDevice != rhs._sourceDevice {return false}
     if lhs._relay != rhs._relay {return false}
     if lhs._timestamp != rhs._timestamp {return false}
@@ -2681,6 +2696,7 @@ extension SignalServiceProtos_Envelope: SwiftProtobuf.Message, SwiftProtobuf._Me
     if lhs._content != rhs._content {return false}
     if lhs._serverGuid != rhs._serverGuid {return false}
     if lhs._serverTimestamp != rhs._serverTimestamp {return false}
+    if lhs._sourceUuid != rhs._sourceUuid {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

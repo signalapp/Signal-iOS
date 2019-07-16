@@ -6,7 +6,7 @@
 public class NoopNotificationsManager: NSObject, NotificationsProtocol {
 
     public func notifyUser(for incomingMessage: TSIncomingMessage, in thread: TSThread, transaction: SDSAnyReadTransaction) {
-        owsFailDebug("")
+        Logger.warn("skipping notification for: \(incomingMessage.description)")
     }
 
     public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {

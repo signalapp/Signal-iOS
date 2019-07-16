@@ -60,8 +60,8 @@ public enum SSKProtoError: Error {
         if let _value = type {
             builder.setType(_value)
         }
-        if let _value = source {
-            builder.setSource(_value)
+        if let _value = sourceE164 {
+            builder.setSourceE164(_value)
         }
         if hasSourceDevice {
             builder.setSourceDevice(sourceDevice)
@@ -80,6 +80,9 @@ public enum SSKProtoError: Error {
         }
         if hasServerTimestamp {
             builder.setServerTimestamp(serverTimestamp)
+        }
+        if let _value = sourceUuid {
+            builder.setSourceUuid(_value)
         }
         return builder
     }
@@ -100,8 +103,8 @@ public enum SSKProtoError: Error {
             proto.type = SSKProtoEnvelopeTypeUnwrap(valueParam)
         }
 
-        @objc public func setSource(_ valueParam: String) {
-            proto.source = valueParam
+        @objc public func setSourceE164(_ valueParam: String) {
+            proto.sourceE164 = valueParam
         }
 
         @objc public func setSourceDevice(_ valueParam: UInt32) {
@@ -130,6 +133,10 @@ public enum SSKProtoError: Error {
 
         @objc public func setServerTimestamp(_ valueParam: UInt64) {
             proto.serverTimestamp = valueParam
+        }
+
+        @objc public func setSourceUuid(_ valueParam: String) {
+            proto.sourceUuid = valueParam
         }
 
         @objc public func build() throws -> SSKProtoEnvelope {
@@ -163,14 +170,14 @@ public enum SSKProtoError: Error {
         return proto.hasType
     }
 
-    @objc public var source: String? {
-        guard proto.hasSource else {
+    @objc public var sourceE164: String? {
+        guard proto.hasSourceE164 else {
             return nil
         }
-        return proto.source
+        return proto.sourceE164
     }
-    @objc public var hasSource: Bool {
-        return proto.hasSource
+    @objc public var hasSourceE164: Bool {
+        return proto.hasSourceE164
     }
 
     @objc public var sourceDevice: UInt32 {
@@ -225,6 +232,16 @@ public enum SSKProtoError: Error {
     }
     @objc public var hasServerTimestamp: Bool {
         return proto.hasServerTimestamp
+    }
+
+    @objc public var sourceUuid: String? {
+        guard proto.hasSourceUuid else {
+            return nil
+        }
+        return proto.sourceUuid
+    }
+    @objc public var hasSourceUuid: Bool {
+        return proto.hasSourceUuid
     }
 
     private init(proto: SignalServiceProtos_Envelope,

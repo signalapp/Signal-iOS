@@ -70,4 +70,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let registrationLockV2 = false
+
+    @objc
+    public static let contactUUID = false
 }

@@ -25,7 +25,7 @@ message Envelope {
   }
 
   optional Type   type            = 1;
-  optional string source          = 2;
+  optional string sourceE164      = 2;
   optional uint32 sourceDevice    = 7;
   optional string relay           = 3;
   // @required
@@ -36,6 +36,7 @@ message Envelope {
   optional string serverGuid      = 9;
   // We may eventually want to make this required.
   optional uint64 serverTimestamp = 10;
+  optional string sourceUuid      = 11;
 }
 
 message TypingMessage {
