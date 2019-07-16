@@ -30,7 +30,7 @@ public class PerMessageExpiration: NSObject {
     // MARK: - Constants
 
     @objc
-    public static let kExpirationDurationSeconds: UInt32 = 10
+    public static let kExpirationDurationSeconds: UInt32 = 5
 
     // MARK: -
 
