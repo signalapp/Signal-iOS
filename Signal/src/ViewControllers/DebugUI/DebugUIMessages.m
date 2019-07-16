@@ -3972,14 +3972,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                            groupId:groupId];
 
     __block TSGroupThread *thread;
-    [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if (!transaction.transitional_yapWriteTransaction) {
             OWSFailDebug(@"failure: not yet implemented for GRDB");
             return;
         }
 
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel
-                                                    transaction:transaction.transitional_yapWriteTransaction];
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
         OWSAssertDebug(thread);
 
         TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
@@ -4484,15 +4483,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                        members:recipientAddresses
                                                                          image:nil
                                                                        groupId:groupId];
-
-                if (transaction.transitional_yapWriteTransaction) {
-                    TSGroupThread *groupThread =
-                        [TSGroupThread getOrCreateThreadWithGroupModel:groupModel
-                                                           transaction:transaction.transitional_yapWriteTransaction];
-                    OWSAssertDebug(groupThread);
-                } else {
-                    OWSFailDebug(@"failure: not yet implemented for GRDB");
-                }
+                TSGroupThread *groupThread =
+                    [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                OWSAssertDebug(groupThread);
             }
         }
     }];
@@ -4532,15 +4525,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                        members:recipientAddresses
                                                                          image:nil
                                                                        groupId:groupId];
-
-                if (transaction.transitional_yapWriteTransaction) {
-                    TSGroupThread *groupThread =
-                        [TSGroupThread getOrCreateThreadWithGroupModel:groupModel
-                                                           transaction:transaction.transitional_yapWriteTransaction];
-                    OWSAssertDebug(groupThread);
-                } else {
-                    OWSFailDebug(@"failure: not yet implemented for GRDB");
-                }
+                TSGroupThread *groupThread =
+                    [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                OWSAssertDebug(groupThread);
             }
         }
     }];
@@ -4579,15 +4566,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                            members:recipientAddresses
                                                                              image:nil
                                                                            groupId:groupId];
-
-                    if (transaction.transitional_yapWriteTransaction) {
-                        TSGroupThread *groupThread = [TSGroupThread
-                            getOrCreateThreadWithGroupModel:groupModel
-                                                transaction:transaction.transitional_yapWriteTransaction];
-                        OWSAssertDebug(groupThread);
-                    } else {
-                        OWSFailDebug(@"failure: not yet implemented for GRDB");
-                    }
+                    TSGroupThread *groupThread =
+                        [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+                    OWSAssertDebug(groupThread);
                 }
             }
         }];
@@ -4633,11 +4614,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 + (void)deleteAllMessagesInThread:(TSThread *)thread
 {
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        if (transaction.transitional_yapWriteTransaction) {
-            [thread removeAllThreadInteractionsWithTransaction:transaction.transitional_yapWriteTransaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        [thread removeAllThreadInteractionsWithTransaction:transaction];
     }];
 }
 

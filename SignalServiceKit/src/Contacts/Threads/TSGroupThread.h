@@ -49,17 +49,12 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
-+ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
-                                 anyTransaction:(SDSAnyWriteTransaction *)transaction;
+                                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId;
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
-                                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId anyTransaction:(SDSAnyWriteTransaction *)transaction;
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction;
 
-+ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction;
-+ (nullable instancetype)threadWithGroupId:(NSData *)groupId anyTransaction:(SDSAnyReadTransaction *)transaction;
++ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction;
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 
@@ -72,9 +67,9 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
                                           transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)leaveGroupWithSneakyTransaction;
-- (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)softDeleteGroupThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)softDeleteGroupThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Avatar
 

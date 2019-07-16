@@ -21,11 +21,14 @@ protocol InteractionFinderAdapter {
     func count(transaction: ReadTransaction) -> UInt
     func unreadCount(transaction: ReadTransaction) throws -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
+    func enumerateInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
 
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
 }
+
+// MARK: -
 
 @objc
 public class InteractionFinder: NSObject, InteractionFinderAdapter {
@@ -141,6 +144,26 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
+    @objc
+    public func enumerateInteractionIdsObjc(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return try yapAdapter.enumerateInteractionIds(transaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            return try grdbAdapter.enumerateInteractionIds(transaction: grdbRead, block: block)
+        }
+    }
+
+    @objc
+    public func enumerateInteractions(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return try yapAdapter.enumerateInteractions(transaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            return try grdbAdapter.enumerateInteractions(transaction: grdbRead, block: block)
+        }
+    }
+
     public func interaction(at index: UInt, transaction: SDSAnyReadTransaction) throws -> TSInteraction? {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
@@ -164,6 +187,8 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 }
+
+// MARK: -
 
 struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
@@ -276,6 +301,21 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
     }
 
+    func enumerateInteractions(transaction: YapDatabaseReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        guard let view = interactionExt(transaction) else {
+            return
+        }
+        view.safe_enumerateKeysAndObjects(inGroup: threadUniqueId,
+                                          extensionName: TSMessageDatabaseViewExtensionName,
+                                          with: NSEnumerationOptions.reverse) { (_, _, object, _, stopPtr) in
+                                            guard let interaction = object as? TSInteraction else {
+                                                owsFailDebug("unexpected interaction: \(type(of: object))")
+                                                return
+                                            }
+                                            block(interaction, stopPtr)
+        }
+    }
+
     func interaction(at index: UInt, transaction: YapDatabaseReadTransaction) -> TSInteraction? {
         guard let view = interactionExt(transaction) else {
             return nil
@@ -312,6 +352,8 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return transaction.safeViewTransaction(TSMessageDatabaseViewExtensionName)
     }
 }
+
+// MARK: -
 
 struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
@@ -470,6 +512,16 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 }
 
                 try block(uniqueId, &stop)
+        }
+    }
+
+    func enumerateInteractions(transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
+        try enumerateInteractionIds(transaction: transaction) { (uniqueId, stop) in
+            guard let interaction = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead) else {
+                owsFailDebug("Couldn't load interaction.")
+                return
+            }
+            block(interaction, stop)
         }
     }
 

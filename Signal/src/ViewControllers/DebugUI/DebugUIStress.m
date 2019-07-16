@@ -530,7 +530,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             members:groupThread.groupModel.groupMembers
                                               image:groupThread.groupModel.groupImage
                                             groupId:[Randomness generateRandomBytes:kGroupIdLength]];
-            thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+            thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction.asAnyWrite];
         }];
     OWSAssertDebug(thread);
 
@@ -565,7 +565,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                members:recipientAddresses
                                                                  image:nil
                                                                groupId:[Randomness generateRandomBytes:kGroupIdLength]];
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction.asAnyWrite];
     }];
     OWSAssertDebug(thread);
 

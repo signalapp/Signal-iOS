@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,7 +35,7 @@ extern ConversationColorName const kConversationColorName_Default;
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread
  */
-@interface TSThread : TSYapDatabaseObject
+@interface TSThread : BaseModel
 
 @property (nonatomic) BOOL shouldThreadBeVisible;
 @property (nonatomic, readonly, nullable) NSDate *creationDate;
@@ -81,8 +81,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 @property (nonatomic, readonly) ConversationColorName conversationColorName;
 
-- (void)updateConversationColorName:(ConversationColorName)colorName
-                        transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateConversationColorName:(ConversationColorName)colorName transaction:(SDSAnyWriteTransaction *)transaction;
 + (ConversationColorName)stableColorNameForNewConversationWithString:(NSString *)colorSeed;
 @property (class, nonatomic, readonly) NSArray<ConversationColorName> *conversationColorNames;
 
@@ -130,7 +129,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  *  @param lastMessage Latest Interaction to take into consideration.
  *  @param transaction Database transaction.
  */
-- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithLastMessage:(TSInteraction *)lastMessage transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark Archival
 
@@ -153,7 +152,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  */
 - (void)unarchiveThreadWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)removeAllThreadInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 
 #pragma mark Disappearing Messages
@@ -171,7 +170,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  *
  *  @return Last known draft for that thread.
  */
-- (NSString *)currentDraftWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSString *)currentDraftWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  *  Sets the draft of a thread. Typically called when leaving a conversation view.
@@ -186,7 +185,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction;
 

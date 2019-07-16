@@ -505,7 +505,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (dataMessage.group) {
         TSGroupThread *_Nullable groupThread =
-            [TSGroupThread threadWithGroupId:dataMessage.group.id anyTransaction:transaction];
+            [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
 
         if (!dataMessage.group.hasType) {
             OWSFailDebug(@"Group message is missing type.");
@@ -708,7 +708,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSThread *_Nullable thread;
     if (typingMessage.hasGroupID) {
-        TSGroupThread *groupThread = [TSGroupThread threadWithGroupId:typingMessage.groupID anyTransaction:transaction];
+        TSGroupThread *groupThread = [TSGroupThread threadWithGroupId:typingMessage.groupID transaction:transaction];
 
         if (!groupThread.isLocalUserInGroup) {
             OWSLogInfo(@"Ignoring messages for left group.");
@@ -768,7 +768,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSGroupThread *_Nullable groupThread =
-        [TSGroupThread threadWithGroupId:dataMessage.group.id anyTransaction:transaction];
+        [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
     if (!groupThread) {
         OWSFailDebug(@"Missing group for group avatar update");
         return;
@@ -919,7 +919,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                                            TSGroupThread *_Nullable groupThread =
                                                [TSGroupThread threadWithGroupId:dataMessage.group.id
-                                                                 anyTransaction:transaction];
+                                                                    transaction:transaction];
                                            if (!groupThread) {
                                                OWSFailDebug(@"ignoring sync group avatar update for unknown group.");
                                                return;
@@ -1176,8 +1176,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"Received 'Request Group Info' message for group: %@ from: %@", groupId, envelope.sourceAddress);
 
-    TSGroupThread *_Nullable gThread =
-        [TSGroupThread threadWithGroupId:dataMessage.group.id anyTransaction:transaction];
+    TSGroupThread *_Nullable gThread = [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
     if (!gThread) {
         OWSLogWarn(@"Unknown group: %@", groupId);
         return;
@@ -1276,7 +1275,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Group messages create the group if it doesn't already exist.
         //
         // We distinguish between the old group state (if any) and the new group state.
-        TSGroupThread *_Nullable oldGroupThread = [TSGroupThread threadWithGroupId:groupId anyTransaction:transaction];
+        TSGroupThread *_Nullable oldGroupThread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
         if (oldGroupThread) {
             // Don't trust other clients; ensure all known group members remain in the
             // group unless it is a "quit" message in which case we should only remove
@@ -1297,7 +1296,7 @@ NS_ASSUME_NONNULL_BEGIN
             case SSKProtoGroupContextTypeUpdate: {
                 // Ensures that the thread exists but doesn't update it.
                 TSGroupThread *newGroupThread =
-                    [TSGroupThread getOrCreateThreadWithGroupId:groupId anyTransaction:transaction];
+                    [TSGroupThread getOrCreateThreadWithGroupId:groupId transaction:transaction];
 
                 TSGroupModel *newGroupModel = [[TSGroupModel alloc] initWithTitle:dataMessage.group.name
                                                                           members:newMembers.allObjects
@@ -1644,7 +1643,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (dataMessage.group) {
         NSData *groupId = dataMessage.group.id;
         OWSAssertDebug(groupId.length > 0);
-        TSGroupThread *_Nullable groupThread = [TSGroupThread threadWithGroupId:groupId anyTransaction:transaction];
+        TSGroupThread *_Nullable groupThread = [TSGroupThread threadWithGroupId:groupId transaction:transaction];
         // This method should only be called from a code path that has already verified
         // that this is a "known" group.
         OWSAssertDebug(groupThread);

@@ -84,11 +84,11 @@ class FullTextSearcherTest: SignalBaseTest {
 
         self.dbConnection.readWrite { transaction in
             let bookModel = TSGroupModel(title: "Book Club", members: [aliceRecipient, bobRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
-            let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction)
+            let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction.asAnyWrite)
             self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyWrite)
 
             let snackModel = TSGroupModel(title: "Snack Club", members: [aliceRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
-            let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
+            let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction.asAnyWrite)
             self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyWrite)
 
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction.asAnyWrite)

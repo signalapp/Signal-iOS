@@ -1221,8 +1221,9 @@ const CGFloat kIconViewLength = 24;
     TSOutgoingMessage *message =
         [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+
         [gThread leaveGroupWithTransaction:transaction];
     }];
 
@@ -1441,10 +1442,10 @@ const CGFloat kIconViewLength = 24;
 
 - (void)setThreadMutedUntilDate:(nullable NSDate *)value
 {
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
-        [self.thread updateWithMutedUntilDate:value transaction:transaction];
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.thread updateWithMutedUntilDate:value transaction:transaction.asAnyWrite];
     }];
-    
+
     [self updateTableContents];
 }
 
@@ -1512,8 +1513,8 @@ const CGFloat kIconViewLength = 24;
     didPickConversationColor:(OWSConversationColor *_Nonnull)conversationColor
 {
     OWSLogDebug(@"picked color: %@", conversationColor.name);
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.thread updateConversationColorName:conversationColor.name transaction:transaction];
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.thread updateConversationColorName:conversationColor.name transaction:transaction.asAnyWrite];
     }];
 
     [self.contactsManager.avatarCache removeAllImages];

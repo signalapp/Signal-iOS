@@ -17,15 +17,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 @implementation TSGroupThread
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
 #define TSGroupThreadPrefix @"g"
 
 // --- CODE GENERATION MARKER
@@ -112,42 +103,33 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return self;
 }
 
-+ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(YapDatabaseReadTransaction *)transaction
++ (nullable instancetype)threadWithUniqueId:(NSString *)uniqueId transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(groupId.length > 0);
+    OWSAssertDebug(uniqueId.length > 0);
 
-    return [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId] transaction:transaction];
-}
-
-+ (nullable instancetype)threadWithGroupId:(NSData *)groupId anyTransaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(groupId.length > 0);
-
-    NSString *uniqueId = [self threadIdFromGroupId:groupId];
-    return (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:uniqueId transaction:transaction];
-}
-
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
-                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(groupId.length > 0);
-    OWSAssertDebug(transaction);
-
-    TSGroupThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId] transaction:transaction];
-    if (!thread) {
-        thread = [[self alloc] initWithGroupId:groupId];
-        [thread saveWithTransaction:transaction];
+    TSThread *_Nullable thread = [self anyFetchWithUniqueId:uniqueId transaction:transaction];
+    if (thread && ![thread isKindOfClass:[TSGroupThread class]]) {
+        OWSFailDebug(@"Thread has unexpected type.");
+        return nil;
     }
-    return thread;
+    return (TSGroupThread *)thread;
 }
 
-+ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId anyTransaction:(SDSAnyWriteTransaction *)transaction
++ (nullable instancetype)threadWithGroupId:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(groupId.length > 0);
+
+    NSString *uniqueId = [self threadIdFromGroupId:groupId];
+    return [self threadWithUniqueId:uniqueId transaction:transaction];
+}
+
++ (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(groupId.length > 0);
     OWSAssertDebug(transaction);
 
     NSString *uniqueId = [self threadIdFromGroupId:groupId];
-    TSGroupThread *thread = (TSGroupThread *)[self anyFetchWithUniqueId:uniqueId transaction:transaction];
+    TSGroupThread *thread = [self threadWithUniqueId:uniqueId transaction:transaction];
     if (!thread) {
         thread = [[self alloc] initWithGroupId:groupId];
         [thread anyInsertWithTransaction:transaction];
@@ -155,20 +137,19 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return thread;
 }
 
-
 + (instancetype)getOrCreateThreadWithGroupId:(NSData *)groupId
 {
     OWSAssertDebug(groupId.length > 0);
 
     __block TSGroupThread *thread;
-    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithGroupId:groupId transaction:transaction];
     }];
     return thread;
 }
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
-                                 anyTransaction:(SDSAnyWriteTransaction *)transaction
+                                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(groupModel);
     OWSAssertDebug(groupModel.groupId.length > 0);
@@ -185,28 +166,12 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 }
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    OWSAssertDebug(groupModel);
-    OWSAssertDebug(groupModel.groupId.length > 0);
-    OWSAssertDebug(transaction);
-
-    TSGroupThread *thread =
-        [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupModel.groupId] transaction:transaction];
-
-    if (!thread) {
-        thread = [[TSGroupThread alloc] initWithGroupModel:groupModel];
-        [thread saveWithTransaction:transaction];
-    }
-    return thread;
-}
-
-+ (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
 {
     OWSAssertDebug(groupModel);
     OWSAssertDebug(groupModel.groupId.length > 0);
 
     __block TSGroupThread *thread;
-    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
     }];
     return thread;
@@ -256,16 +221,15 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
     NSMutableArray<TSGroupThread *> *groupThreads = [NSMutableArray new];
 
-    [self
-        enumerateCollectionObjectsWithTransaction:transaction.transitional_yapReadTransaction
-                                       usingBlock:^(id obj, BOOL *stop) {
-                                           if ([obj isKindOfClass:[TSGroupThread class]]) {
-                                               TSGroupThread *groupThread = (TSGroupThread *)obj;
-                                               if ([groupThread.groupModel.groupMembers containsObject:address]) {
-                                                   [groupThreads addObject:groupThread];
-                                               }
-                                           }
-                                       }];
+    [TSThread anyEnumerateWithTransaction:transaction
+                                    block:^(TSThread *thread, BOOL *stop) {
+                                        if ([thread isKindOfClass:[TSGroupThread class]]) {
+                                            TSGroupThread *groupThread = (TSGroupThread *)thread;
+                                            if ([groupThread.groupModel.groupMembers containsObject:address]) {
+                                                [groupThreads addObject:groupThread];
+                                            }
+                                        }
+                                    }];
 
     return [groupThreads copy];
 }
@@ -301,25 +265,44 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 
 - (void)leaveGroupWithSneakyTransaction
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self leaveGroupWithTransaction:transaction];
     }];
 }
 
-- (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)leaveGroupWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    NSMutableArray<SignalServiceAddress *> *newGroupMembers = [self.groupModel.groupMembers mutableCopy];
-    [newGroupMembers removeObject:TSAccountManager.localAddress];
+    SignalServiceAddress *_Nullable localAddress = TSAccountManager.localAddress;
+    OWSAssertDebug(localAddress);
 
-    self.groupModel.groupMembers = newGroupMembers;
-    [self saveWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 if (![thread isKindOfClass:[TSGroupThread class]]) {
+                                     OWSFailDebug(@"Object has unexpected type: %@", thread.class);
+                                     return;
+                                 }
+                                 TSGroupThread *groupThread = (TSGroupThread *)thread;
+                                 NSMutableArray<SignalServiceAddress *> *newGroupMembers =
+                                     [groupThread.groupModel.groupMembers mutableCopy];
+                                 [newGroupMembers removeObject:localAddress];
+
+                                 groupThread.groupModel.groupMembers = newGroupMembers;
+                             }];
 }
 
-- (void)softDeleteGroupThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)softDeleteGroupThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [self removeAllThreadInteractionsWithTransaction:transaction];
-    self.shouldThreadBeVisible = NO;
-    [self saveWithTransaction:transaction];
+
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 if (![thread isKindOfClass:[TSGroupThread class]]) {
+                                     OWSFailDebug(@"Object has unexpected type: %@", thread.class);
+                                     return;
+                                 }
+                                 TSGroupThread *groupThread = (TSGroupThread *)thread;
+                                 groupThread.shouldThreadBeVisible = NO;
+                             }];
 }
 
 #pragma mark - Avatar

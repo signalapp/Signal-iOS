@@ -371,7 +371,7 @@ class GroupThreadFactory: NSObject, Factory {
     @objc
     public func create(transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         let thread = TSGroupThread.getOrCreateThread(with: groupModelBuilder(self),
-                                                     anyTransaction: transaction)
+                                                     transaction: transaction)
         thread.anyInsert(transaction: transaction)
 
         let incomingMessageFactory = IncomingMessageFactory()
