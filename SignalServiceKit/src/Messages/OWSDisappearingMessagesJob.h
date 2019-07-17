@@ -46,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startIfNecessary;
 
 - (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)schedulePass;
 
 @end
 

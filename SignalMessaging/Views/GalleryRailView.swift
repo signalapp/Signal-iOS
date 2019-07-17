@@ -123,13 +123,31 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
     // MARK: Public
 
-    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?, cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView) {
+    typealias AnimationBlock = () -> Void
+    typealias AnimationCompletionBlock = (Bool) -> Void
+
+    // UIView.animate(), takes an "animated" flag which disables animations.
+    private func animate(animationDuration: TimeInterval,
+                         animated: Bool,
+                         animations: @escaping AnimationBlock,
+                         completion: AnimationCompletionBlock? = nil) {
+        guard animated else {
+            animations()
+            completion?(true)
+            return
+        }
+        UIView.animate(withDuration: animationDuration, animations: animations, completion: completion)
+    }
+
+    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?, cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView, animated: Bool = true) {
         let animationDuration: TimeInterval = 0.2
 
         guard let itemProvider = itemProvider else {
-            UIView.animate(withDuration: animationDuration) {
+            animate(animationDuration: animationDuration,
+                    animated: animated,
+                    animations: {
                 self.isHidden = true
-            }
+            })
             self.cellViews = []
             return
         }
@@ -147,10 +165,12 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         }
 
         if itemProvider === self.itemProvider, areRailItemsIdentical(itemProvider.railItems, self.cellViewItems) {
-            UIView.animate(withDuration: animationDuration) {
+            animate(animationDuration: animationDuration,
+                    animated: animated,
+                    animations: {
                 self.updateFocusedItem(focusedItem)
                 self.layoutIfNeeded()
-            }
+            })
         }
 
         self.itemProvider = itemProvider
@@ -158,7 +178,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         guard itemProvider.railItems.count > 1 else {
             let cellViews = scrollView.subviews
 
-            UIView.animate(withDuration: animationDuration,
+            animate(animationDuration: animationDuration, animated: animated,
                            animations: {
                             cellViews.forEach { $0.isHidden = true }
                             self.isHidden = true
@@ -170,9 +190,11 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
         scrollView.subviews.forEach { $0.removeFromSuperview() }
 
-        UIView.animate(withDuration: animationDuration) {
+        animate(animationDuration: animationDuration,
+                animated: animated,
+                animations: {
             self.isHidden = false
-        }
+        })
 
         let cellViews = buildCellViews(items: itemProvider.railItems, cellViewBuilder: cellViewBuilder)
         self.cellViews = cellViews

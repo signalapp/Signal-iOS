@@ -23,10 +23,6 @@ class PerMessageExpirationViewController: OWSViewController {
     private let message: TSMessage
     private let attachmentStream: TSAttachmentStream
 
-    private let progressView = CircularProgressView(thickness: 0.15)
-
-    private var timer: Timer?
-
     // MARK: - Initializers
 
     required init(message: TSMessage, attachmentStream: TSAttachmentStream) {
@@ -154,21 +150,10 @@ class PerMessageExpirationViewController: OWSViewController {
         dismissButton.autoPinEdge(.top, to: .top, of: mediaView)
         dismissButton.setShadow(opacity: 0.33)
 
-        view.addSubview(progressView)
-        progressView.autoSetDimension(.width, toSize: controlSize)
-        progressView.autoSetDimension(.height, toSize: controlSize)
-        progressView.autoPinEdge(.trailing, to: .trailing, of: mediaView, withOffset: -hMargin)
-        progressView.autoPinEdge(.top, to: .top, of: mediaView, withOffset: vMargin)
-        progressView.setShadow(opacity: 0.33)
-
         view.addGestureRecognizer(UITapGestureRecognizer(target: self,
                                                          action: #selector(rootViewWasTapped)))
 
         setupDatabaseObservation()
-
-        updateProgress()
-
-        timer = Timer.weakScheduledTimer(withTimeInterval: 0.1, target: self, selector: #selector(progressTimerDidFire), userInfo: nil, repeats: true)
     }
 
     private func buildMediaView() -> (mediaView: UIView, aspectRatio: CGFloat)? {
@@ -253,36 +238,6 @@ class PerMessageExpirationViewController: OWSViewController {
                                                object: nil)
     }
 
-    private func updateProgress() {
-        AssertIsOnMainThread()
-
-        progressView.progress = currentProgress()
-    }
-
-    private func currentProgress() -> CGFloat {
-        AssertIsOnMainThread()
-
-        let perMessageExpirationDurationSeconds: UInt32 = message.perMessageExpirationDurationSeconds
-        guard perMessageExpirationDurationSeconds > 0 else {
-            owsFailDebug("Invalid perMessageExpirationDurationSeconds.")
-            return 1
-        }
-        let perMessageExpireStartedAtMs: UInt64 = message.perMessageExpireStartedAt
-        guard perMessageExpireStartedAtMs > 0 else {
-            owsFailDebug("Invalid perMessageExpireStartedAt.")
-            return 1
-        }
-        let nowMs: UInt64 = NSDate.ows_millisecondTimeStamp()
-        guard nowMs > perMessageExpireStartedAtMs else {
-            owsFailDebug("Invalid perMessageExpireStartedAt.")
-            return 1
-        }
-        let elapsedMs: UInt64 = nowMs - perMessageExpireStartedAtMs
-        let durationMs: UInt64 = UInt64(perMessageExpirationDurationSeconds) * 1000
-        let progress: CGFloat = (CGFloat(elapsedMs) / CGFloat(durationMs)).clamp01()
-        return progress
-    }
-
     public override var canBecomeFirstResponder: Bool {
         return true
     }
@@ -305,6 +260,9 @@ class PerMessageExpirationViewController: OWSViewController {
 
     // MARK: - Video
 
+    // Once open, this view only dismisses if the message is deleted
+    // (e.g. by per-conversation expiration).  If per-message expiration
+    // occurs, this view remains presented.
     private func dismissIfExpired() {
         AssertIsOnMainThread()
 
@@ -312,10 +270,10 @@ class PerMessageExpirationViewController: OWSViewController {
             guard let uniqueId = self.message.uniqueId else {
                 return true
             }
-            guard let message = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
+            guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil else {
                 return true
             }
-            return message.perMessageExpirationHasExpired
+            return false
         }
 
         if shouldDismiss {
@@ -354,13 +312,6 @@ class PerMessageExpirationViewController: OWSViewController {
         AssertIsOnMainThread()
 
         dismiss(animated: true)
-    }
-
-    @objc
-    private func progressTimerDidFire() {
-        AssertIsOnMainThread()
-
-        updateProgress()
     }
 }
 

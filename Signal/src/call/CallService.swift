@@ -468,7 +468,7 @@ private class SignalCallData: NSObject {
             }
 
             guard callData.peerConnectionClient == nil else {
-                let errorDescription = "peerconnection was unexpectedly already set."
+                let errorDescription = "peerConnectionClient was unexpectedly already set."
                 Logger.error(errorDescription)
                 OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionAlreadySet(), file: #file, function: #function, line: #line)
                 throw CallError.assertionError(description: errorDescription)
@@ -1142,7 +1142,7 @@ private class SignalCallData: NSObject {
 
         guard let peerConnectionClient = self.peerConnectionClient else {
             OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file: #file, function: #function, line: #line)
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "missing peerconnection client"))
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "missing peerConnection client"))
             return
         }
 
@@ -1536,7 +1536,7 @@ private class SignalCallData: NSObject {
         self.handleIceConnected()
     }
 
-    func peerConnectionClientIceDisconnected(_ peerconnectionClient: PeerConnectionClient) {
+    func peerConnectionClientIceDisconnected(_ peerConnectionClient: PeerConnectionClient) {
         AssertIsOnMainThread()
 
         guard peerConnectionClient == self.peerConnectionClient else {
@@ -1579,7 +1579,7 @@ private class SignalCallData: NSObject {
     }
 
     /**
-     * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
+     * Once the peerConnection is established, we can receive messages via the data channel, and notify the delegate.
      */
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, received dataChannelMessage: WebRTCProtoData) {
         AssertIsOnMainThread()

@@ -42,6 +42,32 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 }
 
+NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellType)
+{
+    switch (cellType) {
+        case PerMessageExpirationState_Unknown:
+            return @"PerMessageExpirationState_Unknown";
+        case PerMessageExpirationState_IncomingExpired:
+            return @"PerMessageExpirationState_IncomingExpired";
+        case PerMessageExpirationState_IncomingDownloading:
+            return @"PerMessageExpirationState_IncomingDownloading";
+        case PerMessageExpirationState_IncomingFailed:
+            return @"PerMessageExpirationState_IncomingFailed";
+        case PerMessageExpirationState_IncomingAvailable:
+            return @"PerMessageExpirationState_IncomingAvailable";
+        case PerMessageExpirationState_IncomingInvalidContent:
+            return @"PerMessageExpirationState_IncomingInvalidContent";
+        case PerMessageExpirationState_OutgoingSending:
+            return @"PerMessageExpirationState_OutgoingSending";
+        case PerMessageExpirationState_OutgoingFailed:
+            return @"PerMessageExpirationState_OutgoingFailed";
+        case PerMessageExpirationState_OutgoingSentAvailable:
+            return @"PerMessageExpirationState_OutgoingSentAvailable";
+        case PerMessageExpirationState_OutgoingSentExpired:
+            return @"PerMessageExpirationState_OutgoingSentExpired";
+    }
+}
+
 #pragma mark -
 
 @implementation ConversationMediaAlbumItem
@@ -867,10 +893,34 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         switch (outgoingMessage.messageState) {
             case TSOutgoingMessageStateSending:
                 self.perMessageExpirationState = PerMessageExpirationState_OutgoingSending;
+                break;
             case TSOutgoingMessageStateFailed:
                 self.perMessageExpirationState = PerMessageExpirationState_OutgoingFailed;
+                break;
             default:
-                self.perMessageExpirationState = PerMessageExpirationState_OutgoingSent;
+                if (message.perMessageExpirationHasExpired) {
+                    self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentExpired;
+                } else {
+                    NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction];
+                    // TODO: We currently only support single attachments for messages
+                    //       with per-message expiration.
+                    TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
+                    if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
+                        OWSFailDebug(@"Invalid outgoing attachment.");
+                        self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentExpired;
+                    } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
+                        TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
+                        if (attachmentStream.isValidVisualMedia
+                            && (attachmentStream.isImage || attachmentStream.isAnimated)) {
+                            self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentAvailable;
+                            self.attachmentStream = attachmentStream;
+                        } else {
+                            OWSFailDebug(@"Invalid outgoing attachment.");
+                            self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentExpired;
+                        }
+                    }
+                }
+                break;
         }
         self.messageCellType = OWSMessageCellType_PerMessageExpiration;
         return;

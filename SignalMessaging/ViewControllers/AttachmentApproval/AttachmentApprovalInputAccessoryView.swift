@@ -15,7 +15,11 @@ protocol AttachmentApprovalInputAccessoryViewDelegate: class {
 
 class AttachmentApprovalInputAccessoryView: UIView {
 
-    private let options: AttachmentApprovalViewControllerOptions
+    var options: AttachmentApprovalViewControllerOptions {
+        didSet {
+            attachmentTextToolbar.options = options
+        }
+    }
 
     weak var delegate: AttachmentApprovalInputAccessoryViewDelegate?
 
