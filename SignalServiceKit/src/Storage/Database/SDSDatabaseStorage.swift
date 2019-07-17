@@ -6,7 +6,7 @@ import Foundation
 import GRDBCipher
 
 @objc
-public class SDSDatabaseStorage: NSObject {
+public class SDSDatabaseStorage: SDSTransactable {
 
     @objc
     public static var shared: SDSDatabaseStorage {
@@ -103,9 +103,9 @@ public class SDSDatabaseStorage: NSObject {
     @objc
     public func newDatabaseQueue() -> SDSAnyDatabaseQueue {
         if useGRDB {
-            return grdbStorage.newDatabaseQueue().asAnyQueue
+            return grdbStorage.newDatabaseQueue().asAnyQueue(crossProcess: crossProcess)
         } else {
-            return yapStorage.newDatabaseQueue().asAnyQueue
+            return yapStorage.newDatabaseQueue().asAnyQueue(crossProcess: crossProcess)
         }
     }
 
@@ -144,7 +144,7 @@ public class SDSDatabaseStorage: NSObject {
     }
 
     @objc
-    public func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
+    public override func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
         if useGRDB {
             do {
                 try grdbStorage.read { transaction in
@@ -163,7 +163,7 @@ public class SDSDatabaseStorage: NSObject {
     }
 
     @objc
-    public func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    public override func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
         if useGRDB {
             do {
                 try grdbStorage.write { transaction in
@@ -180,73 +180,7 @@ public class SDSDatabaseStorage: NSObject {
             }
         }
 
-        self.notifyCrossProcessWrite()
-    }
-
-    @objc
-    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        asyncRead(block: block, completion: { })
-    }
-
-    @objc
-    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completion: @escaping () -> Void) {
-        asyncRead(block: block, completionQueue: .main, completion: completion)
-    }
-
-    @objc
-    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
-        DispatchQueue.global().async {
-            if self.useGRDB {
-                do {
-                    try self.grdbStorage.read { transaction in
-                        autoreleasepool {
-                            block(transaction.asAnyRead)
-                        }
-                    }
-                } catch {
-                    owsFail("error: \(error)")
-                }
-            } else {
-                self.yapStorage.read { transaction in
-                    block(transaction.asAnyRead)
-                }
-            }
-
-            completionQueue.async(execute: completion)
-        }
-    }
-
-    @objc
-    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        asyncWrite(block: block, completion: { })
-    }
-
-    @objc
-    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completion: @escaping () -> Void) {
-        asyncWrite(block: block, completionQueue: .main, completion: completion)
-    }
-
-    @objc
-    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
-        DispatchQueue.global().async {
-            if self.useGRDB {
-                do {
-                    try self.grdbStorage.write { transaction in
-                        autoreleasepool {
-                            block(transaction.asAnyWrite)
-                        }
-                    }
-                } catch {
-                    owsFail("error: \(error)")
-                }
-            } else {
-                self.yapStorage.write { transaction in
-                    block(transaction.asAnyWrite)
-                }
-            }
-
-            completionQueue.async(execute: completion)
-        }
+        crossProcess.notifyChangedAsync()
     }
 
     // MARK: - Value Methods
@@ -288,7 +222,7 @@ public class SDSDatabaseStorage: NSObject {
             yap.touchObject(forKey: uniqueId, inCollection: TSInteraction.collection())
         case .grdbWrite(let grdb):
             guard let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver else {
-                if !CurrentAppContext().isRunningTests {
+                if AppReadiness.isAppReady() {
                     owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
                 }
                 return
@@ -308,7 +242,7 @@ public class SDSDatabaseStorage: NSObject {
             yap.touchObject(forKey: uniqueId, inCollection: TSThread.collection())
         case .grdbWrite(let grdb):
             guard let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver else {
-                if !CurrentAppContext().isRunningTests {
+                if AppReadiness.isAppReady() {
                     owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
                 }
                 return
@@ -324,7 +258,7 @@ public class SDSDatabaseStorage: NSObject {
             yap.touchObject(forKey: threadId, inCollection: TSThread.collection())
         case .grdbWrite(let grdb):
             guard let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver else {
-                if !CurrentAppContext().isRunningTests {
+                if AppReadiness.isAppReady() {
                     owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
                 }
                 return
@@ -351,17 +285,6 @@ public class SDSDatabaseStorage: NSObject {
         } else {
             // If not active, set flag to update when we become active.
             hasPendingCrossProcessWrite = true
-        }
-    }
-
-    private func notifyCrossProcessWrite() {
-        Logger.info("")
-
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else {
-                return
-            }
-            self.crossProcess.notifyChanged()
         }
     }
 

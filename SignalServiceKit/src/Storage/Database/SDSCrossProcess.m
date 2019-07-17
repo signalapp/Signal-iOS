@@ -90,8 +90,18 @@ pid_t localPid(void)
     self.notifyToken = NOTIFY_TOKEN_INVALID;
 }
 
+- (void)notifyChangedAsync
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self notifyChanged];
+    });
+}
+
 - (void)notifyChanged
 {
+    OWSAssertIsOnMainThread();
+    OWSLogVerbose(@"");
+
     if (!notify_is_valid_token(self.notifyToken)) {
         [self start];
     }
