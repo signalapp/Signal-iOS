@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension OWSContactOffersInteraction {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateContactOffersInteraction(transaction: SDSAnyWriteTransaction, block: (OWSContactOffersInteraction) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSContactOffersInteraction else {

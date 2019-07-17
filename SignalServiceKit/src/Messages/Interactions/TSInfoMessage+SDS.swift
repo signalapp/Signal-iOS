@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension TSInfoMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateInfoMessage(transaction: SDSAnyWriteTransaction, block: (TSInfoMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSInfoMessage else {

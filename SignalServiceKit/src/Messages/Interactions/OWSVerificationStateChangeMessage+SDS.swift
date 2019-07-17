@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension OWSVerificationStateChangeMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateVerificationStateChangeMessage(transaction: SDSAnyWriteTransaction, block: (OWSVerificationStateChangeMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSVerificationStateChangeMessage else {

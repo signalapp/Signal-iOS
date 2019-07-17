@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension OWSAddToProfileWhitelistOfferMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateAddToProfileWhitelistOfferMessage(transaction: SDSAnyWriteTransaction, block: (OWSAddToProfileWhitelistOfferMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSAddToProfileWhitelistOfferMessage else {

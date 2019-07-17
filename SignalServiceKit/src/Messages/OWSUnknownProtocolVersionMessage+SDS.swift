@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension OWSUnknownProtocolVersionMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateUnknownProtocolVersionMessage(transaction: SDSAnyWriteTransaction, block: (OWSUnknownProtocolVersionMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSUnknownProtocolVersionMessage else {

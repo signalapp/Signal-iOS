@@ -36,8 +36,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 @property (atomic, nullable) NSString *avatarFileName;
 
 @property (atomic, readonly) NSUInteger userProfileSchemaVersion;
-@property (atomic, readonly) NSString *recipientPhoneNumber;
-@property (atomic, readonly) NSString *recipientUUID;
+@property (atomic, nullable, readonly) NSString *recipientPhoneNumber;
+@property (atomic, nullable, readonly) NSString *recipientUUID;
 
 @end
 
@@ -61,8 +61,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
-            recipientPhoneNumber:(NSString *)recipientPhoneNumber
-                   recipientUUID:(NSString *)recipientUUID
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+                   recipientUUID:(nullable NSString *)recipientUUID
         userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
 {
     self = [super initWithUniqueId:uniqueId];
