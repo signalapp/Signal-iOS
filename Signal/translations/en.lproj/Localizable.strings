@@ -299,6 +299,9 @@
 /* Label for the 'next' button. */
 "BUTTON_NEXT" = "Next";
 
+/* Label for the 'okay' button. */
+"BUTTON_OKAY" = "Okay";
+
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Select";
 
@@ -1524,7 +1527,7 @@
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "To protect your privacy and the security of your account, we’ve locked it for 7 days. After 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.";
@@ -1538,11 +1541,23 @@
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Incorrect PIN";
 
-/* Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_FORMAT" = "Incorrect PIN, you have %lu attempts remaining.\n\nIf you run out of attempts your account will be locked for 7 days. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+/* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+
+/* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Registration Lock";
+
+/* Explanation of the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+
+/* Label for the 'learn more' link in the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+
+/* Title of the 'onboarding account locked' view. */
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
@@ -1918,6 +1933,15 @@
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+
+/* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+
+/* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+
+/* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Incorrect PIN";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Submit";
@@ -2647,9 +2671,6 @@
 
 /* Header for PINs migration splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registration Lock = PIN";
-
-/* Button to dismiss the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_OKAY_BUTTON" = "Okay";
 
 /* Body text for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Add even more security to your account and take your contacts with you when you switch phones.";

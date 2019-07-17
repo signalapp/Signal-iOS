@@ -7,6 +7,10 @@ import UIKit
 @objc
 public class Onboarding2FAViewController: OnboardingBaseViewController {
 
+    // When the users attempts remaining falls below this number,
+    // we will show an alert with more detail about the risks.
+    private let attemptsAlertThreshold = 4
+
     private let pinTextField = UITextField()
 
     private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
@@ -178,12 +182,23 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
                 self.attemptState = .invalid(remainingAttempts: remainingAttempts)
             case .exhaustedV2RegistrationLockAttempts:
                 self.attemptState = .exhausted
+                self.showAccountLocked()
             case .success:
                 self.attemptState = .valid
             case .invalidVerificationCode:
                 owsFailDebug("Invalid verification code in 2FA view.")
             }
         })
+    }
+
+    private func showAccountLocked() {
+        guard let navigationController = navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        let vc = OnboardingAccountLockedViewController(onboardingController: onboardingController)
+        navigationController.pushViewController(vc, animated: true)
     }
 
     private func updateValidationWarnings() {
@@ -203,9 +218,35 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
                                                                 comment: "Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view.")
                 break
             }
-            let localizedString = NSLocalizedString("ONBOARDING_2FA_INVALID_PIN_FORMAT",
-                                                    comment: "Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view.")
-            validationWarningLabel.text = String(format: localizedString, remaining)
+
+            // If there are less than the threshold attempts remaining, also show an alert with more detail.
+            if remaining < attemptsAlertThreshold {
+                let formatMessage: String
+                if remaining == 1 {
+                    formatMessage = NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE",
+                                                      comment: "Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'.")
+                } else {
+                    formatMessage = NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT",
+                                                      comment: "Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'.")
+                }
+
+                OWSAlerts.showAlert(
+                    title: NSLocalizedString("REGISTER_2FA_INVALID_PIN_ALERT_TITLE",
+                                             comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'."),
+                    message: String(format: formatMessage, remaining)
+                )
+            }
+
+            let formatMessage: String
+            if remaining == 1 {
+                formatMessage = NSLocalizedString("ONBOARDING_2FA_INVALID_PIN_SINGLE",
+                                                  comment: "Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view.")
+            } else {
+                formatMessage = NSLocalizedString("ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT",
+                                                  comment: "Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view.")
+            }
+
+            validationWarningLabel.text = String(format: formatMessage, remaining)
 
         default:
             break
