@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -45,15 +45,18 @@ public enum WebSocketProtoError: Error {
             setRequestID(requestID)
         }
 
-        @objc public func setVerb(_ valueParam: String) {
+        @objc public func setVerb(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.verb = valueParam
         }
 
-        @objc public func setPath(_ valueParam: String) {
+        @objc public func setPath(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.path = valueParam
         }
 
-        @objc public func setBody(_ valueParam: Data) {
+        @objc public func setBody(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.body = valueParam
         }
 
@@ -214,7 +217,8 @@ extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMe
             proto.status = valueParam
         }
 
-        @objc public func setMessage(_ valueParam: String) {
+        @objc public func setMessage(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.message = valueParam
         }
 
@@ -228,7 +232,8 @@ extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMe
             proto.headers = wrappedItems
         }
 
-        @objc public func setBody(_ valueParam: Data) {
+        @objc public func setBody(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.body = valueParam
         }
 
@@ -390,11 +395,13 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
             proto.type = WebSocketProtoWebSocketMessageTypeUnwrap(valueParam)
         }
 
-        @objc public func setRequest(_ valueParam: WebSocketProtoWebSocketRequestMessage) {
+        @objc public func setRequest(_ valueParam: WebSocketProtoWebSocketRequestMessage?) {
+            guard let valueParam = valueParam else { return }
             proto.request = valueParam.proto
         }
 
-        @objc public func setResponse(_ valueParam: WebSocketProtoWebSocketResponseMessage) {
+        @objc public func setResponse(_ valueParam: WebSocketProtoWebSocketResponseMessage?) {
+            guard let valueParam = valueParam else { return }
             proto.response = valueParam.proto
         }
 

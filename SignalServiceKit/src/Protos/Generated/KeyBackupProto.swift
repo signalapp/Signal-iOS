@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,15 +42,18 @@ public enum KeyBackupProtoError: Error {
 
         @objc fileprivate override init() {}
 
-        @objc public func setBackup(_ valueParam: KeyBackupProtoBackupRequest) {
+        @objc public func setBackup(_ valueParam: KeyBackupProtoBackupRequest?) {
+            guard let valueParam = valueParam else { return }
             proto.backup = valueParam.proto
         }
 
-        @objc public func setRestore(_ valueParam: KeyBackupProtoRestoreRequest) {
+        @objc public func setRestore(_ valueParam: KeyBackupProtoRestoreRequest?) {
+            guard let valueParam = valueParam else { return }
             proto.restore = valueParam.proto
         }
 
-        @objc public func setDelete(_ valueParam: KeyBackupProtoDeleteRequest) {
+        @objc public func setDelete(_ valueParam: KeyBackupProtoDeleteRequest?) {
+            guard let valueParam = valueParam else { return }
             proto.delete = valueParam.proto
         }
 
@@ -170,15 +173,18 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setBackup(_ valueParam: KeyBackupProtoBackupResponse) {
+        @objc public func setBackup(_ valueParam: KeyBackupProtoBackupResponse?) {
+            guard let valueParam = valueParam else { return }
             proto.backup = valueParam.proto
         }
 
-        @objc public func setRestore(_ valueParam: KeyBackupProtoRestoreResponse) {
+        @objc public func setRestore(_ valueParam: KeyBackupProtoRestoreResponse?) {
+            guard let valueParam = valueParam else { return }
             proto.restore = valueParam.proto
         }
 
-        @objc public func setDelete(_ valueParam: KeyBackupProtoDeleteResponse) {
+        @objc public func setDelete(_ valueParam: KeyBackupProtoDeleteResponse?) {
+            guard let valueParam = valueParam else { return }
             proto.delete = valueParam.proto
         }
 
@@ -310,15 +316,18 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setServiceID(_ valueParam: Data) {
+        @objc public func setServiceID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.serviceID = valueParam
         }
 
-        @objc public func setBackupID(_ valueParam: Data) {
+        @objc public func setBackupID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.backupID = valueParam
         }
 
-        @objc public func setNonce(_ valueParam: Data) {
+        @objc public func setNonce(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.nonce = valueParam
         }
 
@@ -326,11 +335,13 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
             proto.validFrom = valueParam
         }
 
-        @objc public func setData(_ valueParam: Data) {
+        @objc public func setData(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.data = valueParam
         }
 
-        @objc public func setPin(_ valueParam: Data) {
+        @objc public func setPin(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.pin = valueParam
         }
 
@@ -513,7 +524,8 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
             proto.status = KeyBackupProtoBackupResponseStatusUnwrap(valueParam)
         }
 
-        @objc public func setNonce(_ valueParam: Data) {
+        @objc public func setNonce(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.nonce = valueParam
         }
 
@@ -637,15 +649,18 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setServiceID(_ valueParam: Data) {
+        @objc public func setServiceID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.serviceID = valueParam
         }
 
-        @objc public func setBackupID(_ valueParam: Data) {
+        @objc public func setBackupID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.backupID = valueParam
         }
 
-        @objc public func setNonce(_ valueParam: Data) {
+        @objc public func setNonce(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.nonce = valueParam
         }
 
@@ -653,7 +668,8 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
             proto.validFrom = valueParam
         }
 
-        @objc public func setPin(_ valueParam: Data) {
+        @objc public func setPin(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.pin = valueParam
         }
 
@@ -827,11 +843,13 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
             proto.status = KeyBackupProtoRestoreResponseStatusUnwrap(valueParam)
         }
 
-        @objc public func setNonce(_ valueParam: Data) {
+        @objc public func setNonce(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.nonce = valueParam
         }
 
-        @objc public func setData(_ valueParam: Data) {
+        @objc public func setData(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.data = valueParam
         }
 
@@ -967,11 +985,13 @@ extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setServiceID(_ valueParam: Data) {
+        @objc public func setServiceID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.serviceID = valueParam
         }
 
-        @objc public func setBackupID(_ valueParam: Data) {
+        @objc public func setBackupID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.backupID = valueParam
         }
 

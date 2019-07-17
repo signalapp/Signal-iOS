@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,7 +39,8 @@ public enum FingerprintProtoError: Error {
             setIdentityData(identityData)
         }
 
-        @objc public func setIdentityData(_ valueParam: Data) {
+        @objc public func setIdentityData(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.identityData = valueParam
         }
 
@@ -142,11 +143,13 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
             proto.version = valueParam
         }
 
-        @objc public func setLocalFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint) {
+        @objc public func setLocalFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint?) {
+            guard let valueParam = valueParam else { return }
             proto.localFingerprint = valueParam.proto
         }
 
-        @objc public func setRemoteFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint) {
+        @objc public func setRemoteFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint?) {
+            guard let valueParam = valueParam else { return }
             proto.remoteFingerprint = valueParam.proto
         }
 

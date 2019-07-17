@@ -278,6 +278,9 @@ class BaseContext(object):
             if type(matching_context) is MessageContext:
                 return True
         return False
+
+    def can_field_be_optional_objc(self, field):
+        return self.can_field_be_optional(field) and not self.is_field_primitive(field) and not self.is_field_an_enum(field)
         
     def default_value_for_field(self, field):
         if field.rules == 'repeated':
@@ -905,10 +908,16 @@ public func serializedData() throws -> Data {
                 writer.add('}')
                 writer.newline()
             else:
+                # for fields that are supported as optionals in objc, we will make the setter ignore null values
+                can_be_optional_objc = self.can_field_be_optional_objc(field)
+
                 accessor_name = field.name_swift
                 accessor_name = 'set' + accessor_name[0].upper() + accessor_name[1:]
-                writer.add('@objc public func %s(_ valueParam: %s) {' % ( accessor_name, self.base_swift_type_for_field(field), ))
+                writer.add('@objc public func %s(_ valueParam: %s) {' % ( accessor_name, self.swift_type_for_field(field, suppress_optional=not can_be_optional_objc), ))
                 writer.push_indent()
+
+                if can_be_optional_objc:
+                    writer.add('guard let valueParam = valueParam else { return }')
 
                 if self.is_field_an_enum(field):
                     enum_context = self.context_for_proto_type(field)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,11 +40,13 @@ public enum ProvisioningProtoError: Error {
             setBody(body)
         }
 
-        @objc public func setPublicKey(_ valueParam: Data) {
+        @objc public func setPublicKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.publicKey = valueParam
         }
 
-        @objc public func setBody(_ valueParam: Data) {
+        @objc public func setBody(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.body = valueParam
         }
 
@@ -157,27 +159,33 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
             setReadReceipts(readReceipts)
         }
 
-        @objc public func setIdentityKeyPublic(_ valueParam: Data) {
+        @objc public func setIdentityKeyPublic(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.identityKeyPublic = valueParam
         }
 
-        @objc public func setIdentityKeyPrivate(_ valueParam: Data) {
+        @objc public func setIdentityKeyPrivate(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.identityKeyPrivate = valueParam
         }
 
-        @objc public func setNumber(_ valueParam: String) {
+        @objc public func setNumber(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.number = valueParam
         }
 
-        @objc public func setProvisioningCode(_ valueParam: String) {
+        @objc public func setProvisioningCode(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.provisioningCode = valueParam
         }
 
-        @objc public func setUserAgent(_ valueParam: String) {
+        @objc public func setUserAgent(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.userAgent = valueParam
         }
 
-        @objc public func setProfileKey(_ valueParam: Data) {
+        @objc public func setProfileKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.profileKey = valueParam
         }
 

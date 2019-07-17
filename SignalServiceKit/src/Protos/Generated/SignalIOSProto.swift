@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -81,15 +81,18 @@ public enum SignalIOSProtoError: Error {
             proto.type = SignalIOSProtoBackupSnapshotBackupEntityTypeUnwrap(valueParam)
         }
 
-        @objc public func setEntityData(_ valueParam: Data) {
+        @objc public func setEntityData(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.entityData = valueParam
         }
 
-        @objc public func setCollection(_ valueParam: String) {
+        @objc public func setCollection(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.collection = valueParam
         }
 
-        @objc public func setKey(_ valueParam: String) {
+        @objc public func setKey(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.key = valueParam
         }
 
@@ -322,15 +325,18 @@ extension SignalIOSProtoBackupSnapshot.SignalIOSProtoBackupSnapshotBuilder {
             setCiphertext(ciphertext)
         }
 
-        @objc public func setEphemeralPublic(_ valueParam: Data) {
+        @objc public func setEphemeralPublic(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.ephemeralPublic = valueParam
         }
 
-        @objc public func setSyntheticIv(_ valueParam: Data) {
+        @objc public func setSyntheticIv(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.syntheticIv = valueParam
         }
 
-        @objc public func setCiphertext(_ valueParam: Data) {
+        @objc public func setCiphertext(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.ciphertext = valueParam
         }
 
