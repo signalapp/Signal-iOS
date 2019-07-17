@@ -199,7 +199,9 @@ public class SDSDatabaseStorage: NSObject {
             if self.useGRDB {
                 do {
                     try self.grdbStorage.read { transaction in
-                        block(transaction.asAnyRead)
+                        autoreleasepool {
+                            block(transaction.asAnyRead)
+                        }
                     }
                 } catch {
                     owsFail("error: \(error)")
@@ -230,7 +232,9 @@ public class SDSDatabaseStorage: NSObject {
             if self.useGRDB {
                 do {
                     try self.grdbStorage.write { transaction in
-                        block(transaction.asAnyWrite)
+                        autoreleasepool {
+                            block(transaction.asAnyWrite)
+                        }
                     }
                 } catch {
                     owsFail("error: \(error)")
