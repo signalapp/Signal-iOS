@@ -416,7 +416,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
         }
 
-        guard let cell = galleryRailView.cellViews.first(where: { $0.item === attachmentApprovalItem }) else {
+        guard let cell = galleryRailView.cellViews.first(where: { cellView in
+            guard let item = cellView.item else { return false }
+            return item.isEqualToGalleryRailItem(attachmentApprovalItem)
+        }) else {
             owsFailDebug("cell was unexpectedly nil")
             return
         }

@@ -21,6 +21,12 @@ class AddMoreRailItem: GalleryRailItem {
     }
 }
 
+extension AddMoreRailItem: Equatable {
+    static func == (lhs: AddMoreRailItem, rhs: AddMoreRailItem) -> Bool {
+        return true
+    }
+}
+
 public class AttachmentApprovalItem: Hashable {
 
     enum AttachmentApprovalItemError: Error {
