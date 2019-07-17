@@ -424,7 +424,26 @@ const CGFloat kIconViewLength = 24;
                         }]];
     }
 
-    if (isNoteToSelf) {
+    // Indicate if the user is in the system contacts
+    if (!isNoteToSelf && self.hasExistingContact) {
+        [mainSection
+         addItem:[OWSTableItem
+                  itemWithCustomCellBlock:^{
+                      OWSConversationSettingsViewController *strongSelf = weakSelf;
+                      OWSCAssertDebug(strongSelf);
+
+                      return [strongSelf
+                              labelCellWithName:NSLocalizedString(
+                                                                  @"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT",
+                                                                  @"Indicates that user is in the system contacts list.")
+                              iconName:@"profile-outline-24"
+                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                                                         OWSConversationSettingsViewController, @"is_in_contacts")];
+                  }
+                  actionBlock:nil]];
+    }
+
+    if (isNoteToSelf || SSKFeatureFlags.messageRequest) {
         // Skip the profile whitelist.
     } else if ([self.profileManager isThreadInProfileWhitelist:self.thread]) {
         [mainSection
