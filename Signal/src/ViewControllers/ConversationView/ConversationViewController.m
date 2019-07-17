@@ -1371,6 +1371,7 @@ typedef enum : NSUInteger {
 - (void)updateNavigationTitle
 {
     NSAttributedString *name;
+    UIImage *_Nullable icon;
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *thread = (TSContactThread *)self.thread;
 
@@ -1387,6 +1388,12 @@ typedef enum : NSUInteger {
                                                                       primaryFont:self.headerView.titlePrimaryFont
                                                                     secondaryFont:self.headerView.titleSecondaryFont];
         }
+
+        // If the user is in the system contacts, show a badge
+        if ([self.contactsManager hasSignalAccountForAddress:thread.contactAddress]) {
+            icon =
+                [[UIImage imageNamed:@"profile-outline-16"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        }
     } else {
         if (self.thread.name.length == 0) {
             name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
@@ -1395,6 +1402,8 @@ typedef enum : NSUInteger {
         }
     }
     self.title = nil;
+
+    self.headerView.titleIcon = icon;
 
     if ([name isEqual:self.headerView.attributedTitle]) {
         return;

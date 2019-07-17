@@ -26,6 +26,17 @@ public class ConversationHeaderView: UIStackView {
     }
 
     @objc
+    public var titleIcon: UIImage? {
+        get {
+            return self.titleIconView.image
+        }
+        set {
+            self.titleIconView.image = newValue
+            self.titleIconView.isHidden = newValue == nil
+        }
+    }
+
+    @objc
     public var attributedSubtitle: NSAttributedString? {
         get {
             return self.subtitleLabel.attributedText
@@ -53,6 +64,7 @@ public class ConversationHeaderView: UIStackView {
     public let subtitleFont: UIFont = UIFont.ows_regularFont(withSize: 12)
 
     private let titleLabel: UILabel
+    private let titleIconView: UIImageView
     private let subtitleLabel: UILabel
     private let avatarView: ConversationAvatarImageView
 
@@ -70,13 +82,21 @@ public class ConversationHeaderView: UIStackView {
         titleLabel.font = titlePrimaryFont
         titleLabel.setContentHuggingHigh()
 
+        titleIconView = UIImageView()
+        titleIconView.tintColor = Theme.secondaryColor
+        titleIconView.contentMode = .scaleAspectFit
+        titleIconView.setCompressionResistanceHigh()
+
+        let titleColumns = UIStackView(arrangedSubviews: [titleLabel, titleIconView])
+        titleColumns.spacing = 5
+
         subtitleLabel = UILabel()
         subtitleLabel.textColor = Theme.navbarTitleColor
         subtitleLabel.lineBreakMode = .byTruncatingTail
         subtitleLabel.font = subtitleFont
         subtitleLabel.setContentHuggingHigh()
 
-        let textRows = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
+        let textRows = UIStackView(arrangedSubviews: [titleColumns, subtitleLabel])
         textRows.axis = .vertical
         textRows.alignment = .leading
         textRows.distribution = .fillProportionally
