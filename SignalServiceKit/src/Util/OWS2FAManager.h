@@ -31,6 +31,7 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
 
 - (BOOL)is2FAEnabled;
 - (BOOL)isDueForReminder;
+- (BOOL)hasPending2FASetup;
 - (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result;
 
 // Request with service

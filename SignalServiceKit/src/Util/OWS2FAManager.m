@@ -71,6 +71,11 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     return TSAccountManager.sharedInstance;
 }
 
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SSKEnvironment.shared.databaseStorage;
+}
+
 #pragma mark -
 
 - (nullable NSString *)pinCode
@@ -263,6 +268,19 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     }
 
     return self.nextReminderDate.timeIntervalSinceNow < 0;
+}
+
+- (BOOL)hasPending2FASetup
+{
+    __block BOOL hasPendingPinExperienceUpgrade = NO;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        hasPendingPinExperienceUpgrade = [ExperienceUpgradeFinder.sharedManager
+            hasUnseenWithExperienceUpgrade:ExperienceUpgradeFinder.sharedManager.pins
+                               transaction:transaction];
+    }];
+
+    // If we require pins AND we don't have a pin AND we're not going to setup a pin through the upgrade interstitial
+    return SSKFeatureFlags.pinsForEveryone && !self.is2FAEnabled && !hasPendingPinExperienceUpgrade;
 }
 
 - (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result

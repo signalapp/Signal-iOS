@@ -124,14 +124,7 @@ public class PinSetupViewController: OWSViewController {
             // Back button
 
             let topButton = UIButton()
-
-            let topButtonImage: UIImage
-            // If we're on the first step of recreation, the top button is an X to dismiss
-            if case .recreating = mode {
-                topButtonImage = #imageLiteral(resourceName: "x-24")
-            } else {
-                topButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-            }
+            let topButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
 
             topButton.setTemplateImage(topButtonImage, tintColor: Theme.secondaryColor)
             topButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
@@ -153,7 +146,16 @@ public class PinSetupViewController: OWSViewController {
 
             titleLabel = label
 
-            let row = UIStackView(arrangedSubviews: [topButtonRow, label, UIView.spacer(withHeight: 10)])
+            let arrangeSubviews: [UIView]
+
+            // If we're in creating mode AND we're the rootViewController, don't allow going back
+            if case .creating = mode, navigationController?.viewControllers.first == self {
+                arrangeSubviews = [UIView.spacer(withHeight: 40), label, UIView.spacer(withHeight: 10)]
+            } else {
+                arrangeSubviews = [topButtonRow, label, UIView.spacer(withHeight: 10)]
+            }
+
+            let row = UIStackView(arrangedSubviews: arrangeSubviews)
             row.axis = .vertical
             row.distribution = .fill
             topRow = row

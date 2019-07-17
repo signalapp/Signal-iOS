@@ -778,21 +778,47 @@ static NSTimeInterval launchStartedAt;
                                                     preferences:Environment.shared.preferences];
             }
 
-            if ([OWS2FAManager sharedManager].isDueForReminder) {
-                if (!self.hasInitialRootViewController || self.window.rootViewController == nil) {
-                    OWSLogDebug(@"Skipping 2FA reminder since there isn't yet an initial view controller");
-                } else {
-                    UIViewController *rootViewController = self.window.rootViewController;
+            // 2FA
 
-                    UIViewController *reminderVC;
-                    if (SSKFeatureFlags.pinsForEveryone) {
-                        reminderVC = [OWSPinReminderViewController new];
-                    } else {
-                        reminderVC = [OWS2FAReminderViewController wrappedInNavController];
-                    }
+            // Get the top most view controller, either the rootViewController
+            // or any presented view controller
+            UIViewController *topViewController = self.window.rootViewController;
+            while (topViewController.presentedViewController) {
+                topViewController = topViewController.presentedViewController;
+            }
 
-                    [rootViewController presentViewController:reminderVC animated:YES completion:nil];
+            if ([OWS2FAManager sharedManager].hasPending2FASetup) {
+                OWSAssertDebug(topViewController);
+
+                if ([topViewController isKindOfClass:[OWSPinSetupViewController class]]) {
+                    // We're already presenting this
+                    return;
                 }
+
+                OWSPinSetupViewController *setupVC = [[OWSPinSetupViewController alloc] initWithCompletionHandler:^{
+                    [topViewController dismissViewControllerAnimated:YES completion:nil];
+                }];
+
+                [topViewController
+                    presentViewController:[[OWSNavigationController alloc] initWithRootViewController:setupVC]
+                                 animated:YES
+                               completion:nil];
+            } else if ([OWS2FAManager sharedManager].isDueForReminder) {
+                OWSAssertDebug(topViewController);
+
+                UIViewController *reminderVC;
+                if (SSKFeatureFlags.pinsForEveryone) {
+                    reminderVC = [OWSPinReminderViewController new];
+                } else {
+                    reminderVC = [OWS2FAReminderViewController wrappedInNavController];
+                }
+
+                if ([topViewController isKindOfClass:[reminderVC class]]) {
+                    // We're already presenting this
+                    return;
+                }
+
+                [topViewController presentViewController:reminderVC animated:YES completion:nil];
             }
         });
     }
