@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension TSErrorMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateErrorMessage(transaction: SDSAnyWriteTransaction, block: (TSErrorMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSErrorMessage else {

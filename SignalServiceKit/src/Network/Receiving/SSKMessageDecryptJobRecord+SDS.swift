@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension SSKMessageDecryptJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateMessageDecryptJobRecord(transaction: SDSAnyWriteTransaction, block: (SSKMessageDecryptJobRecord) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? SSKMessageDecryptJobRecord else {

@@ -1400,7 +1400,6 @@ public extension %s {
 @objc
 public extension %s {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdate%s(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? %s else {

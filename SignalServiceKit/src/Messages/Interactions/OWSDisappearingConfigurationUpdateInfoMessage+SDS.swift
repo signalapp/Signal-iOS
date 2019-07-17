@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension OWSDisappearingConfigurationUpdateInfoMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateDisappearingConfigurationUpdateInfoMessage(transaction: SDSAnyWriteTransaction, block: (OWSDisappearingConfigurationUpdateInfoMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSDisappearingConfigurationUpdateInfoMessage else {

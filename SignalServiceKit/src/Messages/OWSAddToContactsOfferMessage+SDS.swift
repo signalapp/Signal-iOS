@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension OWSAddToContactsOfferMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateAddToContactsOfferMessage(transaction: SDSAnyWriteTransaction, block: (OWSAddToContactsOfferMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSAddToContactsOfferMessage else {

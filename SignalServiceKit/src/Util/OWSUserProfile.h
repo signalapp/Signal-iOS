@@ -46,8 +46,8 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
-            recipientPhoneNumber:(NSString *)recipientPhoneNumber
-                   recipientUUID:(NSString *)recipientUUID
+            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
+                   recipientUUID:(nullable NSString *)recipientUUID
         userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
 NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:recipientPhoneNumber:recipientUUID:userProfileSchemaVersion:));
 

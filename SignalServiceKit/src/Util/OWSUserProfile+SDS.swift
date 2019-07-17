@@ -30,8 +30,8 @@ public struct UserProfileRecord: SDSRecord {
     public let avatarUrlPath: String?
     public let profileKey: Data?
     public let profileName: String?
-    public let recipientPhoneNumber: String
-    public let recipientUUID: String
+    public let recipientPhoneNumber: String?
+    public let recipientUUID: String?
     public let userProfileSchemaVersion: UInt
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
@@ -85,8 +85,8 @@ extension OWSUserProfile {
             let profileKeySerialized: Data? = record.profileKey
             let profileKey: OWSAES256Key? = try SDSDeserialization.optionalUnarchive(profileKeySerialized, name: "profileKey")
             let profileName: String? = record.profileName
-            let recipientPhoneNumber: String = record.recipientPhoneNumber
-            let recipientUUID: String = record.recipientUUID
+            let recipientPhoneNumber: String? = record.recipientPhoneNumber
+            let recipientUUID: String? = record.recipientUUID
             let userProfileSchemaVersion: UInt = record.userProfileSchemaVersion
 
             return OWSUserProfile(uniqueId: uniqueId,
@@ -137,8 +137,8 @@ extension OWSUserProfileSerializer {
     static let avatarUrlPathColumn = SDSColumnMetadata(columnName: "avatarUrlPath", columnType: .unicodeString, isOptional: true, columnIndex: 4)
     static let profileKeyColumn = SDSColumnMetadata(columnName: "profileKey", columnType: .blob, isOptional: true, columnIndex: 5)
     static let profileNameColumn = SDSColumnMetadata(columnName: "profileName", columnType: .unicodeString, isOptional: true, columnIndex: 6)
-    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, columnIndex: 7)
-    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, columnIndex: 8)
+    static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 7)
+    static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 8)
     static let userProfileSchemaVersionColumn = SDSColumnMetadata(columnName: "userProfileSchemaVersion", columnType: .int64, columnIndex: 9)
 
     // TODO: We should decide on a naming convention for
@@ -483,8 +483,8 @@ class OWSUserProfileSerializer: SDSSerializer {
         let avatarUrlPath: String? = model.avatarUrlPath
         let profileKey: Data? = optionalArchive(model.profileKey)
         let profileName: String? = model.profileName
-        let recipientPhoneNumber: String = model.recipientPhoneNumber
-        let recipientUUID: String = model.recipientUUID
+        let recipientPhoneNumber: String? = model.recipientPhoneNumber
+        let recipientUUID: String? = model.recipientUUID
         let userProfileSchemaVersion: UInt = model.userProfileSchemaVersion
 
         return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, userProfileSchemaVersion: userProfileSchemaVersion)

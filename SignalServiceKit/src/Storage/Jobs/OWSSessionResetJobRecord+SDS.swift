@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension OWSSessionResetJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateSessionResetJobRecord(transaction: SDSAnyWriteTransaction, block: (OWSSessionResetJobRecord) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSSessionResetJobRecord else {

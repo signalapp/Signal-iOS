@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension TSAttachmentPointer {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateAttachmentPointer(transaction: SDSAnyWriteTransaction, block: (TSAttachmentPointer) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSAttachmentPointer else {

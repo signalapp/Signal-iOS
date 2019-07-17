@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension TSInvalidIdentityKeyReceivingErrorMessage {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateInvalidIdentityKeyReceivingErrorMessage(transaction: SDSAnyWriteTransaction, block: (TSInvalidIdentityKeyReceivingErrorMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSInvalidIdentityKeyReceivingErrorMessage else {

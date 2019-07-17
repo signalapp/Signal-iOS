@@ -14,7 +14,6 @@ import SignalCoreKit
 @objc
 public extension TSUnreadIndicatorInteraction {
     // NOTE: This method will fail if the object has unexpected type.
-    @objc
     func anyUpdateUnreadIndicatorInteraction(transaction: SDSAnyWriteTransaction, block: (TSUnreadIndicatorInteraction) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSUnreadIndicatorInteraction else {
