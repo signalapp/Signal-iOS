@@ -1286,7 +1286,41 @@ public extension %s {
             }
         }
     }
-    
+''' % ( ( str(clazz.name), ) * 4 )
+
+        swift_body += '''
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: %s.collection()) { (uniqueId, stop) in
+                block(uniqueId, stop)
+            }
+        case .grdbRead(let grdbTransaction):
+            do {
+                let cursor = try String.fetchCursor(grdbTransaction.database,
+                                                    sql: """
+                    SELECT \(%sColumn: .uniqueId)
+                    FROM \(%s.databaseTableName)
+                    """,
+                    arguments: [])
+                while let uniqueId = try cursor.next() {
+                    var stop: ObjCBool = false
+                    block(uniqueId, &stop)
+                    if stop.boolValue {
+                        return
+                    }
+                }
+            } catch let error as NSError {
+                owsFailDebug("Couldn't fetch models: \(error)")
+            }
+        }
+    }
+''' % ( str(clazz.name), record_identifier(clazz.name), record_name, )
+
+        swift_body += '''
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [%s] {
         var result = [%s]()
@@ -1295,7 +1329,16 @@ public extension %s {
         }
         return result
     }
-''' % ( ( str(clazz.name), ) * 6 )
+    
+    // Does not order the results.
+    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+            result.append(uniqueId)
+        }
+        return result
+    }
+''' % ( ( str(clazz.name), ) * 2 )
 
         # ---- Count ----
 

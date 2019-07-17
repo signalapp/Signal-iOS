@@ -348,11 +348,50 @@ public extension KnownStickerPack {
         }
     }
 
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: KnownStickerPack.collection()) { (uniqueId, stop) in
+                block(uniqueId, stop)
+            }
+        case .grdbRead(let grdbTransaction):
+            do {
+                let cursor = try String.fetchCursor(grdbTransaction.database,
+                                                    sql: """
+                    SELECT \(knownStickerPackColumn: .uniqueId)
+                    FROM \(KnownStickerPackRecord.databaseTableName)
+                    """,
+                    arguments: [])
+                while let uniqueId = try cursor.next() {
+                    var stop: ObjCBool = false
+                    block(uniqueId, &stop)
+                    if stop.boolValue {
+                        return
+                    }
+                }
+            } catch let error as NSError {
+                owsFailDebug("Couldn't fetch models: \(error)")
+            }
+        }
+    }
+
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [KnownStickerPack] {
         var result = [KnownStickerPack]()
         anyEnumerate(transaction: transaction) { (model, _) in
             result.append(model)
+        }
+        return result
+    }
+
+    // Does not order the results.
+    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+            result.append(uniqueId)
         }
         return result
     }
