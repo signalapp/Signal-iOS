@@ -235,8 +235,8 @@ DEPENDENCIES:
   - Reachability
   - SignalCoreKit (from `https://github.com/signalapp/SignalCoreKit.git`)
   - SignalCoreKit/Tests (from `https://github.com/signalapp/SignalCoreKit.git`)
-  - SignalMetadataKit (from `https://github.com/signalapp/SignalMetadataKit`)
-  - SignalMetadataKit/Tests (from `https://github.com/signalapp/SignalMetadataKit`)
+  - "SignalMetadataKit (from `git@github.com:signalapp/SignalMetadataKit-Private`)"
+  - "SignalMetadataKit/Tests (from `git@github.com:signalapp/SignalMetadataKit-Private`)"
   - SignalServiceKit (from `.`)
   - SignalServiceKit/Tests (from `.`)
   - SQLCipher (>= 4.0.1)
@@ -278,7 +278,7 @@ EXTERNAL SOURCES:
   SignalCoreKit:
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :git: https://github.com/signalapp/SignalMetadataKit
+    :git: "git@github.com:signalapp/SignalMetadataKit-Private"
   SignalServiceKit:
     :path: "."
   Starscream:
@@ -311,8 +311,8 @@ CHECKOUT OPTIONS:
     :commit: 8bbbdd07bbf8c1e84b10f6aca29b3875930d4a52
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
-    :commit: 801b824c9e64423e841763fc61747c0a6272534f
-    :git: https://github.com/signalapp/SignalMetadataKit
+    :commit: 58e0316701af87e3fb681124ee80d4d800461d08
+    :git: "git@github.com:signalapp/SignalMetadataKit-Private"
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: "git@github.com:signalapp/Starscream.git"
@@ -345,6 +345,6 @@ SPEC CHECKSUMS:
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
 
-PODFILE CHECKSUM: fa3c6e087f31f5862585dad31caaedc0fd655ccc
+PODFILE CHECKSUM: 4dd261a75fe759741ce989dacc14201d285d940a
 
 COCOAPODS: 1.5.3

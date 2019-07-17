@@ -44,6 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)activate
 {
+    [SMKEnvironment setShared:[[SMKEnvironment alloc] initWithAccountIdFinder:[OWSAccountIdFinder new]]];
+
     MockSSKEnvironment *instance = [self new];
     [self setShared:instance];
     [instance configure];

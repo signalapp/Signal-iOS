@@ -325,7 +325,7 @@ class FileContext(BaseContext):
         
     def generate(self, writer):
         writer.extend('''//
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -551,7 +551,7 @@ class MessageContext(BaseContext):
                     writer.add('}')
                     writer.newline()
               
-        if uuid_field and e164_field:
+        if uuid_field and e164_field and not args.skip_address_helpers:
             accessor_prefix = uuid_field.name.replace('Uuid', '')
             address_accessor = accessor_prefix + 'Address'
             address_has_accessor = 'hasValid' + accessor_prefix[0].upper() + accessor_prefix[1:]
@@ -1337,8 +1337,8 @@ if __name__ == "__main__":
     parser.add_argument('--wrapper-prefix', help='name prefix for generated wrappers.')
     parser.add_argument('--proto-prefix', help='name prefix for proto bufs.')
     parser.add_argument('--dst-dir', help='path to the destination directory.')
-    parser.add_argument('--add-log-tag', action='store_true', help='add log tag properties.')
-    parser.add_argument('--add-description', action='store_true', help='add log tag properties.')
+    parser.add_argument('--add-description', action='store_true', help='add `description` properties.')
+    parser.add_argument('--skip-address-helpers', action='store_true', help='skip generating address helpers for uuid/e164 fields')
     parser.add_argument('--verbose', action='store_true', help='enables verbose logging')
     args = parser.parse_args()
     
