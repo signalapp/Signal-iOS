@@ -179,6 +179,19 @@ NS_ASSUME_NONNULL_BEGIN
     if (quotedMessage) {
         bodySource = TSQuotedMessageContentSourceLocal;
 
+        if (quotedMessage.hasPerMessageExpiration) {
+            // We construct a quote that does not include any of the
+            // quoted message's renderable content.
+            body = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE",
+                @"Label for outgoing messages with per-message expiration.");
+            // Legit usage of senderTimestamp - this class references the message it is quoting by it's sender timestamp
+            return [[TSQuotedMessage alloc] initWithTimestamp:timestamp
+                                                authorAddress:authorAddress
+                                                         body:body
+                                                   bodySource:TSQuotedMessageContentSourceLocal
+                                receivedQuotedAttachmentInfos:@[]];
+        }
+
         NSString *localText = [quotedMessage bodyTextWithTransaction:transaction];
         if (localText.length > 0) {
             body = localText;

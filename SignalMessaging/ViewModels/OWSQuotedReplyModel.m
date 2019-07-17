@@ -144,6 +144,23 @@ NS_ASSUME_NONNULL_BEGIN
     }();
     OWSAssertDebug(authorAddress.isValid);
 
+    if (message.hasPerMessageExpiration) {
+        // We construct a quote that does not include any of the
+        // quoted message's renderable content.
+        NSString *body = NSLocalizedString(
+            @"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE", @"Label for outgoing messages with per-message expiration.");
+        return [[self alloc] initWithTimestamp:timestamp
+                                 authorAddress:authorAddress
+                                          body:body
+                                    bodySource:TSQuotedMessageContentSourceLocal
+                                thumbnailImage:nil
+                                   contentType:nil
+                                sourceFilename:nil
+                              attachmentStream:nil
+                    thumbnailAttachmentPointer:nil
+                       thumbnailDownloadFailed:NO];
+    }
+
     if (conversationItem.contactShare) {
         ContactShareViewModel *contactShare = conversationItem.contactShare;
         

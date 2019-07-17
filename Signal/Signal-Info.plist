@@ -47,13 +47,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.41.0.2</string>
+	<string>2.41.0.10</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>
-	<string>support@whispersystems.org</string>
+	<string>support@signal.org</string>
 	<key>LOGS_URL</key>
-	<string>https://github.com/WhisperSystems/Signal-iOS/issues</string>
+	<string>https://github.com/signalapp/Signal-iOS/issues</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.social-networking</string>
 	<key>LSRequiresIPhoneOS</key>

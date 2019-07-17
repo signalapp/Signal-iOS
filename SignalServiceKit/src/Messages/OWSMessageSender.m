@@ -1446,6 +1446,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     };
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        TSInteraction *_Nullable latestCopy = [TSInteraction anyFetchWithUniqueId:message.uniqueId
+                                                                      transaction:transaction];
+        if (![latestCopy isKindOfClass:[TSOutgoingMessage class]]) {
+            OWSLogWarn(@"Could not update expiration for deleted message.");
+            return;
+        }
+        TSOutgoingMessage *latestMessage = (TSOutgoingMessage *)latestCopy;
         [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:message
                                                          expirationStartedAt:[NSDate ows_millisecondTimeStamp]
                                                                  transaction:transaction];

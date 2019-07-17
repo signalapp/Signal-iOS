@@ -280,6 +280,13 @@ void AssertIsOnDisappearingMessagesQueue()
     });
 }
 
+- (void)schedulePass
+{
+    dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
+        [self runLoop];
+    });
+}
+
 - (NSDateFormatter *)dateFormatter
 {
     static NSDateFormatter *dateFormatter;

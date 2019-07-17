@@ -75,7 +75,7 @@ public class AttachmentApprovalItem: Hashable {
 
 class AttachmentApprovalItemCollection {
     private (set) var attachmentApprovalItems: [AttachmentApprovalItem]
-    let isAddMoreVisible: Bool
+    var isAddMoreVisible: Bool
     init(attachmentApprovalItems: [AttachmentApprovalItem], isAddMoreVisible: Bool) {
         self.attachmentApprovalItems = attachmentApprovalItems
         self.isAddMoreVisible = isAddMoreVisible

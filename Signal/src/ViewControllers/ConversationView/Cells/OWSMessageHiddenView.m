@@ -265,7 +265,8 @@ NS_ASSUME_NONNULL_BEGIN
             return pendingColor;
         case PerMessageExpirationState_OutgoingSending:
             return self.conversationStyle.bubbleColorOutgoingSending;
-        case PerMessageExpirationState_OutgoingSent:
+        case PerMessageExpirationState_OutgoingSentAvailable:
+        case PerMessageExpirationState_OutgoingSentExpired:
             return self.conversationStyle.bubbleColorOutgoingSent;
         case PerMessageExpirationState_IncomingInvalidContent:
             return Theme.backgroundColor;
@@ -285,7 +286,8 @@ NS_ASSUME_NONNULL_BEGIN
         case PerMessageExpirationState_IncomingAvailable:
         case PerMessageExpirationState_OutgoingFailed:
         case PerMessageExpirationState_OutgoingSending:
-        case PerMessageExpirationState_OutgoingSent:
+        case PerMessageExpirationState_OutgoingSentAvailable:
+        case PerMessageExpirationState_OutgoingSentExpired:
             return NO;
         case PerMessageExpirationState_IncomingInvalidContent:
             return YES;
@@ -309,7 +311,8 @@ NS_ASSUME_NONNULL_BEGIN
         case PerMessageExpirationState_OutgoingFailed:
             return nil;
         case PerMessageExpirationState_OutgoingSending:
-        case PerMessageExpirationState_OutgoingSent:
+        case PerMessageExpirationState_OutgoingSentAvailable:
+        case PerMessageExpirationState_OutgoingSentExpired:
             return nil;
         case PerMessageExpirationState_IncomingInvalidContent:
             return UIColor.ows_destructiveRedColor;
@@ -334,7 +337,8 @@ NS_ASSUME_NONNULL_BEGIN
             return ConversationStyle.bubbleTextColorIncoming;
         case PerMessageExpirationState_OutgoingFailed:
         case PerMessageExpirationState_OutgoingSending:
-        case PerMessageExpirationState_OutgoingSent:
+        case PerMessageExpirationState_OutgoingSentAvailable:
+        case PerMessageExpirationState_OutgoingSentExpired:
             return ConversationStyle.bubbleTextColorOutgoing;
         case PerMessageExpirationState_IncomingInvalidContent:
             return Theme.secondaryColor;
@@ -359,7 +363,8 @@ NS_ASSUME_NONNULL_BEGIN
         case PerMessageExpirationState_OutgoingFailed:
             return pendingColor;
         case PerMessageExpirationState_OutgoingSending:
-        case PerMessageExpirationState_OutgoingSent:
+        case PerMessageExpirationState_OutgoingSentAvailable:
+        case PerMessageExpirationState_OutgoingSentExpired:
             return ConversationStyle.bubbleTextColorOutgoing;
         case PerMessageExpirationState_IncomingInvalidContent:
             return Theme.secondaryColor;
@@ -443,9 +448,16 @@ NS_ASSUME_NONNULL_BEGIN
             self.label.text = CommonStrings.retryButton;
             break;
         case PerMessageExpirationState_OutgoingSending:
-        case PerMessageExpirationState_OutgoingSent:
+            self.label.text = NSLocalizedString(@"MESSAGE_STATUS_SENDING", @"message status while message is sending.");
+            break;
+        case PerMessageExpirationState_OutgoingSentExpired:
             self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE",
                 @"Label for outgoing messages with per-message expiration.");
+            break;
+        case PerMessageExpirationState_OutgoingSentAvailable:
+            self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW",
+                @"Label for messages with per-message expiration indicating that "
+                @"user can tap to view the message's contents.");
             break;
         case PerMessageExpirationState_IncomingInvalidContent:
             self.label.text = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_INVALID_CONTENT",
@@ -487,8 +499,10 @@ NS_ASSUME_NONNULL_BEGIN
         case PerMessageExpirationState_OutgoingFailed:
             return @"arrow-down-circle-outline-24";
         case PerMessageExpirationState_OutgoingSending:
-        case PerMessageExpirationState_OutgoingSent:
+        case PerMessageExpirationState_OutgoingSentExpired:
             return @"play-outline-24";
+        case PerMessageExpirationState_OutgoingSentAvailable:
+            return @"play-filled-24";
         case PerMessageExpirationState_IncomingInvalidContent:
             OWSFailDebug(@"Unexpected state.");
             return nil;
@@ -549,9 +563,10 @@ NS_ASSUME_NONNULL_BEGIN
     return self.viewItem.perMessageExpirationState == PerMessageExpirationState_IncomingFailed;
 }
 
-- (BOOL)isIncomingAvailable
+- (BOOL)isAvailable
 {
-    return self.viewItem.perMessageExpirationState == PerMessageExpirationState_IncomingAvailable;
+    return (self.viewItem.perMessageExpirationState == PerMessageExpirationState_IncomingAvailable
+        || self.viewItem.perMessageExpirationState == PerMessageExpirationState_OutgoingSentAvailable);
 }
 
 #pragma mark - Measurement
@@ -712,7 +727,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.isIncomingFailed) {
         [self.delegate didTapFailedIncomingAttachment:self.viewItem];
-    } else if (self.isIncomingAvailable) {
+    } else if (self.isAvailable) {
         [self.delegate didTapAttachmentWithPerMessageExpiration:self.viewItem
                                                attachmentStream:self.viewItem.attachmentStream];
     }

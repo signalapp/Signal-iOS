@@ -104,9 +104,6 @@
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Størrelse: %@";
 
-/* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Meddelelsesgrænse nået";
-
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
 
@@ -170,7 +167,7 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Højtaler";
 
-/* button text for back button */
+/* return to the previous screen */
 "BACK_BUTTON" = "Tilbage";
 
 /* Error indicating the backup export could not export the user's data. */
@@ -951,6 +948,9 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sikkerhedsnummeret har ændret sig.";
 
+/* Error indicating a send failure due to an expired application. */
+"ERROR_SENDING_EXPIRED" = "Your version of Signal has expired. Please update to send further messages.";
+
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Ikke-registreret bruger: %@";
 
@@ -959,6 +959,15 @@
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
 "EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Let's Go";
+
+/* Label notifying the user that the app has expired. */
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Messages will no longer send successfully. Tap to update to the most recent version.";
+
+/* Label warning the user that the app will expire soon. */
+"EXPIRATION_WARNING_SOON" = "Din version af Signal vil udløbe om %d dage. Tap for at opdatere til den nyeste version";
+
+/* Label warning the user that the app will expire today. */
+"EXPIRATION_WARNING_TODAY" = "Din version af Signal udløber i dag. Tap for at opdatere til den nyeste version";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Received a message that is not compatible with this version.";
@@ -1136,6 +1145,9 @@
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Ubesvaret opkald, fordi deres sikkerhedsnummer er ændret.";
+
+/* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal, say hey!";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ugyldig lydfil.";
@@ -1508,6 +1520,9 @@
 /* No comment provided by engineer. */
 "OK" = "OK";
 
+/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "You have exhausted all pin attempts, you can attempt to register again in 7 days.";
+
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Dette telefonnummer har registreringslås slået til. Indtast venligst registreringskoden";
 
@@ -1516,6 +1531,12 @@
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "Jeg har glemt min PIN-kode";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN" = "Incorrect PIN";
+
+/* Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_FORMAT" = "Incorrect PIN, you have %lu tries remaining.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Registreringslås";
@@ -1562,6 +1583,9 @@
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
 "ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Jeg har ikke modtaget en verifikationskode (tilgængelig i %@)";
 
+/* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Contact Signal Support";
+
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Den indtastede verifikationskode er forkert";
 
@@ -1575,10 +1599,10 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Ingen verifikationskode?";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Gensend verifikationskode";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend Code";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Ring til mig i stedet ";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Ring mig op i stedet.";
 
 /* Label for link that can be used when the resent code did not arrive. */
 "ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Stadig ingen verifikationskode?";
@@ -1612,6 +1636,27 @@
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@...";
+
+/* Error indicating that a PDF could not be displayed. */
+"PDF_VIEW_COULD_NOT_RENDER" = "PDF could not be displayed";
+
+/* Navbar title for for PDF view. */
+"PDF_VIEW_TITLE" = "PDF";
+
+/* Label that indicates that 'per-message expiration' is active. */
+"PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Disappearing Photo";
+
+/* Label for messages with per-message expiration that have invalid content. */
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Fejl i forbindelse med indgående besked";
+
+/* Label for outgoing messages with per-message expiration. */
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Billed";
+
+/* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "View Photo";
+
+/* Label for messages with per-message expiration indicating that the local user has viewed the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Viewed";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Eksempel: %@";
@@ -2192,6 +2237,12 @@
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Meddelelses indhold";
 
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joined Signal";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Begivenheder";
+
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Meddelelser";
 
@@ -2358,19 +2409,19 @@
 "STICKERS_INSTALL_BUTTON" = "Installér";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Series";
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Serie";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Stickers You Received";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Klistermærker du har modtaget";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installeret klistermærker";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No stickers installed";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Ingen klistermærker installeret";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Stickers from incoming messages will appear here";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Klistermærker fra modtaget beskeder vil vises her";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "Animationer";
@@ -2459,6 +2510,9 @@
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "Ukendt land";
 
+/* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "One of your devices sent a message that can't be processed or displayed here because it uses a new Signal feature.";
+
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ sent you a message that can't be processed or displayed because it uses a new Signal feature.";
 
@@ -2467,6 +2521,9 @@
 
 /* Label for button that lets users upgrade the app. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+
+/* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Updated to the latest version of Signal. You can now receive this message type on your device.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "You can ask %@ to re-send this message now that you are using an up-to-date version of Signal.";

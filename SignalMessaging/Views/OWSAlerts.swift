@@ -118,7 +118,7 @@ import Foundation
         }
 
         if let iOSUpgradeNagDate = Environment.shared.preferences.iOSUpgradeNagDate() {
-            let kNagFrequencySeconds = 14 * kDayInterval
+            let kNagFrequencySeconds = 3 * kDayInterval
             guard fabs(iOSUpgradeNagDate.timeIntervalSinceNow) > kNagFrequencySeconds else {
                 return
             }

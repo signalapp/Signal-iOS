@@ -104,9 +104,6 @@
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "檔案大小：%@";
 
-/* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "已達到訊息限制。";
-
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "傳送";
 
@@ -170,7 +167,7 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "揚聲器";
 
-/* button text for back button */
+/* return to the previous screen */
 "BACK_BUTTON" = "返回";
 
 /* Error indicating the backup export could not export the user's data. */
@@ -951,6 +948,9 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "安全碼已變更。";
 
+/* Error indicating a send failure due to an expired application. */
+"ERROR_SENDING_EXPIRED" = "Your version of Signal has expired. Please update to send further messages.";
+
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "未註冊的使用者: %@";
 
@@ -959,6 +959,15 @@
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
 "EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "讓我們開始吧";
+
+/* Label notifying the user that the app has expired. */
+"EXPIRATION_ERROR" = "Your version of Signal has expired! Messages will no longer send successfully. Tap to update to the most recent version.";
+
+/* Label warning the user that the app will expire soon. */
+"EXPIRATION_WARNING_SOON" = "您的 Signal 版本將於 %d 日內到期，請更新至最新版本。";
+
+/* Label warning the user that the app will expire today. */
+"EXPIRATION_WARNING_TODAY" = "您的 Signal 版本今日到期，請更新至最新版本。";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "此聯繫人失敗太多次，請稍後再試。";
@@ -1136,6 +1145,9 @@
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "未接來電，因聯絡人的安全碼改變。";
+
+/* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal, say hey!";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "無效的音訊檔。";
@@ -1508,6 +1520,9 @@
 /* No comment provided by engineer. */
 "OK" = "OK";
 
+/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "You have exhausted all pin attempts, you can attempt to register again in 7 days.";
+
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "此電話號碼已啟用註冊鎖定。請輸入註冊鎖定 PIN 碼。";
 
@@ -1516,6 +1531,12 @@
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "我忘記自己的 PIN碼。";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN" = "Incorrect PIN";
+
+/* Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_FORMAT" = "Incorrect PIN, you have %lu tries remaining.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "註冊鎖定";
@@ -1562,6 +1583,9 @@
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
 "ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "我沒有收到驗證碼(由%@提供)";
 
+/* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "聯絡 Signal 支援";
+
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "這個驗證碼是不正確的。";
 
@@ -1575,10 +1599,10 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "沒有收到驗證碼？";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "重新傳送驗證碼";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend Code";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "改為撥電話給我";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "改用電話撥給我";
 
 /* Label for link that can be used when the resent code did not arrive. */
 "ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "還是沒有收到驗證碼？";
@@ -1612,6 +1636,27 @@
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@...";
+
+/* Error indicating that a PDF could not be displayed. */
+"PDF_VIEW_COULD_NOT_RENDER" = "PDF could not be displayed";
+
+/* Navbar title for for PDF view. */
+"PDF_VIEW_TITLE" = "PDF";
+
+/* Label that indicates that 'per-message expiration' is active. */
+"PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Disappearing Photo";
+
+/* Label for messages with per-message expiration that have invalid content. */
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "在處理來訊時出現錯誤";
+
+/* Label for outgoing messages with per-message expiration. */
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "照片";
+
+/* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "View Photo";
+
+/* Label for messages with per-message expiration indicating that the local user has viewed the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Viewed";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "範例：%@";
@@ -2192,6 +2237,12 @@
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "通知欄內容";
 
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joined Signal";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "事件";
+
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "通知";
 
@@ -2459,6 +2510,9 @@
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "未知的國家";
 
+/* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "One of your devices sent a message that can't be processed or displayed here because it uses a new Signal feature.";
+
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ 發送了一條無法處理或顯示的訊息，因為它使用了新的Signal 功能。";
 
@@ -2467,6 +2521,9 @@
 
 /* Label for button that lets users upgrade the app. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "請立即更新 Signal ";
+
+/* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Updated to the latest version of Signal. You can now receive this message type on your device.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "你現在可以要求 %@ 重新傳送這個訊息因你已經使用最新版本的 Signal。";

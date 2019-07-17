@@ -7,6 +7,7 @@
 #import "MIMETypeUtil.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBackgroundTask.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "OWSDispatch.h"
 #import "OWSError.h"
 #import "OWSFileSystem.h"
@@ -168,6 +169,14 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     OWSAssertDebug(message);
     OWSAssertDebug(attachments.count > 0);
 
+    if (CurrentAppContext().isRunningTests) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSError *error = [OWSAttachmentDownloads buildError];
+            failure(error);
+        });
+        return;
+    }
+
     NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray array];
     NSMutableArray<TSAttachmentPointer *> *attachmentPointers = [NSMutableArray new];
 
@@ -200,6 +209,14 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                           failure:(void (^)(NSError *error))failure
 {
     OWSAssertDebug(attachmentPointer);
+
+    if (CurrentAppContext().isRunningTests) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSError *error = [OWSAttachmentDownloads buildError];
+            failure(error);
+        });
+        return;
+    }
 
     [self enqueueJobsForAttachmentStreams:@[]
                        attachmentPointers:@[
@@ -369,6 +386,11 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
                     if (job.message) {
                         [self.databaseStorage touchInteraction:job.message transaction:transaction];
+                        [transaction
+                            addCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                             block:^{
+                                                 [OWSDisappearingMessagesJob.sharedJob schedulePass];
+                                             }];
                     }
                 }];
 

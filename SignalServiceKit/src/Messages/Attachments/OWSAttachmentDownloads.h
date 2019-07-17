@@ -17,6 +17,8 @@ extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
 #pragma mark -
 
+// TODO: We might want to pull out a protocol, convert this to an impl
+//       and use a mock in our tests.
 /**
  * Given incoming attachment protos, determines which we support.
  * It can download those that we support and notifies threads when it receives unsupported attachments.
