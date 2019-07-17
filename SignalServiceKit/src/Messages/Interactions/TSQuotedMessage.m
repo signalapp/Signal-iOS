@@ -186,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
                 @"Label for outgoing messages with per-message expiration.");
             // Legit usage of senderTimestamp - this class references the message it is quoting by it's sender timestamp
             return [[TSQuotedMessage alloc] initWithTimestamp:timestamp
-                                                     authorId:authorId
+                                                authorAddress:authorAddress
                                                          body:body
                                                    bodySource:TSQuotedMessageContentSourceLocal
                                 receivedQuotedAttachmentInfos:@[]];

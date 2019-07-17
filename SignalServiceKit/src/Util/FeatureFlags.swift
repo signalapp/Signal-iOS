@@ -16,7 +16,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var useGRDB: Bool {
-        return false
+        return OWSIsDebugBuild()
     }
 
     @objc
