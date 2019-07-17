@@ -41,9 +41,9 @@ public enum ExperienceUpgradeId: String {
             upgrades.append(stickers)
         }
 
-//        if FeatureFlags.pinsForEveryone {
-//            upgrades.append(pins)
-//        }
+        if FeatureFlags.pinsForEveryone {
+            upgrades.append(pins)
+        }
 
         return upgrades
     }

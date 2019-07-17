@@ -9,8 +9,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
     private let pinTextField = UITextField()
 
-    private var pinStrokeNormal: UIView?
-    private var pinStrokeError: UIView?
+    private lazy var pinStrokeNormal = pinTextField.addBottomStroke()
+    private lazy var pinStrokeError = pinTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
     private let validationWarningLabel = UILabel()
 
     enum PinAttemptState {
@@ -40,44 +40,66 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         view.backgroundColor = Theme.backgroundColor
         view.layoutMargins = .zero
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString("ONBOARDING_2FA_TITLE", comment: "Title of the 'onboarding 2FA' view."))
+        let titleText: String
+        let explanationText: String
 
-        let explanationLabel1 = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_2FA_EXPLANATION_1",
-                                                                                         comment: "The first explanation in the 'onboarding 2FA' view."))
-        let explanationLabel2 = self.explanationLabel(explanationText: NSLocalizedString("ONBOARDING_2FA_EXPLANATION_2",
-                                                                                         comment: "The first explanation in the 'onboarding 2FA' view."))
-        explanationLabel1.font = UIFont.ows_dynamicTypeCaption1
-        explanationLabel2.font = UIFont.ows_dynamicTypeCaption1
-        explanationLabel1.accessibilityIdentifier = "onboarding.2fa." + "explanationLabel1"
-        explanationLabel2.accessibilityIdentifier = "onboarding.2fa." + "explanationLabel2"
+        if (FeatureFlags.pinsForEveryone) {
+            titleText = NSLocalizedString("ONBOARDING_PIN_TITLE", comment: "Title of the 'onboarding PIN' view.")
+            explanationText = NSLocalizedString("ONBOARDING_PIN_EXPLANATION", comment: "Title of the 'onboarding PIN' view.")
+        } else {
+            titleText = NSLocalizedString("ONBOARDING_2FA_TITLE", comment: "Title of the 'onboarding 2FA' view.")
+            let explanationText1 = NSLocalizedString("ONBOARDING_2FA_EXPLANATION_1",
+                                                     comment: "The first explanation in the 'onboarding 2FA' view.")
+            let explanationText2 = NSLocalizedString("ONBOARDING_2FA_EXPLANATION_2",
+                                                     comment: "The first explanation in the 'onboarding 2FA' view.")
 
-        pinTextField.textAlignment = .center
+            explanationText = explanationText1.rtlSafeAppend("\n\n").rtlSafeAppend(explanationText2)
+        }
+
+        let titleLabel = self.titleLabel(text: titleText)
+        let explanationLabel = self.explanationLabel(explanationText: explanationText)
+        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        explanationLabel.accessibilityIdentifier = "onboarding.2fa." + "explanationLabel"
+
         pinTextField.delegate = self
         pinTextField.keyboardType = .numberPad
         pinTextField.textColor = Theme.primaryColor
-        pinTextField.font = UIFont.ows_dynamicTypeBodyClamped
+        pinTextField.font = .ows_dynamicTypeBodyClamped
+        pinTextField.isSecureTextEntry = true
+        pinTextField.defaultTextAttributes.updateValue(5, forKey: .kern)
+        pinTextField.keyboardAppearance = Theme.keyboardAppearance
         pinTextField.setContentHuggingHorizontalLow()
         pinTextField.setCompressionResistanceHorizontalLow()
         pinTextField.autoSetDimension(.height, toSize: 40)
-        pinTextField.accessibilityIdentifier = "onboarding.2fa." + "pinTextField"
-
-        pinStrokeNormal = pinTextField.addBottomStroke()
-        pinStrokeError = pinTextField.addBottomStroke(color: .ows_destructiveRed, strokeWidth: 2)
+        pinTextField.accessibilityIdentifier = "onboarding.2fa.pinTextField"
 
         validationWarningLabel.textColor = .ows_destructiveRed
-        validationWarningLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
-        validationWarningLabel.textAlignment = .center
-        validationWarningLabel.accessibilityIdentifier = "onboarding.2fa." + "validationWarningLabel"
-
-        let validationWarningRow = UIView()
-        validationWarningRow.addSubview(validationWarningLabel)
-        validationWarningLabel.ows_autoPinToSuperviewEdges()
-        validationWarningRow.setContentHuggingVerticalHigh()
+        validationWarningLabel.font = UIFont.ows_dynamicTypeCaption1Clamped
+        validationWarningLabel.accessibilityIdentifier = "onboarding.2fa.validationWarningLabel"
+        validationWarningLabel.numberOfLines = 0
+        validationWarningLabel.setCompressionResistanceHigh()
 
         let forgotPinLink = self.linkButton(title: NSLocalizedString("ONBOARDING_2FA_FORGOT_PIN_LINK",
                                                                      comment: "Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view."),
                                             selector: #selector(forgotPinLinkTapped))
         forgotPinLink.accessibilityIdentifier = "onboarding.2fa." + "forgotPinLink"
+
+        let pinStack = UIStackView(arrangedSubviews: [
+            pinTextField,
+            UIView.spacer(withHeight: 10),
+            validationWarningLabel,
+            UIView.spacer(withHeight: 10),
+            forgotPinLink
+        ])
+        pinStack.axis = .vertical
+        pinStack.alignment = .fill
+
+        let pinStackRow = UIView()
+        pinStackRow.addSubview(pinStack)
+        pinStack.autoHCenterInSuperview()
+        pinStack.autoPinHeightToSuperview()
+        pinStack.autoSetDimension(.width, toSize: 227)
+        pinStackRow.setContentHuggingVerticalHigh()
 
         let nextButton = self.button(title: NSLocalizedString("BUTTON_NEXT",
                                                               comment: "Label for the 'next' button."),
@@ -90,18 +112,12 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
             UIView.spacer(withHeight: 10),
-            explanationLabel1,
-            UIView.spacer(withHeight: 10),
-            explanationLabel2,
+            explanationLabel,
             topSpacer,
-            pinTextField,
-            UIView.spacer(withHeight: 10),
-            validationWarningRow,
+            pinStackRow,
             bottomSpacer,
-            forgotPinLink,
-            UIView.spacer(withHeight: 10),
             nextButton
-            ])
+        ])
         stackView.axis = .vertical
         stackView.alignment = .fill
         stackView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
@@ -128,8 +144,12 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     @objc func forgotPinLinkTapped() {
         Logger.info("")
 
-        OWSAlerts.showAlert(title: nil, message: NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE",
-                                                                   comment: "Alert message explaining what happens if you forget your 'two-factor auth pin'."))
+        OWSAlerts.showAlert(
+            title: NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_TITLE",
+                                     comment: "Alert title explaining what happens if you forget your 'two-factor auth pin'."),
+            message: NSLocalizedString("REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE",
+                                       comment: "Alert message explaining what happens if you forget your 'two-factor auth pin'.")
+        )
     }
 
     @objc func nextPressed() {
@@ -169,8 +189,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
     private func updateValidationWarnings() {
         AssertIsOnMainThread()
 
-        pinStrokeNormal?.isHidden = attemptState.isInvalid
-        pinStrokeError?.isHidden = !attemptState.isInvalid
+        pinStrokeNormal.isHidden = attemptState.isInvalid
+        pinStrokeError.isHidden = !attemptState.isInvalid
         validationWarningLabel.isHidden = !attemptState.isInvalid
 
         switch attemptState {

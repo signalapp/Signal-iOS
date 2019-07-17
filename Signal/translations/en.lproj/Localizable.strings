@@ -1524,7 +1524,7 @@
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "You have exhausted all pin attempts, you can attempt to register again in 7 days.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "To protect your privacy and the security of your account, we’ve locked it for 7 days. After 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "This phone number has Registration Lock enabled. Please enter the Registration Lock PIN.";
@@ -1533,13 +1533,13 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "Your Registration Lock PIN is separate from the automated verification code that was sent to your phone during the last step.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "I forgot my PIN";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Incorrect PIN";
 
 /* Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_FORMAT" = "Incorrect PIN, you have %lu tries remaining.";
+"ONBOARDING_2FA_INVALID_PIN_FORMAT" = "Incorrect PIN, you have %lu attempts remaining.\n\nIf you run out of attempts your account will be locked for 7 days. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Registration Lock";
@@ -1564,6 +1564,12 @@
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Invalid number";
+
+/* Title of the 'onboarding PIN' view. */
+"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+
+/* Title of the 'onboarding PIN' view. */
+"ONBOARDING_PIN_TITLE" = "Enter your PIN";
 
 /* Explanation in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_EXPLANATION" = "Signal profiles are end-to-end encrypted and the Signal service never has access to this information.";
@@ -1722,7 +1728,7 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account. ";
+"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
@@ -1737,7 +1743,7 @@
 "PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN. ";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Create a new PIN";
@@ -1908,7 +1914,10 @@
 "REGISTER_2FA_FORGOT_PIN" = "I forgot my PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration of this phone number will be possible without your Registration Lock PIN after 7 days have passed since the phone number was last active on Signal.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
+
+/* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Submit";
