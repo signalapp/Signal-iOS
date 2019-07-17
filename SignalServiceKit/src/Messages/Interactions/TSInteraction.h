@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import "BaseModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,7 +30,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 #pragma mark -
 
-@interface TSInteraction : TSYapDatabaseObject
+@interface TSInteraction : BaseModel
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 

@@ -86,35 +86,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteOldMessages:(NSTimeInterval)maxAgeSeconds
 {
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    [primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        NSMutableArray<NSString *> *threadIds = [NSMutableArray new];
-        YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
-        [interactionsByThread enumerateGroupsUsingBlock:^(NSString *group, BOOL *stop) {
-            [threadIds addObject:group];
-        }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSArray<NSString *> *threadIds = [TSThread anyAllUniqueIdsWithTransaction:transaction];
         NSMutableArray<TSInteraction *> *interactionsToDelete = [NSMutableArray new];
         for (NSString *threadId in threadIds) {
-            [interactionsByThread enumerateKeysAndObjectsInGroup:threadId
-                                                      usingBlock:^(NSString *collection,
-                                                          NSString *key,
-                                                          TSInteraction *interaction,
-                                                          NSUInteger index,
-                                                          BOOL *stop) {
-                                                          NSTimeInterval ageSeconds
-                                                              = fabs(interaction.receivedAtDate.timeIntervalSinceNow);
-                                                          if (ageSeconds < maxAgeSeconds) {
-                                                              *stop = YES;
-                                                              return;
-                                                          }
-                                                          [interactionsToDelete addObject:interaction];
-                                                      }];
+            InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:threadId];
+            NSError *error;
+            [interactionFinder enumerateInteractionsWithTransaction:transaction
+                                                              error:&error
+                                                              block:^(TSInteraction *interaction, BOOL *stop) {
+                                                                  NSTimeInterval ageSeconds = fabs(
+                                                                      interaction.receivedAtDate.timeIntervalSinceNow);
+                                                                  if (ageSeconds >= maxAgeSeconds) {
+                                                                      [interactionsToDelete addObject:interaction];
+                                                                  }
+                                                              }];
         }
 
         OWSLogInfo(@"Deleting %zd interactions.", interactionsToDelete.count);
 
         for (TSInteraction *interaction in interactionsToDelete) {
-            [interaction removeWithTransaction:transaction];
+            [interaction anyRemoveWithTransaction:transaction];
         }
     }];
 }

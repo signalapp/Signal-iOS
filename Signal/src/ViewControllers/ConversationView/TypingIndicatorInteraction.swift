@@ -42,8 +42,12 @@ public class TypingIndicatorInteraction: TSInteraction {
             timestamp: timestamp, in: thread)
     }
 
+    public override var shouldBeSaved: Bool {
+        return false
+    }
+
     @objc
-    public override func save(with transaction: YapDatabaseReadWriteTransaction) {
+    public override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
         owsFailDebug("The transient interaction should not be saved in the database.")
     }
 }

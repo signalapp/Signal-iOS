@@ -61,7 +61,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                      serverTimestamp:nil
                                                                                      wasReceivedByUD:NO
                                                                  perMessageExpirationDurationSeconds:0];
-    [incomingMessage save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [incomingMessage anyInsertWithTransaction:transaction];
+    }];
 }
 
 - (void)testExistingMessages

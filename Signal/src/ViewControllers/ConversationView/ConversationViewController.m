@@ -1945,10 +1945,9 @@ typedef enum : NSUInteger {
                                 return;
                             }
                             TSContactThread *contactThread = (TSContactThread *)self.thread;
-                            [self.editingDatabaseConnection
-                                asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                    [self.sessionResetJobQueue addContactThread:contactThread transaction:transaction];
-                                }];
+                            [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                [self.sessionResetJobQueue addContactThread:contactThread transaction:transaction];
+                            }];
                         }];
     [alert addAction:resetSessionAction];
 

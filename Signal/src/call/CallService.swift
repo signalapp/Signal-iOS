@@ -407,6 +407,10 @@ private class SignalCallData: NSObject {
         return AppEnvironment.shared.notificationPresenter
     }
 
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     // MARK: - Notifications
 
     @objc func didEnterBackground() {
@@ -456,7 +460,9 @@ private class SignalCallData: NSObject {
 
         // MJK TODO remove this timestamp param
         let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), callType: .outgoingIncomplete, in: call.thread)
-        callRecord.save()
+        databaseStorage.write { transaction in
+            callRecord.anyInsert(transaction: transaction)
+        }
         call.callRecord = callRecord
 
         let promise = getIceServers()
@@ -624,7 +630,9 @@ private class SignalCallData: NSObject {
 
         switch callRecord.callType {
         case .incomingMissed:
-            callRecord.save()
+            databaseStorage.write { transaction in
+                callRecord.anyUpsert(transaction: transaction)
+            }
             callUIAdapter.reportMissedCall(call)
         case .incomingIncomplete, .incoming:
             callRecord.updateCallType(.incomingMissed)
@@ -633,9 +641,13 @@ private class SignalCallData: NSObject {
             callRecord.updateCallType(.outgoingMissed)
         case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing:
             owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
-            callRecord.save()
+            databaseStorage.write { transaction in
+                callRecord.anyUpsert(transaction: transaction)
+            }
         default:
-            callRecord.save()
+            databaseStorage.write { transaction in
+                callRecord.anyUpsert(transaction: transaction)
+            }
             owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
         }
     }
@@ -725,7 +737,9 @@ private class SignalCallData: NSObject {
                                     in: thread)
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
-            callRecord.save()
+            databaseStorage.write { transaction in
+                callRecord.anyInsert(transaction: transaction)
+            }
 
             terminateCall()
 
@@ -1150,7 +1164,9 @@ private class SignalCallData: NSObject {
 
         // MJK TODO remove this timestamp param
         let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), callType: .incomingIncomplete, in: call.thread)
-        callRecord.save()
+        databaseStorage.write { transaction in
+            callRecord.anyInsert(transaction: transaction)
+        }
         call.callRecord = callRecord
 
         var messageData: Data
@@ -1240,7 +1256,9 @@ private class SignalCallData: NSObject {
         } else {
             // MJK TODO remove this timestamp param
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), callType: .incomingDeclined, in: call.thread)
-            callRecord.save()
+            databaseStorage.write { transaction in
+                callRecord.anyInsert(transaction: transaction)
+            }
             call.callRecord = callRecord
         }
 

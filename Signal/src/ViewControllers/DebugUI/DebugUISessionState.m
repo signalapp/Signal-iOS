@@ -88,12 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
                                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                    if (!transaction.transitional_yapWriteTransaction) {
-                                        OWSFailDebug(@"GRDB TODO");
-                                    }
-                                    [self.sessionResetJobQueue
-                                        addContactThread:thread
-                                             transaction:transaction.transitional_yapWriteTransaction];
+                                    [self.sessionResetJobQueue addContactThread:thread transaction:transaction];
                                 }];
                             }],
         ]];

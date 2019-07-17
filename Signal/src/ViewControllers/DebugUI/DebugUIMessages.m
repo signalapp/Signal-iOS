@@ -4420,7 +4420,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         perMessageExpirationDurationSeconds:0];
     // private setter to avoid starting expire machinery.
     message.read = YES;
-    [message save];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [message anyInsertWithTransaction:transaction];
+    }];
 }
 
 + (void)testLinkificationInThread:(TSThread *)thread

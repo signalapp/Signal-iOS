@@ -53,7 +53,7 @@ public class OWS114RemoveDynamicInteractions: YDBDatabaseMigration {
 
                 for interaction in interactionsToDelete {
                     Logger.debug("Cleaning up interaction: \(type(of: interaction)).")
-                    interaction.remove(with: transaction)
+                    interaction.ydb_remove(with: transaction)
                 }
 
                 self.markAsComplete(with: transaction.asAnyWrite)

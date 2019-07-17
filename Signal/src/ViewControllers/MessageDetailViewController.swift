@@ -567,7 +567,7 @@ class MessageDetailViewController: OWSViewController {
                 Logger.error("Message is missing uniqueId.")
                 return
             }
-            guard let newMessage = TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
+            guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead) as? TSMessage else {
                 Logger.error("Message was deleted")
                 throw DetailViewError.messageWasDeleted
             }

@@ -18,7 +18,6 @@
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 #import <SignalServiceKit/TSThread.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -28,7 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define ENABLE_ORPHAN_DATA_CLEANER
 
-NSString *const OWSOrphanDataCleaner_Collection = @"OWSOrphanDataCleaner_Collection";
 NSString *const OWSOrphanDataCleaner_LastCleaningVersionKey = @"OWSOrphanDataCleaner_LastCleaningVersionKey";
 NSString *const OWSOrphanDataCleaner_LastCleaningDateKey = @"OWSOrphanDataCleaner_LastCleaningDateKey";
 
@@ -59,6 +57,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     return [OWSProfileManager sharedManager];
 }
 
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark -
 
 + (SDSKeyValueStore *)keyValueStore
@@ -66,6 +69,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     static SDSKeyValueStore *keyValueStore = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
+        NSString *const OWSOrphanDataCleaner_Collection = @"OWSOrphanDataCleaner_Collection";
         keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSOrphanDataCleaner_Collection];
     });
     return keyValueStore;
@@ -162,12 +166,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 //   its corresponding message.  Better that the broken message shows up in the
 //   conversation view.
 + (void)findOrphanDataWithRetries:(NSInteger)remainingRetries
-               databaseConnection:(YapDatabaseConnection *)databaseConnection
                           success:(OrphanDataBlock)success
                           failure:(dispatch_block_t)failure
 {
-    OWSAssertDebug(databaseConnection);
-
     if (remainingRetries < 1) {
         OWSLogInfo(@"Aborting orphan data search.");
         dispatch_async(self.workQueue, ^{
@@ -180,12 +181,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [CurrentAppContext() runNowOrWhenMainAppIsActive:^{
         // ...but perform the work off the main thread.
         dispatch_async(self.workQueue, ^{
-            OWSOrphanData *_Nullable orphanData = [self findOrphanDataSync:databaseConnection];
+            OWSOrphanData *_Nullable orphanData = [self findOrphanDataSync];
             if (orphanData) {
                 success(orphanData);
             } else {
                 [self findOrphanDataWithRetries:remainingRetries - 1
-                             databaseConnection:databaseConnection
                                         success:success
                                         failure:failure];
             }
@@ -196,10 +196,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 // Returns nil on failure, usually indicating that the search
 // aborted due to the app resigning active.  This method is extremely careful to
 // abort if the app resigns active, in order to avoid 0xdead10cc crashes.
-+ (nullable OWSOrphanData *)findOrphanDataSync:(YapDatabaseConnection *)databaseConnection
++ (nullable OWSOrphanData *)findOrphanDataSync
 {
-    OWSAssertDebug(databaseConnection);
-
     __block BOOL shouldAbort = NO;
 
 #ifdef LOG_ALL_FILE_PATHS
@@ -326,59 +324,57 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSMutableSet<NSString *> *allMessageAttachmentIds = [NSMutableSet new];
     // Stickers
     NSMutableSet<NSString *> *activeStickerFilePaths = [NSMutableSet new];
-    [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [transaction enumerateKeysAndObjectsInCollection:TSAttachmentStream.collection
-                                              usingBlock:^(NSString *key, TSAttachment *attachment, BOOL *stop) {
-                                                  if (!self.isMainAppAndActive) {
-                                                      shouldAbort = YES;
-                                                      *stop = YES;
-                                                      return;
-                                                  }
-                                                  if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                                                      return;
-                                                  }
-                                                  [allAttachmentIds addObject:attachment.uniqueId];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [TSAttachmentStream
+            anyEnumerateWithTransaction:transaction
+                                  block:^(TSAttachment *attachment, BOOL *stop) {
+                                      if (!self.isMainAppAndActive) {
+                                          shouldAbort = YES;
+                                          *stop = YES;
+                                          return;
+                                      }
+                                      if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                                          return;
+                                      }
+                                      [allAttachmentIds addObject:attachment.uniqueId];
 
-                                                  TSAttachmentStream *attachmentStream
-                                                      = (TSAttachmentStream *)attachment;
-                                                  attachmentStreamCount++;
-                                                  NSString *_Nullable filePath = [attachmentStream originalFilePath];
-                                                  if (filePath) {
-                                                      [allAttachmentFilePaths addObject:filePath];
-                                                  } else {
-                                                      OWSFailDebug(@"attachment has no file path.");
-                                                  }
+                                      TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+                                      attachmentStreamCount++;
+                                      NSString *_Nullable filePath = [attachmentStream originalFilePath];
+                                      if (filePath) {
+                                          [allAttachmentFilePaths addObject:filePath];
+                                      } else {
+                                          OWSFailDebug(@"attachment has no file path.");
+                                      }
 
-                                                  [allAttachmentFilePaths
-                                                      addObjectsFromArray:attachmentStream.allThumbnailPaths];
-                                              }];
+                                      [allAttachmentFilePaths addObjectsFromArray:attachmentStream.allThumbnailPaths];
+                                  }];
 
         if (shouldAbort) {
             return;
         }
 
-        threadIds = [NSSet setWithArray:[transaction allKeysInCollection:TSThread.collection]];
+        threadIds = [NSSet setWithArray:[TSThread anyAllUniqueIdsWithTransaction:transaction]];
 
-        [transaction
-            enumerateKeysAndObjectsInCollection:TSMessage.collection
-                                     usingBlock:^(NSString *key, TSInteraction *interaction, BOOL *stop) {
-                                         if (!self.isMainAppAndActive) {
-                                             shouldAbort = YES;
-                                             *stop = YES;
-                                             return;
-                                         }
-                                         if (interaction.uniqueThreadId.length < 1
-                                             || ![threadIds containsObject:interaction.uniqueThreadId]) {
-                                             [orphanInteractionIds addObject:interaction.uniqueId];
-                                         }
+        [TSInteraction anyEnumerateWithTransaction:transaction
+                                             block:^(TSInteraction *interaction, BOOL *stop) {
+                                                 if (!self.isMainAppAndActive) {
+                                                     shouldAbort = YES;
+                                                     *stop = YES;
+                                                     return;
+                                                 }
+                                                 if (interaction.uniqueThreadId.length < 1
+                                                     || ![threadIds containsObject:interaction.uniqueThreadId]) {
+                                                     [orphanInteractionIds addObject:interaction.uniqueId];
+                                                 }
 
-                                         if (![interaction isKindOfClass:[TSMessage class]]) {
-                                             return;
-                                         }
+                                                 if (![interaction isKindOfClass:[TSMessage class]]) {
+                                                     return;
+                                                 }
 
-                                         TSMessage *message = (TSMessage *)interaction;
-                                         [allMessageAttachmentIds addObjectsFromArray:message.allAttachmentIds];
-                                     }];
+                                                 TSMessage *message = (TSMessage *)interaction;
+                                                 [allMessageAttachmentIds addObjectsFromArray:message.allAttachmentIds];
+                                             }];
 
         if (shouldAbort) {
             return;
@@ -405,7 +401,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         }
 
         [activeStickerFilePaths
-            addObjectsFromArray:[StickerManager filepathsForAllInstalledStickersWithTransaction:transaction.asAnyRead]];
+            addObjectsFromArray:[StickerManager filepathsForAllInstalledStickersWithTransaction:transaction]];
     }];
     if (shouldAbort) {
         return nil;
@@ -448,7 +444,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     return result;
 }
 
-+ (BOOL)shouldAuditOnLaunch:(YapDatabaseConnection *)databaseConnection
++ (BOOL)shouldAuditOnLaunch
 {
     OWSAssertIsOnMainThread();
 
@@ -458,11 +454,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
     __block NSString *_Nullable lastCleaningVersion;
     __block NSDate *_Nullable lastCleaningDate;
-    [databaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        lastCleaningVersion = [self.keyValueStore getString:OWSOrphanDataCleaner_LastCleaningVersionKey
-                                                transaction:transaction.asAnyRead];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        lastCleaningVersion =
+            [self.keyValueStore getString:OWSOrphanDataCleaner_LastCleaningVersionKey transaction:transaction];
         lastCleaningDate =
-            [self.keyValueStore getDate:OWSOrphanDataCleaner_LastCleaningDateKey transaction:transaction.asAnyRead];
+            [self.keyValueStore getDate:OWSOrphanDataCleaner_LastCleaningDateKey transaction:transaction];
     }];
 
     // Clean up once per app version.
@@ -494,17 +490,14 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 {
     OWSAssertIsOnMainThread();
 
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    YapDatabaseConnection *databaseConnection = [primaryStorage newDatabaseConnection];
-
-    if (![self shouldAuditOnLaunch:databaseConnection]) {
+    if (![self shouldAuditOnLaunch]) {
         return;
     }
 
     // If we want to be cautious, we can disable orphan deletion using
     // flag - the cleanup will just be a dry run with logging.
     BOOL shouldRemoveOrphans = YES;
-    [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection completion:nil];
+    [self auditAndCleanup:shouldRemoveOrphans completion:nil];
 }
 
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans
@@ -514,14 +507,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                }];
 }
 
-+ (void)auditAndCleanup:(BOOL)shouldRemoveOrphans completion:(dispatch_block_t)completion
-{
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    YapDatabaseConnection *databaseConnection = [primaryStorage newDatabaseConnection];
-
-    [self auditAndCleanup:shouldRemoveOrphans databaseConnection:databaseConnection completion:completion];
-}
-
 // We use the lowest priority possible.
 + (dispatch_queue_t)workQueue
 {
@@ -529,11 +514,9 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 }
 
 + (void)auditAndCleanup:(BOOL)shouldRemoveOrphans
-     databaseConnection:(YapDatabaseConnection *)databaseConnection
              completion:(nullable dispatch_block_t)completion
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(databaseConnection);
 
     if (!AppReadiness.isAppReady) {
         OWSFailDebug(@"can't audit orphan data until app is ready.");
@@ -574,23 +557,21 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     //   up.
     const NSInteger kMaxRetries = 3;
     [self findOrphanDataWithRetries:kMaxRetries
-        databaseConnection:databaseConnection
         success:^(OWSOrphanData *orphanData) {
             [self processOrphans:orphanData
                 remainingRetries:kMaxRetries
-                databaseConnection:databaseConnection
                 shouldRemoveOrphans:shouldRemoveOrphans
                 success:^{
                     OWSLogInfo(@"Completed orphan data cleanup.");
 
-                    [databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        [transaction setObject:AppVersion.sharedInstance.currentAppVersion
-                                        forKey:OWSOrphanDataCleaner_LastCleaningVersionKey
-                                  inCollection:OWSOrphanDataCleaner_Collection];
+                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                        [self.keyValueStore setString:AppVersion.sharedInstance.currentAppVersion
+                                                  key:OWSOrphanDataCleaner_LastCleaningVersionKey
+                                          transaction:transaction];
 
                         [self.keyValueStore setDate:[NSDate new]
                                                 key:OWSOrphanDataCleaner_LastCleaningDateKey
-                                        transaction:transaction.asAnyWrite];
+                                        transaction:transaction];
                     }];
 
                     if (completion) {
@@ -617,12 +598,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 // abort if the app resigns active, in order to avoid 0xdead10cc crashes.
 + (void)processOrphans:(OWSOrphanData *)orphanData
        remainingRetries:(NSInteger)remainingRetries
-     databaseConnection:(YapDatabaseConnection *)databaseConnection
     shouldRemoveOrphans:(BOOL)shouldRemoveOrphans
                 success:(dispatch_block_t)success
                 failure:(dispatch_block_t)failure
 {
-    OWSAssertDebug(databaseConnection);
     OWSAssertDebug(orphanData);
 
     if (remainingRetries < 1) {
@@ -638,14 +617,12 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         // ...but perform the work off the main thread.
         dispatch_async(self.workQueue, ^{
             if ([self processOrphansSync:orphanData
-                      databaseConnection:databaseConnection
                      shouldRemoveOrphans:shouldRemoveOrphans]) {
                 success();
                 return;
             } else {
                 [self processOrphans:orphanData
                        remainingRetries:remainingRetries - 1
-                     databaseConnection:databaseConnection
                     shouldRemoveOrphans:shouldRemoveOrphans
                                 success:success
                                 failure:failure];
@@ -658,10 +635,8 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 // aborted due to the app resigning active.  This method is extremely careful to
 // abort if the app resigns active, in order to avoid 0xdead10cc crashes.
 + (BOOL)processOrphansSync:(OWSOrphanData *)orphanData
-        databaseConnection:(YapDatabaseConnection *)databaseConnection
        shouldRemoveOrphans:(BOOL)shouldRemoveOrphans
 {
-    OWSAssertDebug(databaseConnection);
     OWSAssertDebug(orphanData);
 
     __block BOOL shouldAbort = NO;
@@ -672,7 +647,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSDate *appLaunchTime = CurrentAppContext().appLaunchTime;
     NSTimeInterval thresholdTimestamp = appLaunchTime.timeIntervalSince1970 - kMinimumOrphanAgeSeconds;
     NSDate *thresholdDate = [NSDate dateWithTimeIntervalSince1970:thresholdTimestamp];
-    [databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSUInteger interactionsRemoved = 0;
         for (NSString *interactionId in orphanData.interactionIds) {
             if (!self.isMainAppAndActive) {
@@ -680,7 +655,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 return;
             }
             TSInteraction *_Nullable interaction =
-                [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
+                [TSInteraction anyFetchWithUniqueId:interactionId transaction:transaction];
             if (!interaction) {
                 // This could just be a race condition, but it should be very unlikely.
                 OWSLogWarn(@"Could not load interaction: %@", interactionId);
@@ -697,7 +672,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             if (!shouldRemoveOrphans) {
                 continue;
             }
-            [interaction removeWithTransaction:transaction];
+            [interaction anyRemoveWithTransaction:transaction];
         }
         OWSLogInfo(@"Deleted orphan interactions: %zu", interactionsRemoved);
 
@@ -708,7 +683,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 return;
             }
             TSAttachment *_Nullable attachment =
-                [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction.asAnyRead];
+                [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
             if (!attachment) {
                 // This can happen on launch since we sync contacts/groups, especially if you have a lot of attachments
                 // to churn through, it's likely it's been deleted since starting this job.
@@ -730,7 +705,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             if (!shouldRemoveOrphans) {
                 continue;
             }
-            [attachmentStream anyRemoveWithTransaction:transaction.asAnyWrite];
+            [attachmentStream anyRemoveWithTransaction:transaction];
         }
         OWSLogInfo(@"Deleted orphan attachments: %zu", attachmentsRemoved);
     }];
