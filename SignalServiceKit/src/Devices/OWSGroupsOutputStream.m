@@ -36,12 +36,12 @@ NS_ASSUME_NONNULL_BEGIN
             [membersE164 addObject:address.phoneNumber];
         }
 
-        SSKProtoGroupContextMemberBuilder *memberBuilder = [SSKProtoGroupContextMember builder];
+        SSKProtoGroupDetailsMemberBuilder *memberBuilder = [SSKProtoGroupDetailsMember builder];
         memberBuilder.uuid = address.uuidString;
         memberBuilder.e164 = address.phoneNumber;
 
         NSError *error;
-        SSKProtoGroupContextMember *_Nullable member = [memberBuilder buildAndReturnError:&error];
+        SSKProtoGroupDetailsMember *_Nullable member = [memberBuilder buildAndReturnError:&error];
         if (error || !member) {
             OWSFailDebug(@"could not build members protobuf: %@", error);
         } else {
