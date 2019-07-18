@@ -116,6 +116,10 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 {
     OWSAssertDebug(pin.length > 0);
 
+    // Convert the pin to arabic numerals, we never want to
+    // operate with pins in other numbering systems.
+    pin = pin.ensureArabicNumerals;
+
     if (!SSKFeatureFlags.registrationLockV2) {
         [self.dbConnection setObject:pin forKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
     } else {
@@ -285,12 +289,16 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
 - (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result
 {
+    // Convert the pin to arabic numerals, we never want to
+    // operate with pins in other numbering systems.
+    pin = pin.ensureArabicNumerals;
+
     switch (self.mode) {
     case OWS2FAMode_V2:
         [OWSKeyBackupService verifyPin:pin resultHandler:result];
         break;
     case OWS2FAMode_V1:
-        result(self.pinCode == pin);
+        result([self.pinCode.ensureArabicNumerals isEqualToString:pin]);
         break;
     case OWS2FAMode_Disabled:
         OWSFailDebug(@"unexpectedly attempting to verify pin when 2fa is disabled");

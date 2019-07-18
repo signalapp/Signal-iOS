@@ -244,7 +244,7 @@ public class KeyBackupService: NSObject {
     private static func deriveStretchedPin(from pin: String) -> Data? {
         assertIsOnBackgroundQueue()
 
-        guard let pinData = pin.data(using: .utf8) else {
+        guard let pinData = pin.ensureArabicNumerals.data(using: .utf8) else {
             owsFailDebug("Failed to encode pin data")
             return nil
         }

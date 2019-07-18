@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "UtilTest.h"
@@ -8,6 +8,7 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSObject+OWS.h>
 #import <SignalServiceKit/NSString+SSK.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 @interface DateUtil (Test)
 
@@ -48,11 +49,46 @@
     test([[@"abc123%^&" removeAllCharactersIn:NSCharacterSet.decimalDigitCharacterSet] isEqual:@"abc%^&"]);
 }
 
--(void) testDigitsOnly {
+- (void)testDigitsOnly {
     test([@"".digitsOnly isEqual:@""]);
     test([@"1".digitsOnly isEqual:@"1"]);
     test([@"a".digitsOnly isEqual:@""]);
     test([@"(555) 235-7111".digitsOnly isEqual:@"5552357111"]);
+}
+
+- (void)testEnsureArabicNumerals {
+    NSArray<NSString *> *zeroToNineTests = @[
+        @"০১২৩৪৫৬৭৮৯", // Bengali
+        @"၀၁၂၃၄၅၆၇၈၉", // Burmese
+        @"〇一二三四五六七八九", // Chinese (Simplified), Japanese
+        @"零一二三四五六七八九", // Chinese (Traditional)
+        @"०१२३४५६७८९", // Devanagari (Sanskrit, Hindi, and other Indian languages)
+        @"٠١٢٣٤٥٦٧٨٩", // Eastern Arabic
+        @"૦૧૨૩૪૫૬૭૮૯", // Gujarati
+        @"੦੧੨੩੪੫੬੭੮੯", // Gurmukhi (Punjabi)
+        @"೦೧೨೩೪೫೬೭೮೯", // Kannada
+        @"൦൧൨൩൪൫൬൭൮൯", // Malayalam
+        @"୦୧୨୩୪୫୬୭୮୯", // Odia
+        @"۰۱۲۳۴۵۶۷۸۹", // Persian, Urdu
+        @"௦௧௨௩௪௫௬௭௮௯", // Tamil
+        @"౦౧౨౩౪౫౬౭౮౯", // Telugu
+        @"๐๑๒๓๔๕๖๗๘๙", // Thai
+        @"0123456789", // Western arabic
+    ];
+
+    for (NSString *zeroToNineTest in zeroToNineTests) {
+        test([zeroToNineTest.ensureArabicNumerals isEqualToString:@"0123456789"]);
+    }
+
+    // In mixed strings, only replaces the numerals.
+    test([@"نمرا ١٢٣٤٥ يا".ensureArabicNumerals isEqualToString:@"نمرا 12345 يا"]);
+
+    // Appropriately handles characters that extend across multiple unicode scalars
+    test([@"123 👩🏻‍🔬🧛🏿‍♀️🤦🏽‍♀️🏳️‍🌈 ١٢٣".ensureArabicNumerals isEqualToString:@"123 👩🏻‍🔬🧛🏿‍♀️🤦🏽‍♀️🏳️‍🌈 123"]);
+
+    // In strings without numerals, does nothing.
+    test([@"a".ensureArabicNumerals isEqualToString:@"a"]);
+    test([@"".ensureArabicNumerals isEqualToString:@""]);
 }
 
 - (void)testfilterUnsafeFilenameCharacters

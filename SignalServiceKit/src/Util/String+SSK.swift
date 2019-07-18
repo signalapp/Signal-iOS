@@ -24,6 +24,28 @@ public extension String {
     enum StringError: Error {
         case invalidCharacterShift
     }
+
+    /// Converts all non arabic numerals within a string to arabic numerals
+    ///
+    /// For example: "Hello ١٢٣" would become "Hello 123"
+    var ensureArabicNumerals: String {
+        return String(map { character in
+            // Check if this character is a number between 0-9, if it's not just return it and carry on
+            //
+            // Some languages (like Chinese) have characters that represent larger numbers (万 = 10^4)
+            // These are not easily translatable into arabic numerals at a character by character level,
+            // so we ignore them.
+            guard let number = character.wholeNumberValue, number <= 9, number >= 0 else { return character }
+            return Character("\(number)")
+        })
+    }
+}
+
+public extension NSString {
+    @objc
+    var ensureArabicNumerals: String {
+        return (self as String).ensureArabicNumerals
+    }
 }
 
 // MARK: - Selector Encoding
