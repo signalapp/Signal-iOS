@@ -101,7 +101,6 @@
 		3461284B1FD0B94000532771 /* SAELoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461284A1FD0B93F00532771 /* SAELoadViewController.swift */; };
 		346129391FD1B47300532771 /* OWSPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129371FD1B47200532771 /* OWSPreferences.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3461293A1FD1B47300532771 /* OWSPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129381FD1B47200532771 /* OWSPreferences.m */; };
-		3461293E1FD1D72B00532771 /* ExperienceUpgradeFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3461293D1FD1D72B00532771 /* ExperienceUpgradeFinder.swift */; };
 		3461295A1FD1D74C00532771 /* Environment.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129401FD1D74B00532771 /* Environment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3461295B1FD1D74C00532771 /* Environment.m in Sources */ = {isa = PBXBuildFile; fileRef = 346129411FD1D74B00532771 /* Environment.m */; };
 		346129951FD1E30000532771 /* OWSDatabaseMigration.h in Headers */ = {isa = PBXBuildFile; fileRef = 346129931FD1E30000532771 /* OWSDatabaseMigration.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -527,6 +526,7 @@
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
+		8810223722DF9C2300A7C44F /* OnboardingAccountLockedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8810223622DF9C2300A7C44F /* OnboardingAccountLockedViewController.swift */; };
 		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
 		881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */; };
 		881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */; };
@@ -802,7 +802,6 @@
 		3461284A1FD0B93F00532771 /* SAELoadViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SAELoadViewController.swift; sourceTree = "<group>"; };
 		346129371FD1B47200532771 /* OWSPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSPreferences.h; sourceTree = "<group>"; };
 		346129381FD1B47200532771 /* OWSPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSPreferences.m; sourceTree = "<group>"; };
-		3461293D1FD1D72B00532771 /* ExperienceUpgradeFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ExperienceUpgradeFinder.swift; path = ExperienceUpgrades/ExperienceUpgradeFinder.swift; sourceTree = "<group>"; };
 		346129401FD1D74B00532771 /* Environment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Environment.h; sourceTree = "<group>"; };
 		346129411FD1D74B00532771 /* Environment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Environment.m; sourceTree = "<group>"; };
 		346129931FD1E30000532771 /* OWSDatabaseMigration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDatabaseMigration.h; sourceTree = "<group>"; };
@@ -1302,6 +1301,7 @@
 		76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		76EB03C218170B33006006FC /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		8810223622DF9C2300A7C44F /* OnboardingAccountLockedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAccountLockedViewController.swift; sourceTree = "<group>"; };
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
 		881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinReminderViewController.swift; sourceTree = "<group>"; };
 		881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinSetupViewController.swift; sourceTree = "<group>"; };
@@ -1552,6 +1552,7 @@
 			children = (
 				3441FD9E21A3604F00BB9542 /* BackupRestoreViewController.swift */,
 				349ED98F221B0194008045B0 /* Onboarding2FAViewController.swift */,
+				8810223622DF9C2300A7C44F /* OnboardingAccountLockedViewController.swift */,
 				3448E1612213585C004B052E /* OnboardingBaseViewController.swift */,
 				3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */,
 				3448E15D221333F5004B052E /* OnboardingController.swift */,
@@ -2186,14 +2187,6 @@
 			path = DebugUI;
 			sourceTree = "<group>";
 		};
-		4505C2BD1E648E6E00CEBF41 /* ExperienceUpgrades */ = {
-			isa = PBXGroup;
-			children = (
-				3461293D1FD1D72B00532771 /* ExperienceUpgradeFinder.swift */,
-			);
-			name = ExperienceUpgrades;
-			sourceTree = "<group>";
-		};
 		450DF2061E0DD28D003D14BE /* UserInterface */ = {
 			isa = PBXGroup;
 			children = (
@@ -2456,7 +2449,6 @@
 			isa = PBXGroup;
 			children = (
 				34D99CE3217509C1000AFB39 /* AppEnvironment.swift */,
-				4505C2BD1E648E6E00CEBF41 /* ExperienceUpgrades */,
 				4539B5851F79348F007141FF /* PushRegistrationManager.swift */,
 				346129981FD1E4DA00532771 /* SignalApp.h */,
 				346129971FD1E4D900532771 /* SignalApp.m */,
@@ -3643,7 +3635,6 @@
 			files = (
 				4CC0B59C20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift in Sources */,
 				3434AE1C22AEDE7D002EE04E /* PerMessageExpirationViewController.swift in Sources */,
-				3461293E1FD1D72B00532771 /* ExperienceUpgradeFinder.swift in Sources */,
 				34C4E2582118957600BEA353 /* WebRTCProto.swift in Sources */,
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				452EC6DF205E9E30000E787C /* MediaGalleryViewController.swift in Sources */,
@@ -3795,6 +3786,7 @@
 				340FC8BB204DAC8D007AEB0F /* OWSAddToContactViewController.m in Sources */,
 				34C2EEB92272244600BCA1D0 /* OWSMessageStickerView.m in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
+				8810223722DF9C2300A7C44F /* OnboardingAccountLockedViewController.swift in Sources */,
 				452C468F1E427E200087B011 /* OutboundCallInitiator.swift in Sources */,
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
 				45F170BB1E2FC5D3003FC1F2 /* CallAudioService.swift in Sources */,

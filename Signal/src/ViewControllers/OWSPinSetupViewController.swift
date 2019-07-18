@@ -124,14 +124,7 @@ public class PinSetupViewController: OWSViewController {
             // Back button
 
             let topButton = UIButton()
-
-            let topButtonImage: UIImage
-            // If we're on the first step of recreation, the top button is an X to dismiss
-            if case .recreating = mode {
-                topButtonImage = #imageLiteral(resourceName: "x-24")
-            } else {
-                topButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
-            }
+            let topButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
 
             topButton.setTemplateImage(topButtonImage, tintColor: Theme.secondaryColor)
             topButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
@@ -153,7 +146,16 @@ public class PinSetupViewController: OWSViewController {
 
             titleLabel = label
 
-            let row = UIStackView(arrangedSubviews: [topButtonRow, label, UIView.spacer(withHeight: 10)])
+            let arrangedSubviews: [UIView]
+
+            // If we're in creating mode AND we're the rootViewController, don't allow going back
+            if case .creating = mode, navigationController?.viewControllers.first == self {
+                arrangedSubviews = [UIView.spacer(withHeight: 40), label, UIView.spacer(withHeight: 10)]
+            } else {
+                arrangedSubviews = [topButtonRow, label, UIView.spacer(withHeight: 10)]
+            }
+
+            let row = UIStackView(arrangedSubviews: arrangedSubviews)
             row.axis = .vertical
             row.distribution = .fill
             topRow = row
@@ -182,7 +184,9 @@ public class PinSetupViewController: OWSViewController {
             let explanationBoldText = NSLocalizedString("PIN_CREATION_BOLD_EXPLANATION",
                                                         comment: "The bold portion of the explanation in the 'pin creation' view.")
 
-            let attributedExplanation = NSAttributedString(string: explanationText).rtlSafeAppend(explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
+            let attributedExplanation = NSAttributedString(string: explanationText)
+                .rtlSafeAppend(" ")
+                .rtlSafeAppend(explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
 
             explanationLabel.attributedText = attributedExplanation
 
@@ -194,7 +198,9 @@ public class PinSetupViewController: OWSViewController {
             let explanationBoldText = NSLocalizedString("PIN_CREATION_RECREATION_BOLD_EXPLANATION",
                                                         comment: "The bold portion of the re-creation explanation in the 'pin creation' view.")
 
-            let attributedExplanation = NSAttributedString(string: explanationText).rtlSafeAppend(explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
+            let attributedExplanation = NSAttributedString(string: explanationText)
+                .rtlSafeAppend(" ")
+                .rtlSafeAppend(explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
 
             explanationLabel.attributedText = attributedExplanation
 

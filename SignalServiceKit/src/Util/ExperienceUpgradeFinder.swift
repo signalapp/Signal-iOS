@@ -3,9 +3,8 @@
 //
 
 import Foundation
-import SignalServiceKit
 
-enum ExperienceUpgradeId: String {
+public enum ExperienceUpgradeId: String {
     case introducingStickers = "008"
     case introducingPins = "009"
 }
@@ -23,11 +22,13 @@ enum ExperienceUpgradeId: String {
         SwiftSingletons.register(self)
     }
 
-    var stickers: ExperienceUpgrade {
+    @objc
+    public var stickers: ExperienceUpgrade {
         return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingStickers.rawValue)
     }
 
-    var pins: ExperienceUpgrade {
+    @objc
+    public var pins: ExperienceUpgrade {
         return ExperienceUpgrade(uniqueId: ExperienceUpgradeId.introducingPins.rawValue)
     }
 
@@ -54,6 +55,11 @@ enum ExperienceUpgradeId: String {
         let seen = ExperienceUpgrade.anyFetchAll(transaction: transaction)
         let seenIds = seen.map { $0.uniqueId! }
         return allExperienceUpgrades.filter { !seenIds.contains($0.uniqueId!) }
+    }
+
+    @objc
+    public func hasUnseen(experienceUpgrade: ExperienceUpgrade, transaction: SDSAnyReadTransaction) -> Bool {
+        return allUnseen(transaction: transaction).contains { experienceUpgrade.uniqueId == $0.uniqueId }
     }
 
     @objc

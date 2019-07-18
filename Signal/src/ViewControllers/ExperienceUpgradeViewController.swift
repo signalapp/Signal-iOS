@@ -231,8 +231,8 @@ private class IntroducingPinsExperienceUpgradeViewController: ExperienceUpgradeV
 
     func primaryButtonTitle() -> String {
         if hasPinAlready {
-            return NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_OKAY_BUTTON",
-                                     comment: "Button to dismiss the one time splash screen that appears after upgrading")
+            return NSLocalizedString("BUTTON_OKAY",
+                                     comment: "Label for the 'okay' button.")
         } else {
             return NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON",
                                      comment: "Button to start a create pin flow from the one time splash screen that appears after upgrading")

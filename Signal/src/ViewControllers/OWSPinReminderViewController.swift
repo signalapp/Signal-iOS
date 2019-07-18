@@ -203,7 +203,8 @@ public class PinReminderViewController: OWSViewController {
     @objc func submitPressed() {
         Logger.info("")
 
-        guard let pin = pinTextField.text?.ows_stripped(), pin.count > 3 else {
+        // We only check > 0 here rather than > 3 because legacy pins may be less than 4 characters
+        guard let pin = pinTextField.text?.ows_stripped(), pin.count > 0 else {
             validationState = .tooShort
             return
         }
@@ -221,7 +222,8 @@ public class PinReminderViewController: OWSViewController {
     private func verifySilently() {
         Logger.info("")
 
-        guard let pin = pinTextField.text?.ows_stripped(), pin.count > 3 else {
+        // We only check > 0 here rather than > 3 because legacy pins may be less than 4 characters
+        guard let pin = pinTextField.text?.ows_stripped(), pin.count > 0 else {
             return
         }
 
