@@ -111,11 +111,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 {
     OWSAssertDebug(contactAddress.isValid);
 
-    // UUID TODO: Is this correct?
-    NSString *_Nullable uniqueId = [contactAddress serviceIdentifier];
-    OWSAssertDebug(uniqueId.length > 0);
-    
-    if (self = [super initWithUniqueId:uniqueId]) {
+    if (self = [super init]) {
         _contactUUID = contactAddress.uuidString;
         _contactPhoneNumber = contactAddress.phoneNumber;
         _contactThreadSchemaVersion = TSContactThreadSchemaVersion;
