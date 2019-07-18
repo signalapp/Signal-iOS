@@ -181,6 +181,14 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (TSThread *)threadWithSneakyTransaction
 {
+    if (self.uniqueThreadId == nil) {
+        // This might be a true for a few legacy interactions enqueued in
+        // the message sender.  The message sender will handle this case.
+        // Note that this method is not declared as nullable.
+        OWSFailDebug(@"Missing uniqueThreadId.");
+        return nil;
+    }
+
     __block TSThread *thread;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         thread = [TSThread anyFetchWithUniqueId:self.uniqueThreadId transaction:transaction];
@@ -191,6 +199,14 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (TSThread *)threadWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    if (self.uniqueThreadId == nil) {
+        // This might be a true for a few legacy interactions enqueued in
+        // the message sender.  The message sender will handle this case.
+        // Note that this method is not declared as nullable.
+        OWSFailDebug(@"Missing uniqueThreadId.");
+        return nil;
+    }
+
     return [TSThread anyFetchWithUniqueId:self.uniqueThreadId transaction:transaction];
 }
 
