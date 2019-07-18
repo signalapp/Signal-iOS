@@ -780,31 +780,26 @@ static NSTimeInterval launchStartedAt;
 
             // 2FA
 
-            // Get the top most view controller, either the rootViewController
-            // or any presented view controller
-            UIViewController *topViewController = self.window.rootViewController;
-            while (topViewController.presentedViewController) {
-                topViewController = topViewController.presentedViewController;
-            }
-
             if ([OWS2FAManager sharedManager].hasPending2FASetup) {
-                OWSAssertDebug(topViewController);
+                UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
+                OWSAssertDebug(frontmostViewController);
 
-                if ([topViewController isKindOfClass:[OWSPinSetupViewController class]]) {
+                if ([frontmostViewController isKindOfClass:[OWSPinSetupViewController class]]) {
                     // We're already presenting this
                     return;
                 }
 
                 OWSPinSetupViewController *setupVC = [[OWSPinSetupViewController alloc] initWithCompletionHandler:^{
-                    [topViewController dismissViewControllerAnimated:YES completion:nil];
+                    [frontmostViewController dismissViewControllerAnimated:YES completion:nil];
                 }];
 
-                [topViewController
+                [frontmostViewController
                     presentViewController:[[OWSNavigationController alloc] initWithRootViewController:setupVC]
                                  animated:YES
                                completion:nil];
             } else if ([OWS2FAManager sharedManager].isDueForReminder) {
-                OWSAssertDebug(topViewController);
+                UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
+                OWSAssertDebug(frontmostViewController);
 
                 UIViewController *reminderVC;
                 if (SSKFeatureFlags.pinsForEveryone) {
@@ -813,12 +808,12 @@ static NSTimeInterval launchStartedAt;
                     reminderVC = [OWS2FAReminderViewController wrappedInNavController];
                 }
 
-                if ([topViewController isKindOfClass:[reminderVC class]]) {
+                if ([frontmostViewController isKindOfClass:[reminderVC class]]) {
                     // We're already presenting this
                     return;
                 }
 
-                [topViewController presentViewController:reminderVC animated:YES completion:nil];
+                [frontmostViewController presentViewController:reminderVC animated:YES completion:nil];
             }
         });
     }

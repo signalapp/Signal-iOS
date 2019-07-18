@@ -146,16 +146,16 @@ public class PinSetupViewController: OWSViewController {
 
             titleLabel = label
 
-            let arrangeSubviews: [UIView]
+            let arrangedSubviews: [UIView]
 
             // If we're in creating mode AND we're the rootViewController, don't allow going back
             if case .creating = mode, navigationController?.viewControllers.first == self {
-                arrangeSubviews = [UIView.spacer(withHeight: 40), label, UIView.spacer(withHeight: 10)]
+                arrangedSubviews = [UIView.spacer(withHeight: 40), label, UIView.spacer(withHeight: 10)]
             } else {
-                arrangeSubviews = [topButtonRow, label, UIView.spacer(withHeight: 10)]
+                arrangedSubviews = [topButtonRow, label, UIView.spacer(withHeight: 10)]
             }
 
-            let row = UIStackView(arrangedSubviews: arrangeSubviews)
+            let row = UIStackView(arrangedSubviews: arrangedSubviews)
             row.axis = .vertical
             row.distribution = .fill
             topRow = row
