@@ -597,6 +597,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)syncQueuedVerificationStates
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
+        if (thread == nil) {
+            OWSFailDebug(@"Missing thread.");
+            return;
+        }
         NSMutableArray<OWSVerificationStateSyncMessage *> *messages = [NSMutableArray new];
         [self.databaseQueue readWithBlock:^(SDSAnyReadTransaction *transaction) {
             [self.queuedVerificationStateSyncMessagesKeyValueStore
@@ -645,7 +650,8 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                      }
                                                      OWSVerificationStateSyncMessage *message =
                                                          [[OWSVerificationStateSyncMessage alloc]
-                                                                   initWithVerificationState:recipientIdentity
+                                                                              initWithThread:thread
+                                                                           verificationState:recipientIdentity
                                                                                                  .verificationState
                                                                                  identityKey:identityKey
                                                              verificationForRecipientAddress:address];

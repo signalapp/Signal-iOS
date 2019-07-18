@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSProfileKeyMessage
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
 {
     return [super initOutgoingMessageWithTimestamp:timestamp
                                           inThread:thread
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address
 {
-    OWSAssertDebug(self.thread);
+    OWSAssertDebug(self.threadWithSneakyTransaction != nil);
 
     SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
     if (!builder) {

@@ -194,9 +194,8 @@ class DebugUINotifications: DebugUIPage {
     func notifyUserForThreadlessErrorMessage() -> Guarantee<Void> {
         return delayedNotificationDispatch {
             self.databaseStorage.write { transaction in
-                let errorMessage = TSErrorMessage.corruptedMessageInUnknownThread()
-
-                self.notificationPresenter.notifyUser(forThreadlessErrorMessage: errorMessage,
+                let errorMessage = ThreadlessErrorMessage.corruptedMessageInUnknownThread()
+                self.notificationPresenter.notifyUser(for: errorMessage,
                                                       transaction: transaction)
             }
         }

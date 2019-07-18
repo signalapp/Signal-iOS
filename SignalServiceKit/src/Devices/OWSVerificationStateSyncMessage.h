@@ -13,9 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithVerificationState:(OWSVerificationState)verificationState
-                              identityKey:(NSData *)identityKey
-          verificationForRecipientAddress:(SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithThread:(TSThread *)thread
+                  verificationState:(OWSVerificationState)verificationState
+                        identityKey:(NSData *)identityKey
+    verificationForRecipientAddress:(SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 // This is a clunky name, but we want to differentiate it from `recipientIdentifier` inherited from `TSOutgoingMessage`

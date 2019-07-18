@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSProfileKeyMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(nullable TSThread *)thread
+                                        inThread:(TSThread *)thread
                                      messageBody:(nullable NSString *)body
                                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
                                 expiresInSeconds:(uint32_t)expiresInSeconds
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(nullable TSThread *)thread NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 @end

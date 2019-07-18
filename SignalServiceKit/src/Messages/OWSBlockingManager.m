@@ -48,6 +48,15 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 @implementation OWSBlockingManager
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 + (instancetype)sharedManager
 {
     OWSAssertDebug(SSKEnvironment.shared.blockingManager);
@@ -437,10 +446,19 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     OWSAssertDebug(blockedUUIDs);
     OWSAssertDebug(blockedGroupIds);
 
-    OWSBlockedPhoneNumbersMessage *message =
-        [[OWSBlockedPhoneNumbersMessage alloc] initWithPhoneNumbers:blockedPhoneNumbers
-                                                              uuids:blockedUUIDs
-                                                           groupIds:blockedGroupIds];
+    __block TSThread *_Nullable thread;
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+    }];
+    if (thread == nil) {
+        OWSFailDebug(@"Missing thread.");
+        return;
+    }
+
+    OWSBlockedPhoneNumbersMessage *message = [[OWSBlockedPhoneNumbersMessage alloc] initWithThread:thread
+                                                                                      phoneNumbers:blockedPhoneNumbers
+                                                                                             uuids:blockedUUIDs
+                                                                                          groupIds:blockedGroupIds];
 
     [self.messageSender sendMessage:message
         success:^{

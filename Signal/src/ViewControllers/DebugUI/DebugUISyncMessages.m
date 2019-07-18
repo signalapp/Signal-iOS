@@ -108,13 +108,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendGroupSyncMessage
 {
-    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
+    TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
+    if (thread == nil) {
+        OWSFailDebug(@"Missing thread.");
+        return;
+    }
+
+    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithThread:thread];
+
     __block DataSource *dataSource;
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         dataSource = [DataSourceValue
             dataSourceWithSyncMessageData:[syncGroupsMessage
                                               buildPlainTextAttachmentDataWithTransaction:transaction.asAnyRead]];
     }];
+
+    if (syncGroupsMessage == nil || dataSource == nil) {
+        return;
+    }
 
     [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
                                      dataSource:dataSource

@@ -16,9 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
-                       identityManager:(OWSIdentityManager *)identityManager
-                        profileManager:(id<ProfileManagerProtocol>)profileManager NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithThread:(TSThread *)thread
+                signalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+               identityManager:(OWSIdentityManager *)identityManager
+                profileManager:(id<ProfileManagerProtocol>)profileManager NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

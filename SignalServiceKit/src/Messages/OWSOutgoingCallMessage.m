@@ -151,7 +151,9 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setBusy:self.busyMessage];
     }
 
-    [ProtoUtils addLocalProfileKeyIfNecessary:self.thread address:address callMessageBuilder:builder];
+    [ProtoUtils addLocalProfileKeyIfNecessary:self.threadWithSneakyTransaction
+                                      address:address
+                           callMessageBuilder:builder];
 
     NSError *error;
     SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];

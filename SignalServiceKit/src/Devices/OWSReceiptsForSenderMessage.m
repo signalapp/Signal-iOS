@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSReceiptsForSenderMessage
 
-+ (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
++ (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                           messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    receiptType:SSKProtoReceiptMessageTypeDelivery];
 }
 
-+ (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
++ (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                       messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    receiptType:SSKProtoReceiptMessageTypeRead];
 }
 
-- (instancetype)initWithThread:(nullable TSThread *)thread
+- (instancetype)initWithThread:(TSThread *)thread
              messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
                    receiptType:(SSKProtoReceiptMessageType)receiptType
 {

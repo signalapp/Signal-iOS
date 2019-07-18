@@ -22,11 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
-                               uuids:(NSArray<NSString *> *)uuids
-                            groupIds:(NSArray<NSData *> *)groupIds
+- (instancetype)initWithThread:(TSThread *)thread
+                  phoneNumbers:(NSArray<NSString *> *)phoneNumbers
+                         uuids:(NSArray<NSString *> *)uuids
+                      groupIds:(NSArray<NSData *> *)groupIds
 {
-    self = [super init];
+    self = [super initWithThread:thread];
     if (!self) {
         return self;
     }

@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSSyncGroupsRequestMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(nullable TSThread *)thread
+                                        inThread:(TSThread *)thread
                                      messageBody:(nullable NSString *)body
                                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
                                 expiresInSeconds:(uint32_t)expiresInSeconds
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
 
-- (instancetype)initWithThread:(nullable TSThread *)thread groupId:(NSData *)groupId;
+- (instancetype)initWithThread:(TSThread *)thread groupId:(NSData *)groupId;
 
 @end
 

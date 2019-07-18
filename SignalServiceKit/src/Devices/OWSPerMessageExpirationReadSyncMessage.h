@@ -17,9 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp NS_UNAVAILABLE;
 
-- (instancetype)initWithSenderAddress:(SignalServiceAddress *)senderAddress
-                   messageIdTimestamp:(uint64_t)messageIdtimestamp
-                        readTimestamp:(uint64_t)readTimestamp NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithThread:(TSThread *)thread
+                 senderAddress:(SignalServiceAddress *)senderAddress
+            messageIdTimestamp:(uint64_t)messageIdtimestamp
+                 readTimestamp:(uint64_t)readTimestamp NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 

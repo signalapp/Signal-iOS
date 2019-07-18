@@ -798,7 +798,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 
             if (!success) {
                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                    TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+                    ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
                     [self.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                        transaction:transaction];
                 }];

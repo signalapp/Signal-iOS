@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL wasReceivedByUD;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
+                                inThread:(TSThread *)thread
                              messageBody:(nullable NSString *)body
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds

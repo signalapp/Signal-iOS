@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
 
 NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
-@protocol OWSPreviewText
+@protocol OWSPreviewText <NSObject>
 
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
@@ -31,6 +31,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 #pragma mark -
 
 @interface TSInteraction : BaseModel
+
+- (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 
@@ -55,9 +57,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 @property (nonatomic, readonly) NSString *uniqueThreadId;
 
-// GRDB TODO: Remove.
-@property (nonatomic, readonly) TSThread *thread;
-
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
@@ -65,6 +64,8 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (NSDate *)receivedAtDate;
 
 - (OWSInteractionType)interactionType;
+
+- (TSThread *)threadWithSneakyTransaction;
 
 - (TSThread *)threadWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(thread(transaction:));
 

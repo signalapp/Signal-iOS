@@ -1862,7 +1862,7 @@ typedef enum : NSUInteger {
         [self.attachmentDownloads downloadAllAttachmentsForMessage:message
             transaction:transaction
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
+                OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.threadWithSneakyTransaction);
             }
             failure:^(NSError *error) {
                 OWSLogWarn(@"Failed to redownload message with error: %@", error);

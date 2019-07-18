@@ -282,10 +282,17 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             [self.toLinkedDevicesReadReceiptMap allValues];
         [self.toLinkedDevicesReadReceiptMap removeAllObjects];
         if (readReceiptsForLinkedDevices.count > 0) {
-            OWSReadReceiptsForLinkedDevicesMessage *message =
-                [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithReadReceipts:readReceiptsForLinkedDevices];
-
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+                if (thread == nil) {
+                    OWSFailDebug(@"Missing thread.");
+                    return;
+                }
+
+                OWSReadReceiptsForLinkedDevicesMessage *message =
+                    [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithThread:thread
+                                                                      readReceipts:readReceiptsForLinkedDevices];
+
                 [self.messageSenderJobQueue addMessage:message transaction:transaction];
             }];
         }

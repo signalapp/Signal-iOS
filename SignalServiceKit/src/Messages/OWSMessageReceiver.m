@@ -417,7 +417,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         // TODO: Add analytics.
 
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+            ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                 transaction:transaction];
         }];

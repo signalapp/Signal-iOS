@@ -80,7 +80,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @interface TSOutgoingMessage : TSMessage
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
+                                inThread:(TSThread *)thread
                              messageBody:(nullable NSString *)body
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds
@@ -92,7 +92,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 
 // MJK TODO - Can we remove the sender timestamp param?
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(nullable TSThread *)thread
+                                        inThread:(TSThread *)thread
                                      messageBody:(nullable NSString *)body
                                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
                                 expiresInSeconds:(uint32_t)expiresInSeconds
@@ -151,16 +151,16 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId;
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds
@@ -168,7 +168,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                             linkPreview:(nullable OWSLinkPreview *)linkPreview
                          messageSticker:(nullable MessageSticker *)messageSticker;
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 

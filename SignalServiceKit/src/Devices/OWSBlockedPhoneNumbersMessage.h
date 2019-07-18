@@ -10,9 +10,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithPhoneNumbers:(NSArray<NSString *> *)phoneNumbers
-                               uuids:(NSArray<NSString *> *)uuids
-                            groupIds:(NSArray<NSData *> *)groupIds NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithThread:(TSThread *)thread
+                  phoneNumbers:(NSArray<NSString *> *)phoneNumbers
+                         uuids:(NSArray<NSString *> *)uuids
+                      groupIds:(NSArray<NSData *> *)groupIds NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -16,7 +16,9 @@ typedef NS_ENUM(NSUInteger, StickerPackOperationType) {
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithPacks:(NSArray<StickerPackInfo *> *)packs operationType:(StickerPackOperationType)operationType;
+- (instancetype)initWithThread:(TSThread *)thread
+                         packs:(NSArray<StickerPackInfo *> *)packs
+                 operationType:(StickerPackOperationType)operationType;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 @end

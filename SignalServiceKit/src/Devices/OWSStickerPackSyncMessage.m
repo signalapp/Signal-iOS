@@ -23,9 +23,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithPacks:(NSArray<StickerPackInfo *> *)packs operationType:(StickerPackOperationType)operationType
+- (instancetype)initWithThread:(TSThread *)thread
+                         packs:(NSArray<StickerPackInfo *> *)packs
+                 operationType:(StickerPackOperationType)operationType
 {
-    self = [super init];
+    self = [super initWithThread:thread];
     if (!self) {
         return self;
     }

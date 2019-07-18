@@ -66,7 +66,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @implementation TSMessage
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
+                                inThread:(TSThread *)thread
                              messageBody:(nullable NSString *)body
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds

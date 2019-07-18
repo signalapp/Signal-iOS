@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSOutgoingNullMessage : TSOutgoingMessage
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(nullable TSThread *)thread
+                                        inThread:(TSThread *)thread
                                      messageBody:(nullable NSString *)body
                                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
                                 expiresInSeconds:(uint32_t)expiresInSeconds

@@ -34,7 +34,7 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
 @property (atomic, readonly, nullable) SignalServiceAddress *unregisteredAddress;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
+                                inThread:(TSThread *)thread
                              messageBody:(nullable NSString *)body
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds
@@ -96,7 +96,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
           unregisteredAddress:(SignalServiceAddress *)unregisteredAddress;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
+                         inThread:(TSThread *)thread
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds

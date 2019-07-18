@@ -27,10 +27,18 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
     TSErrorMessageGroupCreationFailed,
 };
 
+@interface ThreadlessErrorMessage : NSObject <OWSPreviewText>
+
++ (ThreadlessErrorMessage *)corruptedMessageInUnknownThread;
+
+@end
+
+#pragma mark -
+
 @interface TSErrorMessage : TSMessage <OWSReadTracking>
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
+                                inThread:(TSThread *)thread
                              messageBody:(nullable NSString *)body
                            attachmentIds:(NSArray<NSString *> *)attachmentIds
                         expiresInSeconds:(uint32_t)expiresInSeconds
@@ -41,7 +49,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
                           messageSticker:(nullable MessageSticker *)messageSticker NS_UNAVAILABLE;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
+                         inThread:(TSThread *)thread
                       messageBody:(nullable NSString *)body
                     attachmentIds:(NSArray<NSString *> *)attachmentIds
                  expiresInSeconds:(uint32_t)expiresInSeconds
@@ -50,7 +58,7 @@ typedef NS_ENUM(int32_t, TSErrorMessageType) {
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
+                         inThread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
                           address:(nullable SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
 
@@ -90,8 +98,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 + (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                              withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-+ (instancetype)corruptedMessageInUnknownThread;
 
 + (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
                            withTransaction:(YapDatabaseReadWriteTransaction *)transaction;

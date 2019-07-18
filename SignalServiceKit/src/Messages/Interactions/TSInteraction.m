@@ -86,6 +86,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                                    inThread:(TSThread *)thread
 {
     OWSAssertDebug(timestamp > 0);
+    OWSAssertDebug(thread);
 
     self = [super initWithUniqueId:uniqueId];
 
@@ -178,8 +179,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 #pragma mark Thread
 
-// GRDB TODO: Remove.
-- (TSThread *)thread
+- (TSThread *)threadWithSneakyTransaction
 {
     __block TSThread *thread;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
