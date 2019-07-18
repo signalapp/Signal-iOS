@@ -91,7 +91,7 @@ public class OWS110SortIdMigration: YDBDatabaseMigration {
                                 }
                                 previousTimestampForLegacySorting = interaction.timestampForLegacySorting()
 
-                                interaction.saveNextSortId(transaction: transaction)
+                                interaction.ydb_saveNextSortId(transaction: transaction)
 
                                 completedCount += 1
                                 if completedCount % 100 == 0 {

@@ -358,10 +358,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return interaction
     }
 
-    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
-        return TSInteraction.interactions(withTimestamp: timestamp,
-                                          filter: filter,
-                                          with: transaction)
+    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: YapDatabaseReadTransaction) throws -> [TSInteraction] {
+        return TSInteraction.ydb_interactions(withTimestamp: timestamp,
+                                              filter: filter,
+                                              with: transaction)
     }
 
     // MARK: - private
@@ -528,7 +528,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     func enumerateInteractionIds(transaction: GRDBReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
 
         let cursor = try String.fetchCursor(transaction.database,
-                                        sql: """
+                                            sql: """
             SELECT \(interactionColumn: .uniqueId)
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
@@ -589,7 +589,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 
-    public static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
+    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)

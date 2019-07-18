@@ -646,9 +646,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             // We load a new instance before using anyUpdateWithTransaction()
             // since it isn't thread-safe to mutate the current instance async.
-            TSAttachment *_Nullable attachment =
-                [TSAttachment anyFetchWithUniqueId:self.uniqueId transaction:transaction];
-            if (!attachment) {
+            TSAttachmentStream *_Nullable latestInstance =
+                [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:self.uniqueId transaction:transaction];
+            if (latestInstance == nil) {
                 // This attachment has either not yet been saved or has been deleted; do nothing.
                 // This isn't an error per se, but these race conditions should be
                 // _very_ rare.
@@ -657,11 +657,6 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                 OWSLogWarn(@"Could not load attachment.");
                 return;
             }
-            if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                OWSFailDebug(@"Object has unexpected type: %@.", [attachment class]);
-                return;
-            }
-            TSAttachmentStream *latestInstance = (TSAttachmentStream *)attachment;
             [latestInstance anyUpdateAttachmentStreamWithTransaction:transaction
                                                                block:^(TSAttachmentStream *attachmentStream) {
                                                                    changeBlock(attachmentStream);
@@ -963,12 +958,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     // but should be straight forward.
     __block TSAttachmentStream *_Nullable attachmentStream;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
-        if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-            OWSFailDebug(@"Object has unexpected type: %@", [attachment class]);
-            return;
-        }
-        attachmentStream = (TSAttachmentStream *)attachment;
+        attachmentStream =
+            [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId transaction:transaction];
     }];
     if (attachmentStream == nil) {
         return nil;

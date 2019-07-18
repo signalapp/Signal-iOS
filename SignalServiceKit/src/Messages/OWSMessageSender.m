@@ -445,14 +445,20 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         successHandler();
 
         OWSLogDebug(@"Removing successful temporary attachment message with attachment ids: %@", message.attachmentIds);
-        [message remove];
+
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [message anyRemoveWithTransaction:transaction];
+        }];
     };
 
     void (^failureWithDeleteHandler)(NSError *error) = ^(NSError *error) {
         failureHandler(error);
 
         OWSLogDebug(@"Removing failed temporary attachment message with attachment ids: %@", message.attachmentIds);
-        [message remove];
+
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [message anyRemoveWithTransaction:transaction];
+        }];
     };
 
     [self sendAttachment:dataSource
@@ -1830,19 +1836,30 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     if (message.groupMetaMessage == TSGroupMetaMessageDeliver) {
         // TODO: Why is this necessary?
-        [message save];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [message anyUpsertWithTransaction:transaction];
+        }];
+#pragma clang diagnostic pop
     } else if (message.groupMetaMessage == TSGroupMetaMessageQuit) {
         // MJK TODO - remove senderTimestamp
-        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-                                         inThread:thread
-                                      messageType:TSInfoMessageTypeGroupQuit
-                                    customMessage:message.customMessage] save];
+        TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+                                                                     inThread:thread
+                                                                  messageType:TSInfoMessageTypeGroupQuit
+                                                                customMessage:message.customMessage];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [infoMessage anyInsertWithTransaction:transaction];
+        }];
     } else {
         // MJK TODO - remove senderTimestamp
-        [[[TSInfoMessage alloc] initWithTimestamp:message.timestamp
-                                         inThread:thread
-                                      messageType:TSInfoMessageTypeGroupUpdate
-                                    customMessage:message.customMessage] save];
+        TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:message.timestamp
+                                                                     inThread:thread
+                                                                  messageType:TSInfoMessageTypeGroupUpdate
+                                                                customMessage:message.customMessage];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [infoMessage anyInsertWithTransaction:transaction];
+        }];
     }
 }
 
@@ -1914,22 +1931,24 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     if (message.linkPreview.imageAttachmentId != nil) {
-        TSAttachment *attachment =
-            [TSAttachment anyFetchWithUniqueId:message.linkPreview.imageAttachmentId transaction:transaction];
-        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-            [attachmentIds addObject:attachment.uniqueId];
+        TSAttachmentStream *_Nullable attachment =
+            [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:message.linkPreview.imageAttachmentId
+                                                         transaction:transaction];
+        if (attachment == nil) {
+            OWSFailDebug(@"Missing attachment: %@", attachment);
         } else {
-            OWSFailDebug(@"unexpected attachment: %@", attachment);
+            [attachmentIds addObject:attachment.uniqueId];
         }
     }
 
     if (message.messageSticker.attachmentId != nil) {
-        TSAttachment *attachment =
-            [TSAttachment anyFetchWithUniqueId:message.messageSticker.attachmentId transaction:transaction];
-        if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
-            [attachmentIds addObject:attachment.uniqueId];
+        TSAttachmentStream *_Nullable attachment =
+            [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:message.messageSticker.attachmentId
+                                                         transaction:transaction];
+        if (attachment == nil) {
+            OWSFailDebug(@"Missing attachment: %@", attachment);
         } else {
-            OWSFailDebug(@"unexpected attachment: %@", attachment);
+            [attachmentIds addObject:attachment.uniqueId];
         }
     }
 

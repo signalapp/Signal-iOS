@@ -14,6 +14,22 @@ import SignalCoreKit
 @objc
 public extension OWSUnknownContactBlockOfferMessage {
     // NOTE: This method will fail if the object has unexpected type.
+    class func anyFetchUnknownContactBlockOfferMessage(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> OWSUnknownContactBlockOfferMessage? {
+        assert(uniqueId.count > 0)
+
+        guard let object = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        return nil
+        }
+        guard let instance = object as? OWSUnknownContactBlockOfferMessage else {
+            owsFailDebug("Object has unexpected type: \(type(of: object))")
+            return nil
+        }
+        return instance
+    }
+
+    // NOTE: This method will fail if the object has unexpected type.
     func anyUpdateUnknownContactBlockOfferMessage(transaction: SDSAnyWriteTransaction, block: (OWSUnknownContactBlockOfferMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? OWSUnknownContactBlockOfferMessage else {

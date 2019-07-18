@@ -7,7 +7,6 @@
 #import "OWSAttachmentDownloads.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "SSKEnvironment.h"
 #import "SSKSessionStore.h"
@@ -26,13 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSRecordTranscriptJob
 
 #pragma mark - Dependencies
-
-+ (OWSPrimaryStorage *)primaryStorage
-{
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
-    return SSKEnvironment.shared.primaryStorage;
-}
 
 + (SSKSessionStore *)sessionStore
 {
@@ -65,12 +57,17 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.attachmentDownloads;
 }
 
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark -
 
 + (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)transcript
                            attachmentHandler:(void (^)(
                                                  NSArray<TSAttachmentStream *> *attachmentStreams))attachmentHandler
-                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
@@ -86,12 +83,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (transcript.isEndSessionMessage) {
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientAddress);
-        [self.sessionStore deleteAllSessionsForAddress:transcript.recipientAddress transaction:transaction.asAnyWrite];
+        [self.sessionStore deleteAllSessionsForAddress:transcript.recipientAddress transaction:transaction];
 
         // MJK TODO - we don't use this timestamp, safe to remove
-        [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
-                                         inThread:transcript.thread
-                                      messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
+        TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
+                                                                     inThread:transcript.thread
+                                                                  messageType:TSInfoMessageTypeSessionDidEnd];
+        [infoMessage anyInsertWithTransaction:transaction];
 
         // Don't continue processing lest we print a bubble for the session reset.
         return;
@@ -119,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (transcript.requiredProtocolVersion != nil
         && transcript.requiredProtocolVersion.integerValue > SSKProtos.currentProtocolVersion) {
-        [self insertUnknownProtocolVersionErrorForTranscript:transcript transaction:transaction.asAnyWrite];
+        [self insertUnknownProtocolVersionErrorForTranscript:transcript transaction:transaction];
         return;
     }
 
@@ -143,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
                                              albumMessage:outgoingMessage];
     for (TSAttachmentPointer *pointer in attachmentPointers) {
-        [pointer anyInsertWithTransaction:transaction.asAnyWrite];
+        [pointer anyInsertWithTransaction:transaction];
         [outgoingMessage.attachmentIds addObject:pointer.uniqueId];
     }
 
@@ -151,8 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {
         // We weren't able to derive a local thumbnail, so we'll fetch the referenced attachment.
         TSAttachment *_Nullable attachment =
-            [TSAttachment anyFetchWithUniqueId:quotedMessage.thumbnailAttachmentPointerId
-                                   transaction:transaction.asAnyRead];
+            [TSAttachment anyFetchWithUniqueId:quotedMessage.thumbnailAttachmentPointerId transaction:transaction];
 
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
@@ -164,11 +161,15 @@ NS_ASSUME_NONNULL_BEGIN
                 success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                     OWSAssertDebug(attachmentStreams.count == 1);
                     TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                    [self.primaryStorage.newDatabaseConnection
-                        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                            [outgoingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
-                            [outgoingMessage saveWithTransaction:transaction];
-                        }];
+                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                        [outgoingMessage
+                            anyUpdateOutgoingMessageWithTransaction:transaction
+                                                              block:^(TSOutgoingMessage *outgoingMessage) {
+                                                                  [outgoingMessage
+                                                                      setQuotedMessageThumbnailAttachmentStream:
+                                                                          attachmentStream];
+                                                              }];
+                    }];
                 }
                 failure:^(NSError *error) {
                     OWSLogWarn(@"failed to fetch thumbnail for transcript: %lu with error: %@",
@@ -182,7 +183,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                               thread:transcript.thread
                                                             createdByRemoteRecipient:nil
                                                               createdInExistingGroup:NO
-                                                                         transaction:transaction.asAnyWrite];
+                                                                         transaction:transaction];
 
     if (transcript.isExpirationTimerUpdate) {
         // early return to avoid saving an empty incoming message.
@@ -197,23 +198,22 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [outgoingMessage saveWithTransaction:transaction];
+    [outgoingMessage anyInsertWithTransaction:transaction];
     [outgoingMessage updateWithWasSentFromLinkedDeviceWithUDRecipientAddresses:transcript.udRecipientAddresses
                                                        nonUdRecipientAddresses:transcript.nonUdRecipientAddresses
                                                                   isSentUpdate:NO
                                                                    transaction:transaction];
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:outgoingMessage
                                                      expirationStartedAt:transcript.expirationStartedAt
-                                                             transaction:transaction.asAnyWrite];
+                                                             transaction:transaction];
     [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
-                                                                          transaction:transaction.asAnyWrite];
-    [PerMessageExpiration expireIfNecessaryWithMessage:outgoingMessage
-                                           transaction:transaction.asAnyWrite];
+                                                                          transaction:transaction];
+    [PerMessageExpiration expireIfNecessaryWithMessage:outgoingMessage transaction:transaction];
 
     if (outgoingMessage.hasAttachments) {
         [self.attachmentDownloads
             downloadAllAttachmentsForMessage:outgoingMessage
-                                 transaction:transaction.asAnyRead
+                                 transaction:transaction
                                      success:attachmentHandler
                                      failure:^(NSError *error) {
                                          OWSLogError(@"failed to fetch transcripts attachments for message: %@",
@@ -222,7 +222,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (outgoingMessage.messageSticker != nil) {
-        [StickerManager.shared setHasUsedStickersWithTransaction:transaction.asAnyWrite];
+        [StickerManager.shared setHasUsedStickersWithTransaction:transaction];
     }
 }
 
@@ -246,7 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 + (void)processRecipientUpdateWithTranscript:(OWSIncomingSentMessageTranscript *)transcript
-                                 transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transcript);
     OWSAssertDebug(transaction);
@@ -278,10 +278,19 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSArray<TSOutgoingMessage *> *messages
-        = (NSArray<TSOutgoingMessage *> *)[TSInteraction interactionsWithTimestamp:timestamp
-                                                                           ofClass:[TSOutgoingMessage class]
-                                                                   withTransaction:transaction];
+    NSError *error;
+    NSArray<TSOutgoingMessage *> *messages = (NSArray<TSOutgoingMessage *> *)[InteractionFinder
+        interactionsWithTimestamp:timestamp
+                           filter:^(TSInteraction *interaction) {
+                               return [interaction isKindOfClass:[TSOutgoingMessage class]];
+                           }
+                      transaction:transaction
+                            error:&error];
+    if (error != nil) {
+        OWSFailDebug(@"Error loading interactions: %@", error);
+        return;
+    }
+
     if (messages.count < 1) {
         // This message may have disappeared.
         OWSLogError(@"No matching message with timestamp: %llu.", timestamp);
@@ -297,7 +306,7 @@ NS_ASSUME_NONNULL_BEGIN
             // b) It's safe to discard suspicious "sent updates."
             continue;
         }
-        TSThread *thread = [message threadWithTransaction:transaction.asAnyRead];
+        TSThread *thread = [message threadWithTransaction:transaction];
         if (!thread.isGroupThread) {
             continue;
         }

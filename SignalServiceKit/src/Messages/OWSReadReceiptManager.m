@@ -388,13 +388,18 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         for (NSNumber *nsSentTimestamp in sentTimestamps) {
             UInt64 sentTimestamp = [nsSentTimestamp unsignedLongLongValue];
 
-            NSArray<TSOutgoingMessage *> *messages;
-            if (transaction.transitional_yapReadTransaction) {
-                messages = (NSArray<TSOutgoingMessage *> *)[TSInteraction
-                    interactionsWithTimestamp:sentTimestamp
-                                      ofClass:[TSOutgoingMessage class]
-                              withTransaction:transaction.transitional_yapReadTransaction];
+            NSError *error;
+            NSArray<TSOutgoingMessage *> *messages = (NSArray<TSOutgoingMessage *> *)[InteractionFinder
+                interactionsWithTimestamp:sentTimestamp
+                                   filter:^(TSInteraction *interaction) {
+                                       return [interaction isKindOfClass:[TSOutgoingMessage class]];
+                                   }
+                              transaction:transaction
+                                    error:&error];
+            if (error != nil) {
+                OWSFailDebug(@"Error loading interactions: %@", error);
             }
+
             if (messages.count > 1) {
                 OWSLogError(@"More than one matching message with timestamp: %llu.", sentTimestamp);
             }
@@ -484,13 +489,18 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             continue;
         }
 
-        NSArray<TSIncomingMessage *> *messages;
-        if (transaction.transitional_yapReadTransaction) {
-            messages = (NSArray<TSIncomingMessage *> *)[TSInteraction
-                interactionsWithTimestamp:messageIdTimestamp
-                                  ofClass:[TSIncomingMessage class]
-                          withTransaction:transaction.transitional_yapReadTransaction];
+        NSError *error;
+        NSArray<TSIncomingMessage *> *messages = (NSArray<TSIncomingMessage *> *)[InteractionFinder
+            interactionsWithTimestamp:messageIdTimestamp
+                               filter:^(TSInteraction *interaction) {
+                                   return [interaction isKindOfClass:[TSIncomingMessage class]];
+                               }
+                          transaction:transaction
+                                error:&error];
+        if (error != nil) {
+            OWSFailDebug(@"Error loading interactions: %@", error);
         }
+
         if (messages.count > 0) {
             for (TSIncomingMessage *message in messages) {
                 NSTimeInterval secondsSinceRead = [NSDate new].timeIntervalSince1970 - readTimestamp / 1000;

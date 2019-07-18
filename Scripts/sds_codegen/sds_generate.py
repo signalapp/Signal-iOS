@@ -1400,6 +1400,22 @@ public extension %s {
 @objc
 public extension %s {
     // NOTE: This method will fail if the object has unexpected type.
+    class func anyFetch%s(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> %s? {
+        assert(uniqueId.count > 0)
+        
+        guard let object = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        return nil
+        }
+        guard let instance = object as? %s else {
+            owsFailDebug("Object has unexpected type: \(type(of: object))")
+            return nil
+        }
+        return instance
+    }
+
+    // NOTE: This method will fail if the object has unexpected type.
     func anyUpdate%s(transaction: SDSAnyWriteTransaction, block: (%s) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? %s else {
@@ -1410,7 +1426,7 @@ public extension %s {
         }
     }
 }
-''' % ( str(clazz.name), str(remove_prefix_from_class_name(clazz.name)), str(clazz.name), str(clazz.name), )    
+''' % ( str(clazz.name), str(remove_prefix_from_class_name(clazz.name)), str(clazz.name), str(clazz.name), str(remove_prefix_from_class_name(clazz.name)), str(clazz.name), str(clazz.name), )    
     
     
     # ---- SDSModel ----

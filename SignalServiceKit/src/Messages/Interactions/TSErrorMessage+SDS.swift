@@ -14,6 +14,22 @@ import SignalCoreKit
 @objc
 public extension TSErrorMessage {
     // NOTE: This method will fail if the object has unexpected type.
+    class func anyFetchErrorMessage(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> TSErrorMessage? {
+        assert(uniqueId.count > 0)
+
+        guard let object = anyFetch(uniqueId: uniqueId,
+                                    transaction: transaction) else {
+                                        return nil
+        }
+        guard let instance = object as? TSErrorMessage else {
+            owsFailDebug("Object has unexpected type: \(type(of: object))")
+            return nil
+        }
+        return instance
+    }
+
+    // NOTE: This method will fail if the object has unexpected type.
     func anyUpdateErrorMessage(transaction: SDSAnyWriteTransaction, block: (TSErrorMessage) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
             guard let instance = object as? TSErrorMessage else {

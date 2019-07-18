@@ -846,29 +846,36 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         return nil;
     }
 
-    NSArray<TSInteraction *> *interactions =
-        [TSInteraction interactionsWithTimestamp:timestamp
-                                          filter:^(TSInteraction *interaction) {
-                                              SignalServiceAddress *_Nullable messageAuthorAddress = nil;
-                                              if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-                                                  TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
-                                                  messageAuthorAddress = incomingMessage.authorAddress;
-                                              } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
-                                                  messageAuthorAddress = localAddress;
-                                              }
-                                              if (!messageAuthorAddress.isValid) {
-                                                  return NO;
-                                              }
+    BOOL (^filter)(TSInteraction *) = ^(TSInteraction *interaction) {
+        SignalServiceAddress *_Nullable messageAuthorAddress = nil;
+        if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
+            TSIncomingMessage *incomingMessage = (TSIncomingMessage *)interaction;
+            messageAuthorAddress = incomingMessage.authorAddress;
+        } else if ([interaction isKindOfClass:[TSOutgoingMessage class]]) {
+            messageAuthorAddress = localAddress;
+        }
+        if (!messageAuthorAddress.isValid) {
+            return NO;
+        }
 
-                                              if (![authorAddress isEqualToAddress:messageAuthorAddress]) {
-                                                  return NO;
-                                              }
-                                              if (![interaction.uniqueThreadId isEqualToString:threadUniqueId]) {
-                                                  return NO;
-                                              }
-                                              return YES;
-                                          }
-                                 withTransaction:transaction];
+        if (![authorAddress isEqualToAddress:messageAuthorAddress]) {
+            return NO;
+        }
+        if (![interaction.uniqueThreadId isEqualToString:threadUniqueId]) {
+            return NO;
+        }
+        return YES;
+    };
+
+    NSError *error;
+    NSArray<TSInteraction *> *interactions = [InteractionFinder interactionsWithTimestamp:timestamp
+                                                                                   filter:filter
+                                                                              transaction:transaction.asAnyRead
+                                                                                    error:&error];
+    if (error != nil) {
+        OWSFailDebug(@"Error loading interactions: %@", error);
+    }
+
     if (interactions.count < 1) {
         return nil;
     }

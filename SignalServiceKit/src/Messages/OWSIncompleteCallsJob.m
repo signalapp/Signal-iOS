@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIncompleteCallsJob.h"
@@ -7,6 +7,7 @@
 #import "OWSPrimaryStorage.h"
 #import "TSCall.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
@@ -67,12 +68,12 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
     // Since we can't directly mutate the enumerated "incomplete" calls, we store only their ids in hopes
     // of saving a little memory and then enumerate the (larger) TSCall objects one at a time.
     for (NSString *callId in [self fetchIncompleteCallIdsWithTransaction:transaction]) {
-        TSCall *_Nullable call = [TSCall fetchObjectWithUniqueID:callId transaction:transaction];
-        if ([call isKindOfClass:[TSCall class]]) {
-            block(call);
-        } else {
-            OWSLogError(@"unexpected object: %@", call);
+        TSCall *_Nullable call = [TSCall anyFetchCallWithUniqueId:callId transaction:transaction.asAnyRead];
+        if (call == nil) {
+            OWSFailDebug(@"Missing call.");
+            continue;
         }
+        block(call);
     }
 }
 

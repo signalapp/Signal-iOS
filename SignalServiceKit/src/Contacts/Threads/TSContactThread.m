@@ -205,9 +205,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
 + (nullable SignalServiceAddress *)contactAddressFromThreadId:(NSString *)threadId
                                                   transaction:(SDSAnyReadTransaction *)transaction
 {
-    TSContactThread *_Nullable contactThread = (TSContactThread *)[TSContactThread anyFetchWithUniqueId:threadId
-                                                                                            transaction:transaction];
-    return contactThread.contactAddress;
+    return [TSContactThread anyFetchContactThreadWithUniqueId:threadId transaction:transaction].contactAddress;
 }
 
 + (nullable NSString *)legacyContactPhoneNumberFromThreadId:(NSString *)threadId

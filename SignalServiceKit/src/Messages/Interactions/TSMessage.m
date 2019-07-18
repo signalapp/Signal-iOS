@@ -341,15 +341,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     OWSAssertDebug([self.attachmentIds containsObject:attachment.uniqueId]);
     [attachment anyRemoveWithTransaction:transaction];
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *_Nonnull interaction) {
-                                 if (![interaction isKindOfClass:[TSMessage class]]) {
-                                     OWSFailDebug(@"unexpected interaction: %@", interaction.class);
-                                     return;
-                                 }
-                                 TSMessage *message = (TSMessage *)interaction;
-                                 [message.attachmentIds removeObject:attachment.uniqueId];
-                             }];
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        [message.attachmentIds removeObject:attachment.uniqueId];
+                                    }];
 }
 
 - (NSString *)debugDescription
@@ -599,11 +594,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 {
     OWSAssertDebug(expireStartedAt > 0);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 TSMessage *message = (TSMessage *)interaction;
-                                 [message setExpireStartedAt:expireStartedAt];
-                             }];
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        [message setExpireStartedAt:expireStartedAt];
+                                    }];
 }
 
 - (void)updateWithLinkPreview:(OWSLinkPreview *)linkPreview transaction:(SDSAnyWriteTransaction *)transaction
@@ -611,11 +605,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     OWSAssertDebug(linkPreview);
     OWSAssertDebug(transaction);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 TSMessage *message = (TSMessage *)interaction;
-                                 [message setLinkPreview:linkPreview];
-                             }];
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        [message setLinkPreview:linkPreview];
+                                    }];
 }
 
 - (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction
@@ -623,11 +616,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     OWSAssertDebug(messageSticker);
     OWSAssertDebug(transaction);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 TSMessage *message = (TSMessage *)interaction;
-                                 message.messageSticker = messageSticker;
-                             }];
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        message.messageSticker = messageSticker;
+                                    }];
 }
 
 #pragma mark - Renderable Content
@@ -669,12 +661,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     OWSAssertDebug(perMessageExpireStartedAt > 0);
     OWSAssertDebug(transaction);
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 TSMessage *message = (TSMessage *)interaction;
-
-                                 message.perMessageExpireStartedAt = perMessageExpireStartedAt;
-                             }];
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        message.perMessageExpireStartedAt = perMessageExpireStartedAt;
+                                    }];
 }
 
 - (void)updateWithHasPerMessageExpiredAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -692,19 +682,19 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     [self anyReloadWithTransaction:transaction ignoreMissing:YES];
     [self removeAllAttachmentsWithTransaction:transaction];
 
-    [self anyUpdateWithTransaction:transaction
-                             block:^(TSInteraction *interaction) {
-                                 TSMessage *message = (TSMessage *)interaction;
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        message.perMessageExpirationHasExpired = YES;
 
-                                 message.perMessageExpirationHasExpired = YES;
-
-                                 message.body = nil;
-                                 message.contactShare = nil;
-                                 message.quotedMessage = nil;
-                                 message.linkPreview = nil;
-                                 message.messageSticker = nil;
-                                 message.attachmentIds = [NSMutableArray new];
-                             }];
+                                        // Remove renderable content.
+                                        message.body = nil;
+                                        message.contactShare = nil;
+                                        message.quotedMessage = nil;
+                                        message.linkPreview = nil;
+                                        message.messageSticker = nil;
+                                        message.attachmentIds = [NSMutableArray new];
+                                        OWSAssertDebug(!message.hasRenderableContent);
+                                    }];
 }
 
 @end

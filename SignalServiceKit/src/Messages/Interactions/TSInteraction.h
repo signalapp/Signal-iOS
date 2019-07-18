@@ -32,9 +32,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 @interface TSInteraction : TSYapDatabaseObject
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId
-                                  timestamp:(uint64_t)timestamp
-                                   inThread:(TSThread *)thread;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
 
@@ -78,13 +76,16 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 #pragma mark Utility Method
 
-+ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
-                                                ofClass:(Class)clazz
-                                        withTransaction:(YapDatabaseReadTransaction *)transaction;
+// GRDB TODO: Remove this method.
++ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
+                                                    ofClass:(Class)clazz
+                                            withTransaction:(YapDatabaseReadTransaction *)transaction;
 
-+ (NSArray<TSInteraction *> *)interactionsWithTimestamp:(uint64_t)timestamp
-                                                 filter:(BOOL (^_Nonnull)(TSInteraction *))filter
-                                        withTransaction:(YapDatabaseReadTransaction *)transaction;
+
+// GRDB TODO: Remove this method.
++ (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
+                                                     filter:(BOOL (^_Nonnull)(TSInteraction *))filter
+                                            withTransaction:(YapDatabaseReadTransaction *)transaction;
 
 - (uint64_t)timestampForLegacySorting;
 - (NSComparisonResult)compareForSorting:(TSInteraction *)other;
@@ -97,8 +98,9 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // unseen message indicators, etc.
 - (BOOL)isDynamicInteraction;
 
-- (void)saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-    NS_SWIFT_NAME(saveNextSortId(transaction:));
+// NOTE: This is only for use by a legacy migration.
+- (void)ydb_saveNextSortIdWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+    NS_SWIFT_NAME(ydb_saveNextSortId(transaction:));
 
 @end
 

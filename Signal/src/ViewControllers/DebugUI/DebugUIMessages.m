@@ -3141,11 +3141,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
                                                   UIImage *avatarImage =
                                                       [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
-                                                  if (transaction.transitional_yapWriteTransaction) {
-                                                      [contact saveAvatarImage:avatarImage transaction:transaction];
-                                                  } else {
-                                                      OWSFailDebug(@"failure: not yet implemented for GRDB");
-                                                  }
+                                                  [contact saveAvatarImage:avatarImage transaction:transaction];
 
                                                   return contact;
                                               }]];
@@ -3328,11 +3324,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
                                                   UIImage *avatarImage =
                                                       [OWSAvatarBuilder buildRandomAvatarWithDiameter:200];
-                                                  if (transaction.transitional_yapWriteTransaction) {
-                                                      [contact saveAvatarImage:avatarImage transaction:transaction];
-                                                  } else {
-                                                      OWSFailDebug(@"failure: not yet implemented for GRDB");
-                                                  }
+                                                  [contact saveAvatarImage:avatarImage transaction:transaction];
 
                                                   return contact;
                                               }]];
@@ -3973,19 +3965,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     __block TSGroupThread *thread;
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        if (!transaction.transitional_yapWriteTransaction) {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-            return;
-        }
-
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
         OWSAssertDebug(thread);
 
         TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:thread
                                                                groupMetaMessage:TSGroupMetaMessageNew
                                                                expiresInSeconds:0];
-        [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil)
-                             transaction:transaction.transitional_yapWriteTransaction];
+        [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil) transaction:transaction];
 
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
@@ -4401,16 +4387,10 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 [message anyInsertWithTransaction:transaction];
                 [message updateWithFakeMessageState:TSOutgoingMessageStateSent transaction:transaction];
                 [message updateWithSentRecipient:address wasSentByUD:NO transaction:transaction];
-                if (transaction.transitional_yapWriteTransaction) {
-                    [message updateWithDeliveredRecipient:address
-                                        deliveryTimestamp:timestamp
-                                              transaction:transaction.transitional_yapWriteTransaction];
-                    [message updateWithReadRecipient:address
-                                       readTimestamp:timestamp.unsignedLongLongValue
-                                         transaction:transaction];
-                } else {
-                    OWSFailDebug(@"failure: not yet implemented for GRDB");
-                }
+                [message updateWithDeliveredRecipient:address deliveryTimestamp:timestamp transaction:transaction];
+                [message updateWithReadRecipient:address
+                                   readTimestamp:timestamp.unsignedLongLongValue
+                                     transaction:transaction];
             }
         }
     }];
@@ -4736,24 +4716,16 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     if (isDelivered) {
         SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
         OWSAssertDebug(address.isValid);
-        if (transaction.transitional_yapWriteTransaction) {
-            [message updateWithDeliveredRecipient:address
-                                deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
-                                      transaction:transaction.transitional_yapWriteTransaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        [message updateWithDeliveredRecipient:address
+                            deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
+                                  transaction:transaction];
     }
     if (isRead) {
         SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
         OWSAssertDebug(address.isValid);
-        if (transaction.transitional_yapWriteTransaction) {
-            [message updateWithReadRecipient:address
-                               readTimestamp:[NSDate ows_millisecondTimeStamp]
-                                 transaction:transaction];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        [message updateWithReadRecipient:address
+                           readTimestamp:[NSDate ows_millisecondTimeStamp]
+                             transaction:transaction];
     }
     return message;
 }
