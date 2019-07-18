@@ -123,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
                                               buildPlainTextAttachmentDataWithTransaction:transaction.asAnyRead]];
     }];
 
-    if (syncGroupsMessage == nil || dataSource == nil) {
+    if (dataSource == nil) {
         return;
     }
 
