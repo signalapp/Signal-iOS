@@ -31,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) UIScrollView *scrollView;
 @property (nonatomic) UIView *mediaView;
-@property (nonatomic) UIView *presentationView;
 @property (nonatomic) UIView *replacingView;
 @property (nonatomic) UIButton *shareButton;
 
@@ -45,7 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) UIBarButtonItem *videoPlayBarButton;
 @property (nonatomic, nullable) UIBarButtonItem *videoPauseBarButton;
 
-@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *presentationViewConstraints;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewBottomConstraint;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewLeadingConstraint;
 @property (nonatomic, nullable) NSLayoutConstraint *mediaViewTopConstraint;

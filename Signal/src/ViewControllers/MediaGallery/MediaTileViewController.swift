@@ -6,6 +6,9 @@ import Foundation
 
 public protocol MediaTileViewControllerDelegate: class {
     func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem)
+    func mediaTileViewControllerRequestedDismiss(_ tileViewController: MediaTileViewController,
+                                                 animated isAnimated: Bool,
+                                                 completion: (() -> Void)?)
 }
 
 public class MediaTileViewController: UICollectionViewController, MediaGalleryDataSourceDelegate, UICollectionViewDelegateFlowLayout {
@@ -37,9 +40,10 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
 
     fileprivate let mediaTileViewLayout: MediaTileViewLayout
 
-    init(mediaGalleryDataSource: MediaGalleryDataSource) {
+    let shouldShowDismissButton: Bool
+    init(mediaGalleryDataSource: MediaGalleryDataSource, shouldShowDismissButton: Bool) {
         self.mediaGalleryDataSource = mediaGalleryDataSource
-
+        self.shouldShowDismissButton = shouldShowDismissButton
         let layout: MediaTileViewLayout = type(of: self).buildLayout()
         self.mediaTileViewLayout = layout
         super.init(collectionViewLayout: layout)
@@ -105,7 +109,17 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         self.footerBarBottomConstraint = footerBar.autoPinEdge(toSuperviewEdge: .bottom, withInset: -kFooterBarHeight)
 
         updateSelectButton()
+
+        if shouldShowDismissButton {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(didTapDismiss(_:)))
+        }
+
         self.mediaTileViewLayout.invalidateLayout()
+    }
+
+    @objc
+    func didTapDismiss(_ sender: UIBarButtonItem) {
+        delegate?.mediaTileViewControllerRequestedDismiss(self, animated: true, completion: nil)
     }
 
     private func indexPath(galleryItem: MediaGalleryItem) -> IndexPath? {
@@ -791,6 +805,43 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
                 })
             }
         }
+    }
+}
+
+extension MediaTileViewController: MediaPresentationContextProvider {
+    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        // First time presentation can occur before layout.
+        view.layoutIfNeeded()
+
+        guard let indexPath = indexPath(galleryItem: galleryItem) else {
+            owsFailDebug("galleryItemIndexPath was unexpectedly nil")
+            return nil
+        }
+
+        guard let visibleIndex = collectionView.indexPathsForVisibleItems.firstIndex(of: indexPath) else {
+            owsFailDebug("visibleIndex was unexpectedly nil")
+            return nil
+        }
+
+        guard let cell = collectionView.visibleCells[safe: visibleIndex] as? PhotoGridViewCell else {
+            owsFailDebug("cell was unexpectedly nil")
+            return nil
+        }
+
+        let mediaView = cell.imageView
+
+        guard let mediaSuperview = mediaView.superview else {
+            owsFailDebug("mediaSuperview was unexpectedly nil")
+            return nil
+        }
+
+        let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
+
+        return MediaPresentationContext(mediaView: mediaView, presentationFrame: presentationFrame, cornerRadius: 0)
+    }
+
+    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        return nil
     }
 }
 
