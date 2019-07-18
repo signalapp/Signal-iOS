@@ -104,6 +104,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 @property (atomic, nullable)
     NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates;
 
+// This property is only intended to be used by GRDB queries.
+@property (nonatomic, readonly) TSOutgoingMessageState storedMessageState;
+
 @end
 
 #pragma mark -

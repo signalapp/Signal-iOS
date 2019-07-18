@@ -173,8 +173,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
 @property (nonatomic, readonly) TSOutgoingMessageState messageState;
-// This property is only intended to be used by GRDB queries.
-@property (nonatomic, readonly) TSOutgoingMessageState storedMessageState;
 
 @property (nonatomic, readonly) BOOL wasDeliveredToAnyRecipient;
 @property (nonatomic, readonly) BOOL wasSentToAnyRecipient;
