@@ -622,8 +622,10 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         SELECT \(interactionColumn: .uniqueId)
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .recordType) = ?
-        AND ( \(interactionColumn: .callType) = ?
-        OR \(interactionColumn: .callType) = ? )
+        AND (
+              \(interactionColumn: .callType) = ?
+              OR \(interactionColumn: .callType) = ?
+            )
         """
         let statementArguments: StatementArguments = [
             SDSRecordType.call.rawValue,
@@ -632,12 +634,9 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         ]
         var result = [String]()
         do {
-            let cursor = try String.fetchCursor(transaction.database,
-                                                sql: sql,
-                                                arguments: statementArguments)
-            while let uniqueId = try cursor.next() {
-                result.append(uniqueId)
-            }
+             result = try String.fetchAll(transaction.database,
+                                          sql: sql,
+                                          arguments: statementArguments)
         } catch {
             owsFailDebug("error: \(error)")
         }

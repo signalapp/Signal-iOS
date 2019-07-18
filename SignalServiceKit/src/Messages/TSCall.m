@@ -208,7 +208,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
     [self anyUpdateCallWithTransaction:transaction
                                  block:^(TSCall *call) {
-                                     self.callType = callType;
+                                     call.callType = callType;
                                  }];
 }
 
