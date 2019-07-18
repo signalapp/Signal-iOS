@@ -26,6 +26,7 @@ protocol InteractionFinderAdapter {
 
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 
+    // GRDB TODO: Gather static methods at the top of the protocol.
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
 
     static func incompleteCallIds(transaction: ReadTransaction) -> [String]
@@ -225,6 +226,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
 
 // MARK: -
 
+// GRDB TODO: Nice to have: pull all of the YDB finder logic into this file.
 struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     private let threadUniqueId: String
