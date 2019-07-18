@@ -317,7 +317,7 @@ CHECKOUT OPTIONS:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
     :git: "git@github.com:signalapp/Starscream.git"
   YapDatabase:
-    :commit: 8e2b69110efd9499a5b553fda0165d2cea4e818d
+    :commit: 927a7c4157e8c31f2a206359346d9fd2b606a0ab
     :git: https://github.com/signalapp/YapDatabase.git
 
 SPEC CHECKSUMS:
