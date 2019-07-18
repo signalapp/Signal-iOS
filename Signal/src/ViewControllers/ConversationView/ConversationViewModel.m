@@ -1544,9 +1544,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                 // ...and always show the "disappearing messages" animation.
                 shouldHideFooter
                     = ([timestampText isEqualToString:nextTimestampText] && receiptStatus == nextReceiptStatus
-                        && outgoingMessage.outgoingMessageState != TSOutgoingMessageStateFailed
-                        && outgoingMessage.outgoingMessageState != TSOutgoingMessageStateSending
-                        && !nextViewItem.hasCellHeader && !isDisappearingMessage);
+                        && outgoingMessage.messageState != TSOutgoingMessageStateFailed
+                        && outgoingMessage.messageState != TSOutgoingMessageStateSending && !nextViewItem.hasCellHeader
+                        && !isDisappearingMessage);
             }
 
             // clustering

@@ -665,7 +665,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         let sql: String = """
         SELECT \(interactionColumn: .uniqueId)
         FROM \(InteractionRecord.databaseTableName)
-        WHERE \(interactionColumn: .outgoingMessageState) = ?
+        WHERE \(interactionColumn: .storedMessageState) = ?
         """
         var result = [String]()
         do {

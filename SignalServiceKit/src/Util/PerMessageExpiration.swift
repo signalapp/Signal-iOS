@@ -193,7 +193,7 @@ public class PerMessageExpiration: NSObject {
         guard let outgoingMessage = message as? TSOutgoingMessage else {
             return false
         }
-        guard outgoingMessage.outgoingMessageState == .sent else {
+        guard outgoingMessage.messageState == .sent else {
             return false
         }
         return true

@@ -890,7 +890,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
 
     if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
-        switch (outgoingMessage.outgoingMessageState) {
+        switch (outgoingMessage.messageState) {
             case TSOutgoingMessageStateSending:
                 self.perMessageExpirationState = PerMessageExpirationState_OutgoingSending;
                 break;

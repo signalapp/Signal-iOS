@@ -41,6 +41,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    if (!self.shouldBeSaved) {
+        OWSLogDebug(@"Skipping save for %s.", [self class]);
+
+        return;
+    }
+
     [transaction setObject:self forKey:self.uniqueId inCollection:[[self class] collection]];
 }
 

@@ -707,7 +707,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Ignore taps on links in outgoing messages that haven't been sent yet, as
         // this interferes with "tap to retry".
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        shouldIgnoreEvents = outgoingMessage.outgoingMessageState != TSOutgoingMessageStateSent;
+        shouldIgnoreEvents = outgoingMessage.messageState != TSOutgoingMessageStateSent;
     }
     [self.class loadForTextDisplay:self.bodyTextView
                    displayableText:self.displayableBodyText
@@ -1423,9 +1423,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.outgoingMessageState == TSOutgoingMessageStateFailed) {
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
             return;
-        } else if (outgoingMessage.outgoingMessageState == TSOutgoingMessageStateSending) {
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
             // Ignore taps on outgoing messages being sent.
             return;
         }

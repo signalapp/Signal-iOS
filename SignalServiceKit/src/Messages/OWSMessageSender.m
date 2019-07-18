@@ -244,7 +244,7 @@ void AssertIsOnSendingQueue()
 
 - (void)didSucceed
 {
-    if (self.message.outgoingMessageState != TSOutgoingMessageStateSent) {
+    if (self.message.messageState != TSOutgoingMessageStateSent) {
         OWSFailDebug(@"unexpected message status: %@", self.message.statusDescription);
     }
 

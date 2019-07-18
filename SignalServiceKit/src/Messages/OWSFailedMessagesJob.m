@@ -78,16 +78,15 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
         writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [self enumerateAttemptingOutMessagesWithBlock:^(TSOutgoingMessage *message) {
                 // sanity check
-                OWSAssertDebug(message.outgoingMessageState == TSOutgoingMessageStateSending);
-                if (message.outgoingMessageState != TSOutgoingMessageStateSending) {
-                    OWSLogError(
-                        @"Refusing to mark as unsent message with state: %d", (int)message.outgoingMessageState);
+                OWSAssertDebug(message.messageState == TSOutgoingMessageStateSending);
+                if (message.messageState != TSOutgoingMessageStateSending) {
+                    OWSLogError(@"Refusing to mark as unsent message with state: %d", (int)message.messageState);
                     return;
                 }
 
                 OWSLogDebug(@"marking message as unsent: %@", message.uniqueId);
                 [message updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:transaction];
-                OWSAssertDebug(message.outgoingMessageState == TSOutgoingMessageStateFailed);
+                OWSAssertDebug(message.messageState == TSOutgoingMessageStateFailed);
 
                 count++;
             }
@@ -115,7 +114,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
             }
             TSOutgoingMessage *message = (TSOutgoingMessage *)object;
 
-            dict[OWSFailedMessagesJobMessageStateColumn] = @(message.outgoingMessageState);
+            dict[OWSFailedMessagesJobMessageStateColumn] = @(message.messageState);
         }];
 
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
