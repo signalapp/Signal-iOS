@@ -9,6 +9,7 @@ import PromiseKit
 protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerDidCompleteSelection(_ imagePicker: ImagePickerGridController)
     func imagePickerDidCancel(_ imagePicker: ImagePickerGridController)
+    func imagePickerDidCamera(_ imagePicker: ImagePickerGridController)
 
     func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>)
@@ -73,6 +74,17 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         cancelButton.tintColor = .ows_gray05
         navigationItem.leftBarButtonItem = cancelButton
+
+        // The PhotoCaptureVC needs a shadow behind it's cancel button, so we use a custom icon.
+        // This VC has a visible navbar so doesn't need the shadow, but because the user can
+        // quickly toggle between the Capture and the Picker VC's, we use the same custom "X"
+        // icon here rather than the system "stop" icon so that the spacing matches exactly.
+        // Otherwise there's a noticable shift in the icon placement.
+        let cameraImage = UIImage(imageLiteralResourceName: "camera-outline-28")
+        let cameraButton = UIBarButtonItem(image: cameraImage, style: .plain, target: self, action: #selector(didPressCamera))
+
+        cameraButton.tintColor = .ows_gray05
+        navigationItem.rightBarButtonItem = cameraButton
 
         let titleView = TitleView()
         titleView.delegate = self
@@ -348,6 +360,11 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     @objc
     func didPressCancel(sender: UIBarButtonItem) {
         self.delegate?.imagePickerDidCancel(self)
+    }
+
+    @objc
+    func didPressCamera(sender: UIBarButtonItem) {
+        self.delegate?.imagePickerDidCamera(self)
     }
 
     // MARK: - Layout

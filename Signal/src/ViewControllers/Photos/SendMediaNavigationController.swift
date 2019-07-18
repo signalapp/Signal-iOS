@@ -449,6 +449,10 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         didRequestExit(dontAbandonText: dontAbandonText)
     }
 
+    func imagePickerDidCamera(_ imagePicker: ImagePickerGridController) {
+        didTapCameraModeButton()
+    }
+
     func showApprovalAfterProcessingAnyMediaLibrarySelections() {
         let backgroundBlock: (ModalActivityIndicatorViewController) -> Void = { modal in
             when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises).map { attachmentApprovalItems in
