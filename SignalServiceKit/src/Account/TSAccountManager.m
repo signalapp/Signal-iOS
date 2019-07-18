@@ -286,7 +286,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
     // Cache this since we access this a lot, and once set it will not change.
     @synchronized(self) {
-        if (self.cachedUuid == nil) {
+        if (self.cachedUuid == nil && SSKFeatureFlags.allowUUIDOnlyContacts) {
             self.cachedUuid = self.storedUuid;
         }
 
@@ -296,6 +296,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable NSUUID *)storedUuid
 {
+    OWSAssertDebug(SSKFeatureFlags.allowUUIDOnlyContacts);
+
     @synchronized(self) {
         __block NSUUID *_Nullable result;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
