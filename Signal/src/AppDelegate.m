@@ -740,7 +740,7 @@ static NSTimeInterval launchStartedAt;
                 [[[OWSFailedMessagesJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
                 // Mark all "incomplete" calls as missed, e.g. any incoming or outgoing calls that were not
                 // connected, failed or hung up before the app existed should be marked as missed.
-                [[[OWSIncompleteCallsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
+                [[OWSIncompleteCallsJob new] run];
                 [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
             });
         } else {

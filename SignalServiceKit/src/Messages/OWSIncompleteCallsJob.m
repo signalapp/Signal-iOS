@@ -17,29 +17,32 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString *const OWSIncompleteCallsJobCallTypeColumn = @"call_type";
 static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_call_type";
 
-@interface OWSIncompleteCallsJob ()
-
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
-
-@end
-
 #pragma mark -
 
 @implementation OWSIncompleteCallsJob
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
 {
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _primaryStorage = primaryStorage;
-
-    return self;
+    return SDSDatabaseStorage.shared;
 }
 
-- (NSArray<NSString *> *)fetchIncompleteCallIdsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (OWSPrimaryStorage *)primaryStorage
+{
+    return OWSPrimaryStorage.sharedManager;
+}
+
+#pragma mark -
+
+- (NSArray<NSString *> *)fetchIncompleteCallIdsWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    return [InteractionFinder incompleteCallIdsWithTransaction:transaction];
+}
+
++ (NSArray<NSString *> *)ydb_incompleteCallIdsWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -61,14 +64,14 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
 }
 
 - (void)enumerateIncompleteCallsWithBlock:(void (^)(TSCall *call))block
-                              transaction:(YapDatabaseReadWriteTransaction *)transaction
+                              transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
     // Since we can't directly mutate the enumerated "incomplete" calls, we store only their ids in hopes
     // of saving a little memory and then enumerate the (larger) TSCall objects one at a time.
     for (NSString *callId in [self fetchIncompleteCallIdsWithTransaction:transaction]) {
-        TSCall *_Nullable call = [TSCall anyFetchCallWithUniqueId:callId transaction:transaction.asAnyRead];
+        TSCall *_Nullable call = [TSCall anyFetchCallWithUniqueId:callId transaction:transaction];
         if (call == nil) {
             OWSFailDebug(@"Missing call.");
             continue;
@@ -84,7 +87,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
     OWSAssertDebug(CurrentAppContext().appLaunchTime);
     uint64_t cutoffTimestamp = [NSDate ows_millisecondsSince1970ForDate:CurrentAppContext().appLaunchTime];
 
-    [[self.primaryStorage newDatabaseConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self
             enumerateIncompleteCallsWithBlock:^(TSCall *call) {
                 if (call.timestamp <= cutoffTimestamp) {

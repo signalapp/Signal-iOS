@@ -177,8 +177,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     [TSDatabaseSecondaryIndexes
         enumerateMessagesWithTimestamp:timestamp
                              withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
-                                 TSInteraction *interaction =
-                                     [TSInteraction fetchObjectWithUniqueID:key transaction:transaction];
+                                 TSInteraction *_Nullable interaction =
+                                     [TSInteraction anyFetchWithUniqueId:key transaction:transaction.asAnyRead];
                                  if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
                                      TSIncomingMessage *message = (TSIncomingMessage *)interaction;
 

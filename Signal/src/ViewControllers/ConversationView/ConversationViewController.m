@@ -1878,11 +1878,14 @@ typedef enum : NSUInteger {
 
     [actionSheet addAction:[OWSAlerts cancelAction]];
 
-    UIAlertAction *deleteMessageAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
-                                                                  style:UIAlertActionStyleDestructive
-                                                                handler:^(UIAlertAction *action) {
-                                                                    [message remove];
-                                                                }];
+    UIAlertAction *deleteMessageAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", @"")
+                                 style:UIAlertActionStyleDestructive
+                               handler:^(UIAlertAction *action) {
+                                   [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                       [message anyRemoveWithTransaction:transaction];
+                                   }];
+                               }];
     [actionSheet addAction:deleteMessageAction];
 
     UIAlertAction *resendMessageAction =
@@ -2308,15 +2311,14 @@ typedef enum : NSUInteger {
                                    OWSLogInfo(@"Blocking an unknown user.");
                                    [self.blockingManager addBlockedAddress:contactThread.contactAddress];
                                    // Delete the offers.
-                                   [self.editingDatabaseConnection
-                                       readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                           [contactThread
-                                               anyUpdateContactThreadWithTransaction:transaction.asAnyWrite
-                                                                               block:^(TSContactThread *thread) {
-                                                                                   thread.hasDismissedOffers = NO;
-                                                                               }];
-                                           [interaction removeWithTransaction:transaction];
-                                       }];
+                                   [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                       [contactThread anyUpdateContactThreadWithTransaction:transaction
+                                                                                      block:^(TSContactThread *thread) {
+                                                                                          thread.hasDismissedOffers
+                                                                                              = NO;
+                                                                                      }];
+                                       [interaction anyRemoveWithTransaction:transaction];
+                                   }];
                                }];
     [actionSheet addAction:blockAction];
 
@@ -2340,12 +2342,12 @@ typedef enum : NSUInteger {
                                                     editImmediately:YES];
 
     // Delete the offers.
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [contactThread anyUpdateContactThreadWithTransaction:transaction.asAnyWrite
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [contactThread anyUpdateContactThreadWithTransaction:transaction
                                                        block:^(TSContactThread *thread) {
                                                            thread.hasDismissedOffers = NO;
                                                        }];
-        [interaction removeWithTransaction:transaction];
+        [interaction anyRemoveWithTransaction:transaction];
     }];
 }
 
@@ -2360,12 +2362,12 @@ typedef enum : NSUInteger {
 
     [self presentAddThreadToProfileWhitelistWithSuccess:^() {
         // Delete the offers.
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [contactThread anyUpdateContactThreadWithTransaction:transaction.asAnyWrite
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [contactThread anyUpdateContactThreadWithTransaction:transaction
                                                            block:^(TSContactThread *thread) {
                                                                thread.hasDismissedOffers = NO;
                                                            }];
-            [interaction removeWithTransaction:transaction];
+            [interaction anyRemoveWithTransaction:transaction];
         }];
     }];
 }
@@ -2586,9 +2588,12 @@ typedef enum : NSUInteger {
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-            [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
-                [message saveWithTransaction:transaction];
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                [message
+                    anyUpdateMessageWithTransaction:transaction
+                                              block:^(TSMessage *message) {
+                                                  [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+                                              }];
             }];
         }
         failure:^(NSError *error) {
@@ -4091,7 +4096,9 @@ typedef enum : NSUInteger {
            successCompletion:^{
                OWSLogInfo(@"Group updated, removing group creation error.");
 
-               [message remove];
+               [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                   [message anyRemoveWithTransaction:transaction];
+               }];
            }];
 }
 
