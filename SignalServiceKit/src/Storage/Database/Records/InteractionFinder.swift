@@ -360,8 +360,8 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: YapDatabaseReadTransaction) throws -> [TSInteraction] {
         return TSInteraction.ydb_interactions(withTimestamp: timestamp,
-                                          filter: filter,
-                                          with: transaction)
+                                              filter: filter,
+                                              with: transaction)
     }
 
     // MARK: - private
