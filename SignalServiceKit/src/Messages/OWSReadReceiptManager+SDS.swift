@@ -212,6 +212,11 @@ public extension TSRecipientReadReceipt {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
+        guard shouldBeSaved else {
+            Logger.warn("Skipping remove of: \(type(of: self))")
+            return
+        }
+
         anyWillRemove(with: transaction)
 
         switch transaction.writeTransaction {
