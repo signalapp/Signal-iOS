@@ -298,8 +298,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 }
 
-// UUID TODO: This method is getting constantly called for local users
-// without a uuid, and its causing deadlock.
 - (nullable NSUUID *)storedUuid
 {
     OWSAssertDebug(SSKFeatureFlags.allowUUIDOnlyContacts);
