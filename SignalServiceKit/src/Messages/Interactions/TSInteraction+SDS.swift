@@ -1557,23 +1557,12 @@ public extension TSInteraction {
                 block(uniqueId, stop)
             }
         case .grdbRead(let grdbTransaction):
-            do {
-                let cursor = try String.fetchCursor(grdbTransaction.database,
-                                                    sql: """
+            grdbEnumerateUniqueIds(transaction: grdbTransaction,
+                                   sql: """
                     SELECT \(interactionColumn: .uniqueId)
                     FROM \(InteractionRecord.databaseTableName)
-                    """,
-                    arguments: [])
-                while let uniqueId = try cursor.next() {
-                    var stop: ObjCBool = false
-                    block(uniqueId, &stop)
-                    if stop.boolValue {
-                        return
-                    }
-                }
-            } catch let error as NSError {
-                owsFailDebug("Couldn't fetch models: \(error)")
-            }
+                """,
+                block: block)
         }
     }
 

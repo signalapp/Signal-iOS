@@ -381,7 +381,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         }
 
         [MessageSenderJobQueue
-            enumerateEnqueuedInteractionsWithTransaction:transaction.asAnyRead
+            enumerateEnqueuedInteractionsWithTransaction:transaction
                                                    block:^(TSInteraction *interaction, BOOL *stop) {
                                                        if (!self.isMainAppAndActive) {
                                                            shouldAbort = YES;
