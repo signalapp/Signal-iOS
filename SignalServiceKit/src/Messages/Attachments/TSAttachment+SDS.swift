@@ -411,7 +411,7 @@ public extension TSAttachment {
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
         guard shouldBeSaved else {
-            Logger.warn("Skipping remove of: \(type(of: self))")
+            // Skipping remove.
             return
         }
 
