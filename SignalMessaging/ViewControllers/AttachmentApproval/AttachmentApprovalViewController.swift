@@ -69,7 +69,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         var options = receivedOptions
 
         // For now, only still images can have per-message expiration.
-        if FeatureFlags.perMessageExpiration,
+        if FeatureFlags.sendPerMessageExpiration,
             attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
             let firstItem = attachmentApprovalItemCollection.attachmentApprovalItems.first,
             firstItem.attachment.isValidImage {

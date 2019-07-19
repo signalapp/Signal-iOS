@@ -69,7 +69,7 @@ public class FeatureFlags: NSObject {
     // This shouldn't be enabled in production until the receive side has been
     // in production for "long enough".
     @objc
-    public static let perMessageExpiration = build.includes(.beta)
+    public static let sendPerMessageExpiration = build.includes(.beta)
 
     // Don't enable this flag in production.
     @objc
