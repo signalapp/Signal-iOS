@@ -1061,8 +1061,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     // If contact intersection hasn't completed, it might exist on disk
     // even if it doesn't exist in memory yet.
     if (!signalAccount) {
-        [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            signalAccount = [self.accountFinder signalAccountForAddress:address transaction:transaction.asAnyRead];
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            signalAccount = [self.accountFinder signalAccountForAddress:address transaction:transaction];
         }];
     }
 
