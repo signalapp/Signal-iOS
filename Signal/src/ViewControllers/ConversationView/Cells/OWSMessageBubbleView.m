@@ -738,7 +738,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *text = displayableText.displayText;
 
     NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
-    paragraphStyle.alignment = text.naturalTextAlignment;
+    paragraphStyle.alignment = displayableText.displayTextNaturalAlignment;
 
     NSMutableAttributedString *attributedText =
         [[NSMutableAttributedString alloc] initWithString:text

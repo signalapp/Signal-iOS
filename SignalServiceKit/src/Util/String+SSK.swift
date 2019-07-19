@@ -45,6 +45,8 @@ public extension NSString {
     }
 }
 
+// MARK: - Attributed String Concatentation
+
 public extension NSAttributedString {
     @objc
     func stringByAppendingString(_ string: String, attributes: [NSAttributedString.Key: Any] = [:]) -> NSAttributedString {
