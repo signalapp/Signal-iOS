@@ -6,6 +6,7 @@
 #import "CountryCodeViewController.h"
 #import "PhoneNumber.h"
 #import "ViewControllerUtils.h"
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/Environment.h>

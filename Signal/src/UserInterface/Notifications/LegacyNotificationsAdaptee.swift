@@ -164,7 +164,7 @@ extension LegacyNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         let alertBody: String
         if let title = title {
             // TODO - Make this a format string for better l10n
-            alertBody = title.rtlSafeAppend(":").rtlSafeAppend(" ").rtlSafeAppend(escapedBody)
+            alertBody = title + ":" + " " + escapedBody
         } else {
             alertBody = escapedBody
         }

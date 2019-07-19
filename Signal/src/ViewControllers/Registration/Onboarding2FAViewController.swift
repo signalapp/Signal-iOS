@@ -57,7 +57,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             let explanationText2 = NSLocalizedString("ONBOARDING_2FA_EXPLANATION_2",
                                                      comment: "The first explanation in the 'onboarding 2FA' view.")
 
-            explanationText = explanationText1.rtlSafeAppend("\n\n").rtlSafeAppend(explanationText2)
+            explanationText = explanationText1 + "\n\n" + explanationText2
         }
 
         let titleLabel = self.titleLabel(text: titleText)

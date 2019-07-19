@@ -9,10 +9,6 @@ public extension String {
         return (self as NSString).digitsOnly()
     }
 
-    func rtlSafeAppend(_ string: String) -> String {
-        return (self as NSString).rtlSafeAppend(string)
-    }
-
     func substring(from index: Int) -> String {
         return String(self[self.index(self.startIndex, offsetBy: index)...])
     }
@@ -45,6 +41,28 @@ public extension NSString {
     @objc
     var ensureArabicNumerals: String {
         return (self as String).ensureArabicNumerals
+    }
+}
+
+public extension NSAttributedString {
+    @objc
+    func stringByAppendingString(_ string: String, attributes: [NSAttributedString.Key: Any] = [:]) -> NSAttributedString {
+        return stringByAppendingString(NSAttributedString(string: string, attributes: attributes))
+    }
+
+    @objc
+    func stringByAppendingString(_ string: NSAttributedString) -> NSAttributedString {
+        let copy = mutableCopy() as! NSMutableAttributedString
+        copy.append(string)
+        return copy.copy() as! NSAttributedString
+    }
+
+    static func + (lhs: NSAttributedString, rhs: NSAttributedString) -> NSAttributedString {
+        return lhs.stringByAppendingString(rhs)
+    }
+
+    static func + (lhs: NSAttributedString, rhs: String) -> NSAttributedString {
+        return lhs.stringByAppendingString(rhs)
     }
 }
 

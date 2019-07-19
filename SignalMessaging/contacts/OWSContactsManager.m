@@ -4,20 +4,19 @@
 
 #import "OWSContactsManager.h"
 #import "Environment.h"
-#import "NSAttributedString+OWS.h"
 #import "OWSFormat.h"
 #import "OWSProfileManager.h"
 #import "OWSUserProfile.h"
 #import "ViewControllerUtils.h"
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/PhoneNumber.h>
@@ -1032,10 +1031,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if (profileName.length > 0) {
         NSAttributedString *result = [[NSAttributedString alloc] initWithString:phoneNumber ?: address.stringForDisplay
                                                                      attributes:primaryAttributes];
-        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@" "]];
-        result = [result rtlSafeAppend:[[NSAttributedString alloc] initWithString:@"~" attributes:secondaryAttributes]];
-        result = [result
-            rtlSafeAppend:[[NSAttributedString alloc] initWithString:profileName attributes:secondaryAttributes]];
+        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:@" "]];
+        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:@"~"
+                                                                                 attributes:secondaryAttributes]];
+        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:profileName
+                                                                                 attributes:secondaryAttributes]];
         return [result copy];
     }
 
