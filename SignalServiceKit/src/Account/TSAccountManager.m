@@ -279,6 +279,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable NSUUID *)uuid
 {
+    if (!SSKFeatureFlags.allowUUIDOnlyContacts) {
+        return nil;
+    }
+
     NSUUID *awaitingVerif = self.uuidAwaitingVerification;
     if (awaitingVerif) {
         return awaitingVerif;
@@ -296,6 +300,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable NSUUID *)storedUuid
 {
+    OWSAssertDebug(SSKFeatureFlags.allowUUIDOnlyContacts);
+
     @synchronized(self) {
         __block NSUUID *_Nullable result;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
