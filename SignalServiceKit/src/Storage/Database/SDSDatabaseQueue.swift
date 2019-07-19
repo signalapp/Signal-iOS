@@ -12,6 +12,8 @@ protocol SDSDatabaseQueue {
     func write(block: @escaping (WriteTransaction) -> Void)
 }
 
+// MARK: -
+
 @objc
 public class GRDBDatabaseQueue: NSObject, SDSDatabaseQueue {
     let databaseQueue: DatabaseQueue
@@ -32,7 +34,7 @@ public class GRDBDatabaseQueue: NSObject, SDSDatabaseQueue {
     public func write(block: @escaping (GRDBWriteTransaction) -> Void) {
         do {
             try databaseQueue.write { database in
-                try autoreleasepool {
+                autoreleasepool {
                     block(GRDBWriteTransaction(database: database))
                 }
             }
@@ -41,10 +43,12 @@ public class GRDBDatabaseQueue: NSObject, SDSDatabaseQueue {
         }
     }
 
-    var asAnyQueue: SDSAnyDatabaseQueue {
-        return SDSAnyDatabaseQueue(grdbDatabaseQueue: self)
+    func asAnyQueue(crossProcess: SDSCrossProcess) -> SDSAnyDatabaseQueue {
+        return SDSAnyDatabaseQueue(grdbDatabaseQueue: self, crossProcess: crossProcess)
     }
 }
+
+// MARK: -
 
 class YAPDBDatabaseQueue: SDSDatabaseQueue {
     private let databaseConnection: YapDatabaseConnection
@@ -65,13 +69,15 @@ class YAPDBDatabaseQueue: SDSDatabaseQueue {
         databaseConnection.readWrite(block)
     }
 
-    var asAnyQueue: SDSAnyDatabaseQueue {
-        return SDSAnyDatabaseQueue(yapDatabaseQueue: self)
+    func asAnyQueue(crossProcess: SDSCrossProcess) -> SDSAnyDatabaseQueue {
+        return SDSAnyDatabaseQueue(yapDatabaseQueue: self, crossProcess: crossProcess)
     }
 }
 
+// MARK: -
+
 @objc
-public class SDSAnyDatabaseQueue: NSObject, SDSDatabaseQueue {
+public class SDSAnyDatabaseQueue: SDSTransactable, SDSDatabaseQueue {
     enum SomeDatabaseQueue {
         case yap(_ yapQueue: YAPDBDatabaseQueue)
         case grdb(_ grdbQueue: GRDBDatabaseQueue)
@@ -79,16 +85,22 @@ public class SDSAnyDatabaseQueue: NSObject, SDSDatabaseQueue {
 
     private let someDatabaseQueue: SomeDatabaseQueue
 
-    init(yapDatabaseQueue: YAPDBDatabaseQueue) {
+    private let crossProcess: SDSCrossProcess
+
+    init(yapDatabaseQueue: YAPDBDatabaseQueue, crossProcess: SDSCrossProcess) {
         someDatabaseQueue = .yap(yapDatabaseQueue)
+
+        self.crossProcess = crossProcess
     }
 
-    init(grdbDatabaseQueue: GRDBDatabaseQueue) {
+    init(grdbDatabaseQueue: GRDBDatabaseQueue, crossProcess: SDSCrossProcess) {
         someDatabaseQueue = .grdb(grdbDatabaseQueue)
+
+        self.crossProcess = crossProcess
     }
 
     @objc
-    func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
+    public override func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
         switch someDatabaseQueue {
         case .yap(let yapDatabaseQueue):
             yapDatabaseQueue.read { block($0.asAnyRead) }
@@ -98,52 +110,14 @@ public class SDSAnyDatabaseQueue: NSObject, SDSDatabaseQueue {
     }
 
     @objc
-    func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    public override func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
         switch someDatabaseQueue {
         case .yap(let yapDatabaseQueue):
             yapDatabaseQueue.write { block($0.asAnyWrite) }
         case .grdb(let grdbDatabaseQueue):
             grdbDatabaseQueue.write { block($0.asAnyWrite) }
         }
-    }
 
-    // MARK: - Async Methods
-
-    @objc
-    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        asyncRead(block: block, completion: { })
-    }
-
-    @objc
-    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completion: @escaping () -> Void) {
-        asyncRead(block: block, completionQueue: .main, completion: completion)
-    }
-
-    @objc
-    public func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
-        DispatchQueue.global().async {
-            self.read(block: block)
-
-            completionQueue.async(execute: completion)
-        }
-    }
-
-    @objc
-    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        asyncWrite(block: block, completion: { })
-    }
-
-    @objc
-    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completion: @escaping () -> Void) {
-        asyncWrite(block: block, completionQueue: .main, completion: completion)
-    }
-
-    @objc
-    public func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
-        DispatchQueue.global().async {
-            self.write(block: block)
-
-            completionQueue.async(execute: completion)
-        }
+        crossProcess.notifyChangedAsync()
     }
 }

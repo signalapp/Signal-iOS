@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 // It will only be invoked on the main thread.
 @property (nonatomic, nullable) dispatch_block_t callback;
 
-- (void)notifyChanged;
+- (void)notifyChangedAsync;
 
 @end
 
