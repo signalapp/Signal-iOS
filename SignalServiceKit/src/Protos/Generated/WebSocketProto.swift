@@ -45,18 +45,36 @@ public enum WebSocketProtoError: Error {
             setRequestID(requestID)
         }
 
-        @objc public func setVerb(_ valueParam: String?) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setVerb(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
             proto.verb = valueParam
         }
 
-        @objc public func setPath(_ valueParam: String?) {
+        public func setVerb(_ valueParam: String) {
+            proto.verb = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPath(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
             proto.path = valueParam
         }
 
-        @objc public func setBody(_ valueParam: Data?) {
+        public func setPath(_ valueParam: String) {
+            proto.path = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBody(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
+            proto.body = valueParam
+        }
+
+        public func setBody(_ valueParam: Data) {
             proto.body = valueParam
         }
 
@@ -70,7 +88,8 @@ public enum WebSocketProtoError: Error {
             proto.headers = wrappedItems
         }
 
-        @objc public func setRequestID(_ valueParam: UInt64) {
+        @objc
+        public func setRequestID(_ valueParam: UInt64) {
             proto.requestID = valueParam
         }
 
@@ -209,16 +228,24 @@ extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMe
             setStatus(status)
         }
 
-        @objc public func setRequestID(_ valueParam: UInt64) {
+        @objc
+        public func setRequestID(_ valueParam: UInt64) {
             proto.requestID = valueParam
         }
 
-        @objc public func setStatus(_ valueParam: UInt32) {
+        @objc
+        public func setStatus(_ valueParam: UInt32) {
             proto.status = valueParam
         }
 
-        @objc public func setMessage(_ valueParam: String?) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setMessage(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
+            proto.message = valueParam
+        }
+
+        public func setMessage(_ valueParam: String) {
             proto.message = valueParam
         }
 
@@ -232,8 +259,14 @@ extension WebSocketProtoWebSocketRequestMessage.WebSocketProtoWebSocketRequestMe
             proto.headers = wrappedItems
         }
 
-        @objc public func setBody(_ valueParam: Data?) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBody(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
+            proto.body = valueParam
+        }
+
+        public func setBody(_ valueParam: Data) {
             proto.body = valueParam
         }
 
@@ -391,17 +424,30 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
 
         @objc fileprivate override init() {}
 
-        @objc public func setType(_ valueParam: WebSocketProtoWebSocketMessageType) {
+        @objc
+        public func setType(_ valueParam: WebSocketProtoWebSocketMessageType) {
             proto.type = WebSocketProtoWebSocketMessageTypeUnwrap(valueParam)
         }
 
-        @objc public func setRequest(_ valueParam: WebSocketProtoWebSocketRequestMessage?) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRequest(_ valueParam: WebSocketProtoWebSocketRequestMessage?) {
             guard let valueParam = valueParam else { return }
             proto.request = valueParam.proto
         }
 
-        @objc public func setResponse(_ valueParam: WebSocketProtoWebSocketResponseMessage?) {
+        public func setRequest(_ valueParam: WebSocketProtoWebSocketRequestMessage) {
+            proto.request = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setResponse(_ valueParam: WebSocketProtoWebSocketResponseMessage?) {
             guard let valueParam = valueParam else { return }
+            proto.response = valueParam.proto
+        }
+
+        public func setResponse(_ valueParam: WebSocketProtoWebSocketResponseMessage) {
             proto.response = valueParam.proto
         }
 

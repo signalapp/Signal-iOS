@@ -39,8 +39,14 @@ public enum FingerprintProtoError: Error {
             setIdentityData(identityData)
         }
 
-        @objc public func setIdentityData(_ valueParam: Data?) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setIdentityData(_ valueParam: Data?) {
             guard let valueParam = valueParam else { return }
+            proto.identityData = valueParam
+        }
+
+        public func setIdentityData(_ valueParam: Data) {
             proto.identityData = valueParam
         }
 
@@ -139,17 +145,30 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
             setRemoteFingerprint(remoteFingerprint)
         }
 
-        @objc public func setVersion(_ valueParam: UInt32) {
+        @objc
+        public func setVersion(_ valueParam: UInt32) {
             proto.version = valueParam
         }
 
-        @objc public func setLocalFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint?) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setLocalFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint?) {
             guard let valueParam = valueParam else { return }
             proto.localFingerprint = valueParam.proto
         }
 
-        @objc public func setRemoteFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint?) {
+        public func setLocalFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint) {
+            proto.localFingerprint = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRemoteFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint?) {
             guard let valueParam = valueParam else { return }
+            proto.remoteFingerprint = valueParam.proto
+        }
+
+        public func setRemoteFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint) {
             proto.remoteFingerprint = valueParam.proto
         }
 
