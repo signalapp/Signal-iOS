@@ -6,7 +6,7 @@ import Foundation
 
 enum FeatureBuild: Int {
     case dev
-    case testing
+    case internalPreview
     case qa
     case beta
     case production
@@ -14,11 +14,11 @@ enum FeatureBuild: Int {
 
 extension FeatureBuild {
     func includes(_ level: FeatureBuild) -> Bool {
-        return self.rawValue < level.rawValue
+        return self.rawValue <= level.rawValue
     }
 }
 
-let build: FeatureBuild = .dev
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .production
 
 /// By centralizing feature flags here and documenting their rollout plan, it's easier to review
 /// which feature flags are in play.
