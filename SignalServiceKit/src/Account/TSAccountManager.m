@@ -245,6 +245,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable NSString *)storedLocalNumber
 {
+    OWSLogVerbose(@"");
+    
     @synchronized (self) {
         __block NSString *_Nullable result;
 
@@ -302,6 +304,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 {
     OWSAssertDebug(SSKFeatureFlags.allowUUIDOnlyContacts);
 
+    OWSLogVerbose(@"");
+    
     @synchronized(self) {
         __block NSUUID *_Nullable result;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
