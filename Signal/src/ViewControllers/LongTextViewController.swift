@@ -131,6 +131,7 @@ public class LongTextViewController: OWSViewController {
         messageTextView.textColor = Theme.primaryColor
         if let displayableText = displayableText {
             messageTextView.text = fullText
+            messageTextView.textAlignment = displayableText.fullTextNaturalAlignment
             messageTextView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
         } else {
             owsFailDebug("displayableText was unexpectedly nil")

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import NaturalLanguage
 
 public extension String {
     var digitsOnly: String {
@@ -44,6 +45,8 @@ public extension NSString {
     }
 }
 
+// MARK: - Attributed String Concatentation
+
 public extension NSAttributedString {
     @objc
     func stringByAppendingString(_ string: String, attributes: [NSAttributedString.Key: Any] = [:]) -> NSAttributedString {
@@ -63,6 +66,53 @@ public extension NSAttributedString {
 
     static func + (lhs: NSAttributedString, rhs: String) -> NSAttributedString {
         return lhs.stringByAppendingString(rhs)
+    }
+}
+
+// MARK: - Natural Text Alignment
+
+public extension String {
+    private var dominantLanguage: String? {
+        if #available(iOS 12, *) {
+            return NLLanguageRecognizer.dominantLanguage(for: self)?.rawValue
+        } else if #available(iOS 11, *) {
+            return NSLinguisticTagger.dominantLanguage(for: self)
+        } else {
+            let tagger = NSLinguisticTagger(tagSchemes: [.language], options: 0)
+            tagger.string = self
+            return tagger.tag(at: 0, scheme: .language, tokenRange: nil, sentenceRange: nil)?.rawValue
+        }
+    }
+
+    /// The natural text alignment of a given string. This may be different
+    /// than the natural alignment of the current system locale depending on
+    /// the language of the string, especially for user entered text.
+    var naturalTextAlignment: NSTextAlignment {
+        guard let dominantLanguage = dominantLanguage else {
+            // If we can't identify the strings language, use the system language's natural alignment
+            return .natural
+        }
+
+        switch NSParagraphStyle.defaultWritingDirection(forLanguage: dominantLanguage) {
+        case .leftToRight:
+            return .left
+        case .rightToLeft:
+            return .right
+        case .natural:
+            return .natural
+        @unknown default:
+            return .natural
+        }
+    }
+}
+
+public extension NSString {
+    /// The natural text alignment of a given string. This may be different
+    /// than the natural alignment of the current system locale depending on
+    /// the language of the string, especially for user entered text.
+    @objc
+    var naturalTextAlignment: NSTextAlignment {
+        return (self as String).naturalTextAlignment
     }
 }
 

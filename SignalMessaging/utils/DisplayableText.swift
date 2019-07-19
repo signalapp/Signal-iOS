@@ -7,7 +7,11 @@ import Foundation
 @objc public class DisplayableText: NSObject {
 
     @objc public let fullText: String
+    @objc public let fullTextNaturalAlignment: NSTextAlignment
+
     @objc public let displayText: String
+    @objc public let displayTextNaturalAlignment: NSTextAlignment
+
     @objc public let isTextTruncated: Bool
     @objc public let jumbomojiCount: UInt
 
@@ -24,7 +28,9 @@ import Foundation
     @objc
     public init(fullText: String, displayText: String, isTextTruncated: Bool) {
         self.fullText = fullText
+        self.fullTextNaturalAlignment = fullText.naturalTextAlignment
         self.displayText = displayText
+        self.displayTextNaturalAlignment = displayText.naturalTextAlignment
         self.isTextTruncated = isTextTruncated
         self.jumbomojiCount = DisplayableText.jumbomojiCount(in: fullText)
     }

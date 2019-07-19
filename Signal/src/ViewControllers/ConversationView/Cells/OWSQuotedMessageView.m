@@ -466,6 +466,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     self.quotedTextLabel.numberOfLines = self.isForPreview ? 1 : 2;
     self.quotedTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.quotedTextLabel.text = text;
+    self.quotedTextLabel.textAlignment = self.displayableQuotedText.displayTextNaturalAlignment;
     self.quotedTextLabel.textColor = textColor;
     self.quotedTextLabel.font = font;
 
