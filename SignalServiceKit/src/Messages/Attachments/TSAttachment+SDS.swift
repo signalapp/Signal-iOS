@@ -410,6 +410,11 @@ public extension TSAttachment {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
+        guard shouldBeSaved else {
+            // Skipping remove.
+            return
+        }
+
         anyWillRemove(with: transaction)
 
         switch transaction.writeTransaction {

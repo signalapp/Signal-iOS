@@ -20,7 +20,7 @@ public protocol SDSModel: TSYapDatabaseObject {
 public extension SDSModel {
     func sdsSave(saveMode: SDSSaveMode, transaction: SDSAnyWriteTransaction) {
         guard shouldBeSaved else {
-            Logger.info("Skipping save of: \(type(of: self))")
+            Logger.warn("Skipping save of: \(type(of: self))")
             return
         }
 
