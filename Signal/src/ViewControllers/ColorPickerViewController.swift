@@ -466,8 +466,11 @@ private class MockIncomingMessage: TSIncomingMessage {
         fatalError("init(dictionary:) has not been implemented")
     }
 
-    override func save(with transaction: YapDatabaseReadWriteTransaction) {
-        // no - op
+    public override var shouldBeSaved: Bool {
+        return false
+    }
+
+    override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
         owsFailDebug("shouldn't save mock message")
     }
 }
@@ -497,8 +500,11 @@ private class MockOutgoingMessage: TSOutgoingMessage {
         fatalError("init(dictionary:) has not been implemented")
     }
 
-    override func save(with transaction: YapDatabaseReadWriteTransaction) {
-        // no - op
+    public override var shouldBeSaved: Bool {
+        return false
+    }
+
+    override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
         owsFailDebug("shouldn't save mock message")
     }
 

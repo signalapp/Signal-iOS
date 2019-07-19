@@ -82,7 +82,7 @@ public class OWS110SortIdMigration: YDBDatabaseMigration {
                     for batch in groupKeys.chunked(by: groupKeyBatchSize) {
                         autoreleasepool {
                             for uniqueId in batch {
-                                guard let interaction = TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) else {
+                                guard let interaction = TSInteraction.ydb_fetch(uniqueId: uniqueId, transaction: transaction) else {
                                     owsFailDebug("Could not load interaction: \(uniqueId)")
                                     return
                                 }

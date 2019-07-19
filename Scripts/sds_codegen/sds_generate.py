@@ -1083,7 +1083,7 @@ public extension %s {
                 isInserting = true
             }
         } else {
-            owsFailDebug("Missing uniqueId: \(type(of:self))")
+            owsFailDebug("Missing uniqueId: \(type(of: self))")
             isInserting = true
         }
         sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
@@ -1286,7 +1286,30 @@ public extension %s {
             }
         }
     }
-    
+''' % ( ( str(clazz.name), ) * 4 )
+
+        swift_body += '''
+    // Traverses all records' unique ids.
+    // Records are not visited in any particular order.
+    // Traversal aborts if the visitor returns false.
+    class func anyEnumerateUniqueIds(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: %s.collection()) { (uniqueId, stop) in
+                block(uniqueId, stop)
+            }
+        case .grdbRead(let grdbTransaction):
+            grdbEnumerateUniqueIds(transaction: grdbTransaction,
+                                   sql: """
+                    SELECT \(%sColumn: .uniqueId)
+                    FROM \(%s.databaseTableName)
+                """,
+                block: block)
+        }
+    }
+''' % ( str(clazz.name), record_identifier(clazz.name), record_name, )
+
+        swift_body += '''
     // Does not order the results.
     class func anyFetchAll(transaction: SDSAnyReadTransaction) -> [%s] {
         var result = [%s]()
@@ -1295,7 +1318,16 @@ public extension %s {
         }
         return result
     }
-''' % ( ( str(clazz.name), ) * 6 )
+    
+    // Does not order the results.
+    class func anyAllUniqueIds(transaction: SDSAnyReadTransaction) -> [String] {
+        var result = [String]()
+        anyEnumerateUniqueIds(transaction: transaction) { (uniqueId, _) in
+            result.append(uniqueId)
+        }
+        return result
+    }
+''' % ( ( str(clazz.name), ) * 2 )
 
         # ---- Count ----
 

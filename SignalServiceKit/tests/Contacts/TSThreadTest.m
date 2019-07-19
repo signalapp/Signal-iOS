@@ -90,8 +90,8 @@
     }];
     [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
+        XCTAssertEqual(0, [TSInteraction anyCountWithTransaction:transaction]);
     }];
-    XCTAssertEqual(0, [TSInteraction numberOfKeysInCollection]);
 }
 
 - (void)testDeletingThreadDeletesAttachmentFiles

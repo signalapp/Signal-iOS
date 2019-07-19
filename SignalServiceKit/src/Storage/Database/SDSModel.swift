@@ -73,3 +73,25 @@ public extension TableRecord {
         }
     }
 }
+
+// MARK: -
+
+public extension SDSModel {
+    static func grdbEnumerateUniqueIds(transaction: GRDBReadTransaction,
+                                       sql: String,
+                                       block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        do {
+            let cursor = try String.fetchCursor(transaction.database,
+                                                sql: sql)
+            while let uniqueId = try cursor.next() {
+                var stop: ObjCBool = false
+                block(uniqueId, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch let error as NSError {
+            owsFailDebug("Couldn't fetch uniqueIds: \(error)")
+        }
+    }
+}

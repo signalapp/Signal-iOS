@@ -85,7 +85,6 @@ NSString *const OWSIncomingMessageFinderColumnSourceDeviceId = @"OWSIncomingMess
                     sourceDeviceId:(uint32_t)sourceDeviceId
                        transaction:(YapDatabaseReadTransaction *)transaction
 {
-    BOOL success = NO;
     NSUInteger count = 0;
 
     if (address.uuidString) {

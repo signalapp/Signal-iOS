@@ -82,38 +82,38 @@ class FullTextSearcherTest: SignalBaseTest {
         // Replace this singleton.
         SSKEnvironment.shared.contactsManager = FullTextSearcherContactsManager()
 
-        self.dbConnection.readWrite { transaction in
+        self.write { transaction in
             let bookModel = TSGroupModel(title: "Book Club", members: [aliceRecipient, bobRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
-            let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction.asAnyWrite)
-            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyWrite)
+            let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction)
+            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction)
 
             let snackModel = TSGroupModel(title: "Snack Club", members: [aliceRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
-            let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction.asAnyWrite)
-            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyWrite)
+            let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
+            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction)
 
-            let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction.asAnyWrite)
-            self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction.asAnyWrite)
+            let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction)
+            self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction)
 
-            let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: bobRecipient, transaction: transaction.asAnyWrite)
-            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction.asAnyWrite)
+            let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: bobRecipient, transaction: transaction)
+            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
-            helloAlice.save(with: transaction)
+            helloAlice.anyInsert(transaction: transaction)
 
             let goodbyeAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Goodbye Alice", attachmentId: nil)
-            goodbyeAlice.save(with: transaction)
+            goodbyeAlice.anyInsert(transaction: transaction)
 
             let helloBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Hello Book Club", attachmentId: nil)
-            helloBookClub.save(with: transaction)
+            helloBookClub.anyInsert(transaction: transaction)
 
             let goodbyeBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Goodbye Book Club", attachmentId: nil)
-            goodbyeBookClub.save(with: transaction)
+            goodbyeBookClub.anyInsert(transaction: transaction)
 
             let bobsPhoneNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My phone number is: 321-321-4321", attachmentId: nil)
-            bobsPhoneNumber.save(with: transaction)
+            bobsPhoneNumber.anyInsert(transaction: transaction)
 
             let bobsFaxNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My fax is: 222-333-4444", attachmentId: nil)
-            bobsFaxNumber.save(with: transaction)
+            bobsFaxNumber.anyInsert(transaction: transaction)
         }
     }
 
@@ -299,13 +299,13 @@ class FullTextSearcherTest: SignalBaseTest {
     func bodies<T>(forMessageResults messageResults: [ConversationSearchResult<T>]) -> [String] {
         var result = [String]()
 
-        self.dbConnection.read { transaction in
+        self.read { transaction in
             for messageResult in messageResults {
                 guard let messageId = messageResult.messageId else {
                     owsFailDebug("message result missing message id")
                     continue
                 }
-                guard let interaction = TSInteraction.fetch(uniqueId: messageId, transaction: transaction) else {
+                guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
                     owsFailDebug("couldn't load interaction for message result")
                     continue
                 }

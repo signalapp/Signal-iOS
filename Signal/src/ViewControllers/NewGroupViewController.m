@@ -60,6 +60,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation NewGroupViewController
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 - (instancetype)init
 {
     self = [super init];
@@ -467,8 +476,8 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupModel *model = [self makeGroup];
 
     __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction.asAnyWrite];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
     }];
     OWSAssertDebug(thread);
     
@@ -492,7 +501,9 @@ NS_ASSUME_NONNULL_BEGIN
         TSErrorMessage *errorMessage = [[TSErrorMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
                                                                         inThread:thread
                                                                failedMessageType:TSErrorMessageGroupCreationFailed];
-        [errorMessage save];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [errorMessage anyInsertWithTransaction:transaction];
+        }];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];

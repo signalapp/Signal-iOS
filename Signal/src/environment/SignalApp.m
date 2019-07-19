@@ -71,10 +71,9 @@ NS_ASSUME_NONNULL_BEGIN
                              animated:(BOOL)isAnimated
 {
     __block TSThread *thread = nil;
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            thread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction.asAnyWrite];
-        }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
+    }];
     [self presentConversationForThread:thread action:action animated:(BOOL)isAnimated];
 }
 

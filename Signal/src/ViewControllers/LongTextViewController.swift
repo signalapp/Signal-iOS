@@ -93,7 +93,7 @@ public class LongTextViewController: OWSViewController {
 
         do {
             try uiDatabaseConnection.read { transaction in
-                guard TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) != nil else {
+                guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead) != nil else {
                     Logger.error("Message was deleted")
                     throw LongTextViewError.messageWasDeleted
                 }

@@ -35,7 +35,7 @@ public class OWS113MultiAttachmentMediaMessages: YDBDatabaseMigration {
             var legacyAttachments: [(attachmentId: String, messageId: String)] = []
 
             self.ydbReadWriteConnection.read { transaction in
-                TSMessage.enumerateCollectionObjects(with: transaction) { object, _ in
+                TSMessage.ydb_enumerateCollectionObjects(with: transaction) { object, _ in
                     autoreleasepool {
                         guard let message: TSMessage = object as? TSMessage else {
                             Logger.debug("ignoring message with type: \(object)")
