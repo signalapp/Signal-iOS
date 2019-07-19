@@ -47,7 +47,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
 
         let attributes = [NSAttributedString.Key.font: pinEntryView.boldLabelFont]
 
-        let attributedInstructionsText = NSAttributedString(string: instructionsTextHeader, attributes: attributes).rtlSafeAppend(" ").rtlSafeAppend(instructionsTextBody)
+        let attributedInstructionsText = NSAttributedString(string: instructionsTextHeader, attributes: attributes) + " " + instructionsTextBody
 
         pinEntryView.attributedInstructionsText = attributedInstructionsText
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageHeaderView.h"
@@ -136,7 +136,7 @@ const CGFloat OWSMessageHeaderViewDateHeaderVMargin = 23;
         NSString *title = NSLocalizedString(
             @"MESSAGES_VIEW_UNREAD_INDICATOR", @"Indicator that separates read from unread messages.");
         if (viewItem.shouldShowDate) {
-            title = [[dateString rtlSafeAppend:@" \u00B7 "] rtlSafeAppend:title];
+            title = [[dateString stringByAppendingString:@" \u00B7 "] stringByAppendingString:title];
         }
         self.titleLabel.text = title.localizedUppercaseString;
 

@@ -184,9 +184,7 @@ public class PinSetupViewController: OWSViewController {
             let explanationBoldText = NSLocalizedString("PIN_CREATION_BOLD_EXPLANATION",
                                                         comment: "The bold portion of the explanation in the 'pin creation' view.")
 
-            let attributedExplanation = NSAttributedString(string: explanationText)
-                .rtlSafeAppend(" ")
-                .rtlSafeAppend(explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
+            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
 
             explanationLabel.attributedText = attributedExplanation
 
@@ -198,9 +196,7 @@ public class PinSetupViewController: OWSViewController {
             let explanationBoldText = NSLocalizedString("PIN_CREATION_RECREATION_BOLD_EXPLANATION",
                                                         comment: "The bold portion of the re-creation explanation in the 'pin creation' view.")
 
-            let attributedExplanation = NSAttributedString(string: explanationText)
-                .rtlSafeAppend(" ")
-                .rtlSafeAppend(explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
+            let attributedExplanation = NSAttributedString(string: explanationText) + " " + NSAttributedString(string: explanationBoldText, attributes: [.font: UIFont.ows_dynamicTypeSubheadlineClamped.ows_semiBold()])
 
             explanationLabel.attributedText = attributedExplanation
 

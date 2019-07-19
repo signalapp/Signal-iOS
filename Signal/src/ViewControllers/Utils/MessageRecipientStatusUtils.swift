@@ -78,16 +78,14 @@ public class MessageRecipientStatusUtils: NSObject {
             if let readTimestamp = recipientState.readTimestamp {
                 let timestampString = DateUtil.formatPastTimestampRelativeToNow(readTimestamp.uint64Value)
                 let shortStatusMessage = timestampString
-                let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages").rtlSafeAppend(" ")
-                    .rtlSafeAppend(timestampString)
+                let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_READ", comment: "status message for read messages") + " " + timestampString
                 return (status:.read, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
             }
             if let deliveryTimestamp = recipientState.deliveryTimestamp {
                 let timestampString = DateUtil.formatPastTimestampRelativeToNow(deliveryTimestamp.uint64Value)
                 let shortStatusMessage = timestampString
                 let longStatusMessage = NSLocalizedString("MESSAGE_STATUS_DELIVERED",
-                                                          comment: "message status for message delivered to their recipient.").rtlSafeAppend(" ")
-                    .rtlSafeAppend(timestampString)
+                                                          comment: "message status for message delivered to their recipient.") + " " + timestampString
                 return (status:.delivered, shortStatusMessage:shortStatusMessage, longStatusMessage:longStatusMessage)
             }
             let statusMessage =

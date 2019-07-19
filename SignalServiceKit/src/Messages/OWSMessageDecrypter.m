@@ -4,7 +4,6 @@
 
 #import "OWSMessageDecrypter.h"
 #import "NSData+messagePadding.h"
-#import "NSString+SSK.h"
 #import "NotificationsProtocol.h"
 #import "OWSAnalytics.h"
 #import "OWSBlockingManager.h"
@@ -25,6 +24,7 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/SessionCipher.h>
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalCoreKit/SCKExceptionWrapper.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>

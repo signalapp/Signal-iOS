@@ -4,8 +4,8 @@
 
 #import "SignalAccount.h"
 #import "Contact.h"
-#import "NSString+SSK.h"
 #import "SignalRecipient.h"
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

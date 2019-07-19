@@ -5,7 +5,6 @@
 #import "TSMessage.h"
 #import "AppContext.h"
 #import "MIMETypeUtil.h"
-#import "NSString+SSK.h"
 #import "OWSContact.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "TSAttachment.h"
@@ -13,6 +12,7 @@
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
@@ -449,13 +449,13 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 
     if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
         // Attachment with caption.
-        return [[bodyDescription rtlSafeAppend:@" "] rtlSafeAppend:attachmentDescription];
+        return [[bodyDescription stringByAppendingString:@" "] stringByAppendingString:attachmentDescription];
     } else if (bodyDescription.length > 0) {
         return bodyDescription;
     } else if (attachmentDescription.length > 0) {
         return attachmentDescription;
     } else if (self.contactShare) {
-        return [[self.contactShare.name.displayName rtlSafeAppend:@" "] rtlSafeAppend:@"👤"];
+        return [[self.contactShare.name.displayName stringByAppendingString:@" "] stringByAppendingString:@"👤"];
     } else if (self.messageSticker) {
         return NSLocalizedString(
             @"STICKER_MESSAGE_PREVIEW", @"Preview text shown in notifications and home view for sticker messages.");
