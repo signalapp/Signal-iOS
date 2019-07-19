@@ -129,9 +129,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         if useGRDB {
             do {
                 try grdbStorage.uiRead { transaction in
-                    autoreleasepool {
-                        block(transaction.asAnyRead)
-                    }
+                    block(transaction.asAnyRead)
                 }
             } catch {
                 owsFail("error: \(error)")
@@ -148,9 +146,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         if useGRDB {
             do {
                 try grdbStorage.read { transaction in
-                    autoreleasepool {
-                        block(transaction.asAnyRead)
-                    }
+                    block(transaction.asAnyRead)
                 }
             } catch {
                 owsFail("error: \(error)")
@@ -167,9 +163,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         if useGRDB {
             do {
                 try grdbStorage.write { transaction in
-                    autoreleasepool {
-                        block(transaction.asAnyWrite)
-                    }
+                    block(transaction.asAnyWrite)
                 }
             } catch {
                 owsFail("error: \(error)")
@@ -383,7 +377,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     private let keyServiceName: String = "TSKeyChainService"
     private let keyName: String = "OWSDatabaseCipherKeySpec"
 
-    private let storage: Storage
+    private let storage: GRDBStorage
 
     public var pool: DatabasePool {
         return storage.pool
@@ -393,7 +387,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         OWSFileSystem.ensureDirectoryExists(dbDir.path)
 
         let dbURL = dbDir.appendingPathComponent("signal.sqlite", isDirectory: false)
-        storage = try Storage(dbURL: dbURL, keyServiceName: keyServiceName, keyName: keyName)
+        storage = try GRDBStorage(dbURL: dbURL, keyServiceName: keyServiceName, keyName: keyName)
 
         super.init()
 
@@ -414,7 +408,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     }
 
     func newDatabaseQueue() -> GRDBDatabaseQueue {
-        return GRDBDatabaseQueue(databaseQueue: storage.newDatabaseQueue())
+        return GRDBDatabaseQueue(storageAdapter: self)
     }
 
     public func add(function: DatabaseFunction) {
@@ -645,14 +639,18 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     public func uiReadThrows(block: @escaping (GRDBReadTransaction) throws -> Void) rethrows {
         AssertIsOnMainThread()
         try latestSnapshot.read { database in
-            try block(GRDBReadTransaction(database: database))
+            try autoreleasepool {
+                try block(GRDBReadTransaction(database: database))
+            }
         }
     }
 
     public func readReturningResultThrows<T>(block: @escaping (GRDBReadTransaction) throws -> T) throws -> T {
         AssertIsOnMainThread()
         return try pool.read { database in
-            return try block(GRDBReadTransaction(database: database))
+            try autoreleasepool {
+                return try block(GRDBReadTransaction(database: database))
+            }
         }
     }
 
@@ -660,14 +658,18 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     public func uiRead(block: @escaping (GRDBReadTransaction) -> Void) throws {
         AssertIsOnMainThread()
         latestSnapshot.read { database in
-            block(GRDBReadTransaction(database: database))
+            autoreleasepool {
+                block(GRDBReadTransaction(database: database))
+            }
         }
     }
 
     @objc
     public func read(block: @escaping (GRDBReadTransaction) -> Void) throws {
         try pool.read { database in
-            block(GRDBReadTransaction(database: database))
+            autoreleasepool {
+                block(GRDBReadTransaction(database: database))
+            }
         }
     }
 
@@ -675,42 +677,20 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     public func write(block: @escaping (GRDBWriteTransaction) -> Void) throws {
         var transaction: GRDBWriteTransaction!
         try pool.write { database in
-            transaction = GRDBWriteTransaction(database: database)
-            block(transaction)
+            autoreleasepool {
+                transaction = GRDBWriteTransaction(database: database)
+                block(transaction)
+            }
         }
         for (queue, block) in transaction.completions {
             queue.async(execute: block)
         }
     }
-
-    public func uiReadReturningResult<T>(block: @escaping (GRDBReadTransaction) -> T) -> T {
-        var value: T!
-        try! uiRead { (transaction) in
-            value = block(transaction)
-        }
-        return value
-    }
-
-    public func readReturningResult<T>(block: @escaping (GRDBReadTransaction) -> T) -> T {
-        var value: T!
-        try! read { (transaction) in
-            value = block(transaction)
-        }
-        return value
-    }
-
-    public func writeReturningResult<T>(block: @escaping (GRDBWriteTransaction) -> T) -> T {
-        var value: T!
-        try! write { (transaction) in
-            value = block(transaction)
-        }
-        return value
-    }
 }
 
-private struct Storage {
+// MARK: -
 
-    // MARK: -
+private struct GRDBStorage {
 
     let pool: DatabasePool
 
@@ -719,7 +699,7 @@ private struct Storage {
 
     init(dbURL: URL, keyServiceName: String, keyName: String) throws {
         self.dbURL = dbURL
-        let keyspec = KeySpecSource(keyServiceName: keyServiceName, keyName: keyName)
+        let keyspec = GRDBKeySpecSource(keyServiceName: keyServiceName, keyName: keyName)
 
         var configuration = Configuration()
         configuration.readonly = false
@@ -755,19 +735,11 @@ private struct Storage {
 
         OWSFileSystem.protectFileOrFolder(atPath: dbURL.path)
     }
-
-    public func newDatabaseQueue() -> DatabaseQueue {
-        do {
-            return try DatabaseQueue(path: dbURL.path, configuration: configuration)
-        } catch {
-            owsFail("error: \(error)")
-        }
-    }
 }
 
 // MARK: -
 
-private struct KeySpecSource {
+private struct GRDBKeySpecSource {
     let keyServiceName: String
     let keyName: String
 

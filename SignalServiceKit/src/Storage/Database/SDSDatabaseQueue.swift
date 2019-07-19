@@ -14,33 +14,39 @@ protocol SDSDatabaseQueue {
 
 // MARK: -
 
+// Serializes all transactions done usingx this queue.
 @objc
 public class GRDBDatabaseQueue: NSObject, SDSDatabaseQueue {
-    let databaseQueue: DatabaseQueue
-    init(databaseQueue: DatabaseQueue) {
-        self.databaseQueue = databaseQueue
+    let storageAdapter: GRDBDatabaseStorageAdapter
+
+    init(storageAdapter: GRDBDatabaseStorageAdapter) {
+        self.storageAdapter = storageAdapter
     }
 
     @objc
     public func read(block: @escaping (GRDBReadTransaction) -> Void) {
-        databaseQueue.read { database in
-            autoreleasepool {
-                block(GRDBReadTransaction(database: database))
-            }
+        // We use objc_sync...() to avoid running afoul of GRDB's
+        // scheduling watchdog.
+        objc_sync_enter(self)
+        do {
+            try storageAdapter.read(block: block)
+        } catch {
+            owsFail("fatal error: \(error)")
         }
+        objc_sync_exit(self)
     }
 
     @objc
     public func write(block: @escaping (GRDBWriteTransaction) -> Void) {
+        // We use objc_sync...() to avoid running afoul of GRDB's
+        // scheduling watchdog.
+        objc_sync_enter(self)
         do {
-            try databaseQueue.write { database in
-                autoreleasepool {
-                    block(GRDBWriteTransaction(database: database))
-                }
-            }
+            try storageAdapter.write(block: block)
         } catch {
             owsFail("fatal error: \(error)")
         }
+        objc_sync_exit(self)
     }
 
     func asAnyQueue(crossProcess: SDSCrossProcess) -> SDSAnyDatabaseQueue {
@@ -56,7 +62,7 @@ class YAPDBDatabaseQueue: SDSDatabaseQueue {
     public init(databaseConnection: YapDatabaseConnection) {
         // We use DatabaseQueue's in places where we're especially concerned
         // about data consistency. To help ensure that our instances aren't being
-        // mutated elsewhere we disable object caching on the connection
+        // mutated elsewhere we disable object caching on the connection.
         databaseConnection.objectCacheEnabled = false
         self.databaseConnection = databaseConnection
     }
