@@ -737,9 +737,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *text = displayableText.displayText;
 
-    NSMutableAttributedString *attributedText = [[NSMutableAttributedString alloc]
-        initWithString:text
-            attributes:@{ NSFontAttributeName : font, NSForegroundColorAttributeName : textColor }];
+    NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+    paragraphStyle.alignment = text.naturalTextAlignment;
+
+    NSMutableAttributedString *attributedText =
+        [[NSMutableAttributedString alloc] initWithString:text
+                                               attributes:@{
+                                                   NSFontAttributeName : font,
+                                                   NSForegroundColorAttributeName : textColor,
+                                                   NSParagraphStyleAttributeName : paragraphStyle
+                                               }];
     if (searchText.length >= ConversationSearchController.kMinimumSearchTextLength) {
         NSString *searchableText = [FullTextSearchFinder normalizeWithText:searchText];
         NSError *error;
