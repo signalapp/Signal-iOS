@@ -279,6 +279,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable NSUUID *)uuid
 {
+    if (!SSKFeatureFlags.allowUUIDOnlyContacts) {
+        return nil;
+    }
+
     NSUUID *awaitingVerif = self.uuidAwaitingVerification;
     if (awaitingVerif) {
         return awaitingVerif;
@@ -286,7 +290,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
     // Cache this since we access this a lot, and once set it will not change.
     @synchronized(self) {
-        if (self.cachedUuid == nil && SSKFeatureFlags.allowUUIDOnlyContacts) {
+        if (self.cachedUuid == nil) {
             self.cachedUuid = self.storedUuid;
         }
 
