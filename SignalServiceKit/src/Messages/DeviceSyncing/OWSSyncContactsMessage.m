@@ -30,11 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncContactsMessage
 
-- (instancetype)initWithSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
-                       identityManager:(OWSIdentityManager *)identityManager
-                        profileManager:(id<ProfileManagerProtocol>)profileManager
+- (instancetype)initWithThread:(TSThread *)thread
+                signalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+               identityManager:(OWSIdentityManager *)identityManager
+                profileManager:(id<ProfileManagerProtocol>)profileManager
 {
-    self = [super init];
+    self = [super initWithThread:thread];
     if (!self) {
         return self;
     }

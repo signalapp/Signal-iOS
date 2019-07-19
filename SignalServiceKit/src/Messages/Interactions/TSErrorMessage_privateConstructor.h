@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSErrorMessage ()
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
+                         inThread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType NS_DESIGNATED_INITIALIZER;
 
 @end

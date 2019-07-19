@@ -9,13 +9,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSPerMessageExpirationReadSyncMessage
 
-- (instancetype)initWithSenderAddress:(SignalServiceAddress *)senderAddress
-                   messageIdTimestamp:(uint64_t)messageIdTimestamp
-                        readTimestamp:(uint64_t)readTimestamp
+- (instancetype)initWithThread:(TSThread *)thread
+                 senderAddress:(SignalServiceAddress *)senderAddress
+            messageIdTimestamp:(uint64_t)messageIdTimestamp
+                 readTimestamp:(uint64_t)readTimestamp
 {
     OWSAssertDebug(senderAddress.isValid && messageIdTimestamp > 0);
 
-    self = [super initWithTimestamp:readTimestamp];
+    self = [super initWithTimestamp:readTimestamp thread:thread];
     if (!self) {
         return self;
     }

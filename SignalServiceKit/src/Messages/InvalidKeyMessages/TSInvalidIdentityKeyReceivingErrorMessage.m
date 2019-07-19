@@ -175,7 +175,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
     // Decrypt this and any old messages for the newly accepted key
     NSArray<TSInvalidIdentityKeyReceivingErrorMessage *> *messagesToDecrypt =
-        [self.thread receivedMessagesForInvalidKey:newKey];
+        [self.threadWithSneakyTransaction receivedMessagesForInvalidKey:newKey];
 
     for (TSInvalidIdentityKeyReceivingErrorMessage *errorMessage in messagesToDecrypt) {
         [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:errorMessage.envelopeData];

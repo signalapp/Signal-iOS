@@ -304,7 +304,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
 
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+            ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                 transaction:transaction];
         }];
@@ -604,7 +604,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         TSErrorMessage *errorMessage;
 
         if (!envelope.sourceAddress.isValid) {
-            TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+            ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                 transaction:transaction];
             return;

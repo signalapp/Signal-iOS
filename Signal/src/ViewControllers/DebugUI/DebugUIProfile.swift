@@ -45,6 +45,10 @@ class DebugUIProfile: DebugUIPage {
             },
             OWSTableItem(title: "Send Profile Key Message") { [weak self] in
                 guard let strongSelf = self else { return }
+                guard let aThread = aThread else {
+                    owsFailDebug("Missing thread.")
+                    return
+                }
 
                 // MJK TODO - should be safe to remove this senderTimestamp
                 let message = OWSProfileKeyMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: aThread)

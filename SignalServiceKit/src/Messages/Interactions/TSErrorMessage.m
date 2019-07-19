@@ -16,6 +16,48 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSUInteger TSErrorMessageSchemaVersion = 2;
 
+@interface ThreadlessErrorMessage ()
+
+@property (nonatomic, readonly) TSErrorMessageType errorType;
+
+@end
+
+#pragma mark -
+
+@implementation ThreadlessErrorMessage
+
+- (instancetype)initWithErrorType:(TSErrorMessageType)errorType
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _errorType = errorType;
+
+    return self;
+}
+
++ (ThreadlessErrorMessage *)corruptedMessageInUnknownThread
+{
+    return [[self alloc] initWithErrorType:TSErrorMessageInvalidMessage];
+}
+
+- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    switch (_errorType) {
+        case TSErrorMessageInvalidMessage:
+            return NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @"");
+        default:
+            OWSFailDebug(@"Unknown error type.");
+            return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
+    }
+}
+
+@end
+
+#pragma mark -
+
 @interface TSErrorMessage ()
 
 @property (nonatomic, getter=wasRead) BOOL read;
@@ -57,7 +99,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
+                         inThread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
                           address:(nullable SignalServiceAddress *)address
 {
@@ -89,7 +131,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
+                         inThread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
 {
     return [self initWithTimestamp:timestamp inThread:thread failedMessageType:errorMessageType address:nil];
@@ -227,14 +269,6 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     return [[self alloc] initWithEnvelope:envelope
                           withTransaction:transaction
                         failedMessageType:TSErrorMessageInvalidMessage];
-}
-
-+ (instancetype)corruptedMessageInUnknownThread
-{
-    // MJK TODO - Seems like we could safely remove this timestamp
-    return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                  inThread:nil
-                         failedMessageType:TSErrorMessageInvalidMessage];
 }
 
 + (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope

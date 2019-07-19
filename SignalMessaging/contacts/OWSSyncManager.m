@@ -12,6 +12,7 @@
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/DataSource.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
@@ -154,11 +155,17 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             return;
         }
 
-        OWSSyncContactsMessage *syncContactsMessage =
-            [[OWSSyncContactsMessage alloc] initWithSignalAccounts:self.contactsManager.signalAccounts
-                                                   identityManager:self.identityManager
-                                                    profileManager:self.profileManager];
+        TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
+        if (thread == nil) {
+            OWSFailDebug(@"Missing thread.");
+            return;
+        }
 
+        OWSSyncContactsMessage *syncContactsMessage =
+            [[OWSSyncContactsMessage alloc] initWithThread:thread
+                                            signalAccounts:self.contactsManager.signalAccounts
+                                           identityManager:self.identityManager
+                                            profileManager:self.profileManager];
         __block NSData *_Nullable messageData;
         __block NSData *_Nullable lastMessageData;
         [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -242,14 +249,21 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     BOOL showUnidentifiedDeliveryIndicators = Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators;
     BOOL showTypingIndicators = self.typingIndicators.areTypingIndicatorsEnabled;
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction.asAnyWrite];
+        if (thread == nil) {
+            OWSFailDebug(@"Missing thread.");
+            return;
+        }
+
         BOOL sendLinkPreviews = [SSKPreferences areLinkPreviewsEnabledWithTransaction:transaction.asAnyRead];
 
         OWSSyncConfigurationMessage *syncConfigurationMessage =
-            [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled
-                                          showUnidentifiedDeliveryIndicators:showUnidentifiedDeliveryIndicators
-                                                        showTypingIndicators:showTypingIndicators
-                                                            sendLinkPreviews:sendLinkPreviews];
+            [[OWSSyncConfigurationMessage alloc] initWithThread:thread
+                                            readReceiptsEnabled:areReadReceiptsEnabled
+                             showUnidentifiedDeliveryIndicators:showUnidentifiedDeliveryIndicators
+                                           showTypingIndicators:showTypingIndicators
+                                               sendLinkPreviews:sendLinkPreviews];
 
         [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction.asAnyWrite];
     }];
@@ -273,32 +287,43 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
 {
-    OWSSyncContactsMessage *syncContactsMessage =
-        [[OWSSyncContactsMessage alloc] initWithSignalAccounts:signalAccounts
-                                               identityManager:self.identityManager
-                                                profileManager:self.profileManager];
-    __block DataSource *dataSource;
-    [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        dataSource = [DataSourceValue
-            dataSourceWithSyncMessageData:[syncContactsMessage
-                                              buildPlainTextAttachmentDataWithTransaction:transaction.asAnyRead]];
-    }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
+        if (thread == nil) {
+            OWSFailDebug(@"Missing thread.");
+            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMissingLocalThread, @"Missing local thread.");
+            return [AnyPromise promiseWithValue:error];
+        }
 
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [self.messageSender sendTemporaryAttachment:dataSource
-            contentType:OWSMimeTypeApplicationOctetStream
-            inMessage:syncContactsMessage
-            success:^{
-                OWSLogInfo(@"Successfully sent contacts sync message.");
-                resolve(@(1));
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"Failed to send contacts sync message with error: %@", error);
-                resolve(error);
-            }];
-    }];
-    [promise retainUntilComplete];
-    return promise;
+        OWSSyncContactsMessage *syncContactsMessage =
+            [[OWSSyncContactsMessage alloc] initWithThread:thread
+                                            signalAccounts:signalAccounts
+                                           identityManager:self.identityManager
+                                            profileManager:self.profileManager];
+
+        __block DataSource *dataSource;
+        [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            dataSource = [DataSourceValue
+                dataSourceWithSyncMessageData:[syncContactsMessage
+                                                  buildPlainTextAttachmentDataWithTransaction:transaction.asAnyRead]];
+        }];
+
+        AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+            [self.messageSender sendTemporaryAttachment:dataSource
+                contentType:OWSMimeTypeApplicationOctetStream
+                inMessage:syncContactsMessage
+                success:^{
+                    OWSLogInfo(@"Successfully sent contacts sync message.");
+                    resolve(@(1));
+                }
+                failure:^(NSError *error) {
+                    OWSLogError(@"Failed to send contacts sync message with error: %@", error);
+                    resolve(error);
+                }];
+        }];
+        [promise retainUntilComplete];
+        return promise;
+    });
 }
 
 @end

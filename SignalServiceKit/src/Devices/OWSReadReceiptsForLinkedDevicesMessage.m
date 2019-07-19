@@ -16,9 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSReadReceiptsForLinkedDevicesMessage
 
-- (instancetype)initWithReadReceipts:(NSArray<OWSLinkedDeviceReadReceipt *> *)readReceipts
+- (instancetype)initWithThread:(TSThread *)thread readReceipts:(NSArray<OWSLinkedDeviceReadReceipt *> *)readReceipts
 {
-    self = [super init];
+    self = [super initWithThread:thread];
     if (!self) {
         return self;
     }

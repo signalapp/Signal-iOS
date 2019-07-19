@@ -210,7 +210,7 @@ void AssertIsOnSendingQueue()
 {
     if (SSKAppExpiry.isExpired) {
         OWSLogWarn(@"Unable to send because the application has expired.");
-        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeAppExired,
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeAppExpired,
             NSLocalizedString(
                 @"ERROR_SENDING_EXPIRED", @"Error indicating a send failure due to an expired application."));
         error.isRetryable = NO;
@@ -706,7 +706,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         failureHandlerParam(error);
     };
 
-    TSThread *_Nullable thread = message.thread;
+    // GRDB TODO: Make this non-nil.
+    TSThread *_Nullable thread = [self threadForMessageWithSneakyTransaction:message];
+    OWSAssertDebug(thread != nil);
 
     BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
     if (!thread && !isSyncMessage) {
@@ -841,6 +843,28 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     });
     [sendPromise retainUntilComplete];
+}
+
+- (nullable TSThread *)threadForMessageWithSneakyTransaction:(TSMessage *)message
+{
+    __block TSThread *_Nullable thread = nil;
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [message threadWithTransaction:transaction];
+        OWSAssertDebug(thread != nil);
+
+        // For some legacy sync messages, thread may be nil.
+        // In this case, we should use the "local" thread.
+        BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
+        if (thread == nil && isSyncMessage) {
+            thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+            if (thread == nil) {
+                OWSFailDebug(@"Could not restore thread for sync message.");
+            } else {
+                OWSLogInfo(@"Thread restored for sync message.");
+            }
+        }
+    }];
+    return thread;
 }
 
 - (void)unregisteredRecipient:(SignalRecipient *)recipient
@@ -1429,7 +1453,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                          failure:(RetryableFailureHandler)failure
 {
     dispatch_block_t success = ^{
-        TSThread *_Nullable thread = message.thread;
+        // GRDB TODO: Make this non-nil.
+        TSThread *_Nullable thread = [self threadForMessageWithSneakyTransaction:message];
+        OWSAssertDebug(thread != nil);
 
         TSContactThread *_Nullable contactThread;
         if ([thread isKindOfClass:[TSContactThread class]]) {
@@ -1459,7 +1485,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return;
         }
         TSOutgoingMessage *latestMessage = (TSOutgoingMessage *)latestCopy;
-        [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:message
+        [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:latestMessage
                                                          expirationStartedAt:[NSDate ows_millisecondTimeStamp]
                                                                  transaction:transaction];
 
@@ -1493,17 +1519,26 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                              success:(void (^)(void))success
                              failure:(RetryableFailureHandler)failure
 {
-    OWSOutgoingSentMessageTranscript *sentMessageTranscript =
-        [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message isRecipientUpdate:isRecipientUpdate];
-
     SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
+    __block TSThread *_Nullable thread;
     __block SignalRecipient *recipient;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+
         recipient = [SignalRecipient markRecipientAsRegisteredAndGet:localAddress transaction:transaction];
     }];
+    if (thread == nil) {
+        OWSFailDebug(@"Missing thread.");
+        return;
+    }
+
+    OWSOutgoingSentMessageTranscript *sentMessageTranscript =
+        [[OWSOutgoingSentMessageTranscript alloc] initWithThread:thread
+                                                 outgoingMessage:message
+                                               isRecipientUpdate:isRecipientUpdate];
 
     OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:sentMessageTranscript
-        thread:message.thread
+        thread:message.threadWithSneakyTransaction
         recipient:recipient
         senderCertificate:nil
         udAccess:nil

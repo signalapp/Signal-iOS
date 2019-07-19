@@ -971,7 +971,12 @@ NS_ASSUME_NONNULL_BEGIN
                 [[self.syncManager syncAllContacts] retainUntilComplete];
             });
         } else if (syncMessage.request.unwrappedType == SSKProtoSyncMessageRequestTypeGroups) {
-            OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] init];
+            TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+            if (thread == nil) {
+                OWSFailDebug(@"Missing thread.");
+                return;
+            }
+            OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithThread:thread];
             NSData *_Nullable syncData = [syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
             if (!syncData) {
                 OWSFailDebug(@"Failed to serialize groups sync message.");

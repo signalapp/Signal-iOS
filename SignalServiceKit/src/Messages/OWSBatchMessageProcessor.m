@@ -300,7 +300,7 @@ NS_ASSUME_NONNULL_BEGIN
 
             void (^reportFailure)(SDSAnyWriteTransaction *transaction) = ^(SDSAnyWriteTransaction *transaction) {
                 // TODO: Add analytics.
-                TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+                ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
                 [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                     transaction:transaction];
             };

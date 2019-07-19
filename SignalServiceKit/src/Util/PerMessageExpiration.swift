@@ -240,10 +240,15 @@ public class PerMessageExpiration: NSObject {
             owsFailDebug("Could not send sync message; no local number.")
             return
         }
+        guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+            owsFailDebug("Missing thread.")
+            return
+        }
         let messageIdTimestamp: UInt64 = message.timestamp
         let readTimestamp: UInt64 = nowMs()
 
-        let syncMessage = OWSPerMessageExpirationReadSyncMessage(senderAddress: senderAddress,
+        let syncMessage = OWSPerMessageExpirationReadSyncMessage(thread: thread,
+                                                                 senderAddress: senderAddress,
                                                                  messageIdTimestamp: messageIdTimestamp,
                                                                  readTimestamp: readTimestamp)
         messageSenderJobQueue.add(message: syncMessage, transaction: transaction)

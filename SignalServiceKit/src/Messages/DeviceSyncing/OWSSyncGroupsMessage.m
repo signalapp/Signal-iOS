@@ -16,9 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSSyncGroupsMessage
 
-- (instancetype)init
+- (instancetype)initWithThread:(TSThread *)thread
 {
-    return [super init];
+    return [super initWithThread:thread];
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder

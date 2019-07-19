@@ -1057,8 +1057,12 @@ public class StickerManager: NSObject {
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
+        guard let thread = TSAccountManager.getOrCreateLocalThread(transaction: transaction) else {
+            owsFailDebug("Missing thread.")
+            return
+        }
 
-        let message = OWSStickerPackSyncMessage(packs: packs, operationType: operationType)
+        let message = OWSStickerPackSyncMessage(thread: thread, packs: packs, operationType: operationType)
         self.messageSenderJobQueue.add(message: message, transaction: transaction)
     }
 

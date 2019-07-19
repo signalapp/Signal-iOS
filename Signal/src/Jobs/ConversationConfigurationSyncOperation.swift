@@ -64,8 +64,11 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         // The current implementation works, but seems wasteful.
         // Does desktop handle single group sync correctly?
         // What does Android do?
-        let syncMessage: OWSSyncGroupsMessage = OWSSyncGroupsMessage()
-
+        guard let thread = TSAccountManager.getOrCreateLocalThreadWithSneakyTransaction() else {
+            owsFailDebug("Missing thread.")
+            return
+        }
+        let syncMessage = OWSSyncGroupsMessage(thread: thread)
         var dataSource: DataSource?
         self.dbConnection.read { transaction in
             guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction.asAnyRead) else {

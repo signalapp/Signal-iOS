@@ -358,7 +358,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     return SSKEnvironment.shared.migrationDBConnection;
 }
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId
 {
@@ -371,7 +371,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                           messageSticker:nil];
 }
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds
@@ -385,7 +385,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                           messageSticker:nil];
 }
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                             messageBody:(nullable NSString *)body
                            attachmentId:(nullable NSString *)attachmentId
                        expiresInSeconds:(uint32_t)expiresInSeconds
@@ -414,7 +414,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                    perMessageExpirationDurationSeconds:0];
 }
 
-+ (instancetype)outgoingMessageInThread:(nullable TSThread *)thread
++ (instancetype)outgoingMessageInThread:(TSThread *)thread
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds
 {
@@ -435,7 +435,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(nullable TSThread *)thread
+                                        inThread:(TSThread *)thread
                                      messageBody:(nullable NSString *)body
                                    attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
                                 expiresInSeconds:(uint32_t)expiresInSeconds
@@ -1062,7 +1062,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
-    TSThread *thread = self.thread;
+    TSThread *thread = self.threadWithSneakyTransaction;
     OWSAssertDebug(thread);
 
     SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessage builder];
@@ -1311,14 +1311,16 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
 - (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address
 {
-    OWSAssertDebug(self.thread);
+    OWSAssertDebug(self.threadWithSneakyTransaction);
     SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
     if (!builder) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
     }
 
-    [ProtoUtils addLocalProfileKeyIfNecessary:self.thread address:address dataMessageBuilder:builder];
+    [ProtoUtils addLocalProfileKeyIfNecessary:self.threadWithSneakyTransaction
+                                      address:address
+                           dataMessageBuilder:builder];
 
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
