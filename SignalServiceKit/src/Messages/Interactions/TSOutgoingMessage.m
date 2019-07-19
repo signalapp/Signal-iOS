@@ -104,6 +104,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 @property (atomic, nullable)
     NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates;
 
+// This property is only intended to be used by GRDB queries.
+@property (nonatomic, readonly) TSOutgoingMessageState storedMessageState;
+
 @end
 
 #pragma mark -
@@ -155,6 +158,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
     outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
+              storedMessageState:(TSOutgoingMessageState)storedMessageState
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -191,6 +195,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     _mostRecentFailureText = mostRecentFailureText;
     _outgoingMessageSchemaVersion = outgoingMessageSchemaVersion;
     _recipientAddressStates = recipientAddressStates;
+    _storedMessageState = storedMessageState;
 
     return self;
 }
@@ -604,16 +609,23 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 // GRDB TODO: Remove this override.
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    if (!self.shouldBeSaved) {
-        // There's no need to save this message, since it's not displayed to the user.
-        //
-        // Should we find a need to save this in the future, we need to exclude any non-serializable properties.
-        OWSLogDebug(@"Skipping save for transient outgoing message.");
-
-        return;
-    }
+    _storedMessageState = self.messageState;
 
     [super saveWithTransaction:transaction];
+}
+
+- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyWillInsertWithTransaction:transaction];
+
+    _storedMessageState = self.messageState;
+}
+
+- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyWillUpdateWithTransaction:transaction];
+
+    _storedMessageState = self.messageState;
 }
 
 - (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction

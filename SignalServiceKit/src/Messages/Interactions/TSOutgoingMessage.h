@@ -142,7 +142,8 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
            mostRecentFailureText:(nullable NSString *)mostRecentFailureText
     outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:recipientAddressStates:));
+              storedMessageState:(TSOutgoingMessageState)storedMessageState
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:recipientAddressStates:storedMessageState:));
 
 // clang-format on
 
@@ -171,9 +172,10 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds;
 
-@property (readonly) TSOutgoingMessageState messageState;
-@property (readonly) BOOL wasDeliveredToAnyRecipient;
-@property (readonly) BOOL wasSentToAnyRecipient;
+@property (nonatomic, readonly) TSOutgoingMessageState messageState;
+
+@property (nonatomic, readonly) BOOL wasDeliveredToAnyRecipient;
+@property (nonatomic, readonly) BOOL wasSentToAnyRecipient;
 
 @property (atomic, readonly) BOOL hasSyncedTranscript;
 @property (atomic, readonly, nullable) NSString *customMessage;

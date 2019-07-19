@@ -737,7 +737,7 @@ static NSTimeInterval launchStartedAt;
 
                 // Mark all "attempting out" messages as "unsent", i.e. any messages that were not successfully
                 // sent before the app exited should be marked as failures.
-                [[[OWSFailedMessagesJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
+                [[OWSFailedMessagesJob new] run];
                 // Mark all "incomplete" calls as missed, e.g. any incoming or outgoing calls that were not
                 // connected, failed or hung up before the app existed should be marked as missed.
                 [[OWSIncompleteCallsJob new] run];

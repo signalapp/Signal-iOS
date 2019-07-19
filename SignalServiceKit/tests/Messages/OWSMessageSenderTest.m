@@ -508,7 +508,6 @@ NS_ASSUME_NONNULL_BEGIN
             } else {
                 XCTFail(@"Unexpected message state");
             }
-
         }
         failure:^(NSError *_Nonnull error) {
             XCTFail(@"sendMessage should not fail.");
