@@ -156,7 +156,8 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                 return
             }
             guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
-                owsFailDebug("Missing interaction")
+                // Interaction may have been deleted.
+                Logger.warn("Missing interaction")
                 return
             }
             block(interaction, stop)
