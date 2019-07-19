@@ -93,5 +93,4 @@ class ConversationConfigurationSyncOperation: OWSOperation {
                                        isTemporaryAttachment: true)
         self.reportSuccess()
     }
-
 }
