@@ -9,12 +9,10 @@ import PromiseKit
 // A base class for SDSDatabaseStorage and SDSAnyDatabaseQueue.
 @objc
 public class SDSTransactable: NSObject {
-    @objc
     public func read(block: @escaping (SDSAnyReadTransaction) -> Void) {
         owsFail("Method should be implemented by subclasses.")
     }
 
-    @objc
     public func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
         owsFail("Method should be implemented by subclasses.")
     }
@@ -24,18 +22,15 @@ public class SDSTransactable: NSObject {
 
 @objc
 public extension SDSTransactable {
-    @objc
-     func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
+    func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
         asyncRead(block: block, completion: { })
     }
 
-    @objc
-     func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completion: @escaping () -> Void) {
+    func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completion: @escaping () -> Void) {
         asyncRead(block: block, completionQueue: .main, completion: completion)
     }
 
-    @objc
-     func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
+    func asyncRead(block: @escaping (SDSAnyReadTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
         DispatchQueue.global().async {
             self.read(block: block)
 
@@ -43,18 +38,15 @@ public extension SDSTransactable {
         }
     }
 
-    @objc
-     func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void) {
         asyncWrite(block: block, completion: { })
     }
 
-    @objc
-     func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completion: @escaping () -> Void) {
+    func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completion: @escaping () -> Void) {
         asyncWrite(block: block, completionQueue: .main, completion: completion)
     }
 
-    @objc
-     func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
+    func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
         DispatchQueue.global().async {
             self.write(block: block)
 

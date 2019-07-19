@@ -87,15 +87,13 @@ public class SDSAnyDatabaseQueue: SDSTransactable, SDSDatabaseQueue {
 
     private let crossProcess: SDSCrossProcess
 
-    init(yapDatabaseQueue: YAPDBDatabaseQueue,
-         crossProcess: SDSCrossProcess) {
+    init(yapDatabaseQueue: YAPDBDatabaseQueue, crossProcess: SDSCrossProcess) {
         someDatabaseQueue = .yap(yapDatabaseQueue)
 
         self.crossProcess = crossProcess
     }
 
-    init(grdbDatabaseQueue: GRDBDatabaseQueue,
-         crossProcess: SDSCrossProcess) {
+    init(grdbDatabaseQueue: GRDBDatabaseQueue, crossProcess: SDSCrossProcess) {
         someDatabaseQueue = .grdb(grdbDatabaseQueue)
 
         self.crossProcess = crossProcess
