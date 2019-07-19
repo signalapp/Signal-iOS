@@ -287,28 +287,30 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
-        if (thread == nil) {
-            OWSFailDebug(@"Missing thread.");
-            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMissingLocalThread, @"Missing local thread.");
-            return [AnyPromise promiseWithValue:error];
-        }
+    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
+            if (thread == nil) {
+                OWSFailDebug(@"Missing thread.");
+                NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMissingLocalThread, @"Missing local thread.");
+                resolve(error);
+                return;
+            }
 
-        OWSSyncContactsMessage *syncContactsMessage =
-            [[OWSSyncContactsMessage alloc] initWithThread:thread
-                                            signalAccounts:signalAccounts
-                                           identityManager:self.identityManager
-                                            profileManager:self.profileManager];
+            OWSSyncContactsMessage *syncContactsMessage =
+                [[OWSSyncContactsMessage alloc] initWithThread:thread
+                                                signalAccounts:signalAccounts
+                                               identityManager:self.identityManager
+                                                profileManager:self.profileManager];
 
-        __block DataSource *dataSource;
-        [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            dataSource = [DataSourceValue
-                dataSourceWithSyncMessageData:[syncContactsMessage
-                                                  buildPlainTextAttachmentDataWithTransaction:transaction.asAnyRead]];
-        }];
+            __block DataSource *dataSource;
+            [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                dataSource = [DataSourceValue
+                    dataSourceWithSyncMessageData:[syncContactsMessage
+                                                      buildPlainTextAttachmentDataWithTransaction:transaction
+                                                                                                      .asAnyRead]];
+            }];
 
-        AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
             [self.messageSender sendTemporaryAttachment:dataSource
                 contentType:OWSMimeTypeApplicationOctetStream
                 inMessage:syncContactsMessage
@@ -320,10 +322,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     OWSLogError(@"Failed to send contacts sync message with error: %@", error);
                     resolve(error);
                 }];
-        }];
-        [promise retainUntilComplete];
-        return promise;
-    });
+        });
+    }];
+    [promise retainUntilComplete];
+    return promise;
 }
 
 @end
