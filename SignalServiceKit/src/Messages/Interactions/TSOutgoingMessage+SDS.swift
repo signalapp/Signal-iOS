@@ -120,7 +120,7 @@ class TSOutgoingMessageSerializer: SDSSerializer {
         let recipientAddress: Data? = nil
         let recipientAddressStates: Data? = optionalArchive(model.recipientAddressStates)
         let schemaVersion: UInt? = model.schemaVersion
-        let sender: Data? = nil
+        let sender: Data? = nil 
         let serverTimestamp: UInt64? = nil
         let sourceDeviceId: UInt32? = nil
         let storedMessageState: TSOutgoingMessageState? = model.storedMessageState

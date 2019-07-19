@@ -232,7 +232,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface TSOutgoingMessageRecipientState (SDS)
+@interface TSOutgoingMessage (SDS)
 
 @property (nonatomic, readonly) TSOutgoingMessageState storedMessageState;
 
