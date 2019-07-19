@@ -424,6 +424,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     func batchSelectModeDidChange() {
+        applyBatchSelectMode()
+    }
+
+    func applyBatchSelectMode() {
         guard let delegate = delegate else {
             return
         }

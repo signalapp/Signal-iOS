@@ -109,7 +109,6 @@ class SendMediaNavigationController: OWSNavigationController {
     public class func showingCameraFirst() -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
         navController.setViewControllers([navController.captureViewController], animated: false)
-
         return navController
     }
 
@@ -117,7 +116,6 @@ class SendMediaNavigationController: OWSNavigationController {
     public class func showingMediaLibraryFirst() -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
         navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
-
         return navController
     }
 
@@ -127,12 +125,24 @@ class SendMediaNavigationController: OWSNavigationController {
         let navController = SendMediaNavigationController()
         navController.isPickingAsDocument = true
         navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
-
         return navController
     }
 
+    // We want to always use batch mode in the media
+    // library views (but not the camera views) unless
+    // the user entered via the "recent photos" UI.
+    //
+    // TODO: Set this to false for users entering via
+    // the "recent photos" UI.
+    private var isForcingBatchSelectInMediaLibrary = true
+
+    private var isShowingMediaLibrary = false
+
     var isInBatchSelectMode: Bool {
         get {
+            if isForcingBatchSelectInMediaLibrary && isShowingMediaLibrary {
+                return true
+            }
             return self.batchModeButton.isSelected
         }
 
@@ -153,15 +163,17 @@ class SendMediaNavigationController: OWSNavigationController {
     func updateButtons(topViewController: UIViewController) {
         switch topViewController {
         case is AttachmentApprovalViewController:
+            isShowingMediaLibrary = false
             batchModeButton.isHidden = true
             doneButton.isHidden = true
             cameraModeButton.isHidden = true
             mediaLibraryModeButton.isHidden = true
         case is ImagePickerGridController:
+            isShowingMediaLibrary = true
             let showDoneButton = isInBatchSelectMode && attachmentCount > 0
             doneButton.isHidden = !showDoneButton
 
-            batchModeButton.isHidden = showDoneButton
+            batchModeButton.isHidden = showDoneButton || isForcingBatchSelectInMediaLibrary
             batchModeButton.isBeingPresentedOverPhotoCapture = false
 
             cameraModeButton.isHidden = false
@@ -170,6 +182,7 @@ class SendMediaNavigationController: OWSNavigationController {
             mediaLibraryModeButton.isHidden = true
             mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
         case is PhotoCaptureViewController:
+            isShowingMediaLibrary = false
             let showDoneButton = isInBatchSelectMode && attachmentCount > 0
             doneButton.isHidden = !showDoneButton
 
@@ -194,6 +207,10 @@ class SendMediaNavigationController: OWSNavigationController {
         }
 
         doneButton.updateCount()
+
+        if let mediaLibraryView = topViewController as? ImagePickerGridController {
+            mediaLibraryView.applyBatchSelectMode()
+        }
     }
 
     func fadeTo(viewControllers: [UIViewController]) {
