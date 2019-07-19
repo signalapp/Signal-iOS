@@ -14,10 +14,12 @@ protocol SDSDatabaseQueue {
 
 // MARK: -
 
-// Serializes all transactions done usingx this queue.
+// Serializes all transactions done using this queue.
 @objc
 public class GRDBDatabaseQueue: NSObject, SDSDatabaseQueue {
-    let storageAdapter: GRDBDatabaseStorageAdapter
+    private let storageAdapter: GRDBDatabaseStorageAdapter
+
+    private let serialQueue = DispatchQueue(label: "org.signal.grdbDatabaseQueue")
 
     init(storageAdapter: GRDBDatabaseStorageAdapter) {
         self.storageAdapter = storageAdapter
@@ -25,28 +27,24 @@ public class GRDBDatabaseQueue: NSObject, SDSDatabaseQueue {
 
     @objc
     public func read(block: @escaping (GRDBReadTransaction) -> Void) {
-        // We use objc_sync...() to avoid running afoul of GRDB's
-        // scheduling watchdog.
-        objc_sync_enter(self)
-        do {
-            try storageAdapter.read(block: block)
-        } catch {
-            owsFail("fatal error: \(error)")
+        serialQueue.sync {
+            do {
+                try storageAdapter.read(block: block)
+            } catch {
+                owsFail("fatal error: \(error)")
+            }
         }
-        objc_sync_exit(self)
     }
 
     @objc
     public func write(block: @escaping (GRDBWriteTransaction) -> Void) {
-        // We use objc_sync...() to avoid running afoul of GRDB's
-        // scheduling watchdog.
-        objc_sync_enter(self)
-        do {
-            try storageAdapter.write(block: block)
-        } catch {
-            owsFail("fatal error: \(error)")
+        serialQueue.sync {
+            do {
+                try storageAdapter.write(block: block)
+            } catch {
+                owsFail("fatal error: \(error)")
+            }
         }
-        objc_sync_exit(self)
     }
 
     func asAnyQueue(crossProcess: SDSCrossProcess) -> SDSAnyDatabaseQueue {
