@@ -606,7 +606,8 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 
 - (BOOL)hasRenderableContent
 {
-    return (self.body.length > 0 || self.attachmentIds.count > 0 || self.contactShare != nil);
+    return (
+        self.body.length > 0 || self.attachmentIds.count > 0 || self.contactShare != nil || self.messageSticker != nil);
 }
 
 #pragma mark - Per-message expiration
