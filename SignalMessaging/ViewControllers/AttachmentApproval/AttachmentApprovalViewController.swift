@@ -48,7 +48,6 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
     public static let canAddMore = AttachmentApprovalViewControllerOptions(rawValue: 1 << 0)
     public static let hasCancel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 1)
     public static let canToggleExpiration = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
-    public static let isModal = AttachmentApprovalViewControllerOptions(rawValue: 1 << 3)
 }
 
 // MARK: -
@@ -77,11 +76,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             options.insert(.canToggleExpiration)
         }
 
-        if !preferences.isPerMessageExpirationEnabled() && !options.contains(.isModal) {
-            options.insert(.canAddMore)
-        }
-
         return options
+    }
+
+    var isAddMoreVisible: Bool {
+        return options.contains(.canAddMore) && !preferences.isPerMessageExpirationEnabled()
     }
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
@@ -107,12 +106,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.receivedOptions = options
         self.bottomToolView = AttachmentApprovalInputAccessoryView(options: options)
 
-        self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(attachmentApprovalItems: attachmentApprovalItems, isAddMoreVisible: options.contains(.canAddMore))
-
         let pageOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
                    options: pageOptions)
+
+        let isAddMoreVisibleBlock = { [weak self] in
+            return self?.isAddMoreVisible ?? false
+        }
+        self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(attachmentApprovalItems: attachmentApprovalItems, isAddMoreVisible: isAddMoreVisibleBlock)
         self.dataSource = self
         self.delegate = self
         bottomToolView.delegate = self
@@ -130,7 +132,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     @objc
     public class func wrappedInNavController(attachments: [SignalAttachment], approvalDelegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
         let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0) }
-        let vc = AttachmentApprovalViewController(options: [.hasCancel, .isModal],
+        let vc = AttachmentApprovalViewController(options: [.hasCancel],
                                                   attachmentApprovalItems: attachmentApprovalItems)
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
@@ -242,7 +244,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         touchInterceptorView.isHidden = !isEditingCaptions
 
-        attachmentApprovalItemCollection.isAddMoreVisible = options.contains(.canAddMore)
         updateMediaRail()
         bottomToolView.options = options
     }
@@ -599,7 +600,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
 
         // configureCellViews will set galleryRailView.isHidden.
-        if options.contains(.canAddMore) {
+        if isAddMoreVisible {
             galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
                                                focusedItem: currentItem,
                                                cellViewBuilder: cellViewBuilder,
@@ -614,7 +615,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
     }
 
-    let attachmentApprovalItemCollection: AttachmentApprovalItemCollection
+    var attachmentApprovalItemCollection: AttachmentApprovalItemCollection!
 
     var attachmentApprovalItems: [AttachmentApprovalItem] {
         return attachmentApprovalItemCollection.attachmentApprovalItems
@@ -807,7 +808,7 @@ extension AttachmentApprovalItem: GalleryRailItem {
 
 extension AttachmentApprovalItemCollection: GalleryRailItemProvider {
     var railItems: [GalleryRailItem] {
-        if isAddMoreVisible {
+        if isAddMoreVisible() {
             return self.attachmentApprovalItems + [AddMoreRailItem()]
         } else {
             return self.attachmentApprovalItems
