@@ -14,32 +14,36 @@ protocol SDSDatabaseQueue {
 
 // MARK: -
 
+// Serializes all transactions done using this queue.
 @objc
 public class GRDBDatabaseQueue: NSObject, SDSDatabaseQueue {
-    let databaseQueue: DatabaseQueue
-    init(databaseQueue: DatabaseQueue) {
-        self.databaseQueue = databaseQueue
+    private let storageAdapter: GRDBDatabaseStorageAdapter
+
+    private let serialQueue = DispatchQueue(label: "org.signal.grdbDatabaseQueue")
+
+    init(storageAdapter: GRDBDatabaseStorageAdapter) {
+        self.storageAdapter = storageAdapter
     }
 
     @objc
     public func read(block: @escaping (GRDBReadTransaction) -> Void) {
-        databaseQueue.read { database in
-            autoreleasepool {
-                block(GRDBReadTransaction(database: database))
+        serialQueue.sync {
+            do {
+                try storageAdapter.read(block: block)
+            } catch {
+                owsFail("fatal error: \(error)")
             }
         }
     }
 
     @objc
     public func write(block: @escaping (GRDBWriteTransaction) -> Void) {
-        do {
-            try databaseQueue.write { database in
-                autoreleasepool {
-                    block(GRDBWriteTransaction(database: database))
-                }
+        serialQueue.sync {
+            do {
+                try storageAdapter.write(block: block)
+            } catch {
+                owsFail("fatal error: \(error)")
             }
-        } catch {
-            owsFail("fatal error: \(error)")
         }
     }
 
@@ -56,7 +60,7 @@ class YAPDBDatabaseQueue: SDSDatabaseQueue {
     public init(databaseConnection: YapDatabaseConnection) {
         // We use DatabaseQueue's in places where we're especially concerned
         // about data consistency. To help ensure that our instances aren't being
-        // mutated elsewhere we disable object caching on the connection
+        // mutated elsewhere we disable object caching on the connection.
         databaseConnection.objectCacheEnabled = false
         self.databaseConnection = databaseConnection
     }
