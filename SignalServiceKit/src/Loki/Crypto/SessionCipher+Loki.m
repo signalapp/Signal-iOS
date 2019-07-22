@@ -105,7 +105,9 @@ NSString *const kNSNotificationKey_ContactPubKey = @"kNSNotificationKey_ContactP
 {
     SessionRecord *record = [self.sessionStore loadSession:self.recipientId deviceId:self.deviceId protocolContext:protocolContext];
     [record removePreviousSessionStates];
-    [record setState:state];
+    
+    SessionState *newState = state == nil ? [SessionState new] : state;
+    [record setState:newState];
     
     [self.sessionStore storeSession:self.recipientId deviceId:self.deviceId session:record protocolContext:protocolContext];
 }
