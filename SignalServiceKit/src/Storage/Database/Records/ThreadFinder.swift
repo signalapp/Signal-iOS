@@ -87,12 +87,13 @@ struct GRDBThreadFinder: ThreadFinder {
             SELECT COUNT(*)
             FROM (
                 SELECT
+                    \( threadColumn: .shouldThreadBeVisible),
                     CASE maxInteractionId <= \(threadColumn: .archivedAsOfMessageSortId)
                         WHEN 1 THEN 1
                         ELSE 0
                     END isArchived
                 FROM \(ThreadRecord.databaseTableName)
-                INNER JOIN (
+                LEFT JOIN (
                     SELECT
                         MAX(\(interactionColumn: .id)) as maxInteractionId,
                         \(interactionColumn: .threadUniqueId)
@@ -102,6 +103,7 @@ struct GRDBThreadFinder: ThreadFinder {
                 ON latestInteractions.\(interactionColumn: .threadUniqueId) = \(threadColumn: .uniqueId)
             )
             WHERE isArchived = ?
+            AND \(threadColumn: .shouldThreadBeVisible) = 1
         """,
                                             arguments: [isArchived]) else {
                                                 owsFailDebug("count was unexpectedly nil")
@@ -122,7 +124,7 @@ struct GRDBThreadFinder: ThreadFinder {
                         ELSE 0
                     END isArchived
                 FROM \(ThreadRecord.databaseTableName)
-                INNER JOIN (
+                LEFT JOIN (
                     SELECT
                         MAX(\(interactionColumn: .id)) as maxInteractionId,
                         \(interactionColumn: .threadUniqueId)
@@ -133,6 +135,7 @@ struct GRDBThreadFinder: ThreadFinder {
                 ORDER BY maxInteractionId DESC
             )
             WHERE isArchived = ?
+            AND \( threadColumn: .shouldThreadBeVisible) = 1
         """,
                                      arguments: [isArchived]).forEach { threadRecord in
                                         block(try TSThread.fromRecord(threadRecord))

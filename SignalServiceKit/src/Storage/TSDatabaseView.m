@@ -319,10 +319,12 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             OWSAssertDebug(viewTransaction);
             NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
             if (threadMessageCount < 1) {
+                OWSAssertDebug(!thread.shouldThreadBeVisible);
                 return nil;
             }
         }
 
+        OWSAssertDebug(thread.shouldThreadBeVisible);
         return [thread isArchivedWithTransaction:transaction.asAnyRead] ? TSArchiveGroup : TSInboxGroup;
     }];
 
