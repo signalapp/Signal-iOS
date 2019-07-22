@@ -413,13 +413,6 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
         return NO;
     }
 
-    if ([interaction isKindOfClass:[TSMessage class]]) {
-        TSMessage *message = (TSMessage *)interaction;
-        if (message.hasPerMessageExpiration) {
-            return NO;
-        }
-    }
-
     if ([interaction isKindOfClass:[TSErrorMessage class]]) {
         TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
         if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
