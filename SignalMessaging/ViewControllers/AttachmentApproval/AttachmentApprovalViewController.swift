@@ -752,6 +752,10 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         attachmentTextToolbar.isUserInteractionEnabled = false
         attachmentTextToolbar.isHidden = true
 
+        // Generate the attachments once, so that any changes we
+        // make below are reflected afterwards.
+        let attachments = self.attachments
+
         if options.contains(.canToggleExpiration),
             preferences.isPerMessageExpirationEnabled() {
             for attachment in attachments {
