@@ -36,11 +36,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dependencies
 
-+ (YapDatabaseConnection *)dbConnection
-{
-    return [OWSPrimaryStorage.sharedManager dbReadWriteConnection];
-}
-
 + (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
