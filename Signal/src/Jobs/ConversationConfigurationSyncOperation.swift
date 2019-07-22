@@ -11,9 +11,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         case assertionError(description: String)
     }
 
-    private var dbConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadConnection
-    }
+    // MARK: - Dependencies
 
     private var messageSenderJobQueue: MessageSenderJobQueue {
         return SSKEnvironment.shared.messageSenderJobQueue
@@ -26,6 +24,12 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     private var syncManager: OWSSyncManagerProtocol {
         return SSKEnvironment.shared.syncManager
     }
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
 
     private let thread: TSThread
 
@@ -71,8 +75,8 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         }
         let syncMessage = OWSSyncGroupsMessage(thread: thread)
         var dataSource: DataSource?
-        self.dbConnection.read { transaction in
-            guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction.asAnyRead) else {
+        self.databaseStorage.read { transaction in
+            guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
                 owsFailDebug("could not serialize sync groups data")
                 return
             }

@@ -605,11 +605,7 @@ class NotificationActionHandler {
         return AppEnvironment.shared.notificationPresenter
     }
 
-    var dbConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
+    private var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
 
@@ -704,8 +700,8 @@ class NotificationActionHandler {
     }
 
     private func markAsRead(thread: TSThread) -> Promise<Void> {
-        return dbConnection.readWritePromise { transaction in
-            thread.markAllAsRead(with: transaction.asAnyWrite)
+        return databaseStorage.writePromise { transaction in
+            thread.markAllAsRead(with: transaction)
         }
     }
 }
