@@ -92,7 +92,7 @@ struct GRDBThreadFinder: ThreadFinder {
                         ELSE 0
                     END isArchived
                 FROM \(ThreadRecord.databaseTableName)
-                LEFT JOIN (
+                INNER JOIN (
                     SELECT
                         MAX(\(interactionColumn: .id)) as maxInteractionId,
                         \(interactionColumn: .threadUniqueId)
@@ -122,7 +122,7 @@ struct GRDBThreadFinder: ThreadFinder {
                         ELSE 0
                     END isArchived
                 FROM \(ThreadRecord.databaseTableName)
-                LEFT JOIN (
+                INNER JOIN (
                     SELECT
                         MAX(\(interactionColumn: .id)) as maxInteractionId,
                         \(interactionColumn: .threadUniqueId)
