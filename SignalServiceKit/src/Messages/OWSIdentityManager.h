@@ -95,6 +95,8 @@ extern const NSUInteger kStoredIdentityKeyLength;
 - (void)clearIdentityState:(SDSAnyWriteTransaction *)transaction;
 #endif
 
+- (void)tryToSyncQueuedVerificationStates;
+
 #pragma mark - Deprecated IdentityStore methods
 
 - (nullable ECKeyPair *)identityKeyPair:(nullable id<SPKProtocolWriteContext>)protocolContext

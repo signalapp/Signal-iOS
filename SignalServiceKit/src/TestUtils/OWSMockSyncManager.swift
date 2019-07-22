@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,26 +10,35 @@ import PromiseKit
 @objc
 public class OWSMockSyncManager: NSObject, OWSSyncManagerProtocol {
 
-    @objc public func sendConfigurationSyncMessage() {
+    @objc
+    public func sendConfigurationSyncMessage() {
         Logger.info("")
     }
 
-    @objc public func syncLocalContact() -> AnyPromise {
+    @objc
+    public func syncLocalContact() -> AnyPromise {
         Logger.info("")
 
         return AnyPromise()
     }
 
-    @objc public func syncAllContacts() -> AnyPromise {
+    @objc
+    public func syncAllContacts() -> AnyPromise {
         Logger.info("")
 
         return AnyPromise()
     }
 
-    @objc public func syncContacts(for signalAccounts: [SignalAccount]) -> AnyPromise {
+    @objc
+    public func syncContacts(for signalAccounts: [SignalAccount]) -> AnyPromise {
         Logger.info("")
 
         return AnyPromise()
+    }
+
+    @objc
+    public func syncGroups(with transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
     }
 }
 

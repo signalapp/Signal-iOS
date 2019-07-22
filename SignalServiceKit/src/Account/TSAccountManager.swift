@@ -24,6 +24,8 @@ public extension TSAccountManager {
     }
 
     class func getOrCreateLocalThreadWithSneakyTransaction() -> TSThread? {
+        assert(!Thread.isMainThread)
+
         var thread: TSThread?
         databaseStorage.write { transaction in
             thread = getOrCreateLocalThread(transaction: transaction)

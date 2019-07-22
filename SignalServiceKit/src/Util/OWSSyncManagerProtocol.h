@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class AnyPromise;
+@class SDSAnyWriteTransaction;
 @class SignalAccount;
 
 @protocol OWSSyncManagerProtocol <NSObject>
@@ -16,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (AnyPromise *)syncAllContacts __attribute__((warn_unused_result));
 
 - (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts __attribute__((warn_unused_result));
+
+- (void)syncGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

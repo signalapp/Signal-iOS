@@ -17,6 +17,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSSyncConfigurationMessage.h>
 #import <SignalServiceKit/OWSSyncContactsMessage.h>
+#import <SignalServiceKit/OWSSyncGroupsMessage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -249,7 +250,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     BOOL showUnidentifiedDeliveryIndicators = Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators;
     BOOL showTypingIndicators = self.typingIndicators.areTypingIndicatorsEnabled;
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction.asAnyWrite];
         if (thread == nil) {
             OWSFailDebug(@"Missing thread.");
@@ -267,6 +268,31 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
         [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction.asAnyWrite];
     }];
+}
+
+#pragma mark - Groups Sync
+
+- (void)syncGroupsWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+    if (thread == nil) {
+        OWSFailDebug(@"Missing thread.");
+        return;
+    }
+    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithThread:thread];
+    NSData *_Nullable syncData = [syncGroupsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
+    if (!syncData) {
+        OWSFailDebug(@"Failed to serialize groups sync message.");
+        return;
+    }
+    DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
+    [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
+                                     dataSource:dataSource
+                                    contentType:OWSMimeTypeApplicationOctetStream
+                                 sourceFilename:nil
+                                        caption:nil
+                                 albumMessageId:nil
+                          isTemporaryAttachment:YES];
 }
 
 #pragma mark - Local Sync
