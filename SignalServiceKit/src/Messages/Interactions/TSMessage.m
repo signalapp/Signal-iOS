@@ -421,12 +421,6 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 {
     NSString *_Nullable bodyDescription = nil;
 
-    if (self.hasPerMessageExpiration) {
-        bodyDescription = NSLocalizedString(
-            @"PER_MESSAGE_EXPIRATION_NOTIFICATION", @"Notification for incoming disappearing photo.");
-        return [[@"📷" stringByAppendingString:@" "] stringByAppendingString:bodyDescription];
-    }
-
     if (self.body.length > 0) {
         bodyDescription = self.body;
     }
@@ -450,6 +444,19 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     TSAttachment *_Nullable mediaAttachment = [self mediaAttachmentsWithTransaction:transaction].firstObject;
     if (mediaAttachment != nil) {
         attachmentDescription = mediaAttachment.description;
+    }
+
+    if (self.hasPerMessageExpiration) {
+        bodyDescription = NSLocalizedString(
+            @"PER_MESSAGE_EXPIRATION_NOTIFICATION", @"Notification for incoming disappearing photo.");
+        if (mediaAttachment != nil) {
+            attachmentDescription = [TSAttachment emojiForMimeType:mediaAttachment.contentType];
+        }
+        if (attachmentDescription.length > 0) {
+            return [[attachmentDescription stringByAppendingString:@" "] stringByAppendingString:bodyDescription];
+        } else {
+            return bodyDescription;
+        }
     }
 
     if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
