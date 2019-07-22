@@ -599,20 +599,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
         }
 
-        // configureCellViews will set galleryRailView.isHidden.
-        if isAddMoreVisible {
-            galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
-                                               focusedItem: currentItem,
-                                               cellViewBuilder: cellViewBuilder,
-                                               animated: false)
-        } else if attachmentApprovalItemCollection.attachmentApprovalItems.count > 1 {
-            galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
-                                               focusedItem: currentItem,
-                                               cellViewBuilder: cellViewBuilder,
-                                               animated: false)
-        } else {
-            galleryRailView.isHidden = true
-        }
+        galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
+                                           focusedItem: currentItem,
+                                           cellViewBuilder: cellViewBuilder,
+                                           animated: false)
     }
 
     var attachmentApprovalItemCollection: AttachmentApprovalItemCollection!
