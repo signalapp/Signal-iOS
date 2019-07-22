@@ -418,7 +418,7 @@ NSString *const OWSPreferencesKeyIsPerMessageExpirationEnabled = @"OWSPreference
 
 - (BOOL)isPerMessageExpirationEnabled
 {
-    if (SSKFeatureFlags.perMessageExpiration) {
+    if (SSKFeatureFlags.sendPerMessageExpiration) {
         return [self boolForKey:OWSPreferencesKeyIsPerMessageExpirationEnabled defaultValue:NO];
     } else {
         return NO;

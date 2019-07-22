@@ -1075,7 +1075,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     [builder setRequiredProtocolVersion:(uint32_t) requiredProtocolVersion];
 
     if (self.perMessageExpirationDurationSeconds > 0) {
-        if (SSKFeatureFlags.perMessageExpiration) {
+        if (SSKFeatureFlags.sendPerMessageExpiration) {
             [builder setMessageTimer:self.perMessageExpirationDurationSeconds];
         } else {
             OWSFailDebug(@"Feature flag not set.");
