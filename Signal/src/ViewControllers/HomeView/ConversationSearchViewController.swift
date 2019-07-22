@@ -399,7 +399,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         }
 
         var searchResults: HomeScreenSearchResultSet?
-        self.databaseStorage.asyncRead(block: {[weak self] transaction in
+        self.databaseStorage.asyncUIRead(block: {[weak self] transaction in
             guard let strongSelf = self else { return }
             searchResults = strongSelf.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction, contactsManager: strongSelf.contactsManager)
         },
