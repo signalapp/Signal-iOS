@@ -419,14 +419,8 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 // TODO: This method contains view-specific logic and probably belongs in NotificationsManager, not in SSK.
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    if (self.hasPerMessageExpiration) {
-        // Currently, we use the same copy as NotificationStrings.incomingMessageBody.
-        // Despite the name, the actual copy doesn't have anything to do with being
-        // an incoming message.  We could use something different.
-        return NSLocalizedString(@"APN_Message", @"notification body");
-    }
-
     NSString *_Nullable bodyDescription = nil;
+
     if (self.body.length > 0) {
         bodyDescription = self.body;
     }
@@ -450,6 +444,19 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     TSAttachment *_Nullable mediaAttachment = [self mediaAttachmentsWithTransaction:transaction].firstObject;
     if (mediaAttachment != nil) {
         attachmentDescription = mediaAttachment.description;
+    }
+
+    if (self.hasPerMessageExpiration) {
+        NSString *label = NSLocalizedString(
+            @"PER_MESSAGE_EXPIRATION_NOTIFICATION", @"Notification for incoming disappearing photo.");
+        if (mediaAttachment != nil) {
+            attachmentDescription = [TSAttachment emojiForMimeType:mediaAttachment.contentType];
+        }
+        if (attachmentDescription.length > 0) {
+            return [[attachmentDescription stringByAppendingString:@" "] stringByAppendingString:label];
+        } else {
+            return label;
+        }
     }
 
     if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
