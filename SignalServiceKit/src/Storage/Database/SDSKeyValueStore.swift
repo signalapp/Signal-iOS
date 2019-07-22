@@ -180,6 +180,22 @@ public class SDSKeyValueStore: NSObject {
         setObject(NSNumber(value: value), key: key, transaction: transaction)
     }
 
+    // MARK: - Double
+
+    @objc
+    public func getDouble(_ key: String, defaultValue: Double, transaction: SDSAnyReadTransaction) -> Double {
+        if let value: NSNumber = read(key, transaction: transaction) {
+            return value.doubleValue
+        } else {
+            return defaultValue
+        }
+    }
+
+    @objc
+    public func setDouble(_ value: Double, key: String, transaction: SDSAnyWriteTransaction) {
+        setObject(NSNumber(value: value), key: key, transaction: transaction)
+    }
+
     // MARK: - Object
 
     @objc
