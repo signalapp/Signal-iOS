@@ -48,6 +48,7 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
     public static let canAddMore = AttachmentApprovalViewControllerOptions(rawValue: 1 << 0)
     public static let hasCancel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 1)
     public static let canToggleExpiration = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
+    public static let isModal = AttachmentApprovalViewControllerOptions(rawValue: 1 << 3)
 }
 
 // MARK: -
@@ -76,7 +77,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             options.insert(.canToggleExpiration)
         }
 
-        if !preferences.isPerMessageExpirationEnabled() {
+        if !preferences.isPerMessageExpirationEnabled() && !options.contains(.isModal) {
             options.insert(.canAddMore)
         }
 
@@ -129,7 +130,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     @objc
     public class func wrappedInNavController(attachments: [SignalAttachment], approvalDelegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
         let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0) }
-        let vc = AttachmentApprovalViewController(options: [.hasCancel],
+        let vc = AttachmentApprovalViewController(options: [.hasCancel, .isModal],
                                                   attachmentApprovalItems: attachmentApprovalItems)
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
@@ -241,9 +242,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         touchInterceptorView.isHidden = !isEditingCaptions
 
+        attachmentApprovalItemCollection.isAddMoreVisible = options.contains(.canAddMore)
         updateMediaRail()
         bottomToolView.options = options
-        attachmentApprovalItemCollection.isAddMoreVisible = options.contains(.canAddMore)
     }
 
     // MARK: - Input Accessory
