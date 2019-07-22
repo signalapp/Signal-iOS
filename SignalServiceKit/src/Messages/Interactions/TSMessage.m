@@ -447,15 +447,15 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     }
 
     if (self.hasPerMessageExpiration) {
-        bodyDescription = NSLocalizedString(
+        NSString *label = NSLocalizedString(
             @"PER_MESSAGE_EXPIRATION_NOTIFICATION", @"Notification for incoming disappearing photo.");
         if (mediaAttachment != nil) {
             attachmentDescription = [TSAttachment emojiForMimeType:mediaAttachment.contentType];
         }
         if (attachmentDescription.length > 0) {
-            return [[attachmentDescription stringByAppendingString:@" "] stringByAppendingString:bodyDescription];
+            return [[attachmentDescription stringByAppendingString:@" "] stringByAppendingString:label];
         } else {
-            return bodyDescription;
+            return label;
         }
     }
 
