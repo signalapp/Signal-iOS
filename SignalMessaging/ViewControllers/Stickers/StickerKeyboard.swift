@@ -341,10 +341,13 @@ public class StickerKeyboard: UIStackView {
 
     }
 
+    private var isScrollingChange = false
     private func checkForPageChange() {
         // Ignore any page changes while we're laying out, as the content
         // offset will move about as the scrollView potentially resizes.
         guard !isLayingoutSubviews else { return }
+
+        isScrollingChange = true
 
         let offsetX = stickerPagingScrollView.contentOffset.x
 
@@ -360,12 +363,17 @@ public class StickerKeyboard: UIStackView {
         // We wait to execute these until we're sure we're going to cross over as it
         // can cause some UI jitter that interupts scrolling.
         } else if offsetX >= pageWidth * 0.95 && offsetX <= pageWidth * 1.05 {
-            pendingPageChangeUpdates?()
-            pendingPageChangeUpdates = nil
+            applyPendingPageChangeUpdates()
         }
+
+        isScrollingChange = false
     }
 
     private var pendingPageChangeUpdates: (() -> Void)?
+    private func applyPendingPageChangeUpdates() {
+        pendingPageChangeUpdates?()
+        pendingPageChangeUpdates = nil
+    }
 
     private func selectedPackChanged(oldSelectedPack: StickerPack?) {
         AssertIsOnMainThread()
@@ -402,6 +410,9 @@ public class StickerKeyboard: UIStackView {
 
             pendingPageChangeUpdates = nil
         }
+
+        // If we're not currently scrolling, apply the page change updates immediately.
+        if !isScrollingChange { applyPendingPageChangeUpdates() }
 
         updatePageConstraints()
 

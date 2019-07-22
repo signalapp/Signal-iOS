@@ -81,8 +81,9 @@ public class AttachmentApprovalItem: Hashable {
 
 class AttachmentApprovalItemCollection {
     private (set) var attachmentApprovalItems: [AttachmentApprovalItem]
-    var isAddMoreVisible: Bool
-    init(attachmentApprovalItems: [AttachmentApprovalItem], isAddMoreVisible: Bool) {
+    let isAddMoreVisible: () -> Bool
+
+    init(attachmentApprovalItems: [AttachmentApprovalItem], isAddMoreVisible: @escaping () -> Bool) {
         self.attachmentApprovalItems = attachmentApprovalItems
         self.isAddMoreVisible = isAddMoreVisible
     }

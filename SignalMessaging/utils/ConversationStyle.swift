@@ -46,7 +46,8 @@ public class ConversationStyle: NSObject {
         return viewWidth - (headerGutterLeading + headerGutterTrailing)
     }
 
-    @objc public var maxMessageWidth: CGFloat = 0
+    @objc public private(set) var maxMessageWidth: CGFloat = 0
+    @objc public private(set) var maxMediaMessageWidth: CGFloat = 0
 
     @objc public var textInsetTop: CGFloat = 0
     @objc public var textInsetBottom: CGFloat = 0
@@ -104,6 +105,11 @@ public class ConversationStyle: NSObject {
         errorGutterTrailing = 16
 
         maxMessageWidth = floor(contentWidth - 32)
+
+        // This upper bound should have no effect in portrait orientation.
+        // It limits body media size in landscape.
+        let kMaxBodyMediaSize: CGFloat = 350
+        maxMediaMessageWidth = min(maxMessageWidth, kMaxBodyMediaSize)
 
         let messageTextFont = UIFont.ows_dynamicTypeBody
 

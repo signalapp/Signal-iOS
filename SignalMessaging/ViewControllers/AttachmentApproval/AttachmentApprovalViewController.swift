@@ -76,11 +76,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             options.insert(.canToggleExpiration)
         }
 
-        if !preferences.isPerMessageExpirationEnabled() {
-            options.insert(.canAddMore)
-        }
-
         return options
+    }
+
+    var isAddMoreVisible: Bool {
+        return options.contains(.canAddMore) && !preferences.isPerMessageExpirationEnabled()
     }
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
@@ -106,12 +106,15 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         self.receivedOptions = options
         self.bottomToolView = AttachmentApprovalInputAccessoryView(options: options)
 
-        self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(attachmentApprovalItems: attachmentApprovalItems, isAddMoreVisible: options.contains(.canAddMore))
-
         let pageOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
                    options: pageOptions)
+
+        let isAddMoreVisibleBlock = { [weak self] in
+            return self?.isAddMoreVisible ?? false
+        }
+        self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(attachmentApprovalItems: attachmentApprovalItems, isAddMoreVisible: isAddMoreVisibleBlock)
         self.dataSource = self
         self.delegate = self
         bottomToolView.delegate = self
@@ -243,7 +246,6 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         updateMediaRail()
         bottomToolView.options = options
-        attachmentApprovalItemCollection.isAddMoreVisible = options.contains(.canAddMore)
     }
 
     // MARK: - Input Accessory
@@ -600,23 +602,13 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             }
         }
 
-        // configureCellViews will set galleryRailView.isHidden.
-        if options.contains(.canAddMore) {
-            galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
-                                               focusedItem: currentItem,
-                                               cellViewBuilder: cellViewBuilder,
-                                               animated: false)
-        } else if attachmentApprovalItemCollection.attachmentApprovalItems.count > 1 {
-            galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
-                                               focusedItem: currentItem,
-                                               cellViewBuilder: cellViewBuilder,
-                                               animated: false)
-        } else {
-            galleryRailView.isHidden = true
-        }
+        galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
+                                           focusedItem: currentItem,
+                                           cellViewBuilder: cellViewBuilder,
+                                           animated: false)
     }
 
-    let attachmentApprovalItemCollection: AttachmentApprovalItemCollection
+    var attachmentApprovalItemCollection: AttachmentApprovalItemCollection!
 
     var attachmentApprovalItems: [AttachmentApprovalItem] {
         return attachmentApprovalItemCollection.attachmentApprovalItems
@@ -763,6 +755,10 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         attachmentTextToolbar.isUserInteractionEnabled = false
         attachmentTextToolbar.isHidden = true
 
+        // Generate the attachments once, so that any changes we
+        // make below are reflected afterwards.
+        let attachments = self.attachments
+
         if options.contains(.canToggleExpiration),
             preferences.isPerMessageExpirationEnabled() {
             for attachment in attachments {
@@ -809,7 +805,7 @@ extension AttachmentApprovalItem: GalleryRailItem {
 
 extension AttachmentApprovalItemCollection: GalleryRailItemProvider {
     var railItems: [GalleryRailItem] {
-        if isAddMoreVisible {
+        if isAddMoreVisible() {
             return self.attachmentApprovalItems + [AddMoreRailItem()]
         } else {
             return self.attachmentApprovalItems

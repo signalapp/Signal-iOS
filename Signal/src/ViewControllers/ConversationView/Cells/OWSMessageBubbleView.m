@@ -824,7 +824,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSMediaAlbumCellView alloc] initWithMediaCache:self.cellMediaCache
                                                     items:self.viewItem.mediaAlbumItems
                                                isOutgoing:self.isOutgoing
-                                          maxMessageWidth:self.conversationStyle.maxMessageWidth];
+                                          maxMessageWidth:self.conversationStyle.maxMediaMessageWidth];
     self.loadCellContentBlock = ^{
         [albumView loadMedia];
     };
@@ -1065,13 +1065,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
-    // This upper bound should have no effect in portrait orientation.
-    // It limits body media size in landscape.
-    const CGFloat kMaxBodyMediaSize = 350;
-    CGFloat maxMessageWidth = MIN(kMaxBodyMediaSize, self.conversationStyle.maxMessageWidth);
+    CGFloat maxMediaMessageWidth = self.conversationStyle.maxMediaMessageWidth;
     if (!self.hasFullWidthMediaView) {
         CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
-        maxMessageWidth -= hMargins;
+        maxMediaMessageWidth -= hMargins;
     }
 
     CGSize result = CGSizeZero;
@@ -1081,7 +1078,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         case OWSMessageCellType_Audio:
-            result = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
+            result = CGSizeMake(maxMediaMessageWidth, OWSAudioMessageView.bubbleHeight);
             break;
         case OWSMessageCellType_GenericAttachment: {
             TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
@@ -1091,16 +1088,16 @@ NS_ASSUME_NONNULL_BEGIN
                                                           isIncoming:self.isIncoming
                                                             viewItem:self.viewItem];
             [attachmentView createContentsWithConversationStyle:self.conversationStyle];
-            result = [attachmentView measureSizeWithMaxMessageWidth:maxMessageWidth];
+            result = [attachmentView measureSizeWithMaxMessageWidth:maxMediaMessageWidth];
             break;
         }
         case OWSMessageCellType_ContactShare:
             OWSAssertDebug(self.viewItem.contactShare);
 
-            result = CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
+            result = CGSizeMake(maxMediaMessageWidth, [OWSContactShareView bubbleHeight]);
             break;
         case OWSMessageCellType_MediaMessage:
-            result = [OWSMediaAlbumCellView layoutSizeForMaxMessageWidth:maxMessageWidth
+            result = [OWSMediaAlbumCellView layoutSizeForMaxMessageWidth:maxMediaMessageWidth
                                                                    items:self.viewItem.mediaAlbumItems];
 
             if (self.viewItem.mediaAlbumItems.count == 1) {
@@ -1115,8 +1112,8 @@ NS_ASSUME_NONNULL_BEGIN
                     const CGFloat maxAspectRatio = 1 / minAspectRatio;
                     contentAspectRatio = MAX(minAspectRatio, MIN(maxAspectRatio, contentAspectRatio));
 
-                    const CGFloat maxMediaWidth = maxMessageWidth;
-                    const CGFloat maxMediaHeight = maxMessageWidth;
+                    const CGFloat maxMediaWidth = maxMediaMessageWidth;
+                    const CGFloat maxMediaHeight = maxMediaMessageWidth;
                     CGFloat mediaWidth = maxMediaHeight * contentAspectRatio;
                     CGFloat mediaHeight = maxMediaHeight;
                     if (mediaWidth > maxMediaWidth) {
@@ -1141,7 +1138,7 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_OversizeTextDownloading:
             // There's no way to predict the size of the oversize text,
             // so we just use a square bubble.
-            result = CGSizeMake(maxMessageWidth, maxMessageWidth);
+            result = CGSizeMake(maxMediaMessageWidth, maxMediaMessageWidth);
             break;
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
@@ -1153,8 +1150,8 @@ NS_ASSUME_NONNULL_BEGIN
             break;
     }
 
-    OWSAssertDebug(result.width <= maxMessageWidth);
-    result.width = MIN(result.width, maxMessageWidth);
+    OWSAssertDebug(result.width <= maxMediaMessageWidth);
+    result.width = MIN(result.width, maxMediaMessageWidth);
 
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
 }

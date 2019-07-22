@@ -738,6 +738,11 @@ NS_ASSUME_NONNULL_BEGIN
     return OWSMessageGestureLocation_Default;
 }
 
+- (BOOL)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    return NO;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
