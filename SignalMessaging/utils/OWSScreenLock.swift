@@ -83,7 +83,7 @@ public class OWSScreenLock: NSObject {
         databaseStorage.write { transaction in
             self.keyValueStore.setBool(value,
                                        key: OWSScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
-                                              transaction: transaction)
+                                       transaction: transaction)
         }
 
         NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
@@ -112,8 +112,8 @@ public class OWSScreenLock: NSObject {
 
         databaseStorage.write { transaction in
             self.keyValueStore.setDouble(value,
-                                       key: OWSScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
-                                       transaction: transaction)
+                                         key: OWSScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
+                                         transaction: transaction)
         }
 
         NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
@@ -131,9 +131,9 @@ public class OWSScreenLock: NSObject {
     // * On the main thread.
     @objc
     public func tryToUnlockScreenLock(success: @escaping (() -> Void),
-                                            failure: @escaping ((Error) -> Void),
-                                            unexpectedFailure: @escaping ((Error) -> Void),
-                                            cancel: @escaping (() -> Void)) {
+                                      failure: @escaping ((Error) -> Void),
+                                      unexpectedFailure: @escaping ((Error) -> Void),
+                                      cancel: @escaping (() -> Void)) {
         AssertIsOnMainThread()
 
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
