@@ -274,8 +274,13 @@ public class FullTextSearcher: NSObject {
     }
 
     public func searchForHomeScreen(searchText: String,
-                                    transaction: YapDatabaseReadTransaction,
+                                    transaction: SDSAnyReadTransaction,
                                     contactsManager: ContactsManagerProtocol) -> HomeScreenSearchResultSet {
+
+        // GRDB TODO:
+        guard let ydbTransaction = transaction.transitional_yapReadTransaction else {
+            return HomeScreenSearchResultSet(searchText: searchText, conversations: [], contacts: [], messages: [])
+        }
 
         var conversations: [ConversationSearchResult<ConversationSortKey>] = []
         var contacts: [ContactSearchResult] = []
@@ -283,12 +288,12 @@ public class FullTextSearcher: NSObject {
 
         var existingConversationAddresses: Set<SignalServiceAddress> = Set()
 
-        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
+        self.finder.enumerateObjects(searchText: searchText, transaction: ydbTransaction) { (match: Any, snippet: String?) in
 
             if let thread = match as? TSThread {
-                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction.asAnyRead)
+                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
                 let sortKey = ConversationSortKey(creationDate: thread.creationDate,
-                                                  lastMessageReceivedAtDate: thread.lastInteractionForInbox(transaction: transaction.asAnyRead)?.receivedAtDate())
+                                                  lastMessageReceivedAtDate: thread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
 
                 if let contactThread = thread as? TSContactThread {
@@ -297,9 +302,9 @@ public class FullTextSearcher: NSObject {
 
                 conversations.append(searchResult)
             } else if let message = match as? TSMessage {
-                let thread = message.thread(transaction: transaction.asAnyRead)
+                let thread = message.thread(transaction: transaction)
 
-                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction.asAnyRead)
+                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
                 let sortKey = message.sortId
                 let searchResult = ConversationSearchResult(thread: threadViewModel,
                                                             sortKey: sortKey,

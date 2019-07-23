@@ -60,12 +60,13 @@ private let aliceRecipient = SignalServiceAddress(phoneNumber: "+12345678900")
 class FullTextSearcherTest: SignalBaseTest {
 
     // MARK: - Dependencies
+
     var searcher: FullTextSearcher {
         return FullTextSearcher.shared
     }
 
-    var dbConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: - Test Life Cycle
@@ -331,7 +332,7 @@ class FullTextSearcherTest: SignalBaseTest {
 
     private func getResultSet(searchText: String) -> HomeScreenSearchResultSet {
         var results: HomeScreenSearchResultSet!
-        self.dbConnection.read { transaction in
+        self.databaseStorage.read { transaction in
             results = self.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction, contactsManager: SSKEnvironment.shared.contactsManager)
         }
         return results

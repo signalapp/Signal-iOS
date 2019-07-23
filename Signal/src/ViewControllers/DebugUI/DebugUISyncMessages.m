@@ -106,11 +106,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [OWSProfileManager sharedManager];
 }
 
-+ (YapDatabaseConnection *)dbConnection
-{
-    return [OWSPrimaryStorage.sharedManager newDatabaseConnection];
-}
-
 + (id<OWSSyncManagerProtocol>)syncManager
 {
     OWSAssertDebug(SSKEnvironment.shared.syncManager);

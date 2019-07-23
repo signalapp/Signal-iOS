@@ -4,6 +4,7 @@
 
 #import "OWS107LegacySounds.h"
 #import "OWSSounds.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,7 +23,7 @@ static NSString *const OWS107LegacySoundsMigrationId = @"107";
 {
     OWSAssertDebug(transaction);
 
-    [OWSSounds setGlobalNotificationSound:OWSSound_SignalClassic transaction:transaction];
+    [OWSSounds setGlobalNotificationSound:OWSSound_SignalClassic transaction:transaction.asAnyWrite];
 }
 
 @end

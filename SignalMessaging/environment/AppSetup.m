@@ -95,7 +95,7 @@ NS_ASSUME_NONNULL_BEGIN
         AccountServiceClient *accountServiceClient = [AccountServiceClient new];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
-        OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
+        OWSSounds *sounds = [OWSSounds new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
         
@@ -156,6 +156,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        label:@"OWSProfileManager.whitelistedUUIDsStore"];
         [OWS115GRDBMigration addWithKeyStore:profileManager.whitelistedGroupsStore
                                        label:@"OWSProfileManager.whitelistedGroupsStore"];
+        [OWS115GRDBMigration addWithKeyStore:OWSSounds.keyValueStore label:@"OWSSounds"];
 
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             dispatch_async(dispatch_get_main_queue(), ^{

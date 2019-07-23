@@ -52,15 +52,21 @@ class AppUpdateNag: NSObject {
 
     // MARK: - Internal
 
-    let kUpgradeNagCollection = "TSStorageManagerAppUpgradeNagCollection"
-    let kLastNagDateKey = "TSStorageManagerAppUpgradeNagDate"
-    let kFirstHeardOfNewVersionDateKey = "TSStorageManagerAppUpgradeFirstHeardOfNewVersionDate"
+    static let kLastNagDateKey = "TSStorageManagerAppUpgradeNagDate"
+    static let kFirstHeardOfNewVersionDateKey = "TSStorageManagerAppUpgradeFirstHeardOfNewVersionDate"
 
-    var dbConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
-    // MARK: Bundle accessors
+    // MARK: - KV Store
+
+    @objc
+    public let keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerAppUpgradeNagCollection")
+
+    // MARK: - Bundle accessors
 
     var bundle: Bundle {
         return Bundle.main
@@ -152,30 +158,43 @@ class AppUpdateNag: NSObject {
     }
 
     func showAppStore(appStoreURL: URL) {
+        assert(CurrentAppContext().isMainApp)
+
         Logger.debug("")
+
         UIApplication.shared.openURL(appStoreURL)
     }
 
     // MARK: Storage
 
     var firstHeardOfNewVersionDate: Date? {
-        return self.dbConnection.date(forKey: kFirstHeardOfNewVersionDateKey, inCollection: kUpgradeNagCollection)
+        return self.databaseStorage.readReturningResult { transaction in
+            return self.keyValueStore.getDate(AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
+        }
     }
 
     func setFirstHeardOfNewVersionDate(_ date: Date) {
-        self.dbConnection.setDate(date, forKey: kFirstHeardOfNewVersionDateKey, inCollection: kUpgradeNagCollection)
+        self.databaseStorage.write { transaction in
+            self.keyValueStore.setDate(date, key: AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
+        }
     }
 
     func clearFirstHeardOfNewVersionDate() {
-        self.dbConnection.removeObject(forKey: kFirstHeardOfNewVersionDateKey, inCollection: kUpgradeNagCollection)
+        self.databaseStorage.write { transaction in
+            self.keyValueStore.removeValue(forKey: AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
+        }
     }
 
     var lastNagDate: Date? {
-        return self.dbConnection.date(forKey: kLastNagDateKey, inCollection: kUpgradeNagCollection)
+        return self.databaseStorage.readReturningResult { transaction in
+            return self.keyValueStore.getDate(AppUpdateNag.kLastNagDateKey, transaction: transaction)
+        }
     }
 
     func setLastNagDate(_ date: Date) {
-        self.dbConnection.setDate(date, forKey: kLastNagDateKey, inCollection: kUpgradeNagCollection)
+        self.databaseStorage.write { transaction in
+            self.keyValueStore.setDate(date, key: AppUpdateNag.kLastNagDateKey, transaction: transaction)
+        }
     }
 }
 
