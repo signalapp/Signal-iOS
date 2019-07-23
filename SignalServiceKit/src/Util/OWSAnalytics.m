@@ -11,6 +11,7 @@
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 //#define NO_SIGNAL_ANALYTICS
 
 #endif
-
-NSString *const kOWSAnalytics_EventsCollection = @"kOWSAnalytics_EventsCollection";
 
 // Percentage of analytics events to discard. 0 <= x <= 100.
 const int kOWSAnalytics_DiscardFrequency = 0;
@@ -42,7 +41,6 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 @interface OWSAnalytics ()
 
 @property (nonatomic, readonly) Reachability *reachability;
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @property (atomic) BOOL hasRequestInFlight;
 
@@ -52,6 +50,23 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
 @implementation OWSAnalytics
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
++ (SDSKeyValueStore *)keyValueStore
+{
+    NSString *const kOWSAnalytics_EventsCollection = @"kOWSAnalytics_EventsCollection";
+    return [[SDSKeyValueStore alloc] initWithCollection:kOWSAnalytics_EventsCollection];
+}
+
+#pragma mark -
+
 + (instancetype)sharedInstance
 {
     static OWSAnalytics *instance = nil;
@@ -60,13 +75,6 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
         instance = [[self alloc] initDefault];
     });
     return instance;
-}
-
-// We lazy-create the analytics DB connection, so that we can handle
-// errors that occur while initializing OWSPrimaryStorage.
-+ (YapDatabaseConnection *)dbConnection
-{
-    return SSKEnvironment.shared.analyticsDBConnection;
 }
 
 - (instancetype)initDefault
@@ -134,20 +142,27 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
 
         __block NSString *firstEventKey = nil;
         __block NSDictionary *firstEventDictionary = nil;
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             // Take any event. We don't need to deliver them in any particular order.
-            [transaction enumerateKeysInCollection:kOWSAnalytics_EventsCollection
-                                        usingBlock:^(NSString *key, BOOL *_Nonnull stop) {
-                                            firstEventKey = key;
-                                            *stop = YES;
-                                        }];
+            [OWSAnalytics.keyValueStore enumerateKeysWithTransaction:transaction
+                                                               block:^(NSString *key, BOOL *stop) {
+                                                                   firstEventKey = key;
+                                                                   *stop = YES;
+                                                               }];
             if (!firstEventKey) {
                 return;
             }
-            
-            firstEventDictionary = [transaction objectForKey:firstEventKey inCollection:kOWSAnalytics_EventsCollection];
-            OWSAssertDebug(firstEventDictionary);
-            OWSAssertDebug([firstEventDictionary isKindOfClass:[NSDictionary class]]);
+
+            id _Nullable firstObject = [OWSAnalytics.keyValueStore getObject:firstEventKey transaction:transaction];
+            if (firstObject == nil) {
+                OWSFailDebug(@"Missing object for key.");
+                return;
+            }
+            if (![firstObject isKindOfClass:[NSDictionary class]]) {
+                OWSFailDebug(@"Object has unexpected type.");
+                return;
+            }
+            firstEventDictionary = firstObject;
         }];
 
         if (firstEventDictionary) {
@@ -185,9 +200,9 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
                 dispatch_async(self.serialQueue, ^{
                     self.hasRequestInFlight = NO;
 
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        // Remove from queue.
-                        [transaction removeObjectForKey:eventKey inCollection:kOWSAnalytics_EventsCollection];
+                    // Remove from queue.
+                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                        [OWSAnalytics.keyValueStore removeValueForKey:eventKey transaction:transaction];
                     }];
 
                     // Wait a second between network requests / retries.
@@ -319,14 +334,15 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
             [self sendEvent:eventDictionary eventKey:eventKey isCritical:YES];
         } else {
             // Add to queue.
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                 const int kMaxQueuedEvents = 5000;
-                if ([transaction numberOfKeysInCollection:kOWSAnalytics_EventsCollection] > kMaxQueuedEvents) {
+                NSUInteger keyCount = [OWSAnalytics.keyValueStore numberOfKeysWithTransaction:transaction];
+                if (keyCount > kMaxQueuedEvents) {
                     OWSLogError(@"Event queue overflow.");
                     return;
                 }
 
-                [transaction setObject:eventDictionary forKey:eventKey inCollection:kOWSAnalytics_EventsCollection];
+                [OWSAnalytics.keyValueStore setObject:eventDictionary key:eventKey transaction:transaction];
             }];
 
             [self tryToSyncEvents];

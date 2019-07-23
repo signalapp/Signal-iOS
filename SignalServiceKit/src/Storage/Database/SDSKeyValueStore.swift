@@ -274,6 +274,27 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
+    public func enumerateKeys(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: collection) { (key: String, stopPtr: UnsafeMutablePointer<ObjCBool>) in
+                block(key, stopPtr)
+            }
+        case .grdbRead(let grdbRead):
+            var stop: ObjCBool = false
+            // PERF - we could enumerate with a single query rather than
+            // fetching keys then fetching objects one by one. In practice
+            // the collections that use this are pretty small.
+            for key in allKeys(grdbTransaction: grdbRead) {
+                guard !stop.boolValue else {
+                    return
+                }
+                block(key, &stop)
+            }
+        }
+    }
+
+    @objc
     public func allValues(transaction: SDSAnyReadTransaction) -> [Any] {
         return allKeys(transaction: transaction).map { key in
             return self.read(key, transaction: transaction)
