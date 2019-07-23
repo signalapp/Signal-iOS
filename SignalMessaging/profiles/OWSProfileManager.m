@@ -30,7 +30,6 @@
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/UIImage+OWS.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
