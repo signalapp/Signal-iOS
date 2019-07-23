@@ -97,6 +97,10 @@ extension OWS115GRDBMigration {
         return SSKEnvironment.shared.typingIndicators
     }
 
+    var udManager: OWSUDManager {
+        return SSKEnvironment.shared.udManager
+    }
+
     // MARK: -
 
     func run() throws {
@@ -195,6 +199,11 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "OWS2FAManager", keyStore: OWS2FAManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSBlockingManager", keyStore: OWSBlockingManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "typingIndicators", keyStore: typingIndicators.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "udManager.keyValueStore", keyStore: udManager.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "udManager.phoneNumberAccessStore", keyStore: udManager.phoneNumberAccessStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "udManager.uuidAccessStore", keyStore: udManager.uuidAccessStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.phoneNumberStore", keyStore: CallKitIdStore.phoneNumberStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.uuidStore", keyStore: CallKitIdStore.uuidStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1)
         ]
 
         for (label, keyStore) in OWS115GRDBMigration.otherKeyStores {
