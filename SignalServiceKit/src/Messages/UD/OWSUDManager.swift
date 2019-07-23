@@ -107,10 +107,23 @@ public class OWSUDAccess: NSObject {
 @objc
 public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
-    private let dbConnection: YapDatabaseConnection
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
+    @objc
+    public let keyValueStore = SDSKeyValueStore(collection: "kUDCollection")
+    @objc
+    public let phoneNumberAccessStore = SDSKeyValueStore(collection: "kUnidentifiedAccessCollection")
+    @objc
+    public let uuidAccessStore = SDSKeyValueStore(collection: "kUnidentifiedAccessUUIDCollection")
 
     // MARK: Local Configuration State
-    private let kUDCollection = "kUDCollection"
+
     private let kUDCurrentSenderCertificateKey_Production = "kUDCurrentSenderCertificateKey_Production"
     private let kUDCurrentSenderCertificateKey_Staging = "kUDCurrentSenderCertificateKey_Staging"
     private let kUDCurrentSenderCertificateDateKey_Production = "kUDCurrentSenderCertificateDateKey_Production"
@@ -118,14 +131,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     private let kUDUnrestrictedAccessKey = "kUDUnrestrictedAccessKey"
 
     // MARK: Recipient State
-    private let kUnidentifiedAccessPhoneNumberCollection = "kUnidentifiedAccessCollection"
-    private let kUnidentifiedAccessUUIDCollection = "kUnidentifiedAccessUUIDCollection"
 
     var certificateValidator: SMKCertificateValidator
 
     @objc
-    public required init(primaryStorage: OWSPrimaryStorage) {
-        self.dbConnection = primaryStorage.newDatabaseConnection()
+    public required override init() {
         self.certificateValidator = SMKCertificateDefaultValidator(trustRoot: OWSUDManagerImpl.trustRoot())
 
         super.init()
@@ -202,12 +212,12 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     private func unidentifiedAccessMode(forAddress address: SignalServiceAddress,
-                                        transaction: YapDatabaseReadWriteTransaction) -> UnidentifiedAccessMode {
+                                        transaction: SDSAnyWriteTransaction) -> UnidentifiedAccessMode {
         let defaultValue: UnidentifiedAccessMode =  address.isLocalAddress ? .enabled : .unknown
 
         let existingUUIDValue: UnidentifiedAccessMode?
         if let uuidString = address.uuidString,
-            let existingRawValue = transaction.object(forKey: uuidString, inCollection: kUnidentifiedAccessUUIDCollection) as? Int {
+            let existingRawValue = uuidAccessStore.getOptionalInt(uuidString, transaction: transaction) {
 
             guard let value = UnidentifiedAccessMode(rawValue: existingRawValue) else {
                 owsFailDebug("Couldn't parse mode value.")
@@ -220,7 +230,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         let existingPhoneNumberValue: UnidentifiedAccessMode?
         if let phoneNumber = address.phoneNumber,
-            let existingRawValue = transaction.object(forKey: phoneNumber, inCollection: kUnidentifiedAccessPhoneNumberCollection) as? Int {
+            let existingRawValue = phoneNumberAccessStore.getOptionalInt(phoneNumber, transaction: transaction) {
 
             guard let value = UnidentifiedAccessMode(rawValue: existingRawValue) else {
                 owsFailDebug("Couldn't parse mode value.")
@@ -239,7 +249,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             if existingPhoneNumberValue != existingUUIDValue {
                 owsFailDebug("UUID and Phone Number unexpectedly have different UD values")
                 Logger.info("Unexpected UD value mismatch, migrating phone number value: \(existingPhoneNumberValue) to uuid value: \(existingUUIDValue)")
-                transaction.setObject(existingUUIDValue.rawValue, forKey: address.phoneNumber!, inCollection: kUnidentifiedAccessPhoneNumberCollection)
+                phoneNumberAccessStore.setInt(existingUUIDValue.rawValue, key: address.phoneNumber!, transaction: transaction)
             }
 
             existingValue = existingUUIDValue
@@ -248,14 +258,14 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
             // We had phone number entry but not UUID, update UUID value
             if let uuidString = address.uuidString {
-                transaction.setObject(existingPhoneNumberValue.rawValue, forKey: uuidString, inCollection: kUnidentifiedAccessUUIDCollection)
+                uuidAccessStore.setInt(existingPhoneNumberValue.rawValue, key: uuidString, transaction: transaction)
             }
         } else if let existingUUIDValue = existingUUIDValue {
             existingValue = existingUUIDValue
 
             // We had UUID entry but not phone number, update phone number value
             if let phoneNumber = address.phoneNumber {
-                transaction.setObject(existingUUIDValue.rawValue, forKey: phoneNumber, inCollection: kUnidentifiedAccessPhoneNumberCollection)
+                phoneNumberAccessStore.setInt(existingUUIDValue.rawValue, key: phoneNumber, transaction: transaction)
             }
         } else {
             existingValue = nil
@@ -267,7 +277,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func unidentifiedAccessMode(forAddress address: SignalServiceAddress) -> UnidentifiedAccessMode {
         var mode: UnidentifiedAccessMode = .unknown
-        dbConnection.readWrite { (transaction) in
+        databaseStorage.write { (transaction) in
             mode = self.unidentifiedAccessMode(forAddress: address, transaction: transaction)
         }
         return mode
@@ -279,15 +289,15 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             Logger.info("Setting local UD access mode: \(string(forUnidentifiedAccessMode: mode))")
         }
 
-        dbConnection.readWrite { (transaction) in
+        databaseStorage.write { (transaction) in
             let oldMode = self.unidentifiedAccessMode(forAddress: address, transaction: transaction)
 
             if let uuidString = address.uuidString {
-                transaction.setObject(mode.rawValue as Int, forKey: uuidString, inCollection: self.kUnidentifiedAccessUUIDCollection)
+                self.uuidAccessStore.setInt(mode.rawValue, key: uuidString, transaction: transaction)
             }
 
             if let phoneNumber = address.phoneNumber {
-                transaction.setObject(mode.rawValue as Int, forKey: phoneNumber, inCollection: self.kUnidentifiedAccessPhoneNumberCollection)
+                self.phoneNumberAccessStore.setInt(mode.rawValue, key: phoneNumber, transaction: transaction)
             }
 
             if mode != oldMode {
@@ -392,8 +402,15 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     #endif
 
     private func senderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> SMKSenderCertificate? {
+        var certificateDateValue: Date?
+        var certificateDataValue: Data?
+        databaseStorage.read { transaction in
+            certificateDateValue = self.keyValueStore.getDate(self.senderCertificateDateKey(), transaction: transaction)
+            certificateDataValue = self.keyValueStore.getData(self.senderCertificateKey(), transaction: transaction)
+        }
+
         if certificateExpirationPolicy == .strict {
-            guard let certificateDate = dbConnection.object(forKey: senderCertificateDateKey(), inCollection: kUDCollection) as? Date else {
+            guard let certificateDate = certificateDateValue else {
                 return nil
             }
             guard certificateDate.timeIntervalSinceNow < kDayInterval else {
@@ -402,7 +419,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
         }
 
-        guard let certificateData = dbConnection.object(forKey: senderCertificateKey(), inCollection: kUDCollection) as? Data else {
+        guard let certificateData = certificateDataValue else {
             return nil
         }
 
@@ -422,8 +439,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     func setSenderCertificate(_ certificateData: Data) {
-        dbConnection.setObject(Date(), forKey: senderCertificateDateKey(), inCollection: kUDCollection)
-        dbConnection.setObject(certificateData, forKey: senderCertificateKey(), inCollection: kUDCollection)
+        databaseStorage.write { transaction in
+            self.keyValueStore.setDate(Date(), key: self.senderCertificateDateKey(), transaction: transaction)
+            self.keyValueStore.setData(certificateData, key: self.senderCertificateKey(), transaction: transaction)
+        }
     }
 
     private func senderCertificateKey() -> String {
@@ -522,12 +541,16 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc
     public func shouldAllowUnrestrictedAccessLocal() -> Bool {
-        return dbConnection.bool(forKey: kUDUnrestrictedAccessKey, inCollection: kUDCollection, defaultValue: false)
+        return databaseStorage.readReturningResult { transaction in
+            self.keyValueStore.getBool(self.kUDUnrestrictedAccessKey, defaultValue: false, transaction: transaction)
+        }
     }
 
     @objc
     public func setShouldAllowUnrestrictedAccessLocal(_ value: Bool) {
-        dbConnection.setBool(value, forKey: kUDUnrestrictedAccessKey, inCollection: kUDCollection)
+        databaseStorage.write { transaction in
+            self.keyValueStore.setBool(value, key: self.kUDUnrestrictedAccessKey, transaction: transaction)
+        }
 
         // Try to update the account attributes to reflect this change.
         tsAccountManager.updateAccountAttributes().retainUntilComplete()

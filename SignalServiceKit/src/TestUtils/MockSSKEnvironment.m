@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     SSKSessionStore *sessionStore = [SSKSessionStore new];
     SSKPreKeyStore *preKeyStore = [SSKPreKeyStore new];
     SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
-    id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
+    id<OWSUDManager> udManager = [OWSUDManagerImpl new];
     OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
     SSKMessageDecryptJobQueue *messageDecryptJobQueue = [SSKMessageDecryptJobQueue new];
     OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
