@@ -24,8 +24,6 @@ extern NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName;
 extern NSString *const TSPerMessageExpirationMessagesDatabaseViewExtensionName;
 extern NSString *const TSPerMessageExpirationMessagesGroup;
 
-extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
-
 extern NSString *const TSLazyRestoreAttachmentsGroup;
 extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 
@@ -72,8 +70,6 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 + (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterPerMessageExpirationMessagesDatabaseView:(OWSStorage *)storage;
-
-+ (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterLazyRestoreAttachmentsDatabaseView:(OWSStorage *)storage;
 

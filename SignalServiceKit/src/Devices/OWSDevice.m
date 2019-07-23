@@ -3,6 +3,7 @@
 //
 
 #import "OWSDevice.h"
+#import "NSNotificationCenter+OWS.h"
 #import "OWSError.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileManagerProtocol.h"
@@ -14,6 +15,8 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *const OWSDevice_DidChange = @"OWSDevice_DidChange";
 
 uint32_t const OWSDevicePrimaryDeviceId = 1;
 NSString *const kOWSPrimaryStorage_OWSDeviceCollection = @"kTSStorageManager_OWSDeviceCollection";
@@ -177,6 +180,34 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 // clang-format on
 
 // --- CODE GENERATION MARKER
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    [self postDidChangeWithTransaction:transaction];
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
+    [self postDidChangeWithTransaction:transaction];
+}
+
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidRemoveWithTransaction:transaction];
+
+    [self postDidChangeWithTransaction:transaction];
+}
+
+- (void)postDidChangeWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [transaction addCompletionWithBlock:^{
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSDevice_DidChange object:nil userInfo:nil];
+    }];
+}
 
 + (nullable instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error
 {
