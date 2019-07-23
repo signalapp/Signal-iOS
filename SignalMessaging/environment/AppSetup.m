@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
         MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithDatabaseStorage:databaseStorage];
         OWSMessageManager *messageManager = [OWSMessageManager new];
-        OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSBlockingManager *blockingManager = [OWSBlockingManager new];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
         SSKSessionStore *sessionStore = [SSKSessionStore new];
         SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];

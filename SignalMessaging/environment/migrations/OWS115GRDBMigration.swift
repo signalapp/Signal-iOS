@@ -188,7 +188,8 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "OWSDeviceManager", keyStore: OWSDeviceManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSReadReceiptManager", keyStore: OWSReadReceiptManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSAnalytics", keyStore: OWSAnalytics.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWS2FAManager", keyStore: OWS2FAManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1)
+            GRDBKeyValueStoreMigrator<Any>(label: "OWS2FAManager", keyStore: OWS2FAManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSBlockingManager", keyStore: OWSBlockingManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1)
         ]
 
         for (label, keyStore) in OWS115GRDBMigration.otherKeyStores {

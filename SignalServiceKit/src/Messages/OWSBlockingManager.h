@@ -16,8 +16,9 @@ extern NSString *const kOWSBlockingManager_BlockListCollection;
 // This class can be safely accessed and used from any thread.
 @interface OWSBlockingManager : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
++ (SDSKeyValueStore *)keyValueStore;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 

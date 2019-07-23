@@ -12,14 +12,11 @@
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
-#import "YapDatabaseConnection+OWS.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kNSNotificationName_BlockListDidChange = @"kNSNotificationName_BlockListDidChange";
-
-NSString *const kOWSBlockingManager_BlockListCollection = @"kOWSBlockingManager_BlockedPhoneNumbersCollection";
 
 // These keys are used to persist the current local "block list" state.
 NSString *const kOWSBlockingManager_BlockedPhoneNumbersKey = @"kOWSBlockingManager_BlockedPhoneNumbersKey";
@@ -32,8 +29,6 @@ NSString *const kOWSBlockingManager_SyncedBlockedUUIDsKey = @"kOWSBlockingManage
 NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingManager_SyncedBlockedGroupIdsKey";
 
 @interface OWSBlockingManager ()
-
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 // We don't store the phone numbers as instances of PhoneNumber to avoid
 // consistency issues between clients, but these should all be valid e164
@@ -57,6 +52,14 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 #pragma mark -
 
++ (SDSKeyValueStore *)keyValueStore
+{
+    NSString *const kOWSBlockingManager_BlockListCollection = @"kOWSBlockingManager_BlockedPhoneNumbersCollection";
+    return [[SDSKeyValueStore alloc] initWithCollection:kOWSBlockingManager_BlockListCollection];
+}
+
+#pragma mark -
+
 + (instancetype)sharedManager
 {
     OWSAssertDebug(SSKEnvironment.shared.blockingManager);
@@ -64,17 +67,13 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     return SSKEnvironment.shared.blockingManager;
 }
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)init
 {
     self = [super init];
 
     if (!self) {
         return self;
     }
-
-    OWSAssertDebug(primaryStorage);
-
-    _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
 
@@ -308,16 +307,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 - (void)handleUpdate:(BOOL)sendSyncMessage
 {
     NSArray<NSString *> *blockedPhoneNumbers = [self blockedPhoneNumbers];
-
-    [self.dbConnection setObject:blockedPhoneNumbers
-                          forKey:kOWSBlockingManager_BlockedPhoneNumbersKey
-                    inCollection:kOWSBlockingManager_BlockListCollection];
-
     NSArray<NSString *> *blockedUUIDs = [self blockedUUIDs];
-
-    [self.dbConnection setObject:blockedUUIDs
-                          forKey:kOWSBlockingManager_BlockedUUIDsKey
-                    inCollection:kOWSBlockingManager_BlockListCollection];
 
     NSDictionary *blockedGroupMap;
     @synchronized(self) {
@@ -325,10 +315,17 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
     NSArray<NSData *> *blockedGroupIds = blockedGroupMap.allKeys;
 
-    [self.dbConnection setObject:blockedGroupMap
-                          forKey:kOWSBlockingManager_BlockedGroupMapKey
-                    inCollection:kOWSBlockingManager_BlockListCollection];
-
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [OWSBlockingManager.keyValueStore setObject:blockedPhoneNumbers
+                                                key:kOWSBlockingManager_BlockedPhoneNumbersKey
+                                        transaction:transaction];
+        [OWSBlockingManager.keyValueStore setObject:blockedUUIDs
+                                                key:kOWSBlockingManager_BlockedUUIDsKey
+                                        transaction:transaction];
+        [OWSBlockingManager.keyValueStore setObject:blockedGroupMap
+                                                key:kOWSBlockingManager_BlockedGroupMapKey
+                                        transaction:transaction];
+    }];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (sendSyncMessage) {
@@ -368,18 +365,20 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         return;
     }
 
-    NSArray<NSString *> *blockedPhoneNumbers =
-        [self.dbConnection objectForKey:kOWSBlockingManager_BlockedPhoneNumbersKey
-                           inCollection:kOWSBlockingManager_BlockListCollection];
+    __block NSArray<NSString *> *_Nullable blockedPhoneNumbers;
+    __block NSArray<NSString *> *blockedUUIDs;
+    __block NSDictionary<NSData *, TSGroupModel *> *storedBlockedGroupMap;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        blockedPhoneNumbers = [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_BlockedPhoneNumbersKey
+                                                              transaction:transaction];
+        blockedUUIDs =
+            [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_BlockedUUIDsKey transaction:transaction];
+        storedBlockedGroupMap =
+            [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_BlockedGroupMapKey transaction:transaction];
+    }];
     _blockedPhoneNumberSet = [[NSMutableSet alloc] initWithArray:(blockedPhoneNumbers ?: @[])];
-
-    NSArray<NSString *> *blockedUUIDs = [self.dbConnection objectForKey:kOWSBlockingManager_BlockedUUIDsKey
-                                                           inCollection:kOWSBlockingManager_BlockListCollection];
     _blockedUUIDSet = [[NSMutableSet alloc] initWithArray:(blockedUUIDs ?: @[])];
 
-    NSDictionary<NSData *, TSGroupModel *> *storedBlockedGroupMap =
-        [self.dbConnection objectForKey:kOWSBlockingManager_BlockedGroupMapKey
-                           inCollection:kOWSBlockingManager_BlockListCollection];
     if ([storedBlockedGroupMap isKindOfClass:[NSDictionary class]]) {
         _blockedGroupMap = [storedBlockedGroupMap mutableCopy];
     } else {
@@ -408,18 +407,21 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
     // If we haven't yet successfully synced the current "block list" changes,
     // try again to sync now.
-    NSArray<NSString *> *syncedBlockedPhoneNumbers =
-        [self.dbConnection objectForKey:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
-                           inCollection:kOWSBlockingManager_BlockListCollection];
+    __block NSArray<NSString *> *syncedBlockedPhoneNumbers;
+    __block NSArray<NSString *> *syncedBlockedUUIDs;
+    __block NSArray<NSData *> *syncedBlockedGroupIds;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        syncedBlockedPhoneNumbers =
+            [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
+                                            transaction:transaction];
+        syncedBlockedUUIDs = [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_SyncedBlockedUUIDsKey
+                                                             transaction:transaction];
+        syncedBlockedGroupIds = [OWSBlockingManager.keyValueStore getObject:kOWSBlockingManager_SyncedBlockedGroupIdsKey
+                                                                transaction:transaction];
+    }];
+
     NSSet<NSString *> *syncedBlockedPhoneNumberSet = [[NSSet alloc] initWithArray:(syncedBlockedPhoneNumbers ?: @[])];
-
-    NSArray<NSString *> *syncedBlockedUUIDs = [self.dbConnection objectForKey:kOWSBlockingManager_SyncedBlockedUUIDsKey
-                                                                 inCollection:kOWSBlockingManager_BlockListCollection];
     NSSet<NSString *> *syncedBlockedUUIDsSet = [[NSSet alloc] initWithArray:(syncedBlockedUUIDs ?: @[])];
-
-    NSArray<NSData *> *syncedBlockedGroupIds =
-        [self.dbConnection objectForKey:kOWSBlockingManager_SyncedBlockedGroupIdsKey
-                           inCollection:kOWSBlockingManager_BlockListCollection];
     NSSet<NSData *> *syncedBlockedGroupIdSet = [[NSSet alloc] initWithArray:(syncedBlockedGroupIds ?: @[])];
 
     NSArray<NSData *> *localBlockedGroupIds = self.blockedGroupIds;
@@ -482,17 +484,17 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     OWSAssertDebug(blockedUUIDs);
     OWSAssertDebug(blockedGroupIds);
 
-    [self.dbConnection setObject:blockedPhoneNumbers
-                          forKey:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
-                    inCollection:kOWSBlockingManager_BlockListCollection];
-
-    [self.dbConnection setObject:blockedUUIDs
-                          forKey:kOWSBlockingManager_SyncedBlockedUUIDsKey
-                    inCollection:kOWSBlockingManager_BlockListCollection];
-
-    [self.dbConnection setObject:blockedGroupIds
-                          forKey:kOWSBlockingManager_SyncedBlockedGroupIdsKey
-                    inCollection:kOWSBlockingManager_BlockListCollection];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [OWSBlockingManager.keyValueStore setObject:blockedPhoneNumbers
+                                                key:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
+                                        transaction:transaction];
+        [OWSBlockingManager.keyValueStore setObject:blockedUUIDs
+                                                key:kOWSBlockingManager_SyncedBlockedUUIDsKey
+                                        transaction:transaction];
+        [OWSBlockingManager.keyValueStore setObject:blockedGroupIds
+                                                key:kOWSBlockingManager_SyncedBlockedGroupIdsKey
+                                        transaction:transaction];
+    }];
 }
 
 #pragma mark - Notifications
