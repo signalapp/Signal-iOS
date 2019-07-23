@@ -27,13 +27,14 @@ NSString *const kNSNotificationKey_ContactPubKey = @"kNSNotificationKey_ContactP
     // Our state before we decrypt the message
     SessionState *_Nullable state = [self getCurrentState:protocolContext];
     
-    // While decrypting our state may change internally
-    NSData *plainText = [self throws_decrypt:whisperMessage protocolContext:protocolContext];
-    
     // Loki: Verify incoming friend request messages
     if (!state) {
         [self throws_verifyFriendRequestAcceptPreKeyForMessage:whisperMessage protocolContext:protocolContext];
     }
+    
+    // While decrypting our state may change internally
+    NSData *plainText = [self throws_decrypt:whisperMessage protocolContext:protocolContext];
+    
    
     // Loki: Handle any session resets
     [self handleSessionReset:whisperMessage previousState:state protocolContext:protocolContext];
