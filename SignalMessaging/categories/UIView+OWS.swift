@@ -406,7 +406,6 @@ public extension UIBarButtonItem {
 
 @objc
 public extension UIButton {
-    @objc
     func setTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) {
         guard let templateImage = templateImage else {
             owsFailDebug("Missing image")
@@ -416,7 +415,6 @@ public extension UIButton {
         self.tintColor = tintColor
     }
 
-    @objc
     func setTemplateImageName(_ imageName: String, tintColor: UIColor) {
         guard let image = UIImage(named: imageName) else {
             owsFailDebug("Couldn't load image: \(imageName)")
@@ -425,14 +423,12 @@ public extension UIButton {
         setTemplateImage(image, tintColor: tintColor)
     }
 
-    @objc
     class func withTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) -> UIButton {
         let imageView = UIButton()
         imageView.setTemplateImage(templateImage, tintColor: tintColor)
         return imageView
     }
 
-    @objc
     class func withTemplateImageName(_ imageName: String, tintColor: UIColor) -> UIButton {
         let imageView = UIButton()
         imageView.setTemplateImageName(imageName, tintColor: tintColor)
@@ -444,7 +440,6 @@ public extension UIButton {
 
 @objc
 public extension UIImageView {
-    @objc
     func setImage(imageName: String) {
         guard let image = UIImage(named: imageName) else {
             owsFailDebug("Couldn't load image: \(imageName)")
@@ -453,7 +448,6 @@ public extension UIImageView {
         self.image = image
     }
 
-    @objc
     func setTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) {
         guard let templateImage = templateImage else {
             owsFailDebug("Missing image")
@@ -463,7 +457,6 @@ public extension UIImageView {
         self.tintColor = tintColor
     }
 
-    @objc
     func setTemplateImageName(_ imageName: String, tintColor: UIColor) {
         guard let image = UIImage(named: imageName) else {
             owsFailDebug("Couldn't load image: \(imageName)")
@@ -472,14 +465,12 @@ public extension UIImageView {
         setTemplateImage(image, tintColor: tintColor)
     }
 
-    @objc
     class func withTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) -> UIImageView {
         let imageView = UIImageView()
         imageView.setTemplateImage(templateImage, tintColor: tintColor)
         return imageView
     }
 
-    @objc
     class func withTemplateImageName(_ imageName: String, tintColor: UIColor) -> UIImageView {
         let imageView = UIImageView()
         imageView.setTemplateImageName(imageName, tintColor: tintColor)
@@ -491,7 +482,6 @@ public extension UIImageView {
 
 @objc
 public extension UISearchBar {
-    @objc
     var textField: UITextField? {
         // TODO: iOS 13 – a public accessor for this textField as been added in iOS 13,
         // once we start building with that SDK switch to using it for 13+
@@ -507,7 +497,6 @@ public extension UISearchBar {
 
 @objc
 public extension UITextView {
-    @objc
     func acceptAutocorrectSuggestion() {
         // https://stackoverflow.com/a/27865136/4509555
         inputDelegate?.selectionWillChange(self)
@@ -517,9 +506,23 @@ public extension UITextView {
 
 @objc
 public extension UITextField {
-    @objc
     func acceptAutocorrectSuggestion() {
         inputDelegate?.selectionWillChange(self)
         inputDelegate?.selectionDidChange(self)
+    }
+}
+
+@objc
+extension UIView {
+    var findFirstResponder: UIView? {
+        guard !isFirstResponder else { return self }
+
+        for subview in subviews {
+            if let firstResponder = subview.findFirstResponder {
+                return firstResponder
+            }
+        }
+
+        return nil
     }
 }
