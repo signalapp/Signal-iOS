@@ -597,6 +597,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 - (void)syncQueuedVerificationStates
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        if (!self.tsAccountManager.isRegisteredAndReady) {
+            OWSLogInfo(@"Skipping sync of verification states; not registered.");
+            return;
+        }
         TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
         if (thread == nil) {
             OWSFailDebug(@"Missing thread.");
