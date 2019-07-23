@@ -7,8 +7,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class HomeViewController;
+@class SDSKeyValueStore;
 
 @interface ProfileViewController : OWSViewController
+
++ (SDSKeyValueStore *)keyValueStore;
 
 - (instancetype)init NS_UNAVAILABLE;
 
