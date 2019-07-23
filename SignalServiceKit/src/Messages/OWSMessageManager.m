@@ -413,6 +413,9 @@ NS_ASSUME_NONNULL_BEGIN
             envelope.timestamp);
         return;
     }
+    
+    // Loki: Handle any friend request accepts if we need to
+    [self handleFriendRequestAcceptIfNeededWithEnvelope:envelope transaction:transaction];
 
     if (envelope.content != nil) {
         NSError *error;
@@ -1383,7 +1386,7 @@ NS_ASSUME_NONNULL_BEGIN
                 }
 
                 // Loki: Do this before the check below
-                [self handleFriendRequestIfNeededWithEnvelope:envelope message:incomingMessage thread:oldGroupThread transaction:transaction];
+                [self handleFriendRequestMessageIfNeededWithEnvelope:envelope message:incomingMessage thread:oldGroupThread transaction:transaction];
                 
                 if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
                     OWSLogWarn(@"ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu",
@@ -1458,7 +1461,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Do this before the check below
-        [self handleFriendRequestIfNeededWithEnvelope:envelope message:incomingMessage thread:thread transaction:transaction];
+        [self handleFriendRequestMessageIfNeededWithEnvelope:envelope message:incomingMessage thread:thread transaction:transaction];
         
         if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
             OWSLogWarn(@"ignoring empty incoming message from: %@ with timestamp: %lu",
@@ -1486,50 +1489,61 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)handleFriendRequestIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope message:(TSIncomingMessage *)message thread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
-        if (thread.hasCurrentUserSentFriendRequest) {
-            // This can happen if Alice sent Bob a friend request, Bob declined, but then Bob changed his
-            // mind and sent a friend request to Alice. In this case we want Alice to auto-accept the request
-            // and send a friend request accepted message back to Bob. We don't check that sending the
-            // friend request accepted message succeeded. Even if it doesn't, the thread's current friend
-            // request status will be set to LKThreadFriendRequestStatusFriends for Alice making it possible
-            // for Alice to send messages to Bob. When Bob receives a message, his thread's friend request status
-            // will then be set to LKThreadFriendRequestStatusFriends. If we do check for a successful send
-            // before updating Alice's thread's friend request status to LKThreadFriendRequestStatusFriends,
-            // we can end up in a deadlock where both users' threads' friend request statuses are
-            // LKThreadFriendRequestStatusRequestSent.
-            [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
-            TSOutgoingMessage *existingFriendRequestMessage = (TSOutgoingMessage *)[thread.lastInteraction as:TSOutgoingMessage.class];
-            if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
-                [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
-            }
-            // The two lines below are equivalent to calling [ThreadUtil enqueueAcceptFriendRequestMessageInThread:thread]
-            LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
-            [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
-        } else if (!thread.isContactFriend) {
-            // Checking that the sender of the message isn't already a friend is necessary because otherwise
-            // the following situation can occur: Alice and Bob are friends. Bob loses his database and his
-            // friend request status is reset to LKThreadFriendRequestStatusNone. Bob now sends Alice a friend
-            // request. Alice's thread's friend request status is reset to
-            // LKThreadFriendRequestStatusRequestReceived.
-            [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestReceived withTransaction:transaction];
-            message.friendRequestStatus = LKMessageFriendRequestStatusPending; // Don't save yet. This is done in finalizeIncomingMessage:thread:envelope:transaction.
-        }
-    } else if (!thread.isContactFriend) {
-        // If the thread's friend request status is not LKThreadFriendRequestStatusFriends, but we're receiving a message,
-        // it must be a friend request accepted message. Declining a friend request doesn't send a message.
+// The difference between this function and `handleFriendRequestAcceptIfNeededWithEnvelope:` is that this will setup the incoming message for display to the user
+// While `handleFriendRequestAcceptIfNeededWithEnvelope:` handles friend request accepting logic and doesn't need a message
+- (void)handleFriendRequestMessageIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope message:(TSIncomingMessage *)message thread:(TSThread *)thread transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    // Check if it's a friend request message
+    if (envelope.type != SSKProtoEnvelopeTypeFriendRequest) return;
+    
+    if (thread.hasCurrentUserSentFriendRequest) {
+        // This can happen if Alice sent Bob a friend request, Bob declined, but then Bob changed his
+        // mind and sent a friend request to Alice. In this case we want Alice to auto-accept the request
+        // and send a friend request accepted message back to Bob. We don't check that sending the
+        // friend request accepted message succeeded. Even if it doesn't, the thread's current friend
+        // request status will be set to LKThreadFriendRequestStatusFriends for Alice making it possible
+        // for Alice to send messages to Bob. When Bob receives a message, his thread's friend request status
+        // will then be set to LKThreadFriendRequestStatusFriends. If we do check for a successful send
+        // before updating Alice's thread's friend request status to LKThreadFriendRequestStatusFriends,
+        // we can end up in a deadlock where both users' threads' friend request statuses are
+        // LKThreadFriendRequestStatusRequestSent.
         [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
         TSOutgoingMessage *existingFriendRequestMessage = (TSOutgoingMessage *)[thread.lastInteraction as:TSOutgoingMessage.class];
         if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
             [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
         }
-        // Send our P2P details
-        LKAddressMessage *_Nullable onlineMessage = [LKP2PAPI onlineBroadcastMessageForThread:thread];
-        if (onlineMessage != nil) {
-            [self.messageSenderJobQueue addMessage:onlineMessage transaction:transaction];
-        }
+        // The two lines below are equivalent to calling [ThreadUtil enqueueAcceptFriendRequestMessageInThread:thread]
+        LKEphemeralMessage *emptyMessage = [[LKEphemeralMessage alloc] initInThread:thread];
+        [self.messageSenderJobQueue addMessage:emptyMessage transaction:transaction];
+    } else if (!thread.isContactFriend) {
+        // Checking that the sender of the message isn't already a friend is necessary because otherwise
+        // the following situation can occur: Alice and Bob are friends. Bob loses his database and his
+        // friend request status is reset to LKThreadFriendRequestStatusNone. Bob now sends Alice a friend
+        // request. Alice's thread's friend request status is reset to
+        // LKThreadFriendRequestStatusRequestReceived.
+        [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestReceived withTransaction:transaction];
+        message.friendRequestStatus = LKMessageFriendRequestStatusPending; // Don't save yet. This is done in finalizeIncomingMessage:thread:envelope:transaction.
+    }
+}
+
+- (void)handleFriendRequestAcceptIfNeededWithEnvelope:(SSKProtoEnvelope *)envelope transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    // If we get any other envelope type then we can assume that we had to use signal cipher decryption
+    // and that means we must have a session with the other person.
+    if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) return;
+    
+    // If we're already friends then there's no point in continuing
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    if (thread.isContactFriend) return;
+    
+    // Become happy friends and go on great adventures
+    [thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:transaction];
+    TSOutgoingMessage *existingFriendRequestMessage = (TSOutgoingMessage *)[thread.lastInteraction as:TSOutgoingMessage.class];
+    if (existingFriendRequestMessage != nil && existingFriendRequestMessage.isFriendRequest) {
+        [existingFriendRequestMessage saveFriendRequestStatus:LKMessageFriendRequestStatusAccepted withTransaction:transaction];
+    }
+    // Send our P2P details
+    LKAddressMessage *_Nullable onlineMessage = [LKP2PAPI onlineBroadcastMessageForThread:thread];
+    if (onlineMessage != nil) {
+        [self.messageSenderJobQueue addMessage:onlineMessage transaction:transaction];
     }
 }
 
