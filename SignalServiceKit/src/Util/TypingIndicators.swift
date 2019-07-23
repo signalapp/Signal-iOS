@@ -7,6 +7,9 @@ import Foundation
 @objc(OWSTypingIndicators)
 public protocol TypingIndicators: class {
     @objc
+    var keyValueStore: SDSKeyValueStore { get }
+
+    @objc
     func didStartTypingOutgoingInput(inThread thread: TSThread)
 
     @objc

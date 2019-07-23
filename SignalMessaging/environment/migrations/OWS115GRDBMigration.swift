@@ -202,8 +202,8 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "udManager.keyValueStore", keyStore: udManager.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "udManager.phoneNumberAccessStore", keyStore: udManager.phoneNumberAccessStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "udManager.uuidAccessStore", keyStore: udManager.uuidAccessStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.phoneNumberStore", keyStore: CallKitIdStore.phoneNumberStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.uuidStore", keyStore: CallKitIdStore.uuidStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1)
+            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.phoneNumber", keyStore: CallKitIdStore.phoneNumber(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.uuid", keyStore: CallKitIdStore.uuidStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
         ]
 
         for (label, keyStore) in OWS115GRDBMigration.otherKeyStores {

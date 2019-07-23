@@ -170,6 +170,13 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - Int
 
+    public func getOptionalInt(_ key: String, transaction: SDSAnyReadTransaction) -> Int? {
+        guard let number: NSNumber = read(key, transaction: transaction) else {
+            return nil
+        }
+        return number.intValue
+    }
+
     @objc
     public func getInt(_ key: String, transaction: SDSAnyReadTransaction) -> Int {
         guard let number: NSNumber = read(key, transaction: transaction) else {

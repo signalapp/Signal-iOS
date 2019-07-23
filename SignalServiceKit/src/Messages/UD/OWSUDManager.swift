@@ -64,6 +64,12 @@ public class OWSUDAccess: NSObject {
 }
 
 @objc public protocol OWSUDManager: class {
+    @objc
+    var keyValueStore: SDSKeyValueStore { get }
+    @objc
+    var phoneNumberAccessStore: SDSKeyValueStore { get }
+    @objc
+    var uuidAccessStore: SDSKeyValueStore { get }
 
     @objc func setup()
 

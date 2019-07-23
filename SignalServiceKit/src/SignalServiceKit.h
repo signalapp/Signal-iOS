@@ -4,6 +4,7 @@
 
 // Any Obj-C used by SSK Swift must be imported.
 #import <Reachability/Reachability.h>
+#import <SignalServiceKit/CallKitIdStore.h>
 #import <SignalServiceKit/ContactsManagerProtocol.h>
 #import <SignalServiceKit/ExperienceUpgrade.h>
 #import <SignalServiceKit/InstalledSticker.h>
