@@ -15,6 +15,7 @@ import SignalCoreKit
 public class SDSKeyValueStore: NSObject {
 
     // By default, all reads/writes use this collection.
+    @objc
     public let collection: String
 
     static let collectionColumn = SDSColumnMetadata(columnName: "collection", columnType: .unicodeString, isOptional: false)

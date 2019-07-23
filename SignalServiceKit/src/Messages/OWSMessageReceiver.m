@@ -466,7 +466,6 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 @interface OWSMessageReceiver ()
 
 @property (nonatomic, readonly) YAPDBMessageDecryptQueue *yapProcessingQueue;
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 
 @end
 
@@ -483,7 +482,6 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         return self;
     }
 
-    // For coherency we use the same dbConnection to persist and read the unprocessed envelopes
     OWSMessageDecryptJobFinder *finder = [OWSMessageDecryptJobFinder new];
     YAPDBMessageDecryptQueue *yapProcessingQueue = [[YAPDBMessageDecryptQueue alloc] initWithFinder:finder];
 
