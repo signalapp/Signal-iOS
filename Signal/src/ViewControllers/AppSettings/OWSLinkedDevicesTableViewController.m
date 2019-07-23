@@ -355,7 +355,6 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                       [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                                           [device anyRemoveWithTransaction:transaction];
                                       }];
-                                      [self updateDeviceList];
                                   }];
     }
 }
