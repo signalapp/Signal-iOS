@@ -4,6 +4,7 @@
 
 #import "AppSetup.h"
 #import "Environment.h"
+#import "Theme.h"
 #import "VersionMigrations.h"
 #import <AxolotlKit/SessionCipher.h>
 #import <SignalMessaging/OWSDatabaseMigration.h>
@@ -157,6 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
         [OWS115GRDBMigration addWithKeyStore:profileManager.whitelistedGroupsStore
                                        label:@"OWSProfileManager.whitelistedGroupsStore"];
         [OWS115GRDBMigration addWithKeyStore:OWSSounds.keyValueStore label:@"OWSSounds"];
+        [OWS115GRDBMigration addWithKeyStore:Theme.keyValueStore label:@"Theme"];
 
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             dispatch_async(dispatch_get_main_queue(), ^{

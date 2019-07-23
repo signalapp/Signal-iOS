@@ -8,13 +8,11 @@
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 NSString *const ThemeDidChangeNotification = @"ThemeDidChangeNotification";
 
-NSString *const ThemeCollection = @"ThemeCollection";
 NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 
@@ -25,6 +23,22 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 @end
 
 @implementation Theme
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
++ (SDSKeyValueStore *)keyValueStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"ThemeCollection"];
+}
+
+#pragma mark -
 
 + (instancetype)sharedInstance
 {
@@ -52,9 +66,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     }
 
     if (self.isDarkThemeEnabledNumber == nil) {
-        BOOL isDarkThemeEnabled = [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:ThemeKeyThemeEnabled
-                                                                                  inCollection:ThemeCollection
-                                                                                  defaultValue:NO];
+        __block BOOL isDarkThemeEnabled;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            isDarkThemeEnabled =
+                [Theme.keyValueStore getBool:ThemeKeyThemeEnabled defaultValue:NO transaction:transaction];
+        }];
         self.isDarkThemeEnabledNumber = @(isDarkThemeEnabled);
     }
 
@@ -71,9 +87,9 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     OWSAssertIsOnMainThread();
 
     self.isDarkThemeEnabledNumber = @(value);
-    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection setBool:value
-                                                            forKey:ThemeKeyThemeEnabled
-                                                      inCollection:ThemeCollection];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [Theme.keyValueStore setBool:value key:ThemeKeyThemeEnabled transaction:transaction];
+    }];
 
     [UIUtil setupSignalAppearence];
 

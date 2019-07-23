@@ -9,7 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const ThemeDidChangeNotification;
 
+@class SDSKeyValueStore;
+
 @interface Theme : NSObject
+
++ (SDSKeyValueStore *)keyValueStore;
 
 - (instancetype)init NS_UNAVAILABLE;
 
