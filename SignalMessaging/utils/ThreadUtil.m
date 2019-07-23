@@ -79,11 +79,6 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return SSKEnvironment.shared.messageSenderJobQueue;
 }
 
-+ (YapDatabaseConnection *)dbConnection
-{
-    return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
-}
-
 + (SDSDatabaseStorage *)databaseStorage
 {
     return SSKEnvironment.shared.databaseStorage;
