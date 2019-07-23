@@ -101,6 +101,10 @@ extension OWS115GRDBMigration {
         return SSKEnvironment.shared.udManager
     }
 
+    var signalService: OWSSignalService {
+        return OWSSignalService.sharedInstance()
+    }
+
     // MARK: -
 
     func run() throws {
@@ -204,6 +208,7 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "udManager.uuidAccessStore", keyStore: udManager.uuidAccessStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.phoneNumber", keyStore: CallKitIdStore.phoneNumber(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.uuid", keyStore: CallKitIdStore.uuidStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "signalService", keyStore: signalService.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1)
         ]
 
         for (label, keyStore) in OWS115GRDBMigration.otherKeyStores {
