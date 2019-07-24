@@ -1,0 +1,65 @@
+//
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//
+
+// iOS - since we use a modern proto-compiler, we must specify
+// the legacy proto format.
+syntax = "proto2";
+
+// iOS - package name determines class prefix
+package StorageServiceProtos;
+
+message Contact {
+  // @required
+  optional bytes key   = 1;  // Randomly generated 16-byte value
+  // @required
+  optional bytes value = 2;  // Encrypted serialized bytes
+}
+
+message Contacts {
+  repeated Contact contacts = 1; // Corresponds to the requested
+                                 // contact keys that were found
+}
+
+message ContactsManifest {
+  // @required
+  optional uint64 version = 1; // Monotonically increasing value
+  // @required
+  optional bytes  value   = 2; // Encrypted serialized bytes
+}
+
+message ReadOperation {
+  repeated bytes readKey = 1;
+}
+
+message WriteOperation {
+  optional ContactsManifest manifest      = 1;
+  repeated Contact          insertContact = 2;
+  repeated bytes            deleteKey     = 3;
+}
+
+// Placeholder record protos, these are serialized, encrypted, and
+// set in the Contact and ContactsManifest value fields defined above
+//
+// We need to decide what contact data we'd actually like to sync
+message ContactRecord {
+  // @required
+  optional bytes  key               = 1;
+  optional string serviceUuid       = 2;
+  optional string serviceE164       = 3;
+  optional string profileName       = 4;
+  optional bytes  profileAvatar     = 5;
+  optional bytes  profileKey        = 6;
+  optional string conversationColor = 7;
+  optional uint32 conversationTimer = 8;
+  optional string notificationTone  = 9;
+  optional bytes  identityKey       = 10;
+  optional bool   verified          = 11;
+  optional bool   blocked           = 12;
+}
+
+message ManifestRecord {
+  // @required
+  optional uint64 version  = 1;
+  repeated bytes  keys     = 2;
+}

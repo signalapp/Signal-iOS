@@ -20,6 +20,7 @@ public protocol SignalServiceClient: SignalServiceClientObjC {
     func requestUDSenderCertificate() -> Promise<Data>
     func updateAccountAttributes() -> Promise<Void>
     func getAccountUuid() -> Promise<UUID>
+    func requestStorageAuth() -> Promise<(username: String, password: String)>
 }
 
 /// Based on libsignal-service-java's PushServiceSocket class
@@ -122,6 +123,20 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
             }
 
             return uuid
+        }
+    }
+
+    public func requestStorageAuth() -> Promise<(username: String, password: String)> {
+        let request = OWSRequestFactory.storageAuthRequest()
+        return networkManager.makePromise(request: request).map { _, responseObject in
+            guard let parser = ParamParser(responseObject: responseObject) else {
+                throw OWSErrorMakeUnableToProcessServerResponseError()
+            }
+
+            let username: String = try parser.required(key: "username")
+            let password: String = try parser.required(key: "password")
+
+            return (username: username, password: password)
         }
     }
 

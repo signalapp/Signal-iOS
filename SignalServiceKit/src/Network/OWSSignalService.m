@@ -284,6 +284,27 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     return sessionManager;
 }
 
+#pragma mark - Storage Service
+
+- (AFHTTPSessionManager *)storageServiceSessionManager
+{
+    NSURL *baseURL = [[NSURL alloc] initWithString:storageServiceURL];
+    OWSAssertDebug(baseURL);
+
+    NSURLSessionConfiguration *sessionConf = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithBaseURL:baseURL
+                                                                    sessionConfiguration:sessionConf];
+
+    sessionManager.securityPolicy = [OWSHTTPSecurityPolicy sharedPolicy];
+    sessionManager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    sessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+
+    // Disable default cookie handling for all requests.
+    sessionManager.requestSerializer.HTTPShouldHandleCookies = NO;
+
+    return sessionManager;
+}
+
 #pragma mark - Events
 
 - (void)registrationStateDidChange:(NSNotification *)notification
