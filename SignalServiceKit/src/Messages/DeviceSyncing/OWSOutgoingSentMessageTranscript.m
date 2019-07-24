@@ -40,14 +40,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingSentMessageTranscript
 
-- (instancetype)initWithThread:(TSThread *)thread
-               outgoingMessage:(TSOutgoingMessage *)message
-             isRecipientUpdate:(BOOL)isRecipientUpdate
+- (instancetype)initWithLocalThread:(TSThread *)localThread
+                      messageThread:(TSThread *)messageThread
+                    outgoingMessage:(TSOutgoingMessage *)message
+                  isRecipientUpdate:(BOOL)isRecipientUpdate
 {
-    OWSAssertDebug(message);
+    OWSAssertDebug(message != nil);
+    OWSAssertDebug(localThread != nil);
+    OWSAssertDebug(messageThread != nil);
 
     // The sync message's timestamp must match the original outgoing message's timestamp.
-    self = [super initWithTimestamp:message.timestamp thread:thread];
+    self = [super initWithTimestamp:message.timestamp thread:localThread];
 
     if (!self) {
         return self;
@@ -56,7 +59,6 @@ NS_ASSUME_NONNULL_BEGIN
     _message = message;
     _isRecipientUpdate = isRecipientUpdate;
 
-    TSThread *_Nullable messageThread = message.threadWithSneakyTransaction;
     if ([messageThread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)messageThread;
         _sentRecipientAddress = contactThread.contactAddress;
