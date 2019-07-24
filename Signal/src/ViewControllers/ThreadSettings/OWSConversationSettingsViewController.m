@@ -54,7 +54,6 @@ const CGFloat kIconViewLength = 24;
 
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-@property (nullable, nonatomic) MediaGallery *mediaGallery;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) UIImageView *avatarView;
 @property (nonatomic, readonly) UILabel *disappearingMessagesDurationLabel;
@@ -1472,13 +1471,11 @@ const CGFloat kIconViewLength = 24;
 {
     OWSLogDebug(@"");
 
-    MediaGallery *mediaGallery = [[MediaGallery alloc] initWithThread:self.thread
-                                                              options:MediaGalleryOptionSliderEnabled];
+    MediaGalleryNavigationController *mediaGallery =
+        [MediaGalleryNavigationController showingTileViewWithThread:self.thread
+                                                            options:MediaGalleryOptionSliderEnabled];
 
-    self.mediaGallery = mediaGallery;
-
-    OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
-    [mediaGallery pushTileViewFromNavController:(OWSNavigationController *)self.navigationController];
+    [self presentViewController:mediaGallery animated:YES completion:nil];
 }
 
 - (void)tappedConversationSearch

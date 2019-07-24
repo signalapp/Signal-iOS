@@ -697,17 +697,20 @@ class MessageDetailViewController: OWSViewController {
 extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
 
     func didTapImageViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let mediaGallery = MediaGallery(thread: self.thread)
+        let galleryVC = MediaGalleryNavigationController.showingDetailView(thread: thread,
+                                                                           mediaAttachment: attachmentStream,
+                                                                           options: [])
 
-        mediaGallery.addDataSourceDelegate(self)
-        mediaGallery.presentDetailView(fromViewController: self, mediaAttachment: attachmentStream, replacingView: imageView)
+        galleryVC.mediaGallery.addDataSourceDelegate(self)
+        present(galleryVC, animated: true)
     }
 
     func didTapVideoViewItem(_ viewItem: ConversationViewItem, attachmentStream: TSAttachmentStream, imageView: UIView) {
-        let mediaGallery = MediaGallery(thread: self.thread)
-
-        mediaGallery.addDataSourceDelegate(self)
-        mediaGallery.presentDetailView(fromViewController: self, mediaAttachment: attachmentStream, replacingView: imageView)
+        let galleryVC = MediaGalleryNavigationController.showingDetailView(thread: thread,
+                                                                           mediaAttachment: attachmentStream,
+                                                                           options: [])
+        galleryVC.mediaGallery.addDataSourceDelegate(self)
+        present(galleryVC, animated: true)
     }
 
     func didTapContactShare(_ viewItem: ConversationViewItem) {
@@ -865,5 +868,67 @@ extension MessageDetailViewController: ContactShareViewHelperDelegate {
 extension MessageDetailViewController: LongTextViewDelegate {
     func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController) {
         self.delegate?.detailViewMessageWasDeleted(self)
+    }
+}
+
+extension MessageDetailViewController: MediaPresentationContextProvider {
+    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        guard let messageBubbleView = self.messageView as? OWSMessageBubbleView else {
+            owsFailDebug("messageBubbleView was unexpectedly nil")
+            return nil
+        }
+
+        guard let mediaView = messageBubbleView.albumItemView(forAttachment: galleryItem.attachmentStream) else {
+            owsFailDebug("itemView was unexpectedly nil")
+            return nil
+        }
+
+        guard let mediaSuperview = mediaView.superview else {
+            owsFailDebug("mediaSuperview was unexpectedly nil")
+            return nil
+        }
+
+        let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
+
+        // TODO better corner rounding.
+        return MediaPresentationContext(mediaView: mediaView, presentationFrame: presentationFrame, cornerRadius: kOWSMessageCellCornerRadius_Small * 2)
+    }
+
+    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        return nil
+    }
+
+    func mediaWillDismiss(toContext: MediaPresentationContext) {
+        guard let messageBubbleView = toContext.messageBubbleView else { return }
+
+        // To avoid flicker when transition view is animated over the message bubble,
+        // we initially hide the overlaying elements and fade them in.
+        messageBubbleView.footerView.alpha = 0
+        messageBubbleView.bodyMediaGradientView?.alpha = 0.0
+    }
+
+    func mediaDidDismiss(toContext: MediaPresentationContext) {
+        guard let messageBubbleView = toContext.messageBubbleView else { return }
+
+        // To avoid flicker when transition view is animated over the message bubble,
+        // we initially hide the overlaying elements and fade them in.
+        let duration: TimeInterval = kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.2
+        UIView.animate(
+            withDuration: duration,
+            animations: {
+                messageBubbleView.footerView.alpha = 1.0
+                messageBubbleView.bodyMediaGradientView?.alpha = 1.0
+        })
+    }
+}
+
+private extension MediaPresentationContext {
+    var messageBubbleView: OWSMessageBubbleView? {
+        guard let messageBubbleView = mediaView.firstAncestor(ofType: OWSMessageBubbleView.self) else {
+            owsFailDebug("unexpected mediaView: \(mediaView)")
+            return nil
+        }
+
+        return messageBubbleView
     }
 }

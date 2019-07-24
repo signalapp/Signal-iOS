@@ -119,6 +119,26 @@ public class OWSNavigationBar: UINavigationBar {
         }
     }
 
+    public func snapshotViewIncludingBackground(afterScreenUpdates: Bool) -> UIView? {
+        let originalFrame = self.frame
+        let originalBounds = self.bounds
+        self.frame = blurEffectView!.frame
+        self.bounds = self.frame
+        defer {
+            self.frame = originalFrame
+            self.bounds = originalBounds
+        }
+
+        guard let barSnapshot = self.snapshotView(afterScreenUpdates: afterScreenUpdates) else {
+            owsFailDebug("barSnapshot was unexpectedly nil")
+            return nil
+        }
+
+        barSnapshot.frame.origin = .zero
+
+        return barSnapshot
+    }
+
     @objc
     public func themeDidChange() {
         Logger.debug("")

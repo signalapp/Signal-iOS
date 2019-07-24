@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) LinkPreviewView *linkPreviewView;
 
+@property (nonatomic, nullable) OWSLayerView *bodyMediaGradientView;
+
 // Should lazy-load expensive view contents (images, etc.).
 // Should do nothing if view is already loaded.
 @property (nonatomic, nullable) dispatch_block_t loadCellContentBlock;
@@ -398,9 +400,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      layerFrame.origin.y = layerView.height - layerFrame.size.height;
                                      gradientLayer.frame = layerFrame;
                                  }];
+        self.bodyMediaGradientView = gradientView;
         [gradientView.layer addSublayer:gradientLayer];
         [bodyMediaView addSubview:gradientView];
-        [self.viewConstraints addObjectsFromArray:[gradientView ows_autoPinToSuperviewEdges]];
+        [self.viewConstraints addObjectsFromArray:[gradientView autoPinEdgesToSuperviewEdges]];
 
         [self.footerView configureWithConversationViewItem:self.viewItem
                                          conversationStyle:self.conversationStyle
@@ -841,7 +844,7 @@ NS_ASSUME_NONNULL_BEGIN
                              opacity:0.15f];
         [itemView addSubview:innerShadowView];
         [self.bubbleView addPartnerView:innerShadowView];
-        [self.viewConstraints addObjectsFromArray:[innerShadowView ows_autoPinToSuperviewEdges]];
+        [self.viewConstraints addObjectsFromArray:[innerShadowView autoPinEdgesToSuperviewEdges]];
     }
 
     return albumView;
@@ -1391,6 +1394,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [self.bodyMediaView removeFromSuperview];
     self.bodyMediaView = nil;
+    self.bodyMediaGradientView = nil;
 
     [self.quotedMessageView removeFromSuperview];
     self.quotedMessageView = nil;

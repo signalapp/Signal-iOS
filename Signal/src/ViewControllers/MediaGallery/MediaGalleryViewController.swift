@@ -213,6 +213,11 @@ public struct GalleryDate: Hashable, Comparable, Equatable {
     }
 }
 
+protocol MediaPageViewDelegate: class {
+    func mediaPageViewControllerDidTapAllMedia(_ mediaPageViewController: MediaPageViewController)
+    func mediaPageViewControllerRequestedDismiss(_ mediaPageViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?)
+}
+
 protocol MediaGalleryDataSource: class {
     var hasFetchedOldest: Bool { get }
     var hasFetchedMostRecent: Bool { get }
@@ -231,9 +236,6 @@ protocol MediaGalleryDataSource: class {
     func galleryItem(before currentItem: MediaGalleryItem) -> MediaGalleryItem?
     func galleryItem(after currentItem: MediaGalleryItem) -> MediaGalleryItem?
 
-    func showAllMedia(focusedItem: MediaGalleryItem)
-    func dismissMediaDetailViewController(_ mediaDetailViewController: MediaPageViewController, animated isAnimated: Bool, completion: (() -> Void)?)
-
     func delete(items: [MediaGalleryItem], initiatedBy: AnyObject)
 }
 
@@ -242,54 +244,27 @@ protocol MediaGalleryDataSourceDelegate: class {
     func mediaGalleryDataSource(_ mediaGalleryDataSource: MediaGalleryDataSource, deletedSections: IndexSet, deletedItems: [IndexPath])
 }
 
-class MediaGalleryNavigationController: OWSNavigationController {
-
-    var presentationView: UIImageView!
-    var retainUntilDismissed: MediaGallery?
+@objc
+public class MediaGalleryNavigationController: OWSNavigationController {
 
     // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
     // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
     // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
     override public var canBecomeFirstResponder: Bool {
-        Logger.debug("")
         return true
-    }
-
-    override public func becomeFirstResponder() -> Bool {
-        Logger.debug("")
-        return super.becomeFirstResponder()
-    }
-
-    override public func resignFirstResponder() -> Bool {
-        Logger.debug("")
-        return super.resignFirstResponder()
     }
 
     // MARK: View Lifecycle
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
+    override public var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
 
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
-        // UIModalPresentationCustom retains the current view context behind our VC, allowing us to manually
-        // animate in our view, over the existing context, similar to a cross disolve, but allowing us to have
-        // more fine grained control
-        self.modalPresentationStyle = .custom
-
-        // The presentationView is only used during present/dismiss animations.
-        // It's a static image of the media content.
-        let presentationView = UIImageView()
-        self.presentationView = presentationView
-        self.view.insertSubview(presentationView, at: 0)
-        presentationView.isHidden = true
-        presentationView.clipsToBounds = true
-        presentationView.layer.allowsEdgeAntialiasing = true
-        presentationView.layer.minificationFilter = .trilinear
-        presentationView.layer.magnificationFilter = .trilinear
-        presentationView.contentMode = .scaleAspectFit
+        view.backgroundColor = Theme.darkThemeBackgroundColor
+        self.modalPresentationStyle = .overFullScreen
 
         guard let navigationBar = self.navigationBar as? OWSNavigationBar else {
             owsFailDebug("navigationBar had unexpected class: \(self.navigationBar)")
@@ -299,39 +274,366 @@ class MediaGalleryNavigationController: OWSNavigationController {
         navigationBar.overrideTheme(type: .alwaysDark)
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // If the user's device is already rotated, try to respect that by rotating to landscape now
-        UIViewController.attemptRotationToDeviceOrientation()
-    }
-
     // MARK: Orientation
 
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         return .allButUpsideDown
     }
-}
 
-@objc
-class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDelegate {
+    // MARK: 
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    lazy var mediaGallery = MediaGallery(thread: self.thread)
+
+    var thread: TSThread!
+    var options: MediaGalleryOption = []
+    private func configure(thread: TSThread, options: MediaGalleryOption) {
+        self.delegate = self
+        self.transitioningDelegate = self
+        self.thread = thread
+        self.options = options
+    }
+
+    lazy var tileViewController: MediaTileViewController = {
+        let shouldShowDismissButton: Bool
+        if case .some(.tileFirst) = presentationMode {
+            shouldShowDismissButton = true
+        } else {
+            shouldShowDismissButton = false
+        }
+        let vc = MediaTileViewController(mediaGalleryDataSource: mediaGallery, shouldShowDismissButton: shouldShowDismissButton)
+        vc.delegate = self
+
+        mediaGallery.addDataSourceDelegate(vc)
+
+        return vc
+    }()
+
+    private var presentationMode: PresentationMode?
+
+    private enum PresentationMode {
+        case detailFirst, tileFirst
+    }
 
     @objc
-    weak public var navigationController: MediaGalleryNavigationController!
+    class func showingDetailView(thread: TSThread, mediaAttachment: TSAttachment, options: MediaGalleryOption) -> MediaGalleryNavigationController {
+        let vc = MediaGalleryNavigationController()
+        vc.presentationMode = .detailFirst
+        vc.configure(thread: thread, options: options)
+
+        let galleryItem: MediaGalleryItem? = vc.databaseStorage.uiReadReturningResult { transaction in
+            return vc.mediaGallery.buildGalleryItem(attachment: mediaAttachment, transaction: transaction)
+        }
+
+        guard let initialDetailItem = galleryItem else {
+            owsFailDebug("unexpectedly failed to build initialDetailItem.")
+            return vc
+        }
+
+        let pageViewController = vc.buildPageViewController(focusedItem: initialDetailItem)
+        vc.pushViewController(pageViewController, animated: false)
+
+        return vc
+    }
+
+    @objc
+    public class func showingTileView(thread: TSThread, options: MediaGalleryOption) -> MediaGalleryNavigationController {
+        let vc = MediaGalleryNavigationController()
+        vc.presentationMode = .tileFirst
+        vc.configure(thread: thread, options: options)
+
+        let mostRecentItem = vc.mediaGallery.ensureLoadedForMostRecentTileView()
+        vc.tileViewController.focusedItem = mostRecentItem
+
+        vc.pushViewController(vc.tileViewController, animated: false)
+
+        return vc
+    }
+
+    func buildPageViewController(focusedItem: MediaGalleryItem) -> MediaPageViewController {
+        mediaGallery.ensureLoadedForDetailView(focusedItem: focusedItem)
+
+        let pageViewController = MediaPageViewController(initialItem: focusedItem,
+                                                         mediaGalleryDataSource: mediaGallery,
+                                                         mediaPageViewDelegate: self,
+                                                         options: options)
+
+        mediaGallery.addDataSourceDelegate(pageViewController)
+        pageViewController.transitioningDelegate = self
+
+        return pageViewController
+    }
+}
+
+extension MediaGalleryNavigationController: MediaPageViewDelegate {
+
+    func mediaPageViewControllerDidTapAllMedia(_ mediaPageViewController: MediaPageViewController) {
+        let noTitleItem = UIBarButtonItem(title: " ", style: .plain, target: nil, action: nil)
+        mediaPageViewController.navigationItem.backBarButtonItem = noTitleItem
+
+        guard let focusedItem = mediaPageViewController.currentItem else {
+            owsFailDebug("focusedItem was unexpectedly nil")
+            return
+        }
+
+        mediaGallery.ensureGalleryItemsLoaded(.around, item: focusedItem, amount: 100)
+        setViewControllers([mediaPageViewController, tileViewController], animated: true)
+    }
+
+    func mediaPageViewControllerRequestedDismiss(_ mediaPageViewController: MediaPageViewController,
+                                                   animated isAnimated: Bool,
+                                                   completion: (() -> Void)?) {
+
+        guard let presentationMode = presentationMode else {
+            owsFailDebug("presentationMode was unexpectedly nil")
+            dismiss(animated: isAnimated, completion: completion)
+            return
+        }
+
+        switch presentationMode {
+        case .detailFirst:
+            dismiss(animated: isAnimated, completion: completion)
+        case .tileFirst:
+            setViewControllers([tileViewController, mediaPageViewController], animated: false)
+            popViewController(animated: true, completion: completion)
+        }
+    }
+}
+
+extension MediaGalleryNavigationController: MediaTileViewControllerDelegate {
+    public func mediaTileViewController(_ tileViewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem) {
+
+        let pageViewController = buildPageViewController(focusedItem: mediaGalleryItem)
+        self.setViewControllers([pageViewController, tileViewController], animated: false)
+
+        popViewController(animated: true)
+    }
+
+    public func mediaTileViewControllerRequestedDismiss(_ tileViewController: MediaTileViewController,
+                                                        animated isAnimated: Bool,
+                                                        completion: (() -> Void)?) {
+        assert(presentationMode == .tileFirst)
+        assert(viewControllers.count == 1)
+        dismiss(animated: isAnimated, completion: completion)
+    }
+}
+
+extension MediaGalleryNavigationController: UIViewControllerTransitioningDelegate {
+    public func animationController(forPresented presented: UIViewController,
+                                    presenting: UIViewController,
+                                    source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+
+        guard self == presented else {
+            owsFailDebug("unexpected presented: \(presented)")
+            return nil
+        }
+
+        guard let presentationMode = presentationMode else {
+            owsFailDebug("presentationMode was unexpectedly nil")
+            return nil
+        }
+
+        switch presentationMode {
+        case .detailFirst:
+            guard let detailVC = viewControllers.first as? MediaPageViewController else {
+                owsFailDebug("unexpected viewControllers: \([viewControllers])")
+                return nil
+            }
+
+            guard let currentItem = detailVC.currentItem else {
+                owsFailDebug("currentItem was unexpectedly nil")
+                return nil
+            }
+
+            return MediaZoomAnimationController(galleryItem: currentItem)
+        case .tileFirst:
+            // use system default modal presentation
+            return nil
+        }
+    }
+
+    public func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard self == dismissed else {
+            owsFailDebug("unexpected presented: \(dismissed)")
+            return nil
+        }
+
+        guard let presentationMode = presentationMode else {
+            owsFailDebug("presentationMode was unexpectedly nil")
+            return nil
+        }
+
+        switch presentationMode {
+        case .detailFirst:
+            guard let detailVC = viewControllers.first as? MediaPageViewController else {
+                owsFailDebug("unexpected viewControllers: \([viewControllers])")
+                return nil
+            }
+
+            guard let currentItem = detailVC.currentItem else {
+                owsFailDebug("currentItem was unexpectedly nil")
+                return nil
+            }
+
+            let animationController = MediaDismissAnimationController(galleryItem: currentItem,
+                                                                      interactionController: detailVC.mediaInteractiveDismiss)
+            guard let mediaInteractiveDismiss = detailVC.mediaInteractiveDismiss else {
+                owsFailDebug("mediaInteractiveDismiss was unexpectedly nil")
+                return nil
+            }
+            mediaInteractiveDismiss.interactiveDismissDelegate = animationController
+
+            return animationController
+        case .tileFirst:
+            // use system default modal presentation
+            return nil
+        }
+    }
+
+    public func interactionControllerForDismissal(using animator: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        guard let animator = animator as? MediaDismissAnimationController,
+            let interactionController = animator.interactionController,
+            interactionController.interactionInProgress
+            else {
+                return nil
+        }
+        return interactionController
+    }
+}
+
+extension MediaGalleryNavigationController: UINavigationControllerDelegate {
+    public func navigationController(_ navigationController: UINavigationController,
+                                     animationControllerFor operation: UINavigationController.Operation,
+                                     from fromVC: UIViewController,
+                                     to toVC: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        switch toVC {
+        case let mediaPageViewController as MediaPageViewController:
+            switch operation {
+            case .none:
+                return nil
+            case .push, .pop:
+                guard let galleryItem = mediaPageViewController.currentItem else {
+                    owsFailDebug("galleryItem was unexpectedly nil")
+                    return nil
+                }
+                return MediaZoomAnimationController(galleryItem: galleryItem)
+            @unknown default:
+                owsFailDebug("unexpected operation: \(operation)")
+                return nil
+            }
+        case is MediaTileViewController:
+            guard let mediaPageViewController = fromVC as? MediaPageViewController else {
+                owsFailDebug("unexpected fromVC: \(fromVC)")
+                return nil
+            }
+
+            switch operation {
+            case .none:
+                owsFailDebug("unexpected operation: \(operation)")
+                return nil
+            case .push, .pop:
+                guard let currentItem = mediaPageViewController.currentItem else {
+                    owsFailDebug("galleryItem was unexpectedly nil")
+                    return nil
+                }
+                let animationController = MediaDismissAnimationController(galleryItem: currentItem,
+                                                                          interactionController: mediaPageViewController.mediaInteractiveDismiss)
+                guard let mediaInteractiveDismiss = mediaPageViewController.mediaInteractiveDismiss else {
+                    owsFailDebug("mediaInteractiveDismiss was unexpectedly nil")
+                    return nil
+                }
+                mediaInteractiveDismiss.interactiveDismissDelegate = animationController
+
+                return animationController
+            @unknown default:
+                owsFailDebug("unknown operation: \(operation)")
+                return nil
+            }
+        default:
+            owsFailDebug("unexpected toVC: \(toVC)")
+            return nil
+        }
+    }
+
+    public func navigationController(_ navigationController: UINavigationController,
+                                     interactionControllerFor animationController: UIViewControllerAnimatedTransitioning) -> UIViewControllerInteractiveTransitioning? {
+        guard let animationController = animationController as? MediaDismissAnimationController,
+            let interactionController = animationController.interactionController,
+            interactionController.interactionInProgress else {
+            return nil
+        }
+        return interactionController
+    }
+}
+
+extension MediaGalleryNavigationController: MediaPresentationContextProvider {
+    func mediaPresentationContext(galleryItem: MediaGalleryItem, in coordinateSpace: UICoordinateSpace) -> MediaPresentationContext? {
+        return proxy?.mediaPresentationContext(galleryItem: galleryItem, in: coordinateSpace)
+    }
+
+    func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {
+        guard let proxy = proxy else {
+            return nil
+        }
+        view.layoutIfNeeded()
+
+        guard let navigationBar = self.navigationBar as? OWSNavigationBar else {
+            owsFailDebug("unexpected navigatinoBar: \(self.navigationBar)")
+            return nil
+        }
+
+        guard let navbarSnapshot = navigationBar.snapshotViewIncludingBackground(afterScreenUpdates: true) else {
+            owsFailDebug("navbarSnapshot was unexpectedly nil")
+            return nil
+        }
+
+        guard let (proxySnapshot, proxySnapshotFrame) = proxy.snapshotOverlayView(in: self.view) else {
+            return nil
+        }
+
+        let container = UIView()
+        container.frame = view.frame
+        container.addSubview(navbarSnapshot)
+
+        container.addSubview(proxySnapshot)
+        proxySnapshot.frame = proxySnapshotFrame
+
+        let viewFrame = self.view.convert(view.bounds, to: coordinateSpace)
+        let presentationFrame = viewFrame
+        return (container, presentationFrame)
+    }
+
+    private var proxy: MediaPresentationContextProvider? {
+        guard let topViewController = topViewController else {
+            owsFailDebug("topVC was unexpectedly nil")
+            return nil
+        }
+
+        switch topViewController {
+        case let detailView as MediaPageViewController:
+            return detailView
+        default:
+            owsFailDebug("unexpected topViewController: \(topViewController)")
+            return nil
+        }
+    }
+}
+
+// TODO - move MediaGallery to a separate file
+
+class MediaGallery: MediaGalleryDataSource {
 
     var deletedAttachments: Set<TSAttachment> = Set()
     var deletedGalleryItems: Set<MediaGalleryItem> = Set()
-
-    private var pageViewController: MediaPageViewController?
 
     private var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
 
     private let mediaGalleryFinder: AnyMediaGalleryFinder
-
-    private var initialDetailItem: MediaGalleryItem?
-    private let thread: TSThread
-    private let options: MediaGalleryOption
 
     // we start with a small range size for quick loading.
     private let fetchRangeSize: UInt = 10
@@ -341,13 +643,8 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     }
 
     @objc
-    init(thread: TSThread, options: MediaGalleryOption = []) {
-        self.thread = thread
-
-        self.options = options
+    init(thread: TSThread) {
         self.mediaGalleryFinder = AnyMediaGalleryFinder(thread: thread)
-        super.init()
-
         setupDatabaseObservation()
     }
 
@@ -366,368 +663,6 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         }
     }
 
-    // MARK: Present/Dismiss
-
-    private var currentItem: MediaGalleryItem {
-        return self.pageViewController!.currentItem
-    }
-
-    private var replacingView: UIView?
-    private var presentationViewConstraints: [NSLayoutConstraint] = []
-
-    // TODO rename to replacingOriginRect
-    private var originRect: CGRect?
-
-    @objc
-    public func presentDetailView(fromViewController: UIViewController, mediaAttachment: TSAttachment, replacingView: UIView) {
-        let galleryItem: MediaGalleryItem? = databaseStorage.uiReadReturningResult { transaction in
-            return self.buildGalleryItem(attachment: mediaAttachment, transaction: transaction)
-        }
-
-        guard let initialDetailItem = galleryItem else {
-            owsFailDebug("unexpectedly failed to build initialDetailItem.")
-            return
-        }
-
-        presentDetailView(fromViewController: fromViewController, initialDetailItem: initialDetailItem, replacingView: replacingView)
-    }
-
-    public func presentDetailView(fromViewController: UIViewController, initialDetailItem: MediaGalleryItem, replacingView: UIView) {
-        // For a speedy load, we only fetch a few items on either side of
-        // the initial message
-        ensureGalleryItemsLoaded(.around, item: initialDetailItem, amount: 10)
-
-        // We lazily load media into the gallery, but with large albums, we want to be sure
-        // we load all the media required to render the album's media rail.
-        ensureAlbumEntirelyLoaded(galleryItem: initialDetailItem)
-
-        self.initialDetailItem = initialDetailItem
-
-        let pageViewController = MediaPageViewController(initialItem: initialDetailItem, mediaGalleryDataSource: self, options: self.options)
-        self.addDataSourceDelegate(pageViewController)
-
-        self.pageViewController = pageViewController
-
-        let navController = MediaGalleryNavigationController()
-        self.navigationController = navController
-        navController.retainUntilDismissed = self
-
-        navigationController.setViewControllers([pageViewController], animated: false)
-
-        self.replacingView = replacingView
-
-        let convertedRect: CGRect = replacingView.convert(replacingView.bounds, to: UIApplication.shared.keyWindow)
-        self.originRect = convertedRect
-
-        // loadView hasn't necessarily been called yet.
-        navigationController.loadViewIfNeeded()
-
-        navigationController.presentationView.image = initialDetailItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
-            guard let strongSelf = self else {
-                return
-            }
-            strongSelf.navigationController.presentationView.image = image
-            }, failure: {
-                Logger.warn("Could not load presentation image.")
-        })
-
-        self.applyInitialMediaViewConstraints()
-
-        // Restore presentationView.alpha in case a previous dismiss left us in a bad state.
-        navigationController.setNavigationBarHidden(false, animated: false)
-        navigationController.presentationView.alpha = 1
-
-        // We want to animate the tapped media from it's position in the previous VC
-        // to it's resting place in the center of this view controller.
-        //
-        // Rather than animating the actual media view in place, we animate the presentationView, which is a static
-        // image of the media content. Animating the actual media view is problematic for a couple reasons:
-        // 1. The media view ultimately lives in a zoomable scrollView. Getting both original positioning and the final positioning
-        //    correct, involves manipulating the zoomScale and position simultaneously, which results in non-linear movement,
-        //    especially noticeable on high resolution images.
-        // 2. For Video views, the AVPlayerLayer content does not scale with the presentation animation. So you instead get a full scale
-        //    video, wherein only the cropping is animated.
-        // Using a simple image view allows us to address both these problems relatively easily.
-        navigationController.view.alpha = 0.0
-
-        guard let detailView = pageViewController.view else {
-            owsFailDebug("detailView was unexpectedly nil")
-            return
-        }
-
-        // At this point our media view should be overlayed perfectly
-        // by our presentationView. Swapping them out should be imperceptible.
-        navigationController.presentationView.isHidden = false
-        // We don't hide the pageViewController entirely - e.g. we want the toolbars to fade in.
-        pageViewController.currentViewController.view.isHidden = true
-        detailView.backgroundColor = .clear
-        navigationController.view.backgroundColor = .clear
-
-        navigationController.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Small
-
-        fromViewController.present(navigationController, animated: false) {
-
-            // 1. Fade in the entire view.
-            UIView.animate(withDuration: 0.1) {
-                self.replacingView?.alpha = 0.0
-                self.navigationController.view.alpha = 1.0
-            }
-
-            self.navigationController.presentationView.superview?.layoutIfNeeded()
-            self.applyFinalMediaViewConstraints()
-
-            // 2. Animate imageView from it's initial position, which should match where it was
-            // in the presenting view to it's final position, front and center in this view. This
-            // animation duration intentionally overlaps the previous
-            UIView.animate(withDuration: 0.2,
-                           delay: 0.08,
-                           options: .curveEaseOut,
-                           animations: {
-
-                            self.navigationController.presentationView.layer.cornerRadius = 0
-                            self.navigationController.presentationView.superview?.layoutIfNeeded()
-
-                            // fade out content behind the pageViewController
-                            // and behind the presentation view
-                            self.navigationController.view.backgroundColor = Theme.darkThemeBackgroundColor
-            },
-                           completion: { (_: Bool) in
-                            // At this point our presentation view should be overlayed perfectly
-                            // with our media view. Swapping them out should be imperceptible.
-                            pageViewController.currentViewController.view.isHidden = false
-                            self.navigationController.presentationView.isHidden = true
-
-                            self.navigationController.view.isUserInteractionEnabled = true
-
-                            pageViewController.wasPresented()
-
-                            // Since we're presenting *over* the ConversationVC, we need to `becomeFirstResponder`.
-                            //
-                            // Otherwise, the `ConversationVC.inputAccessoryView` will appear over top of us whenever
-                            // OWSWindowManager window juggling calls `[rootWindow makeKeyAndVisible]`.
-                            //
-                            // We don't need to do this when pushing VCs onto the SignalsNavigationController - only when
-                            // presenting directly from ConversationVC.
-                            _ = self.navigationController.becomeFirstResponder()
-            })
-        }
-    }
-
-    // If we're using a navigationController other than self to present the views
-    // e.g. the conversation settings view controller
-    var fromNavController: OWSNavigationController?
-
-    @objc
-    func pushTileView(fromNavController: OWSNavigationController) {
-        let mostRecentItem: MediaGalleryItem? = databaseStorage.uiReadReturningResult { transaction in
-            guard let attachment = self.mediaGalleryFinder.mostRecentMediaAttachment(transaction: transaction)  else {
-                return nil
-            }
-            return self.buildGalleryItem(attachment: attachment, transaction: transaction)
-        }
-
-        if let mostRecentItem = mostRecentItem {
-            mediaTileViewController.focusedItem = mostRecentItem
-            ensureGalleryItemsLoaded(.around, item: mostRecentItem, amount: 100)
-        }
-        self.fromNavController = fromNavController
-        fromNavController.pushViewController(mediaTileViewController, animated: true)
-    }
-
-    func showAllMedia(focusedItem: MediaGalleryItem) {
-        // TODO fancy animation - zoom media item into it's tile in the all media grid
-        ensureGalleryItemsLoaded(.around, item: focusedItem, amount: 100)
-
-        if let fromNavController = self.fromNavController {
-            // If from conversation settings view, we've already pushed
-            fromNavController.popViewController(animated: true)
-        } else {
-            // If from conversation view
-            mediaTileViewController.focusedItem = focusedItem
-            navigationController.pushViewController(mediaTileViewController, animated: true)
-        }
-    }
-
-    // MARK: MediaTileViewControllerDelegate
-
-    func mediaTileViewController(_ viewController: MediaTileViewController, didTapView tappedView: UIView, mediaGalleryItem: MediaGalleryItem) {
-        if self.fromNavController != nil {
-            // If we got to the gallery via conversation settings, present the detail view
-            // on top of the tile view
-            //
-            // == ViewController Schematic ==
-            //
-            // [DetailView] <--,
-            // [TileView] -----'
-            // [ConversationSettingsView]
-            // [ConversationView]
-            //
-
-            self.presentDetailView(fromViewController: mediaTileViewController, initialDetailItem: mediaGalleryItem, replacingView: tappedView)
-        } else {
-            // If we got to the gallery via the conversation view, pop the tile view
-            // to return to the detail view
-            //
-            // == ViewController Schematic ==
-            //
-            // [TileView] -----,
-            // [DetailView] <--'
-            // [ConversationView]
-            //
-
-            guard let pageViewController = self.pageViewController else {
-                owsFailDebug("pageViewController was unexpectedly nil")
-                self.navigationController.dismiss(animated: true)
-
-                return
-            }
-
-            pageViewController.setCurrentItem(mediaGalleryItem, direction: .forward, animated: false)
-            pageViewController.willBePresentedAgain()
-
-            // TODO fancy zoom animation
-            self.navigationController.popViewController(animated: true)
-        }
-    }
-
-    public func dismissMediaDetailViewController(_ mediaPageViewController: MediaPageViewController, animated isAnimated: Bool, completion completionParam: (() -> Void)?) {
-
-        guard let presentingViewController = self.navigationController.presentingViewController else {
-            owsFailDebug("presentingController was unexpectedly nil")
-            return
-        }
-
-        let completion = {
-            completionParam?()
-            UIApplication.shared.isStatusBarHidden = false
-            presentingViewController.setNeedsStatusBarAppearanceUpdate()
-        }
-
-        navigationController.view.isUserInteractionEnabled = false
-
-        guard let detailView = mediaPageViewController.view else {
-            owsFailDebug("detailView was unexpectedly nil")
-            self.navigationController.presentingViewController?.dismiss(animated: false, completion: completion)
-            return
-        }
-
-        mediaPageViewController.currentViewController.view.isHidden = true
-        navigationController.presentationView.isHidden = false
-
-        // Move the presentationView back to it's initial position, i.e. where
-        // it sits on the screen in the conversation view.
-        let changedItems = currentItem != self.initialDetailItem
-        if changedItems {
-            navigationController.presentationView.image = currentItem.attachmentStream.thumbnailImageLarge(success: { [weak self] (image) in
-                guard let strongSelf = self else {
-                    return
-                }
-                strongSelf.navigationController.presentationView.image = image
-                }, failure: {
-                    Logger.warn("Could not load presentation image.")
-            })
-            self.applyOffscreenMediaViewConstraints()
-        } else {
-            self.applyInitialMediaViewConstraints()
-        }
-
-        if isAnimated {
-            UIView.animate(withDuration: changedItems ? 0.25 : 0.18,
-                           delay: 0.0,
-                           options: .curveEaseOut,
-                           animations: {
-                            // Move back over it's original location
-                            self.navigationController.presentationView.superview?.layoutIfNeeded()
-
-                            detailView.alpha = 0
-
-                            if changedItems {
-                                self.navigationController.presentationView.alpha = 0
-                            } else {
-                                self.navigationController.presentationView.layer.cornerRadius = kOWSMessageCellCornerRadius_Small
-                            }
-            })
-
-            // This intentionally overlaps the previous animation a bit
-            UIView.animate(withDuration: 0.1,
-                           delay: 0.15,
-                           options: .curveEaseInOut,
-                           animations: {
-                            guard let replacingView = self.replacingView else {
-                                owsFailDebug("replacingView was unexpectedly nil")
-                                presentingViewController.dismiss(animated: false, completion: completion)
-                                return
-                            }
-                            // fade out content and toolbars
-                            self.navigationController.view.alpha = 0.0
-                            replacingView.alpha = 1.0
-            },
-                           completion: { (_: Bool) in
-                            presentingViewController.dismiss(animated: false, completion: completion)
-            })
-        } else {
-            guard let replacingView = self.replacingView else {
-                owsFailDebug("replacingView was unexpectedly nil")
-                presentingViewController.dismiss(animated: false, completion: completion)
-                return
-            }
-            replacingView.alpha = 1.0
-            presentingViewController.dismiss(animated: false, completion: completion)
-        }
-    }
-
-    private func applyInitialMediaViewConstraints() {
-        if (self.presentationViewConstraints.count > 0) {
-            NSLayoutConstraint.deactivate(self.presentationViewConstraints)
-            self.presentationViewConstraints = []
-        }
-
-        guard let originRect = self.originRect else {
-            owsFailDebug("originRect was unexpectedly nil")
-            return
-        }
-
-        guard let presentationSuperview = navigationController.presentationView.superview else {
-            owsFailDebug("presentationView.superview was unexpectedly nil")
-            return
-        }
-
-        let convertedRect: CGRect = presentationSuperview.convert(originRect, from: UIApplication.shared.keyWindow)
-
-        self.presentationViewConstraints += navigationController.presentationView.autoSetDimensions(to: convertedRect.size)
-        self.presentationViewConstraints += [
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .top, withInset: convertedRect.origin.y),
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .left, withInset: convertedRect.origin.x)
-        ]
-    }
-
-    private func applyFinalMediaViewConstraints() {
-        if (self.presentationViewConstraints.count > 0) {
-            NSLayoutConstraint.deactivate(self.presentationViewConstraints)
-            self.presentationViewConstraints = []
-        }
-
-        self.presentationViewConstraints = [
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .leading),
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .top),
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .trailing),
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .bottom)
-        ]
-    }
-
-    private func applyOffscreenMediaViewConstraints() {
-        if (self.presentationViewConstraints.count > 0) {
-            NSLayoutConstraint.deactivate(self.presentationViewConstraints)
-            self.presentationViewConstraints = []
-        }
-
-        self.presentationViewConstraints += [
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .leading),
-            navigationController.presentationView.autoPinEdge(toSuperviewEdge: .trailing),
-            navigationController.presentationView.autoPinEdge(.top, to: .bottom, of: self.navigationController.view)
-        ]
-    }
-
     // MARK: - Yap Database Notifications
 
     @objc
@@ -738,7 +673,6 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         }
 
         guard mediaGalleryFinder.yapAdapter.hasMediaChanges(in: notifications, dbConnection: OWSPrimaryStorage.shared().uiDatabaseConnection) else {
-            Logger.verbose("no changes for thread: \(thread)")
             return
         }
 
@@ -796,15 +730,6 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     }
 
     // MARK: - MediaGalleryDataSource
-
-    lazy var mediaTileViewController: MediaTileViewController = {
-        let vc = MediaTileViewController(mediaGalleryDataSource: self)
-        vc.delegate = self
-
-        self.addDataSourceDelegate(vc)
-
-        return vc
-    }()
 
     var galleryItems: [MediaGalleryItem] = []
     var sections: [GalleryDate: [MediaGalleryItem]] = [:]
@@ -866,6 +791,8 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
     enum MediaGalleryError: Error {
         case itemNoLongerExists
     }
+
+    // MARK: - Loading
 
     func ensureGalleryItemsLoaded(_ direction: GalleryDirection, item: MediaGalleryItem, amount: UInt, completion: ((IndexSet, [IndexPath]) -> Void)? = nil ) {
 
@@ -1013,9 +940,40 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         }
     }
 
-    var dataSourceDelegates: [Weak<MediaGalleryDataSourceDelegate>] = []
+    public func ensureLoadedForDetailView(focusedItem: MediaGalleryItem) {
+        // For a speedy load, we only fetch a few items on either side of
+        // the initial message
+        ensureGalleryItemsLoaded(.around, item: focusedItem, amount: 10)
+
+        // We lazily load media into the gallery, but with large albums, we want to be sure
+        // we load all the media required to render the album's media rail.
+        ensureAlbumEntirelyLoaded(galleryItem: focusedItem)
+    }
+
+    func ensureLoadedForMostRecentTileView() -> MediaGalleryItem? {
+        guard let mostRecentItem: MediaGalleryItem = (databaseStorage.uiReadReturningResult { transaction in
+            guard let attachment = self.mediaGalleryFinder.mostRecentMediaAttachment(transaction: transaction)  else {
+                return nil
+            }
+            return self.buildGalleryItem(attachment: attachment, transaction: transaction)
+        }) else {
+            return nil
+        }
+
+        ensureGalleryItemsLoaded(.around, item: mostRecentItem, amount: 100)
+        return mostRecentItem
+    }
+
+    // MARK: -
+
+    private var _dataSourceDelegates: [Weak<MediaGalleryDataSourceDelegate>] = []
+
+    var dataSourceDelegates: [MediaGalleryDataSourceDelegate] {
+        return _dataSourceDelegates.compactMap { $0.value }
+    }
+
     func addDataSourceDelegate(_ dataSourceDelegate: MediaGalleryDataSourceDelegate) {
-        dataSourceDelegates.append(Weak(value: dataSourceDelegate))
+        _dataSourceDelegates = _dataSourceDelegates.filter({ $0.value != nil}) + [Weak(value: dataSourceDelegate)]
     }
 
     func delete(items: [MediaGalleryItem], initiatedBy: AnyObject) {
@@ -1024,7 +982,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
         Logger.info("with items: \(items.map { ($0.attachmentStream, $0.message.timestamp) })")
 
         deletedGalleryItems.formUnion(items)
-        dataSourceDelegates.forEach { $0.value?.mediaGalleryDataSource(self, willDelete: items, initiatedBy: initiatedBy) }
+        dataSourceDelegates.forEach { $0.mediaGalleryDataSource(self, willDelete: items, initiatedBy: initiatedBy) }
 
         for item in items {
             self.deletedAttachments.insert(item.attachmentStream)
@@ -1101,7 +1059,7 @@ class MediaGallery: NSObject, MediaGalleryDataSource, MediaTileViewControllerDel
             }
         }
 
-        dataSourceDelegates.forEach { $0.value?.mediaGalleryDataSource(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths) }
+        dataSourceDelegates.forEach { $0.mediaGalleryDataSource(self, deletedSections: deletedSections, deletedItems: deletedIndexPaths) }
     }
 
     let kGallerySwipeLoadBatchSize: UInt = 5

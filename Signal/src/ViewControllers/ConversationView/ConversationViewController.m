@@ -2424,17 +2424,13 @@ typedef enum : NSUInteger {
 
     [self dismissKeyBoard];
 
-    // In case we were presenting edit menu, we need to become first responder before presenting another VC
-    // else UIKit won't restore first responder status to us when the presented VC is dismissed.
-    if (!self.isFirstResponder) {
-        [self becomeFirstResponder];
-    }
+    MediaGalleryOption options = MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton;
+    MediaGalleryNavigationController *mediaGallery =
+        [MediaGalleryNavigationController showingDetailViewWithThread:self.thread
+                                                      mediaAttachment:attachmentStream
+                                                              options:options];
 
-    MediaGallery *mediaGallery =
-        [[MediaGallery alloc] initWithThread:self.thread
-                                     options:MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton];
-
-    [mediaGallery presentDetailViewFromViewController:self mediaAttachment:attachmentStream replacingView:imageView];
+    [self presentViewController:mediaGallery animated:YES completion:nil];
 }
 
 - (void)didTapVideoViewItem:(id<ConversationViewItem>)viewItem
@@ -2446,17 +2442,14 @@ typedef enum : NSUInteger {
     OWSAssertDebug(attachmentStream);
 
     [self dismissKeyBoard];
-    // In case we were presenting edit menu, we need to become first responder before presenting another VC
-    // else UIKit won't restore first responder status to us when the presented VC is dismissed.
-    if (!self.isFirstResponder) {
-        [self becomeFirstResponder];
-    }
 
-    MediaGallery *mediaGallery =
-        [[MediaGallery alloc] initWithThread:self.thread
-                                     options:MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton];
+    MediaGalleryOption options = MediaGalleryOptionSliderEnabled | MediaGalleryOptionShowAllMediaButton;
+    MediaGalleryNavigationController *mediaGallery =
+        [MediaGalleryNavigationController showingDetailViewWithThread:self.thread
+                                                      mediaAttachment:attachmentStream
+                                                              options:options];
 
-    [mediaGallery presentDetailViewFromViewController:self mediaAttachment:attachmentStream replacingView:imageView];
+    [self presentViewController:mediaGallery animated:YES completion:nil];
 }
 
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
