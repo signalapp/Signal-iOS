@@ -852,21 +852,27 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     __block TSThread *_Nullable thread = nil;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        thread = [message threadWithTransaction:transaction];
-        OWSAssertDebug(thread != nil);
-
-        // For some legacy sync messages, thread may be nil.
-        // In this case, we should try to use the "local" thread.
-        BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
-        if (thread == nil && isSyncMessage) {
-            thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
-            if (thread == nil) {
-                OWSFailDebug(@"Could not restore thread for sync message.");
-            } else {
-                OWSLogInfo(@"Thread restored for sync message.");
-            }
-        }
+        thread = [self threadForMessage:message transaction:transaction];
     }];
+    return thread;
+}
+
+- (nullable TSThread *)threadForMessage:(TSMessage *)message transaction:(SDSAnyWriteTransaction *)transaction
+{
+    TSThread *_Nullable thread = [message threadWithTransaction:transaction];
+    OWSAssertDebug(thread != nil);
+
+    // For some legacy sync messages, thread may be nil.
+    // In this case, we should try to use the "local" thread.
+    BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
+    if (thread == nil && isSyncMessage) {
+        thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+        if (thread == nil) {
+            OWSFailDebug(@"Could not restore thread for sync message.");
+        } else {
+            OWSLogInfo(@"Thread restored for sync message.");
+        }
+    }
     return thread;
 }
 
@@ -1524,25 +1530,35 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                              failure:(RetryableFailureHandler)failure
 {
     SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
-    __block TSThread *_Nullable thread;
+    // After sending a message to its "message thread",
+    // we send a sync transcript to the "local thread".
+    __block TSThread *_Nullable localThread;
+    __block TSThread *_Nullable messageThread;
     __block SignalRecipient *recipient;
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+        localThread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
+
+        messageThread = [self threadForMessage:message transaction:transaction];
 
         recipient = [SignalRecipient markRecipientAsRegisteredAndGet:localAddress transaction:transaction];
     }];
-    if (thread == nil) {
+    if (localThread == nil) {
         OWSFailDebug(@"Missing local thread.");
+        return;
+    }
+    if (messageThread == nil) {
+        OWSFailDebug(@"Missing message thread.");
         return;
     }
 
     OWSOutgoingSentMessageTranscript *sentMessageTranscript =
-        [[OWSOutgoingSentMessageTranscript alloc] initWithThread:thread
-                                                 outgoingMessage:message
-                                               isRecipientUpdate:isRecipientUpdate];
+        [[OWSOutgoingSentMessageTranscript alloc] initWithLocalThread:localThread
+                                                        messageThread:messageThread
+                                                      outgoingMessage:message
+                                                    isRecipientUpdate:isRecipientUpdate];
 
     OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:sentMessageTranscript
-        thread:thread
+        thread:localThread
         recipient:recipient
         senderCertificate:nil
         udAccess:nil
