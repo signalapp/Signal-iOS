@@ -710,9 +710,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     TSThread *_Nullable thread = [self threadForMessageWithSneakyTransaction:message];
     OWSAssertDebug(thread != nil);
 
-    BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
-    if (!thread && !isSyncMessage) {
-        OWSFailDebug(@"Missing thread for non-sync message.");
+    if (!thread) {
+        OWSFailDebug(@"Missing thread.");
 
         // This thread has been deleted since the message was enqueued.
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeMessageSendNoValidRecipients,
@@ -727,8 +726,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         contactThread = (TSContactThread *)thread;
     }
 
-    // In the "self-send" special case, we ony need to send a sync message with a delivery receipt.
-    if (contactThread && contactThread.contactAddress.isLocalAddress) {
+    // In the "self-send" aka "Note to Self" special case, we only
+    // need to send a sync message with a delivery receipt.
+    BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
+    if (contactThread && contactThread.contactAddress.isLocalAddress && !isSyncMessage) {
         // Send to self.
         OWSAssertDebug(message.recipientAddresses.count == 1);
         // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
@@ -995,7 +996,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (void)sendMessageToRecipient:(OWSMessageSend *)messageSend
 {
     OWSAssertDebug(messageSend);
-    OWSAssertDebug(messageSend.thread || [messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]);
+    OWSAssertDebug(messageSend.thread);
 
     TSOutgoingMessage *message = messageSend.message;
     SignalRecipient *recipient = messageSend.recipient;
@@ -1094,10 +1095,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 destinationAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:destination];
             }
 
-            if (destinationAddress.isLocalAddress) {
-                OWSFailDebug(@"Sync device message has invalid destination: %@", deviceMessage);
-                continue;
-            }
             NSNumber *_Nullable destinationDeviceId = deviceMessage[@"destinationDeviceId"];
             if (!destinationDeviceId) {
                 OWSFailDebug(@"Sync device message missing destination device id: %@", deviceMessage);
@@ -1283,7 +1280,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
               responseData:(nullable NSData *)responseData
 {
     OWSAssertDebug(messageSend);
-    OWSAssertDebug(messageSend.thread || [messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]);
+    OWSAssertDebug(messageSend.thread);
     OWSAssertDebug(deviceMessages);
     OWSAssertDebug(responseError);
 
@@ -1478,6 +1475,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     };
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        if (!message.shouldBeSaved) {
+            return;
+        }
         TSInteraction *_Nullable latestCopy = [TSInteraction anyFetchWithUniqueId:message.uniqueId
                                                                       transaction:transaction];
         if (![latestCopy isKindOfClass:[TSOutgoingMessage class]]) {
@@ -1538,7 +1538,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                isRecipientUpdate:isRecipientUpdate];
 
     OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:sentMessageTranscript
-        thread:message.threadWithSneakyTransaction
+        thread:thread
         recipient:recipient
         senderCertificate:nil
         udAccess:nil
