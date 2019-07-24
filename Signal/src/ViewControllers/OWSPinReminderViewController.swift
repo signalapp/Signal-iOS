@@ -237,7 +237,22 @@ public class PinReminderViewController: OWSViewController {
 
     private func dismissAndUpdateRepetitionInterval() {
         OWS2FAManager.shared().updateRepetitionInterval(withWasSuccessful: !hasGuessedWrong)
-        dismiss(animated: true, completion: nil)
+
+        // Migrate to 2FA v2 if they've proved they know their pin
+        if let pinCode = OWS2FAManager.shared().pinCode, FeatureFlags.registrationLockV2, OWS2FAManager.shared().mode == .V1 {
+            // enabling 2fa v2 automatically disables v1 on the server
+            OWS2FAManager.shared().enable2FAPromise(with: pinCode)
+                .ensure {
+                    self.dismiss(animated: true)
+                }.catch { error in
+                    // We don't need to bubble this up to the user, since they
+                    // don't know / care that something is changing in this moment.
+                    // We can try and migrate them again during their next reminder.
+                    owsFailDebug("Unexpected error \(error) while migrating to reg lock v2")
+                }.retainUntilComplete()
+        } else {
+            dismiss(animated: true)
+        }
     }
 
     private func updateValidationWarnings() {
