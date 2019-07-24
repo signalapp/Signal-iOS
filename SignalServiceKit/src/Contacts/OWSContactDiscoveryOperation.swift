@@ -344,21 +344,14 @@ class CDSBatchOperation: OWSOperation {
 
     func handle(response: Any?, remoteAttestation: RemoteAttestation) throws -> Set<String> {
         let isIncludedData: Data = try parseAndDecrypt(response: response, remoteAttestation: remoteAttestation)
-        guard let isIncluded: [Bool] = type(of: self).boolArray(data: isIncludedData) else {
-            throw ContactDiscoveryError.assertionError(description: "isIncluded was unexpectedly nil")
-        }
-
+        let isIncluded: [Bool] = type(of: self).boolArray(data: isIncludedData)
         return try match(recipientIds: self.recipientIdsToLookup, isIncluded: isIncluded)
     }
 
-    class func boolArray(data: Data) -> [Bool]? {
-        var bools: [Bool]?
-        data.withUnsafeBytes { (bytes: UnsafePointer<Bool>) -> Void in
-            let buffer = UnsafeBufferPointer(start: bytes, count: data.count)
-            bools = Array(buffer)
+    class func boolArray(data: Data) -> [Bool] {
+        return data.withUnsafeBytes {
+            [Bool]($0.bindMemory(to: Bool.self))
         }
-
-        return bools
     }
 
     func match(recipientIds: [String], isIncluded: [Bool]) throws -> Set<String> {
