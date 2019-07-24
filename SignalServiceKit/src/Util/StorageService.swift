@@ -10,13 +10,19 @@ public struct StorageService {
         case assertion
     }
 
-    public struct ContactKey: Hashable {
-        public static let keyLength: Int32 = 16
+    /// An identifier representing a given contact object.
+    /// This can be used to fetch specific contacts from the service.
+    public struct ContactIdentifier: Hashable {
+        public static let identifierLength: Int32 = 16
         public let data: Data
 
-        public init(data: Data = Randomness.generateRandomBytes(keyLength)) {
-            if data.count != ContactKey.keyLength { owsFailDebug("Initialized with invalid data") }
+        public init(data: Data) {
+            if data.count != ContactIdentifier.identifierLength { owsFail("Initialized with invalid data") }
             self.data = data
+        }
+
+        static func generate() -> ContactIdentifier {
+            return .init(data: Randomness.generateRandomBytes(identifierLength))
         }
     }
 
@@ -27,20 +33,15 @@ public struct StorageService {
         Logger.info("")
 
         return storageRequest(withMethod: "GET", endpoint: "v1/contacts/manifest").map(on: .global()) { response in
-            switch response.statusCode {
-            case 200:
-                guard let responseData = response.data else {
-                    owsFailDebug("response missing data")
-                    throw StorageError.assertion
-                }
-
-                let encryptedManifestData = try StorageServiceProtoContactsManifest.parseData(responseData).value
+            switch response.status {
+            case .success:
+                let encryptedManifestData = try StorageServiceProtoContactsManifest.parseData(response.data).value
                 let manifestData = try KeyBackupService.decryptWithMasterKey(encryptedManifestData)
                 return try StorageServiceProtoManifestRecord.parseData(manifestData)
-            case 404:
+            case .notFound:
                 return nil
             default:
-                owsFailDebug("invalid response \(response.statusCode)")
+                owsFailDebug("unexpected response \(response.status)")
                 throw StorageError.assertion
             }
         }
@@ -48,13 +49,13 @@ public struct StorageService {
 
     /// Update the manifest record on the service.
     ///
-    /// If the version we are updating to already exists on the ervice,
+    /// If the version we are updating to already exists on the service,
     /// the conflicting manifest will return and the update will not
     /// have been applied until we resolve the conflicts.
     public static func updateManifest(
         _ manifest: StorageServiceProtoManifestRecord,
         newContacts: [StorageServiceProtoContactRecord],
-        deletedContacts: [ContactKey]
+        deletedContacts: [ContactIdentifier]
     ) -> Promise<StorageServiceProtoManifestRecord?> {
         Logger.info("")
 
@@ -86,23 +87,18 @@ public struct StorageService {
         }.then(on: .global()) { data in
             storageRequest(withMethod: "PUT", endpoint: "/v1/contacts", body: data)
         }.map(on: .global()) { response in
-            switch response.statusCode {
-            case 200:
+            switch response.status {
+            case .success:
                 // We expect a successful response to have no data
-                if let responseData = response.data, !responseData.isEmpty { owsFailDebug("unexpected response data") }
+                if !response.data.isEmpty { owsFailDebug("unexpected response data") }
                 return nil
-            case 409:
+            case .conflict:
                 // Our version was out of date, we should've received a copy of the latest version
-                guard let responseData = response.data else {
-                    owsFailDebug("response missing data")
-                    throw StorageError.assertion
-                }
-
-                let encryptedManifestData = try StorageServiceProtoContactsManifest.parseData(responseData).value
+                let encryptedManifestData = try StorageServiceProtoContactsManifest.parseData(response.data).value
                 let manifestData = try KeyBackupService.decryptWithMasterKey(encryptedManifestData)
                 return try StorageServiceProtoManifestRecord.parseData(manifestData)
             default:
-                owsFailDebug("invalid response \(response.statusCode)")
+                owsFailDebug("unexpected response \(response.status)")
                 throw StorageError.assertion
             }
         }
@@ -111,14 +107,14 @@ public struct StorageService {
     /// Fetch a contact from the service
     ///
     /// Returns nil if this contact does not exist
-    public static func fetchContact(for key: ContactKey) -> Promise<StorageServiceProtoContactRecord?> {
+    public static func fetchContact(for key: ContactIdentifier) -> Promise<StorageServiceProtoContactRecord?> {
         return fetchContacts(for: [key]).map { $0.first }
     }
 
     /// Fetch a list of contacts from the service
     ///
     /// The response will include only the contacts that could be found on the service
-    public static func fetchContacts(for keys: [ContactKey]) -> Promise<[StorageServiceProtoContactRecord]> {
+    public static func fetchContacts(for keys: [ContactIdentifier]) -> Promise<[StorageServiceProtoContactRecord]> {
         Logger.info("")
 
         return DispatchQueue.global().async(.promise) {
@@ -128,17 +124,12 @@ public struct StorageService {
         }.then(on: .global()) { data in
             storageRequest(withMethod: "PUT", endpoint: "v1/contacts/read", body: data)
         }.map(on: .global()) { response in
-            guard response.statusCode == 200 else {
-                owsFailDebug("invalid response \(response.statusCode)")
+            guard case .success = response.status else {
+                owsFailDebug("unexpected response \(response.status)")
                 throw StorageError.assertion
             }
 
-            guard let responseData = response.data else {
-                owsFailDebug("response missing data")
-                throw StorageError.assertion
-            }
-
-            let contactsProto = try StorageServiceProtoContacts.parseData(responseData)
+            let contactsProto = try StorageServiceProtoContacts.parseData(response.data)
 
             return try contactsProto.contacts.map { contact in
                 let encryptedContactData = contact.value
@@ -161,8 +152,13 @@ public struct StorageService {
     // MARK: - Storage Requests
 
     private struct StorageResponse {
-        let statusCode: Int
-        let data: Data?
+        enum Status {
+            case success
+            case conflict
+            case notFound
+        }
+        let status: Status
+        let data: Data
     }
 
     private struct Auth {
@@ -179,7 +175,7 @@ public struct StorageService {
     }
 
     private static func storageRequest(withMethod method: String, endpoint: String, body: Data? = nil) -> Promise<StorageResponse> {
-        return signalServiceClient.requetStorageAuth().map { username, password in
+        return signalServiceClient.requestStorageAuth().map { username, password in
             Auth(username: username, password: password)
         }.then(on: .global()) { auth in
             Promise { resolver in
@@ -201,7 +197,9 @@ public struct StorageService {
                     throw StorageError.assertion
                 }
 
-                if method != "GET" { request.httpBody = body }
+                if method == "GET" { assert(body == nil) }
+
+                request.httpBody = body
 
                 request.setValue(OWSMimeTypeProtobuf, forHTTPHeaderField: "Content-Type")
                 request.setValue(try auth.authHeader(), forHTTPHeaderField: "Authorization")
@@ -225,9 +223,37 @@ public struct StorageService {
                         return resolver.reject(error)
                     }
 
+                    let status: StorageResponse.Status
+
+                    switch response.statusCode {
+                    case 200:
+                        status = .success
+                    case 409:
+                        status = .conflict
+                    case 404:
+                        status = .notFound
+                    default:
+                        if let error = error {
+                            owsFailDebug("response error \(error)")
+                            return resolver.reject(error)
+                        }
+
+                        owsFailDebug("invalid response \(response.statusCode)")
+                        return resolver.reject(StorageError.assertion)
+                    }
+
+                    // We should always receive response data, for some responses it will be empty.
+                    guard let responseData = responseObject as? Data else {
+                        owsFailDebug("missing response data")
+                        return resolver.reject(StorageError.assertion)
+                    }
+
+                    // The layers that use this only want to process 200 and 409 responses,
+                    // anything else we should raise as an error.
+
                     Logger.info("Storage request succeeded: \(method) \(endpoint)")
 
-                    resolver.fulfill(StorageResponse(statusCode: response.statusCode, data: responseObject as? Data))
+                    resolver.fulfill(StorageResponse(status: status, data: responseData))
                 }
                 task.resume()
             }
@@ -241,17 +267,17 @@ public extension StorageService {
     static func updateManifestObjc(
         _ manifest: StorageServiceProtoManifestRecord,
         newContacts: [StorageServiceProtoContactRecord],
-        deletedContacts: [ContactKeyObjc]
+        deletedContacts: [ContactIdentifierObjc]
     ) -> Promise<StorageServiceProtoManifestRecord?> {
-        return updateManifest(manifest, newContacts: newContacts, deletedContacts: deletedContacts.map { $0.contactKey })
+        return updateManifest(manifest, newContacts: newContacts, deletedContacts: deletedContacts.map { $0.contactIdentifier })
     }
 
-    static func fetchContactObjc(for key: ContactKeyObjc) -> Promise<StorageServiceProtoContactRecord?> {
-        return fetchContacts(for: [key.contactKey]).map { $0.first }
+    static func fetchContactObjc(for key: ContactIdentifierObjc) -> Promise<StorageServiceProtoContactRecord?> {
+        return fetchContacts(for: [key.contactIdentifier]).map { $0.first }
     }
 
-    static func fetchContactsObjc(for keys: [ContactKeyObjc]) -> Promise<[StorageServiceProtoContactRecord]> {
-        return fetchContacts(for: keys.map { $0.contactKey })
+    static func fetchContactsObjc(for keys: [ContactIdentifierObjc]) -> Promise<[StorageServiceProtoContactRecord]> {
+        return fetchContacts(for: keys.map { $0.contactIdentifier })
     }
 }
 
@@ -267,7 +293,7 @@ public class StorageServiceObjc: NSObject {
     public static func updateManifest(
         _ manifest: StorageServiceProtoManifestRecord,
         newContacts: [StorageServiceProtoContactRecord],
-        deletedContacts: [ContactKeyObjc]
+        deletedContacts: [ContactIdentifierObjc]
     ) -> AnyPromise {
         return AnyPromise(StorageService.updateManifestObjc(
             manifest,
@@ -277,46 +303,51 @@ public class StorageServiceObjc: NSObject {
     }
 
     @objc
-    public static func fetchContact(forKey key: ContactKeyObjc) -> AnyPromise {
+    public static func fetchContact(forKey key: ContactIdentifierObjc) -> AnyPromise {
         return AnyPromise(StorageService.fetchContactObjc(for: key))
     }
 
     @objc
-    public static func fetchContacts(forKeys keys: [ContactKeyObjc]) -> AnyPromise {
+    public static func fetchContacts(forKeys keys: [ContactIdentifierObjc]) -> AnyPromise {
         return AnyPromise(StorageService.fetchContactsObjc(for: keys))
     }
 }
 
 @objc(OWSContactKey)
-public class ContactKeyObjc: NSObject {
-    fileprivate let contactKey: StorageService.ContactKey
+public class ContactIdentifierObjc: NSObject {
+    fileprivate let contactIdentifier: StorageService.ContactIdentifier
 
     @objc
-    public var data: Data { return contactKey.data }
+    public var data: Data { return contactIdentifier.data }
 
     @objc
-    public init(data: Data) {
-        self.contactKey = .init(data: data)
+    public convenience init(data: Data) {
+        self.init(.init(data: data))
     }
 
-    @objc convenience override init() {
-        self.init(data: Randomness.generateRandomBytes(StorageService.ContactKey.keyLength))
+    // This function isn't objc accessible, it's just used for casting in swift land
+    public init(_ contactIdentifier: StorageService.ContactIdentifier) {
+        self.contactIdentifier = contactIdentifier
+    }
+
+    @objc static func generate() -> ContactIdentifierObjc {
+        return ContactIdentifierObjc(.generate())
     }
 
     public override func isEqual(_ object: Any?) -> Bool {
-        guard let object = object as? ContactKeyObjc else { return false }
-        return contactKey == object.contactKey
+        guard let object = object as? ContactIdentifierObjc else { return false }
+        return contactIdentifier == object.contactIdentifier
     }
 
     public override var hash: Int {
-        return contactKey.hashValue
+        return contactIdentifier.hashValue
     }
 }
 
 // MARK: -
 
 public extension StorageServiceProtoContactRecord {
-    var contactKey: StorageService.ContactKey { return .init(data: key) }
+    var contactIdentifier: StorageService.ContactIdentifier { return .init(data: key) }
 }
 
 // MARK: - Test Helpers
@@ -328,16 +359,16 @@ public extension StorageService {
         let testNames = ["abc", "def", "ghi", "jkl", "mno"]
         var contactsInManifest = [StorageServiceProtoContactRecord]()
         for i in 0...4 {
-            let key = StorageService.ContactKey()
+            let identifier = StorageService.ContactIdentifier.generate()
 
-            let recordBuilder = StorageServiceProtoContactRecord.builder(key: key.data)
+            let recordBuilder = StorageServiceProtoContactRecord.builder(key: identifier.data)
             recordBuilder.setProfileKey(Randomness.generateRandomBytes(16))
             recordBuilder.setProfileName(testNames[i])
 
             contactsInManifest.append(try! recordBuilder.build())
         }
 
-        let keysInManfest = contactsInManifest.map { $0.contactKey }
+        let identifiersInManfest = contactsInManifest.map { $0.contactIdentifier }
 
         var ourManifestVersion: UInt64 = 0
 
@@ -350,7 +381,7 @@ public extension StorageService {
             let newManifestBuilder = StorageServiceProtoManifestRecord.builder(version: ourManifestVersion)
             newManifestBuilder.setKeys(contactsInManifest.map { $0.key })
 
-            return (try! newManifestBuilder.build(), manifest?.keys.map { ContactKey(data: $0) } ?? [])
+            return (try! newManifestBuilder.build(), manifest?.keys.map { ContactIdentifier(data: $0) } ?? [])
 
         // Update or create initial manifest with test data
         }.then { manifest, deletedKeys in
@@ -368,7 +399,7 @@ public extension StorageService {
                 throw StorageError.assertion
             }
 
-            guard Set(manifest.keys) == Set(keysInManfest.map { $0.data }) else {
+            guard Set(manifest.keys) == Set(identifiersInManfest.map { $0.data }) else {
                 owsFailDebug("manifest should only contain our test keys")
                 throw StorageError.assertion
             }
@@ -380,9 +411,9 @@ public extension StorageService {
 
         // Fetch the first contact we just stored
         }.then {
-            fetchContact(for: keysInManfest.first!)
+            fetchContact(for: identifiersInManfest.first!)
         }.map { contact in
-            guard contact!.key == keysInManfest.first!.data else {
+            guard contact!.key == identifiersInManfest.first!.data else {
                 owsFailDebug("this should be the contact we set")
                 throw StorageError.assertion
             }
@@ -399,7 +430,7 @@ public extension StorageService {
 
         // Fetch all the contacts we stored
         }.then {
-            fetchContacts(for: keysInManfest)
+            fetchContacts(for: identifiersInManfest)
         }.map { contacts in
             guard contacts.count == contactsInManifest.count else {
                 owsFailDebug("wrong number of contacts")
@@ -425,7 +456,7 @@ public extension StorageService {
 
         // Fetch a contact that doesn't exist
         }.then {
-            fetchContact(for: ContactKey())
+            fetchContact(for: .generate())
         }.map { contact in
             guard contact == nil else {
                 owsFailDebug("this contact should not exist")
@@ -438,7 +469,7 @@ public extension StorageService {
             let newManifestBuilder = StorageServiceProtoManifestRecord.builder(version: ourManifestVersion)
             return try! newManifestBuilder.build()
         }.then { manifest in
-            updateManifest(manifest, newContacts: [], deletedContacts: keysInManfest)
+            updateManifest(manifest, newContacts: [], deletedContacts: identifiersInManfest)
         }.map { manifest in
             guard manifest == nil else {
                 owsFailDebug("Manifest conflicted unexpectedly, should be nil")
@@ -466,13 +497,13 @@ public extension StorageService {
         }.map {
             let oldManifestBuilder = StorageServiceProtoManifestRecord.builder(version: 0)
 
-            let key = ContactKey()
+            let identifier = ContactIdentifier.generate()
 
-            let recordBuilder = StorageServiceProtoContactRecord.builder(key: key.data)
+            let recordBuilder = StorageServiceProtoContactRecord.builder(key: identifier.data)
             recordBuilder.setProfileKey(Randomness.generateRandomBytes(16))
             recordBuilder.setProfileName(testNames[0])
 
-            oldManifestBuilder.setKeys([key.data])
+            oldManifestBuilder.setKeys([identifier.data])
 
             return (try! oldManifestBuilder.build(), try! recordBuilder.build())
         }.then { oldManifest, contact in
@@ -494,7 +525,7 @@ public extension StorageService {
             }
         }.catch { error in
             owsFailDebug("unexpectedly raised error \(error)")
-        }
+        }.retainUntilComplete()
     }
 }
 
