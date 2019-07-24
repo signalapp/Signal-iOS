@@ -14,9 +14,8 @@ public class OWSMessageSend: NSObject {
     @objc
     public let message: TSOutgoingMessage
 
-    // thread may be nil if message is an OWSOutgoingSyncMessage.
     @objc
-    public let thread: TSThread?
+    public let thread: TSThread
 
     @objc
     public let recipient: SignalRecipient
@@ -51,7 +50,7 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public init(message: TSOutgoingMessage,
-                thread: TSThread?,
+                thread: TSThread,
                 recipient: SignalRecipient,
                 senderCertificate: SMKSenderCertificate?,
                 udAccess: OWSUDAccess?,

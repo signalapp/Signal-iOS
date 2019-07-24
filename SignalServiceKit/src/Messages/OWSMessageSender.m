@@ -358,7 +358,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (NSOperationQueue *)sendingQueueForMessage:(TSOutgoingMessage *)message
 {
     OWSAssertDebug(message);
-
+    OWSAssertDebug(message.uniqueThreadId);
 
     NSString *kDefaultQueueKey = @"kDefaultQueueKey";
     NSString *queueKey = message.uniqueThreadId ?: kDefaultQueueKey;
@@ -708,7 +708,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         failureHandlerParam(error);
     };
 
-    // GRDB TODO: Make this non-nil.
+    // This should not be nil, even for legacy queued messages.
     TSThread *_Nullable thread = [self threadForMessageWithSneakyTransaction:message];
     OWSAssertDebug(thread != nil);
 
@@ -780,7 +780,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSArray<SignalRecipient *> *recipients = [self recipientsForAddresses:recipientAddresses];
 
-    BOOL isGroupSend = (thread && thread.isGroupThread);
+    BOOL isGroupSend = (thread.isGroupThread);
     NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
     AnyPromise *sendPromise = [self sendPromiseForRecipients:recipients
                                                      message:message
@@ -1452,7 +1452,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                          failure:(RetryableFailureHandler)failure
 {
     dispatch_block_t success = ^{
-        // GRDB TODO: Make this non-nil.
+        // This should not be nil, even for legacy queued messages.
         TSThread *_Nullable thread = [self threadForMessageWithSneakyTransaction:message];
         OWSAssertDebug(thread != nil);
 
@@ -1461,7 +1461,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             contactThread = (TSContactThread *)thread;
         }
 
-        if (contactThread && contactThread.contactAddress.isLocalAddress) {
+        BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
+        if (contactThread && contactThread.contactAddress.isLocalAddress && !isSyncMessage) {
             OWSAssertDebug(message.recipientAddresses.count == 1);
             // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -1478,6 +1479,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if (!message.shouldBeSaved) {
+            // We don't need to do this work for transient messages.
             return;
         }
         TSInteraction *_Nullable latestCopy = [TSInteraction anyFetchWithUniqueId:message.uniqueId
@@ -1530,7 +1532,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         recipient = [SignalRecipient markRecipientAsRegisteredAndGet:localAddress transaction:transaction];
     }];
     if (thread == nil) {
-        OWSFailDebug(@"Missing thread.");
+        OWSFailDebug(@"Missing local thread.");
         return;
     }
 
