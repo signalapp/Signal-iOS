@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,15 +42,36 @@ public enum KeyBackupProtoError: Error {
 
         @objc fileprivate override init() {}
 
-        @objc public func setBackup(_ valueParam: KeyBackupProtoBackupRequest) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBackup(_ valueParam: KeyBackupProtoBackupRequest?) {
+            guard let valueParam = valueParam else { return }
             proto.backup = valueParam.proto
         }
 
-        @objc public func setRestore(_ valueParam: KeyBackupProtoRestoreRequest) {
+        public func setBackup(_ valueParam: KeyBackupProtoBackupRequest) {
+            proto.backup = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRestore(_ valueParam: KeyBackupProtoRestoreRequest?) {
+            guard let valueParam = valueParam else { return }
             proto.restore = valueParam.proto
         }
 
-        @objc public func setDelete(_ valueParam: KeyBackupProtoDeleteRequest) {
+        public func setRestore(_ valueParam: KeyBackupProtoRestoreRequest) {
+            proto.restore = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDelete(_ valueParam: KeyBackupProtoDeleteRequest?) {
+            guard let valueParam = valueParam else { return }
+            proto.delete = valueParam.proto
+        }
+
+        public func setDelete(_ valueParam: KeyBackupProtoDeleteRequest) {
             proto.delete = valueParam.proto
         }
 
@@ -170,15 +191,36 @@ extension KeyBackupProtoRequest.KeyBackupProtoRequestBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setBackup(_ valueParam: KeyBackupProtoBackupResponse) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBackup(_ valueParam: KeyBackupProtoBackupResponse?) {
+            guard let valueParam = valueParam else { return }
             proto.backup = valueParam.proto
         }
 
-        @objc public func setRestore(_ valueParam: KeyBackupProtoRestoreResponse) {
+        public func setBackup(_ valueParam: KeyBackupProtoBackupResponse) {
+            proto.backup = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRestore(_ valueParam: KeyBackupProtoRestoreResponse?) {
+            guard let valueParam = valueParam else { return }
             proto.restore = valueParam.proto
         }
 
-        @objc public func setDelete(_ valueParam: KeyBackupProtoDeleteResponse) {
+        public func setRestore(_ valueParam: KeyBackupProtoRestoreResponse) {
+            proto.restore = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDelete(_ valueParam: KeyBackupProtoDeleteResponse?) {
+            guard let valueParam = valueParam else { return }
+            proto.delete = valueParam.proto
+        }
+
+        public func setDelete(_ valueParam: KeyBackupProtoDeleteResponse) {
             proto.delete = valueParam.proto
         }
 
@@ -310,31 +352,68 @@ extension KeyBackupProtoResponse.KeyBackupProtoResponseBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setServiceID(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setServiceID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.serviceID = valueParam
         }
 
-        @objc public func setBackupID(_ valueParam: Data) {
+        public func setServiceID(_ valueParam: Data) {
+            proto.serviceID = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBackupID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.backupID = valueParam
         }
 
-        @objc public func setNonce(_ valueParam: Data) {
+        public func setBackupID(_ valueParam: Data) {
+            proto.backupID = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setNonce(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.nonce = valueParam
         }
 
-        @objc public func setValidFrom(_ valueParam: UInt64) {
+        public func setNonce(_ valueParam: Data) {
+            proto.nonce = valueParam
+        }
+
+        @objc
+        public func setValidFrom(_ valueParam: UInt64) {
             proto.validFrom = valueParam
         }
 
-        @objc public func setData(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setData(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.data = valueParam
         }
 
-        @objc public func setPin(_ valueParam: Data) {
+        public func setData(_ valueParam: Data) {
+            proto.data = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPin(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.pin = valueParam
         }
 
-        @objc public func setTries(_ valueParam: UInt32) {
+        public func setPin(_ valueParam: Data) {
+            proto.pin = valueParam
+        }
+
+        @objc
+        public func setTries(_ valueParam: UInt32) {
             proto.tries = valueParam
         }
 
@@ -509,11 +588,19 @@ extension KeyBackupProtoBackupRequest.KeyBackupProtoBackupRequestBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setStatus(_ valueParam: KeyBackupProtoBackupResponseStatus) {
+        @objc
+        public func setStatus(_ valueParam: KeyBackupProtoBackupResponseStatus) {
             proto.status = KeyBackupProtoBackupResponseStatusUnwrap(valueParam)
         }
 
-        @objc public func setNonce(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setNonce(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.nonce = valueParam
+        }
+
+        public func setNonce(_ valueParam: Data) {
             proto.nonce = valueParam
         }
 
@@ -637,23 +724,52 @@ extension KeyBackupProtoBackupResponse.KeyBackupProtoBackupResponseBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setServiceID(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setServiceID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.serviceID = valueParam
         }
 
-        @objc public func setBackupID(_ valueParam: Data) {
+        public func setServiceID(_ valueParam: Data) {
+            proto.serviceID = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBackupID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.backupID = valueParam
         }
 
-        @objc public func setNonce(_ valueParam: Data) {
+        public func setBackupID(_ valueParam: Data) {
+            proto.backupID = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setNonce(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.nonce = valueParam
         }
 
-        @objc public func setValidFrom(_ valueParam: UInt64) {
+        public func setNonce(_ valueParam: Data) {
+            proto.nonce = valueParam
+        }
+
+        @objc
+        public func setValidFrom(_ valueParam: UInt64) {
             proto.validFrom = valueParam
         }
 
-        @objc public func setPin(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPin(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.pin = valueParam
+        }
+
+        public func setPin(_ valueParam: Data) {
             proto.pin = valueParam
         }
 
@@ -823,19 +939,35 @@ extension KeyBackupProtoRestoreRequest.KeyBackupProtoRestoreRequestBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setStatus(_ valueParam: KeyBackupProtoRestoreResponseStatus) {
+        @objc
+        public func setStatus(_ valueParam: KeyBackupProtoRestoreResponseStatus) {
             proto.status = KeyBackupProtoRestoreResponseStatusUnwrap(valueParam)
         }
 
-        @objc public func setNonce(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setNonce(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.nonce = valueParam
         }
 
-        @objc public func setData(_ valueParam: Data) {
+        public func setNonce(_ valueParam: Data) {
+            proto.nonce = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setData(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.data = valueParam
         }
 
-        @objc public func setTries(_ valueParam: UInt32) {
+        public func setData(_ valueParam: Data) {
+            proto.data = valueParam
+        }
+
+        @objc
+        public func setTries(_ valueParam: UInt32) {
             proto.tries = valueParam
         }
 
@@ -967,11 +1099,25 @@ extension KeyBackupProtoRestoreResponse.KeyBackupProtoRestoreResponseBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setServiceID(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setServiceID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.serviceID = valueParam
         }
 
-        @objc public func setBackupID(_ valueParam: Data) {
+        public func setServiceID(_ valueParam: Data) {
+            proto.serviceID = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBackupID(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.backupID = valueParam
+        }
+
+        public func setBackupID(_ valueParam: Data) {
             proto.backupID = valueParam
         }
 

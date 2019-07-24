@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,11 +40,25 @@ public enum ProvisioningProtoError: Error {
             setBody(body)
         }
 
-        @objc public func setPublicKey(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setPublicKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.publicKey = valueParam
         }
 
-        @objc public func setBody(_ valueParam: Data) {
+        public func setPublicKey(_ valueParam: Data) {
+            proto.publicKey = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setBody(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
+            proto.body = valueParam
+        }
+
+        public func setBody(_ valueParam: Data) {
             proto.body = valueParam
         }
 
@@ -157,31 +171,74 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
             setReadReceipts(readReceipts)
         }
 
-        @objc public func setIdentityKeyPublic(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setIdentityKeyPublic(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.identityKeyPublic = valueParam
         }
 
-        @objc public func setIdentityKeyPrivate(_ valueParam: Data) {
+        public func setIdentityKeyPublic(_ valueParam: Data) {
+            proto.identityKeyPublic = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setIdentityKeyPrivate(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.identityKeyPrivate = valueParam
         }
 
-        @objc public func setNumber(_ valueParam: String) {
+        public func setIdentityKeyPrivate(_ valueParam: Data) {
+            proto.identityKeyPrivate = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setNumber(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.number = valueParam
         }
 
-        @objc public func setProvisioningCode(_ valueParam: String) {
+        public func setNumber(_ valueParam: String) {
+            proto.number = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setProvisioningCode(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.provisioningCode = valueParam
         }
 
-        @objc public func setUserAgent(_ valueParam: String) {
+        public func setProvisioningCode(_ valueParam: String) {
+            proto.provisioningCode = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setUserAgent(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
             proto.userAgent = valueParam
         }
 
-        @objc public func setProfileKey(_ valueParam: Data) {
+        public func setUserAgent(_ valueParam: String) {
+            proto.userAgent = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setProfileKey(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.profileKey = valueParam
         }
 
-        @objc public func setReadReceipts(_ valueParam: Bool) {
+        public func setProfileKey(_ valueParam: Data) {
+            proto.profileKey = valueParam
+        }
+
+        @objc
+        public func setReadReceipts(_ valueParam: Bool) {
             proto.readReceipts = valueParam
         }
 
