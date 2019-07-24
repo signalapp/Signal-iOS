@@ -33,6 +33,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureCDNReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net"
 #define contactDiscoveryURL @"https://api.directory.signal.org"
 #define keyBackupURL @"https://api.backup.signal.org"
+#define storageServiceURL @"https://storage.signal.org"
 #define kUDTrustRoot @"BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
 
 #define serviceCensorshipPrefix @"service"
@@ -59,6 +60,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define textSecureCDNReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net";
 //#define contactDiscoveryURL @"https://api-staging.directory.signal.org"
 //#define keyBackupURL @"https://api-staging.backup.signal.org"
+//#define storageServiceURL @"https://storage.signal.org" // For now, staging is using the production URL
 //#define kUDTrustRoot @"BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
 //
 //#define serviceCensorshipPrefix @"service-staging"

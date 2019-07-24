@@ -469,6 +469,13 @@ NS_ASSUME_NONNULL_BEGIN
     };
 }
 
+#pragma mark - Storage Service
+
++ (TSRequest *)storageAuthRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/storage/auth"] method:@"GET" parameters:@{}];
+}
+
 #pragma mark - Remote Attestation
 
 + (TSRequest *)remoteAttestationRequestForService:(RemoteAttestationService)service
@@ -520,7 +527,7 @@ NS_ASSUME_NONNULL_BEGIN
             path = @"v1/directory/auth";
             break;
         case RemoteAttestationServiceKeyBackup:
-            path = @"v1/storage/auth";
+            path = @"v1/backup/auth";
             break;
     }
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];

@@ -237,6 +237,36 @@ public class KeyBackupService: NSObject {
 
     // PRAGMA MARK: - Crypto
 
+    public static func encryptWithMasterKey(_ data: Data) throws -> Data {
+        guard let masterKeyData = storedMasterKey, let masterKey = OWSAES256Key(data: masterKeyData) else {
+            owsFailDebug("missing master key")
+            throw KBSError.assertion
+        }
+
+        // TODO: Maybe rename this since it's no longer profile specific
+        guard let encryptedData = Cryptography.encryptAESGCMProfileData(plainTextData: data, key: masterKey) else {
+            owsFailDebug("Failed to encrypt data")
+            throw KBSError.assertion
+        }
+
+        return encryptedData
+    }
+
+    public static func decryptWithMasterKey(_ encryptedData: Data) throws -> Data {
+        guard let masterKeyData = storedMasterKey, let masterKey = OWSAES256Key(data: masterKeyData) else {
+            owsFailDebug("missing master key")
+            throw KBSError.assertion
+        }
+
+        // TODO: Maybe rename this since it's no longer profile specific
+        guard let data = Cryptography.decryptAESGCMProfileData(encryptedData: encryptedData, key: masterKey) else {
+            owsFailDebug("failed to decrypt data")
+            throw KBSError.assertion
+        }
+
+        return data
+    }
+
     private static func assertIsOnBackgroundQueue() {
         assertOnQueue(DispatchQueue.global())
     }
