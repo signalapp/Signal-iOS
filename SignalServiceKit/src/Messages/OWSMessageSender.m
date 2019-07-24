@@ -780,7 +780,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSArray<SignalRecipient *> *recipients = [self recipientsForAddresses:recipientAddresses];
 
-    BOOL isGroupSend = (thread.isGroupThread);
+    BOOL isGroupSend = thread.isGroupThread;
     NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
     AnyPromise *sendPromise = [self sendPromiseForRecipients:recipients
                                                      message:message
