@@ -52,6 +52,9 @@ void ClearOldTemporaryDirectories(void);
 + (nullable NSString *)writeDataToTemporaryFile:(NSData *)data fileExtension:(NSString *_Nullable)fileExtension;
 
 + (nullable NSNumber *)fileSizeOfPath:(NSString *)filePath;
+
++ (nullable NSNumber *)fileSizeOfUrl:(NSURL *)fileUrl;
+
 + (void)logAttributesOfItemAtPathRecursively:(NSString *)path;
 
 @end

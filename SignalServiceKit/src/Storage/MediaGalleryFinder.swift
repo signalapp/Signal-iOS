@@ -141,7 +141,6 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         """
 
         return try! UInt.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId]) ?? 0
-
     }
 
     func enumerateMediaAttachments(range: NSRange, transaction: GRDBReadTransaction, block: @escaping (TSAttachment) -> Void) {

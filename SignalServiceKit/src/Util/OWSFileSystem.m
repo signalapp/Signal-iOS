@@ -348,6 +348,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
++ (nullable NSNumber *)fileSizeOfUrl:(NSURL *)fileUrl
+{
+    return [self fileSizeOfPath:fileUrl.path];
+}
+
 @end
 
 #pragma mark -
