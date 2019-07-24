@@ -52,13 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.finder = [OWSDisappearingMessagesFinder new];
 }
 
-- (void)tearDown
-{
-    self.dbConnection = nil;
-
-    [super tearDown];
-}
-
 - (TSMessage *)messageWithBody:(NSString *)body
               expiresInSeconds:(uint32_t)expiresInSeconds
                expireStartedAt:(uint64_t)expireStartedAt

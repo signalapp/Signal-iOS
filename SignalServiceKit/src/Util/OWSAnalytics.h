@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAnalyticsEvents.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class SDSKeyValueStore;
 
 // TODO: We probably don't need all of these levels.
 typedef NS_ENUM(NSUInteger, OWSAnalyticsSeverity) {
@@ -25,6 +27,8 @@ typedef NS_ENUM(NSUInteger, OWSAnalyticsSeverity) {
 // report user activity - especially serious bugs - without compromising user
 // privacy in any way.  We must _never_ include any identifying information.
 @interface OWSAnalytics : NSObject
+
++ (SDSKeyValueStore *)keyValueStore;
 
 // description: A non-empty string without any leading whitespace.
 //              This should conform to our analytics event naming conventions.

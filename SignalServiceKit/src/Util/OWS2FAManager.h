@@ -15,14 +15,14 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
     OWS2FAMode_V2,
 };
 
-@class OWSPrimaryStorage;
+@class SDSKeyValueStore;
 
 // This class can be safely accessed and used from any thread.
 @interface OWS2FAManager : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
++ (SDSKeyValueStore *)keyValueStore;
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 

@@ -14,24 +14,25 @@ protocol InteractionFinderAdapter {
 
     static func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: ReadTransaction) -> Bool
 
-    func mostRecentInteraction(transaction: ReadTransaction) -> TSInteraction?
-    func mostRecentInteractionForInbox(transaction: ReadTransaction) -> TSInteraction?
-
-    func sortIndex(interactionUniqueId: String, transaction: ReadTransaction) throws -> UInt?
-    func count(transaction: ReadTransaction) -> UInt
-    func unreadCount(transaction: ReadTransaction) throws -> UInt
-    func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
-    func enumerateInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
-    func enumerateUnseenInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
-
-    func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
-
-    // GRDB TODO: Gather static methods at the top of the protocol.
     static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction]
 
     static func incompleteCallIds(transaction: ReadTransaction) -> [String]
 
     static func attemptingOutInteractionIds(transaction: ReadTransaction) -> [String]
+
+    static func unreadCountInAllThreads(transaction: ReadTransaction) -> UInt
+
+    func mostRecentInteraction(transaction: ReadTransaction) -> TSInteraction?
+    func mostRecentInteractionForInbox(transaction: ReadTransaction) -> TSInteraction?
+
+    func sortIndex(interactionUniqueId: String, transaction: ReadTransaction) throws -> UInt?
+    func count(transaction: ReadTransaction) -> UInt
+    func unreadCount(transaction: ReadTransaction) -> UInt
+    func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
+    func enumerateInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
+    func enumerateUnseenInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
+
+    func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 }
 
 // MARK: -
@@ -89,6 +90,50 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
+    @objc
+    public class func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: SDSAnyReadTransaction) throws -> [TSInteraction] {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return try YAPDBInteractionFinderAdapter.interactions(withTimestamp: timestamp,
+                                                                  filter: filter,
+                                                                  transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return try GRDBInteractionFinderAdapter.interactions(withTimestamp: timestamp,
+                                                                 filter: filter,
+                                                                 transaction: grdbRead)
+        }
+    }
+
+    @objc
+    public class func incompleteCallIds(transaction: SDSAnyReadTransaction) -> [String] {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return YAPDBInteractionFinderAdapter.incompleteCallIds(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinderAdapter.incompleteCallIds(transaction: grdbRead)
+        }
+    }
+
+    @objc
+    public class func attemptingOutInteractionIds(transaction: SDSAnyReadTransaction) -> [String] {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return YAPDBInteractionFinderAdapter.attemptingOutInteractionIds(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinderAdapter.attemptingOutInteractionIds(transaction: grdbRead)
+        }
+    }
+
+    @objc
+    public class func unreadCountInAllThreads(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return YAPDBInteractionFinderAdapter.unreadCountInAllThreads(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinderAdapter.unreadCountInAllThreads(transaction: grdbRead)
+        }
+    }
+
     // MARK: - instance methods
 
     @objc
@@ -132,7 +177,8 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
-    public func unreadCount(transaction: SDSAnyReadTransaction) throws -> UInt {
+    @objc
+    public func unreadCount(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
             return yapAdapter.unreadCount(transaction: yapRead)
@@ -188,40 +234,6 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return try grdbAdapter.interaction(at: index, transaction: grdbRead)
         }
     }
-
-    @objc
-    public class func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: SDSAnyReadTransaction) throws -> [TSInteraction] {
-        switch transaction.readTransaction {
-        case .yapRead(let yapRead):
-            return try YAPDBInteractionFinderAdapter.interactions(withTimestamp: timestamp,
-                                                                  filter: filter,
-                                                                  transaction: yapRead)
-        case .grdbRead(let grdbRead):
-            return try GRDBInteractionFinderAdapter.interactions(withTimestamp: timestamp,
-                                                                 filter: filter,
-                                                                 transaction: grdbRead)
-        }
-    }
-
-    @objc
-    public class func incompleteCallIds(transaction: SDSAnyReadTransaction) -> [String] {
-        switch transaction.readTransaction {
-        case .yapRead(let yapRead):
-            return YAPDBInteractionFinderAdapter.incompleteCallIds(transaction: yapRead)
-        case .grdbRead(let grdbRead):
-            return GRDBInteractionFinderAdapter.incompleteCallIds(transaction: grdbRead)
-        }
-    }
-
-    @objc
-    public class func attemptingOutInteractionIds(transaction: SDSAnyReadTransaction) -> [String] {
-        switch transaction.readTransaction {
-        case .yapRead(let yapRead):
-            return YAPDBInteractionFinderAdapter.attemptingOutInteractionIds(transaction: yapRead)
-        case .grdbRead(let grdbRead):
-            return GRDBInteractionFinderAdapter.attemptingOutInteractionIds(transaction: grdbRead)
-        }
-    }
 }
 
 // MARK: -
@@ -247,6 +259,27 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     static func existsIncomingMessage(timestamp: UInt64, address: SignalServiceAddress, sourceDeviceId: UInt32, transaction: YapDatabaseReadTransaction) -> Bool {
         return OWSIncomingMessageFinder().existsMessage(withTimestamp: timestamp, address: address, sourceDeviceId: sourceDeviceId, transaction: transaction)
+    }
+
+    static func incompleteCallIds(transaction: YapDatabaseReadTransaction) -> [String] {
+        return OWSIncompleteCallsJob.ydb_incompleteCallIds(with: transaction)
+    }
+
+    static func attemptingOutInteractionIds(transaction: YapDatabaseReadTransaction) -> [String] {
+        return OWSFailedMessagesJob.attemptingOutMessageIds(with: transaction)
+    }
+
+    static func unreadCountInAllThreads(transaction: YapDatabaseReadTransaction) -> UInt {
+        guard let view = unreadExt(transaction) else {
+            return 0
+        }
+        return view.numberOfItemsInAllGroups()
+    }
+
+    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: YapDatabaseReadTransaction) throws -> [TSInteraction] {
+        return TSInteraction.ydb_interactions(withTimestamp: timestamp,
+                                              filter: filter,
+                                              with: transaction)
     }
 
     // MARK: - instance methods
@@ -384,28 +417,18 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return interaction
     }
 
-    static func incompleteCallIds(transaction: YapDatabaseReadTransaction) -> [String] {
-        return OWSIncompleteCallsJob.ydb_incompleteCallIds(with: transaction)
-    }
-
-    static func attemptingOutInteractionIds(transaction: YapDatabaseReadTransaction) -> [String] {
-        return OWSFailedMessagesJob.attemptingOutMessageIds(with: transaction)
-    }
-
-    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: YapDatabaseReadTransaction) throws -> [TSInteraction] {
-        return TSInteraction.ydb_interactions(withTimestamp: timestamp,
-                                              filter: filter,
-                                              with: transaction)
-    }
-
     // MARK: - private
 
     private var collection: String {
         return TSInteraction.collection()
     }
 
-    private func unreadExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction? {
+    private static func unreadExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction? {
         return transaction.safeViewTransaction(TSUnreadDatabaseViewExtensionName)
+    }
+
+    private func unreadExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction? {
+        return YAPDBInteractionFinderAdapter.unreadExt(transaction)
     }
 
     private func interactionExt(_ transaction: YapDatabaseReadTransaction) -> YapDatabaseViewTransaction? {
@@ -485,6 +508,83 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         return exists
     }
 
+    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .timestamp) = ?
+        """
+        let arguments: [DatabaseValueConvertible] = [timestamp]
+
+        let unfiltered = try TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction).all()
+        return unfiltered.filter(filter)
+    }
+
+    static func incompleteCallIds(transaction: ReadTransaction) -> [String] {
+        let sql: String = """
+        SELECT \(interactionColumn: .uniqueId)
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .recordType) = ?
+        AND (
+        \(interactionColumn: .callType) = ?
+        OR \(interactionColumn: .callType) = ?
+        )
+        """
+        let statementArguments: StatementArguments = [
+            SDSRecordType.call.rawValue,
+            RPRecentCallType.outgoingIncomplete.rawValue,
+            RPRecentCallType.incomingIncomplete.rawValue
+        ]
+        var result = [String]()
+        do {
+            result = try String.fetchAll(transaction.database,
+                                         sql: sql,
+                                         arguments: statementArguments)
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+        return result
+    }
+
+    static func attemptingOutInteractionIds(transaction: ReadTransaction) -> [String] {
+        let sql: String = """
+        SELECT \(interactionColumn: .uniqueId)
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .storedMessageState) = ?
+        """
+        var result = [String]()
+        do {
+            let cursor = try String.fetchCursor(transaction.database,
+                                                sql: sql,
+                                                arguments: [TSOutgoingMessageState.sending.rawValue])
+            while let uniqueId = try cursor.next() {
+                result.append(uniqueId)
+            }
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+        return result
+    }
+
+    static func unreadCountInAllThreads(transaction: ReadTransaction) -> UInt {
+        do {
+            guard let count = try UInt.fetchOne(transaction.database,
+                                                sql: """
+                SELECT COUNT(*)
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .read) is 0
+                """,
+                arguments: []) else {
+                    owsFailDebug("count was unexpectedly nil")
+                    return 0
+            }
+            return count
+        } catch {
+            owsFailDebug("error: \(error)")
+            return 0
+        }
+    }
+
     // MARK: - instance methods
 
     func mostRecentInteraction(transaction: GRDBReadTransaction) -> TSInteraction? {
@@ -545,18 +645,24 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
     }
 
-    func unreadCount(transaction: GRDBReadTransaction) throws -> UInt {
-        guard let count = try UInt.fetchOne(transaction.database,
-                                            sql: """
-            SELECT COUNT(*)
-            FROM \(InteractionRecord.databaseTableName)
-            WHERE \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .read) is 0
-            """,
-            arguments: [threadUniqueId]) else {
-                throw assertionError("count was unexpectedly nil")
+    func unreadCount(transaction: GRDBReadTransaction) -> UInt {
+        do {
+            guard let count = try UInt.fetchOne(transaction.database,
+                                                sql: """
+                SELECT COUNT(*)
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .threadUniqueId) = ?
+                AND \(interactionColumn: .read) is 0
+                """,
+                arguments: [threadUniqueId]) else {
+                    owsFailDebug("count was unexpectedly nil")
+                    return 0
+            }
+            return count
+        } catch {
+            owsFailDebug("error: \(error)")
+            return 0
         }
-        return count
     }
 
     func enumerateInteractionIds(transaction: GRDBReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws {
@@ -622,64 +728,6 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         let arguments: StatementArguments = [threadUniqueId, index]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
-
-    static func interactions(withTimestamp timestamp: UInt64, filter: @escaping (TSInteraction) -> Bool, transaction: ReadTransaction) throws -> [TSInteraction] {
-        let sql = """
-        SELECT *
-        FROM \(InteractionRecord.databaseTableName)
-        WHERE \(interactionColumn: .timestamp) = ?
-        """
-        let arguments: [DatabaseValueConvertible] = [timestamp]
-
-        let unfiltered = try TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction).all()
-        return unfiltered.filter(filter)
-    }
-
-    static func incompleteCallIds(transaction: ReadTransaction) -> [String] {
-        let sql: String = """
-        SELECT \(interactionColumn: .uniqueId)
-        FROM \(InteractionRecord.databaseTableName)
-        WHERE \(interactionColumn: .recordType) = ?
-        AND (
-              \(interactionColumn: .callType) = ?
-              OR \(interactionColumn: .callType) = ?
-            )
-        """
-        let statementArguments: StatementArguments = [
-            SDSRecordType.call.rawValue,
-            RPRecentCallType.outgoingIncomplete.rawValue,
-            RPRecentCallType.incomingIncomplete.rawValue
-        ]
-        var result = [String]()
-        do {
-             result = try String.fetchAll(transaction.database,
-                                          sql: sql,
-                                          arguments: statementArguments)
-        } catch {
-            owsFailDebug("error: \(error)")
-        }
-        return result
-    }
-
-    static func attemptingOutInteractionIds(transaction: ReadTransaction) -> [String] {
-        let sql: String = """
-        SELECT \(interactionColumn: .uniqueId)
-        FROM \(InteractionRecord.databaseTableName)
-        WHERE \(interactionColumn: .storedMessageState) = ?
-        """
-        var result = [String]()
-        do {
-            let cursor = try String.fetchCursor(transaction.database,
-                                                sql: sql,
-                                                arguments: [TSOutgoingMessageState.sending.rawValue])
-            while let uniqueId = try cursor.next() {
-                result.append(uniqueId)
-            }
-        } catch {
-            owsFailDebug("error: \(error)")
-        }
-        return result
-   }
 }
 
 private func assertionError(_ description: String) -> Error {

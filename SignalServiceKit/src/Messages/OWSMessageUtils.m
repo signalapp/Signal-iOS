@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageUtils.h"
@@ -17,46 +17,38 @@
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
 #import "UIImage+OWS.h"
-#import <YapDatabase/YapDatabase.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageUtils ()
+@implementation OWSMessageUtils
 
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
+#pragma mark - Dependencies
 
-@end
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
 
 #pragma mark -
-
-@implementation OWSMessageUtils
 
 + (instancetype)sharedManager
 {
     static OWSMessageUtils *sharedMyManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedMyManager = [[self alloc] initDefault];
+        sharedMyManager = [self new];
     });
     return sharedMyManager;
 }
 
-- (instancetype)initDefault
-{
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-
-    return [self initWithPrimaryStorage:primaryStorage];
-}
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)init
 {
     self = [super init];
 
     if (!self) {
         return self;
     }
-
-    _dbConnection = primaryStorage.newDatabaseConnection;
 
     OWSSingletonAssert();
 
@@ -66,8 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)unreadMessagesCount
 {
     __block NSUInteger numberOfItems;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        numberOfItems = [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInAllGroups];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        numberOfItems = [InteractionFinder unreadCountInAllThreadsWithTransaction:transaction];
     }];
 
     return numberOfItems;
@@ -76,10 +68,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)unreadMessagesCountExcept:(TSThread *)thread
 {
     __block NSUInteger numberOfItems;
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        id databaseView = [transaction ext:TSUnreadDatabaseViewExtensionName];
-        OWSAssertDebug(databaseView);
-        numberOfItems = ([databaseView numberOfItemsInAllGroups] - [databaseView numberOfItemsInGroup:thread.uniqueId]);
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSUInteger allCount = [InteractionFinder unreadCountInAllThreadsWithTransaction:transaction];
+        InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+        NSUInteger threadCount = [interactionFinder unreadCountWithTransaction:transaction];
+        numberOfItems = (allCount - threadCount);
     }];
 
     return numberOfItems;

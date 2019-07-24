@@ -15,6 +15,7 @@ import SignalCoreKit
 public class SDSKeyValueStore: NSObject {
 
     // By default, all reads/writes use this collection.
+    @objc
     public let collection: String
 
     static let collectionColumn = SDSColumnMetadata(columnName: "collection", columnType: .unicodeString, isOptional: false)
@@ -269,6 +270,24 @@ public class SDSKeyValueStore: NSObject {
                     continue
                 }
                 block(key, value, &stop)
+            }
+        }
+    }
+
+    @objc
+    public func enumerateKeys(transaction: SDSAnyReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            ydbTransaction.enumerateKeys(inCollection: collection) { (key: String, stopPtr: UnsafeMutablePointer<ObjCBool>) in
+                block(key, stopPtr)
+            }
+        case .grdbRead(let grdbRead):
+            var stop: ObjCBool = false
+            for key in allKeys(grdbTransaction: grdbRead) {
+                guard !stop.boolValue else {
+                    return
+                }
+                block(key, &stop)
             }
         }
     }

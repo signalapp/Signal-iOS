@@ -69,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
         MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithDatabaseStorage:databaseStorage];
         OWSMessageManager *messageManager = [OWSMessageManager new];
-        OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSBlockingManager *blockingManager = [OWSBlockingManager new];
         OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
         SSKSessionStore *sessionStore = [SSKSessionStore new];
         SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
@@ -81,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSMessageReceiver *messageReceiver = [OWSMessageReceiver new];
         TSSocketManager *socketManager = [[TSSocketManager alloc] init];
         TSAccountManager *tsAccountManager = [TSAccountManager new];
-        OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWS2FAManager *ows2FAManager = [OWS2FAManager new];
         OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
         OWSReadReceiptManager *readReceiptManager = [OWSReadReceiptManager new];
         OWSOutgoingReceiptManager *outgoingReceiptManager =
