@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSDevice_DidChange = @"OWSDevice_DidChange";
+NSString *const NSNotificationName_OWSDeviceDidChange = @"NSNotificationName_OWSDeviceDidChange";
 
 uint32_t const OWSDevicePrimaryDeviceId = 1;
 NSString *const kOWSPrimaryStorage_OWSDeviceCollection = @"kTSStorageManager_OWSDeviceCollection";
@@ -205,7 +205,9 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 - (void)postDidChangeWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [transaction addCompletionWithBlock:^{
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSDevice_DidChange object:nil userInfo:nil];
+        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_OWSDeviceDidChange
+                                                                 object:nil
+                                                               userInfo:nil];
     }];
 }
 

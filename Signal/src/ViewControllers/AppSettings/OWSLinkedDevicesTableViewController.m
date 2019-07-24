@@ -87,7 +87,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceDidChange:)
-                                                 name:OWSDevice_DidChange
+                                                 name:NSNotificationName_OWSDeviceDidChange
                                                object:nil];
 
     self.refreshControl = [UIRefreshControl new];
