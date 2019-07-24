@@ -136,10 +136,10 @@ class ThreadMapping: NSObject {
     }
 
     func update(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) throws {
-        archiveCount = try threadFinder.threadCount(isArchived: true, transaction: transaction)
-        inboxCount = try threadFinder.threadCount(isArchived: false, transaction: transaction)
+        archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
+        inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
         var newThreads: [TSThread] = []
-        try threadFinder.enumerateThreads(isArchived: isViewingArchive, transaction: transaction) { thread in
+        try threadFinder.enumerateVisibleThreads(isArchived: isViewingArchive, transaction: transaction) { thread in
             newThreads.append(thread)
         }
         threads = newThreads
