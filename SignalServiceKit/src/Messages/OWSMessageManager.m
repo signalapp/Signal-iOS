@@ -1531,6 +1531,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) return;
     
     // If we're already friends then there's no point in continuing
+    // TODO: We'll need to fix this up if we ever start using Sync messages
+    // Currently it'll use `envelope.source` but with sync messages we need to use the message sender id
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
     if (thread.isContactFriend) return;
     
