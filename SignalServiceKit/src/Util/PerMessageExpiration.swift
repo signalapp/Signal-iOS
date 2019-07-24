@@ -485,7 +485,7 @@ class YAPDBPerMessageExpirationFinder: PerMessageExpirationFinder {
             return
         }
 
-        dbView.enumerateKeysAndObjects(inGroup: TSPerMessageExpirationMessagesGroup) { (_: String, _: String, object: Any, _: UInt, stopPointer: UnsafeMutablePointer<ObjCBool>) in
+        dbView.safe_enumerateKeysAndObjects(inGroup: TSPerMessageExpirationMessagesGroup, extensionName: TSPerMessageExpirationMessagesDatabaseViewExtensionName) { (_: String, _: String, object: Any, _: UInt, stopPointer: UnsafeMutablePointer<ObjCBool>) in
             guard let message = object as? TSMessage else {
                 owsFailDebug("Invalid database entity: \(type(of: object)).")
                 return

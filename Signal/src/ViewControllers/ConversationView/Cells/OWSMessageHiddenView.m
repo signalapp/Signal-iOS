@@ -498,9 +498,9 @@ NS_ASSUME_NONNULL_BEGIN
             return @"play-filled-24";
         case PerMessageExpirationState_OutgoingFailed:
             return @"arrow-down-circle-outline-24";
-        case PerMessageExpirationState_OutgoingSending:
         case PerMessageExpirationState_OutgoingSentExpired:
             return @"play-outline-24";
+        case PerMessageExpirationState_OutgoingSending:
         case PerMessageExpirationState_OutgoingSentAvailable:
             return @"play-filled-24";
         case PerMessageExpirationState_IncomingInvalidContent:
