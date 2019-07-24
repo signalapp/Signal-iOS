@@ -129,6 +129,30 @@ class SDSKeyValueStoreTest: SSKBaseTestSwift {
             XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
         }
 
+        self.write { transaction in
+            let key = "date edge cases"
+
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+
+            let date1 = Date()
+            store.setDate(date1, key: key, transaction: transaction)
+            XCTAssertTrue(store.hasValue(forKey: key, transaction: transaction))
+            XCTAssertEqual(date1.timeIntervalSince1970,
+                           store.getDate(key, transaction: transaction)?.timeIntervalSince1970)
+
+            store.removeValue(forKey: key, transaction: transaction)
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+
+            let date2 = Date()
+            store.setObject(date2, key: key, transaction: transaction)
+            XCTAssertTrue(store.hasValue(forKey: key, transaction: transaction))
+            XCTAssertEqual(date2.timeIntervalSince1970,
+                           store.getDate(key, transaction: transaction)?.timeIntervalSince1970)
+
+            store.removeValue(forKey: key, transaction: transaction)
+            XCTAssertFalse(store.hasValue(forKey: key, transaction: transaction))
+        }
+
         let bytes = Randomness.generateRandomBytes(32)!
         self.write { transaction in
             let key = "data"

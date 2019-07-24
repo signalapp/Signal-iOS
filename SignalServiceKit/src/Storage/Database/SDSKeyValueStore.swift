@@ -45,10 +45,25 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public func hasValue(forKey key: String, transaction: SDSAnyReadTransaction) -> Bool {
-        if let _: AnyObject = read(key, transaction: transaction) {
-            return true
-        } else {
-            return false
+        switch transaction.readTransaction {
+        case .yapRead(let ydbTransaction):
+            return ydbTransaction.hasObject(forKey: key, inCollection: collection)
+        case .grdbRead(let grdbTransaction):
+            do {
+                let count = try UInt.fetchOne(grdbTransaction.database,
+                                              sql: """
+                    SELECT
+                    COUNT(*)
+                    FROM \(SDSKeyValueStore.table.tableName)
+                    WHERE \(SDSKeyValueStore.keyColumn.columnName) = ?
+                    AND \(SDSKeyValueStore.collectionColumn.columnName) == ?
+                    """,
+                                              arguments: [key, collection]) ?? 0
+                return count > 0
+            } catch {
+                owsFailDebug("Read failed.")
+                return false
+            }
         }
     }
 
@@ -72,7 +87,16 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public func getDate(_ key: String, transaction: SDSAnyReadTransaction) -> Date? {
-        guard let epochInterval: NSNumber = read(key, transaction: transaction) else {
+        // Our legacy methods sometimes stored dates as NSNumber and
+        // sometimes as NSDate, so we are permissive when decoding.
+        guard let object: NSObject = read(key, transaction: transaction) else {
+            return nil
+        }
+        if let date = object as? Date {
+            return date
+        }
+        guard let epochInterval = object as? NSNumber else {
+            owsFailDebug("Could not decode value: \(type(of: object)).")
             return nil
         }
         return Date(timeIntervalSince1970: epochInterval.doubleValue)
@@ -341,29 +365,33 @@ public class SDSKeyValueStore: NSObject {
     // MARK: - Internal Methods
 
     private func read<T>(_ key: String, transaction: SDSAnyReadTransaction) -> T? {
+        guard let rawObject = readRawObject(key, transaction: transaction) else {
+            return nil
+        }
+        guard let object = rawObject as? T else {
+            owsFailDebug("Value for key: \(key) has unexpected type: \(type(of: rawObject)).")
+            return nil
+        }
+        return object
+    }
+
+    private func readRawObject(_ key: String, transaction: SDSAnyReadTransaction) -> Any? {
         // YDB values are serialized by YDB.
         // GRDB values are serialized to data by this class.
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
-            guard let rawObject = ydbTransaction.object(forKey: key, inCollection: collection) else {
-                return nil
-            }
-            guard let object = rawObject as? T else {
-                owsFailDebug("Value for key: \(key) has unexpected type: \(type(of: rawObject)).")
-                return nil
-            }
-            return object
+            return ydbTransaction.object(forKey: key, inCollection: collection)
         case .grdbRead:
             guard let encoded = readData(key, transaction: transaction) else {
                 return nil
             }
 
             do {
-                guard let decoded = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) as? T else {
+                guard let rawObject = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(encoded) else {
                     owsFailDebug("Could not decode value.")
                     return nil
                 }
-                return decoded
+                return rawObject
             } catch {
                 owsFailDebug("Decode failed.")
                 return nil
