@@ -139,15 +139,6 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
     return [[YapDatabaseSecondaryIndex alloc] initWithSetup:setup handler:handler versionTag:nil];
 }
 
-#ifdef DEBUG
-// Useful for tests, don't use in app startup path because it's slow.
-- (void)blockingRegisterDatabaseExtensions
-{
-    [self.primaryStorage registerExtension:[self.class indexDatabaseExtension]
-                                  withName:OWSIncompleteCallsJobCallTypeIndex];
-}
-#endif
-
 + (NSString *)databaseExtensionName
 {
     return OWSIncompleteCallsJobCallTypeIndex;

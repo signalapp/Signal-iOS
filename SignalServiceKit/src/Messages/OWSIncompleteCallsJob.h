@@ -16,13 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)databaseExtensionName;
 + (void)asyncRegisterDatabaseExtensionsWithPrimaryStorage:(OWSStorage *)storage;
 
-#ifdef DEBUG
-/**
- * Only use the sync version for testing, generally we'll want to register extensions async
- */
-- (void)blockingRegisterDatabaseExtensions;
-#endif
-
 @end
 
 NS_ASSUME_NONNULL_END

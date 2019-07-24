@@ -42,9 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super setUp];
 
-    // TODO: This shouldn't be necessary.
-    //    [OWSDisappearingMessagesFinder blockingRegisterDatabaseExtensions:self.primaryStorage];
-
     self.thread = [TSContactThread getOrCreateThreadWithContactId:@"fake-thread-id"];
     self.now = [NSDate ows_millisecondTimeStamp];
 
