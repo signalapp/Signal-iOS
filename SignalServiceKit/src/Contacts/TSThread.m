@@ -391,7 +391,16 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 {
     OWSAssertDebug(interaction);
 
+    if (!interaction.shouldBeSaved) {
+        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
+        return NO;
+    }
     if (interaction.isDynamicInteraction) {
+        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
+        return NO;
+    }
+    if ([interaction isKindOfClass:[OWSOutgoingSyncMessage class]]) {
+        OWSFailDebug(@"Unexpected interaction type: %@", interaction.class);
         return NO;
     }
 
