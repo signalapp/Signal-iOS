@@ -532,10 +532,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (nullable NSArray<SignalServiceAddress *> *)unsentRecipientsForMessage:(TSOutgoingMessage *)message
-                                                                  thread:(nullable TSThread *)thread
+                                                                  thread:(TSThread *)thread
                                                                    error:(NSError **)errorHandle
 {
     OWSAssertDebug(message);
+    OWSAssertDebug(thread);
     OWSAssertDebug(errorHandle);
 
     NSMutableSet<SignalServiceAddress *> *recipientAddresses = [NSMutableSet new];
@@ -615,12 +616,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (AnyPromise *)sendPromiseForRecipients:(NSArray<SignalRecipient *> *)recipients
                                  message:(TSOutgoingMessage *)message
-                                  thread:(nullable TSThread *)thread
+                                  thread:(TSThread *)thread
                        senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
                               sendErrors:(NSMutableArray<NSError *> *)sendErrors
 {
     OWSAssertDebug(recipients.count > 0);
     OWSAssertDebug(message);
+    OWSAssertDebug(thread);
     OWSAssertDebug(sendErrors);
 
     NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
@@ -854,7 +856,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSAssertDebug(thread != nil);
 
         // For some legacy sync messages, thread may be nil.
-        // In this case, we should use the "local" thread.
+        // In this case, we should try to use the "local" thread.
         BOOL isSyncMessage = [message isKindOfClass:[OWSOutgoingSyncMessage class]];
         if (thread == nil && isSyncMessage) {
             thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
@@ -1308,7 +1310,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         dispatch_async([OWSDispatch sendingQueue], ^{
             if (![messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-                TSThread *_Nullable thread = messageSend.thread;
+                TSThread *thread = messageSend.thread;
                 OWSAssertDebug(thread);
                 [self unregisteredRecipient:recipient message:message thread:thread];
             }
