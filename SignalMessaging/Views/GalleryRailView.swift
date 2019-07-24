@@ -200,8 +200,18 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
         scrollView.subviews.forEach { $0.removeFromSuperview() }
 
+        let animatedReveal: Bool
+        if #available(iOS 12, *) {
+            animatedReveal = true
+        } else {
+            // This animation is broken on iOS11
+            // Often times the media rail will "drop in" from the top of the screen
+            // rather than growing from the top of the toolbar. It's better to skip this
+            // animation all together.
+            animatedReveal = false
+        }
         animate(animationDuration: animationDuration,
-                animated: animated,
+                animated: animatedReveal,
                 animations: {
             self.isHidden = false
         })
