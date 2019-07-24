@@ -147,7 +147,9 @@ extension SSKWebSocketImpl: WebSocketDelegate {
             websocketError = SSKWebSocketError(underlyingError: wsError)
         case let nsError as NSError:
             // Assert that error is either a Starscream.WSError or an OS level networking error
-            assert(nsError.domain == "NSPOSIXErrorDomain" || nsError.domain == kCFErrorDomainCFNetwork as String)
+            assert(nsError.domain == "NSPOSIXErrorDomain"
+                || nsError.domain == kCFErrorDomainCFNetwork as String
+                || nsError.domain == NSOSStatusErrorDomain as String)
             websocketError = error
         default:
             assert(error == nil, "unexpected error type: \(String(describing: error))")
