@@ -32,6 +32,7 @@
 - (void)setUp
 {
     [super setUp];
+
     // Register views, etc.
     [OWSPrimaryStorage registerExtensionsWithMigrationBlock:^{
     }];

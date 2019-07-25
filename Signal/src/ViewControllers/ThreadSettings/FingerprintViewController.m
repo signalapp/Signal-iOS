@@ -91,6 +91,15 @@ typedef void (^CustomLayoutBlock)(void);
 
 @implementation FingerprintViewController
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 + (void)presentFromViewController:(UIViewController *)viewController address:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
@@ -524,21 +533,19 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)verifyUnverifyButtonTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                BOOL isVerified =
-                    [[OWSIdentityManager sharedManager] verificationStateForAddress:self.address
-                                                                        transaction:transaction.asAnyWrite]
-                    == OWSVerificationStateVerified;
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            BOOL isVerified =
+                [[OWSIdentityManager sharedManager] verificationStateForAddress:self.address transaction:transaction]
+                == OWSVerificationStateVerified;
 
-                OWSVerificationState newVerificationState
-                    = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
-                [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
-                                                             identityKey:self.identityKey
-                                                                 address:self.address
-                                                   isUserInitiatedChange:YES
-                                                             transaction:transaction.asAnyWrite];
-            }];
+            OWSVerificationState newVerificationState
+                = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
+            [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
+                                                         identityKey:self.identityKey
+                                                             address:self.address
+                                               isUserInitiatedChange:YES
+                                                         transaction:transaction];
+        }];
 
         [self dismissViewControllerAnimated:YES completion:nil];
     }
