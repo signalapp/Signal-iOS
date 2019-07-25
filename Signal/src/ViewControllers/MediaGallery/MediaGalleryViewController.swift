@@ -398,7 +398,7 @@ extension MediaGalleryNavigationController: MediaPageViewDelegate {
             dismiss(animated: isAnimated, completion: completion)
         case .tileFirst:
             setViewControllers([tileViewController, mediaPageViewController], animated: false)
-            popViewController(animated: true, completion: completion)
+            popViewController(animated: isAnimated, completion: completion)
         }
     }
 }
