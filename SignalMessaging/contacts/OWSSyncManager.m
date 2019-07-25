@@ -274,13 +274,15 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                 // De-bounce.  It's okay if we ignore some new changes;
                 // `sendSyncContactsMessageIfPossible` is called fairly
                 // often so we'll sync soon.
-                return;
+                return resolve(@(1));
             }
 
             TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
             if (thread == nil) {
                 OWSFailDebug(@"Missing thread.");
-                return;
+                NSError *error
+                    = OWSErrorWithCodeDescription(OWSErrorCodeContactSyncFailed, @"Could not sync contacts.");
+                return resolve(error);
             }
 
             OWSSyncContactsMessage *syncContactsMessage =
@@ -300,15 +302,16 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
             if (!messageData) {
                 OWSFailDebug(@"Failed to serialize contacts sync message.");
-                return;
+                NSError *error
+                    = OWSErrorWithCodeDescription(OWSErrorCodeContactSyncFailed, @"Could not sync contacts.");
+                return resolve(error);
             }
 
             NSData *_Nullable messageHash = [self hashForMessageData:messageData];
             if (skipIfRedundant && messageHash != nil && lastMessageHash != nil &&
                 [lastMessageHash isEqual:messageHash]) {
                 // Ignore redundant contacts sync message.
-                OWSLogVerbose(@"---");
-                return;
+                return resolve(@(1));
             }
 
             if (debounce) {
@@ -336,9 +339,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                         if (debounce) {
                             self.isRequestInFlight = NO;
                         }
-                    });
 
-                    resolve(@(1));
+                        resolve(@(1));
+                    });
                 }
                 failure:^(NSError *error) {
                     OWSLogError(@"Failed to send contacts sync message with error: %@", error);
@@ -347,9 +350,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                         if (debounce) {
                             self.isRequestInFlight = NO;
                         }
-                    });
 
-                    resolve(error);
+                        resolve(error);
+                    });
                 }];
         });
     }];
