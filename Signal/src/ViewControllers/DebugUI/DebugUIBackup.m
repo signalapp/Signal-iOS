@@ -30,6 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
     return AppEnvironment.shared.backup;
 }
 
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark - Factory Methods
 
 - (NSString *)name
@@ -175,27 +180,23 @@ NS_ASSUME_NONNULL_BEGIN
     __block unsigned long long interactionSizeTotal = 0;
     __block unsigned long long attachmentCount = 0;
     __block unsigned long long attachmentSizeTotal = 0;
-    [[OWSPrimaryStorage.sharedManager newDatabaseConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [transaction enumerateKeysAndObjectsInCollection:[TSInteraction collection]
-                                              usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                                  TSInteraction *interaction = object;
-                                                  interactionCount++;
-                                                  NSData *_Nullable data =
-                                                      [NSKeyedArchiver archivedDataWithRootObject:interaction];
-                                                  OWSAssertDebug(data);
-                                                  ows_add_overflow(
-                                                      interactionSizeTotal, data.length, &interactionSizeTotal);
-                                              }];
-        [transaction enumerateKeysAndObjectsInCollection:[TSAttachment collection]
-                                              usingBlock:^(NSString *key, id object, BOOL *stop) {
-                                                  TSAttachment *attachment = object;
-                                                  attachmentCount++;
-                                                  NSData *_Nullable data =
-                                                      [NSKeyedArchiver archivedDataWithRootObject:attachment];
-                                                  OWSAssertDebug(data);
-                                                  ows_add_overflow(
-                                                      attachmentSizeTotal, data.length, &attachmentSizeTotal);
-                                              }];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [TSInteraction
+            anyEnumerateWithTransaction:transaction
+                                  block:^(TSInteraction *interaction, BOOL *stop) {
+                                      interactionCount++;
+                                      NSData *_Nullable data = [NSKeyedArchiver archivedDataWithRootObject:interaction];
+                                      OWSAssertDebug(data);
+                                      ows_add_overflow(interactionSizeTotal, data.length, &interactionSizeTotal);
+                                  }];
+        [TSAttachment
+            anyEnumerateWithTransaction:transaction
+                                  block:^(TSAttachment *attachment, BOOL *stop) {
+                                      attachmentCount++;
+                                      NSData *_Nullable data = [NSKeyedArchiver archivedDataWithRootObject:attachment];
+                                      OWSAssertDebug(data);
+                                      ows_add_overflow(attachmentSizeTotal, data.length, &attachmentSizeTotal);
+                                  }];
     }];
 
     OWSLogInfo(@"interactionCount: %llu", interactionCount);
@@ -221,15 +222,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"");
 
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [transaction removeAllObjectsInCollection:[OWSBackupFragment collection]];
-        }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [OWSBackupFragment anyRemoveAllWithInstantationWithTransaction:transaction];
+    }];
 }
 
 + (void)logBackupMetadataCache
 {
-    [self.backup logBackupMetadataCache:OWSPrimaryStorage.sharedManager.newDatabaseConnection];
+    [self.backup logBackupMetadataCache];
 }
 
 + (void)uploadCKBatch:(NSUInteger)count

@@ -257,11 +257,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     return SDSDatabaseStorage.shared;
 }
 
-- (YapDatabaseConnection *)editingDatabaseConnection
-{
-    return self.primaryStorage.dbReadWriteConnection;
-}
-
 - (OWSContactsManager *)contactsManager
 {
     return (OWSContactsManager *)SSKEnvironment.shared.contactsManager;

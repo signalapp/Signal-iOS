@@ -74,7 +74,6 @@
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
@@ -285,11 +284,6 @@ typedef enum : NSUInteger {
 - (OWSBlockingManager *)blockingManager
 {
     return [OWSBlockingManager sharedManager];
-}
-
-- (OWSPrimaryStorage *)primaryStorage
-{
-    return SSKEnvironment.shared.primaryStorage;
 }
 
 - (TSNetworkManager *)networkManager
