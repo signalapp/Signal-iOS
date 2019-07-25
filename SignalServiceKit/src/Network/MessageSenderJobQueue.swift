@@ -200,7 +200,9 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     // MARK: OWSOperation
 
     override public func run() {
-        self.messageSender.send(message, success: reportSuccess, failure: reportError)
+        self.messageSender.send(message,
+                                success: reportSuccess,
+                                failure: reportError(withUndefinedRetry:))
     }
 
     override public func didSucceed() {

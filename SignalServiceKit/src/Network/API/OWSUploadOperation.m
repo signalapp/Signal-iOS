@@ -4,7 +4,7 @@
 
 #import "OWSUploadOperation.h"
 #import "MIMETypeUtil.h"
-#import "NSError+MessageSending.h"
+#import "NSError+OWSOperation.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSDispatch.h"
 #import "OWSError.h"

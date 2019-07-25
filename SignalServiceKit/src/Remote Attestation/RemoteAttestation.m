@@ -3,7 +3,7 @@
 //
 
 #import "RemoteAttestation.h"
-#import "NSError+MessageSending.h"
+#import "NSError+OWSOperation.h"
 #import "OWSError.h"
 #import "OWSRequestFactory.h"
 #import "RemoteAttestationQuote.h"

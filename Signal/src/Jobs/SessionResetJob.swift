@@ -136,7 +136,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             self.reportSuccess()
         }.catch { error in
             Logger.error("sending error: \(error.localizedDescription)")
-            self.reportError(error)
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 

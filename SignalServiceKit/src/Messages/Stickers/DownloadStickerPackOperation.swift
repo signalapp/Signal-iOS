@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 class DownloadStickerPackOperation: CDNDownloadOperation {
 
@@ -37,35 +38,36 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
         let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)/manifest.proto"
 
-        tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDownloadSize)
-            .done(on: DispatchQueue.global()) { [weak self] data in
-                guard let self = self else {
-                    return
-                }
+        firstly {
+            try tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDownloadSize)
+        }.done(on: DispatchQueue.global()) { [weak self] data in
+            guard let self = self else {
+                return
+            }
 
-                do {
-                    let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerPackInfo.packKey)
+            do {
+                let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerPackInfo.packKey)
 
-                    let stickerPack = try self.parseStickerPackManifest(stickerPackInfo: self.stickerPackInfo,
-                                                                        manifestData: plaintext)
+                let stickerPack = try self.parseStickerPackManifest(stickerPackInfo: self.stickerPackInfo,
+                                                                    manifestData: plaintext)
 
-                    self.success(stickerPack)
-                    self.reportSuccess()
-                } catch let error as NSError {
-                    owsFailDebug("Decryption failed: \(error)")
+                self.success(stickerPack)
+                self.reportSuccess()
+            } catch let error as NSError {
+                owsFailDebug("Decryption failed: \(error)")
 
-                    self.markUrlPathAsCorrupt(urlPath)
+                self.markUrlPathAsCorrupt(urlPath)
 
-                    // Fail immediately; do not retry.
-                    error.isRetryable = false
-                    return self.reportError(error)
-                }
-            }.catch(on: DispatchQueue.global()) { [weak self] error in
-                guard let self = self else {
-                    return
-                }
+                // Fail immediately; do not retry.
+                error.isRetryable = false
                 return self.reportError(error)
-            }.retainUntilComplete()
+            }
+        }.catch(on: DispatchQueue.global()) { [weak self] error in
+            guard let self = self else {
+                return
+            }
+            return self.reportError(withUndefinedRetry: error)
+        }.retainUntilComplete()
     }
 
     private func parseStickerPackManifest(stickerPackInfo: StickerPackInfo,

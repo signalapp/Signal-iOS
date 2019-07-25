@@ -12,6 +12,8 @@ typedef NS_ENUM(NSInteger, OWSOperationState) {
     OWSOperationStateFinished
 };
 
+extern NSErrorUserInfoKey const OWSOperationIsRetryableKey;
+
 // A base class for implementing retryable operations.
 // To utilize the retryable behavior:
 // Set remainingRetries to something greater than 0, and when you're reporting an error,
@@ -83,7 +85,7 @@ typedef NS_ENUM(NSInteger, OWSOperationState) {
 //
 // If the error is terminal, and you want to avoid retry, report an error with `error.isFatal = YES` otherwise the
 // operation will retry if possible.
-- (void)reportError:(NSError *)error;
+- (void)reportError:(NSError *)error NS_REFINED_FOR_SWIFT;
 
 @end
 

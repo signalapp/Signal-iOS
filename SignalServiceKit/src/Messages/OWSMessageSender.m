@@ -6,7 +6,7 @@
 #import "AppContext.h"
 #import "NSData+keyVersionByte.h"
 #import "NSData+messagePadding.h"
-#import "NSError+MessageSending.h"
+#import "NSError+OWSOperation.h"
 #import "OWSBackgroundTask.h"
 #import "OWSBlockingManager.h"
 #import "OWSContact.h"

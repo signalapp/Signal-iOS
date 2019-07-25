@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSError (MessageSending)
+@interface NSError (OWSOperation)
 
 @property (nonatomic) BOOL isRetryable;
 @property (nonatomic) BOOL isFatal;

@@ -37,24 +37,18 @@ class CDNDownloadOperation: OWSOperation {
 
     let kMaxStickerDownloadSize: UInt = 100 * 1000
 
-    func tryToDownload(urlPath: String, maxDownloadSize: UInt) -> Promise<Data> {
+    func tryToDownload(urlPath: String, maxDownloadSize: UInt) throws -> Promise<Data> {
         guard !isCorrupt(urlPath: urlPath) else {
             Logger.warn("Skipping download of corrupt data.")
-            var error = StickerError.corruptData
-            error.isRetryable = false
-            return Promise(error: error)
+            throw StickerError.corruptData
         }
         guard let baseUrl = cdnSessionManager.baseURL else {
             owsFailDebug("Missing baseUrl.")
-            var error = StickerError.assertionFailure
-            error.isRetryable = false
-            return Promise(error: error)
+            throw StickerError.assertionFailure
         }
         guard let url = URL(string: urlPath, relativeTo: baseUrl) else {
             owsFailDebug("Invalid url.")
-            var error = StickerError.assertionFailure
-            error.isRetryable = false
-            return Promise(error: error)
+            throw StickerError.assertionFailure
         }
 
         var requestError: NSError?
@@ -65,7 +59,7 @@ class CDNDownloadOperation: OWSOperation {
         if let error = requestError {
             owsFailDebug("Could not create request failed: \(error)")
             error.isRetryable = false
-            return Promise(error: error)
+            throw error
         }
         request.setValue(OWSMimeTypeApplicationOctetStream, forHTTPHeaderField: "Content-Type")
 
@@ -93,10 +87,7 @@ class CDNDownloadOperation: OWSOperation {
                                                     let abortDownload = { (message: String) -> Void in
                                                         owsFailDebug(message)
                                                         task.cancel()
-
-                                                        var error = StickerError.assertionFailure
-                                                        error.isRetryable = false
-                                                        resolver.reject(error)
+                                                        resolver.reject(StickerError.assertionFailure)
                                                     }
 
                                                     // A malicious service might send a misleading content length header,
@@ -155,21 +146,15 @@ class CDNDownloadOperation: OWSOperation {
                                                     }
                                                     guard completionUrl == tempFileURL else {
                                                         owsFailDebug("Unexpected temp file path.")
-                                                        var error = StickerError.assertionFailure
-                                                        error.isRetryable = false
-                                                        return resolver.reject(error)
+                                                        return resolver.reject(StickerError.assertionFailure)
                                                     }
                                                     guard let fileSize = OWSFileSystem.fileSize(ofPath: tempFilePath) else {
                                                         owsFailDebug("Couldn't determine file size.")
-                                                        var error = StickerError.assertionFailure
-                                                        error.isRetryable = false
-                                                        return resolver.reject(error)
+                                                        return resolver.reject(StickerError.assertionFailure)
                                                     }
                                                     guard fileSize.uint64Value <= maxDownloadSize else {
                                                         owsFailDebug("Download length exceeds max size.")
-                                                        var error = StickerError.assertionFailure
-                                                        error.isRetryable = false
-                                                        return resolver.reject(error)
+                                                        return resolver.reject(StickerError.assertionFailure)
                                                     }
 
                                                     do {

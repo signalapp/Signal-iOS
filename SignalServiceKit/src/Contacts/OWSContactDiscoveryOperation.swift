@@ -60,7 +60,7 @@ public class LegacyContactDiscoveryBatchOperation: OWSOperation {
                                                 self.registeredRecipientIds = try self.parse(response: responseDict, phoneNumbersByHashes: phoneNumbersByHashes)
                                                 self.reportSuccess()
                                             } catch {
-                                                self.reportError(error)
+                                                self.reportError(withUndefinedRetry: error)
                                             }
         },
                                         failure: { (task, error) in
@@ -72,12 +72,13 @@ public class LegacyContactDiscoveryBatchOperation: OWSOperation {
                                             }
 
                                             guard response.statusCode != 413 else {
-                                                let rateLimitError = OWSErrorWithCodeDescription(OWSErrorCode.contactsUpdaterRateLimit, "Contacts Intersection Rate Limit")
-                                                self.reportError(rateLimitError)
+                                                let nsError = OWSErrorWithCodeDescription(OWSErrorCode.contactsUpdaterRateLimit, "Contacts Intersection Rate Limit") as NSError
+                                                nsError.isRetryable = false
+                                                self.reportError(nsError)
                                                 return
                                             }
 
-                                            self.reportError(error)
+                                            self.reportError(withUndefinedRetry: error)
         })
     }
 
@@ -244,7 +245,7 @@ class CDSBatchOperation: OWSOperation {
         do {
             encryptionResult = try encryptAddresses(recipientIds: recipientIdsToLookup, remoteAttestation: remoteAttestation)
         } catch {
-            reportError(error)
+            reportError(withUndefinedRetry: error)
             return
         }
 
@@ -264,7 +265,7 @@ class CDSBatchOperation: OWSOperation {
                                                 self.registeredRecipientIds = try self.handle(response: responseDict, remoteAttestation: remoteAttestation)
                                                 self.reportSuccess()
                                             } catch {
-                                                self.reportError(error)
+                                                self.reportError(withUndefinedRetry: error)
                                             }
         },
                                         failure: { (task, error) in
@@ -300,7 +301,7 @@ class CDSBatchOperation: OWSOperation {
                                                 return
                                             }
 
-                                            self.reportError(error)
+                                            self.reportError(withUndefinedRetry: error)
         })
     }
 
@@ -438,7 +439,7 @@ class CDSFeedbackOperation: OWSOperation {
         }
 
         guard let cdsOperation = dependencies.first as? CDSOperation else {
-            let error = OWSErrorMakeAssertionError("cdsOperation was unexpectedly nil")
+            let error = OWSAssertionError("cdsOperation was unexpectedly nil")
             self.reportError(error)
             return
         }
@@ -498,7 +499,7 @@ class CDSFeedbackOperation: OWSOperation {
         let request = OWSRequestFactory.cdsFeedbackRequest(status: result.statusPath, reason: reason)
         self.networkManager.makeRequest(request,
                                         success: { _, _ in self.reportSuccess() },
-                                        failure: { _, error in self.reportError(error) })
+                                        failure: { _, error in self.reportError(withUndefinedRetry: error) })
     }
 }
 

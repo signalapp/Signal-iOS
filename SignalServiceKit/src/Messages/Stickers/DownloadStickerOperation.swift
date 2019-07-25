@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 class DownloadStickerOperation: CDNDownloadOperation {
 
@@ -42,32 +43,33 @@ class DownloadStickerOperation: CDNDownloadOperation {
         // https://cdn.signal.org/stickers/<pack_id>/full/<sticker_id>
         let urlPath = "stickers/\(stickerInfo.packId.hexadecimalString)/full/\(stickerInfo.stickerId)"
 
-        tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDownloadSize)
-            .done(on: DispatchQueue.global()) { [weak self] data in
-                guard let self = self else {
-                    return
-                }
+        firstly {
+            return try tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDownloadSize)
+        }.done(on: DispatchQueue.global()) { [weak self] data in
+            guard let self = self else {
+                return
+            }
 
-                do {
-                    let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerInfo.packKey)
+            do {
+                let plaintext = try StickerManager.decrypt(ciphertext: data, packKey: self.stickerInfo.packKey)
 
-                    self.success(plaintext)
-                    self.reportSuccess()
-                } catch let error as NSError {
-                    owsFailDebug("Decryption failed: \(error)")
+                self.success(plaintext)
+                self.reportSuccess()
+            } catch let error as NSError {
+                owsFailDebug("Decryption failed: \(error)")
 
-                    self.markUrlPathAsCorrupt(urlPath)
+                self.markUrlPathAsCorrupt(urlPath)
 
-                    // Fail immediately; do not retry.
-                    error.isRetryable = false
-                    return self.reportError(error)
-                }
-            }.catch(on: DispatchQueue.global()) { [weak self] error in
-                guard let self = self else {
-                    return
-                }
+                // Fail immediately; do not retry.
+                error.isRetryable = false
                 return self.reportError(error)
-            }.retainUntilComplete()
+            }
+        }.catch(on: DispatchQueue.global()) { [weak self] error in
+            guard let self = self else {
+                return
+            }
+            return self.reportError(withUndefinedRetry: error)
+        }.retainUntilComplete()
     }
 
     override public func didFail(error: Error) {
