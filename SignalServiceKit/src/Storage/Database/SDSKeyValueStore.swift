@@ -110,7 +110,7 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - Bool
 
-    public func getOptionalBool(_ key: String, transaction: SDSAnyReadTransaction) -> Bool? {
+    public func getBool(_ key: String, transaction: SDSAnyReadTransaction) -> Bool? {
         guard let number: NSNumber = read(key, transaction: transaction) else {
             return nil
         }
@@ -119,11 +119,7 @@ public class SDSKeyValueStore: NSObject {
 
     @objc
     public func getBool(_ key: String, defaultValue: Bool, transaction: SDSAnyReadTransaction) -> Bool {
-        if let value: NSNumber = read(key, transaction: transaction) {
-            return value.boolValue
-        } else {
-            return defaultValue
-        }
+        return getBool(key, transaction: transaction) ?? defaultValue
     }
 
     @objc
@@ -133,14 +129,17 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - UInt
 
+    public func getUInt(_ key: String, transaction: SDSAnyReadTransaction) -> UInt? {
+        guard let number: NSNumber = read(key, transaction: transaction) else {
+            return nil
+        }
+        return number.uintValue
+    }
+
     // TODO: Handle numerics more generally.
     @objc
     public func getUInt(_ key: String, defaultValue: UInt, transaction: SDSAnyReadTransaction) -> UInt {
-        if let value: NSNumber = read(key, transaction: transaction) {
-            return value.uintValue
-        } else {
-            return defaultValue
-        }
+        return getUInt(key, transaction: transaction) ?? defaultValue
     }
 
     @objc
@@ -163,14 +162,14 @@ public class SDSKeyValueStore: NSObject {
     // MARK: - Numeric
 
     @objc
-    public func getOptionalNSNumber(_ key: String, transaction: SDSAnyReadTransaction) -> NSNumber? {
+    public func getNSNumber(_ key: String, transaction: SDSAnyReadTransaction) -> NSNumber? {
         let number: NSNumber? = read(key, transaction: transaction)
         return number
     }
 
     // MARK: - Int
 
-    public func getOptionalInt(_ key: String, transaction: SDSAnyReadTransaction) -> Int? {
+    public func getInt(_ key: String, transaction: SDSAnyReadTransaction) -> Int? {
         guard let number: NSNumber = read(key, transaction: transaction) else {
             return nil
         }
@@ -178,11 +177,8 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    public func getInt(_ key: String, transaction: SDSAnyReadTransaction) -> Int {
-        guard let number: NSNumber = read(key, transaction: transaction) else {
-            return 0
-        }
-        return number.intValue
+    public func getInt(_ key: String, defaultValue: Int, transaction: SDSAnyReadTransaction) -> Int {
+        return getInt(key, transaction: transaction) ?? defaultValue
     }
 
     @objc
@@ -192,7 +188,7 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - UInt64
 
-    public func getOptionalUInt64(_ key: String, transaction: SDSAnyReadTransaction) -> UInt64? {
+    public func getUInt64(_ key: String, transaction: SDSAnyReadTransaction) -> UInt64? {
         guard let number: NSNumber = read(key, transaction: transaction) else {
             return nil
         }
@@ -200,11 +196,8 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    public func getUInt64(_ key: String, transaction: SDSAnyReadTransaction) -> UInt64 {
-        guard let value = getOptionalUInt64(key, transaction: transaction) else {
-            return 0
-        }
-        return value
+    public func getUInt64(_ key: String, defaultValue: UInt64, transaction: SDSAnyReadTransaction) -> UInt64 {
+        return getUInt64(key, transaction: transaction) ?? defaultValue
     }
 
     @objc
@@ -214,13 +207,16 @@ public class SDSKeyValueStore: NSObject {
 
     // MARK: - Double
 
+    public func getDouble(_ key: String, transaction: SDSAnyReadTransaction) -> Double? {
+        guard let number: NSNumber = read(key, transaction: transaction) else {
+            return nil
+        }
+        return number.doubleValue
+    }
+
     @objc
     public func getDouble(_ key: String, defaultValue: Double, transaction: SDSAnyReadTransaction) -> Double {
-        if let value: NSNumber = read(key, transaction: transaction) {
-            return value.doubleValue
-        } else {
-            return defaultValue
-        }
+        return getDouble(key, transaction: transaction) ?? defaultValue
     }
 
     @objc

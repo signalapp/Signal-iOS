@@ -82,6 +82,7 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
             XCTAssertEqual(value2, store3.getInt("key0", transaction: transaction))
             XCTAssertEqual(value3, store1.getInt("key1", transaction: transaction))
             XCTAssertEqual(value4, store2.getInt("key1", transaction: transaction))
+            XCTAssertNil(store3.getInt("key1", transaction: transaction))
         }
     }
 
@@ -149,6 +150,7 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
             XCTAssertEqual(value2, store3.getData("key0", transaction: transaction))
             XCTAssertEqual(value3, store1.getData("key1", transaction: transaction))
             XCTAssertEqual(value4, store2.getData("key1", transaction: transaction))
+            XCTAssertNil(store3.getInt("key1", transaction: transaction))
         }
     }
 
@@ -216,6 +218,7 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
             XCTAssertEqual(value2, store3.getString("key0", transaction: transaction))
             XCTAssertEqual(value3, store1.getString("key1", transaction: transaction))
             XCTAssertEqual(value4, store2.getString("key1", transaction: transaction))
+            XCTAssertNil(store3.getInt("key1", transaction: transaction))
         }
     }
 
@@ -294,6 +297,7 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
             XCTAssertEqual(value2, store3.getDate("key0", transaction: transaction))
             XCTAssertEqual(value3, store1.getDate("key1", transaction: transaction))
             XCTAssertEqual(value4, store2.getDate("key1", transaction: transaction))
+            XCTAssertNil(store3.getInt("key1", transaction: transaction))
 
             // Date edge cases.
             XCTAssertEqual(2, store4.numberOfKeys(transaction: transaction))

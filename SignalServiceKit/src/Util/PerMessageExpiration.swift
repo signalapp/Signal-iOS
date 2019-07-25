@@ -355,7 +355,7 @@ public class PerMessageExpiration: NSObject {
 
         // Check for persisted "per-message expiration read receipt".
         let key = readReceiptKey(senderAddress: senderAddress, messageIdTimestamp: messageIdTimestamp)
-        guard let readTimestamp = store.getOptionalUInt64(key, transaction: transaction) else {
+        guard let readTimestamp = store.getUInt64(key, transaction: transaction) else {
             // No early read receipt applies, abort.
             return
         }

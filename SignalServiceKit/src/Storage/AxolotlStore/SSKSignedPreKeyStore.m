@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)incrementIntForKey:(NSString *)key transaction:(SDSAnyWriteTransaction *)transaction
 {
-    NSInteger value = [self getInt:key transaction:transaction];
+    NSInteger value = [self getInt:key defaultValue:0 transaction:transaction];
     value++;
     [self setInt:value key:key transaction:transaction];
     return value;
