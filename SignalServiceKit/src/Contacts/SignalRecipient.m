@@ -280,17 +280,37 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
 
-    SignalRecipient *_Nullable instance = [self registeredRecipientForAddress:address
-                                                              mustHaveDevices:YES
-                                                                  transaction:transaction];
+    SignalRecipient *_Nullable existingInstance = [self registeredRecipientForAddress:address
+                                                                      mustHaveDevices:YES
+                                                                          transaction:transaction];
 
-    if (!instance) {
+
+    if (existingInstance == nil) {
         OWSLogDebug(@"creating recipient: %@", address);
 
-        instance = [[self alloc] initWithAddress:address];
-        [instance anyInsertWithTransaction:transaction];
+        SignalRecipient *newInstance = [[self alloc] initWithAddress:address];
+        [newInstance anyInsertWithTransaction:transaction];
+        return newInstance;
     }
-    return instance;
+
+    // If we've learned a users UUID, record it.
+    if (existingInstance.recipientUUID == nil && address.uuid != nil) {
+        [existingInstance anyUpdateWithTransaction:transaction
+                                             block:^(SignalRecipient *latestCopy) {
+                                                 latestCopy.recipientUUID = address.uuidString;
+                                             }];
+    }
+
+    // If we've learned a users phone number, record it.
+    if (existingInstance.recipientPhoneNumber == nil && address.phoneNumber != nil) {
+        OWSFailDebug(@"unexpectedly learned about a users phone number");
+        [existingInstance anyUpdateWithTransaction:transaction
+                                             block:^(SignalRecipient *latestCopy) {
+                                                 latestCopy.recipientPhoneNumber = address.phoneNumber;
+                                             }];
+    }
+
+    return existingInstance;
 }
 
 + (void)markRecipientAsRegistered:(SignalServiceAddress *)address
