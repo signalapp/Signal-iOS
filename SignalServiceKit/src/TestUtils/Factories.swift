@@ -408,7 +408,7 @@ class GroupThreadFactory: NSObject, Factory {
 
     @objc
     public var groupIdBuilder: () -> Data = {
-        return Randomness.generateRandomBytes(Int32(kGroupIdLength))!
+        return Randomness.generateRandomBytes(Int32(kGroupIdLength))
     }
 
     @objc

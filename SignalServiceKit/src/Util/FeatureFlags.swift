@@ -97,4 +97,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let messageRequest = build.includes(.dev)
+
+    @objc
+    public static let useOnlyModernContactDiscovery = !IsUsingProductionService() && build.includes(.dev)
 }

@@ -56,8 +56,8 @@ NS_SWIFT_NAME(init(uniqueId:devices:recipientPhoneNumber:recipientSchemaVersion:
                                   devicesToRemove:(nullable NSArray *)devicesToRemove
                                       transaction:(SDSAnyWriteTransaction *)transaction;
 
-@property (nonatomic, readonly, nullable) NSString *recipientPhoneNumber;
-@property (nonatomic, readonly, nullable) NSString *recipientUUID;
+@property (nonatomic, nullable) NSString *recipientPhoneNumber;
+@property (nonatomic, nullable) NSString *recipientUUID;
 
 @property (nonatomic, readonly) SignalServiceAddress *address;
 

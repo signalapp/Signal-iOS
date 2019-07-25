@@ -173,7 +173,7 @@ public class RequestMaker: NSObject {
                 }
         } else {
             return self.networkManager.makePromise(request: request)
-                .map(on: DispatchQueue.global()) { (networkManagerResult: TSNetworkManager.NetworkManagerResult) -> RequestMakerResult in
+                .map(on: DispatchQueue.global()) { (networkManagerResult: TSNetworkManager.Response) -> RequestMakerResult in
                     if self.udManager.isUDVerboseLoggingEnabled() {
                         if isUDRequest {
                             Logger.debug("UD REST request '\(self.label)' succeeded.")

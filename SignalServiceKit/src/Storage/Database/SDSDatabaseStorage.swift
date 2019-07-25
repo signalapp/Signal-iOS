@@ -439,6 +439,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             try TSRecipientReadReceiptSerializer.table.createTable(database: db)
             try OWSLinkedDeviceReadReceiptSerializer.table.createTable(database: db)
             try OWSDeviceSerializer.table.createTable(database: db)
+            try OWSContactQuerySerializer.table.createTable(database: db)
 
             try db.create(index: "index_interactions_on_id_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,
@@ -567,6 +568,13 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                           columns: [
                             InteractionRecord.columnName(.threadUniqueId),
                             InteractionRecord.columnName(.read)
+                ])
+
+            // ContactQuery
+            try db.create(index: "index_contact_queries_on_lastQueried",
+                          on: ContactQueryRecord.databaseTableName,
+                          columns: [
+                            ContactQueryRecord.columnName(.lastQueried)
                 ])
         }
         return migrator

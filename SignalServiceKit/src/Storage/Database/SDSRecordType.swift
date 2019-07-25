@@ -28,6 +28,7 @@ public enum SDSRecordType: UInt {
     case addToProfileWhitelistOfferMessage = 7
     case backupFragment = 32
     case contactOffersInteraction = 22
+    case contactQuery = 57
     case databaseMigration = 46
     case device = 33
     case disappearingConfigurationUpdateInfoMessage = 28

@@ -231,6 +231,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [YAPDBJobRecordFinderSetup asyncRegisterDatabaseExtensionObjCWithStorage:self];
                                       [YAPDBSignalServiceAddressIndex asyncRegisterDatabaseExtensions:self];
                                       [YAPDBLinkedDeviceReadReceiptFinder asyncRegisterDatabaseExtensions:self];
+                                      [YAPDBContactQueryFinder asyncRegisterDatabaseExtensions:self];
 
                                       [self.database
                                           flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(
