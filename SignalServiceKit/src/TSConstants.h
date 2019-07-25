@@ -69,7 +69,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define keyBackupCensorshipPrefix @"backup-staging"
 //
 // CDS uses the same EnclaveName and MrEnclave
-//#define contactDiscoveryEnclaveName @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
+//#define contactDiscoveryEnclaveName @"e0f7dee77dc9d705ccc1376859811da12ecec3b6119a19dc39bdfbf97173aa18"
 //#define contactDiscoveryMrEnclave contactDiscoveryEnclaveName
 //
 //#define keyBackupEnclaveName @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
