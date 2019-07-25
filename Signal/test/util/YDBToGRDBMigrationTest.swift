@@ -83,6 +83,166 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
             XCTAssertEqual(value3, store1.getInt("key1", transaction: transaction))
             XCTAssertEqual(value4, store2.getInt("key1", transaction: transaction))
             XCTAssertNil(store3.getInt("key1", transaction: transaction))
+
+            // NSNumber variations
+            XCTAssertEqual(NSNumber(value: value0), store1.getNSNumber("key0", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value1), store2.getNSNumber("key0", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value2), store3.getNSNumber("key0", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value3), store1.getNSNumber("key1", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value4), store2.getNSNumber("key1", transaction: transaction))
+            XCTAssertNil(store3.getNSNumber("key1", transaction: transaction))
+        }
+    }
+
+    func testKeyValueUInt() {
+        let store1 = SDSKeyValueStore(collection: "store1")
+        let store2 = SDSKeyValueStore(collection: "store2")
+        let store3 = SDSKeyValueStore(collection: "store3")
+
+        let randomValue = {
+            return UInt(arc4random())
+        }
+        let value0 = randomValue()
+        let value1 = randomValue()
+        let value2 = randomValue()
+        let value3 = randomValue()
+        let value4 = randomValue()
+
+        self.read { transaction in
+            XCTAssertEqual(0, store1.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(0, store2.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(0, store3.numberOfKeys(transaction: transaction))
+        }
+
+        self.yapWrite { transaction in
+            store1.setUInt(value0, key: "key0", transaction: transaction.asAnyWrite)
+            store2.setUInt(value1, key: "key0", transaction: transaction.asAnyWrite)
+            store3.setUInt(value2, key: "key0", transaction: transaction.asAnyWrite)
+            store1.setUInt(value3, key: "key1", transaction: transaction.asAnyWrite)
+            store2.setUInt(value4, key: "key1", transaction: transaction.asAnyWrite)
+        }
+
+        self.read { transaction in
+            XCTAssertEqual(0, store1.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(0, store2.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(0, store3.numberOfKeys(transaction: transaction))
+        }
+
+        let migratorGroups = [
+            GRDBMigratorGroup { ydbTransaction in
+                return [
+                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0)
+                ]
+            }
+        ]
+
+        try! YDBToGRDBMigration().migrate(migratorGroups: migratorGroups)
+
+        self.read { transaction in
+            XCTAssertEqual(2, store1.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(2, store2.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(1, store3.numberOfKeys(transaction: transaction))
+
+            XCTAssertTrue(store1.hasValue(forKey: "key0", transaction: transaction))
+            XCTAssertTrue(store2.hasValue(forKey: "key0", transaction: transaction))
+            XCTAssertTrue(store3.hasValue(forKey: "key0", transaction: transaction))
+
+            XCTAssertTrue(store1.hasValue(forKey: "key1", transaction: transaction))
+            XCTAssertTrue(store2.hasValue(forKey: "key1", transaction: transaction))
+            XCTAssertFalse(store3.hasValue(forKey: "key1", transaction: transaction))
+
+            XCTAssertEqual(value0, store1.getUInt("key0", transaction: transaction))
+            XCTAssertEqual(value1, store2.getUInt("key0", transaction: transaction))
+            XCTAssertEqual(value2, store3.getUInt("key0", transaction: transaction))
+            XCTAssertEqual(value3, store1.getUInt("key1", transaction: transaction))
+            XCTAssertEqual(value4, store2.getUInt("key1", transaction: transaction))
+            XCTAssertNil(store3.getUInt("key1", transaction: transaction))
+
+            // NSNumber variations
+            XCTAssertEqual(NSNumber(value: value0), store1.getNSNumber("key0", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value1), store2.getNSNumber("key0", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value2), store3.getNSNumber("key0", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value3), store1.getNSNumber("key1", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value4), store2.getNSNumber("key1", transaction: transaction))
+            XCTAssertNil(store3.getNSNumber("key1", transaction: transaction))
+        }
+    }
+
+    func testKeyValueDouble() {
+        let store1 = SDSKeyValueStore(collection: "store1")
+        let store2 = SDSKeyValueStore(collection: "store2")
+        let store3 = SDSKeyValueStore(collection: "store3")
+
+        let randomValue = {
+            return Double(arc4random()) / Double(arc4random())
+        }
+        let value0 = randomValue()
+        let value1 = randomValue()
+        let value2 = randomValue()
+        let value3 = randomValue()
+        let value4 = randomValue()
+
+        self.read { transaction in
+            XCTAssertEqual(0, store1.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(0, store2.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(0, store3.numberOfKeys(transaction: transaction))
+        }
+
+        self.yapWrite { transaction in
+            store1.setDouble(value0, key: "key0", transaction: transaction.asAnyWrite)
+            store2.setDouble(value1, key: "key0", transaction: transaction.asAnyWrite)
+            store3.setDouble(value2, key: "key0", transaction: transaction.asAnyWrite)
+            store1.setDouble(value3, key: "key1", transaction: transaction.asAnyWrite)
+            store2.setDouble(value4, key: "key1", transaction: transaction.asAnyWrite)
+        }
+
+        self.read { transaction in
+            XCTAssertEqual(0, store1.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(0, store2.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(0, store3.numberOfKeys(transaction: transaction))
+        }
+
+        let migratorGroups = [
+            GRDBMigratorGroup { ydbTransaction in
+                return [
+                    GRDBKeyValueStoreMigrator<Any>(label: "store1", keyStore: store1, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store2", keyStore: store2, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0),
+                    GRDBKeyValueStoreMigrator<Any>(label: "store3", keyStore: store3, ydbTransaction: ydbTransaction, memorySamplerRatio: 1.0)
+                ]
+            }
+        ]
+
+        try! YDBToGRDBMigration().migrate(migratorGroups: migratorGroups)
+
+        self.read { transaction in
+            XCTAssertEqual(2, store1.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(2, store2.numberOfKeys(transaction: transaction))
+            XCTAssertEqual(1, store3.numberOfKeys(transaction: transaction))
+
+            XCTAssertTrue(store1.hasValue(forKey: "key0", transaction: transaction))
+            XCTAssertTrue(store2.hasValue(forKey: "key0", transaction: transaction))
+            XCTAssertTrue(store3.hasValue(forKey: "key0", transaction: transaction))
+
+            XCTAssertTrue(store1.hasValue(forKey: "key1", transaction: transaction))
+            XCTAssertTrue(store2.hasValue(forKey: "key1", transaction: transaction))
+            XCTAssertFalse(store3.hasValue(forKey: "key1", transaction: transaction))
+
+            XCTAssertEqual(value0, store1.getDouble("key0", transaction: transaction))
+            XCTAssertEqual(value1, store2.getDouble("key0", transaction: transaction))
+            XCTAssertEqual(value2, store3.getDouble("key0", transaction: transaction))
+            XCTAssertEqual(value3, store1.getDouble("key1", transaction: transaction))
+            XCTAssertEqual(value4, store2.getDouble("key1", transaction: transaction))
+            XCTAssertNil(store3.getDouble("key1", transaction: transaction))
+
+            // NSNumber variations
+            XCTAssertEqual(NSNumber(value: value0), store1.getNSNumber("key0", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value1), store2.getNSNumber("key0", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value2), store3.getNSNumber("key0", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value3), store1.getNSNumber("key1", transaction: transaction))
+            XCTAssertEqual(NSNumber(value: value4), store2.getNSNumber("key1", transaction: transaction))
+            XCTAssertNil(store3.getNSNumber("key1", transaction: transaction))
         }
     }
 
