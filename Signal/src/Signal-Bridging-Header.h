@@ -83,6 +83,7 @@
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
 #import <SignalServiceKit/AppVersion.h>
+#import <SignalServiceKit/CallKitIdStore.h>
 #import <SignalServiceKit/Contact.h>
 #import <SignalServiceKit/ContactsUpdater.h>
 #import <SignalServiceKit/DataSource.h>
@@ -104,7 +105,6 @@
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
-#import <SignalServiceKit/OWSPrimaryStorage+Calling.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSRequestFactory.h>

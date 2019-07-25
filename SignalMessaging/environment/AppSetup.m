@@ -4,6 +4,7 @@
 
 #import "AppSetup.h"
 #import "Environment.h"
+#import "Theme.h"
 #import "VersionMigrations.h"
 #import <AxolotlKit/SessionCipher.h>
 #import <SignalMessaging/OWSDatabaseMigration.h>
@@ -74,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
         SSKSessionStore *sessionStore = [SSKSessionStore new];
         SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
         SSKPreKeyStore *preKeyStore = [SSKPreKeyStore new];
-        id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
+        id<OWSUDManager> udManager = [OWSUDManagerImpl new];
         OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
         SSKMessageDecryptJobQueue *messageDecryptJobQueue = [SSKMessageDecryptJobQueue new];
         OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
@@ -157,6 +158,8 @@ NS_ASSUME_NONNULL_BEGIN
         [OWS115GRDBMigration addWithKeyStore:profileManager.whitelistedGroupsStore
                                        label:@"OWSProfileManager.whitelistedGroupsStore"];
         [OWS115GRDBMigration addWithKeyStore:OWSSounds.keyValueStore label:@"OWSSounds"];
+        [OWS115GRDBMigration addWithKeyStore:Theme.keyValueStore label:@"Theme"];
+        [OWS115GRDBMigration addWithKeyStore:OWSSyncManager.keyValueStore label:@"OWSSyncManager"];
 
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             dispatch_async(dispatch_get_main_queue(), ^{

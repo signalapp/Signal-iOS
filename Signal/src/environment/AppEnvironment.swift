@@ -101,6 +101,7 @@ import SignalMessaging
 
         OWS115GRDBMigration.add(keyStore: backup.keyValueStore, label: "backup")
         OWS115GRDBMigration.add(keyStore: AppUpdateNag.shared.keyValueStore, label: "AppUpdateNag")
+        OWS115GRDBMigration.add(keyStore: ProfileViewController.keyValueStore(), label: "ProfileViewController")
     }
 
     @objc

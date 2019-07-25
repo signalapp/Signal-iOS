@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/OWSSyncManagerProtocol.h>
@@ -11,8 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSIdentityManager;
 @class OWSMessageSender;
 @class OWSProfileManager;
+@class SDSKeyValueStore;
 
 @interface OWSSyncManager : NSObject <OWSSyncManagerProtocol>
+
++ (SDSKeyValueStore *)keyValueStore;
 
 - (instancetype)init NS_UNAVAILABLE;
 

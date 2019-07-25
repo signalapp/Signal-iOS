@@ -27,6 +27,7 @@
 #import <SignalMessaging/SignalMessaging.h>
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppReadiness.h>
+#import <SignalServiceKit/CallKitIdStore.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
@@ -37,7 +38,6 @@
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSPrimaryStorage+Calling.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -1093,7 +1093,7 @@ static NSTimeInterval launchStartedAt;
     OWSAssertDebug(handle.length > 0);
 
     if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-        SignalServiceAddress *_Nullable address = [self.primaryStorage addressForCallKitId:handle];
+        SignalServiceAddress *_Nullable address = [CallKitIdStore addressForCallKitId:handle];
         if (!address.isValid) {
             OWSLogWarn(@"ignoring attempt to initiate audio call to unknown anonymous signal user.");
             return nil;

@@ -51,7 +51,7 @@ final class CallKitCallManager: NSObject {
         } else {
             let callKitId = CallKitCallManager.kAnonymousCallHandlePrefix + call.localId.uuidString
             handle = CXHandle(type: .generic, value: callKitId)
-            OWSPrimaryStorage.shared().setAddress(call.remoteAddress, forCallKitId: callKitId)
+            CallKitIdStore.setAddress(call.remoteAddress, forCallKitId: callKitId)
         }
 
         let startCallAction = CXStartCallAction(call: call.localId, handle: handle)

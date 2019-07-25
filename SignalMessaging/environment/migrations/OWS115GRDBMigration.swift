@@ -93,6 +93,18 @@ extension OWS115GRDBMigration {
         return Environment.shared.contactsManager
     }
 
+    var typingIndicators: TypingIndicators {
+        return SSKEnvironment.shared.typingIndicators
+    }
+
+    var udManager: OWSUDManager {
+        return SSKEnvironment.shared.udManager
+    }
+
+    var signalService: OWSSignalService {
+        return OWSSignalService.sharedInstance()
+    }
+
     // MARK: -
 
     func run() throws {
@@ -189,7 +201,14 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "OWSReadReceiptManager", keyStore: OWSReadReceiptManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSAnalytics", keyStore: OWSAnalytics.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "OWS2FAManager", keyStore: OWS2FAManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSBlockingManager", keyStore: OWSBlockingManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1)
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSBlockingManager", keyStore: OWSBlockingManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "typingIndicators", keyStore: typingIndicators.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "udManager.keyValueStore", keyStore: udManager.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "udManager.phoneNumberAccessStore", keyStore: udManager.phoneNumberAccessStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "udManager.uuidAccessStore", keyStore: udManager.uuidAccessStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.phoneNumber", keyStore: CallKitIdStore.phoneNumber(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.uuid", keyStore: CallKitIdStore.uuidStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "signalService", keyStore: signalService.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1)
         ]
 
         for (label, keyStore) in OWS115GRDBMigration.otherKeyStores {

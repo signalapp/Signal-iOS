@@ -8,9 +8,12 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 @class AFHTTPSessionManager;
 @class OWSPrimaryStorage;
+@class SDSKeyValueStore;
 @class TSAccountManager;
 
 @interface OWSSignalService : NSObject
+
+- (SDSKeyValueStore *)keyValueStore;
 
 /// For uploading and downloading avatar assets and attachments
 @property (nonatomic, readonly) AFHTTPSessionManager *CDNSessionManager;

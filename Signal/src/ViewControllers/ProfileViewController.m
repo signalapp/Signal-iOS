@@ -30,7 +30,6 @@ typedef NS_ENUM(NSInteger, ProfileViewMode) {
     ProfileViewMode_Registration,
 };
 
-NSString *const kProfileView_Collection = @"kProfileView_Collection";
 NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDate";
 
 @interface ProfileViewController () <UITextFieldDelegate, AvatarViewHelperDelegate, OWSNavigationView>
@@ -57,6 +56,22 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 @implementation ProfileViewController
 
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
++ (SDSKeyValueStore *)keyValueStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"kProfileView_Collection"];
+}
+
+#pragma mark -
+
 - (instancetype)initWithMode:(ProfileViewMode)profileViewMode
 {
     self = [super init];
@@ -67,10 +82,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     self.profileViewMode = profileViewMode;
 
-    // Use the OWSPrimaryStorage.dbReadWriteConnection for consistency with the reads below.
-    [[[OWSPrimaryStorage sharedManager] dbReadWriteConnection] setDate:[NSDate new]
-                                                                forKey:kProfileView_LastPresentedDate
-                                                          inCollection:kProfileView_Collection];
+    [ProfileViewController.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [ProfileViewController.keyValueStore setDate:[NSDate new]
+                                                 key:kProfileView_LastPresentedDate
+                                         transaction:transaction];
+    }];
 
     return self;
 }
@@ -571,9 +587,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     // Use the OWSPrimaryStorage.dbReadWriteConnection for consistency with the writes above.
     NSTimeInterval kProfileNagFrequency = kDayInterval * 30;
-    NSDate *_Nullable lastPresentedDate =
-        [[[OWSPrimaryStorage sharedManager] dbReadWriteConnection] dateForKey:kProfileView_LastPresentedDate
-                                                                 inCollection:kProfileView_Collection];
+    __block NSDate *_Nullable lastPresentedDate;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        lastPresentedDate =
+            [ProfileViewController.keyValueStore getDate:kProfileView_LastPresentedDate transaction:transaction];
+    }];
+
     return (!lastPresentedDate || fabs([lastPresentedDate timeIntervalSinceNow]) > kProfileNagFrequency);
 }
 

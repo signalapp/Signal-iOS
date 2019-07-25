@@ -22,11 +22,9 @@
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kSyncManagerCollection = @"kTSStorageManagerOWSSyncManagerCollection";
 NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManagerLastMessageKey";
 
 @interface OWSSyncManager ()
@@ -37,7 +35,16 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 @end
 
+#pragma mark -
+
 @implementation OWSSyncManager
+
++ (SDSKeyValueStore *)keyValueStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"kTSStorageManagerOWSSyncManagerCollection"];
+}
+
+#pragma mark -
 
 + (instancetype)shared {
     OWSAssertDebug(SSKEnvironment.shared.syncManager);
@@ -113,6 +120,11 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     return SSKEnvironment.shared.typingIndicators;
 }
 
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark - Notifications
 
 - (void)signalAccountsDidChange:(id)notification {
@@ -125,18 +137,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     OWSAssertIsOnMainThread();
 
     [self sendSyncContactsMessageIfPossible];
-}
-
-#pragma mark -
-
-- (YapDatabaseConnection *)editingDatabaseConnection
-{
-    return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
-}
-
-- (YapDatabaseConnection *)readDatabaseConnection
-{
-    return OWSPrimaryStorage.sharedManager.dbReadConnection;
 }
 
 #pragma mark - Methods
@@ -169,10 +169,12 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                             profileManager:self.profileManager];
         __block NSData *_Nullable messageData;
         __block NSData *_Nullable lastMessageData;
-        [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction.asAnyRead];
-            lastMessageData = [transaction objectForKey:kSyncManagerLastContactSyncKey
-                                           inCollection:kSyncManagerCollection];
+        // TODO: Maybe we should store a hash instead to avoid
+        //       large writes for users with many contacts.
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
+            lastMessageData =
+                [OWSSyncManager.keyValueStore getData:kSyncManagerLastContactSyncKey transaction:transaction];
         }];
 
         if (!messageData) {
@@ -196,9 +198,11 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             success:^{
                 OWSLogInfo(@"Successfully sent contacts sync message.");
 
-                [self.editingDatabaseConnection setObject:messageData
-                                                   forKey:kSyncManagerLastContactSyncKey
-                                             inCollection:kSyncManagerCollection];
+                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    [OWSSyncManager.keyValueStore setData:messageData
+                                                      key:kSyncManagerLastContactSyncKey
+                                              transaction:transaction];
+                }];
 
                 dispatch_async(self.serialQueue, ^{
                     self.isRequestInFlight = NO;
@@ -250,14 +254,14 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     BOOL showUnidentifiedDeliveryIndicators = Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators;
     BOOL showTypingIndicators = self.typingIndicators.areTypingIndicatorsEnabled;
 
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction.asAnyWrite];
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
         if (thread == nil) {
             OWSFailDebug(@"Missing thread.");
             return;
         }
 
-        BOOL sendLinkPreviews = [SSKPreferences areLinkPreviewsEnabledWithTransaction:transaction.asAnyRead];
+        BOOL sendLinkPreviews = [SSKPreferences areLinkPreviewsEnabledWithTransaction:transaction];
 
         OWSSyncConfigurationMessage *syncConfigurationMessage =
             [[OWSSyncConfigurationMessage alloc] initWithThread:thread
@@ -266,7 +270,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                            showTypingIndicators:showTypingIndicators
                                                sendLinkPreviews:sendLinkPreviews];
 
-        [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction.asAnyWrite];
+        [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction];
     }];
 }
 
@@ -330,11 +334,10 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                 profileManager:self.profileManager];
 
             __block DataSource *dataSource;
-            [self.readDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                 dataSource = [DataSourceValue
                     dataSourceWithSyncMessageData:[syncContactsMessage
-                                                      buildPlainTextAttachmentDataWithTransaction:transaction
-                                                                                                      .asAnyRead]];
+                                                      buildPlainTextAttachmentDataWithTransaction:transaction]];
             }];
 
             [self.messageSender sendTemporaryAttachment:dataSource

@@ -10,7 +10,6 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 
 NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlobalNotificationKey";

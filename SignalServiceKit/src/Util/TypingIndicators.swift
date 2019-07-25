@@ -7,6 +7,9 @@ import Foundation
 @objc(OWSTypingIndicators)
 public protocol TypingIndicators: class {
     @objc
+    var keyValueStore: SDSKeyValueStore { get }
+
+    @objc
     func didStartTypingOutgoingInput(inThread thread: TSThread)
 
     @objc
@@ -45,13 +48,23 @@ public protocol TypingIndicators: class {
 @objc(OWSTypingIndicatorsImpl)
 public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     @objc
     public static let typingIndicatorStateDidChange = Notification.Name("typingIndicatorStateDidChange")
 
-    private let kDatabaseCollection = "TypingIndicators"
     private let kDatabaseKey_TypingIndicatorsEnabled = "kDatabaseKey_TypingIndicatorsEnabled"
 
     private var _areTypingIndicatorsEnabled = false
+
+    @objc
+    public let keyValueStore = SDSKeyValueStore(collection: "TypingIndicators")
 
     public override init() {
         super.init()
@@ -64,7 +77,17 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     private func setup() {
         AssertIsOnMainThread()
 
-        _areTypingIndicatorsEnabled = primaryStorage.dbReadConnection.bool(forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection, defaultValue: true)
+        databaseStorage.read { transaction in
+            self.warmCache(transaction: transaction)
+        }
+    }
+
+    private func warmCache(transaction: SDSAnyReadTransaction) {
+        AssertIsOnMainThread()
+
+        _areTypingIndicatorsEnabled = keyValueStore.getBool(kDatabaseKey_TypingIndicatorsEnabled,
+                                                            defaultValue: true,
+                                                            transaction: transaction)
     }
 
     // MARK: - Dependencies
@@ -85,7 +108,11 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         Logger.info("\(_areTypingIndicatorsEnabled) -> \(value)")
         _areTypingIndicatorsEnabled = value
 
-        primaryStorage.dbReadWriteConnection.setBool(value, forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection)
+        databaseStorage.write { transaction in
+            self.keyValueStore.setBool(value,
+                                       key: self.kDatabaseKey_TypingIndicatorsEnabled,
+                                       transaction: transaction)
+        }
 
         syncManager.sendConfigurationSyncMessage()
 
