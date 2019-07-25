@@ -23,6 +23,15 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
         let store2 = SDSKeyValueStore(collection: "store2")
         let store3 = SDSKeyValueStore(collection: "store3")
 
+        let randomValue = {
+            return Int(arc4random())
+        }
+        let value0 = randomValue()
+        let value1 = randomValue()
+        let value2 = randomValue()
+        let value3 = randomValue()
+        let value4 = randomValue()
+
         self.read { transaction in
             XCTAssertEqual(0, store1.numberOfKeys(transaction: transaction))
             XCTAssertEqual(0, store2.numberOfKeys(transaction: transaction))
@@ -30,11 +39,11 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
         }
 
         self.yapWrite { transaction in
-            store1.setInt(0, key: "key0", transaction: transaction.asAnyWrite)
-            store2.setInt(1, key: "key0", transaction: transaction.asAnyWrite)
-            store3.setInt(2, key: "key0", transaction: transaction.asAnyWrite)
-            store1.setInt(3, key: "key1", transaction: transaction.asAnyWrite)
-            store2.setInt(4, key: "key1", transaction: transaction.asAnyWrite)
+            store1.setInt(value0, key: "key0", transaction: transaction.asAnyWrite)
+            store2.setInt(value1, key: "key0", transaction: transaction.asAnyWrite)
+            store3.setInt(value2, key: "key0", transaction: transaction.asAnyWrite)
+            store1.setInt(value3, key: "key1", transaction: transaction.asAnyWrite)
+            store2.setInt(value4, key: "key1", transaction: transaction.asAnyWrite)
         }
 
         self.read { transaction in
@@ -68,16 +77,12 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
             XCTAssertTrue(store2.hasValue(forKey: "key1", transaction: transaction))
             XCTAssertFalse(store3.hasValue(forKey: "key1", transaction: transaction))
 
-            XCTAssertEqual(0, store1.getInt("key0", transaction: transaction))
-            XCTAssertEqual(1, store2.getInt("key0", transaction: transaction))
-            XCTAssertEqual(2, store3.getInt("key0", transaction: transaction))
-            XCTAssertEqual(3, store1.getInt("key1", transaction: transaction))
-            XCTAssertEqual(4, store2.getInt("key1", transaction: transaction))
+            XCTAssertEqual(value0, store1.getInt("key0", transaction: transaction))
+            XCTAssertEqual(value1, store2.getInt("key0", transaction: transaction))
+            XCTAssertEqual(value2, store3.getInt("key0", transaction: transaction))
+            XCTAssertEqual(value3, store1.getInt("key1", transaction: transaction))
+            XCTAssertEqual(value4, store2.getInt("key1", transaction: transaction))
         }
-    }
-
-    private func randomData() -> Data {
-        return UUID().uuidString.data(using: .utf8)!
     }
 
     func testKeyValueData() {
@@ -85,11 +90,14 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
         let store2 = SDSKeyValueStore(collection: "store2")
         let store3 = SDSKeyValueStore(collection: "store3")
 
-        let value0 = randomData()
-        let value1 = randomData()
-        let value2 = randomData()
-        let value3 = randomData()
-        let value4 = randomData()
+        let randomValue = {
+            return UUID().uuidString.data(using: .utf8)!
+        }
+        let value0 = randomValue()
+        let value1 = randomValue()
+        let value2 = randomValue()
+        let value3 = randomValue()
+        let value4 = randomValue()
 
         self.read { transaction in
             XCTAssertEqual(0, store1.numberOfKeys(transaction: transaction))
@@ -144,20 +152,19 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
         }
     }
 
-    private func randomString() -> String {
-        return UUID().uuidString
-    }
-
     func testKeyValueString() {
         let store1 = SDSKeyValueStore(collection: "store1")
         let store2 = SDSKeyValueStore(collection: "store2")
         let store3 = SDSKeyValueStore(collection: "store3")
 
-        let value0 = randomString()
-        let value1 = randomString()
-        let value2 = randomString()
-        let value3 = randomString()
-        let value4 = randomString()
+        let randomValue = {
+            return UUID().uuidString
+        }
+        let value0 = randomValue()
+        let value1 = randomValue()
+        let value2 = randomValue()
+        let value3 = randomValue()
+        let value4 = randomValue()
 
         self.read { transaction in
             XCTAssertEqual(0, store1.numberOfKeys(transaction: transaction))
@@ -212,10 +219,6 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
         }
     }
 
-    private func randomDate() -> Date {
-        return NSDate.ows_date(withMillisecondsSince1970: UInt64(arc4random()))
-    }
-
     func testKeyValueDate() {
         let store1 = SDSKeyValueStore(collection: "store1")
         let store2 = SDSKeyValueStore(collection: "store2")
@@ -224,11 +227,14 @@ class YDBToGRDBMigrationTest: SignalBaseTest {
         // A special store we use for date edge cases.
         let store4 = SDSKeyValueStore(collection: "store4")
 
-        let value0 = randomDate()
-        let value1 = randomDate()
-        let value2 = randomDate()
-        let value3 = randomDate()
-        let value4 = randomDate()
+        let randomValue = {
+            return NSDate.ows_date(withMillisecondsSince1970: UInt64(arc4random()))
+        }
+        let value0 = randomValue()
+        let value1 = randomValue()
+        let value2 = randomValue()
+        let value3 = randomValue()
+        let value4 = randomValue()
 
         self.read { transaction in
             XCTAssertEqual(0, store1.numberOfKeys(transaction: transaction))
