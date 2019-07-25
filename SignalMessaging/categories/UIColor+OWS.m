@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Loki
 
-+ (UIColor *)lokiGreen { return [UIColor colorWithRGBHex:0x5BCA5B]; }
++ (UIColor *)lokiGreen { return [UIColor colorWithRGBHex:0x78BE20]; }
 + (UIColor *)lokiDarkGreen { return [UIColor colorWithRGBHex:0x419B41]; }
 + (UIColor *)lokiDarkestGray { return [UIColor colorWithRGBHex:0x0A0A0A]; }
 + (UIColor *)lokiDarkerGray { return [UIColor colorWithRGBHex:0x252525]; }
