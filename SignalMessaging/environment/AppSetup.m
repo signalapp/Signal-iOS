@@ -150,16 +150,16 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
 
-        [OWS115GRDBMigration addWithKeyStore:OWSDatabaseMigration.keyValueStore label:@"OWSDatabaseMigration"];
-        [OWS115GRDBMigration addWithKeyStore:profileManager.whitelistedPhoneNumbersStore
-                                       label:@"OWSProfileManager.whitelistedPhoneNumbersStore"];
-        [OWS115GRDBMigration addWithKeyStore:profileManager.whitelistedUUIDsStore
-                                       label:@"OWSProfileManager.whitelistedUUIDsStore"];
-        [OWS115GRDBMigration addWithKeyStore:profileManager.whitelistedGroupsStore
-                                       label:@"OWSProfileManager.whitelistedGroupsStore"];
-        [OWS115GRDBMigration addWithKeyStore:OWSSounds.keyValueStore label:@"OWSSounds"];
-        [OWS115GRDBMigration addWithKeyStore:Theme.keyValueStore label:@"Theme"];
-        [OWS115GRDBMigration addWithKeyStore:OWSSyncManager.keyValueStore label:@"OWSSyncManager"];
+        [YDBToGRDBMigration addWithKeyStore:OWSDatabaseMigration.keyValueStore label:@"OWSDatabaseMigration"];
+        [YDBToGRDBMigration addWithKeyStore:profileManager.whitelistedPhoneNumbersStore
+                                      label:@"OWSProfileManager.whitelistedPhoneNumbersStore"];
+        [YDBToGRDBMigration addWithKeyStore:profileManager.whitelistedUUIDsStore
+                                      label:@"OWSProfileManager.whitelistedUUIDsStore"];
+        [YDBToGRDBMigration addWithKeyStore:profileManager.whitelistedGroupsStore
+                                      label:@"OWSProfileManager.whitelistedGroupsStore"];
+        [YDBToGRDBMigration addWithKeyStore:OWSSounds.keyValueStore label:@"OWSSounds"];
+        [YDBToGRDBMigration addWithKeyStore:Theme.keyValueStore label:@"Theme"];
+        [YDBToGRDBMigration addWithKeyStore:OWSSyncManager.keyValueStore label:@"OWSSyncManager"];
 
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             dispatch_async(dispatch_get_main_queue(), ^{

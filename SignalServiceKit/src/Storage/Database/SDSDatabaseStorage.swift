@@ -13,7 +13,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         return SSKEnvironment.shared.databaseStorage
     }
 
-    static public var shouldLogDBQueries: Bool = false
+    static public var shouldLogDBQueries: Bool = true
 
     private var hasPendingCrossProcessWrite = false
 

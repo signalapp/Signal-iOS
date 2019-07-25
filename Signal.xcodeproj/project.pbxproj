@@ -11,6 +11,7 @@
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
 		34074F61203D0CBE004596AE /* OWSSounds.m in Sources */ = {isa = PBXBuildFile; fileRef = 34074F5F203D0CBD004596AE /* OWSSounds.m */; };
 		34074F62203D0CBE004596AE /* OWSSounds.h in Headers */ = {isa = PBXBuildFile; fileRef = 34074F60203D0CBE004596AE /* OWSSounds.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		34080E4022E9F50200B4D9DA /* YDBToGRDBMigration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34080E3F22E9F50200B4D9DA /* YDBToGRDBMigration.swift */; };
 		34080EFE2225F96D0087E99F /* ImageEditorPaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34080EFD2225F96D0087E99F /* ImageEditorPaletteView.swift */; };
 		34080F02222853E30087E99F /* ImageEditorBrushViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34080F01222853E30087E99F /* ImageEditorBrushViewController.swift */; };
 		34080F04222858DC0087E99F /* OWSViewController+ImageEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34080F03222858DC0087E99F /* OWSViewController+ImageEditor.swift */; };
@@ -673,6 +674,7 @@
 		3403B95C20EA9527001A1F44 /* OWSContactShareButtonsView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactShareButtonsView.h; sourceTree = "<group>"; };
 		34074F5F203D0CBD004596AE /* OWSSounds.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSounds.m; sourceTree = "<group>"; };
 		34074F60203D0CBE004596AE /* OWSSounds.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSounds.h; sourceTree = "<group>"; };
+		34080E3F22E9F50200B4D9DA /* YDBToGRDBMigration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YDBToGRDBMigration.swift; sourceTree = "<group>"; };
 		34080EFD2225F96D0087E99F /* ImageEditorPaletteView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorPaletteView.swift; sourceTree = "<group>"; };
 		34080F01222853E30087E99F /* ImageEditorBrushViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageEditorBrushViewController.swift; sourceTree = "<group>"; };
 		34080F03222858DC0087E99F /* OWSViewController+ImageEditor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OWSViewController+ImageEditor.swift"; sourceTree = "<group>"; };
@@ -1827,6 +1829,7 @@
 				34ABB2C32090C59700C727A6 /* OWSResaveCollectionDBMigration.h */,
 				34ABB2C22090C59600C727A6 /* OWSResaveCollectionDBMigration.m */,
 				4C3A556E228C7937000E4935 /* PrivateMethodsForMigration.h */,
+				34080E3F22E9F50200B4D9DA /* YDBToGRDBMigration.swift */,
 			);
 			path = migrations;
 			sourceTree = "<group>";
@@ -3538,6 +3541,7 @@
 				34AC0A11211B39EA00997B47 /* OWSLayerView.swift in Sources */,
 				34AC0A1B211B39EA00997B47 /* GradientView.swift in Sources */,
 				34AC09E2211B39B100997B47 /* ReturnToCallViewController.swift in Sources */,
+				34080E4022E9F50200B4D9DA /* YDBToGRDBMigration.swift in Sources */,
 				346129AB1FD1F0EE00532771 /* OWSFormat.m in Sources */,
 				34AC0A12211B39EA00997B47 /* ContactTableViewCell.m in Sources */,
 				451F8A461FD715BA005CB9DA /* OWSGroupAvatarBuilder.m in Sources */,
