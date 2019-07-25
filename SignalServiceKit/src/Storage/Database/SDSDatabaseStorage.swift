@@ -374,6 +374,8 @@ extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
 
+    private let dbURL: URL
+
     private let keyServiceName: String = "TSKeyChainService"
     private let keyName: String = "OWSDatabaseCipherKeySpec"
 
@@ -386,7 +388,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     init(dbDir: URL) throws {
         OWSFileSystem.ensureDirectoryExists(dbDir.path)
 
-        let dbURL = dbDir.appendingPathComponent("signal.sqlite", isDirectory: false)
+        dbURL = dbDir.appendingPathComponent("signal.sqlite", isDirectory: false)
         storage = try GRDBStorage(dbURL: dbURL, keyServiceName: keyServiceName, keyName: keyName)
 
         super.init()
@@ -793,5 +795,62 @@ private struct GRDBKeySpecSource {
 
     func fetchData() throws -> Data {
         return try CurrentAppContext().keychainStorage().data(forService: keyServiceName, key: keyName)
+    }
+}
+
+// MARK: -
+
+@objc
+public extension SDSDatabaseStorage {
+    var databaseFileSize: UInt64 {
+        if useGRDB {
+            return grdbStorage.databaseFileSize
+        } else {
+            return OWSPrimaryStorage.shared().databaseFileSize()
+        }
+    }
+
+    var databaseWALFileSize: UInt64 {
+        if useGRDB {
+            return grdbStorage.databaseWALFileSize
+        } else {
+            return OWSPrimaryStorage.shared().databaseWALFileSize()
+        }
+    }
+
+    var databaseSHMFileSize: UInt64 {
+        if useGRDB {
+            return grdbStorage.databaseSHMFileSize
+        } else {
+            return OWSPrimaryStorage.shared().databaseSHMFileSize()
+        }
+    }
+}
+
+// MARK: -
+
+extension GRDBDatabaseStorageAdapter {
+    var databaseFileSize: UInt64 {
+        guard let fileSize = OWSFileSystem.fileSize(of: dbURL) else {
+            owsFailDebug("Could not determine file size.")
+            return 0
+        }
+        return fileSize.uint64Value
+    }
+
+    var databaseWALFileSize: UInt64 {
+        guard let fileSize = OWSFileSystem.fileSize(ofPath: dbURL.path + "-shm") else {
+            owsFailDebug("Could not determine file size.")
+            return 0
+        }
+        return fileSize.uint64Value
+    }
+
+    var databaseSHMFileSize: UInt64 {
+        guard let fileSize = OWSFileSystem.fileSize(ofPath: dbURL.path + "-wal") else {
+            owsFailDebug("Could not determine file size.")
+            return 0
+        }
+        return fileSize.uint64Value
     }
 }

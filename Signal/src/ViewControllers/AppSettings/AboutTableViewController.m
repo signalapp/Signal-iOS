@@ -8,12 +8,20 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 
 @import SafariServices;
 
 @implementation AboutTableViewController
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (void)dealloc
 {
@@ -98,10 +106,10 @@
     __block NSUInteger threadCount;
     __block NSUInteger messageCount;
     __block NSUInteger attachmentCount;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        threadCount = [transaction numberOfKeysInCollection:[TSThread collection]];
-        messageCount = [transaction numberOfKeysInCollection:[TSInteraction collection]];
-        attachmentCount = [transaction numberOfKeysInCollection:[TSAttachment collection]];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        threadCount = [TSThread anyCountWithTransaction:transaction];
+        messageCount = [TSInteraction anyCountWithTransaction:transaction];
+        attachmentCount = [TSAttachment anyCountWithTransaction:transaction];
     }];
 
     NSByteCountFormatter *byteCountFormatter = [NSByteCountFormatter new];
@@ -127,17 +135,16 @@
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Attachments: %@",
                                                                     formattedAttachmentCount]]];
 
-    NSString *dbSize =
-        [byteCountFormatter stringFromByteCount:(long long)[OWSPrimaryStorage.sharedManager databaseFileSize]];
+    NSString *dbSize = [byteCountFormatter stringFromByteCount:(long long)[self.databaseStorage databaseFileSize]];
     [debugSection addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database size: %@", dbSize]]];
 
     NSString *dbWALSize =
-        [byteCountFormatter stringFromByteCount:(long long)[OWSPrimaryStorage.sharedManager databaseWALFileSize]];
+        [byteCountFormatter stringFromByteCount:(long long)[self.databaseStorage databaseWALFileSize]];
     [debugSection
         addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database WAL size: %@", dbWALSize]]];
 
     NSString *dbSHMSize =
-        [byteCountFormatter stringFromByteCount:(long long)[OWSPrimaryStorage.sharedManager databaseSHMFileSize]];
+        [byteCountFormatter stringFromByteCount:(long long)[self.databaseStorage databaseSHMFileSize]];
     [debugSection
         addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Database SHM size: %@", dbSHMSize]]];
 

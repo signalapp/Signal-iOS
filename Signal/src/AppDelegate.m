@@ -741,7 +741,7 @@ static NSTimeInterval launchStartedAt;
                 // Mark all "incomplete" calls as missed, e.g. any incoming or outgoing calls that were not
                 // connected, failed or hung up before the app existed should be marked as missed.
                 [[OWSIncompleteCallsJob new] run];
-                [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
+                [[OWSFailedAttachmentDownloadsJob new] run];
             });
         } else {
             OWSLogInfo(@"running post launch block for unregistered user.");
