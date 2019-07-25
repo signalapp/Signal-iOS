@@ -3625,29 +3625,25 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                               verificationState:OWSVerificationStateNoLongerVerified
                                   isLocalChange:NO]];
 
-        if (transaction.transitional_yapWriteTransaction) {
-            [result addObject:[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                         withTransaction:transaction]];
-            [result addObject:[TSErrorMessage invalidKeyExceptionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                              withTransaction:transaction]];
-            [result addObject:[TSErrorMessage invalidVersionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                         withTransaction:transaction]];
-            [result addObject:[TSErrorMessage corruptedMessageWithEnvelope:[self createEnvelopeForThread:thread]
-                                                           withTransaction:transaction]];
+        [result addObject:[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread]
+                                                     withTransaction:transaction]];
+        [result addObject:[TSErrorMessage invalidKeyExceptionWithEnvelope:[self createEnvelopeForThread:thread]
+                                                          withTransaction:transaction]];
+        [result addObject:[TSErrorMessage invalidVersionWithEnvelope:[self createEnvelopeForThread:thread]
+                                                     withTransaction:transaction]];
+        [result addObject:[TSErrorMessage corruptedMessageWithEnvelope:[self createEnvelopeForThread:thread]
+                                                       withTransaction:transaction]];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            TSInvalidIdentityKeyReceivingErrorMessage *_Nullable blockingSNChangeMessage =
-                [TSInvalidIdentityKeyReceivingErrorMessage
-                    untrustedKeyWithEnvelope:[self createEnvelopeForThread:thread]
-                             withTransaction:transaction.transitional_yapWriteTransaction];
+        TSInvalidIdentityKeyReceivingErrorMessage *_Nullable blockingSNChangeMessage =
+            [TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithEnvelope:[self createEnvelopeForThread:thread]
+                                                                withTransaction:transaction];
 #pragma clang diagnostic pop
 
 
-            OWSAssertDebug(blockingSNChangeMessage);
-            [result addObject:blockingSNChangeMessage];
-        } else {
-            OWSFailDebug(@"failure: not yet implemented for GRDB");
-        }
+        OWSAssertDebug(blockingSNChangeMessage);
+        [result addObject:blockingSNChangeMessage];
+
         // MJK TODO - should be safe to remove this senderTimestamp
         [result addObject:[[TSErrorMessage alloc]
                               initWithTimestamp:[NSDate ows_millisecondTimeStamp]

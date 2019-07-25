@@ -37,10 +37,10 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 // We no longer create these messages, but they might exist on legacy clients so it's useful to be able to
 // create them with the debug UI
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
-                                  withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                                  withTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
-                                                                              transaction:transaction.asAnyWrite];
+    TSContactThread *contactThread =
+        [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress transaction:transaction];
 
     // Legit usage of senderTimestamp, references message which failed to decrypt
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
