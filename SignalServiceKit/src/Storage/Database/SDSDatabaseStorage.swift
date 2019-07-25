@@ -804,25 +804,25 @@ private struct GRDBKeySpecSource {
 public extension SDSDatabaseStorage {
     var databaseFileSize: UInt64 {
         if useGRDB {
-            return OWSPrimaryStorage.shared().databaseFileSize()
-        } else {
             return grdbStorage.databaseFileSize
+        } else {
+            return OWSPrimaryStorage.shared().databaseFileSize()
         }
     }
 
     var databaseWALFileSize: UInt64 {
         if useGRDB {
-            return OWSPrimaryStorage.shared().databaseWALFileSize()
-        } else {
             return grdbStorage.databaseWALFileSize
+        } else {
+            return OWSPrimaryStorage.shared().databaseWALFileSize()
         }
     }
 
     var databaseSHMFileSize: UInt64 {
         if useGRDB {
-            return OWSPrimaryStorage.shared().databaseSHMFileSize()
-        } else {
             return grdbStorage.databaseSHMFileSize
+        } else {
+            return OWSPrimaryStorage.shared().databaseSHMFileSize()
         }
     }
 }

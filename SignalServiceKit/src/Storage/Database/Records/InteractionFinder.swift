@@ -554,12 +554,9 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         """
         var result = [String]()
         do {
-            let cursor = try String.fetchCursor(transaction.database,
-                                                sql: sql,
-                                                arguments: [TSOutgoingMessageState.sending.rawValue])
-            while let uniqueId = try cursor.next() {
-                result.append(uniqueId)
-            }
+            result = try String.fetchAll(transaction.database,
+                                         sql: sql,
+                                         arguments: [TSOutgoingMessageState.sending.rawValue])
         } catch {
             owsFailDebug("error: \(error)")
         }
