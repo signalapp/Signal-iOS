@@ -2,7 +2,6 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "NSError+MessageSending.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSError.h"
 #import "OWSFakeNetworkManager.h"

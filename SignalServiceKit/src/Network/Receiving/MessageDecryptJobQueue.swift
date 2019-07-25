@@ -123,7 +123,7 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
     override public func run() {
         do {
             guard let envelopeData = jobRecord.envelopeData else {
-                reportError(OWSErrorMakeAssertionError("envelopeData was unexpectedly nil"))
+                reportError(OWSAssertionError("envelopeData was unexpectedly nil"))
                 return
             }
 
@@ -148,11 +148,10 @@ public class SSKMessageDecryptOperation: OWSOperation, DurableOperation {
             },
                                              failureBlock: {
                                                 // TODO error API's should return specific error
-                                                let error = OWSErrorMakeAssertionError("unknown error")
-                                                self.reportError(error)
+                                                self.reportError(OWSAssertionError("unknown error"))
                                             })
         } catch {
-            reportError(error)
+            reportError(withUndefinedRetry: error)
         }
     }
 

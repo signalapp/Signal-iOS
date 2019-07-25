@@ -47,7 +47,7 @@ public class CreatePreKeysOperation: OWSOperation {
             Logger.debug("done")
             self.reportSuccess()
         }.catch { error in
-            self.reportError(error)
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 }

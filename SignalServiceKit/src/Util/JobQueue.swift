@@ -20,17 +20,6 @@ import Foundation
 /// DurableOperations are retryable - via their `remainingRetries` logic. However, if the operation encounters
 /// an error where `error.isRetryable == false`, the operation will fail, regardless of available retries.
 
-public extension Error {
-    var isRetryable: Bool {
-        get {
-            return (self as NSError).isRetryable
-        }
-        set {
-            (self as NSError).isRetryable = newValue
-        }
-    }
-}
-
 extension SSKJobRecordStatus: CustomStringConvertible {
     public var description: String {
         switch self {
