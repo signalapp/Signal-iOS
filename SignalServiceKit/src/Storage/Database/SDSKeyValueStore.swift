@@ -341,7 +341,7 @@ public class SDSKeyValueStore: NSObject {
     }
 
     @objc
-    func numberOfKeys(transaction: SDSAnyReadTransaction) -> UInt {
+    public func numberOfKeys(transaction: SDSAnyReadTransaction) -> UInt {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return ydbTransaction.numberOfKeys(inCollection: collection)
