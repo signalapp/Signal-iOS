@@ -106,7 +106,7 @@ internal extension Promise {
         return recover { error -> Promise<T> in
             if let error = error as? NetworkManagerError {
                 switch error.statusCode {
-                case 0:
+                case 0, 400, 500, 503:
                     // The snode is unreachable
                     let oldFailureCount = LokiAPI.failureCount[target] ?? 0
                     let newFailureCount = oldFailureCount + 1
@@ -127,10 +127,10 @@ internal extension Promise {
                     if case NetworkManagerError.taskError(_, let underlyingError) = error, let nsError = underlyingError as? NSError,
                         let data = nsError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey] as? Data, let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON,
                         let powDifficulty = json["difficulty"] as? Int {
-                        print("[Loki] Setting PoW difficulty to \(powDifficulty).")
+                        print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
                         LokiAPI.powDifficulty = UInt(powDifficulty)
                     } else {
-                        print("[Loki] Failed to update PoW difficulty.")
+                        print("[Loki] Failed to update proof of work difficulty.")
                     }
                     break
                 default: break
