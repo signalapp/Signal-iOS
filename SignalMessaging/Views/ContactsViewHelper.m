@@ -41,6 +41,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ContactsViewHelper
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 - (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate
 {
     self = [super init];
@@ -290,8 +299,8 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableSet<Contact *> *nonSignalContactSet = [NSMutableSet new];
     __block NSArray<Contact *> *nonSignalContacts;
 
-    [OWSPrimaryStorage.dbReadConnection
-        asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.databaseStorage
+        asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 if (signalRecipients.count < 1) {
@@ -303,7 +312,7 @@ NS_ASSUME_NONNULL_BEGIN
                     return [left.fullName compare:right.fullName];
                 }];
         }
-        completionBlock:^{
+        completion:^{
             self.nonSignalContacts = nonSignalContacts;
         }];
 }
@@ -313,7 +322,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     if (!_nonSignalContacts) {
         NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
-        [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 if (signalRecipients.count < 1) {

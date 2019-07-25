@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @class ImageCache;
-@class OWSPrimaryStorage;
 @class SDSKeyValueStore;
 @class SignalAccount;
 @class SignalServiceAddress;
@@ -20,12 +19,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
  * Get latest Signal contacts, and be notified when they change.
  */
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
-
-#pragma mark - Setup
-
-- (instancetype)init NS_UNAVAILABLE;
-
-- (id)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
 
 #pragma mark - Accessors
 
