@@ -41,7 +41,6 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 };
 
 @class OWSAudioPlayer;
-@class OWSPrimaryStorage;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
 @class TSThread;

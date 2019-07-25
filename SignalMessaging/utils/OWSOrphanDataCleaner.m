@@ -10,7 +10,6 @@
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachmentStream.h>

@@ -10,7 +10,6 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>

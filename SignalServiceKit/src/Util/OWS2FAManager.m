@@ -4,7 +4,6 @@
 
 #import "OWS2FAManager.h"
 #import "NSNotificationCenter+OWS.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"

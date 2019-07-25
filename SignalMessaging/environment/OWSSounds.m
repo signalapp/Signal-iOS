@@ -7,10 +7,8 @@
 #import "OWSAudioPlayer.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSThread.h>
-#import <YapDatabase/YapDatabase.h>
 
 NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlobalNotificationKey";
 

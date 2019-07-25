@@ -8,7 +8,6 @@
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBlockedPhoneNumbersMessage.h"
 #import "OWSMessageSender.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSGroupThread.h"

@@ -4,7 +4,6 @@
 
 #import "ContactsUpdater.h"
 #import "OWSError.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "PhoneNumber.h"
 #import "SSKEnvironment.h"

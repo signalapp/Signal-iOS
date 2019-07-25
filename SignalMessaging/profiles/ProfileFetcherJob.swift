@@ -49,10 +49,6 @@ public class ProfileFetcherJob: NSObject {
         return TSSocketManager.shared
     }
 
-    private var primaryStorage: OWSPrimaryStorage {
-        return SSKEnvironment.shared.primaryStorage
-    }
-
     private var udManager: OWSUDManager {
         return SSKEnvironment.shared.udManager
     }
@@ -76,6 +72,10 @@ public class ProfileFetcherJob: NSObject {
 
     private var sessionStore: SSKSessionStore {
         return SSKSessionStore()
+    }
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: -
@@ -230,10 +230,10 @@ public class ProfileFetcherJob: NSObject {
     }
 
     private func verifyIdentityUpToDateAsync(address: SignalServiceAddress, latestIdentityKey: Data) {
-        primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
-            if self.identityManager.saveRemoteIdentity(latestIdentityKey, address: address, transaction: transaction.asAnyWrite) {
+        databaseStorage.asyncWrite { (transaction) in
+            if self.identityManager.saveRemoteIdentity(latestIdentityKey, address: address, transaction: transaction) {
                 Logger.info("updated identity key with fetched profile for recipient: \(address)")
-                self.sessionStore.archiveAllSessions(for: address, transaction: transaction.asAnyWrite)
+                self.sessionStore.archiveAllSessions(for: address, transaction: transaction)
             } else {
                 // no change in identity.
             }

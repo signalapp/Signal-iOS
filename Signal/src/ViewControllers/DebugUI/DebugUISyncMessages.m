@@ -16,7 +16,6 @@
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
 #import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>

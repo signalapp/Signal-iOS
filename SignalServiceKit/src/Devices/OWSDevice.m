@@ -19,7 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const NSNotificationName_OWSDeviceDidChange = @"NSNotificationName_OWSDeviceDidChange";
 
 uint32_t const OWSDevicePrimaryDeviceId = 1;
-NSString *const kOWSPrimaryStorage_OWSDeviceCollection = @"kTSStorageManager_OWSDeviceCollection";
 NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_MayHaveLinkedDevices";
 
 @interface OWSDeviceManager ()
@@ -46,7 +45,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
     static SDSKeyValueStore *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[SDSKeyValueStore alloc] initWithCollection:kOWSPrimaryStorage_OWSDeviceCollection];
+        instance = [[SDSKeyValueStore alloc] initWithCollection:@"kTSStorageManager_OWSDeviceCollection"];
     });
     return instance;
 }

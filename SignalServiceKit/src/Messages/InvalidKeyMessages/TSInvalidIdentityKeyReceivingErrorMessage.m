@@ -7,7 +7,6 @@
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageReceiver.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "SSKSessionStore.h"
 #import "TSContactThread.h"
@@ -16,7 +15,6 @@
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyWhisperMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
