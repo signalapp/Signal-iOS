@@ -85,8 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWS2FAManager *ows2FAManager = [OWS2FAManager new];
         OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
         OWSReadReceiptManager *readReceiptManager = [OWSReadReceiptManager new];
-        OWSOutgoingReceiptManager *outgoingReceiptManager =
-            [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
         OWSSyncManager *syncManager = [[OWSSyncManager alloc] initDefault];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
@@ -160,6 +159,10 @@ NS_ASSUME_NONNULL_BEGIN
         [YDBToGRDBMigration addWithKeyStore:OWSSounds.keyValueStore label:@"OWSSounds"];
         [YDBToGRDBMigration addWithKeyStore:Theme.keyValueStore label:@"Theme"];
         [YDBToGRDBMigration addWithKeyStore:OWSSyncManager.keyValueStore label:@"OWSSyncManager"];
+        [YDBToGRDBMigration addWithKeyStore:OWSOutgoingReceiptManager.deliveryReceiptStore
+                                      label:@"OWSOutgoingReceiptManager.deliveryReceiptStore"];
+        [YDBToGRDBMigration addWithKeyStore:OWSOutgoingReceiptManager.readReceiptStore
+                                      label:@"OWSOutgoingReceiptManager.readReceiptStore"];
 
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             dispatch_async(dispatch_get_main_queue(), ^{
