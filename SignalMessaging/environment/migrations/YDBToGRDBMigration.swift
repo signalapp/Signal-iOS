@@ -159,18 +159,14 @@ extension YDBToGRDBMigration {
         // Logging queries is helpful for normal debugging, but expensive during a migration
         SDSDatabaseStorage.shouldLogDBQueries = false
 
-        // Migrate the key-value and unordered records first;
-        // The later migrations may use these values in
-        // "sneaky" transactions.
         try storage.write { grdbTransaction in
-            // KeyValue Finders
+            // Instantiate the migrators.
             var migrators = [GRDBMigrator]()
-
             ydbReadConnection.read { ydbTransaction in
                 migrators += migratorGroup.migrators(ydbTransaction: ydbTransaction)
             }
 
-            // Migrate migrators
+            // Migrate migrators.
             for migrator in migrators {
                 try! migrator.migrate(grdbTransaction: grdbTransaction)
             }
@@ -243,19 +239,6 @@ extension YDBToGRDBMigration {
             GRDBUnorderedRecordMigrator<OWSUserProfile>(label: "OWSUserProfile", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.02),
             GRDBUnorderedRecordMigrator<TSRecipientReadReceipt>(label: "TSRecipientReadReceipt", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2)
         ]
-    }
-
-    // GRDB TODO: Remove?
-    private func migrateUnorderedRecords<T>(label: String, finder: LegacyUnorderedFinder<T>, memorySamplerRatio: Float, transaction: GRDBWriteTransaction) throws where T: SDSModel {
-        try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
-            var recordCount = 0
-            try finder.enumerateLegacyObjects { legacyRecord in
-                recordCount += 1
-                legacyRecord.anyInsert(transaction: transaction.asAnyWrite)
-                memorySampler.sample()
-            }
-            Logger.info("completed with recordCount: \(recordCount)")
-        }
     }
 }
 
