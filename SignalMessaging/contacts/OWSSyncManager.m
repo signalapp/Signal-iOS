@@ -292,8 +292,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                 profileManager:self.profileManager];
             __block NSData *_Nullable messageData;
             __block NSData *_Nullable lastMessageHash;
-            // TODO: Maybe we should store a hash instead to avoid
-            //       large writes for users with many contacts.
             [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                 messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
                 lastMessageHash =
