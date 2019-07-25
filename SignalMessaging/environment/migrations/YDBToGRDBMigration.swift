@@ -29,14 +29,7 @@ public class YDBToGRDBMigration: NSObject {
 // MARK: -
 
 @objc
-public protocol GRDBMigratorSource {
-    func migrators(ydbTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator]
-}
-
-// MARK: -
-
-@objc
-public class GRDBMigratorGroup: NSObject, GRDBMigratorSource {
+public class GRDBMigratorGroup: NSObject {
     public typealias MigratorBlock = (YapDatabaseReadTransaction) -> [GRDBMigrator]
 
     private let block: MigratorBlock
@@ -46,7 +39,7 @@ public class GRDBMigratorGroup: NSObject, GRDBMigratorSource {
         self.block = block
     }
 
-    public func migrators(ydbTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
+    func migrators(ydbTransaction: YapDatabaseReadTransaction) -> [GRDBMigrator] {
         return block(ydbTransaction)
     }
 }
@@ -109,7 +102,7 @@ extension YDBToGRDBMigration {
         // We migrate the data store contents in phases
         // or batches.  Each "group" defines the data to
         // migrate in a given batch.
-        let migratorSources = [
+        let migratorGroups = [
             // Migrate the key-value and unordered records first;
             // The later migrations may use these values in
             // "sneaky" transactions.
@@ -130,7 +123,7 @@ extension YDBToGRDBMigration {
             }
         ]
 
-        try self.migrate(migratorSources: migratorSources)
+        try self.migrate(migratorGroups: migratorGroups)
 
         // GRDB TODO: OWSMessageDecryptJob
         // GRDB TODO: SSKMessageDecryptJobRecord
@@ -138,7 +131,7 @@ extension YDBToGRDBMigration {
         // GRDB TODO: OWSSessionResetJobRecord
     }
 
-    func migrate(migratorSources: [GRDBMigratorSource]) throws {
+    func migrate(migratorGroups: [GRDBMigratorGroup]) throws {
         Logger.info("")
 
         // We can't nest ydbTransactions in GRDB and vice-versa
@@ -153,14 +146,14 @@ extension YDBToGRDBMigration {
         let ydbReadConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
         ydbReadConnection.beginLongLivedReadTransaction()
 
-        for migratorSource in migratorSources {
-            try migrate(migratorSource: migratorSource,
+        for migratorGroup in migratorGroups {
+            try migrate(migratorGroup: migratorGroup,
                         ydbReadConnection: ydbReadConnection)
         }
     }
 
-    func migrate(migratorSource: GRDBMigratorSource,
-                 ydbReadConnection: YapDatabaseConnection) throws {
+    private func migrate(migratorGroup: GRDBMigratorGroup,
+                         ydbReadConnection: YapDatabaseConnection) throws {
         Logger.info("")
 
         // Logging queries is helpful for normal debugging, but expensive during a migration
@@ -174,7 +167,7 @@ extension YDBToGRDBMigration {
             var migrators = [GRDBMigrator]()
 
             ydbReadConnection.read { ydbTransaction in
-                migrators += migratorSource.migrators(ydbTransaction: ydbTransaction)
+                migrators += migratorGroup.migrators(ydbTransaction: ydbTransaction)
             }
 
             // Migrate migrators
@@ -440,7 +433,7 @@ public protocol GRDBMigrator {
 
 // MARK: -
 
-private class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
+public class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
     private let label: String
     private let finder: LegacyKeyValueFinder<T>
     private let memorySamplerRatio: Float
@@ -451,7 +444,7 @@ private class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
         self.memorySamplerRatio = memorySamplerRatio
     }
 
-    func migrate(grdbTransaction: GRDBWriteTransaction) throws {
+    public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
