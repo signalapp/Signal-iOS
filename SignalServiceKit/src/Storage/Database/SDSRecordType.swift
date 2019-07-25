@@ -43,6 +43,7 @@ public enum SDSRecordType: UInt {
     case unknownProtocolVersionMessage = 54
     case userProfile = 41
     case verificationStateChangeMessage = 13
+    case contactQuery = 57
     case jobRecord = 34
     case messageDecryptJobRecord = 53
     case messageSenderJobRecord = 35

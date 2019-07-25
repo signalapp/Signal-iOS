@@ -32,6 +32,7 @@
     "OWSUnknownProtocolVersionMessage": 54, 
     "OWSUserProfile": 41, 
     "OWSVerificationStateChangeMessage": 13, 
+    "OWSContactQuery": 57, 
     "SSKJobRecord": 34, 
     "SSKMessageDecryptJobRecord": 53, 
     "SSKMessageSenderJobRecord": 35, 
