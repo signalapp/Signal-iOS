@@ -376,8 +376,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (UIView *)createEmptyInboxView
 {
-    return [UIView new];
-    /**
+    /*
     NSArray<NSString *> *emptyInboxImageNames = @[
                                                   @"home_empty_splash_1",
                                                   @"home_empty_splash_2",
@@ -394,10 +393,10 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     CGSize screenSize = UIScreen.mainScreen.bounds.size;
     CGFloat emptyInboxImageSize = MIN(screenSize.width, screenSize.height) * 0.65f;
     [emptyInboxImageView autoSetDimension:ALDimensionWidth toSize:emptyInboxImageSize];
+     */
 
     UILabel *emptyInboxLabel = [UILabel new];
-    emptyInboxLabel.text = NSLocalizedString(@"INBOX_VIEW_EMPTY_INBOX",
-                                             @"Message shown in the home view when the inbox is empty.");
+    emptyInboxLabel.text = NSLocalizedString(@"Looks like you don\'t have any conversations yet. Get started by messaging a friend.", @"");
     emptyInboxLabel.font = UIFont.ows_dynamicTypeBodyClampedFont;
     emptyInboxLabel.textColor = Theme.secondaryColor;
     emptyInboxLabel.textAlignment = NSTextAlignmentCenter;
@@ -405,7 +404,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     emptyInboxLabel.lineBreakMode = NSLineBreakByWordWrapping;
     
     UIStackView *emptyInboxStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-                                                                                   emptyInboxImageView,
+                                                                                   /*emptyInboxImageView,*/
                                                                                    emptyInboxLabel,
                                                                                    ]];
     emptyInboxStack.axis = UILayoutConstraintAxisVertical;
@@ -414,7 +413,6 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     emptyInboxStack.layoutMargins = UIEdgeInsetsMake(50, 50, 50, 50);
     emptyInboxStack.layoutMarginsRelativeArrangement = YES;
     return emptyInboxStack;
-     */
 }
 
 - (void)createFirstConversationCueView
