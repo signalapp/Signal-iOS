@@ -84,10 +84,6 @@
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseAutoView.h>
-#import <YapDatabase/YapDatabaseViewChange.h>
-#import <YapDatabase/YapDatabaseViewConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -1772,7 +1768,7 @@ typedef enum : NSUInteger {
 {
     OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
     settingsVC.conversationSettingsViewDelegate = self;
-    [settingsVC configureWithThread:self.thread uiDatabaseConnection:self.uiDatabaseConnection];
+    [settingsVC configureWithThread:self.thread];
     settingsVC.showVerificationOnAppear = showVerification;
     [self.navigationController pushViewController:settingsVC animated:YES];
 }
@@ -2655,7 +2651,7 @@ typedef enum : NSUInteger {
     OWSLogDebug(@"user did tap reply");
 
     __block OWSQuotedReplyModel *quotedReply;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         quotedReply = [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:conversationItem
                                                                              transaction:transaction];
     }];
@@ -3143,18 +3139,6 @@ typedef enum : NSUInteger {
                   }];
 }
 
-#pragma mark - Storage access
-
-- (YapDatabaseConnection *)uiDatabaseConnection
-{
-    return OWSPrimaryStorage.sharedManager.uiDatabaseConnection;
-}
-
-- (YapDatabaseConnection *)editingDatabaseConnection
-{
-    return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
-}
-
 #pragma mark - Audio
 
 - (void)requestRecordingVoiceMemo
@@ -3604,8 +3588,8 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     __block NSString *draft;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        draft = [self.thread currentDraftWithTransaction:transaction.asAnyRead];
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        draft = [self.thread currentDraftWithTransaction:transaction];
     }];
     [self.inputToolbar setMessageText:draft animated:NO];
 }

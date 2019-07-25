@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSConversationSettingsViewDelegate.h"
@@ -9,7 +9,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSThread;
-@class YapDatabaseConnection;
 
 @interface OWSConversationSettingsViewController : OWSTableViewController
 
@@ -17,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL showVerificationOnAppear;
 
-- (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection;
+- (void)configureWithThread:(TSThread *)thread;
 
 @end
 

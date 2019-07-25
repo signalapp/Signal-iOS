@@ -49,8 +49,6 @@ const CGFloat kIconViewLength = 24;
     OWSSheetViewControllerDelegate>
 
 @property (nonatomic) TSThread *thread;
-@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
-@property (nonatomic, readonly) YapDatabaseConnection *editingDatabaseConnection;
 
 @property (nonatomic) NSArray<NSNumber *> *disappearingMessagesDurations;
 @property (nonatomic) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
@@ -168,11 +166,6 @@ const CGFloat kIconViewLength = 24;
                                                object:nil];
 }
 
-- (YapDatabaseConnection *)editingDatabaseConnection
-{
-    return [OWSPrimaryStorage sharedManager].dbReadWriteConnection;
-}
-
 - (NSString *)threadName
 {
     NSString *threadName = self.thread.name;
@@ -207,11 +200,10 @@ const CGFloat kIconViewLength = 24;
     return groupThread.groupModel.groupImage != nil;
 }
 
-- (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
+- (void)configureWithThread:(TSThread *)thread
 {
     OWSAssertDebug(thread);
     self.thread = thread;
-    self.uiDatabaseConnection = uiDatabaseConnection;
 
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         self.title = NSLocalizedString(
@@ -1460,8 +1452,8 @@ const CGFloat kIconViewLength = 24;
 
 - (void)setThreadMutedUntilDate:(nullable NSDate *)value
 {
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self.thread updateWithMutedUntilDate:value transaction:transaction.asAnyWrite];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.thread updateWithMutedUntilDate:value transaction:transaction];
     }];
 
     [self updateTableContents];
@@ -1529,8 +1521,8 @@ const CGFloat kIconViewLength = 24;
     didPickConversationColor:(OWSConversationColor *_Nonnull)conversationColor
 {
     OWSLogDebug(@"picked color: %@", conversationColor.name);
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self.thread updateConversationColorName:conversationColor.name transaction:transaction.asAnyWrite];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.thread updateConversationColorName:conversationColor.name transaction:transaction];
     }];
 
     [self.contactsManager.avatarCache removeAllImages];
