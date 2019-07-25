@@ -51,7 +51,6 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
     [edgesView addSubview:imageView];
     [imageView autoHCenterInSuperview];
 
-    const CGSize screenSize = UIScreen.mainScreen.bounds.size;
     [imageView autoSetDimension:ALDimensionWidth toSize:75];
     [imageView autoSetDimension:ALDimensionHeight toSize:71];
 

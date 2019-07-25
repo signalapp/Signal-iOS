@@ -16,14 +16,14 @@ public class LoadingViewController: UIViewController {
 
     override public func loadView() {
         self.view = UIView()
-        view.backgroundColor = UIColor.ows_materialBlue
+        view.backgroundColor = UIColor.lokiDarkestGray()
 
-        self.logoView = UIImageView(image: #imageLiteral(resourceName: "logoSignal"))
+        self.logoView = UIImageView(image: #imageLiteral(resourceName: "LokiLogo"))
         view.addSubview(logoView)
 
         logoView.autoCenterInSuperview()
-        logoView.autoPinToSquareAspectRatio()
-        logoView.autoMatch(.width, to: .width, of: view, withMultiplier: 1/3)
+        logoView.autoSetDimension(.width, toSize: 75)
+        logoView.autoSetDimension(.height, toSize: 71)
 
         self.topLabel = buildLabel()
         topLabel.alpha = 0
