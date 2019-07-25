@@ -19,7 +19,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 
 @import SafariServices;
 
@@ -585,7 +584,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         return NO;
     }
 
-    // Use the OWSPrimaryStorage.dbReadWriteConnection for consistency with the writes above.
     NSTimeInterval kProfileNagFrequency = kDayInterval * 30;
     __block NSDate *_Nullable lastPresentedDate;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
