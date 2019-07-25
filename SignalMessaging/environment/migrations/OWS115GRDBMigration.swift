@@ -468,7 +468,11 @@ private class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
             var recordCount = 0
             try finder.enumerateLegacyKeysAndObjects { legacyKey, legacyObject in
                 recordCount += 1
-                self.finder.store.setObject(legacyObject, key: legacyKey, transaction: grdbTransaction.asAnyWrite)
+                if let legacyData = legacyObject as? Data {
+                    self.finder.store.setData(legacyData, key: legacyKey, transaction: grdbTransaction.asAnyWrite)
+                } else {
+                    self.finder.store.setObject(legacyObject, key: legacyKey, transaction: grdbTransaction.asAnyWrite)
+                }
                 memorySampler.sample()
             }
             Logger.info("completed with recordCount: \(recordCount)")
