@@ -212,16 +212,11 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
-    if (!transaction.transitional_yapReadTransaction) {
-        return;
-    }
-
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     NSString *_Nullable remoteContactName = nil;
     if (remoteRecipient.isValid) {
-        remoteContactName = [self.contactsManager displayNameForAddress:remoteRecipient
-                                                            transaction:transaction.transitional_yapReadTransaction];
+        remoteContactName = [self.contactsManager displayNameForAddress:remoteRecipient transaction:transaction];
     }
 
     // Become eventually consistent in the case that the remote changed their settings at the same time.
@@ -243,7 +238,10 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSLogInfo(@"becoming consistent with disappearing message configuration: %@",
         disappearingMessagesConfiguration.dictionaryValue);
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [disappearingMessagesConfiguration anyUpsertWithTransaction:transaction];
+#pragma clang diagnostic pop
 
     // MJK TODO - should be safe to remove this senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =

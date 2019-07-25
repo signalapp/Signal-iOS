@@ -235,15 +235,13 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
             return NSLocalizedString(@"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY", @"");
         case TSErrorMessageNonBlockingIdentityChange: {
             if (self.recipientAddress) {
-                if (transaction.transitional_yapReadTransaction) {
-                    NSString *messageFormat = NSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT",
-                        @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
+                NSString *messageFormat = NSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT",
+                    @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
 
-                    NSString *recipientDisplayName = [SSKEnvironment.shared.contactsManager
-                        displayNameForAddress:self.recipientAddress
-                                  transaction:transaction.transitional_yapReadTransaction];
-                    return [NSString stringWithFormat:messageFormat, recipientDisplayName];
-                }
+                NSString *recipientDisplayName =
+                    [SSKEnvironment.shared.contactsManager displayNameForAddress:self.recipientAddress
+                                                                     transaction:transaction];
+                return [NSString stringWithFormat:messageFormat, recipientDisplayName];
             } else {
                 // address will be nil for legacy errors
                 return NSLocalizedString(

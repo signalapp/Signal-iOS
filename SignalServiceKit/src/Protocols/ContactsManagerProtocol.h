@@ -7,16 +7,16 @@ NS_ASSUME_NONNULL_BEGIN
 @class CNContact;
 @class Contact;
 @class PhoneNumber;
+@class SDSAnyReadTransaction;
 @class SignalAccount;
 @class SignalServiceAddress;
 @class UIImage;
-@class YapDatabaseReadTransaction;
 
 @protocol ContactsManagerProtocol <NSObject>
 
 - (NSString *)displayNameForAddress:(nullable SignalServiceAddress *)address;
 - (NSString *)displayNameForAddress:(nullable SignalServiceAddress *)address
-                        transaction:(YapDatabaseReadTransaction *)transaction;
+                        transaction:(SDSAnyReadTransaction *)transaction;
 - (NSArray<SignalAccount *> *)signalAccounts;
 
 - (BOOL)isSystemContact:(NSString *)phoneNumber;

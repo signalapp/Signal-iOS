@@ -906,8 +906,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (syncMessage.sent) {
         OWSIncomingSentMessageTranscript *transcript =
-            [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent
-                                                        transaction:transaction.transitional_yapWriteTransaction];
+            [[OWSIncomingSentMessageTranscript alloc] initWithProto:syncMessage.sent transaction:transaction];
 
         SSKProtoDataMessage *_Nullable dataMessage = syncMessage.sent.message;
         if (!dataMessage) {
@@ -1078,8 +1077,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     OWSAssertDebug(disappearingMessagesConfiguration);
     [disappearingMessagesConfiguration anyInsertWithTransaction:transaction];
-    NSString *name = [self.contactsManager displayNameForAddress:envelope.sourceAddress
-                                                     transaction:transaction.transitional_yapWriteTransaction];
+    NSString *name = [self.contactsManager displayNameForAddress:envelope.sourceAddress transaction:transaction];
 
     // MJK TODO - safe to remove senderTimestamp
     OWSDisappearingConfigurationUpdateInfoMessage *message =
@@ -1308,14 +1306,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   thread.groupModel = newGroupModel;
                                                               }];
 
-                if (transaction.transitional_yapWriteTransaction) {
-                    [[OWSDisappearingMessagesJob sharedJob]
-                        becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                                          thread:newGroupThread
-                                        createdByRemoteRecipient:nil
-                                          createdInExistingGroup:YES
-                                                     transaction:transaction];
-                }
+                [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
+                                                                                          thread:newGroupThread
+                                                                        createdByRemoteRecipient:nil
+                                                                          createdInExistingGroup:YES
+                                                                                     transaction:transaction];
 
                 // MJK TODO - should be safe to remove senderTimestamp
                 TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
@@ -1458,7 +1453,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSContact *_Nullable contact;
     OWSLinkPreview *_Nullable linkPreview;
-    if (transaction.transitional_yapWriteTransaction && !SSKFeatureFlags.allowUUIDOnlyContacts) {
+    if (!SSKFeatureFlags.allowUUIDOnlyContacts) {
         [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                   thread:thread
                                                                 createdByRemoteRecipient:authorAddress

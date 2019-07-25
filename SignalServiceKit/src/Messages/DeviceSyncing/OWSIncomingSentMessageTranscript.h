@@ -7,13 +7,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class MessageSticker;
 @class OWSContact;
 @class OWSLinkPreview;
+@class SDSAnyWriteTransaction;
 @class SSKProtoAttachmentPointer;
 @class SSKProtoDataMessage;
 @class SSKProtoSyncMessageSent;
 @class SignalServiceAddress;
 @class TSQuotedMessage;
 @class TSThread;
-@class YapDatabaseReadWriteTransaction;
 
 /**
  * Represents notification of a message sent on our behalf from another device.
@@ -21,8 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface OWSIncomingSentMessageTranscript : NSObject
 
-- (instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (nonatomic, readonly) SignalServiceAddress *recipientAddress;
 @property (nonatomic, readonly) uint64_t timestamp;
