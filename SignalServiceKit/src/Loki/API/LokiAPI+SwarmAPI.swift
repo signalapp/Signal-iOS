@@ -39,14 +39,16 @@ public extension LokiAPI {
     }
     
     // MARK: Clearnet Setup
+    fileprivate static let seedNodePool: Set<String> = [ "http://3.104.19.14:22023", "http://13.238.53.205:38157", "http://imaginary.stream:38157" ]
     fileprivate static var randomSnodePool: Set<LokiAPITarget> = []
     
     // MARK: Internal API
     private static func getRandomSnode() -> Promise<LokiAPITarget> {
         if randomSnodePool.isEmpty {
-            let url = URL(string: "http://3.104.19.14:22023/json_rpc")!
+            let target = seedNodePool.randomElement()!
+            let url = URL(string: "\(target)/json_rpc")!
             let request = TSRequest(url: url, method: "POST", parameters: [ "method" : "get_service_nodes" ])
-            print("[Loki] Invoking get_service_nodes on http://3.104.19.14:22023 (i.e. the seed node).")
+            print("[Loki] Invoking get_service_nodes on \(target).")
             return TSNetworkManager.shared().makePromise(request: request).map { intermediate in
                 let rawResponse = intermediate.responseObject
                 guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw "Failed to update random snode pool from: \(rawResponse)." }

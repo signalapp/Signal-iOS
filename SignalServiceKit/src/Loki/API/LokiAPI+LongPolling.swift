@@ -35,7 +35,7 @@ public extension LokiAPI {
         // This is here so we can stop the infinite loop
         guard !shouldStopPolling else { return }
         
-        getSwarm(for: userPublicKey).then { _ -> Guarantee<[Result<Void>]> in
+        getSwarm(for: userHexEncodedPublicKey).then { _ -> Guarantee<[Result<Void>]> in
             var promises = [Promise<Void>]()
             let connections = 3
             for i in 0..<connections {
@@ -59,7 +59,7 @@ public extension LokiAPI {
     }
     
     private static func getUnusedSnodes() -> [LokiAPITarget] {
-        let snodes = LokiAPI.swarmCache[userPublicKey] ?? []
+        let snodes = LokiAPI.swarmCache[userHexEncodedPublicKey] ?? []
         return snodes.filter { !usedSnodes.contains($0) }
     }
 
@@ -105,7 +105,7 @@ public extension LokiAPI {
                 
                 // Connect to the next snode if we haven't cancelled
                 // We also need to remove the cached snode so we don't contact it again
-                dropIfNeeded(nextSnode, hexEncodedPublicKey: userPublicKey)
+                dropIfNeeded(nextSnode, hexEncodedPublicKey: userHexEncodedPublicKey)
                 return connectToNextSnode()
             }
         }

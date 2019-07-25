@@ -4,7 +4,7 @@ import PromiseKit
 public final class LokiAPI : NSObject {
     internal static let storage = OWSPrimaryStorage.shared()
     
-    internal static var userPublicKey: String { return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey }
+    internal static var userHexEncodedPublicKey: String { return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey }
     
     // MARK: Settings
     private static let version = "v1"
@@ -52,15 +52,15 @@ public final class LokiAPI : NSObject {
     
     internal static func getRawMessages(from target: LokiAPITarget, usingLongPolling useLongPolling: Bool) -> RawResponsePromise {
         let lastHashValue = getLastMessageHashValue(for: target) ?? ""
-        let parameters = [ "pubKey" : userPublicKey, "lastHash" : lastHashValue ]
+        let parameters = [ "pubKey" : userHexEncodedPublicKey, "lastHash" : lastHashValue ]
         let headers: [String:String]? = useLongPolling ? [ "X-Loki-Long-Poll" : "true" ] : nil
         let timeout: TimeInterval? = useLongPolling ? longPollingTimeout : nil
-        return invoke(.getMessages, on: target, associatedWith: userPublicKey, parameters: parameters, headers: headers, timeout: timeout)
+        return invoke(.getMessages, on: target, associatedWith: userHexEncodedPublicKey, parameters: parameters, headers: headers, timeout: timeout)
     }
     
     // MARK: Public API
     public static func getMessages() -> Promise<Set<MessageListPromise>> {
-        return getTargetSnodes(for: userPublicKey).mapValues { targetSnode in
+        return getTargetSnodes(for: userHexEncodedPublicKey).mapValues { targetSnode in
             return getRawMessages(from: targetSnode, usingLongPolling: false).map { parseRawMessagesResponse($0, from: targetSnode) }
         }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
@@ -80,10 +80,10 @@ public final class LokiAPI : NSObject {
                     sendLokiMessage(lokiMessageWithPoW, to: $0).map { rawResponse in
                         if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
                             guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }
-                            print("[Loki] Setting PoW difficulty to \(powDifficulty).")
+                            print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
                             LokiAPI.powDifficulty = UInt(powDifficulty)
                         } else {
-                            print("[Loki] Failed to update PoW difficulty from: \(rawResponse).")
+                            print("[Loki] Failed to update proof of work difficulty from: \(rawResponse).")
                         }
                         return rawResponse
                     }
@@ -128,7 +128,14 @@ public final class LokiAPI : NSObject {
         guard let json = rawResponse as? JSON, let rawMessages = json["messages"] as? [JSON] else { return [] }
         updateLastMessageHashValueIfPossible(for: target, from: rawMessages)
         let newRawMessages = removeDuplicates(from: rawMessages)
-        return parseProtoEnvelopes(from: newRawMessages)
+        let newMessages = parseProtoEnvelopes(from: newRawMessages)
+        let newMessageCount = newMessages.count
+        if newMessageCount == 1 {
+            print("[Loki] Retrieved 1 new message.")
+        } else if (newMessageCount != 0) {
+            print("[Loki] Retrieved \(newMessageCount) new messages.")
+        }
+        return newMessages
     }
     
     private static func updateLastMessageHashValueIfPossible(for target: LokiAPITarget, from rawMessages: [JSON]) {
