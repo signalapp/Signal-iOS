@@ -57,11 +57,10 @@ NSString *NSStringForScreenLockUIState(ScreenLockUIState value)
 
     const CGFloat kButtonHeight = 40.f;
     OWSFlatButton *button =
-        [OWSFlatButton buttonWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_SIGNAL",
-                                           @"Label for button on lock screen that lets users unlock Signal.")
+        [OWSFlatButton buttonWithTitle:NSLocalizedString(@"Unlock Loki Messenger", @"")
                                   font:[OWSFlatButton fontForHeight:kButtonHeight]
-                            titleColor:[UIColor ows_materialBlueColor]
-                       backgroundColor:[UIColor whiteColor]
+                            titleColor:UIColor.whiteColor
+                       backgroundColor:UIColor.clearColor
                                 target:self
                               selector:@selector(showUnlockUI)];
     [edgesView addSubview:button];
