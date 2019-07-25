@@ -720,14 +720,11 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
         return;
     }
 
-    if (transaction.transitional_yapReadTransaction != nil) {
-        if (message.contactShare) {
-            self.contactShare =
-                [[ContactShareViewModel alloc] initWithContactShareRecord:message.contactShare
-                                                              transaction:transaction.transitional_yapReadTransaction];
-            self.messageCellType = OWSMessageCellType_ContactShare;
-            return;
-        }
+    if (message.contactShare) {
+        self.contactShare =
+            [[ContactShareViewModel alloc] initWithContactShareRecord:message.contactShare transaction:transaction];
+        self.messageCellType = OWSMessageCellType_ContactShare;
+        return;
     }
 
     // Check for stickers _before_ media or quoted reply handling;

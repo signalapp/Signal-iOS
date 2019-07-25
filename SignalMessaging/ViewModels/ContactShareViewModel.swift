@@ -40,8 +40,8 @@ public class ContactShareViewModel: NSObject {
     }
 
     @objc
-    public convenience init(contactShareRecord: OWSContact, transaction: YapDatabaseReadTransaction) {
-        if let avatarAttachment = contactShareRecord.avatarAttachment(with: transaction.asAnyRead) as? TSAttachmentStream {
+    public convenience init(contactShareRecord: OWSContact, transaction: SDSAnyReadTransaction) {
+        if let avatarAttachment = contactShareRecord.avatarAttachment(with: transaction) as? TSAttachmentStream {
             self.init(contactShareRecord: contactShareRecord, avatarImageData: avatarAttachment.validStillImageData())
         } else {
             self.init(contactShareRecord: contactShareRecord, avatarImageData: nil)
