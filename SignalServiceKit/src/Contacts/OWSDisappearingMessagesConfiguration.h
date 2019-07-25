@@ -37,6 +37,8 @@ NS_SWIFT_NAME(init(uniqueId:durationSeconds:enabled:));
 @property (nonatomic, readonly) NSUInteger durationIndex;
 @property (nonatomic, readonly) NSString *durationString;
 @property (nonatomic, readonly) BOOL dictionaryValueDidChange;
+
+// GRDB TODO: We might want to revisit isNewRecord.
 @property (readonly, getter=isNewRecord) BOOL newRecord;
 
 + (instancetype)fetchOrBuildDefaultWithThreadId:(NSString *)threadId transaction:(SDSAnyReadTransaction *)transaction;

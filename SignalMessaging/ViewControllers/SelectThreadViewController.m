@@ -47,6 +47,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SelectThreadViewController
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 - (void)loadView
 {
     [super loadView];
@@ -327,9 +336,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __block TSThread *thread = nil;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         thread = [TSContactThread getOrCreateThreadWithContactAddress:signalAccount.recipientAddress
-                                                          transaction:transaction.asAnyWrite];
+                                                          transaction:transaction];
     }];
     OWSAssertDebug(thread);
 
