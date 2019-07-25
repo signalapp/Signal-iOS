@@ -8,8 +8,8 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
@@ -53,11 +53,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     return Environment.shared.contactsManager;
 }
 
-- (OWSPrimaryStorage *)primaryStorage
+- (SDSDatabaseStorage *)databaseStorage
 {
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
-    return SSKEnvironment.shared.primaryStorage;
+    return SDSDatabaseStorage.shared;
 }
 
 - (TSAccountManager *)tsAccountManager
@@ -129,8 +127,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     self.address = address;
 
-    [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        self.thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction.asAnyRead];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        self.thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
     }];
 
     [[NSNotificationCenter defaultCenter] addObserver:self

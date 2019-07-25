@@ -15,6 +15,7 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <sys/sysctl.h>

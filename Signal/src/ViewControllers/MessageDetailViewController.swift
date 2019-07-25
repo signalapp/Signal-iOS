@@ -570,7 +570,7 @@ class MessageDetailViewController: OWSViewController {
 
         AssertIsOnMainThread()
 
-        databaseStorage.uiRead { transaction in
+        try databaseStorage.uiReadThrows { transaction in
             guard let uniqueId = self.message.uniqueId else {
                 Logger.error("Message is missing uniqueId.")
                 return

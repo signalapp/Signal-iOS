@@ -7,7 +7,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class SDSAnyReadTransaction;
-@class YapDatabaseReadTransaction;
 
 @interface OWSSyncGroupsMessage : OWSOutgoingSyncMessage
 

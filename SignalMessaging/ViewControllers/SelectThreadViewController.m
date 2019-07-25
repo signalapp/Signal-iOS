@@ -218,12 +218,11 @@ NS_ASSUME_NONNULL_BEGIN
                             if (!cell.hasAccessoryText) {
                                 // Don't add a disappearing messages indicator if we've already added a "blocked" label.
                                 __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-                                [self.uiDatabaseConnection
-                                    readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-                                        disappearingMessagesConfiguration = [OWSDisappearingMessagesConfiguration
-                                            anyFetchWithUniqueId:thread.uniqueId
-                                                     transaction:transaction.asAnyRead];
-                                    }];
+                                [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                    disappearingMessagesConfiguration =
+                                        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId
+                                                                                       transaction:transaction];
+                                }];
 
                                 if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
                                     DisappearingTimerConfigurationView *disappearingTimerConfigurationView =

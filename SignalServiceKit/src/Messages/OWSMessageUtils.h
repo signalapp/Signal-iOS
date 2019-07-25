@@ -6,7 +6,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSMessage;
 @class TSThread;
-@class YapDatabaseReadTransaction;
 
 @interface OWSMessageUtils : NSObject
 
