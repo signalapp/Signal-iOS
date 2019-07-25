@@ -3627,15 +3627,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
         if (transaction.transitional_yapWriteTransaction) {
             [result addObject:[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                         withTransaction:transaction.transitional_yapWriteTransaction]];
-            [result addObject:[TSErrorMessage
-                                  invalidKeyExceptionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                  withTransaction:transaction.transitional_yapWriteTransaction]];
+                                                         withTransaction:transaction]];
+            [result addObject:[TSErrorMessage invalidKeyExceptionWithEnvelope:[self createEnvelopeForThread:thread]
+                                                              withTransaction:transaction]];
             [result addObject:[TSErrorMessage invalidVersionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                         withTransaction:transaction.transitional_yapWriteTransaction]];
-            [result
-                addObject:[TSErrorMessage corruptedMessageWithEnvelope:[self createEnvelopeForThread:thread]
-                                                       withTransaction:transaction.transitional_yapWriteTransaction]];
+                                                         withTransaction:transaction]];
+            [result addObject:[TSErrorMessage corruptedMessageWithEnvelope:[self createEnvelopeForThread:thread]
+                                                           withTransaction:transaction]];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
             TSInvalidIdentityKeyReceivingErrorMessage *_Nullable blockingSNChangeMessage =

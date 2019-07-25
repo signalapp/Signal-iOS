@@ -110,7 +110,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 - (nullable NSString *)oversizeTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (nullable NSString *)bodyTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (BOOL)hasRenderableContent;
 

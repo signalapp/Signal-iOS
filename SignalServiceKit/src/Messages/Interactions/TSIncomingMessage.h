@@ -117,7 +117,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
  */
 + (nullable instancetype)findMessageWithAddress:(SignalServiceAddress *)address
                                       timestamp:(uint64_t)timestamp
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                    transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This will be 0 for messages created before we were tracking sourceDeviceId
 @property (nonatomic, readonly) UInt32 sourceDeviceId;

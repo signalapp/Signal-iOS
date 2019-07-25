@@ -13,7 +13,6 @@
 #import "TSGroupThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -167,9 +166,13 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 + (nullable instancetype)findMessageWithAddress:(SignalServiceAddress *)address
                                       timestamp:(uint64_t)timestamp
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                    transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
+
+    if (transaction.transitional_yapReadTransaction == nil) {
+        return nil;
+    }
 
     __block TSIncomingMessage *foundMessage;
     // In theory we could build a new secondaryIndex for (authorId,timestamp), but in practice there should
@@ -178,7 +181,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         enumerateMessagesWithTimestamp:timestamp
                              withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
                                  TSInteraction *_Nullable interaction =
-                                     [TSInteraction anyFetchWithUniqueId:key transaction:transaction.asAnyRead];
+                                     [TSInteraction anyFetchWithUniqueId:key transaction:transaction];
                                  if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
                                      TSIncomingMessage *message = (TSIncomingMessage *)interaction;
 
@@ -189,7 +192,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                      }
                                  }
                              }
-                      usingTransaction:transaction];
+                      usingTransaction:transaction.transitional_yapReadTransaction];
 
     return foundMessage;
 }
@@ -200,11 +203,10 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     return OWSInteractionType_IncomingMessage;
 }
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     for (NSString *attachmentId in self.attachmentIds) {
-        TSAttachment *_Nullable attachment =
-            [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction.asAnyRead];
+        TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             return NO;
         }

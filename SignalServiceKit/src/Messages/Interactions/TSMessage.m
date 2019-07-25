@@ -14,8 +14,6 @@
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -240,7 +238,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     [self updateExpiresAt];
 }
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return self.hasPerConversationExpiration;
 }
@@ -467,10 +465,6 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         return NSLocalizedString(
             @"STICKER_MESSAGE_PREVIEW", @"Preview text shown in notifications and home view for sticker messages.");
     } else {
-        if (transaction.transitional_yapReadTransaction) {
-            // some cases aren't yet handled by GRDB
-            OWSFailDebug(@"message has neither body nor attachment.");
-        }
         // TODO: We should do better here.
         return @"";
     }
