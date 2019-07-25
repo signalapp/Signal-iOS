@@ -31,7 +31,7 @@ final class NewConversationViewController : OWSViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Theme.primaryColor
         explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
-        explanationLabel.text = NSLocalizedString("For example: 059abcf223aa8c10e3dc2d623688b75dd25896794717e4a9c486772664fc95e41e.", comment: "")
+        explanationLabel.text = NSLocalizedString("Enter the public key of the person you'd like to securely message. They can share their public key with you by going into Loki Messenger's in-app settings and clicking \"Share Public Key\".", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Button

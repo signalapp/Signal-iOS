@@ -396,9 +396,9 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
      */
 
     UILabel *emptyInboxLabel = [UILabel new];
-    emptyInboxLabel.text = NSLocalizedString(@"Looks like you don\'t have any conversations yet. Get started by messaging a friend.", @"");
+    emptyInboxLabel.text = NSLocalizedString(@"Looks like you don't have any conversations yet. Get started by messaging a friend.", @"");
     emptyInboxLabel.font = UIFont.ows_dynamicTypeBodyClampedFont;
-    emptyInboxLabel.textColor = Theme.secondaryColor;
+    emptyInboxLabel.textColor = UIColor.whiteColor;
     emptyInboxLabel.textAlignment = NSTextAlignmentCenter;
     emptyInboxLabel.numberOfLines = 0;
     emptyInboxLabel.lineBreakMode = NSLineBreakByWordWrapping;
