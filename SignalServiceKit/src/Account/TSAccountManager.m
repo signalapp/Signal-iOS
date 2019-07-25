@@ -790,10 +790,9 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     if (SSKFeatureFlags.useGRDB) {
         // Redundantly store in yap db as well - this works around another work around, which
         // insists on reading account registration state from YapDB.
-        [self.primaryStorage.dbReadWriteConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [self storeLocalNumber:localNumber uuid:uuid transaction:transaction.asAnyWrite];
-            }];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [self storeLocalNumber:localNumber uuid:uuid transaction:transaction];
+        }];
     }
 }
 
