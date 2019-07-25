@@ -1147,7 +1147,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Vastaamatta jäänyt puhelu koska hänen turvanumeronsa on vaihtunut.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ käyttää myös Signalia. Sano Hei!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Virheellinen äänitiedosto.";
@@ -2130,7 +2130,7 @@
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Varmuuskopiot päällä";
 
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud tila";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud-tila";
 
 /* Indicates that the last backup restore failed. */
 "SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Varmuuskopion palautus epäonnistui";
@@ -2241,7 +2241,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Ilmoitusten sisältö";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Yhteistietosi liittyi Signaliin";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Yhteystietosi liittyi Signaliin";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Huomautukset";
@@ -2259,7 +2259,7 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Näytä puhelut äskeisissä";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS puheluiden integrointi";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS-puheluiden integrointi";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Yksityisyys";
@@ -2364,13 +2364,13 @@
 "SHARE_EXTENSION_LOADING" = "Ladataan...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Avaa Signal ohjelma rekisteröityäksesi.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Avaa Signal-ohjelma rekisteröityäksesi.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Ei rekisteröity";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Avaa Signal-ohjelma pävittääkesi tai rekisteröidäksesi";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Avaa Signal-ohjelma päivittääkesi tai rekisteröidäksesi.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Ei valmis";
