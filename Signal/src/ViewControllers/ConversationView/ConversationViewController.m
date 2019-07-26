@@ -2955,7 +2955,7 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"Sending contact share.");
 
-    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelist:self.thread];
 
     [self.databaseStorage
         asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -3603,7 +3603,7 @@ typedef enum : NSUInteger {
             }
         }
 
-        BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+        BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelist:self.thread];
 
         __block TSOutgoingMessage *message;
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
@@ -4192,7 +4192,7 @@ typedef enum : NSUInteger {
     //
     // We convert large text messages to attachments
     // which are presented as normal text messages.
-    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelist:self.thread];
     __block TSOutgoingMessage *message;
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {

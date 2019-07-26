@@ -724,22 +724,16 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return @(position);
 }
 
-+ (BOOL)addThreadToProfileWhitelistIfEmptyContactThread:(TSThread *)thread
++ (BOOL)addThreadToProfileWhitelist:(TSThread *)thread
 {
     OWSAssertDebug(thread);
 
-    if (thread.isGroupThread) {
-        return NO;
-    }
     if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
         return NO;
     }
-    if (!thread.shouldThreadBeVisible) {
-        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
-        return YES;
-    } else {
-        return NO;
-    }
+
+    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+    return YES;
 }
 
 #pragma mark - Delete Content
