@@ -28,8 +28,6 @@ typedef NS_ENUM(NSUInteger, OWSAnalyticsSeverity) {
 // privacy in any way.  We must _never_ include any identifying information.
 @interface OWSAnalytics : NSObject
 
-+ (SDSKeyValueStore *)keyValueStore;
-
 // description: A non-empty string without any leading whitespace.
 //              This should conform to our analytics event naming conventions.
 //              "category_event_name", e.g. "database_error_no_database_file_found".
