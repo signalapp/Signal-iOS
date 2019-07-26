@@ -199,7 +199,6 @@ extension OWS115GRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "contactsManager", keyStore: contactsManager.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSDeviceManager", keyStore: OWSDeviceManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSReadReceiptManager", keyStore: OWSReadReceiptManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "OWSAnalytics", keyStore: OWSAnalytics.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "OWS2FAManager", keyStore: OWS2FAManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "OWSBlockingManager", keyStore: OWSBlockingManager.keyValueStore(), yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "typingIndicators", keyStore: typingIndicators.keyValueStore, yapTransaction: yapTransaction, memorySamplerRatio: 0.1),
@@ -471,7 +470,7 @@ private protocol GRDBMigrator {
 
 // MARK: -
 
-private class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
+private class GRDBKeyValueStoreMigrator<T>: GRDBMigrator {
     private let label: String
     private let finder: LegacyKeyValueFinder<T>
     private let memorySamplerRatio: Float
@@ -501,7 +500,7 @@ private class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
 
 // MARK: -
 
-private class GRDBUnorderedRecordMigrator<T> : GRDBMigrator where T: SDSModel {
+private class GRDBUnorderedRecordMigrator<T>: GRDBMigrator where T: SDSModel {
     private let label: String
     private let finder: LegacyUnorderedFinder<T>
     private let memorySamplerRatio: Float

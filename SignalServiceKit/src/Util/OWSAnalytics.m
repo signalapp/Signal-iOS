@@ -9,21 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAnalytics
 
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
-
-#pragma mark -
-
-+ (SDSKeyValueStore *)keyValueStore
-{
-    NSString *const kOWSAnalytics_EventsCollection = @"kOWSAnalytics_EventsCollection";
-    return [[SDSKeyValueStore alloc] initWithCollection:kOWSAnalytics_EventsCollection];
-}
-
 #pragma mark -
 
 + (instancetype)sharedInstance
