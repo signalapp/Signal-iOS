@@ -1453,25 +1453,21 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSContact *_Nullable contact;
     OWSLinkPreview *_Nullable linkPreview;
-    if (!SSKFeatureFlags.allowUUIDOnlyContacts) {
-        [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
-                                                                                  thread:thread
-                                                                createdByRemoteRecipient:authorAddress
-                                                                  createdInExistingGroup:NO
-                                                                             transaction:transaction];
+    [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
+                                                                              thread:thread
+                                                            createdByRemoteRecipient:authorAddress
+                                                              createdInExistingGroup:NO
+                                                                         transaction:transaction];
 
-        contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
+    contact = [OWSContacts contactForDataMessage:dataMessage transaction:transaction];
 
-        NSError *linkPreviewError;
-        linkPreview = [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage
-                                                                          body:body
-                                                                   transaction:transaction
-                                                                         error:&linkPreviewError];
-        if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
-            OWSLogError(@"linkPreviewError: %@", linkPreviewError);
-        }
-    } else {
-        OWSLogWarn(@"GRDB TODO: process non-basic messages.");
+    NSError *linkPreviewError;
+    linkPreview = [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:dataMessage
+                                                                      body:body
+                                                               transaction:transaction
+                                                                     error:&linkPreviewError];
+    if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
+        OWSLogError(@"linkPreviewError: %@", linkPreviewError);
     }
 
     NSError *stickerError;

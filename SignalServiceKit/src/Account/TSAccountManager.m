@@ -357,11 +357,14 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return [[SignalServiceAddress alloc] initWithUuidString:self.uuid.UUIDString phoneNumber:self.localNumber];
 }
 
-// TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.allowUUIDOnlyContacts in production
 - (void)storeLocalNumber:(NSString *)localNumber
                     uuid:(nullable NSUUID *)uuid
              transaction:(SDSAnyWriteTransaction *)transaction
 {
+    // TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.allowUUIDOnlyContacts in production
+    // canary assert for this TODO.
+    OWSAssertDebug(!IsUsingProductionService() || !SSKFeatureFlags.allowUUIDOnlyContacts);
+
     @synchronized (self) {
         [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
 
