@@ -104,21 +104,22 @@ static uint32_t const OWSFingerprintDefaultHashIterations = 5200;
 
 - (NSData *)stableDataForAddress:(SignalServiceAddress *)address
 {
-    NSString *stableString;
-
     // For now, leave safety number based on phone number unless the feature flag is enabled.
     // This prevents mismatch from occuring against old apps until we formally roll out the feature.
     if (SSKFeatureFlags.allowUUIDOnlyContacts) {
         // TODO UUID: Right now, uuid is nullable, but safety numbers require us to always have
         // the UUID for a user. This will need to be updated once we change this field to nonnull.
-        OWSAssert(address.uuid);
-        stableString = address.uuidString;
+        NSUUID *uuid = address.uuid;
+        OWSAssert(uuid);
+        uuid_t bytes;
+        [uuid getUUIDBytes:bytes];
+        return [[NSData alloc] initWithBytes:bytes length:16];
     } else {
-        OWSAssert(address.phoneNumber);
-        stableString = address.phoneNumber;
+        NSString *phoneNumber = address.phoneNumber;
+        OWSAssert(phoneNumber);
+        OWSAssert(phoneNumber.length > 0);
+        return [phoneNumber dataUsingEncoding:NSUTF8StringEncoding];
     }
-
-    return [stableString dataUsingEncoding:NSUTF8StringEncoding];
 }
 
 - (BOOL)matchesLogicalFingerprintsData:(NSData *)data error:(NSError **)error
