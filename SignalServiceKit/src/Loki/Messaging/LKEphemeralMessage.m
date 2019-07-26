@@ -9,20 +9,6 @@
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
 }
 
-// An EphemeralMessage does not have any data message in the content
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
-{
-    NSError *error;
-    SSKProtoContentBuilder *contentBuilder = [self contentBuilder:recipient];
-    
-    NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
-    if (error || !contentData) {
-        OWSFailDebug(@"could not serialize protobuf: %@", error);
-        return nil;
-    }
-    return contentData;
-}
-
 - (BOOL)shouldSyncTranscript { return NO; }
 - (BOOL)shouldBeSaved { return NO; }
 

@@ -415,6 +415,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     // Loki: Handle any friend request accepts if we need to
+    // TODO: We'll need to fix this up if we ever start using Sync messages
     [self handleFriendRequestAcceptIfNeededWithEnvelope:envelope transaction:transaction];
 
     if (envelope.content != nil) {
