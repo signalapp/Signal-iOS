@@ -117,8 +117,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                      maxRangeSize:(NSUInteger)maxRangeSize
                                                       transaction:(SDSAnyReadTransaction *)transaction;
 
-+ (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager;
-
 // This method should be called right _before_ we send a message to a thread,
 // since we want to auto-add contact threads to the profile whitelist if the
 // conversation was initiated by the local user.

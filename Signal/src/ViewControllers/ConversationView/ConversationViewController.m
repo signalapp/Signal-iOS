@@ -965,15 +965,6 @@ typedef enum : NSUInteger {
                         tapSelector:@selector(blockBannerViewWasTapped:)];
         return;
     }
-
-    if ([ThreadUtil shouldShowGroupProfileBannerInThread:self.thread blockingManager:self.blockingManager]) {
-        [self createBannerWithTitle:
-                  NSLocalizedString(@"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER",
-                      @"Text for banner in group conversation view that offers to share your profile with this group.")
-                        bannerColor:[UIColor ows_reminderDarkYellowColor]
-                        tapSelector:@selector(groupProfileWhitelistBannerWasTapped:)];
-        return;
-    }
 }
 
 - (void)createBannerWithTitle:(NSString *)title bannerColor:(UIColor *)bannerColor tapSelector:(SEL)tapSelector
@@ -1055,17 +1046,6 @@ typedef enum : NSUInteger {
             [self.navigationController pushViewController:vc animated:YES];
         }
     }
-}
-
-- (void)groupProfileWhitelistBannerWasTapped:(UIGestureRecognizer *)sender
-{
-    if (sender.state != UIGestureRecognizerStateRecognized) {
-        return;
-    }
-
-    [self presentAddThreadToProfileWhitelistWithSuccess:^{
-        [self ensureBannerState];
-    }];
 }
 
 - (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
@@ -2264,13 +2244,6 @@ typedef enum : NSUInteger {
     menuActionsViewController.delegate = self;
 
     [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
-}
-
-- (void)presentAddThreadToProfileWhitelistWithSuccess:(void (^)(void))successHandler
-{
-    [[OWSProfileManager sharedManager] presentAddThreadToProfileWhitelist:self.thread
-                                                       fromViewController:self
-                                                                  success:successHandler];
 }
 
 #pragma mark - Audio Setup

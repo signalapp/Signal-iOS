@@ -415,7 +415,7 @@ const CGFloat kIconViewLength = 24;
     }
 
     // Indicate if the user is in the system contacts
-    if (!isNoteToSelf && self.hasExistingContact) {
+    if (!isNoteToSelf && !self.isGroupThread && self.hasExistingContact) {
         [mainSection
          addItem:[OWSTableItem
                   itemWithCustomCellBlock:^{
@@ -431,56 +431,6 @@ const CGFloat kIconViewLength = 24;
                                                                                          OWSConversationSettingsViewController, @"is_in_contacts")];
                   }
                   actionBlock:nil]];
-    }
-
-    if (isNoteToSelf || SSKFeatureFlags.messageRequest) {
-        // Skip the profile whitelist.
-    } else if ([self.profileManager isThreadInProfileWhitelist:self.thread]) {
-        [mainSection
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            OWSConversationSettingsViewController *strongSelf = weakSelf;
-                            OWSCAssertDebug(strongSelf);
-
-                            return [strongSelf
-                                      labelCellWithName:
-                                          (strongSelf.isGroupThread
-                                                  ? NSLocalizedString(
-                                                        @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
-                                                        @"Indicates that user's profile has been shared with a group.")
-                                                  : NSLocalizedString(
-                                                        @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
-                                                        @"Indicates that user's profile has been shared with a user."))
-                                               iconName:@"table_ic_share_profile"
-                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                            OWSConversationSettingsViewController,
-                                                            @"profile_is_shared")];
-                        }
-                                    actionBlock:nil]];
-    } else {
-        [mainSection
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            OWSConversationSettingsViewController *strongSelf = weakSelf;
-                            OWSCAssertDebug(strongSelf);
-
-                            UITableViewCell *cell = [strongSelf
-                                 disclosureCellWithName:
-                                     (strongSelf.isGroupThread
-                                             ? NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
-                                                   @"Action that shares user profile with a group.")
-                                             : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
-                                                   @"Action that shares user profile with a user."))
-                                               iconName:@"table_ic_share_profile"
-                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                            OWSConversationSettingsViewController, @"share_profile")];
-                            cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
-
-                            return cell;
-                        }
-                        actionBlock:^{
-                            [weakSelf showShareProfileAlert];
-                        }]];
     }
 
     [mainSection addItem:[OWSTableItem
@@ -964,21 +914,21 @@ const CGFloat kIconViewLength = 24;
 
     __block UIView *lastTitleView = threadTitleLabel;
 
+    const CGFloat kSubtitlePointSize = 12.f;
+    void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
+        UILabel *subtitleLabel = [UILabel new];
+        subtitleLabel.textColor = [Theme secondaryColor];
+        subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+        subtitleLabel.attributedText = subtitle;
+        subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [threadNameView addSubview:subtitleLabel];
+        [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
+        [subtitleLabel autoPinLeadingToSuperviewMargin];
+        lastTitleView = subtitleLabel;
+    };
+
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)self.thread;
-
-        const CGFloat kSubtitlePointSize = 12.f;
-        void (^addSubtitle)(NSAttributedString *) = ^(NSAttributedString *subtitle) {
-            UILabel *subtitleLabel = [UILabel new];
-            subtitleLabel.textColor = [Theme secondaryColor];
-            subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-            subtitleLabel.attributedText = subtitle;
-            subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-            [threadNameView addSubview:subtitleLabel];
-            [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
-            [subtitleLabel autoPinLeadingToSuperviewMargin];
-            lastTitleView = subtitleLabel;
-        };
 
         SignalServiceAddress *recipientAddress = contactThread.contactAddress;
         NSString *_Nullable phoneNumber = recipientAddress.phoneNumber;
@@ -1018,6 +968,15 @@ const CGFloat kIconViewLength = 24;
             addSubtitle(subtitle);
         }
     }
+
+    // TODO Message Request: In order to debug the profile is getting shared in the right moments,
+    // display the thread whitelist state in settings. Eventually we can probably delete this.
+#if DEBUG
+    NSString *hasSharedProfile =
+        [NSString stringWithFormat:@"Whitelisted: %@",
+                  [self.profileManager isThreadInProfileWhitelist:self.thread] ? @"Yes" : @"No"];
+    addSubtitle([[NSAttributedString alloc] initWithString:hasSharedProfile]);
+#endif
 
     [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
@@ -1116,15 +1075,6 @@ const CGFloat kIconViewLength = 24;
 }
 
 #pragma mark - Actions
-
-- (void)showShareProfileAlert
-{
-    [self.profileManager presentAddThreadToProfileWhitelist:self.thread
-                                         fromViewController:self
-                                                    success:^{
-                                                        [self updateTableContents];
-                                                    }];
-}
 
 - (void)showVerificationView
 {

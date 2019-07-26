@@ -724,38 +724,6 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return @(position);
 }
 
-+ (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager
-{
-    OWSAssertDebug(thread);
-    OWSAssertDebug(blockingManager);
-
-    if (!thread.isGroupThread) {
-        return NO;
-    }
-    if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
-        return NO;
-    }
-    if (![OWSProfileManager.sharedManager hasLocalProfile]) {
-        return NO;
-    }
-    if ([blockingManager isThreadBlocked:thread]) {
-        return NO;
-    }
-
-    BOOL hasUnwhitelistedMember = NO;
-    for (SignalServiceAddress *address in thread.recipientAddresses) {
-        if (![blockingManager isAddressBlocked:address]
-            && ![OWSProfileManager.sharedManager isUserInProfileWhitelist:address]) {
-            hasUnwhitelistedMember = YES;
-            break;
-        }
-    }
-    if (!hasUnwhitelistedMember) {
-        return NO;
-    }
-    return YES;
-}
-
 + (BOOL)addThreadToProfileWhitelistIfEmptyContactThread:(TSThread *)thread
 {
     OWSAssertDebug(thread);

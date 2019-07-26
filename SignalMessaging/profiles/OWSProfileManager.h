@@ -87,12 +87,6 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
            profileNameEncrypted:(nullable NSData *)profileNameEncrypted
                   avatarUrlPath:(nullable NSString *)avatarUrlPath;
 
-#pragma mark - User Interface
-
-- (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
-                        fromViewController:(UIViewController *)fromViewController
-                                   success:(void (^)(void))successHandler;
-
 #pragma mark - Clean Up
 
 - (NSSet<NSString *> *)allProfileAvatarFilePaths;
