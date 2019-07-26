@@ -90,7 +90,7 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  */
 @property (nonatomic, readonly) NSArray<SignalServiceAddress *> *recipientAddresses;
 
-- (BOOL)isNoteToSelf;
+@property (nonatomic, readonly) BOOL isNoteToSelf;
 
 #pragma mark Interactions
 

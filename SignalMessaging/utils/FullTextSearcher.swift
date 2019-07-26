@@ -55,15 +55,17 @@ public class ConversationSearchResult<SortKey>: Comparable where SortKey: Compar
 @objc
 public class ContactSearchResult: NSObject, Comparable {
     public let signalAccount: SignalAccount
-    public let contactsManager: ContactsManagerProtocol
+
+    var contactsManager: ContactsManagerProtocol {
+        return Environment.shared.contactsManager
+    }
 
     public var recipientAddress: SignalServiceAddress {
         return signalAccount.recipientAddress
     }
 
-    init(signalAccount: SignalAccount, contactsManager: ContactsManagerProtocol) {
+    init(signalAccount: SignalAccount) {
         self.signalAccount = signalAccount
-        self.contactsManager = contactsManager
     }
 
     // MARK: Comparable
@@ -217,8 +219,8 @@ public class FullTextSearcher: NSObject {
 
     // MARK: - Dependencies
 
-    private var tsAccountManager: TSAccountManager {
-        return TSAccountManager.sharedInstance()
+    private var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
     }
 
     // MARK: - 
@@ -234,8 +236,7 @@ public class FullTextSearcher: NSObject {
 
     @objc
     public func searchForComposeScreen(searchText: String,
-                                       transaction: YapDatabaseReadTransaction,
-                                       contactsManager: ContactsManagerProtocol) -> ComposeScreenSearchResultSet {
+                                       transaction: YapDatabaseReadTransaction) -> ComposeScreenSearchResultSet {
 
         var signalContacts: [ContactSearchResult] = []
         var groups: [GroupSearchResult] = []
@@ -244,7 +245,7 @@ public class FullTextSearcher: NSObject {
 
             switch match {
             case let signalAccount as SignalAccount:
-                let searchResult = ContactSearchResult(signalAccount: signalAccount, contactsManager: contactsManager)
+                let searchResult = ContactSearchResult(signalAccount: signalAccount)
                 signalContacts.append(searchResult)
             case let groupThread as TSGroupThread:
                 let sortKey = ConversationSortKey(creationDate: groupThread.creationDate,
@@ -274,8 +275,7 @@ public class FullTextSearcher: NSObject {
     }
 
     public func searchForHomeScreen(searchText: String,
-                                    transaction: SDSAnyReadTransaction,
-                                    contactsManager: ContactsManagerProtocol) -> HomeScreenSearchResultSet {
+                                    transaction: SDSAnyReadTransaction) -> HomeScreenSearchResultSet {
 
         // GRDB TODO:
         guard let ydbTransaction = transaction.transitional_yapReadTransaction else {
@@ -314,7 +314,7 @@ public class FullTextSearcher: NSObject {
 
                 messages.append(searchResult)
             } else if let signalAccount = match as? SignalAccount {
-                let searchResult = ContactSearchResult(signalAccount: signalAccount, contactsManager: contactsManager)
+                let searchResult = ContactSearchResult(signalAccount: signalAccount)
                 contacts.append(searchResult)
             } else {
                 owsFailDebug("unhandled item: \(match)")
@@ -424,15 +424,10 @@ public class FullTextSearcher: NSObject {
         var result = self.indexingString(address: address)
 
         if IsNoteToSelfEnabled(), address.isLocalAddress {
-            let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
-            result += " \(noteToSelfLabel)"
+            result += " \(MessageStrings.noteToSelf)"
         }
 
         return result
-    }
-
-    private var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
     }
 
     private func indexingString(address: SignalServiceAddress) -> String {

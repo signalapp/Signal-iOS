@@ -184,8 +184,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_NO_LONGER_VERIFIED",
                                          @"An indicator that a contact is no longer verified.");
                                  } else if (isBlocked) {
-                                     cell.accessoryMessage = NSLocalizedString(
-                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                     cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                  }
 
                                  [cell configureWithRecipientAddress:address];

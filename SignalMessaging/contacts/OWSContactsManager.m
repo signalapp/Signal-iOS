@@ -942,6 +942,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
 {
     if (address == nil) {
+        OWSFailDebug(@"address was unexpectedly nil");
         return nil;
     }
 

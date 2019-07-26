@@ -35,6 +35,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
 
     private var isEditingCaptions: Bool = false
     private var currentAttachmentItem: AttachmentApprovalItem?
+    public var isApproved: Bool = false
 
     let kGalleryRailViewHeight: CGFloat = 72
 
@@ -125,7 +126,8 @@ class AttachmentApprovalInputAccessoryView: UIView {
 
         attachmentCaptionToolbar.isHidden = !isEditingCaptions
         currentCaptionWrapper.isHidden = isEditingCaptions || !hasCurrentCaption
-        attachmentTextToolbar.isHidden = isEditingCaptions
+        attachmentTextToolbar.isHidden = isEditingCaptions || isApproved
+        attachmentTextToolbar.isUserInteractionEnabled = !isApproved
 
         updateFirstResponder()
 
@@ -155,11 +157,13 @@ class AttachmentApprovalInputAccessoryView: UIView {
 
     public func update(isEditingCaptions: Bool,
                        currentAttachmentItem: AttachmentApprovalItem?,
-                       shouldHideControls: Bool) {
+                       shouldHideControls: Bool,
+                       isApproved: Bool) {
         // De-bounce
         guard self.isEditingCaptions != isEditingCaptions ||
             self.currentAttachmentItem != currentAttachmentItem ||
-            self.shouldHideControls != shouldHideControls else {
+            self.shouldHideControls != shouldHideControls ||
+            self.isApproved != isApproved else {
 
                 updateFirstResponder()
                 return
@@ -168,6 +172,7 @@ class AttachmentApprovalInputAccessoryView: UIView {
         self.isEditingCaptions = isEditingCaptions
         self.currentAttachmentItem = currentAttachmentItem
         self.shouldHideControls = shouldHideControls
+        self.isApproved = isApproved
 
         updateContents()
     }

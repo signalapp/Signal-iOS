@@ -127,6 +127,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     self.address = address;
 
+    // TODO remove sneaky transaction.
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         self.thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction];
     }];
@@ -167,7 +168,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     BOOL isNoteToSelf = contactThread && contactThread.contactAddress.isLocalAddress;
     if (isNoteToSelf) {
-        threadName = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
+        threadName = MessageStrings.noteToSelf;
     }
 
     NSAttributedString *attributedText =
@@ -225,7 +226,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 {
     BOOL isNoteToSelf = IsNoteToSelfEnabled() && self.address.isLocalAddress;
     if (isNoteToSelf) {
-        self.nameLabel.text = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
+        self.nameLabel.text = MessageStrings.noteToSelf;
     } else {
         self.nameLabel.text = [self.contactsManager displayNameForAddress:self.address];
     }

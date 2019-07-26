@@ -103,4 +103,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let socialGraphOnServer = registrationLockV2 && pinsForEveryone && !IsUsingProductionService() && build.includes(.dev)
+
+    @objc
+    public static let cameraFirstCaptureFlow = build.includes(.qa)
 }

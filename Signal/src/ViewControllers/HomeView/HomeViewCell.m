@@ -521,7 +521,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else {
         if (self.thread.threadRecord.isNoteToSelf) {
-            name = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
+            name = MessageStrings.noteToSelf;
         } else {
             name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         }

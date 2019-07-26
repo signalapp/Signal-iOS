@@ -16,6 +16,25 @@ protocol SendMediaNavDelegate: AnyObject {
 }
 
 @objc
+class CaptureFirstCaptureNavigationController: SendMediaNavigationController {
+
+    @objc
+    private(set) var cameraFirstCaptureSendFlow: CameraFirstCaptureSendFlow!
+
+    @objc
+    public class func captureFirstCameraModal() -> CaptureFirstCaptureNavigationController {
+        let navController = CaptureFirstCaptureNavigationController()
+        navController.setViewControllers([navController.captureViewController], animated: false)
+
+        let cameraFirstCaptureSendFlow = CameraFirstCaptureSendFlow()
+        navController.cameraFirstCaptureSendFlow = cameraFirstCaptureSendFlow
+        navController.sendMediaNavDelegate = cameraFirstCaptureSendFlow
+
+        return navController
+    }
+}
+
+@objc
 class SendMediaNavigationController: OWSNavigationController {
 
     static var bottomButtonsCenterOffset: CGFloat {
@@ -161,7 +180,14 @@ class SendMediaNavigationController: OWSNavigationController {
 
             mediaLibraryModeButton.isHidden = false
             mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = true
-
+        case is ConversationPickerViewController:
+            doneButton.isHidden = true
+            batchModeButton.isHidden = true
+            batchModeButton.isBeingPresentedOverPhotoCapture = false
+            cameraModeButton.isHidden = true
+            cameraModeButton.isBeingPresentedOverPhotoCapture = false
+            mediaLibraryModeButton.isHidden = true
+            mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
         default:
             owsFailDebug("unexpected topViewController: \(topViewController)")
         }
@@ -244,7 +270,7 @@ class SendMediaNavigationController: OWSNavigationController {
 
     // MARK: Child VC's
 
-    private lazy var captureViewController: PhotoCaptureViewController = {
+    fileprivate lazy var captureViewController: PhotoCaptureViewController = {
         let vc = PhotoCaptureViewController()
         vc.delegate = self
 
@@ -349,6 +375,8 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
             return .alwaysDark
         case is PhotoCaptureViewController:
             return .clear
+        case is ConversationPickerViewController:
+            return .removeOverride
         default:
             owsFailDebug("unexpected viewController: \(viewController)")
             return nil

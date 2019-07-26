@@ -57,9 +57,8 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId;
 
-@property (nonatomic) NSString *groupNameOrDefault;
-
-+ (NSString *)defaultGroupName;
+@property (nonatomic, readonly) NSString *groupNameOrDefault;
+@property (class, nonatomic, readonly) NSString *defaultGroupName;
 
 - (BOOL)isLocalUserInGroup;
 

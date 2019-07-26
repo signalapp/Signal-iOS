@@ -262,8 +262,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     cell.accessoryMessage = NSLocalizedString(@"NEW_GROUP_MEMBER_LABEL",
                                         @"An indicator that a user is a member of the new group.");
                                 } else if (isBlocked) {
-                                    cell.accessoryMessage = NSLocalizedString(
-                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                    cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                 }
                                 [cell configureWithRecipientAddress:address];
 
@@ -354,8 +353,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     cell.accessoryMessage = NSLocalizedString(@"NEW_GROUP_MEMBER_LABEL",
                                         @"An indicator that a user is a member of the new group.");
                                 } else if (isBlocked) {
-                                    cell.accessoryMessage = NSLocalizedString(
-                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                    cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                 }
 
                                 [cell configureWithRecipientAddress:signalAccount.recipientAddress];

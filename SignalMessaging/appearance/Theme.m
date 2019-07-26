@@ -119,7 +119,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)secondaryColor
 {
-    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray25Color : UIColor.ows_gray60Color);
+    return (Theme.isDarkThemeEnabled ? Theme.darkThemeSecondaryColor : UIColor.ows_gray60Color);
+}
+
++ (UIColor *)darkThemeSecondaryColor
+{
+    return UIColor.ows_gray25Color;
 }
 
 + (UIColor *)boldColor
@@ -140,6 +145,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIColor *)hairlineColor
 {
     return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray25Color);
+}
+
++ (UIColor *)outlineColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray15Color;
 }
 
 #pragma mark - Global App Colors
@@ -223,6 +233,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIKeyboardAppearance)keyboardAppearance
 {
     return Theme.isDarkThemeEnabled ? self.darkThemeKeyboardAppearance : UIKeyboardAppearanceDefault;
+}
+
++ (UIColor *)keyboardBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray90Color : UIColor.ows_gray02Color;
 }
 
 + (UIKeyboardAppearance)darkThemeKeyboardAppearance
