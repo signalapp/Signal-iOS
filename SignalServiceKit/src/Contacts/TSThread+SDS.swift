@@ -41,7 +41,6 @@ public struct ThreadRecord: SDSRecord {
     public let contactThreadSchemaVersion: UInt?
     public let contactUUID: String?
     public let groupModel: Data?
-    public let hasDismissedOffers: Bool?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -60,7 +59,6 @@ public struct ThreadRecord: SDSRecord {
         case contactThreadSchemaVersion
         case contactUUID
         case groupModel
-        case hasDismissedOffers
     }
 
     public static func columnName(_ column: ThreadRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -109,7 +107,6 @@ extension TSThread {
             let contactPhoneNumber: String? = record.contactPhoneNumber
             let contactThreadSchemaVersion: UInt = try SDSDeserialization.required(record.contactThreadSchemaVersion, name: "contactThreadSchemaVersion")
             let contactUUID: String? = record.contactUUID
-            let hasDismissedOffers: Bool = try SDSDeserialization.required(record.hasDismissedOffers, name: "hasDismissedOffers")
 
             return TSContactThread(uniqueId: uniqueId,
                                    archivalDate: archivalDate,
@@ -124,8 +121,7 @@ extension TSThread {
                                    shouldThreadBeVisible: shouldThreadBeVisible,
                                    contactPhoneNumber: contactPhoneNumber,
                                    contactThreadSchemaVersion: contactThreadSchemaVersion,
-                                   contactUUID: contactUUID,
-                                   hasDismissedOffers: hasDismissedOffers)
+                                   contactUUID: contactUUID)
 
         case .groupThread:
 
@@ -237,7 +233,6 @@ extension TSThreadSerializer {
     static let contactThreadSchemaVersionColumn = SDSColumnMetadata(columnName: "contactThreadSchemaVersion", columnType: .int64, isOptional: true, columnIndex: 13)
     static let contactUUIDColumn = SDSColumnMetadata(columnName: "contactUUID", columnType: .unicodeString, isOptional: true, columnIndex: 14)
     static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true, columnIndex: 15)
-    static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true, columnIndex: 16)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -257,8 +252,7 @@ extension TSThreadSerializer {
         contactPhoneNumberColumn,
         contactThreadSchemaVersionColumn,
         contactUUIDColumn,
-        groupModelColumn,
-        hasDismissedOffersColumn
+        groupModelColumn
         ])
 }
 
@@ -632,8 +626,7 @@ class TSThreadSerializer: SDSSerializer {
         let contactThreadSchemaVersion: UInt? = nil
         let contactUUID: String? = nil
         let groupModel: Data? = nil
-        let hasDismissedOffers: Bool? = nil
 
-        return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+        return ThreadRecord(id: id, recordType: recordType, uniqueId: uniqueId, archivalDate: archivalDate, archivedAsOfMessageSortId: archivedAsOfMessageSortId, conversationColorName: conversationColorName, creationDate: creationDate, isArchivedByLegacyTimestampForSorting: isArchivedByLegacyTimestampForSorting, lastMessageDate: lastMessageDate, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactThreadSchemaVersion: contactThreadSchemaVersion, contactUUID: contactUUID, groupModel: groupModel)
     }
 }

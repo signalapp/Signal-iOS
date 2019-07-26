@@ -20,7 +20,6 @@
 #import "FingerprintViewController.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioPlayer.h"
-#import "OWSContactOffersCell.h"
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -68,7 +67,6 @@
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSContactOffersInteraction.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageManager.h>
@@ -676,8 +674,6 @@ typedef enum : NSUInteger {
             forCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSTypingIndicatorCell class]
             forCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]];
-    [self.collectionView registerClass:[OWSContactOffersCell class]
-            forCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSMessageCell class]
             forCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]];
 }
@@ -2268,96 +2264,6 @@ typedef enum : NSUInteger {
     menuActionsViewController.delegate = self;
 
     [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
-}
-
-- (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
-{
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread: %@", self.thread);
-        return;
-    }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-
-    NSString *displayName = [self.contactsManager displayNameForAddress:contactThread.contactAddress];
-    NSString *title =
-        [NSString stringWithFormat:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT",
-                                       @"Title format for action sheet that offers to block an unknown user."
-                                       @"Embeds {{the unknown user's name or phone number}}."),
-                  [BlockListUIUtils formatDisplayNameForAlertTitle:displayName]];
-
-    UIAlertController *actionSheet =
-        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    [actionSheet addAction:[OWSAlerts cancelAction]];
-
-    UIAlertAction *blockAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION",
-                                           @"Action sheet that will block an unknown user.")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block_user")
-                                 style:UIAlertActionStyleDestructive
-                               handler:^(UIAlertAction *action) {
-                                   OWSLogInfo(@"Blocking an unknown user.");
-                                   [self.blockingManager addBlockedAddress:contactThread.contactAddress];
-                                   // Delete the offers.
-                                   [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                       [contactThread anyUpdateContactThreadWithTransaction:transaction
-                                                                                      block:^(TSContactThread *thread) {
-                                                                                          thread.hasDismissedOffers
-                                                                                              = NO;
-                                                                                      }];
-                                       [interaction anyRemoveWithTransaction:transaction];
-                                   }];
-                               }];
-    [actionSheet addAction:blockAction];
-
-    [self dismissKeyBoard];
-    [self presentAlert:actionSheet];
-}
-
-- (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction
-{
-    if (!self.contactsManager.supportsContactEditing) {
-        OWSFailDebug(@"Contact editing not supported");
-        return;
-    }
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread: %@", [self.thread class]);
-        return;
-    }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForAddress:contactThread.contactAddress
-                                                 fromViewController:self
-                                                    editImmediately:YES];
-
-    // Delete the offers.
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [contactThread anyUpdateContactThreadWithTransaction:transaction
-                                                       block:^(TSContactThread *thread) {
-                                                           thread.hasDismissedOffers = NO;
-                                                       }];
-        [interaction anyRemoveWithTransaction:transaction];
-    }];
-}
-
-- (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction
-{
-    // This is accessed via the contact offer. Group whitelisting happens via a different interaction.
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread: %@", [self.thread class]);
-        return;
-    }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-
-    [self presentAddThreadToProfileWhitelistWithSuccess:^() {
-        // Delete the offers.
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [contactThread anyUpdateContactThreadWithTransaction:transaction
-                                                           block:^(TSContactThread *thread) {
-                                                               thread.hasDismissedOffers = NO;
-                                                           }];
-            [interaction anyRemoveWithTransaction:transaction];
-        }];
-    }];
 }
 
 - (void)presentAddThreadToProfileWhitelistWithSuccess:(void (^)(void))successHandler

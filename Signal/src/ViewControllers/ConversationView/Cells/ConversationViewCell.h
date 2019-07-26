@@ -6,7 +6,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationStyle;
 @class ConversationViewCell;
-@class OWSContactOffersInteraction;
 @class OWSContactsManager;
 @class SignalServiceAddress;
 @class TSAttachmentStream;
@@ -45,12 +44,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showFingerprintWithAddress:(SignalServiceAddress *)address;
 - (void)showConversationSettings;
 - (void)handleCallTap:(TSCall *)call;
-
-#pragma mark - Offers
-
-- (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction;
-- (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction;
-- (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction;
 
 #pragma mark - Caching
 
