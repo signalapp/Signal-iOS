@@ -5,6 +5,7 @@
         let builder = self.builder()
         
         builder.setIdentityKey(preKeyBundle.identityKey)
+        builder.setDeviceID(UInt32(preKeyBundle.deviceId))
         builder.setPrekeyID(UInt32(preKeyBundle.preKeyId))
         builder.setPrekey(preKeyBundle.preKeyPublic)
         builder.setSignedKeyID(UInt32(preKeyBundle.signedPreKeyId))
