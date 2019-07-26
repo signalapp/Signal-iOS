@@ -33,13 +33,13 @@
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "Добавить участника";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Хотите ли вы поделиться своим профилем с данной группой?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Вы хотите поделиться своим профилем с этой группой?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Хотите ли вы добавить этого пользователя в свои контакты?";
+"ADD_TO_CONTACTS_OFFER" = "Вы хотите добавить этого пользователя в свои контакты?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Хотите ли вы поделиться своим профилем с этим пользователем?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Вы хотите поделиться своим профилем с этим пользователем?";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Отклонить";
@@ -333,7 +333,7 @@
 "CALL_USER_ALERT_CALL_BUTTON" = "Позвонить";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Хотите позвонить %@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Вы хотите позвонить %@?";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Позвонить?";
@@ -1147,7 +1147,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Звонок не был принят, так как код безопасности собеседника изменился.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ теперь в Signal — скажите «Привет»!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Некорректный аудиофайл.";
@@ -1473,7 +1473,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Прочие пользователи";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Вы хотите отменить изменения?";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Вы хотите отменить эти изменения?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Несохраненные изменения";
@@ -2067,7 +2067,7 @@
 "SEND_SMS_CONFIRM_TITLE" = "Пригласить друга через незащищенное SMS?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Хотите пригласить следующий номер в Signal:";
+"SEND_SMS_INVITE_TITLE" = "Вы хотите пригласить следующий номер в Signal:";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "О программе";
@@ -2196,7 +2196,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Удалить все данные";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Вы уверены, что хотите удалить всю историю (сообщения, вложения, звонки и т. д.? Это действие необратимо.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Вы действительно хотите удалить всю историю (сообщения, вложения, звонки и т. д.? Это действие необратимо.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Удалить все";
@@ -2505,7 +2505,7 @@
 "UNARCHIVE_ACTION" = "Разархивировать";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Пользователя нет в вашем списке контактов. Хотите заблокировать этого пользователя?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Пользователя нет в вашем списке контактов. Хотите ли вы заблокировать этого пользователя?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Неизвестный контакт";
