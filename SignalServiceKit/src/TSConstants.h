@@ -53,7 +53,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 
 //#else
 
-// Staging
+//// Staging
 //#define textSecureWebSocketAPI @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
 //#define textSecureServerURL @"https://textsecure-service-staging.whispersystems.org/"
 //#define textSecureCDNServerURL @"https://cdn-staging.signal.org"
@@ -69,7 +69,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define contactDiscoveryCensorshipPrefix @"directory-staging"
 //#define keyBackupCensorshipPrefix @"backup-staging"
 //
-// CDS uses the same EnclaveName and MrEnclave
+//// CDS uses the same EnclaveName and MrEnclave
 //#define contactDiscoveryEnclaveName @"e0f7dee77dc9d705ccc1376859811da12ecec3b6119a19dc39bdfbf97173aa18"
 //#define contactDiscoveryMrEnclave contactDiscoveryEnclaveName
 //
