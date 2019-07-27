@@ -3370,6 +3370,11 @@ typedef enum : NSUInteger {
 
 - (void)markVisibleMessagesAsRead
 {
+    // Don't mark messages as read until the message request has been processed
+    if (self.messageRequestView) {
+        return;
+    }
+
     if (self.presentedViewController) {
         return;
     }
@@ -5163,12 +5168,16 @@ typedef enum : NSUInteger {
 
 - (void)messageRequestViewDidTapBlock
 {
+    OWSAssertIsOnMainThread();
+
     [self.blockingManager addBlockedThread:self.thread];
     [self messageRequestViewDidTapDelete];
 }
 
 - (void)messageRequestViewDidTapDelete
 {
+    OWSAssertIsOnMainThread();
+
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if ([self.thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)self.thread;
@@ -5196,6 +5205,8 @@ typedef enum : NSUInteger {
 
 - (void)messageRequestViewDidTapAccept
 {
+    OWSAssertIsOnMainThread();
+
     [ThreadUtil addThreadToProfileWhitelist:self.thread];
     [self dismissMessageRequestView];
 }
