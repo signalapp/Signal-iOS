@@ -535,6 +535,7 @@
 		881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */; };
 		881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
+		88D1D40222EBB5A100F472C5 /* MessageRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
@@ -1313,6 +1314,7 @@
 		881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinReminderViewController.swift; sourceTree = "<group>"; };
 		881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinSetupViewController.swift; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
+		88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestView.swift; sourceTree = "<group>"; };
 		8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.test.xcconfig"; sourceTree = "<group>"; };
 		8EEE74B0753448C085B48721 /* Pods-SignalMessaging.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.app store release.xcconfig"; sourceTree = "<group>"; };
 		948239851C08032C842937CC /* Pods-SignalMessaging.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.test.xcconfig"; sourceTree = "<group>"; };
@@ -1755,6 +1757,7 @@
 				341341EE2187467900192D59 /* ConversationViewModel.m */,
 				34B6A904218B4C90007C4606 /* TypingIndicatorInteraction.swift */,
 				4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */,
+				88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */,
 			);
 			path = ConversationView;
 			sourceTree = "<group>";
@@ -3692,6 +3695,7 @@
 				34A4C62022175C5C0042EF2E /* OnboardingProfileViewController.swift in Sources */,
 				EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */,
 				4C4F5EBC22711EEB00F3DD01 /* SendMediaBottomButton.swift in Sources */,
+				88D1D40222EBB5A100F472C5 /* MessageRequestView.swift in Sources */,
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
 				4C0C36F8226647FE0083F19A /* ThreadMapping.swift in Sources */,
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,

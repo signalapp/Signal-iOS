@@ -38,9 +38,12 @@ extern NSString *const kNSNotificationName_BlockListDidChange;
 - (void)removeBlockedGroupId:(NSData *)groupId;
 - (nullable TSGroupModel *)cachedGroupDetailsWithGroupId:(NSData *)groupId;
 
+- (void)addBlockedThread:(TSThread *)thread;
+- (void)removeBlockedThread:(TSThread *)thread;
+- (BOOL)isThreadBlocked:(TSThread *)thread;
+
 - (BOOL)isAddressBlocked:(SignalServiceAddress *)address;
 - (BOOL)isGroupIdBlocked:(NSData *)groupId;
-- (BOOL)isThreadBlocked:(TSThread *)thread;
 
 - (void)syncBlockList;
 

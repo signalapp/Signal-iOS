@@ -131,7 +131,8 @@ typedef enum : NSUInteger {
     UITextViewDelegate,
     ConversationCollectionViewDelegate,
     ConversationInputToolbarDelegate,
-    ConversationViewModelDelegate>
+    ConversationViewModelDelegate,
+    MessageRequestDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
@@ -201,6 +202,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) MenuActionsViewController *menuActionsViewController;
 @property (nonatomic) CGFloat extraContentInsetPadding;
 @property (nonatomic) CGFloat contentInsetBottom;
+
+@property (nonatomic, nullable) MessageRequestView *messageRequestView;
 
 @end
 
@@ -272,6 +275,11 @@ typedef enum : NSUInteger {
 - (OWSContactsManager *)contactsManager
 {
     return Environment.shared.contactsManager;
+}
+
+- (OWSProfileManager *)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
 }
 
 - (ContactsUpdater *)contactsUpdater
@@ -661,7 +669,9 @@ typedef enum : NSUInteger {
 
 - (nullable UIView *)inputAccessoryView
 {
-    if (self.isShowingSearchUI) {
+    if (self.messageRequestView) {
+        return self.messageRequestView;
+    } else if (self.isShowingSearchUI) {
         return self.searchController.resultsBar;
     } else {
         return self.inputToolbar;
@@ -768,6 +778,8 @@ typedef enum : NSUInteger {
         [self.collectionView.panGestureRecognizer
             requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
     }
+
+    [self showMessageRequestDialogIfRequired];
 }
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
@@ -1240,7 +1252,12 @@ typedef enum : NSUInteger {
         case ConversationViewActionNone:
             break;
         case ConversationViewActionCompose:
-            [self popKeyBoard];
+            // Don't pop the keyboard if we have a pending message request, since
+            // the user can't currently send a message until acting on this
+            if (!self.messageRequestView) {
+                [self popKeyBoard];
+            }
+
             // When we programmatically pop the keyboard here,
             // the scroll position gets into a weird state and
             // content is hidden behind the keyboard so we restore
@@ -5063,6 +5080,124 @@ typedef enum : NSUInteger {
 
     // Scroll button layout depends on input toolbar size.
     [self updateScrollDownButtonLayout];
+}
+
+#pragma mark - Message Request
+
+- (void)showMessageRequestDialogIfRequired
+{
+    OWSAssertIsOnMainThread();
+
+    // If we're already showing the message request view, don't render it again
+    if (self.messageRequestView) {
+        return;
+    }
+
+    // If we're creating the thread, don't show the message request view
+    if (!self.thread.shouldThreadBeVisible) {
+        return;
+    }
+
+    // If the thread is already whitelisted, do nothing. The user has already
+    // accepted the request for this thread.
+    if ([self.profileManager isThreadInProfileWhitelist:self.thread]) {
+        return;
+    }
+
+    BOOL isThreadSystemContact = NO;
+    if (!self.isGroupConversation) {
+        TSContactThread *thread = (TSContactThread *)self.thread;
+        isThreadSystemContact = [self.contactsManager hasSignalAccountForAddress:thread.contactAddress];
+    }
+
+    // If this thread is a conversation with a system contact, add them to the profile
+    // whitelist immediately and do not show the request dialog. People in your system
+    // contacts get to bypass the message request flow.
+    if (isThreadSystemContact) {
+        [self.profileManager addThreadToProfileWhitelist:self.thread];
+        return;
+    }
+
+    self.messageRequestView = [[MessageRequestView alloc] initWithThread:self.thread];
+    self.messageRequestView.delegate = self;
+}
+
+- (void)dismissMessageRequestView
+{
+    OWSAssertIsOnMainThread();
+
+    if (!self.messageRequestView) {
+        return;
+    }
+
+    // Slide the request view off the bottom of the screen.
+    CGFloat bottomInset = 0;
+    if (@available(iOS 11, *)) {
+        bottomInset = self.view.safeAreaInsets.bottom;
+    }
+
+    MessageRequestView *dismissingView = self.messageRequestView;
+    self.messageRequestView = nil;
+
+    [self reloadInputViews];
+
+    // Add the view on top of the new input accessory view (if there is one)
+    // or our view, and then slide it off screen to reveal the new input view.
+    UIView *parentView = self.inputAccessoryView ?: self.view;
+
+    [parentView addSubview:dismissingView];
+    [dismissingView autoPinWidthToSuperview];
+    [dismissingView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    CGRect endFrame = dismissingView.bounds;
+    endFrame.origin.y -= endFrame.size.height + bottomInset;
+
+    [UIView animateWithDuration:0.2
+        animations:^{
+            dismissingView.bounds = endFrame;
+        }
+        completion:^(BOOL finished) {
+            [dismissingView removeFromSuperview];
+        }];
+}
+
+- (void)messageRequestViewDidTapBlock
+{
+    [self.blockingManager addBlockedThread:self.thread];
+    [self messageRequestViewDidTapDelete];
+}
+
+- (void)messageRequestViewDidTapDelete
+{
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+            TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+
+            // Quit the group if we're a member
+            if (groupThread.isLocalUserInGroup) {
+                TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:groupThread
+                                                                       groupMetaMessage:TSGroupMetaMessageQuit
+                                                                       expiresInSeconds:0];
+
+                [self.messageSenderJobQueue addMessage:message transaction:transaction];
+                [groupThread leaveGroupWithTransaction:transaction];
+            }
+
+            [groupThread softDeleteGroupThreadWithTransaction:transaction];
+        } else {
+            [self.thread anyRemoveWithTransaction:transaction];
+        }
+
+        [transaction addCompletionWithBlock:^{
+            [self.navigationController popViewControllerAnimated:YES];
+        }];
+    }];
+}
+
+- (void)messageRequestViewDidTapAccept
+{
+    [ThreadUtil addThreadToProfileWhitelist:self.thread];
+    [self dismissMessageRequestView];
 }
 
 @end

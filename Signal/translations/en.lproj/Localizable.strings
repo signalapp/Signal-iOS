@@ -281,12 +281,6 @@
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
 
-/* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Block";
-
-/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Block %@?";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
 
@@ -644,38 +638,14 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
 
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "This group can see your profile.";
-
-/* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "This user can see your profile.";
-
-/* Button to confirm that user wants to share their profile with a user or group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Share Profile";
-
-/* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Share Your Profile";
-
-/* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Share Your Profile";
-
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Add to Contacts";
-
-/* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
-
-/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "This user is not in your contacts.";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Block This User";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Resetting your session will allow you to receive future messages from %@, but it will not recover any already corrupted messages.";
@@ -1104,6 +1074,9 @@
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
 
+/* Table cell subtitle label for a conversation the user has not accepted. */
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
 
@@ -1338,6 +1311,21 @@
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Message";
 
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Accept";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Block";
+
+/* A prompt asking if the user wants to accept a conversation invite. */
+"MESSAGE_REQUEST_VIEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+
+/* A button used to block a user on an incoming message request. */
+"MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Delete";
+
+/* A prompt asking if the user wants to accept a group invite. */
+"MESSAGE_REQUEST_VIEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Delivered";
 
@@ -1385,9 +1373,6 @@
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
-
-/* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Share Your Profile With This Group?";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
@@ -1843,12 +1828,6 @@
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Proceed";
-
-/* Label text combining the phone number and profile name separated by a simple demarcation character. Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced with {{profile name}} */
-"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT" = "%1$@ ~%2$@";
-
-/* Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}. */
-"PROFILE_NAME_LABEL_FORMAT" = "~%@";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Avatar";

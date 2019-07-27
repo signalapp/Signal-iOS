@@ -381,6 +381,17 @@ NS_ASSUME_NONNULL_BEGIN
                                      NSFontAttributeName : self.snippetFont.ows_mediumWeight,
                                      NSForegroundColorAttributeName : [Theme primaryColor],
                                  }]];
+    } else if (thread.hasPendingMessageRequest) {
+        // If you haven't accepted the message request for this thread, don't show the latest message
+        [snippetText
+            appendAttributedString:
+                [[NSAttributedString alloc]
+                    initWithString:NSLocalizedString(@"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
+                                       @"Table cell subtitle label for a conversation the user has not accepted.")
+                        attributes:@{
+                            NSFontAttributeName : self.snippetFont.ows_mediumWeight,
+                            NSForegroundColorAttributeName : [Theme primaryColor],
+                        }]];
     } else {
         if ([thread isMuted]) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
