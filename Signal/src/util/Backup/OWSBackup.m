@@ -906,7 +906,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     return [AnyPromise promiseWithValue:@(1)];
 }
 
-- (void)logBackupMetadataCache:(YapDatabaseConnection *)dbConnection
+- (void)logBackupMetadataCache
 {
     OWSLogInfo(@"");
 

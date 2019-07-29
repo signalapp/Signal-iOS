@@ -8,12 +8,18 @@ import SignalServiceKit
 @objc
 public class SafetyNumberConfirmationAlert: NSObject {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     private let contactsManager: OWSContactsManager
-    private let primaryStorage: OWSPrimaryStorage
 
     init(contactsManager: OWSContactsManager) {
         self.contactsManager = contactsManager
-        self.primaryStorage = OWSPrimaryStorage.shared()
     }
 
     @objc
@@ -67,9 +73,10 @@ public class SafetyNumberConfirmationAlert: NSObject {
         let confirmAction = UIAlertAction(title: confirmationText, style: .default) { _ in
             Logger.info("Confirmed identity: \(untrustedIdentity)")
 
-        self.primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
-            OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, address: untrustedAddress, isUserInitiatedChange: true, transaction: transaction.asAnyWrite)
-                DispatchQueue.main.async {
+            self.databaseStorage.asyncWrite { (transaction) in
+                OWSIdentityManager.shared().setVerificationState(.default, identityKey: untrustedIdentity.identityKey, address: untrustedAddress, isUserInitiatedChange: true, transaction: transaction)
+
+                transaction.addCompletion {
                     completion(true)
                 }
             }

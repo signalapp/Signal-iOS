@@ -3,7 +3,6 @@
 //
 
 #import "Contact.h"
-#import "OWSPrimaryStorage.h"
 #import "PhoneNumber.h"
 #import "SSKEnvironment.h"
 #import "SignalRecipient.h"
@@ -25,6 +24,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation Contact
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 @synthesize comparableNameFirstLast = _comparableNameFirstLast;
 @synthesize comparableNameLastFirst = _comparableNameLastFirst;
@@ -214,16 +222,14 @@ NS_ASSUME_NONNULL_BEGIN
     return self.registeredAddresses.count > 0;
 }
 
-- (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     __block NSMutableArray *result = [NSMutableArray array];
 
     for (PhoneNumber *number in [self.parsedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)]) {
         SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:number.toE164];
         SignalRecipient *_Nullable signalRecipient =
-            [SignalRecipient registeredRecipientForAddress:address
-                                           mustHaveDevices:YES
-                                               transaction:transaction.asAnyRead];
+            [SignalRecipient registeredRecipientForAddress:address mustHaveDevices:YES transaction:transaction];
         if (signalRecipient) {
             [result addObject:signalRecipient];
         }
@@ -236,10 +242,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     __block NSMutableArray<SignalServiceAddress *> *addresses = [NSMutableArray array];
 
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         for (PhoneNumber *number in self.parsedPhoneNumbers) {
             SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:number.toE164];
-            if ([SignalRecipient isRegisteredRecipient:address transaction:transaction.asAnyRead]) {
+            if ([SignalRecipient isRegisteredRecipient:address transaction:transaction]) {
                 [addresses addObject:address];
             }
         }

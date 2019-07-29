@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Factory Methods
 
 + (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
-                                 transaction:(YapDatabaseReadTransaction *)transaction
+                                 transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(quotedMessage.quotedAttachments.count <= 1);
     OWSAttachmentInfo *attachmentInfo = quotedMessage.quotedAttachments.firstObject;
@@ -82,8 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *_Nullable thumbnailImage;
     TSAttachmentPointer *attachmentPointer;
     if (attachmentInfo.thumbnailAttachmentStreamId) {
-        TSAttachment *attachment = [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentStreamId
-                                                          transaction:transaction.asAnyRead];
+        TSAttachment *attachment =
+            [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentStreamId transaction:transaction];
 
         TSAttachmentStream *attachmentStream;
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
@@ -92,8 +92,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (attachmentInfo.thumbnailAttachmentPointerId) {
         // download failed, or hasn't completed yet.
-        TSAttachment *attachment = [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentPointerId
-                                                          transaction:transaction.asAnyRead];
+        TSAttachment *attachment =
+            [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentPointerId transaction:transaction];
 
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             attachmentPointer = (TSAttachmentPointer *)attachment;
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(id<ConversationViewItem>)conversationItem
-                                                           transaction:(YapDatabaseReadTransaction *)transaction
+                                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(conversationItem);
     OWSAssertDebug(transaction);
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    TSThread *thread = [message threadWithTransaction:transaction.asAnyRead];
+    TSThread *thread = [message threadWithTransaction:transaction];
     OWSAssertDebug(thread);
 
     uint64_t timestamp = message.timestamp;
@@ -213,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *_Nullable quotedText = message.body;
     BOOL hasText = quotedText.length > 0;
 
-    TSAttachment *_Nullable attachment = [message bodyAttachmentsWithTransaction:transaction.asAnyRead].firstObject;
+    TSAttachment *_Nullable attachment = [message bodyAttachmentsWithTransaction:transaction].firstObject;
     TSAttachmentStream *quotedAttachment;
     if (attachment && [attachment isKindOfClass:[TSAttachmentStream class]]) {
 

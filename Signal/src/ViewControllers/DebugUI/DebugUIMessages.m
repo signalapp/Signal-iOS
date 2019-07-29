@@ -2055,14 +2055,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    isGroupThread:thread.isGroupThread
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
-                if (transaction.transitional_yapReadTransaction) {
-                    quotedMessage = [[OWSQuotedReplyModel
-                        quotedReplyForSendingWithConversationViewItem:viewItem
-                                                          transaction:transaction.transitional_yapReadTransaction]
-                        buildQuotedMessageForSending];
-                } else {
-                    OWSFailDebug(@"failure: not yet implemented for GRDB");
-                }
+                quotedMessage = [
+                    [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
+                    buildQuotedMessageForSending];
             } else {
                 TSOutgoingMessage *_Nullable messageToQuote = [self createFakeOutgoingMessage:thread
                                                                                   messageBody:quotedMessageBodyWIndex
@@ -2082,14 +2077,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    isGroupThread:thread.isGroupThread
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
-                if (transaction.transitional_yapReadTransaction) {
-                    quotedMessage = [[OWSQuotedReplyModel
-                        quotedReplyForSendingWithConversationViewItem:viewItem
-                                                          transaction:transaction.transitional_yapReadTransaction]
-                        buildQuotedMessageForSending];
-                } else {
-                    OWSFailDebug(@"failure: not yet implemented for GRDB");
-                }
+                quotedMessage = [
+                    [OWSQuotedReplyModel quotedReplyForSendingWithConversationViewItem:viewItem transaction:transaction]
+                    buildQuotedMessageForSending];
             }
             OWSAssertDebug(quotedMessage);
 

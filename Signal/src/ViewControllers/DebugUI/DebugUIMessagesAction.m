@@ -3,18 +3,11 @@
 //
 
 #import "DebugUIMessagesAction.h"
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class DebugUIMessagesSingleAction;
-
-@interface DebugUIMessagesAction ()
-
-@end
-
-#pragma mark -
 
 @interface DebugUIMessagesSingleAction ()
 

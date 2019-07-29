@@ -12,10 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CNContact;
 @class PhoneNumber;
+@class SDSAnyReadTransaction;
 @class SignalRecipient;
 @class SignalServiceAddress;
 @class UIImage;
-@class YapDatabaseReadTransaction;
 
 @interface Contact : MTLModel
 
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isSignalContact;
 @property (nonatomic, readonly) NSString *cnContactId;
 
-- (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSArray<SignalRecipient *> *)signalRecipientsWithTransaction:(SDSAnyReadTransaction *)transaction;
 // TODO: Remove this method.
 - (NSArray<SignalServiceAddress *> *)registeredAddresses;
 

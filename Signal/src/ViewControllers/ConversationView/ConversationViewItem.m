@@ -762,16 +762,13 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
 
     // Check for quoted replies _before_ media album handling,
     // since that logic may exit early.
-    if (transaction.transitional_yapReadTransaction != nil) {
-        if (message.quotedMessage) {
-            self.quotedReply =
-                [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage
-                                                      transaction:transaction.transitional_yapReadTransaction];
+    if (message.quotedMessage) {
+        self.quotedReply =
+            [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage transaction:transaction];
 
-            if (self.quotedReply.body.length > 0) {
-                self.displayableQuotedText =
-                    [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
-            }
+        if (self.quotedReply.body.length > 0) {
+            self.displayableQuotedText =
+                [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
         }
     }
 

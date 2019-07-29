@@ -8,11 +8,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ConversationViewItem;
 
+@class SDSAnyReadTransaction;
 @class SignalServiceAddress;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSMessage;
-@class YapDatabaseReadTransaction;
 
 // View model which has already fetched any attachments.
 @interface OWSQuotedReplyModel : NSObject
@@ -41,11 +41,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Used for persisted quoted replies, both incoming and outgoing.
 + (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
-                                 transaction:(YapDatabaseReadTransaction *)transaction;
+                                 transaction:(SDSAnyReadTransaction *)transaction;
 
 // Builds a not-yet-sent QuotedReplyModel
 + (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(id<ConversationViewItem>)conversationItem
-                                                           transaction:(YapDatabaseReadTransaction *)transaction;
+                                                           transaction:(SDSAnyReadTransaction *)transaction;
 
 - (TSQuotedMessage *)buildQuotedMessageForSending;
 
