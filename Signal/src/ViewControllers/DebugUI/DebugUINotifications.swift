@@ -14,11 +14,17 @@ class DebugUINotifications: DebugUIPage {
     var notificationPresenter: NotificationPresenter {
         return AppEnvironment.shared.notificationPresenter
     }
+
     var messageSender: MessageSender {
         return SSKEnvironment.shared.messageSender
     }
+
     var contactsManager: OWSContactsManager {
         return Environment.shared.contactsManager
+    }
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SSKEnvironment.shared.databaseStorage
     }
 
     // MARK: Overrides
@@ -66,7 +72,12 @@ class DebugUINotifications: DebugUIPage {
 
             OWSTableItem(title: "Notify For Threadless Error Message") { [weak self] in
                 self?.notifyUserForThreadlessErrorMessage().retainUntilComplete()
+            },
+
+            OWSTableItem(title: "Notify of New Signal Users") { [weak self] in
+                self?.notifyOfNewUsers().retainUntilComplete()
             }
+
         ]
 
         return OWSTableSection(title: "Notifications have delay: \(kNotificationDelay)s", items: sectionItems)
@@ -74,16 +85,12 @@ class DebugUINotifications: DebugUIPage {
 
     // MARK: Helpers
 
-    func readWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
-        OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite(block)
-    }
-
     // After enqueing the notification you may want to background the app or lock the screen before it triggers, so
     // we give a little delay.
     let kNotificationDelay: TimeInterval = 5
 
     func delayedNotificationDispatch(block: @escaping () -> Void) -> Guarantee<Void> {
-        Logger.info("delaying for \(kNotificationDelay) seconds")
+        Logger.info("⚠️ will present notification after \(kNotificationDelay) second delay")
 
         // Notifications won't sound if the app is suspended.
         let taskIdentifier = UIApplication.shared.beginBackgroundTask(expirationHandler: nil)
@@ -127,43 +134,40 @@ class DebugUINotifications: DebugUIPage {
             self.notifyForErrorMessage(thread: contactThread)
         }.then {
             self.notifyUserForThreadlessErrorMessage()
+        }.then {
+            self.notifyOfNewUsers()
         }.done {
             UIApplication.shared.endBackgroundTask(taskIdentifier)
         }
     }
 
     func notifyForIncomingCall(thread: TSContactThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
             self.notificationPresenter.presentIncomingCall(call, callerName: thread.name())
         }
     }
 
     func notifyForMissedCall(thread: TSContactThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
             self.notificationPresenter.presentMissedCall(call, callerName: thread.name())
         }
     }
 
     func notifyForMissedCallBecauseOfNewIdentity(thread: TSContactThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
             self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: call, callerName: thread.name())
         }
     }
 
     func notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: TSContactThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatchWithFakeCall(thread: thread) { call in
             self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: call, callerName: thread.name())
         }
     }
 
     func notifyForIncomingMessage(thread: TSThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatch {
-            self.readWrite { transaction in
+            self.databaseStorage.write { transaction in
                 let factory = IncomingMessageFactory()
                 factory.threadCreator = { _ in return thread }
                 let incomingMessage = factory.create(transaction: transaction)
@@ -176,27 +180,48 @@ class DebugUINotifications: DebugUIPage {
     }
 
     func notifyForErrorMessage(thread: TSThread) -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatch {
             let errorMessage = TSErrorMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
                                               in: thread,
                                               failedMessageType: TSErrorMessageType.invalidMessage)
 
-            self.readWrite { transaction in
+            self.databaseStorage.write { transaction in
                 self.notificationPresenter.notifyUser(for: errorMessage, thread: thread, transaction: transaction)
             }
         }
     }
 
     func notifyUserForThreadlessErrorMessage() -> Guarantee<Void> {
-        Logger.info("⚠️ will present notification after delay")
         return delayedNotificationDispatch {
-            self.readWrite { transaction in
+            self.databaseStorage.write { transaction in
                 let errorMessage = TSErrorMessage.corruptedMessageInUnknownThread()
 
                 self.notificationPresenter.notifyUser(forThreadlessErrorMessage: errorMessage,
-                                                     transaction: transaction)
+                                                      transaction: transaction)
             }
+        }
+    }
+
+    func notifyOfNewUsers() -> Guarantee<Void> {
+         return delayedNotificationDispatch {
+            let recipients: Set<SignalRecipient> = self.databaseStorage.readReturningResult { transaction in
+                let allRecipients = SignalRecipient.anyFetchAll(transaction: transaction)
+                let activeRecipients = allRecipients.filter { recipient in
+                    guard recipient.devices.count > 0 else {
+                        return false
+                    }
+
+                    guard recipient.recipientId != TSAccountManager.localNumber() else {
+                        return false
+                    }
+
+                    return true
+                }
+
+                return Set(activeRecipients)
+            }
+
+            NewAccountDiscovery.shared.discovered(newRecipients: recipients, forNewThreadsOnly: false)
         }
     }
 }

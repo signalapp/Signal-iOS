@@ -31,7 +31,9 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
                    groupMetaMessage: .unspecified,
                    quotedMessage: nil,
                    contactShare: nil,
-                   linkPreview: nil)
+                   linkPreview: nil,
+                   messageSticker: nil,
+                   perMessageExpirationDurationSeconds: 0)
     }
 
     @objc
@@ -41,7 +43,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     }
 
     @objc
-    public required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
         self.action = .started
         try super.init(dictionary: dictionaryValue)
     }
@@ -73,8 +75,8 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     @objc
     public override func buildPlainTextData(_ recipient: SignalRecipient) -> Data? {
 
-        let typingBuilder = SSKProtoTypingMessage.builder(timestamp: self.timestamp,
-                                                          action: protoAction(forAction: action))
+        let typingBuilder = SSKProtoTypingMessage.builder(timestamp: self.timestamp)
+        typingBuilder.setAction(protoAction(forAction: action))
 
         if let groupThread = self.thread as? TSGroupThread {
             typingBuilder.setGroupID(groupThread.groupModel.groupId)

@@ -9,7 +9,6 @@
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/ContactDiscoveryService.h>
 #import <SignalServiceKit/OWS2FAManager.h>
 #import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
@@ -48,7 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
         // initializers injected.
         [[OWSBackgroundTaskManager sharedManager] observeNotifications];
 
-        OWSPrimaryStorage *primaryStorage = [[OWSPrimaryStorage alloc] initStorage];
+        SDSDatabaseStorage *databaseStorage = [SDSDatabaseStorage new];
+        OWSPrimaryStorage *primaryStorage = databaseStorage.yapPrimaryStorage;
         [OWSPrimaryStorage protectFiles];
 
         // AFNetworking (via CFNetworking) spools it's attachments to NSTemporaryDirectory().
@@ -65,22 +65,23 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
         ContactsUpdater *contactsUpdater = [ContactsUpdater new];
         OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithPrimaryStorage:primaryStorage];
-        SSKMessageSenderJobQueue *messageSenderJobQueue = [SSKMessageSenderJobQueue new];
+        MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
         OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSMessageManager *messageManager = [[OWSMessageManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSMessageManager *messageManager = [OWSMessageManager new];
         OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
+        SSKSessionStore *sessionStore = [SSKSessionStore new];
+        SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
+        SSKPreKeyStore *preKeyStore = [SSKPreKeyStore new];
         id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
-        OWSMessageDecrypter *messageDecrypter = [[OWSMessageDecrypter alloc] initWithPrimaryStorage:primaryStorage];
-        OWSBatchMessageProcessor *batchMessageProcessor =
-            [[OWSBatchMessageProcessor alloc] initWithPrimaryStorage:primaryStorage];
+        OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
+        OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
         OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
         TSSocketManager *socketManager = [[TSSocketManager alloc] init];
-        TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
+        TSAccountManager *tsAccountManager = [TSAccountManager new];
         OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSDisappearingMessagesJob *disappearingMessagesJob =
             [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
-        ContactDiscoveryService *contactDiscoveryService = [[ContactDiscoveryService alloc] initDefault];
         OWSReadReceiptManager *readReceiptManager =
             [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
         OWSOutgoingReceiptManager *outgoingReceiptManager =
@@ -89,6 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
         OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
+        StickerManager *stickerManager = [[StickerManager alloc] init];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
         OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
@@ -112,6 +114,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    messageManager:messageManager
                                                                   blockingManager:blockingManager
                                                                   identityManager:identityManager
+                                                                     sessionStore:sessionStore
+                                                                signedPreKeyStore:signedPreKeyStore
+                                                                      preKeyStore:preKeyStore
                                                                         udManager:udManager
                                                                  messageDecrypter:messageDecrypter
                                                             batchMessageProcessor:batchMessageProcessor
@@ -120,13 +125,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  tsAccountManager:tsAccountManager
                                                                     ows2FAManager:ows2FAManager
                                                           disappearingMessagesJob:disappearingMessagesJob
-                                                          contactDiscoveryService:contactDiscoveryService
                                                                readReceiptManager:readReceiptManager
                                                            outgoingReceiptManager:outgoingReceiptManager
                                                               reachabilityManager:reachabilityManager
                                                                       syncManager:syncManager
                                                                  typingIndicators:typingIndicators
-                                                              attachmentDownloads:attachmentDownloads]];
+                                                              attachmentDownloads:attachmentDownloads
+                                                                   stickerManager:stickerManager
+                                                                  databaseStorage:databaseStorage]];
 
         appSpecificSingletonBlock();
 
@@ -135,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Register renamed classes.
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
-
+         
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             dispatch_async(dispatch_get_main_queue(), ^{
                 // Don't start database migrations until storage is ready.

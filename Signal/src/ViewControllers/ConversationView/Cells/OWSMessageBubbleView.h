@@ -2,28 +2,18 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSMessageView.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactShareViewModel;
-@class ConversationStyle;
-
-@protocol ConversationViewItem;
-
 @class OWSContact;
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
+@class StickerPackInfo;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSOutgoingMessage;
-
-typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
-    // Message text, etc.
-    OWSMessageGestureLocation_Default,
-    OWSMessageGestureLocation_OversizeText,
-    OWSMessageGestureLocation_Media,
-    OWSMessageGestureLocation_QuotedReply,
-    OWSMessageGestureLocation_LinkPreview,
-};
 
 @protocol OWSMessageBubbleViewDelegate
 
@@ -36,6 +26,12 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
                   imageView:(UIView *)imageView;
 
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
+
+- (void)didScrubAudioViewItem:(id<ConversationViewItem>)viewItem
+                       toTime:(NSTimeInterval)time
+             attachmentStream:(TSAttachmentStream *)attachmentStream;
+
+- (void)didTapPdfForItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
 
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem;
 
@@ -57,19 +53,15 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 - (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
     NS_SWIFT_NAME(didTapShowAddToContactUI(forContactShare:));
 
+- (void)didTapStickerPack:(StickerPackInfo *)stickerPackInfo NS_SWIFT_NAME(didTapStickerPack(_:));
+
 @property (nonatomic, readonly, nullable) NSString *lastSearchedText;
 
 @end
 
 #pragma mark -
 
-@interface OWSMessageBubbleView : UIView
-
-@property (nonatomic, nullable) id<ConversationViewItem> viewItem;
-
-@property (nonatomic) ConversationStyle *conversationStyle;
-
-@property (nonatomic) NSCache *cellMediaCache;
+@interface OWSMessageBubbleView : OWSMessageView
 
 @property (nonatomic, nullable, readonly) UIView *bodyMediaView;
 
@@ -80,28 +72,6 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
-
-- (void)configureViews;
-
-- (void)loadContent;
-- (void)unloadContent;
-
-- (CGSize)measureSize;
-
-- (void)prepareForReuse;
-
-+ (NSDictionary *)senderNamePrimaryAttributes;
-+ (NSDictionary *)senderNameSecondaryAttributes;
-
-#pragma mark - Gestures
-
-- (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble;
-
-// This only needs to be called when we use the cell _outside_ the context
-// of a conversation view message cell.
-- (void)addTapGestureHandler;
-
-- (void)handleTapGesture:(UITapGestureRecognizer *)sender;
 
 @end
 

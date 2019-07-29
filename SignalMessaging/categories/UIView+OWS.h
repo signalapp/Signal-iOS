@@ -153,6 +153,8 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 - (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
 
+- (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor cornerRadius:(CGFloat)cornerRadius;
+
 - (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius;
 
 @end
@@ -171,5 +173,10 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 #pragma mark - Macros
 
 CGFloat CGHairlineWidth(void);
+
+/// Primarily useful to adjust border widths to
+/// compensate for antialiasing around light
+/// color curves on dark backgrounds.
+CGFloat CGHairlineWidthFraction(CGFloat);
 
 NS_ASSUME_NONNULL_END

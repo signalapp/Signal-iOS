@@ -31,7 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
                                   groupMetaMessage:TSGroupMetaMessageUnspecified
                                      quotedMessage:nil
                                       contactShare:nil
-                                       linkPreview:nil];
+                                       linkPreview:nil
+                                    messageSticker:nil
+               perMessageExpirationDurationSeconds:0];
     if (!self) {
         return self;
     }
@@ -61,8 +63,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
-    SSKProtoGroupContextBuilder *groupContextBuilder =
-        [SSKProtoGroupContext builderWithId:self.groupId type:SSKProtoGroupContextTypeRequestInfo];
+    SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContext builderWithId:self.groupId];
+    [groupContextBuilder setType:SSKProtoGroupContextTypeRequestInfo];
 
     NSError *error;
     SSKProtoGroupContext *_Nullable groupContextProto = [groupContextBuilder buildAndReturnError:&error];

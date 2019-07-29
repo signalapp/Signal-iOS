@@ -1,18 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
 @class OWSStorage;
 @class YapDatabaseReadTransaction;
 
 @interface OWSIncomingMessageFinder : NSObject
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
-
-+ (NSString *)databaseExtensionName;
 + (void)asyncRegisterExtensionWithPrimaryStorage:(OWSStorage *)storage;
 
 /**

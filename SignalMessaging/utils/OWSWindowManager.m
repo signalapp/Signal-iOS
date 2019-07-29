@@ -322,6 +322,22 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
         || window == self.menuActionsWindow || window == self.screenBlockingWindow);
 }
 
+- (void)updateWindowFrames
+{
+    OWSAssertIsOnMainThread();
+
+    CGRect windowFrame = [[UIScreen mainScreen] bounds];
+    for (UIWindow *window in @[
+             self.rootWindow,
+             self.callViewWindow,
+             self.screenBlockingWindow,
+         ]) {
+        if (!CGRectEqualToRect(window.frame, windowFrame)) {
+            window.frame = windowFrame;
+        }
+    }
+}
+
 #pragma mark - Message Actions
 
 - (BOOL)isPresentingMenuActions

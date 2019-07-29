@@ -35,7 +35,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
 
-        self.readWrite { (transaction) in
+        self.write { (transaction) in
             XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
                                                                      body: body,
                                                                      transaction: transaction))
@@ -50,7 +50,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
 
-        self.readWrite { (transaction) in
+        self.write { (transaction) in
             XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
                                                                      body: body,
                                                                      transaction: transaction))
@@ -68,7 +68,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
 
-        self.readWrite { (transaction) in
+        self.write { (transaction) in
             XCTAssertNotNil(try! OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
                                                                      body: body,
                                                                      transaction: transaction))
@@ -82,7 +82,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let dataBuilder = SSKProtoDataMessage.builder()
         dataBuilder.addPreview(try! previewBuilder.build())
 
-        self.readWrite { (transaction) in
+        self.write { (transaction) in
             do {
                 _ = try OWSLinkPreview.buildValidatedLinkPreview(dataMessage: try! dataBuilder.build(),
                                                                  body: body,
@@ -222,7 +222,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 XCTAssertNotNil(draft)
 
                 XCTAssertEqual(draft.title, "Randomness is Random - Numberphile")
-                XCTAssertNotNil(draft.jpegImageData)
+                XCTAssertNotNil(draft.imageData)
 
                 expectation.fulfill()
             }.catch { (error) in

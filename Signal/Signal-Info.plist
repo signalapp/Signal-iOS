@@ -7,9 +7,9 @@
 		<key>CarthageVersion</key>
 		<string>0.33.0</string>
 		<key>OSXVersion</key>
-		<string>10.14.4</string>
+		<string>10.14.5</string>
 		<key>WebRTCCommit</key>
-		<string>1445d719bf05280270e9f77576f80f973fd847f8 M73</string>
+		<string>e742b8b9bc8f2c6d088d9a212fa326ebbba52784 M75 working w/ iOS9</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -30,7 +30,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.39.0</string>
+	<string>2.41.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -47,13 +47,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.39.0.14</string>
+	<string>2.41.0.16</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>
-	<string>support@whispersystems.org</string>
+	<string>support@signal.org</string>
 	<key>LOGS_URL</key>
-	<string>https://github.com/WhisperSystems/Signal-iOS/issues</string>
+	<string>https://github.com/signalapp/Signal-iOS/issues</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.social-networking</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -69,7 +69,21 @@
 				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
 				<false/>
 			</dict>
+			<key>api-staging.backup.signal.org</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
 			<key>api-staging.directory.signal.org</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+			<key>api.backup.signal.org</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>

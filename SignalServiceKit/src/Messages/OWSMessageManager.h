@@ -1,28 +1,21 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageHandler.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
+@class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
-@class TSThread;
-@class YapDatabaseReadWriteTransaction;
 
 @interface OWSMessageManager : OWSMessageHandler
-
-- (instancetype)init NS_UNAVAILABLE;
-+ (instancetype)sharedManager;
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 // processEnvelope: can be called from any thread.
 - (void)throws_processEnvelope:(SSKProtoEnvelope *)envelope
                  plaintextData:(NSData *_Nullable)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
-                   transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                   transaction:(SDSAnyWriteTransaction *)transaction;
 
 // This should be invoked by the main app when the app is ready.
 - (void)startObserving;

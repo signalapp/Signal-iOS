@@ -25,6 +25,9 @@ protocol PhotoCaptureDelegate: AnyObject {
     func photoCaptureDidTryToCaptureTooMany(_ photoCapture: PhotoCapture)
     var zoomScaleReferenceHeight: CGFloat? { get }
     var captureOrientation: AVCaptureVideoOrientation { get }
+
+    func beginCaptureButtonAnimation(_ duration: TimeInterval)
+    func endCaptureButtonAnimation(_ duration: TimeInterval)
 }
 
 class PhotoCapture: NSObject {
@@ -332,15 +335,10 @@ class PhotoCapture: NSObject {
     private func clampZoom(_ factor: CGFloat, device: AVCaptureDevice) -> CGFloat {
         return min(factor.clamp(minimumZoom, maximumZoom), device.activeFormat.videoMaxZoomFactor)
     }
-}
-
-extension PhotoCapture: CaptureButtonDelegate {
 
     // MARK: - Photo
-
-    func didTapCaptureButton(_ captureButton: CaptureButton) {
+    private func handleTap() {
         Logger.verbose("")
-
         guard let delegate = delegate else { return }
         guard delegate.photoCaptureCanCaptureMoreItems(self) else {
             delegate.photoCaptureDidTryToCaptureTooMany(self)
@@ -355,7 +353,7 @@ extension PhotoCapture: CaptureButtonDelegate {
 
     // MARK: - Video
 
-    func didBeginLongPressCaptureButton(_ captureButton: CaptureButton) {
+    private func handleLongPressBegin() {
         AssertIsOnMainThread()
         Logger.verbose("")
 
@@ -375,7 +373,7 @@ extension PhotoCapture: CaptureButtonDelegate {
         }.retainUntilComplete()
     }
 
-    func didCompleteLongPressCaptureButton(_ captureButton: CaptureButton) {
+    private func handleLongPressComplete() {
         Logger.verbose("")
         sessionQueue.async {
             self.captureOutput.completeVideo(delegate: self)
@@ -386,7 +384,7 @@ extension PhotoCapture: CaptureButtonDelegate {
         delegate?.photoCaptureDidCompleteVideo(self)
     }
 
-    func didCancelLongPressCaptureButton(_ captureButton: CaptureButton) {
+    private func handleLongPressCancel() {
         Logger.verbose("")
         AssertIsOnMainThread()
         sessionQueue.async {
@@ -394,13 +392,56 @@ extension PhotoCapture: CaptureButtonDelegate {
         }
         delegate?.photoCaptureDidCancelVideo(self)
     }
+}
+
+extension PhotoCapture: VolumeButtonObserver {
+    func didPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        delegate?.beginCaptureButtonAnimation(0.5)
+    }
+
+    func didReleaseVolumeButton(with identifier: VolumeButtons.Identifier) {
+        delegate?.endCaptureButtonAnimation(0.2)
+    }
+
+    func didTapVolumeButton(with identifier: VolumeButtons.Identifier) {
+        handleTap()
+    }
+
+    func didBeginLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        handleLongPressBegin()
+    }
+    
+    func didCompleteLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        handleLongPressComplete()
+    }
+    
+    func didCancelLongPressVolumeButton(with identifier: VolumeButtons.Identifier) {
+        handleLongPressCancel()
+    }
+}
+
+extension PhotoCapture: CaptureButtonDelegate {
+    func didTapCaptureButton(_ captureButton: CaptureButton) {
+        handleTap()
+    }
+
+    func didBeginLongPressCaptureButton(_ captureButton: CaptureButton) {
+        handleLongPressBegin()
+    }
+
+    func didCompleteLongPressCaptureButton(_ captureButton: CaptureButton) {
+        handleLongPressComplete()
+    }
+
+    func didCancelLongPressCaptureButton(_ captureButton: CaptureButton) {
+        handleLongPressCancel()
+    }
 
     var zoomScaleReferenceHeight: CGFloat? {
         return delegate?.zoomScaleReferenceHeight
     }
 
     func longPressCaptureButton(_ captureButton: CaptureButton, didUpdateZoomAlpha zoomAlpha: CGFloat) {
-        Logger.verbose("zoomAlpha: \(zoomAlpha)")
         updateZoom(alpha: zoomAlpha)
     }
 }
@@ -449,8 +490,11 @@ extension PhotoCapture: CaptureOutputDelegate {
         AssertIsOnMainThread()
 
         if let error = error {
-            delegate?.photoCapture(self, processingDidError: error)
-            return
+            guard didSucceedDespiteError(error) else {
+                delegate?.photoCapture(self, processingDidError: error)
+                return
+            }
+            Logger.info("Ignoring error, since capture succeeded.")
         }
 
         guard let dataSource = DataSourcePath.dataSource(with: outputFileURL, shouldDeleteOnDeallocation: true) else {
@@ -461,11 +505,24 @@ extension PhotoCapture: CaptureOutputDelegate {
         // AVCaptureMovieFileOutput records to .mov, but for compatibility we need to send mp4's.
         // Because we take care to record with h264 compression (not hevc), this conversion
         // doesn't require re-encoding the media streams and happens quickly.
-        let (attachmentPromise, exportSession) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
+        let (attachmentPromise, _) = SignalAttachment.compressVideoAsMp4(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
         attachmentPromise.map { [weak self] attachment in
             guard let self = self else { return }
             self.delegate?.photoCapture(self, didFinishProcessingAttachment: attachment)
         }.retainUntilComplete()
+    }
+
+    /// The AVCaptureFileOutput can return an error even though recording succeeds.
+    /// I can't find useful documentation on this, but Apple's example AVCam app silently
+    /// discards these errors, so we do the same.
+    /// These spurious errors can be reproduced 1/3 of the time when making a series of short videos.
+    private func didSucceedDespiteError(_ error: Error) -> Bool {
+        let nsError = error as NSError
+        guard let successfullyFinished = nsError.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool else {
+            return false
+        }
+
+        return successfullyFinished
     }
 }
 
@@ -501,6 +558,10 @@ class CaptureOutput {
         }
 
         movieOutput = AVCaptureMovieFileOutput()
+        // disable movie fragment writing since it's not supported on mp4
+        // leaving it enabled causes all audio to be lost on videos longer
+        // than the default length (10s).
+        movieOutput.movieFragmentInterval = CMTime.invalid
     }
 
     var photoOutput: AVCaptureOutput? {

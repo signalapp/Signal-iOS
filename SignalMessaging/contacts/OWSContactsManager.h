@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/Contact.h>
@@ -11,6 +11,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @class ImageCache;
 @class OWSPrimaryStorage;
+@class SDSKeyValueStore;
 @class SignalAccount;
 @class UIFont;
 
@@ -26,6 +27,8 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (id)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
 
 #pragma mark - Accessors
+
+@property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 @property (nonnull, readonly) ImageCache *avatarCache;
 

@@ -126,6 +126,14 @@ public extension UIView {
         layer.shadowOffset = offset
         layer.shadowColor = color
     }
+
+    class func accessibilityIdentifier(in container: NSObject, name: String) -> String {
+        return "\(type(of: container)).\(name)"
+    }
+
+    func setAccessibilityIdentifier(in container: NSObject, name: String) {
+        self.accessibilityIdentifier = UIView.accessibilityIdentifier(in: container, name: name)
+    }
 }
 
 // MARK: -
@@ -391,5 +399,127 @@ public extension UIBarButtonItem {
         self.init(customView: customView)
 
         self.accessibilityIdentifier = accessibilityIdentifier
+    }
+}
+
+// MARK: -
+
+@objc
+public extension UIButton {
+    @objc
+    func setTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) {
+        guard let templateImage = templateImage else {
+            owsFailDebug("Missing image")
+            return
+        }
+        setImage(templateImage.withRenderingMode(.alwaysTemplate), for: .normal)
+        self.tintColor = tintColor
+    }
+
+    @objc
+    func setTemplateImageName(_ imageName: String, tintColor: UIColor) {
+        guard let image = UIImage(named: imageName) else {
+            owsFailDebug("Couldn't load image: \(imageName)")
+            return
+        }
+        setTemplateImage(image, tintColor: tintColor)
+    }
+
+    @objc
+    class func withTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) -> UIButton {
+        let imageView = UIButton()
+        imageView.setTemplateImage(templateImage, tintColor: tintColor)
+        return imageView
+    }
+
+    @objc
+    class func withTemplateImageName(_ imageName: String, tintColor: UIColor) -> UIButton {
+        let imageView = UIButton()
+        imageView.setTemplateImageName(imageName, tintColor: tintColor)
+        return imageView
+    }
+}
+
+// MARK: -
+
+@objc
+public extension UIImageView {
+    @objc
+    func setImage(imageName: String) {
+        guard let image = UIImage(named: imageName) else {
+            owsFailDebug("Couldn't load image: \(imageName)")
+            return
+        }
+        self.image = image
+    }
+
+    @objc
+    func setTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) {
+        guard let templateImage = templateImage else {
+            owsFailDebug("Missing image")
+            return
+        }
+        self.image = templateImage.withRenderingMode(.alwaysTemplate)
+        self.tintColor = tintColor
+    }
+
+    @objc
+    func setTemplateImageName(_ imageName: String, tintColor: UIColor) {
+        guard let image = UIImage(named: imageName) else {
+            owsFailDebug("Couldn't load image: \(imageName)")
+            return
+        }
+        setTemplateImage(image, tintColor: tintColor)
+    }
+
+    @objc
+    class func withTemplateImage(_ templateImage: UIImage?, tintColor: UIColor) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.setTemplateImage(templateImage, tintColor: tintColor)
+        return imageView
+    }
+
+    @objc
+    class func withTemplateImageName(_ imageName: String, tintColor: UIColor) -> UIImageView {
+        let imageView = UIImageView()
+        imageView.setTemplateImageName(imageName, tintColor: tintColor)
+        return imageView
+    }
+}
+
+// MARK: -
+
+@objc
+public extension UISearchBar {
+    @objc
+    var textField: UITextField? {
+        // TODO: iOS 13 – a public accessor for this textField as been added in iOS 13,
+        // once we start building with that SDK switch to using it for 13+
+        guard let textField = self.value(forKey: "_searchField") as? UITextField else {
+            owsFailDebug("Couldn't find UITextField.")
+            return nil
+        }
+        return textField
+    }
+}
+
+// MARK: -
+
+@objc
+public extension UITextView {
+    @objc
+    func acceptAutocorrectSuggestion() {
+        // https://stackoverflow.com/a/27865136/4509555
+        inputDelegate?.selectionWillChange(self)
+        inputDelegate?.selectionDidChange(self)
+    }
+}
+
+@objc
+public extension UITextField {
+    @objc
+    func acceptAutocorrectSuggestion() {
+        inputDelegate?.selectionWillChange(self)
+        inputDelegate?.selectionDidChange(self)
     }
 }

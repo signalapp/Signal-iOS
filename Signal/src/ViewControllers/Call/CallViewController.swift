@@ -263,6 +263,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         remoteVideoView = RemoteVideoView()
         remoteVideoView.isUserInteractionEnabled = false
         localVideoView = RTCCameraPreviewView()
+        remoteVideoView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "remoteVideoView")
+        localVideoView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "localVideoView")
 
         remoteVideoView.isHidden = true
         localVideoView.isHidden = true
@@ -315,6 +317,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         self.view.addSubview(contactAvatarContainerView)
         contactAvatarView = AvatarImageView()
         contactAvatarContainerView.addSubview(contactAvatarView)
+
+        leaveCallViewButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "leaveCallViewButton")
+        contactNameLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "contactNameLabel")
+        callStatusLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "callStatusLabel")
+        contactAvatarView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "contactAvatarView")
     }
 
     func createSettingsNagViews() {
@@ -365,6 +372,10 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         notNowButton.autoPinWidthToSuperview()
         notNowButton.autoPinEdge(toSuperviewEdge: .bottom)
         notNowButton.autoPinEdge(.top, to: .bottom, of: callSettingsButton, withOffset: 12)
+
+        settingsNagDescriptionLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "settingsNagDescriptionLabel")
+        callSettingsButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "callSettingsButton")
+        notNowButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "notNowButton")
     }
 
     func buttonSize() -> CGFloat {
@@ -429,6 +440,14 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         ongoingVideoCallControls = UIStackView(arrangedSubviews: [videoModeMuteButton, videoModeFlipCameraButton, videoModeVideoButton])
         ongoingAudioCallControls.distribution = .equalSpacing
         ongoingVideoCallControls.axis = .horizontal
+
+        audioSourceButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioSourceButton")
+        hangUpButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "hangUpButton")
+        audioModeMuteButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioModeMuteButton")
+        audioModeVideoButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "audioModeVideoButton")
+        videoModeMuteButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoModeMuteButton")
+        videoModeFlipCameraButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoModeFlipCameraButton")
+        videoModeVideoButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "videoModeVideoButton")
     }
 
     func presentAudioSourcePicker() {
@@ -482,6 +501,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         incomingCallControls.distribution = .equalSpacing
 
         view.addSubview(incomingCallControls)
+
+        acceptIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "acceptIncomingButton")
+        declineIncomingButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "declineIncomingButton")
     }
 
     func createButton(image: UIImage, action: Selector) -> UIButton {

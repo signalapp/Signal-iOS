@@ -28,6 +28,7 @@
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSMessageUtils.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <StoreKit/StoreKit.h>
@@ -55,17 +56,12 @@ typedef NS_ENUM(NSInteger, HomeViewMode) {
 NSString *const kReminderViewPseudoGroup = @"kReminderViewPseudoGroup";
 NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
-typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
-    HomeViewControllerSectionReminders,
-    HomeViewControllerSectionConversations,
-    HomeViewControllerSectionArchiveButton,
-};
-
 @interface HomeViewController () <UITableViewDelegate,
     UITableViewDataSource,
     UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
+    HomeViewDatabaseSnapshotDelegate,
     OWSBlockListCacheDelegate>
 
 @property (nonatomic) UITableView *tableView;
@@ -74,9 +70,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 @property (nonatomic) UIView *firstConversationCueView;
 @property (nonatomic) UILabel *firstConversationLabel;
 
-@property (nonatomic) YapDatabaseConnection *editingDbConnection;
-@property (nonatomic) YapDatabaseConnection *uiDatabaseConnection;
-@property (nonatomic) YapDatabaseViewMappings *threadMappings;
+@property (nonatomic, readonly) ThreadMapping *threadMapping;
 @property (nonatomic) HomeViewMode homeViewMode;
 @property (nonatomic) id previewingContext;
 @property (nonatomic, readonly) NSCache<NSString *, ThreadViewModel *> *threadViewModelCache;
@@ -89,17 +83,14 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 @property (nonatomic, readonly) UISearchBar *searchBar;
 @property (nonatomic) ConversationSearchViewController *searchResultsController;
 
-// Dependencies
-
-@property (nonatomic, readonly) AccountManager *accountManager;
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) OWSBlockListCache *blocklistCache;
 
 // Views
 
 @property (nonatomic, readonly) UIStackView *reminderStackView;
 @property (nonatomic, readonly) UITableViewCell *reminderViewCell;
+@property (nonatomic, readonly) ExpirationNagView *expiredView;
 @property (nonatomic, readonly) UIView *deregisteredView;
 @property (nonatomic, readonly) UIView *outageView;
 @property (nonatomic, readonly) UIView *archiveReminderView;
@@ -149,19 +140,25 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (void)commonInit
 {
-    _accountManager = AppEnvironment.shared.accountManager;
-    _contactsManager = Environment.shared.contactsManager;
-    _messageSender = SSKEnvironment.shared.messageSender;
     _blocklistCache = [OWSBlockListCache new];
     [_blocklistCache startObservingAndSyncStateWithDelegate:self];
     _threadViewModelCache = [NSCache new];
-
-    // Ensure ExperienceUpgradeFinder has been initialized.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-result"
-    [ExperienceUpgradeFinder sharedManager];
-#pragma GCC diagnostic pop
+    _threadMapping = [ThreadMapping new];
 }
+
+#pragma mark - Dependencies
+
+- (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (void)observeNotifications
 {
@@ -181,14 +178,22 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
                                              selector:@selector(applicationWillResignActive:)
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedNotification
-                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModifiedExternally:)
-                                                 name:YapDatabaseModifiedExternallyNotification
-                                               object:nil];
+    if (SSKFeatureFlags.useGRDB) {
+        [self.databaseStorage.grdbStorage.homeViewDatabaseObserver appendSnapshotDelegate:self];
+    } else {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(uiDatabaseDidUpdateExternally:)
+                                                     name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
+                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(uiDatabaseWillUpdate:)
+                                                     name:OWSUIDatabaseConnectionWillUpdateNotification
+                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(uiDatabaseDidUpdate:)
+                                                     name:OWSUIDatabaseConnectionDidUpdateNotification
+                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+    }
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
                                                  name:RegistrationStateDidChangeNotification
@@ -304,6 +309,11 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     _deregisteredView = deregisteredView;
     [reminderStackView addArrangedSubview:deregisteredView];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, deregisteredView);
+
+    ExpirationNagView *expiredView = [ExpirationNagView new];
+    _expiredView = expiredView;
+    [reminderStackView addArrangedSubview:expiredView];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, expiredView);
 
     ReminderView *outageView = [ReminderView
         nagWithText:NSLocalizedString(@"OUTAGE_WARNING", @"Label warning the user that the Signal service may be down.")
@@ -473,7 +483,9 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 {
     OWSLogInfo(@"");
 
-    AppPreferences.hasDimissedFirstConversationCue = YES;
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [AppPreferences setHasDimissedFirstConversationCue:YES transaction:transaction];
+    }];
 
     [self updateViewState];
 }
@@ -584,8 +596,11 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     self.deregisteredView.hidden = !TSAccountManager.sharedInstance.isDeregistered;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
 
+    self.expiredView.hidden = !SSKAppExpiry.isExpiringSoon;
+    [self.expiredView updateText];
+
     self.hasVisibleReminders = !self.archiveReminderView.isHidden || !self.missingContactsPermissionView.isHidden
-        || !self.deregisteredView.isHidden || !self.outageView.isHidden;
+        || !self.deregisteredView.isHidden || !self.outageView.isHidden || !self.expiredView.isHidden;
 }
 
 - (void)setHasVisibleReminders:(BOOL)hasVisibleReminders
@@ -602,18 +617,8 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 {
     [super viewDidLoad];
 
-    self.editingDbConnection = OWSPrimaryStorage.sharedManager.newDatabaseConnection;
-    
-    // Create the database connection.
-    [self uiDatabaseConnection];
-
-    [self updateMappings];
-    [self updateViewState];
-    [self updateReminderViews];
     [self observeNotifications];
-
-    // because this uses the table data source, `tableViewSetup` must happen
-    // after mappings have been set up in `showInboxGrouping`
+    [self resetMappings];
     [self tableViewSetUp];
 
     switch (self.homeViewMode) {
@@ -640,6 +645,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     searchBar.placeholder = NSLocalizedString(@"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER",
         @"Placeholder text for search bar which filters conversations.");
     searchBar.delegate = self;
+    searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"conversation_search");
     [searchBar sizeToFit];
 
     // Setting tableHeader calls numberOfSections, which must happen after updateMappings has been called at least once.
@@ -654,8 +660,8 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self addChildViewController:searchResultsController];
     [self.view addSubview:searchResultsController.view];
     [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
-    [searchResultsController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
-    [searchResultsController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
+    [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
     if (@available(iOS 11, *)) {
         [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
     } else {
@@ -680,16 +686,21 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     NSString *paddingString = [@"" stringByPaddingToLength:paddingLength withString:@" " startingAtIndex:0];
 
     self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:paddingString style:UIBarButtonItemStylePlain target:nil action:nil];
+        [[UIBarButtonItem alloc] initWithTitle:paddingString
+                                         style:UIBarButtonItemStylePlain
+                                        target:nil
+                                        action:nil
+                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
 }
 
 - (void)applyArchiveBackButton
 {
     self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
+        [[UIBarButtonItem alloc] initWithTitle:CommonStrings.backButton
                                          style:UIBarButtonItemStylePlain
                                         target:nil
-                                        action:nil];
+                                        action:nil
+                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -827,39 +838,21 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
-    __block BOOL hasAnyMessages;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
-    }];
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateReminderViews];
-            });
-        }];
-    }
-
     self.isViewVisible = YES;
 
     BOOL isShowingSearchResults = !self.searchResultsController.view.hidden;
     if (isShowingSearchResults) {
         OWSAssertDebug(self.searchBar.text.ows_stripped.length > 0);
         [self scrollSearchBarToTopAnimated:NO];
+        [self.searchBar becomeFirstResponder];
     } else if (self.lastThread) {
         OWSAssertDebug(self.searchBar.text.ows_stripped.length == 0);
-        
+
         // When returning to home view, try to ensure that the "last" thread is still
         // visible.  The threads often change ordering while in conversation view due
         // to incoming & outgoing messages.
-        __block NSIndexPath *indexPathOfLastThread = nil;
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            indexPathOfLastThread =
-            [[transaction extension:TSThreadDatabaseViewExtensionName] indexPathForKey:self.lastThread.uniqueId
-                                                                          inCollection:[TSThread collection]
-                                                                          withMappings:self.threadMappings];
-        }];
-        
+        NSIndexPath *_Nullable indexPathOfLastThread =
+            [self.threadMapping indexPathForUniqueId:self.lastThread.uniqueId];
         if (indexPathOfLastThread) {
             [self.tableView scrollToRowAtIndexPath:indexPathOfLastThread
                                   atScrollPosition:UITableViewScrollPositionNone
@@ -920,34 +913,23 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (void)resetMappings
 {
-    // If we're entering "active" mode (e.g. view is visible and app is in foreground),
-    // reset all state updated by yapDatabaseModified:.
-    if (self.threadMappings != nil) {
-        // Before we begin observing database modifications, make sure
-        // our mapping and table state is up-to-date.
-        //
-        // We need to `beginLongLivedReadTransaction` before we update our
-        // mapping in order to jump to the most recent commit.
-        [self.uiDatabaseConnection beginLongLivedReadTransaction];
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [self.threadMappings updateWithTransaction:transaction];
-        }];
-    }
+    [BenchManager benchWithTitle:@"HomeViewController#resetMappings"
+                           block:^{
+                               [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                   [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
+                                                                                      transaction:transaction];
+                               }];
 
-    [self updateHasArchivedThreadsRow];
-    [self reloadTableViewData];
+                               [self updateHasArchivedThreadsRow];
+                               [self reloadTableViewData];
 
-    [self updateViewState];
+                               [self updateViewState];
+                           }];
+}
 
-    // If the user hasn't already granted contact access
-    // we don't want to request until they receive a message.
-    __block BOOL hasAnyMessages;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
-    }];
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnce];
-    }
+- (BOOL)isViewingArchive
+{
+    return self.homeViewMode == HomeViewMode_Archive;
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
@@ -955,29 +937,9 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self updateViewState];
 }
 
-- (BOOL)hasAnyMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    return [TSThread numberOfKeysInCollectionWithTransaction:transaction] > 0;
-}
-
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     [self updateShouldObserveDBModifications];
-
-    // It's possible a thread was created while we where in the background. But since we don't honor contact
-    // requests unless the app is in the foregrond, we must check again here upon becoming active.
-    __block BOOL hasAnyMessages;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction * _Nonnull transaction) {
-        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
-    }];
-    
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self updateReminderViews];
-            });
-        }];
-    }
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -992,7 +954,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     OWSAssertIsOnMainThread();
 
     __block NSArray<ExperienceUpgrade *> *unseenUpgrades;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         unseenUpgrades = [ExperienceUpgradeFinder.sharedManager allUnseenWithTransaction:transaction];
     }];
     return unseenUpgrades;
@@ -1005,9 +967,14 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     NSArray<ExperienceUpgrade *> *unseenUpgrades = [self unseenUpgradeExperiences];
 
     if (unseenUpgrades.count > 0) {
-        ExperienceUpgradesPageViewController *experienceUpgradeViewController =
-            [[ExperienceUpgradesPageViewController alloc] initWithExperienceUpgrades:unseenUpgrades];
-        [self presentViewController:experienceUpgradeViewController animated:YES completion:nil];
+        ExperienceUpgrade *firstUpgrade = unseenUpgrades.firstObject;
+        UIViewController *_Nullable viewController =
+            [ExperienceUpgradeViewController viewControllerForExperienceUpgrade:firstUpgrade];
+        if (viewController == nil) {
+            OWSFailDebug(@"Could not display experience upgrade.");
+            return;
+        }
+        [self presentViewController:viewController animated:YES completion:nil];
     } else {
         [OWSAlerts showIOSUpgradeNagIfNecessary];
     }
@@ -1034,7 +1001,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return (NSInteger)[self.threadMappings numberOfSections];
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)aSection
@@ -1045,8 +1012,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
             return self.hasVisibleReminders ? 1 : 0;
         }
         case HomeViewControllerSectionConversations: {
-            NSInteger result = (NSInteger)[self.threadMappings numberOfItemsInSection:(NSUInteger)section];
-            return result;
+            return [self.threadMapping numberOfItemsInSection:section];
         }
         case HomeViewControllerSectionArchiveButton: {
             return self.hasArchivedThreadsRow ? 1 : 0;
@@ -1068,7 +1034,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     }
 
     __block ThreadViewModel *_Nullable newThreadViewModel;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         newThreadViewModel = [[ThreadViewModel alloc] initWithThread:threadRecord transaction:transaction];
     }];
     [self.threadViewModelCache setObject:newThreadViewModel forKey:threadRecord.uniqueId];
@@ -1106,8 +1072,14 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     BOOL isBlocked = [self.blocklistCache isThreadBlocked:thread.threadRecord];
     [cell configureWithThread:thread isBlocked:isBlocked];
 
-    // TODO: Work with Nancy to confirm that this is accessible via Appium.
-    NSString *cellName = [NSString stringWithFormat:@"conversation-%@", NSUUID.UUID.UUIDString];
+    NSString *cellName;
+    if (thread.threadRecord.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread.threadRecord;
+        cellName = [NSString stringWithFormat:@"cell-group-%@", groupThread.groupModel.groupName];
+    } else {
+        TSContactThread *contactThread = (TSContactThread *)thread.threadRecord;
+        cellName = [NSString stringWithFormat:@"cell-contact-%@", contactThread.contactIdentifier];
+    }
     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
 
     return cell;
@@ -1160,18 +1132,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (TSThread *)threadForIndexPath:(NSIndexPath *)indexPath
 {
-    __block TSThread *thread = nil;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        thread = [[transaction extension:TSThreadDatabaseViewExtensionName] objectAtIndexPath:indexPath
-                                                                                 withMappings:self.threadMappings];
-    }];
-
-    if (![thread isKindOfClass:[TSThread class]]) {
-        OWSLogError(@"Invalid object in thread view: %@", [thread class]);
-        [OWSStorage incrementVersionOfDatabaseExtension:TSThreadDatabaseViewExtensionName];
-    }
-
-    return thread;
+    return [self.threadMapping threadForIndexPath:indexPath];
 }
 
 - (void)pullToRefreshPerformed:(UIRefreshControl *)refreshControl
@@ -1301,7 +1262,11 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (void)ensureSearchBarCancelButton
 {
-    self.searchBar.showsCancelButton = (self.searchBar.isFirstResponder || self.searchBar.text.length > 0);
+    BOOL shouldShowCancelButton = (self.searchBar.isFirstResponder || self.searchBar.text.length > 0);
+    if (self.searchBar.showsCancelButton == shouldShowCancelButton) {
+        return;
+    }
+    [self.searchBar setShowsCancelButton:shouldShowCancelButton animated:self.isViewVisible];
 }
 
 - (void)updateSearchResultsVisibility
@@ -1373,16 +1338,18 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (void)deleteThread:(TSThread *)thread
 {
-    [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
             if (groupThread.isLocalUserInGroup) {
-                [groupThread softDeleteGroupThreadWithTransaction:transaction];
+                if (transaction.transitional_yapWriteTransaction) {
+                    [groupThread softDeleteGroupThreadWithTransaction:transaction.transitional_yapWriteTransaction];
+                }
                 return;
             }
         }
 
-        [thread removeWithTransaction:transaction];
+        [thread anyRemoveWithTransaction:transaction];
     }];
 
     [self updateViewState];
@@ -1397,7 +1364,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    [self.editingDbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         switch (self.homeViewMode) {
             case HomeViewMode_Inbox:
                 [thread archiveThreadWithTransaction:transaction];
@@ -1466,19 +1433,6 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 #pragma mark - Groupings
 
-- (YapDatabaseViewMappings *)threadMappings
-{
-    OWSAssertDebug(_threadMappings != nil);
-    return _threadMappings;
-}
-
-- (void)showInboxGrouping
-{
-    OWSAssertDebug(self.homeViewMode == HomeViewMode_Archive);
-
-    [self.navigationController popToRootViewControllerAnimated:YES];
-}
-
 - (void)showArchivedConversations
 {
     OWSAssertDebug(self.homeViewMode == HomeViewMode_Inbox);
@@ -1503,42 +1457,161 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     }
 }
 
-- (void)updateMappings
-{
-    OWSAssertIsOnMainThread();
-
-    self.threadMappings = [[YapDatabaseViewMappings alloc]
-        initWithGroups:@[ kReminderViewPseudoGroup, self.currentGrouping, kArchiveButtonPseudoGroup ]
-                  view:TSThreadDatabaseViewExtensionName];
-    [self.threadMappings setIsReversed:YES forGroup:self.currentGrouping];
-
-    [self resetMappings];
-
-    [self reloadTableViewData];
-    [self updateViewState];
-    [self updateReminderViews];
-}
-
 #pragma mark - Database delegates
 
-- (YapDatabaseConnection *)uiDatabaseConnection
+#pragma mark GRDB Update
+
+- (void)homeViewDatabaseSnapshotWillUpdate
 {
     OWSAssertIsOnMainThread();
-
-    if (!_uiDatabaseConnection) {
-        _uiDatabaseConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
-        // default is 250
-        _uiDatabaseConnection.objectCacheLimit = 500;
-        [_uiDatabaseConnection beginLongLivedReadTransaction];
-    }
-    return _uiDatabaseConnection;
+    [self anyUIDBWillUpdate];
 }
 
-- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+- (void)homeViewDatabaseSnapshotDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedThreadIds
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(SSKFeatureFlags.useGRDB);
+
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
+    [self anyUIDBDidUpdateWithUpdatedThreadIds:updatedThreadIds];
+}
+
+- (void)homeViewDatabaseSnapshotDidUpdateExternally
+{
+    OWSAssertIsOnMainThread();
+    [self anyUIDBDidUpdateExternally];
+}
+
+- (void)homeViewDatabaseSnapshotDidReset
+{
+    OWSAssertIsOnMainThread();
+    if (self.shouldObserveDBModifications) {
+        // We don't need to do this if we're not observing db modifications since we'll
+        // do it when we resume.
+        [self resetMappings];
+    }
+}
+
+#pragma mark YapDB Update
+
+- (void)uiDatabaseWillUpdate:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    [self anyUIDBWillUpdate];
+}
+
+- (void)uiDatabaseDidUpdate:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(!SSKFeatureFlags.useGRDB);
+
+    if (!self.shouldObserveDBModifications) {
+        return;
+    }
+
+    NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
+    YapDatabaseConnection *uiDatabaseConnection = OWSPrimaryStorage.sharedManager.uiDatabaseConnection;
+    if (![[uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
+                                                                          inNotifications:notifications]) {
+
+        [uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            SDSAnyReadTransaction *anyReadTransaction = transaction.asAnyRead;
+            [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
+                                                               transaction:anyReadTransaction];
+        }];
+        [self updateViewState];
+
+        return;
+    }
+
+    NSSet<NSString *> *updatedThreadIds = [self.threadMapping updatedYapItemIdsForNotifications:notifications];
+    [self anyUIDBDidUpdateWithUpdatedThreadIds:updatedThreadIds];
+}
+
+- (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    [self anyUIDBDidUpdateExternally];
+}
+
+#pragma mark AnyDB Update
+
+- (void)anyUIDBWillUpdate
+{
+    OWSAssertIsOnMainThread();
+    [BenchManager startEventWithTitle:@"uiDatabaseUpdate" eventId:@"uiDatabaseUpdate"];
+}
+
+- (void)anyUIDBDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedItemIds
 {
     OWSAssertIsOnMainThread();
 
+    __block ThreadMappingDiff *mappingDiff;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        mappingDiff =
+            [self.threadMapping updateAndCalculateDiffSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
+                                                                            updatedItemIds:updatedItemIds
+                                                                               transaction:transaction];
+    }];
+
+    // We want this regardless of if we're currently viewing the archive.
+    // So we run it before the early return
+    [self updateViewState];
+
+    if (mappingDiff.sectionChanges.count == 0 && mappingDiff.rowChanges.count == 0) {
+        return;
+    }
+
+    if ([self updateHasArchivedThreadsRow]) {
+        [self.tableView reloadData];
+        return;
+    }
+
+    [self.tableView beginUpdates];
+
+    OWSAssertDebug(mappingDiff.sectionChanges.count == 0);
+    for (ThreadMappingRowChange *rowChange in mappingDiff.rowChanges) {
+        NSString *key = rowChange.uniqueRowId;
+        OWSAssertDebug(key);
+        [self.threadViewModelCache removeObjectForKey:key];
+
+        switch (rowChange.type) {
+            case ThreadMappingChangeDelete: {
+                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
+                                      withRowAnimation:UITableViewRowAnimationAutomatic];
+                break;
+            }
+            case ThreadMappingChangeInsert: {
+                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
+                                      withRowAnimation:UITableViewRowAnimationAutomatic];
+                break;
+            }
+            case ThreadMappingChangeMove: {
+                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
+                                      withRowAnimation:UITableViewRowAnimationAutomatic];
+                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
+                                      withRowAnimation:UITableViewRowAnimationAutomatic];
+                break;
+            }
+            case ThreadMappingChangeUpdate: {
+                [self.tableView reloadRowsAtIndexPaths:@[ rowChange.oldIndexPath ]
+                                      withRowAnimation:UITableViewRowAnimationNone];
+                break;
+            }
+        }
+    }
+
+    [self.tableView endUpdates];
+    [BenchManager completeEventWithEventId:@"uiDatabaseUpdate"];
+}
+
+- (void)anyUIDBDidUpdateExternally
+{
     OWSLogVerbose(@"");
+    OWSAssertIsOnMainThread();
 
     if (self.shouldObserveDBModifications) {
         // External database modifications can't be converted into incremental updates,
@@ -1551,131 +1624,16 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     }
 }
 
-- (void)yapDatabaseModified:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    if (!self.shouldObserveDBModifications) {
-        return;
-    }
-
-    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
-
-    if (![[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
-                                                                               inNotifications:notifications]) {
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [self.threadMappings updateWithTransaction:transaction];
-        }];
-        [self updateViewState];
-
-        return;
-    }
-
-    // If the user hasn't already granted contact access
-    // we don't want to request until they receive a message.
-    __block BOOL hasAnyMessages;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        hasAnyMessages = [self hasAnyMessagesWithTransaction:transaction];
-    }];
-
-    if (hasAnyMessages) {
-        [self.contactsManager requestSystemContactsOnce];
-    }
-
-    NSArray *sectionChanges = nil;
-    NSArray *rowChanges = nil;
-    [[self.uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] getSectionChanges:&sectionChanges
-                                                                              rowChanges:&rowChanges
-                                                                        forNotifications:notifications
-                                                                            withMappings:self.threadMappings];
-
-    // We want this regardless of if we're currently viewing the archive.
-    // So we run it before the early return
-    [self updateViewState];
-
-    if ([sectionChanges count] == 0 && [rowChanges count] == 0) {
-        return;
-    }
-
-    if ([self updateHasArchivedThreadsRow]) {
-        [self.tableView reloadData];
-        return;
-    }
-
-    [self.tableView beginUpdates];
-
-    for (YapDatabaseViewSectionChange *sectionChange in sectionChanges) {
-        switch (sectionChange.type) {
-            case YapDatabaseViewChangeDelete: {
-                [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
-                              withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case YapDatabaseViewChangeInsert: {
-                [self.tableView insertSections:[NSIndexSet indexSetWithIndex:sectionChange.index]
-                              withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case YapDatabaseViewChangeUpdate:
-            case YapDatabaseViewChangeMove:
-                break;
-        }
-    }
-
-    for (YapDatabaseViewRowChange *rowChange in rowChanges) {
-        NSString *key = rowChange.collectionKey.key;
-        OWSAssertDebug(key);
-        [self.threadViewModelCache removeObjectForKey:key];
-
-        switch (rowChange.type) {
-            case YapDatabaseViewChangeDelete: {
-                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case YapDatabaseViewChangeInsert: {
-                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case YapDatabaseViewChangeMove: {
-                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case YapDatabaseViewChangeUpdate: {
-                [self.tableView reloadRowsAtIndexPaths:@[ rowChange.indexPath ]
-                                      withRowAnimation:UITableViewRowAnimationNone];
-                break;
-            }
-        }
-    }
-
-    [self.tableView endUpdates];
-}
-
-- (NSUInteger)numberOfThreadsInGroup:(NSString *)group
-{
-    // We need to consult the db view, not the mapping since the mapping only knows about
-    // the current group.
-    __block NSUInteger result;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSThreadDatabaseViewExtensionName];
-        result = [viewTransaction numberOfItemsInGroup:group];
-    }];
-    return result;
-}
+#pragma mark -
 
 - (NSUInteger)numberOfInboxThreads
 {
-    return [self numberOfThreadsInGroup:TSInboxGroup];
+    return self.threadMapping.inboxCount;
 }
 
 - (NSUInteger)numberOfArchivedThreads
 {
-    return [self numberOfThreadsInGroup:TSArchiveGroup];
+    return self.threadMapping.archiveCount;
 }
 
 - (void)updateViewState
@@ -1694,9 +1652,15 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
 - (BOOL)shouldShowFirstConversationCue
 {
+    __block BOOL hasDimissedFirstConversationCue;
+    __block BOOL hasSavedThread;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        hasDimissedFirstConversationCue = [AppPreferences hasDimissedFirstConversationCueWithTransaction:transaction];
+        hasSavedThread = [SSKPreferences hasSavedThreadWithTransaction:transaction];
+    }];
+
     return (self.homeViewMode == HomeViewMode_Inbox && self.numberOfInboxThreads == 0
-        && self.numberOfArchivedThreads == 0 && !AppPreferences.hasDimissedFirstConversationCue
-        && !SSKPreferences.hasSavedThread);
+        && self.numberOfArchivedThreads == 0 && !hasDimissedFirstConversationCue && !hasSavedThread);
 }
 
 // We want to delay asking for a review until an opportune time.

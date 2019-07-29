@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -40,10 +40,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, readonly, nonatomic) UIColor *ows_whiteColor;
 @property (class, readonly, nonatomic) UIColor *ows_gray02Color;
 @property (class, readonly, nonatomic) UIColor *ows_gray05Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray10Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray15Color;
 @property (class, readonly, nonatomic) UIColor *ows_gray25Color;
 @property (class, readonly, nonatomic) UIColor *ows_gray45Color;
 @property (class, readonly, nonatomic) UIColor *ows_gray60Color;
 @property (class, readonly, nonatomic) UIColor *ows_gray75Color;
+@property (class, readonly, nonatomic) UIColor *ows_gray85Color;
 @property (class, readonly, nonatomic) UIColor *ows_gray90Color;
 @property (class, readonly, nonatomic) UIColor *ows_gray95Color;
 @property (class, readonly, nonatomic) UIColor *ows_blackColor;

@@ -27,9 +27,10 @@
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSMath.h"
 #import "OWSMessageCell.h"
+#import "OWSMessageHiddenView.h"
+#import "OWSMessageStickerView.h"
 #import "OWSSystemMessageCell.h"
 #import "Signal-Swift.h"
-#import "SignalKeyingStorage.h"
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
 #import "TSContactThread.h"
@@ -46,16 +47,15 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <ContactsUI/CNContactViewController.h>
 #import <MobileCoreServices/UTCoreTypes.h>
+#import <Photos/Photos.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSUnreadIndicator.h>
-#import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIUtil.h>
@@ -69,6 +69,7 @@
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
+#import <SignalServiceKit/OWSContactOffersInteraction.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageManager.h>
@@ -76,6 +77,7 @@
 #import <SignalServiceKit/OWSMessageUtils.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSReadReceiptManager.h>
+#import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -87,8 +89,6 @@
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
-
-@import Photos;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -128,17 +128,17 @@ typedef enum : NSUInteger {
     MessageDetailViewDelegate,
     MenuActionsViewControllerDelegate,
     OWSMessageBubbleViewDelegate,
+    OWSMessageStickerViewDelegate,
+    OWSMessageHiddenViewDelegate,
     UICollectionViewDelegate,
     UICollectionViewDataSource,
     UIDocumentMenuDelegate,
     UIDocumentPickerDelegate,
-    UIImagePickerControllerDelegate,
     SendMediaNavDelegate,
     UINavigationControllerDelegate,
     UITextViewDelegate,
     ConversationCollectionViewDelegate,
     ConversationInputToolbarDelegate,
-    GifPickerViewControllerDelegate,
     ConversationViewModelDelegate>
 
 @property (nonatomic) TSThread *thread;
@@ -178,7 +178,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, nullable) UIBarButtonItem *customBackButton;
 
-@property (nonatomic) BOOL showLoadMoreHeader;
+@property (nonatomic, readonly) BOOL showLoadMoreHeader;
 @property (nonatomic) UILabel *loadMoreHeader;
 @property (nonatomic) uint64_t lastVisibleSortId;
 
@@ -192,8 +192,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
-@property (nonatomic) BOOL hasUnreadMessages;
-@property (nonatomic) BOOL isPickingMediaAsDocument;
+@property (nonatomic, readonly) BOOL hasUnreadMessages;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 @property (nonatomic) NSTimer *reloadTimer;
@@ -258,7 +257,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - Dependencies
 
-- (SSKMessageSenderJobQueue *)messageSenderJobQueue
+- (MessageSenderJobQueue *)messageSenderJobQueue
 {
     return SSKEnvironment.shared.messageSenderJobQueue;
 }
@@ -323,6 +322,11 @@ typedef enum : NSUInteger {
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
 
     return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
 }
 
 - (OWSNotificationPresenter *)notificationPresenter
@@ -428,7 +432,7 @@ typedef enum : NSUInteger {
         if (self.isGroupConversation) {
             // Reload all cells if this is a group conversation,
             // since we may need to update the sender names on the messages.
-            [self resetContentAndLayout];
+            [self resetContentAndLayoutWithSneakyTransaction];
         }
     }
 }
@@ -441,11 +445,11 @@ typedef enum : NSUInteger {
     NSString *_Nullable recipientId = notification.userInfo[kNSNotificationKey_ProfileRecipientId];
     NSData *_Nullable groupId = notification.userInfo[kNSNotificationKey_ProfileGroupId];
     if (recipientId.length > 0 && [self.thread.recipientIdentifiers containsObject:recipientId]) {
-        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
     } else if (groupId.length > 0 && self.thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)self.thread;
         if ([groupThread.groupModel.groupId isEqualToData:groupId]) {
-            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
             [self ensureBannerState];
         }
     }
@@ -532,7 +536,7 @@ typedef enum : NSUInteger {
     }
 
     OWSLogVerbose(@"reloading conversation view contents.");
-    [self resetContentAndLayout];
+    [self resetContentAndLayoutWithSneakyTransaction];
 }
 
 - (BOOL)userLeftGroup
@@ -639,13 +643,22 @@ typedef enum : NSUInteger {
     [self.loadMoreHeader autoSetDimension:ALDimensionHeight toSize:kLoadMoreHeaderHeight];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _loadMoreHeader);
 
-    [self updateShowLoadMoreHeader];
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self updateShowLoadMoreHeaderWithTransaction:transaction];
+    }];
 }
 
 - (BOOL)becomeFirstResponder
 {
     OWSLogDebug(@"");
-    return [super becomeFirstResponder];
+
+    BOOL result = [super becomeFirstResponder];
+
+    if (result) {
+        [self.inputToolbar ensureFirstResponderState];
+    }
+
+    return result;
 }
 
 - (BOOL)resignFirstResponder
@@ -721,12 +734,6 @@ typedef enum : NSUInteger {
         [self dismissViewControllerAnimated:NO completion:nil];
         return;
     }
-
-    if ([presentedViewController isKindOfClass:[UIImagePickerController class]]) {
-        OWSLogDebug(@"dismissing presentedViewController: %@", presentedViewController);
-        [self dismissViewControllerAnimated:NO completion:nil];
-        return;
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -747,12 +754,12 @@ typedef enum : NSUInteger {
     // unless it ever becomes possible to load this VC without going via the HomeViewController.
     [self.contactsManager requestSystemContactsOnce];
 
-    [self updateDisappearingMessagesConfiguration];
+    [self updateDisappearingMessagesConfigurationWithSneakyTransaction];
 
     [self updateBarButtonItems];
     [self updateNavigationTitle];
 
-    [self resetContentAndLayout];
+    [self resetContentAndLayoutWithSneakyTransaction];
 
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
@@ -761,13 +768,21 @@ typedef enum : NSUInteger {
         [self scrollToMenuActionInteraction:NO];
     }
 
-    [self updateLastVisibleSortId];
+    [self updateLastVisibleSortIdWithSneakyTransaction];
 
     if (!self.viewHasEverAppeared) {
         NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
         OWSLogVerbose(@"First viewWillAppear took: %.2fms", appearenceDuration * 1000);
     }
     [self updateInputToolbarLayout];
+
+    // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.
+    // Make sure we only register the gesture interaction if it actually exists. This helps the swipe back
+    // gesture work reliably without conflict with scrolling.
+    if (self.navigationController) {
+        [self.collectionView.panGestureRecognizer
+            requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
+    }
 }
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
@@ -857,12 +872,19 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)resetContentAndLayout
+- (void)resetContentAndLayoutWithSneakyTransaction
+{
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self resetContentAndLayoutWithTransaction:transaction];
+    }];
+}
+
+- (void)resetContentAndLayoutWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     self.scrollContinuity = kScrollContinuityBottom;
     // Avoid layout corrupt issues and out-of-date message subtitles.
     self.lastReloadDate = [NSDate new];
-    [self.conversationViewModel viewDidResetContentAndLayout];
+    [self.conversationViewModel viewDidResetContentAndLayoutWithTransaction:transaction];
     [self.collectionView.collectionViewLayout invalidateLayout];
     [self.collectionView reloadData];
 
@@ -1170,7 +1192,7 @@ typedef enum : NSUInteger {
 - (void)startReadTimer
 {
     [self.readTimer invalidate];
-    self.readTimer = [NSTimer weakScheduledTimerWithTimeInterval:3.f
+    self.readTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
                                                           target:self
                                                         selector:@selector(readTimerDidFire)
                                                         userInfo:nil
@@ -1241,7 +1263,7 @@ typedef enum : NSUInteger {
         if (self.isShowingSearchUI) {
             shouldBecomeFirstResponder = !self.searchController.uiSearchController.searchBar.isFirstResponder;
         } else {
-            shouldBecomeFirstResponder = !self.inputToolbar.isInputTextViewFirstResponder;
+            shouldBecomeFirstResponder = !self.inputToolbar.isInputViewFirstResponder;
         }
 
         if (shouldBecomeFirstResponder) {
@@ -1255,6 +1277,11 @@ typedef enum : NSUInteger {
             break;
         case ConversationViewActionCompose:
             [self popKeyBoard];
+            // When we programmatically pop the keyboard here,
+            // the scroll position gets into a weird state and
+            // content is hidden behind the keyboard so we restore
+            // it to the default position.
+            [self scrollToDefaultPosition:YES];
             break;
         case ConversationViewActionAudioCall:
             [self startAudioCall];
@@ -1269,6 +1296,7 @@ typedef enum : NSUInteger {
 
     [self updateInputToolbarLayout];
     [self ensureScrollDownButton];
+    [self.inputToolbar viewDidAppear];
 }
 
 // `viewWillDisappear` is called whenever the view *starts* to disappear,
@@ -1303,6 +1331,7 @@ typedef enum : NSUInteger {
     [self markVisibleMessagesAsRead];
     [self cancelVoiceMemo];
     [self.cellMediaCache removeAllObjects];
+    [self.inputToolbar clearStickerKeyboard];
 
     self.isUserScrolling = NO;
 }
@@ -1320,6 +1349,25 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Initiliazers
+
+- (void)updateHeaderViewFrame
+{
+    // TODO: iOS 13 – The titleView no longer respects the headerView's intrinsicContentSize
+    // and always tries to center the headerView. See if this changes in later betas.
+    BOOL iOS11and12 = NO;
+    if (@available(iOS 13, *)) iOS11and12 = NO;
+    else if (@available(iOS 11, *)) iOS11and12 = YES;
+
+    if (iOS11and12) {
+        // Do nothing, we use autolayout/intrinsic content size to grow
+    } else {
+        // Request "full width" title; the navigation bar will truncate this
+        // to fit between the left and right buttons.
+        CGSize screenSize = [UIScreen mainScreen].bounds.size;
+        CGRect headerFrame = CGRectMake(0, 0, screenSize.width, 44);
+        self.headerView.frame = headerFrame;
+    }
+}
 
 - (void)updateNavigationTitle
 {
@@ -1377,15 +1425,7 @@ typedef enum : NSUInteger {
     headerView.delegate = self;
     self.navigationItem.titleView = headerView;
 
-    if (@available(iOS 11, *)) {
-        // Do nothing, we use autolayout/intrinsic content size to grow
-    } else {
-        // Request "full width" title; the navigation bar will truncate this
-        // to fit between the left and right buttons.
-        CGSize screenSize = [UIScreen mainScreen].bounds.size;
-        CGRect headerFrame = CGRectMake(0, 0, screenSize.width, 44);
-        headerView.frame = headerFrame;
-    }
+    [self updateHeaderViewFrame];
 
 #ifdef USE_DEBUG_UI
     [headerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
@@ -1641,7 +1681,11 @@ typedef enum : NSUInteger {
 
 - (void)callWithVideo:(BOOL)isVideo
 {
-    OWSAssertDebug([self.thread isKindOfClass:[TSContactThread class]]);
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        OWSFailDebug(@"unexpected thread: %@", self.thread);
+        return;
+    }
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
 
     if (![self canCall]) {
         OWSLogWarn(@"Tried to initiate a call but thread is not callable.");
@@ -1669,7 +1713,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self.outboundCallInitiator initiateCallWithRecipientId:self.thread.contactIdentifier isVideo:isVideo];
+    [self.outboundCallInitiator initiateCallWithAddress:contactThread.contactAddress isVideo:isVideo];
 }
 
 - (BOOL)canCall
@@ -1743,38 +1787,45 @@ typedef enum : NSUInteger {
     }
     CGSize screenSize = UIScreen.mainScreen.bounds.size;
     CGFloat loadMoreThreshold = MAX(screenSize.width, screenSize.height);
-    if (self.collectionView.contentOffset.y < loadMoreThreshold) {
-        [self.conversationViewModel loadAnotherPageOfMessages];
-    }
+
+    [BenchManager
+        benchWithTitle:@"loading more interactions"
+                 block:^{
+                     if (self.collectionView.contentOffset.y < loadMoreThreshold) {
+                         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                             [self.conversationViewModel loadAnotherPageOfMessagesWithTransaction:transaction];
+                         }];
+                     }
+                 }];
 }
 
-- (void)updateShowLoadMoreHeader
+- (void)updateShowLoadMoreHeaderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(self.conversationViewModel);
+    BOOL newValue = self.conversationViewModel.canLoadMoreItems;
+    BOOL valueChanged = _showLoadMoreHeader != newValue;
 
-    self.showLoadMoreHeader = self.conversationViewModel.canLoadMoreItems;
-}
+    _showLoadMoreHeader = newValue;
 
-- (void)setShowLoadMoreHeader:(BOOL)showLoadMoreHeader
-{
-    BOOL valueChanged = _showLoadMoreHeader != showLoadMoreHeader;
-
-    _showLoadMoreHeader = showLoadMoreHeader;
-
-    self.loadMoreHeader.hidden = !showLoadMoreHeader;
-    self.loadMoreHeader.userInteractionEnabled = showLoadMoreHeader;
+    self.loadMoreHeader.hidden = !newValue;
+    self.loadMoreHeader.userInteractionEnabled = newValue;
 
     if (valueChanged) {
-        [self resetContentAndLayout];
+        [self resetContentAndLayoutWithTransaction:transaction];
     }
 }
 
-- (void)updateDisappearingMessagesConfiguration
+- (void)updateDisappearingMessagesConfigurationWithSneakyTransaction
 {
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        self.disappearingMessagesConfiguration =
-            [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
+    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
     }];
+}
+
+- (void)updateDisappearingMessagesConfigurationWithTransaction:(YapDatabaseReadTransaction *)transaction
+{
+    self.disappearingMessagesConfiguration =
+        [OWSDisappearingMessagesConfiguration fetchObjectWithUniqueID:self.thread.uniqueId transaction:transaction];
 }
 
 - (void)setDisappearingMessagesConfiguration:
@@ -1795,8 +1846,8 @@ typedef enum : NSUInteger {
 {
     OWSAssert(message);
 
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.attachmentDownloads downloadAttachmentsForMessage:message
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self.attachmentDownloads downloadAllAttachmentsForMessage:message
             transaction:transaction
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSLogInfo(@"Successfully redownloaded attachment in thread: %@", message.thread);
@@ -1822,16 +1873,15 @@ typedef enum : NSUInteger {
                                                                 }];
     [actionSheet addAction:deleteMessageAction];
 
-    UIAlertAction *resendMessageAction = [UIAlertAction
-                actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
-        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
-                          style:UIAlertActionStyleDefault
-                        handler:^(UIAlertAction *action) {
-                            [self.editingDatabaseConnection
-                                asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                    [self.messageSenderJobQueue addMessage:message transaction:transaction];
-                                }];
-                        }];
+    UIAlertAction *resendMessageAction =
+        [UIAlertAction actionWithTitle:NSLocalizedString(@"SEND_AGAIN_BUTTON", @"")
+               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
+                                 style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction *action) {
+                                   [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                       [self.messageSenderJobQueue addMessage:message transaction:transaction];
+                                   }];
+                               }];
 
     [actionSheet addAction:resendMessageAction];
 
@@ -1967,6 +2017,7 @@ typedef enum : NSUInteger {
     [alert addAction:callAction];
     [alert addAction:[OWSAlerts cancelAction]];
 
+    [self.inputToolbar clearStickerKeyboard];
     [self dismissKeyBoard];
     [self presentAlert:alert];
 }
@@ -2191,6 +2242,20 @@ typedef enum : NSUInteger {
     [self presentMessageActions:messageActions withFocusedCell:cell];
 }
 
+- (void)conversationCell:(ConversationViewCell *)cell didLongpressSticker:(id<ConversationViewItem>)viewItem
+{
+    OWSAssertDebug(viewItem);
+
+    NSArray<MenuAction *> *messageActions =
+        [ConversationViewItemActions mediaActionsWithConversationViewItem:viewItem shouldAllowReply:YES delegate:self];
+    [self presentMessageActions:messageActions withFocusedCell:cell];
+}
+
+- (void)conversationCell:(ConversationViewCell *)cell didReplyToItem:(id<ConversationViewItem>)viewItem
+{
+    [self populateReplyForViewItem:viewItem];
+}
+
 - (void)presentMessageActions:(NSArray<MenuAction *> *)messageActions withFocusedCell:(ConversationViewCell *)cell
 {
     MenuActionsViewController *menuActionsViewController =
@@ -2302,6 +2367,40 @@ typedef enum : NSUInteger {
                                                                   success:successHandler];
 }
 
+#pragma mark - Audio Setup
+
+- (void)prepareAudioPlayerForViewItem:(id<ConversationViewItem>)viewItem
+                     attachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(attachmentStream);
+
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:attachmentStream.originalFilePath]) {
+        OWSFailDebug(@"Missing audio file: %@", attachmentStream.originalMediaURL);
+    }
+
+    if (self.audioAttachmentPlayer) {
+        // Is this player associated with this media adapter?
+        if (self.audioAttachmentPlayer.owner == viewItem.interaction.uniqueId) {
+            return;
+        }
+
+        [self.audioAttachmentPlayer stop];
+        self.audioAttachmentPlayer = nil;
+    }
+
+    self.audioAttachmentPlayer = [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.originalMediaURL
+                                                            audioBehavior:OWSAudioBehavior_AudioMessagePlayback
+                                                                 delegate:viewItem];
+
+    // Associate the player with this media adapter.
+    self.audioAttachmentPlayer.owner = viewItem.interaction.uniqueId;
+
+    [self.audioAttachmentPlayer setupAudioPlayer];
+}
+
 #pragma mark - OWSMessageBubbleViewDelegate
 
 - (void)didTapImageViewItem:(id<ConversationViewItem>)viewItem
@@ -2352,34 +2451,34 @@ typedef enum : NSUInteger {
 
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
 {
+    [self prepareAudioPlayerForViewItem:viewItem attachmentStream:attachmentStream];
+
+    [self dismissKeyBoard];
+
+    // Resume from where we left off
+    [self.audioAttachmentPlayer setCurrentTime:viewItem.audioProgressSeconds];
+
+    [self.audioAttachmentPlayer togglePlayState];
+}
+
+- (void)didScrubAudioViewItem:(id<ConversationViewItem>)viewItem
+                       toTime:(NSTimeInterval)time
+             attachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    [self prepareAudioPlayerForViewItem:viewItem attachmentStream:attachmentStream];
+
+    [self.audioAttachmentPlayer setCurrentTime:time];
+}
+
+- (void)didTapPdfForItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream
+{
     OWSAssertIsOnMainThread();
     OWSAssertDebug(viewItem);
     OWSAssertDebug(attachmentStream);
 
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:attachmentStream.originalFilePath]) {
-        OWSFailDebug(@"Missing video file: %@", attachmentStream.originalMediaURL);
-    }
-
-    [self dismissKeyBoard];
-
-    if (self.audioAttachmentPlayer) {
-        // Is this player associated with this media adapter?
-        if (self.audioAttachmentPlayer.owner == viewItem) {
-            // Tap to pause & unpause.
-            [self.audioAttachmentPlayer togglePlayState];
-            return;
-        }
-        [self.audioAttachmentPlayer stop];
-        self.audioAttachmentPlayer = nil;
-    }
-
-    self.audioAttachmentPlayer =
-        [[OWSAudioPlayer alloc] initWithMediaUrl:attachmentStream.originalMediaURL audioBehavior:OWSAudioBehavior_AudioMessagePlayback delegate:viewItem];
-    
-    // Associate the player with this media adapter.
-    self.audioAttachmentPlayer.owner = viewItem;
-    [self.audioAttachmentPlayer play];
+    PdfViewController *pdfView = [[PdfViewController alloc] initWithAttachmentStream:attachmentStream];
+    UIViewController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:pdfView];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem
@@ -2428,6 +2527,18 @@ typedef enum : NSUInteger {
     [self.contactShareViewHelper showAddToContactsWithContactShare:contactShare fromViewController:self];
 }
 
+- (void)didTapStickerPack:(StickerPackInfo *)stickerPackInfo
+{
+    OWSAssertIsOnMainThread();
+
+    if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
+        return;
+    }
+
+    StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
+    [self presentViewController:packView animated:YES completion:nil];
+}
+
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem
 {
     OWSAssertIsOnMainThread();
@@ -2462,6 +2573,7 @@ typedef enum : NSUInteger {
 
     [self.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
+            message:message
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSAssertDebug(attachmentStreams.count == 1);
                 TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -2489,8 +2601,13 @@ typedef enum : NSUInteger {
     OWSAssertDebug(quotedReply.timestamp > 0);
     OWSAssertDebug(quotedReply.authorId.length > 0);
 
-    NSIndexPath *_Nullable indexPath = [self.conversationViewModel ensureLoadWindowContainsQuotedReply:quotedReply];
-    if (!indexPath) {
+    __block NSIndexPath *_Nullable indexPath;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        indexPath =
+            [self.conversationViewModel ensureLoadWindowContainsQuotedReply:quotedReply transaction:transaction];
+    }];
+
+    if (quotedReply.isRemotelySourced || !indexPath) {
         [self presentRemotelySourcedQuotedReplyToast];
         return;
     }
@@ -2547,7 +2664,33 @@ typedef enum : NSUInteger {
     }
 
     self.inputToolbar.quotedReply = quotedReply;
-    [self.inputToolbar beginEditingTextMessage];
+    [self.inputToolbar beginEditingMessage];
+}
+
+#pragma mark - OWSMessageStickerViewDelegate
+
+- (void)showStickerPack:(StickerPackInfo *)stickerPackInfo
+{
+    OWSAssertIsOnMainThread();
+
+    if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
+        return;
+    }
+
+    StickerPackViewController *packView = [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
+    [self presentViewController:packView animated:YES completion:nil];
+}
+
+#pragma mark - OWSMessageHiddenViewDelegate
+
+- (void)didTapAttachmentWithPerMessageExpiration:(id<ConversationViewItem>)viewItem
+                                attachmentStream:(TSAttachmentStream *)attachmentStream
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(viewItem);
+    OWSAssertDebug(attachmentStream);
+
+    [PerMessageExpirationViewController tryToPresentWithInteraction:viewItem.interaction from:self];
 }
 
 #pragma mark - ContactEditingDelegate
@@ -2580,7 +2723,7 @@ typedef enum : NSUInteger {
 
 - (void)contactsViewHelperDidUpdateContacts
 {
-    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
 }
 
 - (void)createConversationScrollButtons
@@ -2610,8 +2753,10 @@ typedef enum : NSUInteger {
     [self.scrollDownButton.superview setNeedsLayout];
 }
 
-- (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
+- (void)setHasUnreadMessages:(BOOL)hasUnreadMessages transaction:(SDSAnyReadTransaction *)transaction
 {
+    OWSAssertDebug(transaction);
+
     if (_hasUnreadMessages == hasUnreadMessages) {
         return;
     }
@@ -2619,7 +2764,7 @@ typedef enum : NSUInteger {
     _hasUnreadMessages = hasUnreadMessages;
 
     self.scrollDownButton.hasUnreadMessages = hasUnreadMessages;
-    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES transaction:transaction];
 }
 
 - (void)scrollDownButtonTapped
@@ -2714,7 +2859,7 @@ typedef enum : NSUInteger {
                                  image:takeMediaImage
                                  order:UIDocumentMenuOrderFirst
                                handler:^{
-                                   [self chooseFromLibraryAsDocument];
+                                   [self chooseFromLibraryAsDocument:YES];
                                }];
 
     [self dismissKeyBoard];
@@ -2725,25 +2870,10 @@ typedef enum : NSUInteger {
 
 - (void)showGifPicker
 {
-    GifPickerViewController *view =
-        [[GifPickerViewController alloc] initWithThread:self.thread messageSender:self.messageSender];
-    view.delegate = self;
-    OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:view];
-
+    GifPickerNavigationViewController *gifModal = [GifPickerNavigationViewController new];
+    gifModal.approvalDelegate = self;
     [self dismissKeyBoard];
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-
-#pragma mark GifPickerViewControllerDelegate
-
-- (void)gifPickerDidSelectWithAttachment:(SignalAttachment *)attachment
-{
-    OWSAssertDebug(attachment);
-
-    [self showApprovalDialogForAttachment:attachment];
-
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
-    [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+    [self presentViewController:gifModal animated:YES completion:nil];
 }
 
 - (void)messageWasSent:(TSOutgoingMessage *)message
@@ -2836,7 +2966,7 @@ typedef enum : NSUInteger {
     [dataSource setSourceFilename:filename];
 
     // Although we want to be able to send higher quality attachments through the document picker
-    // it's more imporant that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
+    // it's more important that we ensure the sent format is one all clients can accept (e.g. *not* quicktime .mov)
     if ([SignalAttachment isInvalidVideoWithDataSource:dataSource dataUTI:type]) {
         [self showApprovalDialogAfterProcessingVideoURL:url filename:filename];
         return;
@@ -2848,11 +2978,8 @@ typedef enum : NSUInteger {
     [self showApprovalDialogForAttachment:attachment];
 }
 
-#pragma mark - UIImagePickerController
+#pragma mark - Media Libary
 
-/*
- *  Presenting UIImagePickerController
- */
 - (void)takePictureOrVideo
 {
     [BenchManager startEventWithTitle:@"Show-Camera" eventId:@"Show-Camera"];
@@ -2868,33 +2995,13 @@ typedef enum : NSUInteger {
                 // be silent.
             }
 
-            UIViewController *pickerModal;
-
-            if (SSKFeatureFlags.useCustomPhotoCapture) {
-                SendMediaNavigationController *navController = [SendMediaNavigationController showingCameraFirst];
-                navController.sendMediaNavDelegate = self;
-                pickerModal = navController;
-            } else {
-                UIImagePickerController *picker = [OWSImagePickerController new];
-                pickerModal = picker;
-                picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-                picker.mediaTypes = @[ (__bridge NSString *)kUTTypeImage, (__bridge NSString *)kUTTypeMovie ];
-                picker.allowsEditing = NO;
-                picker.delegate = self;
-            }
-            OWSAssertDebug(pickerModal);
+            SendMediaNavigationController *pickerModal = [SendMediaNavigationController showingCameraFirst];
+            pickerModal.sendMediaNavDelegate = self;
 
             [self dismissKeyBoard];
             [self presentViewController:pickerModal animated:YES completion:nil];
         }];
     }];
-}
-
-- (void)chooseFromLibraryAsDocument
-{
-    OWSAssertIsOnMainThread();
-
-    [self chooseFromLibraryAsDocument:YES];
 }
 
 - (void)chooseFromLibraryAsMedia
@@ -2909,7 +3016,6 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [BenchManager startEventWithTitle:@"Show-Media-Library" eventId:@"Show-Media-Library"];
-    self.isPickingMediaAsDocument = shouldTreatAsDocument;
 
     [self ows_askForMediaLibraryPermissions:^(BOOL granted) {
         if (!granted) {
@@ -2917,28 +3023,18 @@ typedef enum : NSUInteger {
             return;
         }
 
-        SendMediaNavigationController *pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
+        SendMediaNavigationController *pickerModal;
+        if (shouldTreatAsDocument) {
+            pickerModal = [SendMediaNavigationController asMediaDocumentPicker];
+        } else {
+            pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
+        }
+
         pickerModal.sendMediaNavDelegate = self;
 
         [self dismissKeyBoard];
         [self presentViewController:pickerModal animated:YES completion:nil];
     }];
-}
-
-/*
- *  Dismissing UIImagePickerController
- */
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)resetFrame
-{
-    // fixes bug on frame being off after this selection
-    CGRect frame = [UIScreen mainScreen].bounds;
-    self.view.frame = frame;
 }
 
 #pragma mark - SendMediaNavDelegate
@@ -2981,140 +3077,6 @@ typedef enum : NSUInteger {
     [self.inputToolbar setMessageText:messageText animated:NO];
 }
 
-#pragma mark - UIImagePickerControllerDelegate
-
-/*
- *  Fetching data from UIImagePickerController
- */
-- (void)imagePickerController:(UIImagePickerController *)picker
-    didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
-{
-    [self resetFrame];
-
-    NSURL *referenceURL = [info valueForKey:UIImagePickerControllerReferenceURL];
-    if (!referenceURL) {
-        OWSLogVerbose(@"Could not retrieve reference URL for picked asset");
-        [self imagePickerController:picker didFinishPickingMediaWithInfo:info filename:nil];
-        return;
-    }
-
-    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *imageAsset) {
-        ALAssetRepresentation *imageRep = [imageAsset defaultRepresentation];
-        NSString *filename = [imageRep filename];
-        [self imagePickerController:picker didFinishPickingMediaWithInfo:info filename:filename];
-    };
-
-    ALAssetsLibrary *assetslibrary = [[ALAssetsLibrary alloc] init];
-    [assetslibrary assetForURL:referenceURL
-                   resultBlock:resultblock
-                  failureBlock:^(NSError *error) {
-                      OWSCFailDebug(@"Error retrieving filename for asset: %@", error);
-                  }];
-}
-
-- (void)imagePickerController:(UIImagePickerController *)picker
-    didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
-                         filename:(NSString *_Nullable)filename
-{
-    OWSAssertIsOnMainThread();
-
-    void (^failedToPickAttachment)(NSError *error) = ^void(NSError *error) {
-        OWSLogError(@"failed to pick attachment with error: %@", error);
-    };
-
-    NSString *mediaType = info[UIImagePickerControllerMediaType];
-    if ([mediaType isEqualToString:(__bridge NSString *)kUTTypeMovie]) {
-        // Video picked from library or captured with camera
-
-        NSURL *videoURL = info[UIImagePickerControllerMediaURL];
-        [self dismissViewControllerAnimated:YES
-                                 completion:^{
-                                     [self showApprovalDialogAfterProcessingVideoURL:videoURL filename:filename];
-                                 }];
-    } else if (picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
-        // Static Image captured from camera
-
-        UIImage *imageFromCamera = [info[UIImagePickerControllerOriginalImage] normalizedImage];
-
-        [self dismissViewControllerAnimated:YES
-                                 completion:^{
-                                     OWSAssertIsOnMainThread();
-
-                                     if (imageFromCamera) {
-                                         // "Camera" attachments _SHOULD_ be resized, if possible.
-                                         SignalAttachment *attachment =
-                                             [SignalAttachment imageAttachmentWithImage:imageFromCamera
-                                                                                dataUTI:(NSString *)kUTTypeJPEG
-                                                                               filename:filename
-                                                                           imageQuality:TSImageQualityCompact];
-                                         if (!attachment || [attachment hasError]) {
-                                             OWSLogWarn(@"Invalid attachment: %@.",
-                                                 attachment ? [attachment errorName] : @"Missing data");
-                                             [self showErrorAlertForAttachment:attachment];
-                                             failedToPickAttachment(nil);
-                                         } else {
-                                             [self showApprovalDialogForAttachment:attachment];
-                                         }
-                                     } else {
-                                         failedToPickAttachment(nil);
-                                     }
-                                 }];
-    } else {
-        // Non-Video image picked from library
-        OWSFailDebug(
-            @"Only use UIImagePicker for camera/video capture. Picking media from UIImagePicker is not supported. ");
-
-        // To avoid re-encoding GIF and PNG's as JPEG we have to get the raw data of
-        // the selected item vs. using the UIImagePickerControllerOriginalImage
-        NSURL *assetURL = info[UIImagePickerControllerReferenceURL];
-        PHAsset *asset = [[PHAsset fetchAssetsWithALAssetURLs:@[ assetURL ] options:nil] lastObject];
-        if (!asset) {
-            return failedToPickAttachment(nil);
-        }
-
-        // Images chosen from the "attach document" UI should be sent as originals;
-        // images chosen from the "attach media" UI should be resized to "medium" size;
-        TSImageQuality imageQuality = (self.isPickingMediaAsDocument ? TSImageQualityOriginal : TSImageQualityMedium);
-
-        PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
-        options.synchronous = YES; // We're only fetching one asset.
-        options.networkAccessAllowed = YES; // iCloud OK
-        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat; // Don't need quick/dirty version
-        [[PHImageManager defaultManager]
-            requestImageDataForAsset:asset
-                             options:options
-                       resultHandler:^(NSData *_Nullable imageData,
-                           NSString *_Nullable dataUTI,
-                           UIImageOrientation orientation,
-                           NSDictionary *_Nullable assetInfo) {
-                           NSError *assetFetchingError = assetInfo[PHImageErrorKey];
-                           if (assetFetchingError || !imageData) {
-                               return failedToPickAttachment(assetFetchingError);
-                           }
-                           OWSAssertIsOnMainThread();
-
-                           DataSource *_Nullable dataSource =
-                               [DataSourceValue dataSourceWithData:imageData utiType:dataUTI];
-                           [dataSource setSourceFilename:filename];
-                           SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
-                                                                                             dataUTI:dataUTI
-                                                                                        imageQuality:imageQuality];
-                           [self dismissViewControllerAnimated:YES
-                                                    completion:^{
-                                                        OWSAssertIsOnMainThread();
-                                                        if (!attachment || [attachment hasError]) {
-                                                            OWSLogWarn(@"Invalid attachment: %@.",
-                                                                attachment ? [attachment errorName] : @"Missing data");
-                                                            [self showErrorAlertForAttachment:attachment];
-                                                            failedToPickAttachment(nil);
-                                                        } else {
-                                                            [self showApprovalDialogForAttachment:attachment];
-                                                        }
-                                                    }];
-                       }];
-    }
-}
-
 - (void)sendContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
@@ -3124,21 +3086,21 @@ typedef enum : NSUInteger {
 
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
 
-    [self.editingDatabaseConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage
+        asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
             // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
             // preparation rather than duplicated here and in the SAE
             if (contactShare.avatarImage) {
                 [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
             }
         }
-        completionBlock:^{
+        completion:^{
             TSOutgoingMessage *message =
                 [ThreadUtil enqueueMessageWithContactShare:contactShare.dbRecord inThread:self.thread];
             [self messageWasSent:message];
 
             if (didAddToProfileWhitelist) {
-                [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+                [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
             }
         }];
 }
@@ -3367,6 +3329,13 @@ typedef enum : NSUInteger {
 
 #pragma mark Accessory View
 
+- (void)cameraButtonPressed
+{
+    OWSAssertIsOnMainThread();
+
+    [self takePictureOrVideo];
+}
+
 - (void)attachmentButtonPressed
 {
     [self dismissKeyBoard];
@@ -3485,35 +3454,37 @@ typedef enum : NSUInteger {
     return lastVisibleIndexPath;
 }
 
-- (nullable id<ConversationViewItem>)lastVisibleViewItem
-{
-    NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
-    if (!lastVisibleIndexPath) {
-        return nil;
-    }
-    return [self viewItemForIndex:lastVisibleIndexPath.row];
-}
-
-// In the case where we explicitly scroll to bottom, we want to synchronously
-// update the UI to reflect that, since the "mark as read" logic is asynchronous
-// and won't update the UI state immediately.
 - (void)didScrollToBottom
 {
-
-    id<ConversationViewItem> _Nullable lastVisibleViewItem = [self.viewItems lastObject];
-    if (lastVisibleViewItem) {
-        uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
-        self.lastVisibleSortId = MAX(self.lastVisibleSortId, lastVisibleSortId);
-    }
-
     self.scrollDownButton.hidden = YES;
-
-    self.hasUnreadMessages = NO;
+    [self updateLastVisibleSortIdWithSneakyTransaction];
 }
 
-- (void)updateLastVisibleSortId
+- (void)updateLastVisibleSortIdWithSneakyTransaction
 {
-    id<ConversationViewItem> _Nullable lastVisibleViewItem = [self lastVisibleViewItem];
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self updateLastVisibleSortIdWithTransaction:transaction];
+    }];
+}
+
+- (void)updateLastVisibleSortIdWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    if (!transaction.transitional_yapReadTransaction) {
+        return;
+    }
+
+    NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
+    id<ConversationViewItem> _Nullable lastVisibleViewItem;
+    if (lastVisibleIndexPath) {
+        lastVisibleViewItem = [self viewItemForIndex:lastVisibleIndexPath.row];
+    }
+
+    // If the last item is currently a typing indicator, check the previous
+    // view item (if one exists), since typing indicators don't have sortIds
+    if ([lastVisibleViewItem.interaction isKindOfClass:[OWSTypingIndicatorInteraction class]] && lastVisibleIndexPath.row > 0) {
+        lastVisibleViewItem = [self viewItemForIndex:lastVisibleIndexPath.row - 1];
+    }
+
     if (lastVisibleViewItem) {
         uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
         self.lastVisibleSortId = MAX(self.lastVisibleSortId, lastVisibleSortId);
@@ -3522,29 +3493,24 @@ typedef enum : NSUInteger {
     [self ensureScrollDownButton];
 
     __block NSUInteger numberOfUnreadMessages;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        numberOfUnreadMessages =
-            [[transaction ext:TSUnreadDatabaseViewExtensionName] numberOfItemsInGroup:self.thread.uniqueId];
-    }];
-    self.hasUnreadMessages = numberOfUnreadMessages > 0;
+    numberOfUnreadMessages = [[transaction.transitional_yapReadTransaction ext:TSUnreadDatabaseViewExtensionName]
+        numberOfItemsInGroup:self.thread.uniqueId];
+    [self setHasUnreadMessages:numberOfUnreadMessages > 0 transaction:transaction];
 }
 
 - (void)markVisibleMessagesAsRead
 {
     if (self.presentedViewController) {
-        OWSLogInfo(@"Not marking messages as read; another view is presented.");
         return;
     }
     if (OWSWindowManager.sharedManager.shouldShowCallView) {
-        OWSLogInfo(@"Not marking messages as read; call view is presented.");
         return;
     }
     if (self.navigationController.topViewController != self) {
-        OWSLogInfo(@"Not marking messages as read; another view is pushed.");
         return;
     }
 
-    [self updateLastVisibleSortId];
+    [self updateLastVisibleSortIdWithSneakyTransaction];
 
     uint64_t lastVisibleSortId = self.lastVisibleSortId;
 
@@ -3618,12 +3584,12 @@ typedef enum : NSUInteger {
 
 - (void)popKeyBoard
 {
-    [self.inputToolbar beginEditingTextMessage];
+    [self.inputToolbar beginEditingMessage];
 }
 
 - (void)dismissKeyBoard
 {
-    [self.inputToolbar endEditingTextMessage];
+    [self.inputToolbar endEditingMessage];
 }
 
 #pragma mark Drafts
@@ -3645,8 +3611,8 @@ typedef enum : NSUInteger {
         __block TSThread *thread = _thread;
         __block NSString *currentDraft = [self.inputToolbar messageText];
 
-        [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [thread setDraft:currentDraft transaction:transaction];
+        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [thread updateWithDraft:currentDraft transaction:transaction];
         }];
     }
 }
@@ -3778,7 +3744,7 @@ typedef enum : NSUInteger {
         BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
 
         __block TSOutgoingMessage *message;
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
             message = [ThreadUtil enqueueMessageWithText:messageText
                                         mediaAttachments:attachments
                                                 inThread:self.thread
@@ -3790,7 +3756,7 @@ typedef enum : NSUInteger {
         [self messageWasSent:message];
 
         if (didAddToProfileWhitelist) {
-            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+            [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
         }
     });
 }
@@ -4070,7 +4036,13 @@ typedef enum : NSUInteger {
     // Constantly try to update the lastKnownDistanceFromBottom.
     [self updateLastKnownDistanceFromBottom];
 
-    [self updateLastVisibleSortId];
+    // `scrollViewDidScroll:` is called whenever the user scrolls or whenever we programmatically
+    //  set collectionView.contentOffset.
+    // Since the latter sometimes occurs within a transaction, we dispatch to avoid any chance
+    // of deadlock.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateLastVisibleSortIdWithSneakyTransaction];
+    });
 
     [self.autoLoadMoreTimer invalidate];
     self.autoLoadMoreTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
@@ -4118,7 +4090,7 @@ typedef enum : NSUInteger {
 {
     [self.conversationStyle updateProperties];
     [self.headerView updateAvatar];
-    [self resetContentAndLayout];
+    [self resetContentAndLayoutWithSneakyTransaction];
 }
 
 - (void)groupWasUpdated:(TSGroupModel *)groupModel
@@ -4278,7 +4250,12 @@ typedef enum : NSUInteger {
 
 - (void)scrollToInteractionId:(NSString *)interactionId
 {
-    NSIndexPath *_Nullable indexPath = [self.conversationViewModel ensureLoadWindowContainsInteractionId:interactionId];
+    __block NSIndexPath *_Nullable indexPath;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        indexPath =
+            [self.conversationViewModel ensureLoadWindowContainsInteractionId:interactionId transaction:transaction];
+    }];
+
     if (!indexPath) {
         OWSFailDebug(@"unable to find indexPath");
         return;
@@ -4311,6 +4288,7 @@ typedef enum : NSUInteger {
     [BenchManager startEventWithTitle:@"Send Message milestone: toggleDefaultKeyboard completed"
                               eventId:@"fromSendUntil_toggleDefaultKeyboard"];
 
+    [self.inputToolbar acceptAutocorrectSuggestion];
     [self tryToSendTextMessage:self.inputToolbar.messageText updateKeyboardState:YES];
 }
 
@@ -4352,7 +4330,8 @@ typedef enum : NSUInteger {
     // which are presented as normal text messages.
     BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
     __block TSOutgoingMessage *message;
-    [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         message = [ThreadUtil enqueueMessageWithText:text
                                             inThread:self.thread
                                     quotedReplyModel:self.inputToolbar.quotedReply
@@ -4383,13 +4362,39 @@ typedef enum : NSUInteger {
         [BenchManager completeEventWithEventId:@"fromSendUntil_toggleDefaultKeyboard"];
     });
 
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self.thread setDraft:@"" transaction:transaction];
+    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.thread updateWithDraft:@"" transaction:transaction];
     }];
 
     if (didAddToProfileWhitelist) {
-        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessary:YES];
+        [self.conversationViewModel ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:YES];
     }
+}
+
+- (void)sendSticker:(StickerInfo *)stickerInfo
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(stickerInfo);
+
+    OWSLogVerbose(@"Sending sticker.");
+
+    TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithSticker:stickerInfo inThread:self.thread];
+    [self messageWasSent:message];
+}
+
+- (void)presentManageStickersView
+{
+    OWSAssertIsOnMainThread();
+
+    ManageStickersViewController *manageStickersView = [ManageStickersViewController new];
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:manageStickersView];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (CGSize)rootViewSize
+{
+    return self.view.bounds.size;
 }
 
 - (void)voiceMemoGestureDidStart
@@ -4539,7 +4544,7 @@ typedef enum : NSUInteger {
         [self resetForSizeOrOrientationChange];
     }
 
-    [self updateLastVisibleSortId];
+    [self updateLastVisibleSortIdWithSneakyTransaction];
 }
 
 #pragma mark - View Items
@@ -4574,14 +4579,33 @@ typedef enum : NSUInteger {
     if ([cell isKindOfClass:[OWSMessageCell class]]) {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         messageCell.messageBubbleView.delegate = self;
+        messageCell.messageStickerView.delegate = self;
+        messageCell.messageHiddenView.delegate = self;
+
+        // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.
+        // Make sure we only register the gesture interaction if it actually exists. This helps the swipe back
+        // gesture work reliably without conflict with audio scrubbing or swipe-to-repy.
+        if (self.navigationController) {
+            [messageCell.panGestureRecognizer
+                requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
+        }
     }
     cell.conversationStyle = self.conversationStyle;
 
     [cell loadForDisplay];
 
+#ifdef DEBUG
     // TODO: Confirm with nancy if this will work.
     NSString *cellName = [NSString stringWithFormat:@"interaction.%@", NSUUID.UUID.UUIDString];
+    if (viewItem.hasBodyText && viewItem.displayableBodyText.displayText.length > 0) {
+        NSString *textForId =
+            [viewItem.displayableBodyText.displayText stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+        cellName = [NSString stringWithFormat:@"message.text.%@", textForId];
+    } else if (viewItem.stickerInfo) {
+        cellName = [NSString stringWithFormat:@"message.sticker.%@", [viewItem.stickerInfo asKey]];
+    }
     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
+#endif
 
     return cell;
 }
@@ -4861,7 +4885,15 @@ typedef enum : NSUInteger {
     // ENDHACK to work around radar #28167779
 }
 
+- (void)conversationViewModelDidUpdateWithSneakyTransaction:(ConversationUpdate *)conversationUpdate
+{
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self conversationViewModelDidUpdate:conversationUpdate transaction:transaction];
+    }];
+}
+
 - (void)conversationViewModelDidUpdate:(ConversationUpdate *)conversationUpdate
+                           transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(conversationUpdate);
@@ -4877,20 +4909,19 @@ typedef enum : NSUInteger {
     [self updateNavigationBarSubtitleLabel];
     [self dismissMenuActionsIfNecessary];
 
-    if (self.isGroupConversation) {
-        [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            [self.thread reloadWithTransaction:transaction];
-        }];
-        [self updateNavigationTitle];
+    if (transaction.transitional_yapReadTransaction != nil) {
+        if (self.isGroupConversation) {
+            [self.thread reloadWithTransaction:transaction.transitional_yapReadTransaction];
+            [self updateNavigationTitle];
+        }
+        [self updateDisappearingMessagesConfigurationWithTransaction:transaction.transitional_yapReadTransaction];
     }
-
-    [self updateDisappearingMessagesConfiguration];
 
     if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Minor) {
         return;
     } else if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Reload) {
-        [self resetContentAndLayout];
-        [self updateLastVisibleSortId];
+        [self resetContentAndLayoutWithTransaction:transaction];
+        [self updateLastVisibleSortIdWithTransaction:transaction];
         return;
     }
 
@@ -4956,7 +4987,7 @@ typedef enum : NSUInteger {
             OWSLogInfo(@"performBatchUpdates did not finish");
         }
 
-        [self updateLastVisibleSortId];
+        [self updateLastVisibleSortIdWithTransaction:transaction];
 
         if (scrollToBottom) {
             [self scrollToBottomAnimated:NO];
@@ -4988,9 +5019,6 @@ typedef enum : NSUInteger {
                 animateWithDuration:0.0
                          animations:^{
                              [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
-                             if (scrollToBottom) {
-                                 [self scrollToBottomAnimated:NO];
-                             }
                              [BenchManager completeEventWithEventId:@"message-send"];
                          }];
         }
@@ -5064,7 +5092,7 @@ typedef enum : NSUInteger {
     [self scrollToUnreadIndicatorAnimated];
 }
 
-- (void)conversationViewModelRangeDidChange
+- (void)conversationViewModelRangeDidChangeWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertIsOnMainThread();
 
@@ -5072,7 +5100,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self updateShowLoadMoreHeader];
+    [self updateShowLoadMoreHeaderWithTransaction:transaction];
 }
 
 - (void)conversationViewModelDidReset
@@ -5159,6 +5187,7 @@ typedef enum : NSUInteger {
         [self updateLastKnownDistanceFromBottom];
     }
     [self updateInputToolbarLayout];
+    [self updateHeaderViewFrame];
 }
 
 - (void)viewSafeAreaInsetsDidChange

@@ -376,7 +376,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         [self.dbReadWriteConnection
             asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 if (contactShare.avatarImage) {
-                    [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
+                    [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction.asAnyWrite];
                 }
             }
             completionBlock:^{
@@ -552,7 +552,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         OWSVerificationState verificationState =
-            [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId transaction:transaction];
+            [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId
+                                                                    transaction:transaction.asAnyRead];
         switch (verificationState) {
             case OWSVerificationStateVerified: {
                 OWSFailDebug(@"Shouldn't need to confirm identity if it was already verified");
@@ -569,14 +570,15 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             }
             case OWSVerificationStateNoLongerVerified: {
                 OWSLogInfo(@"marked recipient: %@ as default verification status.", recipientId);
-                NSData *identityKey = [[OWSIdentityManager sharedManager] identityKeyForRecipientId:recipientId
-                                                                                    protocolContext:transaction];
+                NSData *identityKey =
+                    [[OWSIdentityManager sharedManager] identityKeyForRecipientId:recipientId
+                                                                      transaction:transaction.asAnyRead];
                 OWSAssertDebug(identityKey);
                 [[OWSIdentityManager sharedManager] setVerificationState:OWSVerificationStateDefault
                                                              identityKey:identityKey
                                                              recipientId:recipientId
                                                    isUserInitiatedChange:YES
-                                                             transaction:transaction];
+                                                             transaction:transaction.asAnyWrite];
                 break;
             }
         }

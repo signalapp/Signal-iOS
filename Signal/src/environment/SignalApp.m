@@ -153,7 +153,7 @@ NS_ASSUME_NONNULL_BEGIN
     });
 }
 
-- (void)didChangeCallLoggingPreference:(NSNotification *)notitication
+- (void)didChangeCallLoggingPreference:(NSNotification *)notification
 {
     [AppEnvironment.shared.callService createCallUIAdapter];
 }
@@ -168,8 +168,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSStorage resetAllStorage];
     [OWSUserProfile resetProfileStorage];
-    [Environment.shared.preferences clear];
+    [Environment.shared.preferences removeAllValues];
     [AppEnvironment.shared.notificationPresenter clearAllNotifications];
+    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appSharedDataDirectoryPath]];
+    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appDocumentDirectoryPath]];
+    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem cachesDirectoryPath]];
+    [OWSFileSystem deleteContentsOfDirectory:OWSTemporaryDirectory()];
+    [OWSFileSystem deleteContentsOfDirectory:NSTemporaryDirectory()];
 
     [DebugLogger.sharedLogger wipeLogs];
     exit(0);

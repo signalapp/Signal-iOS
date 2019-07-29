@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIStress.h"
@@ -24,24 +24,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dependencies
 
-+ (SSKMessageSenderJobQueue *)messageSenderJobQueue
++ (MessageSenderJobQueue *)messageSenderJobQueue
 {
     return SSKEnvironment.shared.messageSenderJobQueue;
 }
 
-- (SSKMessageSenderJobQueue *)messageSenderJobQueue
+- (MessageSenderJobQueue *)messageSenderJobQueue
 {
     return self.class.messageSenderJobQueue;
 }
 
-- (YapDatabaseConnection *)dbConnection
++ (SDSDatabaseStorage *)databaseStorage
 {
-    return self.class.dbConnection;
-}
-
-+ (YapDatabaseConnection *)dbConnection
-{
-    return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
+    return SDSDatabaseStorage.shared;
 }
 
 + (TSAccountManager *)tsAccountManager
@@ -398,8 +393,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
                                                 SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext
-                                                    builderWithId:[Cryptography generateRandomBytes:1]
-                                                             type:SSKProtoGroupContextTypeDeliver];
+                                                    builderWithId:[Cryptography generateRandomBytes:1]];
+                                                [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
                                                 dataBuilder.group = [groupBuilder buildIgnoringErrors];
                                                 sentBuilder.message = [dataBuilder buildIgnoringErrors];
                                                 syncMessageBuilder.sent = [sentBuilder buildIgnoringErrors];
@@ -425,8 +420,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                 SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
                                                 dataBuilder.body = @" ";
                                                 SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext
-                                                    builderWithId:[Cryptography generateRandomBytes:1]
-                                                             type:SSKProtoGroupContextTypeDeliver];
+                                                    builderWithId:[Cryptography generateRandomBytes:1]];
+                                                [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
                                                 dataBuilder.group = [groupBuilder buildIgnoringErrors];
                                                 sentBuilder.message = [dataBuilder buildIgnoringErrors];
                                                 syncMessageBuilder.sent = [sentBuilder buildIgnoringErrors];
@@ -485,8 +480,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSGroupThread *groupThread = (TSGroupThread *)thread;
-    SSKProtoGroupContextBuilder *groupBuilder =
-        [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId type:SSKProtoGroupContextTypeDeliver];
+    SSKProtoGroupContextBuilder *groupBuilder = [SSKProtoGroupContext builderWithId:groupThread.groupModel.groupId];
+    [groupBuilder setType:SSKProtoGroupContextTypeDeliver];
     [groupBuilder setId:groupThread.groupModel.groupId];
     [dataBuilder setGroup:groupBuilder.buildIgnoringErrors];
 }
@@ -495,7 +490,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(message);
 
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
 }

@@ -31,14 +31,23 @@ public protocol AttachmentApprovalViewControllerDelegate: class {
 
     @objc
     optional func attachmentApprovalDidTapAddMore(_ attachmentApproval: AttachmentApprovalViewController)
+
+    @objc
+    optional func attachmentApprovalBackButtonTitle() -> String
 }
 
 // MARK: -
 
-@objc
-public enum AttachmentApprovalViewControllerMode: UInt {
-    case modal
-    case sharedNavigation
+public struct AttachmentApprovalViewControllerOptions: OptionSet {
+    public let rawValue: Int
+
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+
+    public static let canAddMore = AttachmentApprovalViewControllerOptions(rawValue: 1 << 0)
+    public static let hasCancel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 1)
+    public static let canToggleExpiration = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
 }
 
 // MARK: -
@@ -46,10 +55,33 @@ public enum AttachmentApprovalViewControllerMode: UInt {
 @objc
 public class AttachmentApprovalViewController: UIPageViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
 
+    // MARK: - Dependencies
+
+    private var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
+
     // MARK: - Properties
 
-    private let mode: AttachmentApprovalViewControllerMode
-    private let isAddMoreVisible: Bool
+    private let receivedOptions: AttachmentApprovalViewControllerOptions
+
+    private var options: AttachmentApprovalViewControllerOptions {
+        var options = receivedOptions
+
+        // For now, only still images can have per-message expiration.
+        if FeatureFlags.perMessageExpiration,
+            attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
+            let firstItem = attachmentApprovalItemCollection.attachmentApprovalItems.first,
+            firstItem.attachment.isValidImage {
+            options.insert(.canToggleExpiration)
+        }
+
+        return options
+    }
+
+    var isAddMoreVisible: Bool {
+        return options.contains(.canAddMore) && !preferences.isPerMessageExpirationEnabled()
+    }
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
 
@@ -68,20 +100,24 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     let kSpacingBetweenItems: CGFloat = 20
 
-    required public init(mode: AttachmentApprovalViewControllerMode,
+    required public init(options: AttachmentApprovalViewControllerOptions,
                          attachmentApprovalItems: [AttachmentApprovalItem]) {
         assert(attachmentApprovalItems.count > 0)
-        self.mode = mode
-        self.isAddMoreVisible = mode == .sharedNavigation
+        self.receivedOptions = options
+        self.bottomToolView = AttachmentApprovalInputAccessoryView(options: options)
 
-        self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(attachmentApprovalItems: attachmentApprovalItems, isAddMoreVisible: isAddMoreVisible)
-
-        let options: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
+        let pageOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
                    navigationOrientation: .horizontal,
-                   options: options)
+                   options: pageOptions)
+
+        let isAddMoreVisibleBlock = { [weak self] in
+            return self?.isAddMoreVisible ?? false
+        }
+        self.attachmentApprovalItemCollection = AttachmentApprovalItemCollection(attachmentApprovalItems: attachmentApprovalItems, isAddMoreVisible: isAddMoreVisibleBlock)
         self.dataSource = self
         self.delegate = self
+        bottomToolView.delegate = self
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(didBecomeActive),
@@ -96,7 +132,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     @objc
     public class func wrappedInNavController(attachments: [SignalAttachment], approvalDelegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
         let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0) }
-        let vc = AttachmentApprovalViewController(mode: .modal, attachmentApprovalItems: attachmentApprovalItems)
+        let vc = AttachmentApprovalViewController(options: [.hasCancel],
+                                                  attachmentApprovalItems: attachmentApprovalItems)
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
         navController.ows_prefersStatusBarHidden = true
@@ -128,12 +165,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return bottomToolView.attachmentTextToolbar
     }
 
-    lazy var bottomToolView: AttachmentApprovalInputAccessoryView = {
-        let bottomToolView = AttachmentApprovalInputAccessoryView()
-        bottomToolView.delegate = self
-
-        return bottomToolView
-    }()
+    let bottomToolView: AttachmentApprovalInputAccessoryView
 
     lazy var touchInterceptorView = UIView()
 
@@ -211,6 +243,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         updateInputAccessory()
 
         touchInterceptorView.isHidden = !isEditingCaptions
+
+        updateMediaRail()
+        bottomToolView.options = options
     }
 
     // MARK: - Input Accessory
@@ -294,8 +329,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         updateNavigationBar(navigationBarItems: navigationBarItems)
 
-        let hasCancel = (mode != .sharedNavigation)
-        if hasCancel {
+        if options.contains(.hasCancel) {
             // Mimic a UIBarButtonItem of type .cancel, but with a shadow.
             let cancelButton = OWSButton(title: CommonStrings.cancelButton) { [weak self] in
                 self?.cancelPressed()
@@ -318,6 +352,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             let imageName = isRTL ? "NavBarBackRTL" : "NavBarBack"
             let backButton = OWSButton(imageName: imageName, tintColor: .white) { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
+            }
+            if let backButtonTitle = approvalDelegate?.attachmentApprovalBackButtonTitle?() {
+                backButton.setTitle(backButtonTitle, for: .normal)
             }
 
             // Nudge closer to the left edge to match default back button item.
@@ -557,25 +594,18 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                 cell.approvalRailCellDelegate = self
                 return cell
             default:
-                owsFailDebug("unexpted rail item type: \(railItem)")
+                owsFailDebug("unexpected rail item type: \(railItem)")
                 return GalleryRailCellView()
             }
         }
 
         galleryRailView.configureCellViews(itemProvider: attachmentApprovalItemCollection,
                                            focusedItem: currentItem,
-                                           cellViewBuilder: cellViewBuilder)
-
-        if isAddMoreVisible {
-            galleryRailView.isHidden = false
-        } else if attachmentApprovalItemCollection.attachmentApprovalItems.count > 1 {
-            galleryRailView.isHidden = false
-        } else {
-            galleryRailView.isHidden = true
-        }
+                                           cellViewBuilder: cellViewBuilder,
+                                           animated: false)
     }
 
-    let attachmentApprovalItemCollection: AttachmentApprovalItemCollection
+    var attachmentApprovalItemCollection: AttachmentApprovalItemCollection!
 
     var attachmentApprovalItems: [AttachmentApprovalItem] {
         return attachmentApprovalItemCollection.attachmentApprovalItems
@@ -722,11 +752,26 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         attachmentTextToolbar.isUserInteractionEnabled = false
         attachmentTextToolbar.isHidden = true
 
+        // Generate the attachments once, so that any changes we
+        // make below are reflected afterwards.
+        let attachments = self.attachments
+
+        if options.contains(.canToggleExpiration),
+            preferences.isPerMessageExpirationEnabled() {
+            for attachment in attachments {
+                attachment.hasPerMessageExpiration = true
+            }
+        }
+
         approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: attachmentTextToolbar.messageText)
     }
 
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar) {
         approvalDelegate?.attachmentApproval(self, didChangeMessageText: attachmentTextToolbar.messageText)
+    }
+
+    func attachmentTextToolbarDidTogglePerMessageExpiration(_ attachmentTextToolbar: AttachmentTextToolbar) {
+        updateContents()
     }
 }
 
@@ -757,7 +802,7 @@ extension AttachmentApprovalItem: GalleryRailItem {
 
 extension AttachmentApprovalItemCollection: GalleryRailItemProvider {
     var railItems: [GalleryRailItem] {
-        if isAddMoreVisible {
+        if isAddMoreVisible() {
             return self.attachmentApprovalItems + [AddMoreRailItem()]
         } else {
             return self.attachmentApprovalItems

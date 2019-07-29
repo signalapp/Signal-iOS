@@ -104,9 +104,6 @@
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Taille : %@";
 
-/* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "La limite du message a été atteinte.";
-
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Envoyer";
 
@@ -147,7 +144,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Le fichier joint est vide.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choisissez ou prenez une photo, puis envoyez-la.";
+"ATTACHMENT_HINT" = "Choisissez ou prenez une photo et envoyez-la.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Fichier joint";
@@ -170,7 +167,7 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Haut-parleur";
 
-/* button text for back button */
+/* return to the previous screen */
 "BACK_BUTTON" = "Retour";
 
 /* Error indicating the backup export could not export the user's data. */
@@ -345,7 +342,7 @@
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Accepter l’appel entrant";
 
 /* Accessibility label for selection the audio source */
-"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Source audio";
+"CALL_VIEW_AUDIO_SOURCE_LABEL" = "Son";
 
 /* Accessibility label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Refuser l’appel entrant";
@@ -388,6 +385,12 @@
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Utilisateur de Signal";
+
+/* Accessibility hint describing what you can do with the camera button */
+"CAMERA_BUTTON_HINT" = "Prenez une photo et envoyez-la";
+
+/* Accessibility label for camera button. */
+"CAMERA_BUTTON_LABEL" = "Appareil photo";
 
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Cet utilisateur ne pourra pas être vérifié tant que vous n’aurez pas échangé de messages.";
@@ -630,7 +633,7 @@
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Toucher pour modifier";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Rétablir les notifications";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Réactiver les notifications";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Ce groupe peut voir votre profil.";
@@ -912,6 +915,9 @@
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Le contact n’est pas un utilisateur de Signal.";
 
+/* Error message indicating that attachment download(s) failed. */
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Échec de téléchargement du fichier joint.";
+
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Échec de fichier joint : demandez à ce contact de renvoyer son message après avoir mis Signal à jour vers la dernière version.";
 
@@ -942,11 +948,26 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Le numéro de sécurité a changé.";
 
+/* Error indicating a send failure due to an expired application. */
+"ERROR_SENDING_EXPIRED" = "Votre version de Signal est expirée. Veuillez la mettre à jour pour envoyer de nouveaux messages.";
+
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Utilisateur non inscrit : %@";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Pas maintenant";
+
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Allons-y";
+
+/* Label notifying the user that the app has expired. */
+"EXPIRATION_ERROR" = "Votre version de Signal est expirée ! Les messages ne seront plus envoyés. Appuyez pour la mettre à jour vers la version la plus récente.";
+
+/* Label warning the user that the app will expire soon. */
+"EXPIRATION_WARNING_SOON" = "Votre version de Signal expirera dans %d jours. Touchez pour mettre à jour vers la version la plus récente.";
+
+/* Label warning the user that the app will expire today. */
+"EXPIRATION_WARNING_TODAY" = "Votre version de Signal expirera aujourd’hui. Touchez pour mettre à jour vers la version la plus récente.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Trop d’échecs avec ce contact. Veuillez ressayer ultérieurement.";
@@ -1125,8 +1146,11 @@
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "L’appel a été manqué, car le numéro de sécurité de l’appelant a changé.";
 
+/* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
+
 /* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Le fichier audio est invalide";
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Le fichier son est invalide";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Vous pouvez accorder l’accès aux contacts dans l’appli Réglages d’iOS pour inviter vos amis à se joindre à Signal.";
@@ -1267,7 +1291,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "Type MIME";
 
 /* Status label for messages which are delivered. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Distribué";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Remis";
 
 /* Status label for messages which are failed. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_FAILED" = "Échec";
@@ -1306,7 +1330,7 @@
 "MESSAGE_METADATA_VIEW_TITLE" = "Message";
 
 /* message status for message delivered to their recipient. */
-"MESSAGE_STATUS_DELIVERED" = "Distribué";
+"MESSAGE_STATUS_DELIVERED" = "Remis";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Échec d’envoi.";
@@ -1360,7 +1384,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Plus d’un membre de ce groupe n’est plus marqué comme vérifié. Touchez pour plus d’options.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Touchez ici pour les paramètres";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Toucher ici pour les paramètres";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Nouveaux messages";
@@ -1496,6 +1520,9 @@
 /* No comment provided by engineer. */
 "OK" = "Valider";
 
+/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Vous avez épuisé toutes vos tentatives de saisie du NIP. Vous pourrez essayer de vous inscrire à nouveau dans 7 jours.";
+
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Un NIP de blocage de l’inscription est activé pour ce numéro de téléphone. Veuillez saisir le NIP de blocage de l’inscription.";
 
@@ -1504,6 +1531,12 @@
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "J’ai oubli mon NIP";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN" = "NIP erroné";
+
+/* Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_FORMAT" = "NIP erroné, il vous reste %lu tentatives.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Blocage de l’inscription";
@@ -1530,7 +1563,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Le numéro est invalide";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Les profils de Signal sont chiffrés de bout en bout et le service Signal n’a jamais accès à ces renseignements.";
+"ONBOARDING_PROFILE_EXPLANATION" = "Les profils Signal sont chiffrés de bout en bout et le service Signal n’a jamais accès à ces renseignements.";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Votre nom";
@@ -1550,6 +1583,9 @@
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
 "ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Je n’ai pas reçu de code (disponible dans %@)";
 
+/* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Contacter l'assistance Signal";
+
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Ce code est erroné";
 
@@ -1563,7 +1599,7 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Aucun code reçu ?";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Renvoyer le code";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Renvoyer le code.";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Appelez-moi plutôt";
@@ -1600,6 +1636,30 @@
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
+
+/* Error indicating that a PDF could not be displayed. */
+"PDF_VIEW_COULD_NOT_RENDER" = "Impossible d’afficher le fichier PDF";
+
+/* Navbar title for for PDF view. */
+"PDF_VIEW_TITLE" = "PDF";
+
+/* Label that indicates that 'per-message expiration' is active. */
+"PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Photo éphémère";
+
+/* Label for messages with per-message expiration that have invalid content. */
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Erreur de traitement du message entrant";
+
+/* Notification for incoming disappearing photo. */
+"PER_MESSAGE_EXPIRATION_NOTIFICATION" = "Photo éphémère";
+
+/* Label for outgoing messages with per-message expiration. */
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Photo";
+
+/* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "Afficher la photo";
+
+/* Label for messages with per-message expiration indicating that the local user has viewed the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Vu";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Exemple : %@";
@@ -1782,7 +1842,7 @@
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Fichier joint";
 
 /* Indicates this message is a quoted reply to an audio file. */
-"QUOTED_REPLY_TYPE_AUDIO" = "Audio";
+"QUOTED_REPLY_TYPE_AUDIO" = "Son";
 
 /* Indicates this message is a quoted reply to animated GIF file. */
 "QUOTED_REPLY_TYPE_GIF" = "GIF";
@@ -2180,6 +2240,12 @@
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Contenu des notifications";
 
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Un contact a rejoint Signal";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Évènements";
+
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
@@ -2271,7 +2337,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Afficher les indicateurs";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Afficher une icône d’état quand vous sélectionnez « Plus d’infos » pour les messages qui ont été distribués avec l’option « expéditeur scellé ».";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Afficher une icône d’état quand vous sélectionnez « Plus d’infos » pour les messages qui ont été remis avec l’option « expéditeur scellé ».";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Autoriser de tous";
@@ -2332,6 +2398,51 @@
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Aucun";
+
+/* Preview text shown in notifications and home view for sticker messages. */
+"STICKER_MESSAGE_PREVIEW" = "Message — Autocollant";
+
+/* Tooltip indicating that a sticker pack was installed. */
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Le paquet d’autocollants a été installé";
+
+/* Label for a sticker that failed to download. */
+"STICKERS_FAILED_DOWNLOAD" = "Autocollant";
+
+/* Label for the 'install sticker pack' button. */
+"STICKERS_INSTALL_BUTTON" = "Installer";
+
+/* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Série artiste Signal";
+
+/* Title for the 'available known stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Autocollants que vous avez reçus";
+
+/* Title for the 'installed stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Autocollants installés";
+
+/* Label indicating that the user has no installed sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Aucun autocollant n’est installé";
+
+/* Label indicating that the user has no known sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Les autocollants des messages entrants apparaîtront ici";
+
+/* Title for the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_TITLE" = "Autocollants";
+
+/* Default title for sticker packs. */
+"STICKERS_PACK_DEFAULT_TITLE" = "Paquet d’autocollants";
+
+/* Error message shown when a sticker pack failed to install. */
+"STICKERS_PACK_INSTALL_FAILED" = "Échec d’installation d’un paquet d’autocollants";
+
+/* Title of the 'share sticker pack' view. */
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Partager le paquet d’autocollants";
+
+/* The default title for the 'sticker pack' view. */
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Paquet d’autocollants";
+
+/* Label for the 'uninstall sticker pack' button. */
+"STICKERS_UNINSTALL_BUTTON" = "Désinstaller";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Votre numéro de sécurité avec %@ correspond. Vous pouvez marquer ce contact comme vérifié.";
@@ -2402,6 +2513,27 @@
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "Pays inconnu";
 
+/* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Un de vos appareils a envoyé un message qui ne peut être ni traité ni affiché ici, car il utilise une nouvelle fonction de Signal.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ vous a envoyé un message qui ne peut être ni traité ni affiché, car il utilise une nouvelle fonction de Signal.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Vous avez reçu un message qui ne peut être ni traité ni affiché, car il utilise une nouvelle fonction de Signal.";
+
+/* Label for button that lets users upgrade the app. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Mettre Signal à jour maintenant";
+
+/* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Mise à jour vers la dernière version de Signal effectuée. Vous pouvez désormais recevoir ce type de message sur votre appareil.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Vous pouvez demander à %@ de renvoyer ce message, maintenant que vous utilisez une version à jour de Signal.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Vous pouvez demander à l’expéditeur de renvoyer ce message, maintenant que vous utilisez une version à jour de Signal.";
+
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Inconnue";
 
@@ -2435,65 +2567,11 @@
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "La fonction n’est pas prise en charge";
 
-/* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Il est facile de répondre aux appels à partir de votre écran de verrouillage grâce à l’intégration des appels dans iOS. Par défaut, nous anonymisons l’appelant, donc ce renseignement est aussi confidentiel.";
+/* Body text for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Pourquoi utiliser des mots quand vous pouvez utiliser des autocollants ? Touchez cette icône sur votre clavier :";
 
-/* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Apprenez-en plus dans vos paramètres de confidentialité.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Balayez juste pour répondre";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Activer les indicateurs de saisie";
-
-/* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Les aperçus facultatifs de liens sont maintenant pris en charge pour certains des sites les plus populaires d’Internet.";
-
-/* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Vous pouvez désactiver ou activer cette fonction en tout temps dans vos paramètres de Signal (Confidentialité > Envoyer des aperçus de liens).";
-
-/* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Aperçus de liens";
-
-/* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Vous pouvez maintenant choisir des sons de notification par défaut ou par conversation, et les appels utiliseront la sonnerie que vous avez choisie pour chaque contact du système.";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Révisez les paramètres de notification";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Les sons des appels et des messages ont été mis à jour";
-
-/* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Configurez votre profil";
-
-/* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Vous pouvez maintenant partager sur Signal une photo et un nom de profil avec vos amis.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Prêt pour votre gros plan ?";
-
-/* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Vous avez maintenant la possibilité de voir et de partager si les messages ont été lus.";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Activez les accusés de lecture dans vos paramètres de confidentialité.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Les accusés de lecture sont arrivés";
-
-/* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Vous pouvez maintenant voir et faire savoir que des messages sont en cours de saisie.";
-
-/* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Les indicateurs de saisie sont arrivés";
-
-/* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal prend maintenant en charge les appels vidéo sécurisés. Il suffit de commencer un appel normal, de toucher le bouton de l’appareil photo et de dire bonjour.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Bienvenue aux appels vidéo sécurisés !";
+/* Header for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Nous présentons les autocollants";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Bientôt, Signal exigera iOS 10 ou ultérieure. Veuillez effectuer une mise à niveau dans l’appli Réglage >> Général >> Mise à jour logicielle";

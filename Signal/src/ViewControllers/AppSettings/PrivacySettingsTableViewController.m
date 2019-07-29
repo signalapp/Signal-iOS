@@ -74,6 +74,11 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
     return SSKEnvironment.shared.typingIndicators;
 }
 
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark - Table Contents
 
 - (void)updateTableContents
@@ -320,24 +325,24 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                         UIView *spacer = [UIView new];
                         [spacer setContentHuggingHorizontalLow];
 
-                        UISwitch *cellSwitch = [UISwitch new];
-                        cell.accessoryView = cellSwitch;
-                        [cellSwitch setOn:Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators];
-                        [cellSwitch addTarget:weakSelf
-                                       action:@selector(didToggleUDShowIndicatorsSwitch:)
-                             forControlEvents:UIControlEventValueChanged];
-                        [cellSwitch setContentHuggingHorizontalHigh];
-                        cellSwitch.accessibilityIdentifier =
-                            [NSString stringWithFormat:@"settings.privacy.%@", @"sealed_sender"];
-
                         UIStackView *stackView =
-                            [[UIStackView alloc] initWithArrangedSubviews:@[ label, iconView, spacer, cellSwitch ]];
+                            [[UIStackView alloc] initWithArrangedSubviews:@[ label, iconView, spacer ]];
                         stackView.axis = UILayoutConstraintAxisHorizontal;
                         stackView.spacing = 10;
                         stackView.alignment = UIStackViewAlignmentCenter;
 
                         [cell.contentView addSubview:stackView];
                         [stackView ows_autoPinToSuperviewMargins];
+
+                        UISwitch *cellSwitch = [UISwitch new];
+                        [cellSwitch setOn:Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators];
+                        [cellSwitch addTarget:weakSelf
+                                       action:@selector(didToggleUDShowIndicatorsSwitch:)
+                             forControlEvents:UIControlEventValueChanged];
+                        cell.accessoryView = cellSwitch;
+                        cellSwitch.accessibilityIdentifier =
+                            [NSString stringWithFormat:@"settings.privacy.%@", @"sealed_sender"];
+
                         return cell;
                     }
                     customRowHeight:UITableViewAutomaticDimension
@@ -387,7 +392,16 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
                                                      @"Setting for enabling & disabling link previews.")
                     accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"link_previews"]
                     isOnBlock:^{
-                        return [SSKPreferences areLinkPreviewsEnabled];
+                        if (!weakSelf) {
+                            return NO;
+                        }
+                        PrivacySettingsTableViewController *strongSelf = weakSelf;
+
+                        __block BOOL areLinkPreviewsEnabled;
+                        [strongSelf.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                            areLinkPreviewsEnabled = [SSKPreferences areLinkPreviewsEnabledWithTransaction:transaction];
+                        }];
+                        return areLinkPreviewsEnabled;
                     }
                     isEnabledBlock:^{
                         return YES;
@@ -513,7 +527,9 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender
 {
     OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
-    SSKPreferences.areLinkPreviewsEnabled = sender.isOn;
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [SSKPreferences setAreLinkPreviewsEnabled:sender.isOn transaction:transaction];
+    }];
 }
 
 - (void)show2FASettings

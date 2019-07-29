@@ -8,6 +8,7 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
@@ -24,6 +25,8 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 - (instancetype)initWithURL:(NSURL *)url NS_DESIGNATED_INITIALIZER;
 
 @end
+
+#pragma mark -
 
 @implementation OWSSystemSound
 
@@ -161,7 +164,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             return @"Call Outboung Ringing";
         case OWSSound_CallBusy:
             return @"Call Busy";
-        case OWSSound_CallFailure:
+        case OWSSound_CallEnded:
             return @"Call Failure";
         case OWSSound_MessageSent:
             return @"Message Sent";
@@ -225,7 +228,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             return @"ringback_tone_ansi.caf";
         case OWSSound_CallBusy:
             return @"busy_tone_ansi.caf";
-        case OWSSound_CallFailure:
+        case OWSSound_CallEnded:
             return @"end_call_tone_cept.caf";
         case OWSSound_MessageSent:
             return @"message_sent.aiff";
@@ -374,8 +377,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     return (sound == OWSSound_CallConnecting || sound == OWSSound_CallOutboundRinging);
 }
 
-+ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound
-                                 audioBehavior:(OWSAudioBehavior)audioBehavior;
++ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound audioBehavior:(OWSAudioBehavior)audioBehavior
 {
     NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound quiet:NO];
     if (!soundURL) {

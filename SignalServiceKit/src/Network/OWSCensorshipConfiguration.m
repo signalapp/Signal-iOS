@@ -112,7 +112,7 @@ NSString *const OWSFrontingHost_Default = @"www.google.com";
     };
 }
 
-+ (BOOL)isCensoredPhoneNumber:(NSString *)e164PhoneNumber;
++ (BOOL)isCensoredPhoneNumber:(NSString *)e164PhoneNumber
 {
     return [self censoredCountryCodeWithPhoneNumber:e164PhoneNumber].length > 0;
 }

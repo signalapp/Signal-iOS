@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)hasAlphaForValidImageFilePath:(NSString *)filePath;
 
+- (nullable UIImage *)stillForWebpData;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -18,10 +18,13 @@
 #import "Signal-Swift.h"
 #import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
+#import <SignalServiceKit/MIMETypeUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate, OWSContactShareButtonsViewDelegate>
+@interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate,
+    OWSContactShareButtonsViewDelegate,
+    UITextViewDelegate>
 
 @property (nonatomic) OWSBubbleView *bubbleView;
 
@@ -51,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) OWSContactShareButtonsView *contactShareButtonsView;
 
+@property (nonatomic) BOOL isHandlingPan;
+
 @end
 
 #pragma mark -
@@ -62,6 +67,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSAttachmentDownloads *)attachmentDownloads
 {
     return SSKEnvironment.shared.attachmentDownloads;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
 }
 
 #pragma mark -
@@ -122,6 +134,7 @@ NS_ASSUME_NONNULL_BEGIN
     textView.contentInset = UIEdgeInsetsZero;
     textView.textContainer.lineFragmentPadding = 0;
     textView.scrollEnabled = NO;
+    textView.delegate = self;
     return textView;
 }
 
@@ -278,6 +291,12 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_OversizeTextDownloading:
             bodyMediaView = [self loadViewForOversizeTextDownload];
             break;
+        case OWSMessageCellType_StickerMessage:
+            OWSFailDebug(@"Stickers should not be rendered with this view.");
+            break;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+            break;
     }
 
     if (bodyMediaView) {
@@ -384,9 +403,10 @@ NS_ASSUME_NONNULL_BEGIN
         [self.viewConstraints addObjectsFromArray:[gradientView ows_autoPinToSuperviewEdges]];
 
         [self.footerView configureWithConversationViewItem:self.viewItem
-                                         isOverlayingMedia:YES
                                          conversationStyle:self.conversationStyle
-                                                isIncoming:self.isIncoming];
+                                                isIncoming:self.isIncoming
+                                         isOverlayingMedia:YES
+                                           isOutsideBubble:NO];
         [bodyMediaView addSubview:self.footerView];
 
         bodyMediaView.layoutMargins = UIEdgeInsetsZero;
@@ -398,9 +418,10 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
     } else {
         [self.footerView configureWithConversationViewItem:self.viewItem
-                                         isOverlayingMedia:NO
                                          conversationStyle:self.conversationStyle
-                                                isIncoming:self.isIncoming];
+                                                isIncoming:self.isIncoming
+                                         isOverlayingMedia:NO
+                                           isOutsideBubble:NO];
         [textViews addObject:self.footerView];
     }
 
@@ -536,11 +557,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     BOOL hasOnlyBodyMediaView = (self.hasBodyMediaWithThumbnail && self.stackView.subviews.count == 1);
     if (!hasOnlyBodyMediaView) {
-        self.bubbleView.bubbleColor = self.bubbleColor;
+        self.bubbleView.fillColor = self.bubbleColor;
     } else {
         // Media-only messages should have no background color; they will fill the bubble's bounds
         // and we don't want artifacts at the edges.
-        self.bubbleView.bubbleColor = nil;
+        self.bubbleView.fillColor = nil;
     }
 }
 
@@ -564,6 +585,12 @@ NS_ASSUME_NONNULL_BEGIN
             return NO;
         case OWSMessageCellType_MediaMessage:
             return YES;
+        case OWSMessageCellType_StickerMessage:
+            OWSFailDebug(@"Stickers should not be rendered with this view.");
+            return NO;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+            return NO;
     }
 }
 
@@ -578,6 +605,12 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_MediaMessage:
         case OWSMessageCellType_OversizeTextDownloading:
             return YES;
+        case OWSMessageCellType_StickerMessage:
+            OWSFailDebug(@"Stickers should not be rendered with this view.");
+            return NO;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+            return NO;
     }
 }
 
@@ -744,30 +777,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.shouldShowSenderName);
 
     self.senderNameLabel.textColor = self.bodyTextColor;
-    self.senderNameLabel.font = OWSMessageBubbleView.senderNameFont;
+    self.senderNameLabel.font = OWSMessageView.senderNameFont;
     self.senderNameLabel.attributedText = self.viewItem.senderName;
     self.senderNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-}
-
-+ (UIFont *)senderNameFont
-{
-    return UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
-}
-
-+ (NSDictionary *)senderNamePrimaryAttributes
-{
-    return @{
-        NSFontAttributeName : self.senderNameFont,
-        NSForegroundColorAttributeName : ConversationStyle.bubbleTextColorIncoming,
-    };
-}
-
-+ (NSDictionary *)senderNameSecondaryAttributes
-{
-    return @{
-        NSFontAttributeName : self.senderNameFont.ows_italic,
-        NSForegroundColorAttributeName : ConversationStyle.bubbleTextColorIncoming,
-    };
 }
 
 - (BOOL)hasTapForMore
@@ -805,7 +817,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSMediaAlbumCellView alloc] initWithMediaCache:self.cellMediaCache
                                                     items:self.viewItem.mediaAlbumItems
                                                isOutgoing:self.isOutgoing
-                                          maxMessageWidth:self.conversationStyle.maxMessageWidth];
+                                          maxMessageWidth:self.conversationStyle.maxMediaMessageWidth];
     self.loadCellContentBlock = ^{
         [albumView loadMedia];
     };
@@ -1046,13 +1058,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
-    // This upper bound should have no effect in portrait orientation.
-    // It limits body media size in landscape.
-    const CGFloat kMaxBodyMediaSize = 350;
-    CGFloat maxMessageWidth = MIN(kMaxBodyMediaSize, self.conversationStyle.maxMessageWidth);
+    CGFloat maxMediaMessageWidth = self.conversationStyle.maxMediaMessageWidth;
     if (!self.hasFullWidthMediaView) {
         CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
-        maxMessageWidth -= hMargins;
+        maxMediaMessageWidth -= hMargins;
     }
 
     CGSize result = CGSizeZero;
@@ -1062,7 +1071,7 @@ NS_ASSUME_NONNULL_BEGIN
             return nil;
         }
         case OWSMessageCellType_Audio:
-            result = CGSizeMake(maxMessageWidth, OWSAudioMessageView.bubbleHeight);
+            result = CGSizeMake(maxMediaMessageWidth, OWSAudioMessageView.bubbleHeight);
             break;
         case OWSMessageCellType_GenericAttachment: {
             TSAttachment *attachment = (self.viewItem.attachmentStream ?: self.viewItem.attachmentPointer);
@@ -1072,16 +1081,16 @@ NS_ASSUME_NONNULL_BEGIN
                                                           isIncoming:self.isIncoming
                                                             viewItem:self.viewItem];
             [attachmentView createContentsWithConversationStyle:self.conversationStyle];
-            result = [attachmentView measureSizeWithMaxMessageWidth:maxMessageWidth];
+            result = [attachmentView measureSizeWithMaxMessageWidth:maxMediaMessageWidth];
             break;
         }
         case OWSMessageCellType_ContactShare:
             OWSAssertDebug(self.viewItem.contactShare);
 
-            result = CGSizeMake(maxMessageWidth, [OWSContactShareView bubbleHeight]);
+            result = CGSizeMake(maxMediaMessageWidth, [OWSContactShareView bubbleHeight]);
             break;
         case OWSMessageCellType_MediaMessage:
-            result = [OWSMediaAlbumCellView layoutSizeForMaxMessageWidth:maxMessageWidth
+            result = [OWSMediaAlbumCellView layoutSizeForMaxMessageWidth:maxMediaMessageWidth
                                                                    items:self.viewItem.mediaAlbumItems];
 
             if (self.viewItem.mediaAlbumItems.count == 1) {
@@ -1096,8 +1105,8 @@ NS_ASSUME_NONNULL_BEGIN
                     const CGFloat maxAspectRatio = 1 / minAspectRatio;
                     contentAspectRatio = MAX(minAspectRatio, MIN(maxAspectRatio, contentAspectRatio));
 
-                    const CGFloat maxMediaWidth = maxMessageWidth;
-                    const CGFloat maxMediaHeight = maxMessageWidth;
+                    const CGFloat maxMediaWidth = maxMediaMessageWidth;
+                    const CGFloat maxMediaHeight = maxMediaMessageWidth;
                     CGFloat mediaWidth = maxMediaHeight * contentAspectRatio;
                     CGFloat mediaHeight = maxMediaHeight;
                     if (mediaWidth > maxMediaWidth) {
@@ -1122,12 +1131,20 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_OversizeTextDownloading:
             // There's no way to predict the size of the oversize text,
             // so we just use a square bubble.
-            result = CGSizeMake(maxMessageWidth, maxMessageWidth);
+            result = CGSizeMake(maxMediaMessageWidth, maxMediaMessageWidth);
+            break;
+        case OWSMessageCellType_StickerMessage:
+            OWSFailDebug(@"Stickers should not be rendered with this view.");
+            result = CGSizeZero;
+            break;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+            result = CGSizeZero;
             break;
     }
 
-    OWSAssertDebug(result.width <= maxMessageWidth);
-    result.width = MIN(result.width, maxMessageWidth);
+    OWSAssertDebug(result.width <= maxMediaMessageWidth);
+    result.width = MIN(result.width, maxMediaMessageWidth);
 
     return [NSValue valueWithCGSize:CGSizeCeil(result)];
 }
@@ -1349,7 +1366,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.bodyTextView.attributedText = nil;
     self.bodyTextView.hidden = YES;
 
-    self.bubbleView.bubbleColor = nil;
+    self.bubbleView.fillColor = nil;
     [self.bubbleView clearPartnerViews];
 
     for (UIView *subview in self.bubbleView.subviews) {
@@ -1391,13 +1408,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Gestures
-
-- (void)addTapGestureHandler
-{
-    UITapGestureRecognizer *tap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapGesture:)];
-    [self addGestureRecognizer:tap];
-}
 
 - (void)handleTapGesture:(UITapGestureRecognizer *)sender
 {
@@ -1449,6 +1459,9 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Missing link preview.");
             }
             break;
+        case OWSMessageGestureLocation_Sticker:
+            OWSFailDebug(@"Unexpected value.");
+            break;
     }
 }
 
@@ -1473,7 +1486,12 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         case OWSMessageCellType_GenericAttachment:
             if (self.viewItem.attachmentStream) {
-                [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
+                if (PdfViewController.canRenderPdf &&
+                    [OWSMimeTypeImagePdf isEqualToString:self.viewItem.attachmentStream.contentType]) {
+                    [self.delegate didTapPdfForItem:self.viewItem attachmentStream:self.viewItem.attachmentStream];
+                } else {
+                    [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream];
+                }
             }
             break;
         case OWSMessageCellType_ContactShare:
@@ -1517,7 +1535,76 @@ NS_ASSUME_NONNULL_BEGIN
             [self.delegate didTapImageViewItem:self.viewItem attachmentStream:attachmentStream imageView:mediaView];
             break;
         }
+        case OWSMessageCellType_StickerMessage:
+            OWSFailDebug(@"Stickers should not be rendered with this view.");
+            break;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+            break;
     }
+}
+
+- (BOOL)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    CGPoint locationInMessageBubble = [sender locationInView:self];
+    if (self.isHandlingPan || [self gestureLocationForLocation:locationInMessageBubble] == OWSMessageGestureLocation_Media) {
+        if (self.cellType == OWSMessageCellType_Audio && self.viewItem.attachmentStream) {
+            return [self handleAudioPanGesture:sender];
+        }
+    }
+
+    return NO;
+}
+
+- (BOOL)handleAudioPanGesture:(UIPanGestureRecognizer *)sender
+{
+    OWSAssertDebug(self.delegate);
+
+    if (![self.bodyMediaView isKindOfClass:[OWSAudioMessageView class]]) {
+        OWSFailDebug(@"Unexpected body media view: %@", self.bodyMediaView.class);
+        return NO;
+    }
+
+    OWSAudioMessageView *audioMessageView = (OWSAudioMessageView *)self.bodyMediaView;
+
+    CGPoint locationInAudioView = [sender locationInView:audioMessageView];
+
+    // If the gesture has already began, and we're not scrubbing, don't handle the pan
+    if (sender.state != UIGestureRecognizerStateBegan && !audioMessageView.isScrubbing) {
+        return NO;
+    }
+
+    // If we're outside of the scrubbable region, don't handle the pan
+    if (!audioMessageView.isScrubbing && ![audioMessageView isPointInScrubbableRegion:locationInAudioView]) {
+        return NO;
+    }
+
+    NSTimeInterval scrubbedTime = [audioMessageView scrubToLocation:locationInAudioView];
+
+    switch (sender.state) {
+        case UIGestureRecognizerStateBegan:
+            self.isHandlingPan = YES;
+            audioMessageView.isScrubbing = YES;
+            break;
+        case UIGestureRecognizerStateEnded:
+            // Only update the actual playback position when the user finishes scrubbing,
+            // we still call `scrubToLocation` above in order to update the slider.
+            [self.delegate didScrubAudioViewItem:self.viewItem
+                                          toTime:scrubbedTime
+                                attachmentStream:self.viewItem.attachmentStream];
+
+            // fallthrough
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStateCancelled:
+            self.isHandlingPan = NO;
+            audioMessageView.isScrubbing = NO;
+            break;
+        case UIGestureRecognizerStateChanged:
+        case UIGestureRecognizerStatePossible:
+            break;
+    }
+
+    return YES;
 }
 
 - (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble
@@ -1599,6 +1686,40 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(contactShare);
 
     [self.delegate didTapShowAddToContactUIForContactShare:contactShare];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView *)textView
+    shouldInteractWithURL:(NSURL *)url
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction
+{
+    return [self shouldInteractWithURL:url];
+}
+
+- (BOOL)textView:(UITextView *)textView shouldInteractWithURL:(NSURL *)url inRange:(NSRange)characterRange
+{
+    return [self shouldInteractWithURL:url];
+}
+
+- (BOOL)shouldInteractWithURL:(NSURL *)url
+{
+    if (![self.tsAccountManager isRegistered]) {
+        return YES;
+    }
+    if (![StickerPackInfo isStickerPackShareUrl:url]) {
+        return YES;
+    }
+    StickerPackInfo *_Nullable stickerPackInfo = [StickerPackInfo parseStickerPackShareUrl:url];
+    if (stickerPackInfo == nil) {
+        OWSFailDebug(@"Invalid URL: %@", url);
+        return YES;
+    }
+
+    [self.delegate didTapStickerPack:stickerPackInfo];
+
+    return NO;
 }
 
 @end

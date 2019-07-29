@@ -7,14 +7,15 @@ import SignalServiceKit
 
 public typealias MessageSortKey = UInt64
 public struct ConversationSortKey: Comparable {
-    let creationDate: Date
+    let creationDate: Date?
     let lastMessageReceivedAtDate: Date?
 
     // MARK: Comparable
 
     public static func < (lhs: ConversationSortKey, rhs: ConversationSortKey) -> Bool {
-        let lhsDate = lhs.lastMessageReceivedAtDate ?? lhs.creationDate
-        let rhsDate = rhs.lastMessageReceivedAtDate ?? rhs.creationDate
+        let longAgo = Date(timeIntervalSince1970: 0)
+        let lhsDate = lhs.lastMessageReceivedAtDate ?? lhs.creationDate ?? longAgo
+        let rhsDate = rhs.lastMessageReceivedAtDate ?? rhs.creationDate ?? longAgo
         return lhsDate < rhsDate
     }
 }
@@ -239,7 +240,7 @@ public class FullTextSearcher: NSObject {
         var signalContacts: [ContactSearchResult] = []
         var groups: [GroupSearchResult] = []
 
-        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
+        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, _: String?) in
 
             switch match {
             case let signalAccount as SignalAccount:
@@ -247,8 +248,8 @@ public class FullTextSearcher: NSObject {
                 signalContacts.append(searchResult)
             case let groupThread as TSGroupThread:
                 let sortKey = ConversationSortKey(creationDate: groupThread.creationDate,
-                                                  lastMessageReceivedAtDate: groupThread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())
-                let threadViewModel = ThreadViewModel(thread: groupThread, transaction: transaction)
+                                                  lastMessageReceivedAtDate: groupThread.lastInteractionForInbox(transaction: transaction.asAnyRead)?.receivedAtDate())
+                let threadViewModel = ThreadViewModel(thread: groupThread, transaction: transaction.asAnyRead)
                 let searchResult = GroupSearchResult(thread: threadViewModel, sortKey: sortKey)
                 groups.append(searchResult)
             case is TSContactThread:
@@ -285,9 +286,9 @@ public class FullTextSearcher: NSObject {
         self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
 
             if let thread = match as? TSThread {
-                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction.asAnyRead)
                 let sortKey = ConversationSortKey(creationDate: thread.creationDate,
-                                                  lastMessageReceivedAtDate: thread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())
+                                                  lastMessageReceivedAtDate: thread.lastInteractionForInbox(transaction: transaction.asAnyRead)?.receivedAtDate())
                 let searchResult = ConversationSearchResult(thread: threadViewModel, sortKey: sortKey)
 
                 if let contactThread = thread as? TSContactThread {
@@ -297,9 +298,9 @@ public class FullTextSearcher: NSObject {
 
                 conversations.append(searchResult)
             } else if let message = match as? TSMessage {
-                let thread = message.thread(with: transaction)
+                let thread = message.thread(transaction: transaction.asAnyRead)
 
-                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
+                let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction.asAnyRead)
                 let sortKey = message.sortId
                 let searchResult = ConversationSearchResult(thread: threadViewModel,
                                                             sortKey: sortKey,
@@ -340,7 +341,7 @@ public class FullTextSearcher: NSObject {
             return ConversationScreenSearchResultSet.empty
         }
 
-        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?) in
+        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, _: String?) in
             if let message = match as? TSMessage {
                 guard message.uniqueThreadId == threadId else {
                     return

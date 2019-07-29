@@ -184,4 +184,18 @@ public class OWSFlatButton: UIView {
         button.titleLabel?.lineBreakMode = .byWordWrapping
         button.titleLabel?.textAlignment = .center
     }
+
+    @objc
+    public var font: UIFont? {
+        return button.titleLabel?.font
+    }
+
+    @objc
+    public func autoSetHeightUsingFont() {
+        guard let font = font else {
+            owsFailDebug("Missing button font.")
+            return
+        }
+        autoSetDimension(.height, toSize: font.lineHeight * 2.5)
+    }
 }

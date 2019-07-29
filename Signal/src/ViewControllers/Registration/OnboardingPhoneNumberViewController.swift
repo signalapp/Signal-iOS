@@ -164,7 +164,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         if tsAccountManager.isReregistering() {
             // If re-registering, pre-populate the country (country code, calling code, country name)
             // and phone number state.
-            guard let phoneNumberE164 = tsAccountManager.reregisterationPhoneNumber() else {
+            guard let phoneNumberE164 = tsAccountManager.reregistrationPhoneNumber() else {
                 owsFailDebug("Could not resume re-registration; missing phone number.")
                 return
             }
@@ -367,10 +367,10 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
                                             proceedTitle: NSLocalizedString("REGISTRATION_IPAD_CONFIRM_BUTTON",
                                                                              comment: "button text to proceed with registration when on an iPad"),
                                             proceedAction: { (_) in
-                                                self.onboardingController.tryToRegister(fromViewController: self, smsVerification: true)
+                                                self.onboardingController.requestVerification(fromViewController: self, isSMS: true)
             })
         } else {
-            onboardingController.tryToRegister(fromViewController: self, smsVerification: true)
+            onboardingController.requestVerification(fromViewController: self, isSMS: true)
         }
     }
 }

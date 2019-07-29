@@ -15,6 +15,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "UpdateGroupViewController.h"
+#import <ContactsUI/ContactsUI.h>
 #import <Curve25519Kit/Curve25519.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
@@ -22,18 +23,16 @@
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/OWSSounds.h>
-#import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
-
-@import ContactsUI;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -118,7 +117,7 @@ const CGFloat kIconViewLength = 24;
 
 #pragma mark - Dependencies
 
-- (SSKMessageSenderJobQueue *)messageSenderJobQueue
+- (MessageSenderJobQueue *)messageSenderJobQueue
 {
     return SSKEnvironment.shared.messageSenderJobQueue;
 }
@@ -185,6 +184,16 @@ const CGFloat kIconViewLength = 24;
 - (BOOL)isGroupThread
 {
     return [self.thread isKindOfClass:[TSGroupThread class]];
+}
+
+- (BOOL)hasSavedGroupIcon
+{
+    if (![self isGroupThread]) {
+        return NO;
+    }
+
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    return groupThread.groupModel.groupImage != nil;
 }
 
 - (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection
@@ -504,6 +513,8 @@ const CGFloat kIconViewLength = 24;
 
                                  cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
+                                 switchView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                     OWSConversationSettingsViewController, @"disappearing_messages_switch");
                                  cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                      OWSConversationSettingsViewController, @"disappearing_messages");
 
@@ -555,6 +566,8 @@ const CGFloat kIconViewLength = 24;
 
                             cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
 
+                            slider.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                OWSConversationSettingsViewController, @"disappearing_messages_slider");
                             cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                 OWSConversationSettingsViewController, @"disappearing_messages_duration");
 
@@ -802,13 +815,14 @@ const CGFloat kIconViewLength = 24;
 
                                  cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
-                                 UISwitch *blockConversationSwitch = [UISwitch new];
-                                 blockConversationSwitch.on =
-                                     [strongSelf.blockingManager isThreadBlocked:strongSelf.thread];
-                                 [blockConversationSwitch addTarget:strongSelf
-                                                             action:@selector(blockConversationSwitchDidChange:)
-                                                   forControlEvents:UIControlEventValueChanged];
-                                 cell.accessoryView = blockConversationSwitch;
+                                 UISwitch *switchView = [UISwitch new];
+                                 switchView.on = [strongSelf.blockingManager isThreadBlocked:strongSelf.thread];
+                                 [switchView addTarget:strongSelf
+                                                action:@selector(blockConversationSwitchDidChange:)
+                                      forControlEvents:UIControlEventValueChanged];
+                                 cell.accessoryView = switchView;
+                                 switchView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                     OWSConversationSettingsViewController, @"block_conversation_switch");
 
                                  return cell;
                              }
@@ -905,6 +919,14 @@ const CGFloat kIconViewLength = 24;
     [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+
+    if (self.isGroupThread && !self.hasSavedGroupIcon) {
+        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
+        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+        [threadInfoView addSubview:cameraImageView];
+        [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
+        [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
+    }
 
     UIView *threadNameView = [UIView containerView];
     [threadInfoView addSubview:threadNameView];
@@ -1057,7 +1079,7 @@ const CGFloat kIconViewLength = 24;
                 initWithConfiguration:self.disappearingMessagesConfiguration
                                thread:self.thread];
 
-            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+            [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
         }];
     }
 }
@@ -1176,7 +1198,7 @@ const CGFloat kIconViewLength = 24;
         [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message transaction:transaction.asAnyWrite];
         [gThread leaveGroupWithTransaction:transaction];
     }];
 

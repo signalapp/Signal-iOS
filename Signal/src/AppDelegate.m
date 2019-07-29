@@ -15,6 +15,7 @@
 #import "SignalApp.h"
 #import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"
+#import <Intents/Intents.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/iOSVersions.h>
 #import <SignalMessaging/AppSetup.h>
@@ -44,17 +45,17 @@
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSPreKeyManager.h>
 #import <SignalServiceKit/TSSocketManager.h>
+#import <UserNotifications/UserNotifications.h>
+#import <WebRTC/WebRTC.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
-
-@import WebRTC;
-@import Intents;
 
 NSString *const AppDelegateStoryboardMain = @"Main";
 
 static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
 static NSString *const kURLSchemeSGNLKey                = @"sgnl";
 static NSString *const kURLHostVerifyPrefix             = @"verify";
+static NSString *const kURLHostAddStickersPrefix = @"addstickers";
 
 static NSTimeInterval launchStartedAt;
 
@@ -158,6 +159,11 @@ static NSTimeInterval launchStartedAt;
     return AppEnvironment.shared.legacyNotificationActionHandler;
 }
 
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -241,6 +247,9 @@ static NSTimeInterval launchStartedAt;
     // This block will be cleared in storageIsReady.
     [DeviceSleepManager.sharedInstance addBlockWithBlockObject:self];
 
+    if (CurrentAppContext().isRunningTests) {
+        return YES;
+    }
     [AppSetup
         setupEnvironmentWithAppSpecificSingletonBlock:^{
             // Create AppEnvironment.
@@ -255,10 +264,6 @@ static NSTimeInterval launchStartedAt;
 
     [UIUtil setupSignalAppearence];
 
-    if (CurrentAppContext().isRunningTests) {
-        return YES;
-    }
-
     UIWindow *mainWindow = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window = mainWindow;
     CurrentAppContext().mainWindow = mainWindow;
@@ -266,7 +271,7 @@ static NSTimeInterval launchStartedAt;
     mainWindow.rootViewController = [LoadingViewController new];
     [mainWindow makeKeyAndVisible];
 
-    if (@available(iOS 11, *)) {
+    if (@available(iOS 10, *)) {
         // This must happen in appDidFinishLaunching or earlier to ensure we don't
         // miss notifications.
         // Setting the delegate also seems to prevent us from getting the legacy notification
@@ -517,6 +522,8 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
     OWSLogInfo(@"Build Carthage Version: %@", buildDetails[@"CarthageVersion"]);
     OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
+
+    OWSLogInfo(@"Build Expires in: %ld days", SSKAppExpiry.daysUntilBuildExpiry);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
@@ -602,6 +609,30 @@ static NSTimeInterval launchStartedAt;
                         NSStringFromClass(controller.class));
                 }
             }
+        } else if ([url.host hasPrefix:kURLHostAddStickersPrefix] && [self.tsAccountManager isRegistered]) {
+            if (!SSKFeatureFlags.stickerAutoEnable && !SSKFeatureFlags.stickerSend) {
+                return NO;
+            }
+            StickerPackInfo *_Nullable stickerPackInfo = [self parseAddStickersUrl:url];
+            if (stickerPackInfo == nil) {
+                OWSFailDebug(@"Invalid URL: %@", url);
+                return NO;
+            }
+            StickerPackViewController *packView =
+                [[StickerPackViewController alloc] initWithStickerPackInfo:stickerPackInfo];
+            UIViewController *rootViewController = self.window.rootViewController;
+            OWSAssertDebug([rootViewController isKindOfClass:[OWSNavigationController class]]);
+            if (rootViewController.presentedViewController) {
+                [rootViewController dismissViewControllerAnimated:NO
+                                                       completion:^{
+                                                           [rootViewController presentViewController:packView
+                                                                                            animated:NO
+                                                                                          completion:nil];
+                                                       }];
+            } else {
+                [rootViewController presentViewController:packView animated:NO completion:nil];
+            }
+            return YES;
         } else {
             OWSFailDebug(@"Application opened with an unknown URL action: %@", url.host);
         }
@@ -609,6 +640,26 @@ static NSTimeInterval launchStartedAt;
         OWSFailDebug(@"Application opened with an unknown URL scheme: %@", url.scheme);
     }
     return NO;
+}
+
+- (nullable StickerPackInfo *)parseAddStickersUrl:(NSURL *)url
+{
+    NSString *_Nullable packIdHex;
+    NSString *_Nullable packKeyHex;
+    NSURLComponents *components = [NSURLComponents componentsWithString:url.absoluteString];
+    for (NSURLQueryItem *queryItem in [components queryItems]) {
+        if ([queryItem.name isEqualToString:@"pack_id"]) {
+            OWSAssertDebug(packIdHex == nil);
+            packIdHex = queryItem.value;
+        } else if ([queryItem.name isEqualToString:@"pack_key"]) {
+            OWSAssertDebug(packKeyHex == nil);
+            packKeyHex = queryItem.value;
+        } else {
+            OWSLogWarn(@"Unknown query item: %@", queryItem.name);
+        }
+    }
+
+    return [StickerPackInfo parsePackIdHex:packIdHex packKeyHex:packKeyHex];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -638,6 +689,9 @@ static NSTimeInterval launchStartedAt;
 
     // On every activation, clear old temp directories.
     ClearOldTemporaryDirectories();
+
+    // Ensure that all windows have the correct frame.
+    [self.windowManager updateWindowFrames];
 
     OWSLogInfo(@"applicationDidBecomeActive completed.");
 }
@@ -922,6 +976,55 @@ static NSTimeInterval launchStartedAt;
 
             if (AppEnvironment.shared.callService.call != nil) {
                 OWSLogWarn(@"ignoring INStartAudioCallIntent due to ongoing WebRTC call.");
+                return;
+            }
+
+            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
+            OWSAssertDebug(outboundCallInitiator);
+            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
+        }];
+        return YES;
+
+    // On iOS 13, all calls triggered from contacts use this intent
+    } else if ([userActivity.activityType isEqualToString:@"INStartCallIntent"]) {
+        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(13, 0)) {
+            OWSLogError(@"unexpectedly received INStartCallIntent pre iOS13");
+            return NO;
+        }
+
+        OWSLogInfo(@"got start call intent");
+
+        INInteraction *interaction = [userActivity interaction];
+        INIntent *intent = interaction.intent;
+
+        // TODO: iOS 13 – when we're building with the iOS 13 SDK, we should
+        // switch this to reference the new `INStartCallIntent` class.
+        if (![intent isKindOfClass:NSClassFromString(@"INStartCallIntent")]) {
+            OWSLogError(@"unexpected class for start call: %@", intent);
+            return NO;
+        }
+
+        NSArray<INPerson *> *contacts = [intent performSelector:@selector(contacts)];
+        NSString *_Nullable handle = contacts.firstObject.personHandle.value;
+        if (!handle) {
+            OWSLogWarn(@"unable to find handle in startCallIntent: %@", intent);
+            return NO;
+        }
+
+        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+            if (![self.tsAccountManager isRegisteredAndReady]) {
+                OWSLogInfo(@"Ignoring user activity; app not ready.");
+                return;
+            }
+
+            NSString *_Nullable phoneNumber = [self phoneNumberForIntentHandle:handle];
+            if (phoneNumber.length < 1) {
+                OWSLogWarn(@"ignoring attempt to initiate call to unknown user.");
+                return;
+            }
+
+            if (AppEnvironment.shared.callService.call != nil) {
+                OWSLogWarn(@"ignoring INStartCallIntent due to ongoing WebRTC call.");
                 return;
             }
 
@@ -1233,10 +1336,11 @@ static NSTimeInterval launchStartedAt;
 
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
         [self.primaryStorage.newDatabaseConnection
-            asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-                [TSAttachmentStream enumerateCollectionObjectsUsingBlock:^(id _Nonnull obj, BOOL *_Nonnull stop){
-                    // no-op. It's sufficient to initWithCoder: each object.
-                }];
+            asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                [TSAttachment anyEnumerateWithTransaction:transaction.asAnyRead
+                                                    block:^(TSAttachment *attachment, BOOL *stop){
+                                                        // no-op. It's sufficient to initWithCoder: each object.
+                                                    }];
             }
             completionBlock:^{
                 [Environment.shared.preferences setHasGeneratedThumbnails:YES];
@@ -1267,8 +1371,6 @@ static NSTimeInterval launchStartedAt;
 
     [self.udManager setup];
 
-    [self preheatDatabaseViews];
-
     [self.primaryStorage touchDbAsync];
 
     // Every time the user upgrades to a new version:
@@ -1284,23 +1386,8 @@ static NSTimeInterval launchStartedAt;
             [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
         }
     }
-}
 
-- (void)preheatDatabaseViews
-{
-    [self.primaryStorage.uiDatabaseConnection asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        for (NSString *viewName in @[
-                 TSThreadDatabaseViewExtensionName,
-                 TSMessageDatabaseViewExtensionName,
-                 TSThreadOutgoingMessageDatabaseViewExtensionName,
-                 TSUnreadDatabaseViewExtensionName,
-                 TSUnseenDatabaseViewExtensionName,
-                 TSThreadSpecialMessagesDatabaseViewExtensionName,
-             ]) {
-            YapDatabaseViewTransaction *databaseView = [transaction ext:viewName];
-            OWSAssertDebug([databaseView isKindOfClass:[YapDatabaseViewTransaction class]]);
-        }
-    }];
+    [PerMessageExpiration appDidBecomeReady];
 }
 
 - (void)registrationStateDidChange
@@ -1314,10 +1401,9 @@ static NSTimeInterval launchStartedAt;
     if ([self.tsAccountManager isRegistered]) {
         OWSLogInfo(@"localNumber: %@", [self.tsAccountManager localNumber]);
 
-        [self.primaryStorage.newDatabaseConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
-            }];
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
+        }];
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
         [self.disappearingMessagesJob startIfNecessary];

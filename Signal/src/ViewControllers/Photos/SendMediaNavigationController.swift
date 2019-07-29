@@ -101,6 +101,16 @@ class SendMediaNavigationController: OWSNavigationController {
         return navController
     }
 
+    private(set) var isPickingAsDocument = false
+    @objc
+    public class func asMediaDocumentPicker() -> SendMediaNavigationController {
+        let navController = SendMediaNavigationController()
+        navController.isPickingAsDocument = true
+        navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
+
+        return navController
+    }
+
     var isInBatchSelectMode: Bool {
         get {
             return self.batchModeButton.isSelected
@@ -254,7 +264,8 @@ class SendMediaNavigationController: OWSNavigationController {
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(mode: .sharedNavigation, attachmentApprovalItems: attachmentApprovalItems)
+        let approvalViewController = AttachmentApprovalViewController(options: [.canAddMore],
+                                                                      attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
@@ -603,7 +614,7 @@ private struct CameraCaptureAttachment: Hashable, Equatable {
     }
 
     func hash(into hasher: inout Hasher) {
-        signalAttachment.hash(into: &hasher)
+        hasher.combine(signalAttachment)
     }
 
     static func ==(lhs: CameraCaptureAttachment, rhs: CameraCaptureAttachment) -> Bool {
@@ -616,7 +627,7 @@ private struct MediaLibraryAttachment: Hashable, Equatable {
     let attachmentApprovalItemPromise: Promise<AttachmentApprovalItem>
 
     func hash(into hasher: inout Hasher) {
-        asset.hash(into: &hasher)
+        hasher.combine(asset)
     }
 
     static func ==(lhs: MediaLibraryAttachment, rhs: MediaLibraryAttachment) -> Bool {

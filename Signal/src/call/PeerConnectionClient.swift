@@ -13,10 +13,6 @@ import SignalMessaging
 // Binding them to a file constant seems to work around the problem.
 let kAudioTrackType = kRTCMediaStreamTrackKindAudio
 let kVideoTrackType = kRTCMediaStreamTrackKindVideo
-let kMediaConstraintsMinWidth = kRTCMediaConstraintsMinWidth
-let kMediaConstraintsMaxWidth = kRTCMediaConstraintsMaxWidth
-let kMediaConstraintsMinHeight = kRTCMediaConstraintsMinHeight
-let kMediaConstraintsMaxHeight = kRTCMediaConstraintsMaxHeight
 
 /**
  * The PeerConnectionClient notifies it's delegate (the CallService) of key events in the call signaling life cycle

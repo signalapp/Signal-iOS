@@ -8,12 +8,21 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSLinkPreviewDraft;
 @class OWSQuotedReplyModel;
 @class SignalAttachment;
+@class StickerInfo;
 
 @protocol ConversationInputToolbarDelegate <NSObject>
 
 - (void)sendButtonPressed;
 
 - (void)attachmentButtonPressed;
+
+- (void)cameraButtonPressed;
+
+- (void)sendSticker:(StickerInfo *)stickerInfo;
+
+- (void)presentManageStickersView;
+
+- (CGSize)rootViewSize;
 
 #pragma mark - Voice Memo
 
@@ -43,21 +52,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<ConversationInputToolbarDelegate> inputToolbarDelegate;
 
-- (void)beginEditingTextMessage;
-- (void)endEditingTextMessage;
-- (BOOL)isInputTextViewFirstResponder;
+- (void)beginEditingMessage;
+- (void)endEditingMessage;
+- (BOOL)isInputViewFirstResponder;
 
 - (void)setInputTextViewDelegate:(id<ConversationInputTextViewDelegate>)value;
 
 - (NSString *)messageText;
 - (void)setMessageText:(NSString *_Nullable)value animated:(BOOL)isAnimated;
+- (void)acceptAutocorrectSuggestion;
 - (void)clearTextMessageAnimated:(BOOL)isAnimated;
+- (void)clearStickerKeyboard;
 - (void)toggleDefaultKeyboard;
 
 - (void)updateFontSizes;
 
 - (void)updateLayoutWithSafeAreaInsets:(UIEdgeInsets)safeAreaInsets;
 - (void)ensureTextViewHeight;
+
+- (void)viewDidAppear;
+
+- (void)ensureFirstResponderState;
 
 #pragma mark - Voice Memo
 

@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import PromiseKit
 
 @objc
 public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegate {
@@ -27,7 +28,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     }
 
     override public func loadView() {
-        assert(ows2FAManager.pinCode != nil)
+        assert(ows2FAManager.is2FAEnabled())
 
         self.navigationItem.title = NSLocalizedString("REMINDER_2FA_NAV_TITLE", comment: "Navbar title for when user is periodically prompted to enter their registration lock PIN")
 
@@ -60,18 +61,23 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     // MARK: PinEntryViewDelegate
     public func pinEntryView(_ entryView: PinEntryView, submittedPinCode pinCode: String) {
         Logger.info("")
-        if checkResult(pinCode: pinCode) {
-            didSubmitCorrectPin()
-        } else {
-            didSubmitWrongPin()
+
+        ows2FAManager.verifyPin(pinCode) { success in
+            if success {
+                self.didSubmitCorrectPin()
+            } else {
+                self.didSubmitWrongPin()
+            }
         }
     }
 
     //textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
     public func pinEntryView(_ entryView: PinEntryView, pinCodeDidChange pinCode: String) {
         // optimistically match, without having to press "done"
-        if checkResult(pinCode: pinCode) {
-            didSubmitCorrectPin()
+        ows2FAManager.verifyPin(pinCode) { success in
+            if success {
+                self.didSubmitCorrectPin()
+            }
         }
     }
 
@@ -91,14 +97,24 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         self.dismiss(animated: true)
     }
 
-    private func checkResult(pinCode: String) -> Bool {
-        return pinCode == ows2FAManager.pinCode
-    }
-
     private func didSubmitCorrectPin() {
         Logger.info("noWrongGuesses: \(noWrongGuesses)")
 
-        self.dismiss(animated: true)
+        // Migrate to 2FA v2 if they've proved they know their pin
+        if let pinCode = ows2FAManager.pinCode, FeatureFlags.registrationLockV2, ows2FAManager.mode == .V1 {
+            // enabling 2fa v2 automatically disables v1 on the server
+            ows2FAManager.enable2FAPromise(with: pinCode)
+                .ensure {
+                    self.dismiss(animated: true)
+                }.catch { error in
+                    // We don't need to bubble this up to the user, since they
+                    // don't know / care that something is changing in this moment.
+                    // We can try and migrate them again during their next reminder.
+                    owsFailDebug("Unexpected error \(error) while migrating to reg lock v2")
+                }.retainUntilComplete()
+        } else {
+            self.dismiss(animated: true)
+        }
 
         OWS2FAManager.shared().updateRepetitionInterval(withWasSuccessful: noWrongGuesses)
     }
@@ -113,5 +129,17 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
                                           comment: "Alert body after wrong guess for 'two-factor auth pin' reminder activity")
         OWSAlerts.showAlert(title: alertTitle, message: alertBody)
         self.pinEntryView.clearText()
+    }
+}
+
+extension OWS2FAManager {
+    func enable2FAPromise(with pin: String) -> Promise<Void> {
+        return Promise { resolver in
+            requestEnable2FA(withPin: pin, success: {
+                resolver.fulfill(())
+            }, failure: { error in
+                resolver.reject(error)
+            })
+        }
     }
 }

@@ -296,6 +296,8 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
     }
 
     private func completeAndDismiss() {
+        textView.acceptAutocorrectSuggestion()
+
         var newTextItem = textItem
 
         if isNewItem {

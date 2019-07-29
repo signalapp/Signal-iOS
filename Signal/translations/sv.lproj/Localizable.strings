@@ -104,9 +104,6 @@
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Storlek: %@";
 
-/* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Meddelandegräns nådd.";
-
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Skicka";
 
@@ -170,7 +167,7 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Högtalare";
 
-/* button text for back button */
+/* return to the previous screen */
 "BACK_BUTTON" = "Tillbaka";
 
 /* Error indicating the backup export could not export the user's data. */
@@ -389,6 +386,12 @@
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signalanvändare";
 
+/* Accessibility hint describing what you can do with the camera button */
+"CAMERA_BUTTON_HINT" = "Ta en bild och sedan skicka den";
+
+/* Accessibility label for camera button. */
+"CAMERA_BUTTON_LABEL" = "Kamera";
+
 /* Message for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Användaren kan inte verifieras innan du har skickat eller tagit emot meddelanden.";
 
@@ -447,7 +450,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Det här kommer att återställa appen, radera dina meddelanden och avregistrera dig från servern. Appen kommer att stängas när allt är klart.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Är du säker på att du vill radera ditt konto?";
+"CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Är du säker på att du vill ta bort ditt konto?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Du kommer inte längre att kunna skicka eller ta emot meddelanden i den här gruppen.";
@@ -561,7 +564,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Denna åtgärd kan inte ångras.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Radera konversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Ta bort konversation?";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Inga resultat";
@@ -684,10 +687,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimerar databas";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ timmar sen";
+"DATE_HOURS_AGO_FORMAT" = "%@ timmar sedan";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ minuter sen";
+"DATE_MINUTES_AGO_FORMAT" = "%@ minuter sedan";
 
 /* The present; the current time. */
 "DATE_NOW" = "Nu";
@@ -912,6 +915,9 @@
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakten är inte en Signal-användare.";
 
+/* Error message indicating that attachment download(s) failed. */
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Hämtning av bilagan misslyckades.";
+
 /* Error message when unable to receive an attachment because the sending client is too old. */
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Misslyckades att ta emot bilaga: Be den här kontakten att skicka sitt meddelande igen efter att ha uppdaterat till den senaste versionen av Signal.";
 
@@ -942,11 +948,26 @@
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Säkerhetsnumret har ändrats.";
 
+/* Error indicating a send failure due to an expired application. */
+"ERROR_SENDING_EXPIRED" = "Din version av Signal har löpt ut. Uppdatera för att skicka fler meddelanden.";
+
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Oregistrerad kontakt: %@";
 
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Inte nu";
+
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Nu kör vi";
+
+/* Label notifying the user that the app has expired. */
+"EXPIRATION_ERROR" = "Din version av Signal har löpt ut! Meddelanden kommer inte längre att skickas framgångsrikt. Tryck för att uppdatera till den senaste versionen.";
+
+/* Label warning the user that the app will expire soon. */
+"EXPIRATION_WARNING_SOON" = "Din version av Signal upphör om %d dagar. Klicka för att uppdatera till den senaste versionen.";
+
+/* Label warning the user that the app will expire today. */
+"EXPIRATION_WARNING_TODAY" = "Din version av Signal kommer att gå ut idag. Tryck för att uppdatera till senaste versionen.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Får för många fel med den här kontakten. Försök igen senare.";
@@ -1030,7 +1051,7 @@
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Rensa verifiering för alla";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Det här kommer rensa verifieringen av alla gruppmedlemmarna vars säkerhetsnummer har ändrats sen förra verifieringen.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Det här kommer rensa verifieringen av alla gruppmedlemmarna vars säkerhetsnummer har ändrats sedan förra verifieringen.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Medlemmar";
@@ -1124,6 +1145,9 @@
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Missade samtalet, för den andra personens säkerhetsnummer har ändrats.";
+
+/* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ är på Signal!";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ogiltig ljudfil.";
@@ -1496,6 +1520,9 @@
 /* No comment provided by engineer. */
 "OK" = "OK";
 
+/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Du har uttömt alla pin-försök, du kan försöka registrera dig igen om 7 dagar.";
+
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Detta mobilnummer har registreringslåset påslaget. Ange PIN-koden för registreringslåset.";
 
@@ -1504,6 +1531,12 @@
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "Jag glömde min PIN-kod";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN" = "Felaktig PIN-kod";
+
+/* Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_FORMAT" = "Fel PIN-kod, du har %lu försök kvar.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Registreringslås";
@@ -1550,6 +1583,9 @@
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
 "ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Jag fick inte en kod (tillgänglig om %@)";
 
+/* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Kontakta Signal-supporten";
+
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Denna kod är felaktig";
 
@@ -1563,7 +1599,7 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Ingen kod?";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = " Skicka koden pånytt";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Skicka koden pånytt";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Ring mig istället";
@@ -1600,6 +1636,30 @@
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
+
+/* Error indicating that a PDF could not be displayed. */
+"PDF_VIEW_COULD_NOT_RENDER" = "PDF kunde inte visas";
+
+/* Navbar title for for PDF view. */
+"PDF_VIEW_TITLE" = "PDF";
+
+/* Label that indicates that 'per-message expiration' is active. */
+"PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Försvinnande foto";
+
+/* Label for messages with per-message expiration that have invalid content. */
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Fel med att hantera inkommande meddelande";
+
+/* Notification for incoming disappearing photo. */
+"PER_MESSAGE_EXPIRATION_NOTIFICATION" = "Försvinnande foto";
+
+/* Label for outgoing messages with per-message expiration. */
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Foto";
+
+/* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "Visa foto";
+
+/* Label for messages with per-message expiration indicating that the local user has viewed the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Sett";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Exempel: %@";
@@ -2115,13 +2175,13 @@
 "SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Inga sökresultat";
 
 /* Label for the block list section of the settings view */
-"SETTINGS_BLOCK_LIST_TITLE" = "Blockerad";
+"SETTINGS_BLOCK_LIST_TITLE" = "Blockerade";
 
 /* Table cell label */
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Vidarebefordra alltid samtal";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vidarebefordra alla samtal genom en Signal-server för att undvika att avslöja ditt IP-nummer till din kontakt. Detta kommer att reducera samtalskvaliteten.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Vidarebefordra alla samtal genom en Signal-server för att undvika att avslöja ditt IP-nummer för din kontakt. Detta kommer att reducera samtalskvaliteten.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Rensa konversationshistorik";
@@ -2130,16 +2190,16 @@
 "SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \nLicenserad under GPLv3";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Radera konto";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Ta bort konto";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Radera all data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Ta bort all data";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Är du säker på att du vill radera all historik (meddelanden, bifogade filer, samtal, etc.)? Du kan inte ångra dig.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Är du säker på att du vill ta bort all historik (meddelanden, bifogade filer, samtal, etc.)? Du kan inte ångra dig.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Radera allt";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Ta bort allt";
 
 /* No comment provided by engineer. */
 "SETTINGS_HELP_HEADER" = "Hjälp";
@@ -2175,10 +2235,16 @@
 "SETTINGS_NAV_BAR_TITLE" = "Inställningar";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Samtals- och meddelandenotiser kan visas medan din telefon är låst. Du kanske vill begränsa vad som visas i dessa notiser.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Samtals- och meddelandeaviseringar kan visas medan din telefon är låst. Du kanske vill begränsa vad som visas i dessa notiser.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Notisinnehåll";
+
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt anslöt sig till Signal";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Händelser";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Notiser";
@@ -2199,7 +2265,7 @@
 "SETTINGS_PRIVACY_TITLE" = "Integritetsskydd";
 
 /* Label for the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPT" = "Läskvittens";
+"SETTINGS_READ_RECEIPT" = "Läskvittenser";
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Visa och dela när meddelanden har lästs. Inställningen är valfri och påverkar alla konversationer.";
@@ -2223,7 +2289,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Aktivera skärmsäkerhet";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Förhindra Signals förhandsvisning från att visas i app-bytaren.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Förhindra Signals förhandsvisning från att visas i appväxlaren.";
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration visar Signalsamtal på din låsskärm och i systemets samtalshistorik. Du kan välja att visa din kontakts namn och nummer. Ifall iCloud är påslaget kan denna samtalshistorik delas med Apple.";
@@ -2333,6 +2399,51 @@
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Inget";
 
+/* Preview text shown in notifications and home view for sticker messages. */
+"STICKER_MESSAGE_PREVIEW" = "Klistermärkesmeddelande";
+
+/* Tooltip indicating that a sticker pack was installed. */
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Klistermärkepaket installerat";
+
+/* Label for a sticker that failed to download. */
+"STICKERS_FAILED_DOWNLOAD" = "Klistermärke";
+
+/* Label for the 'install sticker pack' button. */
+"STICKERS_INSTALL_BUTTON" = "Installera";
+
+/* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Serier";
+
+/* Title for the 'available known stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Klistermärken du mottagit";
+
+/* Title for the 'installed stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installera klistermärken";
+
+/* Label indicating that the user has no installed sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Inga klistermärken installerade";
+
+/* Label indicating that the user has no known sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Klistermärken från inkommande meddelanden visas här";
+
+/* Title for the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_TITLE" = "Stickers";
+
+/* Default title for sticker packs. */
+"STICKERS_PACK_DEFAULT_TITLE" = "Klistermärkepaket";
+
+/* Error message shown when a sticker pack failed to install. */
+"STICKERS_PACK_INSTALL_FAILED" = "Installation av klistermärkepaket misslyckades.";
+
+/* Title of the 'share sticker pack' view. */
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Dela klistermärkepaket";
+
+/* The default title for the 'sticker pack' view. */
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Klistermärkepaket";
+
+/* Label for the 'uninstall sticker pack' button. */
+"STICKERS_UNINSTALL_BUTTON" = "Avinstallera";
+
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ditt säkerhetsnummer med %@ stämmer. Du kan markera den är kontakten som verifierad.";
 
@@ -2388,7 +2499,7 @@
 "TXT_CANCEL_TITLE" = "Avbryt";
 
 /* No comment provided by engineer. */
-"TXT_DELETE_TITLE" = "Radera";
+"TXT_DELETE_TITLE" = "Ta bort";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Avarkivera";
@@ -2401,6 +2512,27 @@
 
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "Okänt land";
+
+/* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "En av dina enheter skickade ett meddelande som inte kan bearbetas eller visas här eftersom den använder en ny Signal-funktion.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ skickade dig ett meddelande som inte kan bearbetas eller visas eftersom det använder en ny Signal-funktion.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Du fick ett meddelande som inte kan bearbetas eller visas eftersom det använder en ny Signal-funktion.";
+
+/* Label for button that lets users upgrade the app. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Uppdatera Signal nu";
+
+/* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Uppdaterad till den senaste versionen av Signal. Du kan nu ta emot den här meddelandetypen på din enhet.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Du kan be %@ att skicka det här meddelandet igen nu när du använder en aktuell version av Signal.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Du kan be avsändaren att skicka det här meddelandet igen nu när du använder en aktuell version av Signal.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Okänt";
@@ -2435,65 +2567,11 @@
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Stöds inte";
 
-/* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Svara på samtal från din låsskärm är enkelt med iOS call integration. Vi anonymiserar alltid uppringaren, så det är privat också.";
+/* Body text for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Varför använda ord när du kan använda klistermärken? Tryck på den här ikonen på tangentbordet:";
 
-/* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Lär dig mer i inställningarna för integritetsskydd.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Svep för att svara";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Sätt på skrivindikatorer";
-
-/* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Valfria länkförhandsvisningar stöds nu för några av de mest populära platserna på Internet.";
-
-/* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "Du kan inaktivera eller aktivera den här funktionen när som helst i dina Signalinställningar (Sekretess > skicka länkförhandsvisningar).";
-
-/* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Länkförhandsvisningar";
-
-/* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Nu kan du välja standard-notisljud men också sätta per konversation. Samtal kommer respektera ringtoner du valt för varje kontakt i systemet.";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Granska inställningar för notiser";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Uppdaterade samtals- och meddelandeljud";
-
-/* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Skapa din profil";
-
-/* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Du kan nu dela ett profilfoto och namn med dina vänner på Signal.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Redo för en närbild?";
-
-/* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Du har nu möjligheten att visa och dela när meddelanden har blivit lästa.";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Aktivera läskvittenser i inställningarna för integritetsskydd.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Introducerar läskvittenser";
-
-/* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Nu kan du valfritt visa och dela när meddelanden skrivs.";
-
-/* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Introducerar skrivindikatorer";
-
-/* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Signal har nu stöd för säkra videosamtal. Påbörja ett samtal som vanligt, tryck på kameraknappen och vinka hej.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Hallå säkra videosamtal!";
+/* Header for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Introducerar Klistermärken";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal kommer snart att kräva iOS 10 eller senare. Vänligen uppgradera i Inställningar-app >> Allmänt >> Programuppdatering.";

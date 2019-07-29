@@ -77,12 +77,14 @@ struct AudioSource: Hashable {
         return lhsPortDescription.uid == rhsPortDescription.uid
     }
 
-    var hashValue: Int {
+    public func hash(into hasher: inout Hasher) {
         guard let portDescription = self.portDescription else {
             assert(self.isBuiltInSpeaker)
-            return "Built In Speaker".hashValue
+            hasher.combine("Built In Speaker")
+            return
         }
-        return portDescription.uid.hash
+
+        hasher.combine(portDescription.uid)
     }
 }
 
@@ -346,7 +348,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
-        play(sound: OWSSound.callFailure)
+        play(sound: .callEnded)
         handleCallEnded(call: call)
     }
 
@@ -354,6 +356,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
+        play(sound: .callEnded)
         handleCallEnded(call: call)
     }
 
@@ -363,6 +366,7 @@ protocol CallAudioServiceDelegate: class {
 
         vibrate()
 
+        play(sound: .callEnded)
         handleCallEnded(call: call)
     }
 

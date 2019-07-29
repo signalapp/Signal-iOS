@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceProvisioner.h"
@@ -17,7 +17,7 @@
 
 - (void)provisionWithMessageBody:(NSData *)messageBody
                ephemeralDeviceId:(NSString *)deviceId
-                         success:(void (^)())successCallback
+                         success:(void (^)(void))successCallback
                          failure:(void (^)(NSError *))failureCallback
 {
     OWSLogInfo(@"faking successful provisioning");

@@ -38,7 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                      expireStartedAt:0
                                                        quotedMessage:nil
                                                         contactShare:nil
-                                                         linkPreview:nil];
+                                                         linkPreview:nil
+                                                      messageSticker:nil
+                                 perMessageExpirationDurationSeconds:0];
 
     XCTAssertEqual(0, message.expiresAt);
 }
@@ -56,7 +58,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                      expireStartedAt:now
                                                        quotedMessage:nil
                                                         contactShare:nil
-                                                         linkPreview:nil];
+                                                         linkPreview:nil
+                                                      messageSticker:nil
+                                 perMessageExpirationDurationSeconds:0];
     XCTAssertEqual(now + expirationMs, message.expiresAt);
 }
 

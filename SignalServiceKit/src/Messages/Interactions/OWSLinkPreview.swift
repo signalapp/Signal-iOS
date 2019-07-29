@@ -41,12 +41,16 @@ public class OWSLinkPreviewDraft: NSObject {
     public var title: String?
 
     @objc
-    public var jpegImageData: Data?
+    public var imageData: Data?
 
-    public init(urlString: String, title: String?, jpegImageData: Data? = nil) {
+    @objc
+    public var imageMimeType: String?
+
+    public init(urlString: String, title: String?, imageData: Data? = nil, imageMimeType: String? = nil) {
         self.urlString = urlString
         self.title = title
-        self.jpegImageData = jpegImageData
+        self.imageData = imageData
+        self.imageMimeType = imageMimeType
 
         super.init()
     }
@@ -56,7 +60,7 @@ public class OWSLinkPreviewDraft: NSObject {
         if let titleValue = title {
             hasTitle = titleValue.count > 0
         }
-        let hasImage = jpegImageData != nil
+        let hasImage = imageData != nil && imageMimeType != nil
         return hasTitle || hasImage
     }
 
@@ -100,7 +104,7 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
-    public required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
         try super.init(dictionary: dictionaryValue)
     }
 
@@ -115,7 +119,7 @@ public class OWSLinkPreview: MTLModel {
     @objc
     public class func buildValidatedLinkPreview(dataMessage: SSKProtoDataMessage,
                                                 body: String?,
-                                                transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
+                                                transaction: SDSAnyWriteTransaction) throws -> OWSLinkPreview {
         guard let previewProto = dataMessage.preview.first else {
             throw LinkPreviewError.noPreview
         }
@@ -157,7 +161,7 @@ public class OWSLinkPreview: MTLModel {
         var imageAttachmentId: String?
         if let imageProto = previewProto.image {
             if let imageAttachmentPointer = TSAttachmentPointer(fromProto: imageProto, albumMessage: nil) {
-                imageAttachmentPointer.save(with: transaction)
+                imageAttachmentPointer.anyInsert(transaction: transaction)
                 imageAttachmentId = imageAttachmentPointer.uniqueId
             } else {
                 Logger.error("Could not parse image proto.")
@@ -177,12 +181,13 @@ public class OWSLinkPreview: MTLModel {
 
     @objc
     public class func buildValidatedLinkPreview(fromInfo info: OWSLinkPreviewDraft,
-                                                transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+                                                transaction: SDSAnyWriteTransaction) throws -> OWSLinkPreview {
+        guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction) else {
             throw LinkPreviewError.noPreview
         }
-        let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(jpegImageData: info.jpegImageData,
-                                                         transaction: transaction)
+        let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(imageData: info.imageData,
+                                                                        imageMimeType: info.imageMimeType,
+                                                                        transaction: transaction)
 
         let linkPreview = OWSLinkPreview(urlString: info.urlString, title: info.title, imageAttachmentId: imageAttachmentId)
 
@@ -194,22 +199,28 @@ public class OWSLinkPreview: MTLModel {
         return linkPreview
     }
 
-    private class func saveAttachmentIfPossible(jpegImageData: Data?,
-                                                transaction: YapDatabaseReadWriteTransaction) -> String? {
-        guard let jpegImageData = jpegImageData else {
+    private class func saveAttachmentIfPossible(imageData: Data?,
+                                                imageMimeType: String?,
+                                                transaction: SDSAnyWriteTransaction) -> String? {
+        guard let imageData = imageData else {
             return nil
         }
-        let fileSize = jpegImageData.count
+        guard let imageMimeType = imageMimeType else {
+            return nil
+        }
+        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: imageMimeType) else {
+            return nil
+        }
+        let fileSize = imageData.count
         guard fileSize > 0 else {
             owsFailDebug("Invalid file size for image data.")
             return nil
         }
-        let fileExtension = "jpg"
-        let contentType = OWSMimeTypeImageJpeg
+        let contentType = imageMimeType
 
         let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
         do {
-            try jpegImageData.write(to: NSURL.fileURL(withPath: filePath), options: .atomicWrite)
+            try imageData.write(to: NSURL.fileURL(withPath: filePath))
         } catch let error as NSError {
             owsFailDebug("file write failed: \(filePath), \(error)")
             return nil
@@ -219,12 +230,12 @@ public class OWSLinkPreview: MTLModel {
             owsFailDebug("Could not create data source for path: \(filePath)")
             return nil
         }
-        let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil)
+        let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: false)
         guard attachment.write(dataSource) else {
             owsFailDebug("Could not write data source for path: \(filePath)")
             return nil
         }
-        attachment.save(with: transaction)
+        attachment.anyInsert(transaction: transaction)
 
         return attachment.uniqueId
     }
@@ -239,16 +250,16 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
-    public func removeAttachment(transaction: YapDatabaseReadWriteTransaction) {
+    public func removeAttachment(transaction: SDSAnyWriteTransaction) {
         guard let imageAttachmentId = imageAttachmentId else {
             owsFailDebug("No attachment id.")
             return
         }
-        guard let attachment = TSAttachment.fetch(uniqueId: imageAttachmentId, transaction: transaction) else {
+        guard let attachment = TSAttachment.anyFetch(uniqueId: imageAttachmentId, transaction: transaction) else {
             owsFailDebug("Could not load attachment.")
             return
         }
-        attachment.remove(with: transaction)
+        attachment.anyRemove(transaction: transaction)
     }
 
     @objc
@@ -259,6 +270,16 @@ public class OWSLinkPreview: MTLModel {
 
 @objc
 public class OWSLinkPreviewManager: NSObject {
+
+    // MARK: - Dependencies
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    class var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
 
     // MARK: - Whitelists
 
@@ -336,6 +357,9 @@ public class OWSLinkPreviewManager: NSObject {
             owsFailDebug("Invalid url.")
             return nil
         }
+        if StickerPackInfo.isStickerPackShare(url) {
+            return stickerPackShareDomain(forUrl: url)
+        }
         guard let result = whitelistedDomain(forUrl: url,
                                              domainWhitelist: linkDomainWhitelist,
                                              allowSubdomains: false) else {
@@ -347,6 +371,9 @@ public class OWSLinkPreviewManager: NSObject {
 
     @objc
     public class func isValidLink(url: URL) -> Bool {
+        if StickerPackInfo.isStickerPackShare(url) {
+            return true
+        }
         return whitelistedDomain(forUrl: url,
                                  domainWhitelist: linkDomainWhitelist,
                                  allowSubdomains: false) != nil
@@ -386,6 +413,17 @@ public class OWSLinkPreviewManager: NSObject {
         return nil
     }
 
+    private class func stickerPackShareDomain(forUrl url: URL) -> String? {
+        guard let domain = url.host?.lowercased() else {
+            return nil
+        }
+        guard url.path.count > 1 else {
+            // URL must have non-empty path.
+            return nil
+        }
+        return domain
+    }
+
     // MARK: - Serial Queue
 
     private let serialQueue = DispatchQueue(label: "org.signal.linkPreview")
@@ -409,9 +447,12 @@ public class OWSLinkPreviewManager: NSObject {
     public func previewUrl(forMessageBodyText body: String?, selectedRange: NSRange?) -> String? {
         AssertIsOnMainThread()
 
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        }
         // Exit early if link previews are not enabled in order to avoid
         // tainting the cache.
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+        guard areLinkPreviewsEnabled else {
             return nil
         }
 
@@ -460,7 +501,10 @@ public class OWSLinkPreviewManager: NSObject {
     }
 
     class func allPreviewUrlMatches(forMessageBodyText body: String) -> [URLMatchResult] {
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        }
+        guard areLinkPreviewsEnabled else {
             return []
         }
 
@@ -510,9 +554,12 @@ public class OWSLinkPreviewManager: NSObject {
                                             forPreviewUrl previewUrl: String) {
         assert(previewUrl == linkPreviewDraft.urlString)
 
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        }
         // Exit early if link previews are not enabled in order to avoid
         // tainting the cache.
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+        guard areLinkPreviewsEnabled else {
             return
         }
 
@@ -527,7 +574,10 @@ public class OWSLinkPreviewManager: NSObject {
     }
 
     public func tryToBuildPreviewInfo(previewUrl: String?) -> Promise<OWSLinkPreviewDraft> {
-        guard SSKPreferences.areLinkPreviewsEnabled else {
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        }
+        guard areLinkPreviewsEnabled else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
         guard let previewUrl = previewUrl else {
@@ -537,6 +587,22 @@ public class OWSLinkPreviewManager: NSObject {
             Logger.verbose("Link preview info cache hit.")
             return Promise.value(cachedInfo)
         }
+        guard let url = URL(string: previewUrl) else {
+            Logger.error("Could not parse URL.")
+            return Promise(error: LinkPreviewError.invalidInput)
+        }
+        if StickerPackInfo.isStickerPackShare(url) {
+            return linkPreviewDraft(forStickerShare: url)
+                .map(on: DispatchQueue.global()) { (linkPreviewDraft) -> OWSLinkPreviewDraft in
+                    guard linkPreviewDraft.isValid() else {
+                        throw LinkPreviewError.noPreview
+                    }
+                    self.setCachedLinkPreview(linkPreviewDraft, forPreviewUrl: previewUrl)
+
+                    return linkPreviewDraft
+            }
+        }
+
         return downloadLink(url: previewUrl)
             .then(on: DispatchQueue.global()) { (data) -> Promise<OWSLinkPreviewDraft> in
                 return self.parseLinkDataAndBuildDraft(linkData: data, linkUrlString: previewUrl)
@@ -752,7 +818,10 @@ public class OWSLinkPreviewManager: NSObject {
             return downloadImage(url: imageUrlString, imageMimeType: imageMimeType)
                 .map(on: DispatchQueue.global()) { (imageData: Data) -> OWSLinkPreviewDraft in
                     // We always recompress images to Jpeg.
-                    let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, jpegImageData: imageData)
+                    let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString,
+                                                               title: title,
+                                                               imageData: imageData,
+                                                               imageMimeType: OWSMimeTypeImageJpeg)
                     return linkPreviewDraft
                 }
                 .recover(on: DispatchQueue.global()) { (_) -> Promise<OWSLinkPreviewDraft> in
@@ -846,7 +915,57 @@ public class OWSLinkPreviewManager: NSObject {
 
         return attributedString.string
     }
+
+    // MARK: - Stickers
+
+    func linkPreviewDraft(forStickerShare url: URL) -> Promise<OWSLinkPreviewDraft> {
+        Logger.verbose("url: \(url)")
+
+        guard let stickerPackInfo = StickerPackInfo.parseStickerPackShare(url) else {
+            Logger.error("Could not parse URL.")
+            return Promise(error: LinkPreviewError.invalidInput)
+        }
+
+        // tryToDownloadStickerPack will use locally saved data if possible.
+        return StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
+        .then { (stickerPack) -> Promise<OWSLinkPreviewDraft> in
+            let coverInfo = stickerPack.coverInfo
+            // tryToDownloadSticker will use locally saved data if possible.
+            return StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo).map(on: DispatchQueue.global()) { (coverData) -> OWSLinkPreviewDraft in
+                // Try to build thumbnail from cover webp.
+                var pngImageData: Data?
+                if let stillImage = (coverData as NSData).stillForWebpData() {
+                    var stillThumbnail = stillImage
+                    let maxImageSize: CGFloat = 1024
+                    let imageSize = stillImage.size
+                    let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
+                    if shouldResize {
+                        if let resizedImage = stillImage.resized(withMaxDimensionPoints: maxImageSize) {
+                            stillThumbnail = resizedImage
+                        } else {
+                            owsFailDebug("Could not resize image.")
+                        }
+                    }
+
+                    if let stillData = stillThumbnail.pngData() {
+                        pngImageData = stillData
+                    } else {
+                        owsFailDebug("Could not encode as JPEG.")
+                    }
+                } else {
+                    owsFailDebug("Could not extract still.")
+                }
+
+                return OWSLinkPreviewDraft(urlString: url.absoluteString,
+                                           title: stickerPack.title?.filterForDisplay,
+                                           imageData: pngImageData,
+                                           imageMimeType: OWSMimeTypeImagePng)
+            }
+        }
+    }
 }
+
+// MARK: -
 
 extension OWSLinkPreviewManager: ProxiedContentDownloaderDelegate {
     func proxiedContentDownloader(willPerformHTTPRedirection response: HTTPURLResponse, newRequest: URLRequest) -> URLRequest? {

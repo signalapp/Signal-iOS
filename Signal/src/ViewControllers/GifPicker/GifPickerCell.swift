@@ -39,7 +39,7 @@ class GifPickerCell: UICollectionViewCell {
     var imageView: YYAnimatedImageView?
     var activityIndicator: UIActivityIndicatorView?
 
-    var isCellSelected: Bool = false {
+    override var isSelected: Bool {
         didSet {
             AssertIsOnMainThread()
             ensureCellState()
@@ -70,7 +70,7 @@ class GifPickerCell: UICollectionViewCell {
         imageView?.removeFromSuperview()
         imageView = nil
         activityIndicator = nil
-        isCellSelected = false
+        isSelected = false
     }
 
     private func clearStillAssetRequest() {
@@ -220,7 +220,7 @@ class GifPickerCell: UICollectionViewCell {
         imageView.image = image
         self.backgroundColor = nil
 
-        if self.isCellSelected {
+        if isSelected, activityIndicator == nil {
             let activityIndicator = UIActivityIndicatorView(style: .gray)
             self.activityIndicator = activityIndicator
             addSubview(activityIndicator)
@@ -237,8 +237,9 @@ class GifPickerCell: UICollectionViewCell {
             activityIndicator.layer.shadowOffset = CGSize(width: 1, height: 1)
             activityIndicator.layer.shadowOpacity = 0.7
             activityIndicator.layer.shadowRadius = 1.0
-        } else {
-            self.activityIndicator?.stopAnimating()
+        } else if !isSelected, let activityIndicator = self.activityIndicator {
+            activityIndicator.stopAnimating()
+            activityIndicator.removeFromSuperview()
             self.activityIndicator = nil
         }
     }
@@ -273,6 +274,9 @@ class GifPickerCell: UICollectionViewCell {
         self.backgroundColor = (Theme.isDarkThemeEnabled
             ? UIColor(white: 0.25, alpha: 1.0)
             : UIColor(white: 0.95, alpha: 1.0))
+        self.activityIndicator?.stopAnimating()
+        activityIndicator?.removeFromSuperview()
+        self.activityIndicator = nil
     }
 
     private func pickBestAsset() -> ProxiedContentAsset? {

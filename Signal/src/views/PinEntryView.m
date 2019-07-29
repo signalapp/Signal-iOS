@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "PinEntryView.h"
@@ -186,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (void)updateIsSubmitEnabled;
+- (void)updateIsSubmitEnabled
 {
     [self.submitButton setEnabled:self.hasValidPin];
 }

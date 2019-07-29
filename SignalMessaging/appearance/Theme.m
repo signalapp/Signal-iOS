@@ -7,6 +7,7 @@
 #import "UIUtil.h"
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -86,10 +87,14 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? Theme.darkThemeBackgroundColor : UIColor.ows_whiteColor);
 }
 
++ (UIColor *)darkThemeOffBackgroundColor
+{
+    return [UIColor colorWithWhite:0.2f alpha:1.f];
+}
+
 + (UIColor *)offBackgroundColor
 {
-    return (
-        Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor colorWithWhite:0.94f alpha:1.f]);
+    return (Theme.isDarkThemeEnabled ? self.darkThemeOffBackgroundColor : UIColor.ows_gray05Color);
 }
 
 + (UIColor *)primaryColor
@@ -139,7 +144,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? self.darkThemeNavbarIconColor : UIColor.ows_gray60Color);
 }
 
-+ (UIColor *)darkThemeNavbarIconColor;
++ (UIColor *)darkThemeNavbarIconColor
 {
     return UIColor.ows_gray25Color;
 }
@@ -162,6 +167,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIColor *)cellSeparatorColor
 {
     return Theme.hairlineColor;
+}
+
++ (UIColor *)cursorColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_materialBlueColor;
 }
 
 + (UIColor *)darkThemeBackgroundColor
@@ -200,11 +210,10 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return Theme.isDarkThemeEnabled ? self.darkThemeKeyboardAppearance : UIKeyboardAppearanceDefault;
 }
 
-+ (UIKeyboardAppearance)darkThemeKeyboardAppearance;
++ (UIKeyboardAppearance)darkThemeKeyboardAppearance
 {
     return UIKeyboardAppearanceDark;
 }
-
 
 #pragma mark - Search Bar
 
@@ -215,7 +224,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)searchFieldBackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? Theme.offBackgroundColor : UIColor.ows_gray05Color;
+    return Theme.offBackgroundColor;
 }
 
 #pragma mark -

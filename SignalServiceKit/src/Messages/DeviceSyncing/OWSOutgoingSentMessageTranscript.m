@@ -42,7 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithOutgoingMessage:(TSOutgoingMessage *)message isRecipientUpdate:(BOOL)isRecipientUpdate
 {
-    self = [super init];
+    OWSAssertDebug(message);
+
+    // The sync message's timestamp must match the original outgoing message's timestamp.
+    self = [super initWithTimestamp:message.timestamp];
 
     if (!self) {
         return self;
@@ -64,15 +67,30 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSent builder];
-    [sentBuilder setTimestamp:self.message.timestamp];
+    [sentBuilder setTimestamp:self.timestamp];
     [sentBuilder setDestination:self.sentRecipientId];
     [sentBuilder setIsRecipientUpdate:self.isRecipientUpdate];
 
-    SSKProtoDataMessage *_Nullable dataMessage = [self.message buildDataMessage:self.sentRecipientId];
+    SSKProtoDataMessage *_Nullable dataMessage;
+    if (self.message.hasPerMessageExpiration) {
+        // Create data message without renderable content.
+        SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
+        [dataBuilder setTimestamp:self.message.timestamp];
+
+        NSError *error;
+        dataMessage = [dataBuilder buildAndReturnError:&error];
+        if (error || !dataMessage) {
+            OWSFailDebug(@"could not build protobuf: %@", error);
+            return nil;
+        }
+    } else {
+        dataMessage = [self.message buildDataMessage:self.sentRecipientId];
+    }
     if (!dataMessage) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
     }
+
     [sentBuilder setMessage:dataMessage];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 

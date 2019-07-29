@@ -28,11 +28,26 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 #define textSecureWebSocketAPI @"wss://textsecure-service.whispersystems.org/v1/websocket/"
 #define textSecureServerURL @"https://textsecure-service.whispersystems.org/"
 #define textSecureCDNServerURL @"https://cdn.signal.org"
+#define textSecureDirectCDNServerURL @"https://d83eunklitikj.cloudfront.net"
 // Use same reflector for service and CDN
 #define textSecureServiceReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net"
 #define textSecureCDNReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net"
 #define contactDiscoveryURL @"https://api.directory.signal.org"
+#define keyBackupURL @"https://api.backup.signal.org"
 #define kUDTrustRoot @"BXu6QIKVz5MA8gstzfOgRQGqyLqOwNKHL6INkv3IHWMF"
+
+#define serviceCensorshipPrefix @"service"
+#define cdnCensorshipPrefix @"cdn"
+#define contactDiscoveryCensorshipPrefix @"directory"
+#define keyBackupCensorshipPrefix @"backup"
+
+#define contactDiscoveryEnclaveName @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
+#define contactDiscoveryMrEnclave contactDiscoveryEnclaveName
+
+#define keyBackupEnclaveName @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
+#define keyBackupMrEnclave @"94029382f0a8947a72df682e6972f58bbb6dda2f5ec51ab0974bd40c781b719b"
+#define keyBackupServiceId @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
+
 #define USING_PRODUCTION_SERVICE
 
 //#else
@@ -41,17 +56,30 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 //#define textSecureWebSocketAPI @"wss://textsecure-service-staging.whispersystems.org/v1/websocket/"
 //#define textSecureServerURL @"https://textsecure-service-staging.whispersystems.org/"
 //#define textSecureCDNServerURL @"https://cdn-staging.signal.org"
-//#define textSecureServiceReflectorHost @"meek-signal-service-staging.appspot.com";
-//#define textSecureCDNReflectorHost @"meek-signal-cdn-staging.appspot.com";
+//#define textSecureServiceReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net";
+//#define textSecureCDNReflectorHost @"europe-west1-signal-cdn-reflector.cloudfunctions.net";
 //#define contactDiscoveryURL @"https://api-staging.directory.signal.org"
+//#define keyBackupURL @"https://api-staging.backup.signal.org"
 //#define kUDTrustRoot @"BbqY1DzohE4NUZoVF+L18oUPrK3kILllLEJh2UnPSsEx"
+//
+//#define serviceCensorshipPrefix @"service-staging"
+//#define cdnCensorshipPrefix @"cdn-staging"
+//#define contactDiscoveryCensorshipPrefix @"directory-staging"
+//#define keyBackupCensorshipPrefix @"backup-staging"
+//
+//#define contactDiscoveryEnclaveName @"cd6cfc342937b23b1bdd3bbf9721aa5615ac9ff50a75c5527d441cd3276826c9"
+//#define contactDiscoveryMrEnclave contactDiscoveryEnclaveName
+//
+//#define keyBackupEnclaveName @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
+//#define keyBackupMrEnclave @"94029382f0a8947a72df682e6972f58bbb6dda2f5ec51ab0974bd40c781b719b"
+//#define keyBackupServiceId @"281b2220946102e8447b1d72a02b52d413c390780bae3e3a5aad27398999e7a3"
 
 //#endif
 
 BOOL IsUsingProductionService(void);
 
 #define textSecureAccountsAPI @"v1/accounts"
-#define textSecureAttributesAPI @"/attributes/"
+#define textSecureAttributesAPI @"v1/accounts/attributes/"
 
 #define textSecureMessagesAPI @"v1/messages/"
 #define textSecureKeysAPI @"v2/keys"
@@ -64,7 +92,8 @@ BOOL IsUsingProductionService(void);
 #define textSecureProfileAPIFormat @"v1/profile/%@"
 #define textSecureSetProfileNameAPIFormat @"v1/profile/name/%@"
 #define textSecureProfileAvatarFormAPI @"v1/profile/form/avatar"
-#define textSecure2FAAPI @"/v1/accounts/pin"
+#define textSecure2FAAPI @"v1/accounts/pin"
+#define textSecureRegistrationLockV2API @"v1/accounts/registration_lock"
 
 #define SignalApplicationGroup @"group.org.whispersystems.signal.group"
 

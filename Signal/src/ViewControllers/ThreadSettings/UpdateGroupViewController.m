@@ -15,7 +15,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSTableViewController.h>
-#import <SignalMessaging/SignalKeyingStorage.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
@@ -43,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 @property (nonatomic, readonly) AvatarImageView *avatarView;
+@property (nonatomic, readonly) UIImageView *cameraImageView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
 @property (nonatomic, nullable) UIImage *groupAvatar;
@@ -190,6 +190,14 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
     _groupAvatar = self.thread.groupModel.groupImage;
+
+    UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
+    UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+    [threadInfoView addSubview:cameraImageView];
+    [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
+    [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
+    _cameraImageView = cameraImageView;
+
     [self updateAvatarView];
 
     UITextField *groupNameTextField = [OWSTextField new];
@@ -248,15 +256,17 @@ NS_ASSUME_NONNULL_BEGIN
     section.headerTitle = NSLocalizedString(
         @"EDIT_GROUP_MEMBERS_SECTION_TITLE", @"a title for the members section of the 'new/update group' view.");
 
-    [section addItem:[OWSTableItem
-                         disclosureItemWithText:NSLocalizedString(@"EDIT_GROUP_MEMBERS_ADD_MEMBER",
-                                                    @"Label for the cell that lets you add a new member to a group.")
-                                customRowHeight:UITableViewAutomaticDimension
-                                    actionBlock:^{
-                                        AddToGroupViewController *viewController = [AddToGroupViewController new];
-                                        viewController.addToGroupDelegate = weakSelf;
-                                        [weakSelf.navigationController pushViewController:viewController animated:YES];
-                                    }]];
+    [section
+        addItem:[OWSTableItem
+                     disclosureItemWithText:NSLocalizedString(@"EDIT_GROUP_MEMBERS_ADD_MEMBER",
+                                                @"Label for the cell that lets you add a new member to a group.")
+                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(UpdateGroupViewController, @"add_member")
+                            customRowHeight:UITableViewAutomaticDimension
+                                actionBlock:^{
+                                    AddToGroupViewController *viewController = [AddToGroupViewController new];
+                                    viewController.addToGroupDelegate = weakSelf;
+                                    [weakSelf.navigationController pushViewController:viewController animated:YES];
+                                }]];
 
     NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
     [memberRecipientIds removeObject:[contactsViewHelper localNumber]];
@@ -375,6 +385,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.conversationSettingsViewDelegate);
 
+    [self.groupNameTextField acceptAutocorrectSuggestion];
+
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
                                                          memberIds:self.memberRecipientIds.allObjects
@@ -406,9 +418,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateAvatarView
 {
     UIImage *_Nullable groupAvatar = self.groupAvatar;
+    self.cameraImageView.hidden = groupAvatar != nil;
+
     if (!groupAvatar) {
         groupAvatar = [[[OWSGroupAvatarBuilder alloc] initWithThread:self.thread diameter:kLargeAvatarSize] build];
     }
+
     self.avatarView.image = groupAvatar;
 }
 

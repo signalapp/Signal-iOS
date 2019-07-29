@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKEnvironment.h"
@@ -29,13 +29,14 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) TSAccountManager *tsAccountManager;
 @property (nonatomic) OWS2FAManager *ows2FAManager;
 @property (nonatomic) OWSDisappearingMessagesJob *disappearingMessagesJob;
-@property (nonatomic) ContactDiscoveryService *contactDiscoveryService;
 @property (nonatomic) OWSReadReceiptManager *readReceiptManager;
 @property (nonatomic) OWSOutgoingReceiptManager *outgoingReceiptManager;
 @property (nonatomic) id<OWSSyncManagerProtocol> syncManager;
 @property (nonatomic) id<SSKReachabilityManager> reachabilityManager;
 @property (nonatomic) id<OWSTypingIndicators> typingIndicators;
 @property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
+@property (nonatomic) StickerManager *stickerManager;
+@property (nonatomic) SDSDatabaseStorage *databaseStorage;
 
 @end
 
@@ -46,14 +47,13 @@ static SSKEnvironment *sharedSSKEnvironment;
 @synthesize callMessageHandler = _callMessageHandler;
 @synthesize notificationsManager = _notificationsManager;
 @synthesize objectReadWriteConnection = _objectReadWriteConnection;
-@synthesize sessionStoreDBConnection = _sessionStoreDBConnection;
 @synthesize migrationDBConnection = _migrationDBConnection;
 @synthesize analyticsDBConnection = _analyticsDBConnection;
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(OWSMessageSender *)messageSender
-                  messageSenderJobQueue:(SSKMessageSenderJobQueue *)messageSenderJobQueue
+                  messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                          profileManager:(id<ProfileManagerProtocol>)profileManager
                          primaryStorage:(OWSPrimaryStorage *)primaryStorage
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
@@ -61,6 +61,9 @@ static SSKEnvironment *sharedSSKEnvironment;
                          messageManager:(OWSMessageManager *)messageManager
                         blockingManager:(OWSBlockingManager *)blockingManager
                         identityManager:(OWSIdentityManager *)identityManager
+                           sessionStore:(SSKSessionStore *)sessionStore
+                      signedPreKeyStore:(SSKSignedPreKeyStore *)signedPreKeyStore
+                            preKeyStore:(SSKPreKeyStore *)preKeyStore
                               udManager:(id<OWSUDManager>)udManager
                        messageDecrypter:(OWSMessageDecrypter *)messageDecrypter
                   batchMessageProcessor:(OWSBatchMessageProcessor *)batchMessageProcessor
@@ -69,13 +72,14 @@ static SSKEnvironment *sharedSSKEnvironment;
                        tsAccountManager:(TSAccountManager *)tsAccountManager
                           ows2FAManager:(OWS2FAManager *)ows2FAManager
                 disappearingMessagesJob:(OWSDisappearingMessagesJob *)disappearingMessagesJob
-                contactDiscoveryService:(ContactDiscoveryService *)contactDiscoveryService
                      readReceiptManager:(OWSReadReceiptManager *)readReceiptManager
                  outgoingReceiptManager:(OWSOutgoingReceiptManager *)outgoingReceiptManager
                     reachabilityManager:(id<SSKReachabilityManager>)reachabilityManager
                             syncManager:(id<OWSSyncManagerProtocol>)syncManager
                        typingIndicators:(id<OWSTypingIndicators>)typingIndicators
                     attachmentDownloads:(OWSAttachmentDownloads *)attachmentDownloads
+                         stickerManager:(StickerManager *)stickerManager
+                        databaseStorage:(SDSDatabaseStorage *)databaseStorage
 {
     self = [super init];
     if (!self) {
@@ -93,6 +97,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(messageManager);
     OWSAssertDebug(blockingManager);
     OWSAssertDebug(identityManager);
+    OWSAssertDebug(sessionStore);
+    OWSAssertDebug(signedPreKeyStore);
+    OWSAssertDebug(preKeyStore);
     OWSAssertDebug(udManager);
     OWSAssertDebug(messageDecrypter);
     OWSAssertDebug(batchMessageProcessor);
@@ -101,13 +108,14 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(tsAccountManager);
     OWSAssertDebug(ows2FAManager);
     OWSAssertDebug(disappearingMessagesJob);
-    OWSAssertDebug(contactDiscoveryService);
     OWSAssertDebug(readReceiptManager);
     OWSAssertDebug(outgoingReceiptManager);
     OWSAssertDebug(syncManager);
     OWSAssertDebug(reachabilityManager);
     OWSAssertDebug(typingIndicators);
     OWSAssertDebug(attachmentDownloads);
+    OWSAssertDebug(stickerManager);
+    OWSAssertDebug(databaseStorage);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -120,6 +128,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageManager = messageManager;
     _blockingManager = blockingManager;
     _identityManager = identityManager;
+    _sessionStore = sessionStore;
+    _signedPreKeyStore = signedPreKeyStore;
+    _preKeyStore = preKeyStore;
     _udManager = udManager;
     _messageDecrypter = messageDecrypter;
     _batchMessageProcessor = batchMessageProcessor;
@@ -128,13 +139,14 @@ static SSKEnvironment *sharedSSKEnvironment;
     _tsAccountManager = tsAccountManager;
     _ows2FAManager = ows2FAManager;
     _disappearingMessagesJob = disappearingMessagesJob;
-    _contactDiscoveryService = contactDiscoveryService;
     _readReceiptManager = readReceiptManager;
     _outgoingReceiptManager = outgoingReceiptManager;
     _syncManager = syncManager;
     _reachabilityManager = reachabilityManager;
     _typingIndicators = typingIndicators;
     _attachmentDownloads = attachmentDownloads;
+    _stickerManager = stickerManager;
+    _databaseStorage = databaseStorage;
 
     return self;
 }
@@ -180,7 +192,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     }
 }
 
-- (nullable id<NotificationsProtocol>)notificationsManager
+- (id<NotificationsProtocol>)notificationsManager
 {
     @synchronized(self) {
         OWSAssertDebug(_notificationsManager);
@@ -189,7 +201,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     }
 }
 
-- (void)setNotificationsManager:(nullable id<NotificationsProtocol>)notificationsManager
+- (void)setNotificationsManager:(id<NotificationsProtocol>)notificationsManager
 {
     @synchronized(self) {
         OWSAssertDebug(notificationsManager);
@@ -211,15 +223,6 @@ static SSKEnvironment *sharedSSKEnvironment;
             _objectReadWriteConnection = self.primaryStorage.newDatabaseConnection;
         }
         return _objectReadWriteConnection;
-    }
-}
-
-- (YapDatabaseConnection *)sessionStoreDBConnection {
-    @synchronized(self) {
-        if (!_sessionStoreDBConnection) {
-            _sessionStoreDBConnection = self.primaryStorage.newDatabaseConnection;
-        }
-        return _sessionStoreDBConnection;
     }
 }
 

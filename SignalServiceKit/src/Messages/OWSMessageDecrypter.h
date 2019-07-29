@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageHandler.h"
@@ -7,8 +7,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSPrimaryStorage;
+@class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
-@class YapDatabaseReadWriteTransaction;
 
 @interface OWSMessageDecryptResult : NSObject
 
@@ -24,13 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Decryption result includes the envelope since the envelope
 // may be altered by the decryption process.
-typedef void (^DecryptSuccessBlock)(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction);
+typedef void (^DecryptSuccessBlock)(OWSMessageDecryptResult *result, SDSAnyWriteTransaction *transaction);
 typedef void (^DecryptFailureBlock)(void);
 
 @interface OWSMessageDecrypter : OWSMessageHandler
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 // decryptEnvelope: can be called from any thread.
 // successBlock & failureBlock will be called an arbitrary thread.

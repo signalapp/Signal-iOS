@@ -2,11 +2,11 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMessageSender.h"
 #import "NSError+MessageSending.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSError.h"
 #import "OWSFakeNetworkManager.h"
+#import "OWSMessageSender.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSUploadOperation.h"
 #import "SSKBaseTestObjC.h"
@@ -197,14 +197,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface TSAccountManager (Testing)
-
-- (void)storeLocalNumber:(NSString *)localNumber;
-
-@end
-
-#pragma mark -
-
 @interface OWSMessageSenderTest : SSKBaseTestObjC
 
 @property (nonatomic) TSThread *thread;
@@ -313,7 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *messageDidNotStartExpiration = [self expectationWithDescription:@"messageDidNotStartExpiration"];
     [messageSender sendMessageToService:self.unexpiringMessage
         success:^() {
-            if (self.unexpiringMessage.isExpiringMessage || self.unexpiringMessage.expiresAt > 0) {
+            if (self.unexpiringMessage.hasPerConversationExpiration || self.unexpiringMessage.expiresAt > 0) {
                 XCTFail(@"Message expiration was not supposed to start.");
             } else {
                 [messageDidNotStartExpiration fulfill];

@@ -35,6 +35,8 @@ extern const UIWindowLevel UIWindowLevel_Background;
 
 - (BOOL)isAppWindow:(UIWindow *)window;
 
+- (void)updateWindowFrames;
+
 #pragma mark - Message Actions
 
 @property (nonatomic, readonly) BOOL isPresentingMenuActions;

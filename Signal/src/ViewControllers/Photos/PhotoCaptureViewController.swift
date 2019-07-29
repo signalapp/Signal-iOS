@@ -70,11 +70,12 @@ class PhotoCaptureViewController: OWSViewController {
         view.addGestureRecognizer(doubleTapToSwitchCameraGesture)
 
         tapToFocusGesture.require(toFail: doubleTapToSwitchCameraGesture)
-        doubleTapToSwitchCameraGesture.require(toFail: captureButton.tapGesture)
     }
 
+    private var isVisible = false
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        isVisible = true
         UIDevice.current.ows_setOrientation(.portrait)
     }
 
@@ -82,7 +83,14 @@ class PhotoCaptureViewController: OWSViewController {
         super.viewDidAppear(animated)
         if hasCaptureStarted {
             BenchEventComplete(eventId: "Show-Camera")
+            VolumeButtons.shared?.addObserver(observer: photoCapture)
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        isVisible = false
+        VolumeButtons.shared?.removeObserver(photoCapture)
     }
 
     override var prefersStatusBarHidden: Bool {
@@ -333,6 +341,13 @@ class PhotoCaptureViewController: OWSViewController {
         view.addSubview(captureButton)
         captureButton.autoHCenterInSuperview()
         captureButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: SendMediaNavigationController.bottomButtonsCenterOffset).isActive = true
+
+        // If the view is already visible, setup the volume button listener
+        // now that the capture UI is ready. Otherwise, we'll wait until
+        // we're visible.
+        if isVisible {
+            VolumeButtons.shared?.addObserver(observer: photoCapture)
+        }
     }
 
     private func showFailureUI(error: Error) {
@@ -368,6 +383,13 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
         captureFeedbackView.backgroundColor = .black
         view.insertSubview(captureFeedbackView, aboveSubview: previewView)
         captureFeedbackView.autoPinEdgesToSuperviewEdges()
+
+        // Ensure the capture feedback is laid out before we remove it,
+        // depending on where we're coming from a layout pass might not
+        // trigger in 0.05 seconds otherwise.
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             captureFeedbackView.removeFromSuperview()
         }
@@ -419,6 +441,14 @@ extension PhotoCaptureViewController: PhotoCaptureDelegate {
     var captureOrientation: AVCaptureVideoOrientation {
         return lastKnownCaptureOrientation
     }
+
+    func beginCaptureButtonAnimation(_ duration: TimeInterval) {
+        captureButton.beginRecordingAnimation(duration: duration)
+    }
+
+    func endCaptureButtonAnimation(_ duration: TimeInterval) {
+        captureButton.endRecordingAnimation(duration: duration)
+    }
 }
 
 // MARK: - Views
@@ -440,8 +470,6 @@ class CaptureButton: UIView {
 
     let innerButton = CircleView()
 
-    var tapGesture: UITapGestureRecognizer!
-
     var longPressGesture: UILongPressGestureRecognizer!
     let longPressDuration = 0.5
 
@@ -457,11 +485,10 @@ class CaptureButton: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap))
-        innerButton.addGestureRecognizer(tapGesture)
-
+        // The long press handles both the tap and the hold interaction, as well as the animation
+        // the presents as the user begins to hold (and the button begins to grow prior to recording)
         longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(didLongPress))
-        longPressGesture.minimumPressDuration = longPressDuration
+        longPressGesture.minimumPressDuration = 0
         innerButton.addGestureRecognizer(longPressGesture)
 
         addSubview(innerButton)
@@ -485,19 +512,42 @@ class CaptureButton: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    // MARK: - Gestures
-
-    @objc
-    func didTap(_ gesture: UITapGestureRecognizer) {
-        delegate?.didTapCaptureButton(self)
+    func beginRecordingAnimation(duration: TimeInterval, delay: TimeInterval = 0) {
+        UIView.animate(
+            withDuration: duration,
+            delay: delay,
+            options: [.beginFromCurrentState, .curveLinear],
+            animations: {
+                self.innerButtonSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
+                self.zoomIndicatorSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
+                self.superview?.layoutIfNeeded()
+        },
+            completion: nil
+        )
     }
 
+    func endRecordingAnimation(duration: TimeInterval, delay: TimeInterval = 0) {
+        UIView.animate(
+            withDuration: duration,
+            delay: delay,
+            options: [.beginFromCurrentState, .curveEaseIn],
+            animations: {
+                self.innerButtonSizeConstraints.forEach { $0.constant = self.defaultDiameter }
+                self.zoomIndicatorSizeConstraints.forEach { $0.constant = self.defaultDiameter }
+                self.superview?.layoutIfNeeded()
+        },
+            completion: nil
+        )
+    }
+
+    // MARK: - Gestures
+
     var initialTouchLocation: CGPoint?
+    var touchTimer: Timer?
+    var isLongPressing = false
 
     @objc
     func didLongPress(_ gesture: UILongPressGestureRecognizer) {
-        Logger.verbose("")
-
         guard let gestureView = gesture.view else {
             owsFailDebug("gestureView was unexpectedly nil")
             return
@@ -507,13 +557,24 @@ class CaptureButton: UIView {
         case .possible: break
         case .began:
             initialTouchLocation = gesture.location(in: gesture.view)
-            delegate?.didBeginLongPressCaptureButton(self)
-            UIView.animate(withDuration: 0.2) {
-                self.innerButtonSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
-                self.zoomIndicatorSizeConstraints.forEach { $0.constant = type(of: self).recordingDiameter }
-                self.superview?.layoutIfNeeded()
+            beginRecordingAnimation(duration: 0.4, delay: 0.1)
+
+            isLongPressing = false
+
+            touchTimer?.invalidate()
+            touchTimer = WeakTimer.scheduledTimer(
+                timeInterval: longPressDuration,
+                target: self,
+                userInfo: nil,
+                repeats: false
+            ) { [weak self] _ in
+                guard let `self` = self else { return }
+                self.isLongPressing = true
+                self.delegate?.didBeginLongPressCaptureButton(self)
             }
         case .changed:
+            guard isLongPressing else { break }
+
             guard let referenceHeight = delegate?.zoomScaleReferenceHeight else {
                 owsFailDebug("referenceHeight was unexpectedly nil")
                 return
@@ -537,30 +598,31 @@ class CaptureButton: UIView {
 
             let alpha = ratio.clamp(0, 1)
 
-            Logger.verbose("distance: \(distance), alpha: \(alpha)")
-
             let zoomIndicatorDiameter = CGFloatLerp(type(of: self).recordingDiameter, 3, alpha)
             self.zoomIndicatorSizeConstraints.forEach { $0.constant = zoomIndicatorDiameter }
             zoomIndicator.superview?.layoutIfNeeded()
 
             delegate?.longPressCaptureButton(self, didUpdateZoomAlpha: alpha)
         case .ended:
-            UIView.animate(withDuration: 0.2) {
-                self.innerButtonSizeConstraints.forEach { $0.constant = self.defaultDiameter }
-                self.zoomIndicatorSizeConstraints.forEach { $0.constant = self.defaultDiameter }
+            endRecordingAnimation(duration: 0.2)
 
-                self.superview?.layoutIfNeeded()
+            if isLongPressing {
+                delegate?.didCompleteLongPressCaptureButton(self)
+            } else {
+                delegate?.didTapCaptureButton(self)
             }
-            delegate?.didCompleteLongPressCaptureButton(self)
+
+            touchTimer?.invalidate()
+            touchTimer = nil
         case .cancelled, .failed:
+            endRecordingAnimation(duration: 0.2)
 
-            UIView.animate(withDuration: 0.2) {
-                self.innerButtonSizeConstraints.forEach { $0.constant = self.defaultDiameter }
-                self.zoomIndicatorSizeConstraints.forEach { $0.constant = self.defaultDiameter }
-
-                self.superview?.layoutIfNeeded()
+            if isLongPressing {
+                delegate?.didCancelLongPressCaptureButton(self)
             }
-            delegate?.didCancelLongPressCaptureButton(self)
+
+            touchTimer?.invalidate()
+            touchTimer = nil
         }
     }
 }
@@ -672,6 +734,7 @@ class RecordingTimerView: UIView {
         UIView.animate(withDuration: 0.4) {
             self.icon.alpha = 0
         }
+        label.text = nil
     }
 
     // MARK: -
@@ -698,7 +761,6 @@ class RecordingTimerView: UIView {
     @objc
     private func updateView() {
         let recordingDuration = self.recordingDuration
-        Logger.verbose("recordingDuration: \(recordingDuration)")
         let durationDate = Date(timeIntervalSinceReferenceDate: recordingDuration)
         label.text = timeFormatter.string(from: durationDate)
         if #available(iOS 10, *) {

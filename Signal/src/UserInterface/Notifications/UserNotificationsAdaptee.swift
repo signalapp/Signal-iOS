@@ -63,7 +63,7 @@ class UserNotificationConfig {
 }
 
 @available(iOS 10.0, *)
-class UserNotificationPresenterAdaptee: NSObject, UNUserNotificationCenterDelegate {
+class UserNotificationPresenterAdaptee: NSObject {
 
     private let notificationCenter: UNUserNotificationCenter
     private var notifications: [String: UNNotificationRequest] = [:]
@@ -71,7 +71,6 @@ class UserNotificationPresenterAdaptee: NSObject, UNUserNotificationCenterDelega
     override init() {
         self.notificationCenter = UNUserNotificationCenter.current()
         super.init()
-        notificationCenter.delegate = self
         SwiftSingletons.register(self)
     }
 }
@@ -101,12 +100,12 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?) {
         AssertIsOnMainThread()
-        notify(category: category, title: title, body: body, userInfo: userInfo, sound: sound, replacingIdentifier: nil)
+        notify(category: category, title: title, body: body, threadIdentifier: threadIdentifier, userInfo: userInfo, sound: sound, replacingIdentifier: nil)
     }
 
-    func notify(category: AppNotificationCategory, title: String?, body: String, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
+    func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?) {
         AssertIsOnMainThread()
 
         let content = UNMutableNotificationContent()
@@ -145,6 +144,10 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             Logger.debug("supressing notification body")
         }
 
+        if let threadIdentifier = threadIdentifier {
+            content.threadIdentifier = threadIdentifier
+        }
+
         let request = UNNotificationRequest(identifier: notificationIdentifier, content: content, trigger: trigger)
 
         Logger.debug("presenting notification with identifier: \(notificationIdentifier)")
@@ -181,9 +184,13 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
     func clearAllNotifications() {
         AssertIsOnMainThread()
+
         notificationCenter.removeAllPendingNotificationRequests()
         notificationCenter.removeAllDeliveredNotifications()
-        LegacyNotificationPresenterAdaptee.clearExistingNotifications()
+
+        if !FeatureFlags.onlyModernNotificationClearance {
+            LegacyNotificationPresenterAdaptee.clearExistingNotifications()
+        }
     }
 
     func shouldPresentNotification(category: AppNotificationCategory, userInfo: [AnyHashable: Any]) -> Bool {
@@ -192,7 +199,7 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
             return true
         }
 
-        guard category == .incomingMessage || category == .errorMessage else {
+        guard category == .incomingMessage || category == .infoOrErrorMessage else {
             return true
         }
 

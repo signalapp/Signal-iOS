@@ -6,9 +6,10 @@
 #import "OWSAttachmentDownloads.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSIncomingSentMessageTranscript.h"
-#import "OWSPrimaryStorage+SessionStore.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "SSKEnvironment.h"
+#import "SSKSessionStore.h"
 #import "TSAttachmentPointer.h"
 #import "TSGroupThread.h"
 #import "TSInfoMessage.h"
@@ -16,6 +17,7 @@
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
+#import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -29,6 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
 
     return SSKEnvironment.shared.primaryStorage;
+}
+
++ (SSKSessionStore *)sessionStore
+{
+    return SSKEnvironment.shared.sessionStore;
 }
 
 + (TSNetworkManager *)networkManager
@@ -78,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (transcript.isEndSessionMessage) {
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientId);
-        [self.primaryStorage deleteAllSessionsForContact:transcript.recipientId protocolContext:transaction];
+        [self.sessionStore deleteAllSessionsForContact:transcript.recipientId transaction:transaction.asAnyWrite];
 
         // MJK TODO - we don't use this timestamp, safe to remove
         [[[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
@@ -86,6 +93,32 @@ NS_ASSUME_NONNULL_BEGIN
                                       messageType:TSInfoMessageTypeSessionDidEnd] saveWithTransaction:transaction];
 
         // Don't continue processing lest we print a bubble for the session reset.
+        return;
+    }
+
+    if (transcript.timestamp < 1) {
+        OWSFailDebug(@"Transcript is missing timestamp.");
+        // This transcript is invalid, discard it.
+        return;
+    } else if (transcript.dataMessageTimestamp < 1) {
+        OWSLogError(@"Transcript is missing data message timestamp.");
+        // Legacy desktop doesn't supply data message timestamp;
+        // ignore until desktop are in production.
+        if (SSKFeatureFlags.strictSyncTranscriptTimestamps) {
+            OWSFailDebug(@"Transcript timestamps do not match, discarding message.");
+            return;
+        }
+    } else if (transcript.timestamp != transcript.dataMessageTimestamp) {
+        OWSLogVerbose(
+            @"Transcript timestamps do not match: %llu != %llu", transcript.timestamp, transcript.dataMessageTimestamp);
+        OWSFailDebug(@"Transcript timestamps do not match, discarding message.");
+        // This transcript is invalid, discard it.
+        return;
+    }
+
+    if (transcript.requiredProtocolVersion != nil
+        && transcript.requiredProtocolVersion.integerValue > SSKProtos.currentProtocolVersion) {
+        [self insertUnknownProtocolVersionErrorForTranscript:transcript transaction:transaction.asAnyWrite];
         return;
     }
 
@@ -101,27 +134,32 @@ NS_ASSUME_NONNULL_BEGIN
                                                    groupMetaMessage:TSGroupMetaMessageUnspecified
                                                       quotedMessage:transcript.quotedMessage
                                                        contactShare:transcript.contact
-                                                        linkPreview:transcript.linkPreview];
+                                                        linkPreview:transcript.linkPreview
+                                                     messageSticker:transcript.messageSticker
+                                perMessageExpirationDurationSeconds:transcript.perMessageExpirationDurationSeconds];
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
                                              albumMessage:outgoingMessage];
     for (TSAttachmentPointer *pointer in attachmentPointers) {
-        [pointer saveWithTransaction:transaction];
+        [pointer anyInsertWithTransaction:transaction.asAnyWrite];
         [outgoingMessage.attachmentIds addObject:pointer.uniqueId];
     }
 
     TSQuotedMessage *_Nullable quotedMessage = transcript.quotedMessage;
     if (quotedMessage && quotedMessage.thumbnailAttachmentPointerId) {
         // We weren't able to derive a local thumbnail, so we'll fetch the referenced attachment.
-        TSAttachmentPointer *attachmentPointer =
-            [TSAttachmentPointer fetchObjectWithUniqueID:quotedMessage.thumbnailAttachmentPointerId
-                                             transaction:transaction];
+        TSAttachment *_Nullable attachment =
+            [TSAttachment anyFetchWithUniqueId:quotedMessage.thumbnailAttachmentPointerId
+                                   transaction:transaction.asAnyRead];
 
-        if ([attachmentPointer isKindOfClass:[TSAttachmentPointer class]]) {
+        if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
+            TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
+
             OWSLogDebug(@"downloading attachments for transcript: %lu", (unsigned long)transcript.timestamp);
 
             [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
+                message:outgoingMessage
                 success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                     OWSAssertDebug(attachmentStreams.count == 1);
                     TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
@@ -153,7 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if (outgoingMessage.body.length < 1 && outgoingMessage.attachmentIds.count < 1 && !outgoingMessage.contactShare) {
+    if (!outgoingMessage.hasRenderableContent) {
         OWSFailDebug(@"Ignoring message transcript for empty message.");
         return;
     }
@@ -168,17 +206,40 @@ NS_ASSUME_NONNULL_BEGIN
                                                              transaction:transaction];
     [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
                                                                           transaction:transaction];
+    [PerMessageExpiration expireIfNecessaryWithMessage:outgoingMessage
+                                           transaction:transaction.asAnyWrite];
 
     if (outgoingMessage.hasAttachments) {
         [self.attachmentDownloads
-            downloadAttachmentsForMessage:outgoingMessage
-                              transaction:transaction
-                                  success:attachmentHandler
-                                  failure:^(NSError *error) {
-                                      OWSLogError(
-                                          @"failed to fetch transcripts attachments for message: %@", outgoingMessage);
-                                  }];
+            downloadAllAttachmentsForMessage:outgoingMessage
+                                 transaction:transaction.asAnyRead
+                                     success:attachmentHandler
+                                     failure:^(NSError *error) {
+                                         OWSLogError(@"failed to fetch transcripts attachments for message: %@",
+                                             outgoingMessage);
+                                     }];
     }
+
+    if (outgoingMessage.messageSticker != nil) {
+        [StickerManager.shared setHasUsedStickersWithTransaction:transaction.asAnyWrite];
+    }
+}
+
++ (void)insertUnknownProtocolVersionErrorForTranscript:(OWSIncomingSentMessageTranscript *)transcript
+                                           transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transcript.thread);
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(transcript.requiredProtocolVersion != nil);
+
+    OWSFailDebug(@"Unknown protocol version: %@", transcript.requiredProtocolVersion);
+
+    TSInteraction *message =
+        [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:transcript.timestamp
+                                                             thread:transcript.thread
+                                                           senderId:nil
+                                                    protocolVersion:transcript.requiredProtocolVersion.intValue];
+    [message anyInsertWithTransaction:transaction];
 }
 
 #pragma mark -
@@ -235,7 +296,7 @@ NS_ASSUME_NONNULL_BEGIN
             // b) It's safe to discard suspicious "sent updates."
             continue;
         }
-        TSThread *thread = [message threadWithTransaction:transaction];
+        TSThread *thread = [message threadWithTransaction:transaction.asAnyRead];
         if (!thread.isGroupThread) {
             continue;
         }

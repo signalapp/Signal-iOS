@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Foundation/Foundation.h>
-
-@import CocoaLumberjack;
 
 #ifdef DEBUG
 static const NSUInteger ddLogLevel = DDLogLevelAll;

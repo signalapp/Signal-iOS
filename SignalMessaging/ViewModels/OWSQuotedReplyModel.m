@@ -82,8 +82,8 @@ NS_ASSUME_NONNULL_BEGIN
     UIImage *_Nullable thumbnailImage;
     TSAttachmentPointer *attachmentPointer;
     if (attachmentInfo.thumbnailAttachmentStreamId) {
-        TSAttachment *attachment =
-            [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentStreamId transaction:transaction];
+        TSAttachment *attachment = [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentStreamId
+                                                          transaction:transaction.asAnyRead];
 
         TSAttachmentStream *attachmentStream;
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
@@ -92,8 +92,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (attachmentInfo.thumbnailAttachmentPointerId) {
         // download failed, or hasn't completed yet.
-        TSAttachment *attachment =
-            [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentPointerId transaction:transaction];
+        TSAttachment *attachment = [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentPointerId
+                                                          transaction:transaction.asAnyRead];
 
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             attachmentPointer = (TSAttachmentPointer *)attachment;
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(id<ConversationViewItem>)conversationItem
-                                                           transaction:(YapDatabaseReadTransaction *)transaction;
+                                                           transaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(conversationItem);
     OWSAssertDebug(transaction);
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    TSThread *thread = [message threadWithTransaction:transaction];
+    TSThread *thread = [message threadWithTransaction:transaction.asAnyRead];
     OWSAssertDebug(thread);
 
     uint64_t timestamp = message.timestamp;
@@ -143,7 +143,24 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }();
     OWSAssertDebug(authorId.length > 0);
-    
+
+    if (message.hasPerMessageExpiration) {
+        // We construct a quote that does not include any of the
+        // quoted message's renderable content.
+        NSString *body = NSLocalizedString(
+            @"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE", @"Label for outgoing messages with per-message expiration.");
+        return [[self alloc] initWithTimestamp:timestamp
+                                      authorId:authorId
+                                          body:body
+                                    bodySource:TSQuotedMessageContentSourceLocal
+                                thumbnailImage:nil
+                                   contentType:nil
+                                sourceFilename:nil
+                              attachmentStream:nil
+                    thumbnailAttachmentPointer:nil
+                       thumbnailDownloadFailed:NO];
+    }
+
     if (conversationItem.contactShare) {
         ContactShareViewModel *contactShare = conversationItem.contactShare;
         
@@ -163,10 +180,40 @@ NS_ASSUME_NONNULL_BEGIN
                        thumbnailDownloadFailed:NO];
     }
 
+    if (conversationItem.stickerInfo || conversationItem.stickerAttachment) {
+        if (!conversationItem.stickerInfo || !conversationItem.stickerAttachment) {
+            OWSFailDebug(@"Incomplete sticker message.");
+            return nil;
+        }
+
+        TSAttachmentStream *quotedAttachment = conversationItem.stickerAttachment;
+        NSData *_Nullable stickerData = [NSData dataWithContentsOfFile:quotedAttachment.originalFilePath];
+        if (!stickerData) {
+            OWSFailDebug(@"Couldn't load sticker data.");
+            return nil;
+        }
+        UIImage *_Nullable thumbnailImage = [stickerData stillForWebpData];
+        if (!thumbnailImage) {
+            OWSFailDebug(@"Couldn't generate thumbnail for sticker.");
+            return nil;
+        }
+
+        return [[self alloc] initWithTimestamp:timestamp
+                                      authorId:authorId
+                                          body:nil
+                                    bodySource:TSQuotedMessageContentSourceLocal
+                                thumbnailImage:thumbnailImage
+                                   contentType:quotedAttachment.contentType
+                                sourceFilename:quotedAttachment.sourceFilename
+                              attachmentStream:quotedAttachment
+                    thumbnailAttachmentPointer:nil
+                       thumbnailDownloadFailed:NO];
+    }
+
     NSString *_Nullable quotedText = message.body;
     BOOL hasText = quotedText.length > 0;
 
-    TSAttachment *_Nullable attachment = [message attachmentsWithTransaction:transaction].firstObject;
+    TSAttachment *_Nullable attachment = [message bodyAttachmentsWithTransaction:transaction.asAnyRead].firstObject;
     TSAttachmentStream *quotedAttachment;
     if (attachment && [attachment isKindOfClass:[TSAttachmentStream class]]) {
 
@@ -228,11 +275,15 @@ NS_ASSUME_NONNULL_BEGIN
         hasText = YES;
     }
 
+    UIImage *_Nullable thumbnailImage;
+    if (quotedAttachment.isValidVisualMedia) {
+        thumbnailImage = quotedAttachment.thumbnailImageSmallSync;
+    }
     return [[self alloc] initWithTimestamp:timestamp
                                   authorId:authorId
                                       body:quotedText
                                 bodySource:TSQuotedMessageContentSourceLocal
-                            thumbnailImage:quotedAttachment.thumbnailImageSmallSync
+                            thumbnailImage:thumbnailImage
                                contentType:quotedAttachment.contentType
                             sourceFilename:quotedAttachment.sourceFilename
                           attachmentStream:quotedAttachment

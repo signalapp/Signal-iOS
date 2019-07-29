@@ -428,11 +428,8 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         button.layoutMargins = .zero
         button.autoSetDimension(.width, toSize: buttonSize, relation: .greaterThanOrEqual)
 
-        let circleView = UIView()
+        let circleView = CircleView(diameter: buttonSize)
         circleView.backgroundColor = Theme.backgroundColor
-        circleView.autoSetDimension(.width, toSize: buttonSize)
-        circleView.autoSetDimension(.height, toSize: buttonSize)
-        circleView.layer.cornerRadius = buttonSize * 0.5
         button.addSubview(circleView)
         circleView.autoPinEdge(toSuperviewEdge: .top)
         circleView.autoHCenterInSuperview()

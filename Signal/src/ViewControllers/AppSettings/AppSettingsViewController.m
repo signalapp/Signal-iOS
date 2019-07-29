@@ -24,6 +24,7 @@
 @interface AppSettingsViewController ()
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 
 @end
 
@@ -83,7 +84,8 @@
     self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self
-                                                      action:@selector(dismissWasPressed:)];
+                                                      action:@selector(dismissWasPressed:)
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")];
     [self updateRightBarButtonForTheme];
     [self observeNotifications];
 
@@ -361,7 +363,8 @@
 - (void)showInviteFlow
 {
     OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
-    [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
+    self.inviteFlow = inviteFlow;
+    [inviteFlow presentWithIsAnimated:YES completion:nil];
 }
 
 - (void)showPrivacy

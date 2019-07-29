@@ -6,6 +6,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/Theme.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -53,16 +54,13 @@ NS_ASSUME_NONNULL_BEGIN
     iconLabel.userInteractionEnabled = NO;
 
     const CGFloat circleSize = self.class.circleSize;
-    UIView *circleView = [UIView new];
+    UIView *circleView = [[OWSCircleView alloc] initWithDiameter:circleSize];
     self.circleView = circleView;
     circleView.userInteractionEnabled = NO;
-    circleView.layer.cornerRadius = circleSize * 0.5f;
     circleView.layer.shadowColor = Theme.middleGrayColor.CGColor;
     circleView.layer.shadowOffset = CGSizeMake(+1.f, +2.f);
     circleView.layer.shadowRadius = 1.5f;
     circleView.layer.shadowOpacity = 0.35f;
-    [circleView autoSetDimension:ALDimensionWidth toSize:circleSize];
-    [circleView autoSetDimension:ALDimensionHeight toSize:circleSize];
 
     [self addSubview:circleView];
     [self addSubview:iconLabel];

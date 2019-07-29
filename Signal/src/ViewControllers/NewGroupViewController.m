@@ -16,7 +16,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSTableViewController.h>
-#import <SignalMessaging/SignalKeyingStorage.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
@@ -44,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 @property (nonatomic, readonly) AvatarImageView *avatarView;
+@property (nonatomic, readonly) UIImageView *cameraImageView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
 @property (nonatomic, readonly) NSData *groupId;
@@ -158,6 +158,14 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+
+    UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
+    UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+    [threadInfoView addSubview:cameraImageView];
+    [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
+    [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
+    _cameraImageView = cameraImageView;
+
     [self updateAvatarView];
 
     [avatarView
@@ -454,6 +462,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
+    [self.groupNameTextField acceptAutocorrectSuggestion];
+
     TSGroupModel *model = [self makeGroup];
 
     __block TSGroupThread *thread;
@@ -554,12 +564,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateAvatarView
 {
     UIImage *_Nullable groupAvatar = self.groupAvatar;
+    self.cameraImageView.hidden = groupAvatar != nil;
+
     if (!groupAvatar) {
         NSString *conversationColorName = [TSGroupThread defaultConversationColorNameForGroupId:self.groupId];
         groupAvatar = [OWSGroupAvatarBuilder defaultAvatarForGroupId:self.groupId
                                                conversationColorName:conversationColorName
                                                             diameter:kLargeAvatarSize];
     }
+
     self.avatarView.image = groupAvatar;
 }
 

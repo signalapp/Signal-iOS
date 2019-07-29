@@ -9,22 +9,21 @@ public class SSKPreferences: NSObject {
     // Never instantiate this class.
     private override init() {}
 
-    private static let collection = "SSKPreferences"
+    public static let store = SDSKeyValueStore(collection: "SSKPreferences")
 
     // MARK: -
 
     private static let areLinkPreviewsEnabledKey = "areLinkPreviewsEnabled"
 
     @objc
-    public static var areLinkPreviewsEnabled: Bool {
-        get {
-            return getBool(key: areLinkPreviewsEnabledKey, defaultValue: true)
-        }
-        set {
-            setBool(newValue, key: areLinkPreviewsEnabledKey)
+    public static func areLinkPreviewsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
+        return store.getBool(areLinkPreviewsEnabledKey, defaultValue: true, transaction: transaction)
+    }
 
-            SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
-        }
+    @objc
+    public static func setAreLinkPreviewsEnabled(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(newValue, key: areLinkPreviewsEnabledKey, transaction: transaction)
+        SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
     }
 
     // MARK: -
@@ -32,29 +31,12 @@ public class SSKPreferences: NSObject {
     private static let hasSavedThreadKey = "hasSavedThread"
 
     @objc
-    public static var hasSavedThread: Bool {
-        get {
-            return getBool(key: hasSavedThreadKey)
-        }
-        set {
-            setBool(newValue, key: hasSavedThreadKey)
-        }
+    public static func hasSavedThread(transaction: SDSAnyReadTransaction) -> Bool {
+        return store.getBool(hasSavedThreadKey, defaultValue: false, transaction: transaction)
     }
 
     @objc
-    public class func setHasSavedThread(value: Bool, transaction: YapDatabaseReadWriteTransaction) {
-        transaction.setBool(value,
-                            forKey: hasSavedThreadKey,
-                            inCollection: collection)
-    }
-
-    // MARK: -
-
-    private class func getBool(key: String, defaultValue: Bool = false) -> Bool {
-        return OWSPrimaryStorage.dbReadConnection().bool(forKey: key, inCollection: collection, defaultValue: defaultValue)
-    }
-
-    private class func setBool(_ value: Bool, key: String) {
-        OWSPrimaryStorage.dbReadWriteConnection().setBool(value, forKey: key, inCollection: collection)
+    public static func setHasSavedThread(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(newValue, key: hasSavedThreadKey, transaction: transaction)
     }
 }

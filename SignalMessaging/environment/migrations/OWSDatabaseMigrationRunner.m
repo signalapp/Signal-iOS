@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 // This should all migrations which do NOT qualify as safeBlockingMigrations:
 - (NSArray<OWSDatabaseMigration *> *)allMigrations
 {
-    return @[
+    NSArray<OWSDatabaseMigration *> *prodMigrations = @[
         [[OWS100RemoveTSRecipientsMigration alloc] init],
         [[OWS102MoveLoggingPreferenceToUserDefaults alloc] init],
         [[OWS103EnableVideoCalling alloc] init],
@@ -47,8 +47,14 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS111UDAttributesMigration alloc] init],
         [[OWS112TypingIndicatorsMigration alloc] init],
         [[OWS113MultiAttachmentMediaMessages alloc] init],
-        [[OWS114RemoveDynamicInteractions alloc] init],
+        [[OWS114RemoveDynamicInteractions alloc] init]
     ];
+
+    if (SSKFeatureFlags.useGRDB) {
+        return [prodMigrations arrayByAddingObjectsFromArray:@ [[OWS115GRDBMigration new]]];
+    } else {
+        return prodMigrations;
+    }
 }
 
 - (void)assumeAllExistingMigrationsRun

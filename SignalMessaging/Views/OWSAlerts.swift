@@ -90,7 +90,17 @@ import Foundation
             Logger.debug("Cancel item")
             // Do nothing.
         }
-        action.accessibilityIdentifier = "OWSAlerts.\("cancel")"
+        action.accessibilityIdentifier = "OWSAlerts.cancel"
+        return action
+    }
+
+    @objc
+    public class var dismissAction: UIAlertAction {
+        let action = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
+            Logger.debug("Dismiss item")
+            // Do nothing.
+        }
+        action.accessibilityIdentifier = "OWSAlerts.dismiss"
         return action
     }
 
@@ -108,7 +118,7 @@ import Foundation
         }
 
         if let iOSUpgradeNagDate = Environment.shared.preferences.iOSUpgradeNagDate() {
-            let kNagFrequencySeconds = 14 * kDayInterval
+            let kNagFrequencySeconds = 3 * kDayInterval
             guard fabs(iOSUpgradeNagDate.timeIntervalSinceNow) > kNagFrequencySeconds else {
                 return
             }

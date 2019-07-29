@@ -265,7 +265,7 @@ NS_ASSUME_NONNULL_BEGIN
     //       view is pushed on top of this one, not how the "back"
     //       button looks when this view is visible.
     UIBarButtonItem *backButton =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
+        [[UIBarButtonItem alloc] initWithTitle:CommonStrings.backButton
                                          style:UIBarButtonItemStylePlain
                                         target:self
                                         action:@selector(backButtonWasPressed)

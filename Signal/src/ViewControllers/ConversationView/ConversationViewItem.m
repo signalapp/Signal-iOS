@@ -34,6 +34,36 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return @"OWSMessageCellType_MediaMessage";
         case OWSMessageCellType_OversizeTextDownloading:
             return @"OWSMessageCellType_OversizeTextDownloading";
+        case OWSMessageCellType_StickerMessage:
+            return @"OWSMessageCellType_StickerMessage";
+        case OWSMessageCellType_PerMessageExpiration:
+            return @"OWSMessageCellType_PerMessageExpiration";
+    }
+}
+
+NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellType)
+{
+    switch (cellType) {
+        case PerMessageExpirationState_Unknown:
+            return @"PerMessageExpirationState_Unknown";
+        case PerMessageExpirationState_IncomingExpired:
+            return @"PerMessageExpirationState_IncomingExpired";
+        case PerMessageExpirationState_IncomingDownloading:
+            return @"PerMessageExpirationState_IncomingDownloading";
+        case PerMessageExpirationState_IncomingFailed:
+            return @"PerMessageExpirationState_IncomingFailed";
+        case PerMessageExpirationState_IncomingAvailable:
+            return @"PerMessageExpirationState_IncomingAvailable";
+        case PerMessageExpirationState_IncomingInvalidContent:
+            return @"PerMessageExpirationState_IncomingInvalidContent";
+        case PerMessageExpirationState_OutgoingSending:
+            return @"PerMessageExpirationState_OutgoingSending";
+        case PerMessageExpirationState_OutgoingFailed:
+            return @"PerMessageExpirationState_OutgoingFailed";
+        case PerMessageExpirationState_OutgoingSentAvailable:
+            return @"PerMessageExpirationState_OutgoingSentAvailable";
+        case PerMessageExpirationState_OutgoingSentExpired:
+            return @"PerMessageExpirationState_OutgoingSentExpired";
     }
 }
 
@@ -92,6 +122,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 @property (nonatomic, nullable) DisplayableText *displayableBodyText;
 @property (nonatomic, nullable) DisplayableText *displayableQuotedText;
 @property (nonatomic, nullable) OWSQuotedReplyModel *quotedReply;
+@property (nonatomic, nullable) StickerInfo *stickerInfo;
+@property (nonatomic, nullable) TSAttachmentStream *stickerAttachment;
+@property (nonatomic) BOOL isFailedSticker;
+@property (nonatomic) PerMessageExpirationState perMessageExpirationState;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
@@ -123,7 +157,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
-                        transaction:(YapDatabaseReadTransaction *)transaction
+                        transaction:(SDSAnyReadTransaction *)transaction
                   conversationStyle:(ConversationStyle *)conversationStyle
 {
     OWSAssertDebug(interaction);
@@ -140,14 +174,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     _isGroupThread = isGroupThread;
     _conversationStyle = conversationStyle;
 
-    [self updateAuthorConversationColorNameWithTransaction:transaction];
+    [self setAuthorConversationColorNameWithTransaction:transaction];
 
     [self ensureViewState:transaction];
 
     return self;
 }
 
-- (void)replaceInteraction:(TSInteraction *)interaction transaction:(YapDatabaseReadTransaction *)transaction
+- (void)replaceInteraction:(TSInteraction *)interaction transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(interaction);
 
@@ -161,20 +195,24 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.mediaAlbumItems = nil;
     self.displayableQuotedText = nil;
     self.quotedReply = nil;
+    self.stickerInfo = nil;
+    self.stickerAttachment = nil;
+    self.isFailedSticker = NO;
+    self.perMessageExpirationState = PerMessageExpirationState_Unknown;
     self.contactShare = nil;
     self.systemMessageText = nil;
     self.authorConversationColorName = nil;
     self.linkPreview = nil;
     self.linkPreviewAttachment = nil;
 
-    [self updateAuthorConversationColorNameWithTransaction:transaction];
+    [self setAuthorConversationColorNameWithTransaction:transaction];
 
     [self clearCachedLayoutState];
 
     [self ensureViewState:transaction];
 }
 
-- (void)updateAuthorConversationColorNameWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (void)setAuthorConversationColorNameWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -223,7 +261,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return self.hasQuotedAttachment || self.hasQuotedText;
 }
 
-- (BOOL)isExpiringMessage
+- (BOOL)isSticker
+{
+    return self.stickerInfo != nil;
+}
+
+- (BOOL)hasPerConversationExpiration
 {
     if (self.interaction.interactionType != OWSInteractionType_OutgoingMessage
         && self.interaction.interactionType != OWSInteractionType_IncomingMessage) {
@@ -231,7 +274,18 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     TSMessage *message = (TSMessage *)self.interaction;
-    return message.isExpiringMessage;
+    return message.hasPerConversationExpiration;
+}
+
+- (BOOL)hasPerMessageExpiration
+{
+    if (self.interaction.interactionType != OWSInteractionType_OutgoingMessage
+        && self.interaction.interactionType != OWSInteractionType_IncomingMessage) {
+        return NO;
+    }
+
+    TSMessage *message = (TSMessage *)self.interaction;
+    return message.hasPerMessageExpiration;
 }
 
 - (BOOL)hasCellHeader
@@ -316,6 +370,50 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     }
 
     _unreadIndicator = unreadIndicator;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setStickerInfo:(nullable StickerInfo *)stickerInfo
+{
+    if ([NSObject isNullableObject:_stickerInfo equalTo:stickerInfo]) {
+        return;
+    }
+
+    _stickerInfo = stickerInfo;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setStickerAttachment:(nullable TSAttachmentStream *)stickerAttachment
+{
+    BOOL didChange = ((_stickerAttachment != nil) != (stickerAttachment != nil));
+
+    _stickerAttachment = stickerAttachment;
+
+    if (didChange) {
+        [self clearCachedLayoutState];
+    }
+}
+
+- (void)setIsFailedSticker:(BOOL)isFailedSticker
+{
+    if (_isFailedSticker == isFailedSticker) {
+        return;
+    }
+
+    _isFailedSticker = isFailedSticker;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setPerMessageExpirationState:(PerMessageExpirationState)perMessageExpirationState
+{
+    if (_perMessageExpirationState == perMessageExpirationState) {
+        return;
+    }
+
+    _perMessageExpirationState = perMessageExpirationState;
 
     [self clearCachedLayoutState];
 }
@@ -472,9 +570,24 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 {
     OWSAssertIsOnMainThread();
 
-    self.audioProgressSeconds = progress;
+    // We don't want to reset the progress slider when the playback stops,
+    // only when we finish playing the recording. This lets the user pick
+    // back up where they left off if they, for example, play another message.
+    if (self.audioPlaybackState != AudioPlaybackState_Stopped) {
+        self.audioProgressSeconds = progress;
+    }
 
     [self.lastAudioMessageView updateContents];
+}
+
+- (void)audioPlayerDidFinish
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.audioPlaybackState == AudioPlaybackState_Stopped) {
+        self.audioProgressSeconds = 0;
+        [self.lastAudioMessageView updateContents];
+    }
 }
 
 #pragma mark - Displayable Text
@@ -566,7 +679,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 #pragma mark - View State
 
-- (void)ensureViewState:(YapDatabaseReadTransaction *)transaction
+- (void)ensureViewState:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(transaction);
@@ -597,22 +710,57 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     self.hasViewState = YES;
 
     TSMessage *message = (TSMessage *)self.interaction;
-    if (message.contactShare) {
-        self.contactShare =
-            [[ContactShareViewModel alloc] initWithContactShareRecord:message.contactShare transaction:transaction];
-        self.messageCellType = OWSMessageCellType_ContactShare;
+
+    if (message.hasPerMessageExpiration) {
+        [self configurePerMessageExpiration:message transaction:transaction];
+        return;
+    }
+
+    if (transaction.transitional_yapReadTransaction != nil) {
+        if (message.contactShare) {
+            self.contactShare =
+                [[ContactShareViewModel alloc] initWithContactShareRecord:message.contactShare
+                                                              transaction:transaction.transitional_yapReadTransaction];
+            self.messageCellType = OWSMessageCellType_ContactShare;
+            return;
+        }
+    }
+
+    // Check for stickers _before_ media or quoted reply handling;
+    // stickers should not have quoted replies and should never
+    // have media.
+    if (message.messageSticker) {
+        self.stickerInfo = message.messageSticker.info;
+        TSAttachment *_Nullable stickerAttachment =
+            [TSAttachment anyFetchWithUniqueId:message.messageSticker.attachmentId transaction:transaction];
+        OWSAssertDebug(stickerAttachment);
+        if ([stickerAttachment isKindOfClass:[TSAttachmentStream class]]) {
+            TSAttachmentStream *stickerAttachmentStream = (TSAttachmentStream *)stickerAttachment;
+            CGSize mediaSize = [stickerAttachmentStream imageSize];
+            if (stickerAttachmentStream.isValidImage && mediaSize.width > 0 && mediaSize.height > 0) {
+                self.stickerAttachment = stickerAttachmentStream;
+            }
+        } else if ([stickerAttachment isKindOfClass:[TSAttachmentPointer class]]) {
+            TSAttachmentPointer *stickerAttachmentPointer = (TSAttachmentPointer *)stickerAttachment;
+            self.isFailedSticker = stickerAttachmentPointer.state == TSAttachmentPointerStateFailed;
+        }
+        // Exit early; stickers shouldn't have body text or other attachments.
+        self.messageCellType = OWSMessageCellType_StickerMessage;
         return;
     }
 
     // Check for quoted replies _before_ media album handling,
     // since that logic may exit early.
-    if (message.quotedMessage) {
-        self.quotedReply =
-            [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage transaction:transaction];
+    if (transaction.transitional_yapReadTransaction != nil) {
+        if (message.quotedMessage) {
+            self.quotedReply =
+                [OWSQuotedReplyModel quotedReplyWithQuotedMessage:message.quotedMessage
+                                                      transaction:transaction.transitional_yapReadTransaction];
 
-        if (self.quotedReply.body.length > 0) {
-            self.displayableQuotedText =
-                [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
+            if (self.quotedReply.body.length > 0) {
+                self.displayableQuotedText =
+                    [self displayableQuotedTextForText:self.quotedReply.body interactionId:message.uniqueId];
+            }
         }
     }
 
@@ -696,7 +844,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         self.linkPreview = message.linkPreview;
         if (message.linkPreview.imageAttachmentId.length > 0) {
             TSAttachment *_Nullable linkPreviewAttachment =
-                [TSAttachment fetchObjectWithUniqueID:message.linkPreview.imageAttachmentId transaction:transaction];
+                [TSAttachment anyFetchWithUniqueId:message.linkPreview.imageAttachmentId transaction:transaction];
             if (!linkPreviewAttachment) {
                 OWSFailDebug(@"Could not load link preview image attachment.");
             } else if (!linkPreviewAttachment.isImage) {
@@ -721,6 +869,83 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         self.messageCellType = OWSMessageCellType_TextOnlyMessage;
         self.displayableBodyText = [[DisplayableText alloc] initWithFullText:@"" displayText:@"" isTextTruncated:NO];
     }
+}
+
+- (void)configurePerMessageExpiration:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(message != nil);
+    OWSAssertDebug(transaction != nil);
+    OWSAssertDebug(message.hasPerMessageExpiration);
+
+    if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
+        switch (outgoingMessage.messageState) {
+            case TSOutgoingMessageStateSending:
+                self.perMessageExpirationState = PerMessageExpirationState_OutgoingSending;
+                break;
+            case TSOutgoingMessageStateFailed:
+                self.perMessageExpirationState = PerMessageExpirationState_OutgoingFailed;
+                break;
+            default:
+                if (message.perMessageExpirationHasExpired) {
+                    self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentExpired;
+                } else {
+                    NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction];
+                    // TODO: We currently only support single attachments for messages
+                    //       with per-message expiration.
+                    TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
+                    if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
+                        OWSFailDebug(@"Invalid outgoing attachment.");
+                        self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentExpired;
+                    } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
+                        TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
+                        if (attachmentStream.isValidVisualMedia
+                            && (attachmentStream.isImage || attachmentStream.isAnimated)) {
+                            self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentAvailable;
+                            self.attachmentStream = attachmentStream;
+                        } else {
+                            OWSFailDebug(@"Invalid outgoing attachment.");
+                            self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentExpired;
+                        }
+                    }
+                }
+                break;
+        }
+        self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+        return;
+    }
+    if (message.perMessageExpirationHasExpired) {
+        self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+        self.perMessageExpirationState = PerMessageExpirationState_IncomingExpired;
+        return;
+    }
+
+    NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction];
+    // TODO: We currently only support single attachments for messages
+    //       with per-message expiration.
+    TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
+    if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
+        self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+        self.attachmentPointer = (TSAttachmentPointer *)mediaAttachment;
+        self.perMessageExpirationState = (self.attachmentPointer.state == TSAttachmentPointerStateFailed
+                ? PerMessageExpirationState_IncomingFailed
+                : PerMessageExpirationState_IncomingDownloading);
+        return;
+    } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
+        TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
+        if (attachmentStream.isValidVisualMedia && (attachmentStream.isImage || attachmentStream.isAnimated)) {
+            self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+            self.perMessageExpirationState = PerMessageExpirationState_IncomingAvailable;
+            self.attachmentStream = attachmentStream;
+        } else {
+            self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+            self.perMessageExpirationState = PerMessageExpirationState_IncomingInvalidContent;
+        }
+        return;
+    }
+
+    OWSFailDebug(@"Invalid media for message with per-message expiration.");
+    self.messageCellType = OWSMessageCellType_Unknown;
 }
 
 - (NSArray<ConversationMediaAlbumItem *> *)albumItemsForMediaAttachments:(NSArray<TSAttachment *> *)attachments
@@ -781,7 +1006,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return mediaAlbumItems;
 }
 
-- (NSString *)systemMessageTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)systemMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -905,7 +1130,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             [UIPasteboard.generalPasteboard setString:self.displayableBodyText.fullText];
             break;
         }
-        case OWSMessageCellType_Unknown: {
+        case OWSMessageCellType_Unknown:
+        case OWSMessageCellType_StickerMessage: {
             OWSFailDebug(@"No text to copy");
             break;
         }
@@ -916,6 +1142,9 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSMessageCellType_OversizeTextDownloading:
             OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
+            return;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Can't copy message with per-message expiration");
             return;
     }
 }
@@ -953,6 +1182,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSMessageCellType_OversizeTextDownloading:
             OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
+            return;
+        case OWSMessageCellType_StickerMessage:
+            if (self.stickerAttachment != nil) {
+                [self copyAttachmentToPasteboard:self.stickerAttachment];
+            } else {
+                OWSFailDebug(@"Sticked not yet downloaded.");
+            }
+            return;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Can't copy message with per-message expiration");
             return;
     }
 }
@@ -1010,6 +1249,16 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_OversizeTextDownloading:
             OWSFailDebug(@"Can't share not-yet-downloaded attachment");
             return;
+        case OWSMessageCellType_StickerMessage:
+            if (self.stickerAttachment != nil) {
+                [AttachmentSharing showShareUIForAttachment:self.stickerAttachment];
+            } else {
+                OWSFailDebug(@"Sticked not yet downloaded.");
+            }
+            return;
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Can't share message with per-message expiration");
+            return;
     }
 }
 
@@ -1024,7 +1273,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare:
-            return NO;
         case OWSMessageCellType_Audio:
             return NO;
         case OWSMessageCellType_GenericAttachment:
@@ -1038,6 +1286,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return NO;
         }
         case OWSMessageCellType_OversizeTextDownloading:
+        case OWSMessageCellType_StickerMessage:
+        case OWSMessageCellType_PerMessageExpiration:
             return NO;
     }
 }
@@ -1053,9 +1303,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_Unknown:
         case OWSMessageCellType_TextOnlyMessage:
         case OWSMessageCellType_ContactShare:
-            return NO;
         case OWSMessageCellType_Audio:
-            return NO;
         case OWSMessageCellType_GenericAttachment:
             return NO;
         case OWSMessageCellType_MediaMessage: {
@@ -1079,6 +1327,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return NO;
         }
         case OWSMessageCellType_OversizeTextDownloading:
+        case OWSMessageCellType_StickerMessage:
+        case OWSMessageCellType_PerMessageExpiration:
             return NO;
     }
 }
@@ -1107,6 +1357,11 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
         case OWSMessageCellType_OversizeTextDownloading:
             OWSFailDebug(@"Can't save not-yet-downloaded attachment");
+            return;
+        case OWSMessageCellType_StickerMessage:
+            return [self saveSticker];
+        case OWSMessageCellType_PerMessageExpiration:
+            OWSFailDebug(@"Can't save message with per-message expiration");
             return;
     }
 }
@@ -1158,6 +1413,22 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     return [self saveMediaAlbumItems:mediaAlbumItems];
 }
 
+- (void)saveSticker
+{
+    OWSAssertDebug(self.stickerAttachment != nil);
+    OWSAssertDebug(self.stickerAttachment.isValidImage);
+
+    [[PHPhotoLibrary sharedPhotoLibrary]
+        performChanges:^{
+            [PHAssetChangeRequest creationRequestForAssetFromImageAtFileURL:self.stickerAttachment.originalMediaURL];
+        }
+        completionHandler:^(BOOL success, NSError *error) {
+            if (error || !success) {
+                OWSFailDebug(@"Image save failed: %@", error);
+            }
+        }];
+}
+
 - (void)deleteAction
 {
     [self.interaction remove];
@@ -1186,6 +1457,10 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         case OWSMessageCellType_MediaMessage:
             return self.firstValidAlbumAttachment != nil;
         case OWSMessageCellType_OversizeTextDownloading:
+            return NO;
+        case OWSMessageCellType_StickerMessage:
+            return self.stickerAttachment != nil;
+        case OWSMessageCellType_PerMessageExpiration:
             return NO;
     }
 }

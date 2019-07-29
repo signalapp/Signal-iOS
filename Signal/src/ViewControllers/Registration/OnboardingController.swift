@@ -3,6 +3,7 @@
 //
 
 import UIKit
+import PromiseKit
 
 @objc
 public class OnboardingCountryState: NSObject {
@@ -129,7 +130,7 @@ public class OnboardingController: NSObject {
         viewController.navigationController?.pushViewController(view, animated: true)
     }
 
-    public func onboardingRegistrationSucceeded(viewController: UIViewController) {
+    public func requestingVerificationDidSucceed(viewController: UIViewController) {
         AssertIsOnMainThread()
 
         Logger.info("")
@@ -258,6 +259,11 @@ public class OnboardingController: NSObject {
             return
         }
 
+        guard !(navigationController.topViewController is Onboarding2FAViewController) else {
+            // 2fa view is already presented, we don't need to push it again.
+            return
+        }
+
         let view = Onboarding2FAViewController(onboardingController: self)
         navigationController.pushViewController(view, animated: true)
     }
@@ -311,6 +317,10 @@ public class OnboardingController: NSObject {
     public private(set) var verificationCode: String?
 
     public private(set) var twoFAPin: String?
+
+    private var kbsAuth: RemoteAttestationAuth?
+
+    public private(set) var verificationRequestCount: UInt = 0
 
     @objc
     public func update(countryState: OnboardingCountryState) {
@@ -401,8 +411,9 @@ public class OnboardingController: NSObject {
 
     // MARK: - Registration
 
-    public func tryToRegister(fromViewController: UIViewController,
-                              smsVerification: Bool) {
+    public func requestVerification(fromViewController: UIViewController, isSMS: Bool) {
+        AssertIsOnMainThread()
+
         guard let phoneNumber = phoneNumber else {
             owsFailDebug("Missing phoneNumber.")
             return
@@ -414,59 +425,102 @@ public class OnboardingController: NSObject {
         OnboardingController.setLastRegisteredPhoneNumber(value: phoneNumber.userInput)
 
         let captchaToken = self.captchaToken
+        self.verificationRequestCount += 1
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
-                                                     canCancel: true) { (modal) in
-
-                                                        self.tsAccountManager.register(withPhoneNumber: phoneNumber.e164,
-                                                                                       captchaToken: captchaToken,
-                                                                                       success: {
-                                                                                        DispatchQueue.main.async {
-                                                                                            modal.dismiss(completion: {
-                                                                                                self.registrationSucceeded(viewController: fromViewController)
-                                                                                            })
-                                                                                        }
-                                                        }, failure: { (error) in
-                                                            Logger.error("Error: \(error)")
-
-                                                            DispatchQueue.main.async {
-                                                                modal.dismiss(completion: {
-                                                                    self.registrationFailed(viewController: fromViewController, error: error as NSError)
-                                                                })
-                                                            }
-                                                        }, smsVerification: smsVerification)
+                                                     canCancel: true) { modal in
+            firstly {
+                self.accountManager.requestAccountVerification(recipientId: phoneNumber.e164,
+                                                               captchaToken: captchaToken,
+                                                               isSMS: isSMS)
+            }.done {
+                modal.dismiss {
+                    self.requestingVerificationDidSucceed(viewController: fromViewController)
+                }
+            }.catch { error in
+                Logger.error("Error: \(error)")
+                modal.dismiss {
+                    self.requestingVerificationDidFail(viewController: fromViewController, error: error)
+                }
+            }.retainUntilComplete()
         }
     }
 
-    private func registrationSucceeded(viewController: UIViewController) {
-        onboardingRegistrationSucceeded(viewController: viewController)
-    }
-
-    private func registrationFailed(viewController: UIViewController, error: NSError) {
-        if error.code == 402 {
-            Logger.info("Captcha requested.")
-
+    private func requestingVerificationDidFail(viewController: UIViewController, error: Error) {
+        switch error {
+        case AccountServiceClientError.captchaRequired:
             onboardingDidRequireCaptcha(viewController: viewController)
-        } else if error.code == 400 {
-            OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
-                                message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
+            return
 
-        } else {
-            OWSAlerts.showAlert(title: error.localizedDescription,
-                                message: error.localizedRecoverySuggestion)
+        case let networkManagerError as NetworkManagerError:
+            switch networkManagerError.statusCode {
+            case 400:
+                OWSAlerts.showAlert(title: NSLocalizedString("REGISTRATION_ERROR", comment: ""),
+                                    message: NSLocalizedString("REGISTRATION_NON_VALID_NUMBER", comment: ""))
+                return
+            default:
+                break
+            }
+
+        default:
+            break
         }
+
+        let nsError = error as NSError
+        owsFailDebug("unexpected error: \(nsError)")
+        OWSAlerts.showAlert(title: nsError.localizedDescription,
+                            message: nsError.localizedRecoverySuggestion)
     }
 
     // MARK: - Verification
 
-    public enum VerificationOutcome {
+    public enum VerificationOutcome: Equatable {
         case success
         case invalidVerificationCode
         case invalid2FAPin
+        case invalidV2RegistrationLockPin(remainingAttempts: UInt32)
+        case exhaustedV2RegistrationLockAttempts
     }
 
-    public func tryToVerify(fromViewController: UIViewController,
-                            completion : @escaping (VerificationOutcome) -> Void) {
+    public func submitVerification(fromViewController: UIViewController,
+                                   completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
+
+        // If we have credentials for KBS auth, we need to restore our keys.
+        if let kbsAuth = kbsAuth {
+            guard let twoFAPin = twoFAPin else {
+                owsFailDebug("We expected a 2fa attempt, but we don't have a code to try")
+                return completion(.invalid2FAPin)
+            }
+
+            KeyBackupService.restoreKeys(with: twoFAPin, and: kbsAuth).done {
+                // If we restored successfully clear out KBS auth, the server will give it
+                // to us again if we still need to do KBS operations.
+                self.kbsAuth = nil
+
+                // We've restored our keys, we can now re-run this method to post our registration token
+                self.submitVerification(fromViewController: fromViewController, completion: completion)
+            }.catch { error in
+                guard let error = error as? KeyBackupService.KBSError else {
+                    owsFailDebug("unexpected response from KBS")
+                    return completion(.invalid2FAPin)
+                }
+
+                switch error {
+                case .assertion:
+                    owsFailDebug("unexpected response from KBS")
+                    completion(.invalid2FAPin)
+                case .invalidPin(let remainingAttempts):
+                    completion(.invalidV2RegistrationLockPin(remainingAttempts: remainingAttempts))
+                case .backupMissing:
+                    // We don't have a backup for this person, it probably
+                    // was deleted due to too many failed attempts. They'll
+                    // have to retry after the registration lock window expires.
+                    completion(.exhaustedV2RegistrationLockAttempts)
+                }
+            }.retainUntilComplete()
+
+            return
+        }
 
         guard let phoneNumber = phoneNumber else {
             owsFailDebug("Missing phoneNumber.")
@@ -516,6 +570,14 @@ public class OnboardingController: NSObject {
 
             Logger.info("Missing 2FA PIN.")
 
+            // If we were provided KBS auth, we'll need to re-register using reg lock v2,
+            // store this for that path.
+            kbsAuth = error.userInfo[TSRemoteAttestationAuthErrorKey] as? RemoteAttestationAuth
+
+            // Since we were told we need 2fa, clear out any stored KBS keys so we can
+            // do a fresh verification.
+            KeyBackupService.clearKeychain()
+
             completion(.invalid2FAPin)
 
             onboardingDidRequire2FAPin(viewController: fromViewController)
@@ -536,11 +598,11 @@ public class OnboardingController: NSObject {
 // MARK: -
 
 public extension UIView {
-    public func addBottomStroke() -> UIView {
+    func addBottomStroke() -> UIView {
         return addBottomStroke(color: Theme.middleGrayColor, strokeWidth: CGHairlineWidth())
     }
 
-    public func addBottomStroke(color: UIColor, strokeWidth: CGFloat) -> UIView {
+    func addBottomStroke(color: UIColor, strokeWidth: CGFloat) -> UIView {
         let strokeView = UIView()
         strokeView.backgroundColor = color
         addSubview(strokeView)

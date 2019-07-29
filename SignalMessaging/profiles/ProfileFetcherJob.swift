@@ -74,6 +74,10 @@ public class ProfileFetcherJob: NSObject {
         return SSKEnvironment.shared.tsAccountManager
     }
 
+    private var sessionStore: SSKSessionStore {
+        return SSKSessionStore()
+    }
+
     // MARK: -
 
     public func run(recipientIds: [String]) {
@@ -114,7 +118,7 @@ public class ProfileFetcherJob: NSObject {
             self.updateProfile(signalServiceProfile: profile)
         }.catch(on: DispatchQueue.global()) { error in
             switch error {
-            case ProfileFetcherJobError.throttled(let lastTimeInterval):
+            case ProfileFetcherJobError.throttled:
                 // skipping
                 break
             case let error as SignalServiceProfile.ValidationError:
@@ -227,9 +231,9 @@ public class ProfileFetcherJob: NSObject {
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
         primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
-            if self.identityManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, protocolContext: transaction) {
+            if self.identityManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, transaction: transaction.asAnyWrite) {
                 Logger.info("updated identity key with fetched profile for recipient: \(recipientId)")
-                self.primaryStorage.archiveAllSessions(forContact: recipientId, protocolContext: transaction)
+                self.sessionStore.archiveAllSessions(forContact: recipientId, transaction: transaction.asAnyWrite)
             } else {
                 // no change in identity.
             }

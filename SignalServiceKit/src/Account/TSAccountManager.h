@@ -9,13 +9,14 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const TSRegistrationErrorDomain;
 extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
 extern NSString *const RegistrationStateDidChangeNotification;
+extern NSString *const TSRemoteAttestationAuthErrorKey;
 extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 @class AnyPromise;
-@class OWSPrimaryStorage;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
 @class TSNetworkManager;
-@class YapDatabaseReadTransaction;
-@class YapDatabaseReadWriteTransaction;
 
 typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
     OWSRegistrationState_Unregistered,
@@ -27,13 +28,11 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 @interface TSAccountManager : NSObject
 
+@property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
+
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
 
 #pragma mark - Initializers
-
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedInstance;
 
@@ -44,8 +43,8 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
  *
  *  @return registered or not
  */
-- (BOOL)isRegistered;
-- (BOOL)isRegisteredAndReady;
+@property (readonly) BOOL isRegistered;
+@property (readonly) BOOL isRegisteredAndReady;
 
 /**
  *  Returns current phone number for this device, which may not yet have been registered.
@@ -56,49 +55,36 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (nullable NSString *)localNumber;
 
 // A variant of localNumber that never opens a "sneaky" transaction.
-- (nullable NSString *)storedOrCachedLocalNumber:(YapDatabaseReadTransaction *)transaction;
+- (nullable NSString *)storedOrCachedLocalNumber:(SDSAnyReadTransaction *)transaction;
+
+#ifdef DEBUG
+// This method is exposed for testing purposes only.
+- (void)storeLocalNumber:(NSString *)localNumber;
+#endif
 
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,
  *
  *  @return signaling key
  */
-+ (nullable NSString *)signalingKey;
-- (nullable NSString *)signalingKey;
+- (nullable NSString *)storedSignalingKey;
 
 /**
  *  The server auth token allows the Signal client to connect to the Signal server
  *
  *  @return server authentication token
  */
-+ (nullable NSString *)serverAuthToken;
-- (nullable NSString *)serverAuthToken;
+- (nullable NSString *)storedServerAuthToken;
 
 /**
  *  The registration ID is unique to an installation of TextSecure, it allows to know if the app was reinstalled
  *
  *  @return registrationID;
  */
-
-+ (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction;
 - (uint32_t)getOrGenerateRegistrationId;
-- (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction;
+- (uint32_t)getOrGenerateRegistrationIdWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Register with phone number
-
-- (void)registerWithPhoneNumber:(NSString *)phoneNumber
-                   captchaToken:(nullable NSString *)captchaToken
-                        success:(void (^)(void))successBlock
-                        failure:(void (^)(NSError *error))failureBlock
-                smsVerification:(BOOL)isSMS;
-
-- (void)rerequestSMSWithCaptchaToken:(nullable NSString *)captchaToken
-                             success:(void (^)(void))successBlock
-                             failure:(void (^)(NSError *error))failureBlock;
-
-- (void)rerequestVoiceWithCaptchaToken:(nullable NSString *)captchaToken
-                               success:(void (^)(void))successBlock
-                               failure:(void (^)(NSError *error))failureBlock;
 
 - (void)verifyAccountWithCode:(NSString *)verificationCode
                           pin:(nullable NSString *)pin
@@ -148,13 +134,13 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 // Returns YES on success.
 - (BOOL)resetForReregistration;
-- (nullable NSString *)reregisterationPhoneNumber;
+- (nullable NSString *)reregistrationPhoneNumber;
 - (BOOL)isReregistering;
 
 #pragma mark - Manual Message Fetch
 
 - (BOOL)isManualMessageFetchEnabled;
-- (AnyPromise *)setIsManualMessageFetchEnabled:(BOOL)value __attribute__((warn_unused_result));
+- (void)setIsManualMessageFetchEnabled:(BOOL)value;
 
 #ifdef DEBUG
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber;

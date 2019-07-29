@@ -6,10 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-BOOL IsLandscapeOrientationEnabled(void);
-
-UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void);
-
 @interface OWSViewController : UIViewController
 
 @property (nonatomic) BOOL shouldIgnoreKeyboardChanges;
@@ -23,6 +19,10 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void);
 // If YES, the bottom view never "reclaims" layout space if the keyboard is dismissed.
 // Defaults to NO.
 @property (nonatomic) BOOL shouldBottomViewReserveSpaceForKeyboard;
+
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil
+                         bundle:(nullable NSBundle *)nibBundleOrNil NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 @end
 

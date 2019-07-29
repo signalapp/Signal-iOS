@@ -11,7 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSMessageSender;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
+@class SDSAnyReadTransaction;
 @class SignalAttachment;
+@class StickerInfo;
 @class TSContactThread;
 @class TSGroupThread;
 @class TSInteraction;
@@ -48,17 +50,18 @@ NS_ASSUME_NONNULL_BEGIN
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(YapDatabaseReadTransaction *)transaction;
+                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 + (TSOutgoingMessage *)enqueueMessageWithText:(nullable NSString *)fullMessageText
                              mediaAttachments:(NSArray<SignalAttachment *> *)attachments
                                      inThread:(TSThread *)thread
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
-                                  transaction:(YapDatabaseReadTransaction *)transaction;
+                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread;
++ (TSOutgoingMessage *)enqueueMessageWithSticker:(StickerInfo *)stickerInfo inThread:(TSThread *)thread;
 
 #pragma mark - Non-Durable Sending
 
@@ -109,11 +112,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (ThreadDynamicInteractions *)ensureDynamicInteractionsForThread:(TSThread *)thread
                                                   contactsManager:(OWSContactsManager *)contactsManager
                                                   blockingManager:(OWSBlockingManager *)blockingManager
-                                                     dbConnection:(YapDatabaseConnection *)dbConnection
                                       hideUnreadMessagesIndicator:(BOOL)hideUnreadMessagesIndicator
                                               lastUnreadIndicator:(nullable OWSUnreadIndicator *)lastUnreadIndicator
                                                    focusMessageId:(nullable NSString *)focusMessageId
-                                                     maxRangeSize:(int)maxRangeSize;
+                                                     maxRangeSize:(NSUInteger)maxRangeSize
+                                                      transaction:(SDSAnyReadTransaction *)transaction;
 
 + (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager;
 

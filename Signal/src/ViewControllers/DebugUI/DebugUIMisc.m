@@ -14,8 +14,8 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SignalServiceKit/SSKSessionStore.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
 #import <SignalServiceKit/TSThread.h>
@@ -38,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (YapDatabaseConnection *)dbConnection
 {
     return [OWSPrimaryStorage.sharedManager dbReadWriteConnection];
+}
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
 }
 
 #pragma mark - Factory Methods
@@ -268,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"attachment[%@]: %@", [attachment sourceFilename], [attachment errorName]);
         return;
     }
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
         [ThreadUtil enqueueMessageWithText:nil
                           mediaAttachments:@[ attachment ]
                                   inThread:thread

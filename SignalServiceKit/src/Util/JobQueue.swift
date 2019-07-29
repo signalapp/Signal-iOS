@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,7 +22,12 @@ import Foundation
 
 public extension Error {
     var isRetryable: Bool {
-        return (self as NSError).isRetryable
+        get {
+            return (self as NSError).isRetryable
+        }
+        set {
+            (self as NSError).isRetryable = newValue
+        }
     }
 }
 
@@ -61,9 +66,9 @@ public protocol DurableOperation: class {
 public protocol DurableOperationDelegate: class {
     associatedtype DurableOperationType: DurableOperation
 
-    func durableOperationDidSucceed(_ operation: DurableOperationType, transaction: YapDatabaseReadWriteTransaction)
-    func durableOperation(_ operation: DurableOperationType, didReportError: Error, transaction: YapDatabaseReadWriteTransaction)
-    func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: YapDatabaseReadWriteTransaction)
+    func durableOperationDidSucceed(_ operation: DurableOperationType, transaction: SDSAnyWriteTransaction)
+    func durableOperation(_ operation: DurableOperationType, didReportError: Error, transaction: SDSAnyWriteTransaction)
+    func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: SDSAnyWriteTransaction)
 }
 
 public protocol JobQueue: DurableOperationDelegate {
@@ -72,12 +77,12 @@ public protocol JobQueue: DurableOperationDelegate {
 
     // MARK: Dependencies
 
-    var dbConnection: YapDatabaseConnection { get }
-    var finder: JobRecordFinder { get }
+    var databaseStorage: SDSDatabaseStorage { get }
+    var finder: AnyJobRecordFinder<JobRecordType> { get }
 
     // MARK: Default Implementations
 
-    func add(jobRecord: JobRecordType, transaction: YapDatabaseReadWriteTransaction)
+    func add(jobRecord: JobRecordType, transaction: SDSAnyWriteTransaction)
     func restartOldJobs()
     func workStep()
     func defaultSetup()
@@ -89,10 +94,10 @@ public protocol JobQueue: DurableOperationDelegate {
 
     var isSetup: Bool { get set }
     func setup()
-    func didMarkAsReady(oldJobRecord: JobRecordType, transaction: YapDatabaseReadWriteTransaction)
+    func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction)
 
     func operationQueue(jobRecord: JobRecordType) -> OperationQueue
-    func buildOperation(jobRecord: JobRecordType, transaction: YapDatabaseReadTransaction) throws -> DurableOperationType
+    func buildOperation(jobRecord: JobRecordType, transaction: SDSAnyReadTransaction) throws -> DurableOperationType
 
     /// When `requiresInternet` is true, we immediately run any jobs which are waiting for retry upon detecting Reachability.
     ///
@@ -107,12 +112,12 @@ public extension JobQueue {
 
     // MARK: Dependencies
 
-    var dbConnection: YapDatabaseConnection {
-        return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
-    var finder: JobRecordFinder {
-        return JobRecordFinder()
+    var finder: AnyJobRecordFinder<JobRecordType> {
+        return AnyJobRecordFinder<JobRecordType>()
     }
 
     var reachabilityManager: SSKReachabilityManager {
@@ -121,12 +126,12 @@ public extension JobQueue {
 
     // MARK: 
 
-    func add(jobRecord: JobRecordType, transaction: YapDatabaseReadWriteTransaction) {
+    func add(jobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
         assert(jobRecord.status == .ready)
 
-        jobRecord.save(with: transaction)
+        jobRecord.anyInsert(transaction: transaction)
 
-        transaction.addCompletionQueue(.global()) {
+        transaction.addCompletion(queue: .global()) {
             self.startWorkWhenAppIsReady()
         }
     }
@@ -157,8 +162,8 @@ public extension JobQueue {
             return
         }
 
-        self.dbConnection.readWrite { transaction in
-            guard let nextJob: JobRecordType = self.finder.getNextReady(label: self.jobRecordLabel, transaction: transaction) as? JobRecordType else {
+        self.databaseStorage.write { transaction in
+            guard let nextJob: JobRecordType = self.finder.getNextReady(label: self.jobRecordLabel, transaction: transaction) else {
                 Logger.verbose("nothing left to enqueue")
                 return
             }
@@ -196,15 +201,11 @@ public extension JobQueue {
         }
     }
 
-    public func restartOldJobs() {
-        self.dbConnection.readWrite { transaction in
+    func restartOldJobs() {
+        databaseStorage.write { transaction in
             let runningRecords = self.finder.allRecords(label: self.jobRecordLabel, status: .running, transaction: transaction)
             Logger.info("marking old `running` JobRecords as ready: \(runningRecords.count)")
-            for record in runningRecords {
-                guard let jobRecord = record as? JobRecordType else {
-                    owsFailDebug("unexpectred jobRecord: \(record)")
-                    continue
-                }
+            for jobRecord in runningRecords {
                 do {
                     try jobRecord.saveRunningAsReady(transaction: transaction)
                     self.didMarkAsReady(oldJobRecord: jobRecord, transaction: transaction)
@@ -282,12 +283,12 @@ public extension JobQueue {
 
     // MARK: DurableOperationDelegate
 
-    func durableOperationDidSucceed(_ operation: DurableOperationType, transaction: YapDatabaseReadWriteTransaction) {
+    func durableOperationDidSucceed(_ operation: DurableOperationType, transaction: SDSAnyWriteTransaction) {
         self.runningOperations = self.runningOperations.filter { $0 !== operation }
-        operation.jobRecord.remove(with: transaction)
+        operation.jobRecord.anyRemove(transaction: transaction)
     }
 
-    func durableOperation(_ operation: DurableOperationType, didReportError: Error, transaction: YapDatabaseReadWriteTransaction) {
+    func durableOperation(_ operation: DurableOperationType, didReportError: Error, transaction: SDSAnyWriteTransaction) {
         do {
             try operation.jobRecord.addFailure(transaction: transaction)
         } catch {
@@ -296,24 +297,24 @@ public extension JobQueue {
         }
     }
 
-    func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: YapDatabaseReadWriteTransaction) {
+    func durableOperation(_ operation: DurableOperationType, didFailWithError error: Error, transaction: SDSAnyWriteTransaction) {
         self.runningOperations = self.runningOperations.filter { $0 !== operation }
         operation.jobRecord.saveAsPermanentlyFailed(transaction: transaction)
     }
 }
 
-@objc(SSKJobRecordFinder)
-public class JobRecordFinder: NSObject, Finder {
+public protocol JobRecordFinder {
+    associatedtype ReadTransaction
+    associatedtype JobRecordType: SSKJobRecord
 
-    typealias ExtensionType = YapDatabaseSecondaryIndex
-    typealias TransactionType = YapDatabaseSecondaryIndexTransaction
+    func getNextReady(label: String, transaction: ReadTransaction) -> JobRecordType?
+    func allRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction) -> [JobRecordType]
+    func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void)
+}
 
-    enum JobRecordField: String {
-        case status, label, sortId
-    }
-
-    func getNextReady(label: String, transaction: YapDatabaseReadTransaction) -> SSKJobRecord? {
-        var result: SSKJobRecord?
+extension JobRecordFinder {
+    public func getNextReady(label: String, transaction: ReadTransaction) -> JobRecordType? {
+        var result: JobRecordType?
         self.enumerateJobRecords(label: label, status: .ready, transaction: transaction) { jobRecord, stopPointer in
             result = jobRecord
             stopPointer.pointee = true
@@ -321,34 +322,86 @@ public class JobRecordFinder: NSObject, Finder {
         return result
     }
 
-    func allRecords(label: String, status: SSKJobRecordStatus, transaction: YapDatabaseReadTransaction) -> [SSKJobRecord] {
-        var result: [SSKJobRecord] = []
+    public func allRecords(label: String, status: SSKJobRecordStatus, transaction: ReadTransaction) -> [JobRecordType] {
+        var result: [JobRecordType] = []
         self.enumerateJobRecords(label: label, status: status, transaction: transaction) { jobRecord, _ in
             result.append(jobRecord)
         }
         return result
     }
+}
 
-    func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: YapDatabaseReadTransaction, block: @escaping (SSKJobRecord, UnsafeMutablePointer<ObjCBool>) -> Void) {
-        let queryFormat = String(format: "WHERE %@ = ? AND %@ = ? ORDER BY %@", JobRecordField.status.rawValue, JobRecordField.label.rawValue, JobRecordField.sortId.rawValue)
-        let query = YapDatabaseQuery(string: queryFormat, parameters: [status.rawValue, label])
+public class AnyJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
+    lazy var grdbAdapter = GRDBJobRecordFinder<JobRecordType>()
+    lazy var yapAdapter = YAPDBJobRecordFinder<JobRecordType>()
+}
 
-        self.ext(transaction: transaction).enumerateKeysAndObjects(matching: query) { _, _, object, stopPointer in
-            guard let jobRecord = object as? SSKJobRecord else {
-                owsFailDebug("expecting jobRecord but found: \(object)")
-                return
-            }
-            block(jobRecord, stopPointer)
+extension AnyJobRecordFinder: JobRecordFinder {
+    public func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: SDSAnyReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdbRead):
+            grdbAdapter.enumerateJobRecords(label: label, status: status, transaction: grdbRead, block: block)
+        case .yapRead(let yapRead):
+            yapAdapter.enumerateJobRecords(label: label, status: status, transaction: yapRead, block: block)
         }
     }
+}
 
-    static var dbExtensionName: String {
+class GRDBJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
+
+}
+
+extension GRDBJobRecordFinder: JobRecordFinder {
+    func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: GRDBReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
+
+        let sql = """
+            SELECT * FROM \(JobRecordRecord.databaseTableName)
+            WHERE \(jobRecordColumn: .status) = ?
+              AND \(jobRecordColumn: .label) = ?
+            ORDER BY \(jobRecordColumn: .id)
+        """
+
+        let cursor = JobRecordType.grdbFetchCursor(sql: sql,
+                                                   arguments: [status.rawValue, label],
+                                                   transaction: transaction)
+        var stop: ObjCBool = false
+        // GRDB TODO make cursor.next fail hard to remove this `try!`
+        while let next = try! cursor.next() {
+            guard let jobRecord = next as? JobRecordType else {
+                owsFailDebug("expecting jobRecord but found: \(next)")
+                return
+            }
+            block(jobRecord, &stop)
+            if stop.boolValue {
+                return
+            }
+        }
+    }
+}
+
+@objc
+public class YAPDBJobRecordFinderSetup: NSObject {
+    @objc
+    public class func asyncRegisterDatabaseExtensionObjC(storage: OWSStorage) {
+        YAPDBJobRecordFinder.asyncRegisterDatabaseExtension(storage: storage)
+    }
+}
+
+public class YAPDBJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
+    public static var dbExtensionName: String {
         return "SecondaryIndexJobRecord"
     }
 
-    @objc
-    public class func asyncRegisterDatabaseExtensionObjC(storage: OWSStorage) {
-        asyncRegisterDatabaseExtension(storage: storage)
+    func ext(transaction: YapDatabaseReadTransaction) -> YapDatabaseSecondaryIndexTransaction? {
+        return transaction.safeSecondaryIndexTransaction(type(of: self).dbExtensionName)
+    }
+
+    static func asyncRegisterDatabaseExtension(storage: OWSStorage) {
+        storage.asyncRegister(dbExtensionConfig, withName: dbExtensionName)
+    }
+
+    enum JobRecordField: String {
+        case status, label, sortId
     }
 
     static var dbExtensionConfig: YapDatabaseSecondaryIndex {
@@ -377,35 +430,20 @@ public class JobRecordFinder: NSObject, Finder {
     }
 }
 
-protocol Finder {
-    associatedtype ExtensionType: YapDatabaseExtension
-    associatedtype TransactionType: YapDatabaseExtensionTransaction
+extension YAPDBJobRecordFinder: JobRecordFinder {
+    public func enumerateJobRecords(label: String, status: SSKJobRecordStatus, transaction: YapDatabaseReadTransaction, block: @escaping (JobRecordType, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let queryFormat = String(format: "WHERE %@ = ? AND %@ = ? ORDER BY %@", JobRecordField.status.rawValue, JobRecordField.label.rawValue, JobRecordField.sortId.rawValue)
+        let query = YapDatabaseQuery(string: queryFormat, parameters: [status.rawValue, label])
 
-    static var dbExtensionName: String { get }
-    static var dbExtensionConfig: ExtensionType { get }
-
-    func ext(transaction: YapDatabaseReadTransaction) -> TransactionType
-
-    static func asyncRegisterDatabaseExtension(storage: OWSStorage)
-    static func testingOnly_ensureDatabaseExtensionRegistered(storage: OWSStorage)
-}
-
-extension Finder {
-
-    func ext(transaction: YapDatabaseReadTransaction) -> TransactionType {
-        return transaction.ext(type(of: self).dbExtensionName) as! TransactionType
-    }
-
-    static func asyncRegisterDatabaseExtension(storage: OWSStorage) {
-        storage.asyncRegister(dbExtensionConfig, withName: dbExtensionName)
-    }
-
-    // Only for testing.
-    static func testingOnly_ensureDatabaseExtensionRegistered(storage: OWSStorage) {
-        guard storage.registeredExtension(dbExtensionName) == nil else {
+        guard let ext = self.ext(transaction: transaction) else {
             return
         }
-
-        storage.register(dbExtensionConfig, withName: dbExtensionName)
+        ext.enumerateKeysAndObjects(matching: query) { _, _, object, stopPointer in
+            guard let jobRecord = object as? JobRecordType else {
+                owsFailDebug("expecting jobRecord but found: \(object)")
+                return
+            }
+            block(jobRecord, stopPointer)
+        }
     }
 }

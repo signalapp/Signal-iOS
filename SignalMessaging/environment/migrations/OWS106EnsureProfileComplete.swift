@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -62,7 +62,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         }
 
         func start() {
-            guard tsAccountManager.isRegistered() else {
+            guard tsAccountManager.isRegistered else {
                 self.completionHandler(true)
                 return
             }

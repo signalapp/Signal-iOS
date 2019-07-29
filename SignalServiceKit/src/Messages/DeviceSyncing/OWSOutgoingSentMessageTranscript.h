@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSOutgoingSentMessageTranscript : OWSOutgoingSyncMessage
 
 - (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp NS_UNAVAILABLE;
 
 - (instancetype)initWithOutgoingMessage:(TSOutgoingMessage *)message
                       isRecipientUpdate:(BOOL)isRecipientUpdate NS_DESIGNATED_INITIALIZER;

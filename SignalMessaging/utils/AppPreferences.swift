@@ -9,29 +9,19 @@ public class AppPreferences: NSObject {
     // Never instantiate this class.
     private override init() {}
 
-    private static let collection = "AppPreferences"
+    public static let store = SDSKeyValueStore(collection: "AppPreferences")
 
     // MARK: -
 
     private static let hasDimissedFirstConversationCueKey = "hasDimissedFirstConversationCue"
 
     @objc
-    public static var hasDimissedFirstConversationCue: Bool {
-        get {
-            return getBool(key: hasDimissedFirstConversationCueKey)
-        }
-        set {
-            setBool(newValue, key: hasDimissedFirstConversationCueKey)
-        }
+    public static func hasDimissedFirstConversationCue(transaction: SDSAnyReadTransaction) -> Bool {
+        return store.getBool(hasDimissedFirstConversationCueKey, defaultValue: false, transaction: transaction)
     }
 
-    // MARK: -
-
-    private class func getBool(key: String, defaultValue: Bool = false) -> Bool {
-        return OWSPrimaryStorage.dbReadConnection().bool(forKey: key, inCollection: collection, defaultValue: defaultValue)
-    }
-
-    private class func setBool(_ value: Bool, key: String) {
-        OWSPrimaryStorage.dbReadWriteConnection().setBool(value, forKey: key, inCollection: collection)
+    @objc
+    public static func setHasDimissedFirstConversationCue(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(newValue, key: hasDimissedFirstConversationCueKey, transaction: transaction)
     }
 }

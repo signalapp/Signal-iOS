@@ -51,13 +51,15 @@ public enum PushRegistrationError: Error {
     private var voipTokenPromise: Promise<Data>?
     private var voipTokenResolver: Resolver<Data>?
 
+    public var preauthChallengeResolver: Resolver<String>?
+
     // MARK: Public interface
 
     public func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
         Logger.info("")
 
-        return firstly {
-            self.registerUserNotificationSettings()
+        return DispatchQueue.main.async(.promise) {
+            return self.registerUserNotificationSettings()
         }.then { () -> Promise<(pushToken: String, voipToken: String)> in
             guard !Platform.isSimulator else {
                 throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
@@ -101,7 +103,15 @@ public enum PushRegistrationError: Error {
         Logger.info("")
         assert(type == .voIP)
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            (self.messageFetcherJob.run() as Promise<Void>).retainUntilComplete()
+            AssertIsOnMainThread()
+            if let preauthChallengeResolver = self.preauthChallengeResolver,
+                let challenge = payload.dictionaryPayload["challenge"] as? String {
+                Logger.info("received preauth challenge")
+                preauthChallengeResolver.fulfill(challenge)
+                self.preauthChallengeResolver = nil
+            } else {
+                (self.messageFetcherJob.run() as Promise<Void>).retainUntilComplete()
+            }
         }
     }
 

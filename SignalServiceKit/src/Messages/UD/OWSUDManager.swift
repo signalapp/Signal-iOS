@@ -134,7 +134,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     @objc public func setup() {
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            guard self.tsAccountManager.isRegistered() else {
+            guard self.tsAccountManager.isRegistered else {
                 return
             }
 
@@ -155,7 +155,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     func registrationStateDidChange() {
         AssertIsOnMainThread()
 
-        guard tsAccountManager.isRegisteredAndReady() else {
+        guard tsAccountManager.isRegisteredAndReady else {
             return
         }
 
@@ -167,7 +167,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         AssertIsOnMainThread()
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            guard self.tsAccountManager.isRegistered() else {
+            guard self.tsAccountManager.isRegistered else {
                 return
             }
 
@@ -360,7 +360,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
 
         do {
-            let certificate = try SMKSenderCertificate.parse(data: certificateData)
+            let certificate = try SMKSenderCertificate(serializedData: certificateData)
 
             guard isValidCertificate(certificate) else {
                 Logger.warn("Current sender certificate is not valid.")
@@ -409,35 +409,29 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     public func ensureSenderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SMKSenderCertificate> {
         // If there is a valid cached sender certificate, use that.
-        //
-        // NOTE: We use a "strict" expiration policy.
         if let certificate = senderCertificate(certificateExpirationPolicy: certificateExpirationPolicy) {
             return Promise.value(certificate)
         }
 
-        // Try to obtain a new sender certificate.
         return firstly {
             requestSenderCertificate()
-        }.map { (certificateData: Data, certificate: SMKSenderCertificate) in
-
-            // Cache the current sender certificate.
-            self.setSenderCertificate(certificateData)
-
+        }.map { (certificate: SMKSenderCertificate) in
+            self.setSenderCertificate(certificate.serializedData)
             return certificate
         }
     }
 
-    private func requestSenderCertificate() -> Promise<(certificateData: Data, certificate: SMKSenderCertificate)> {
+    private func requestSenderCertificate() -> Promise<SMKSenderCertificate> {
         return firstly {
             SignalServiceRestClient().requestUDSenderCertificate()
-        }.map { certificateData -> (certificateData: Data, certificate: SMKSenderCertificate) in
-            let certificate = try SMKSenderCertificate.parse(data: certificateData)
+        }.map { certificateData -> SMKSenderCertificate in
+            let certificate = try SMKSenderCertificate(serializedData: certificateData)
 
             guard self.isValidCertificate(certificate) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
             }
 
-            return (certificateData: certificateData, certificate: certificate)
+            return certificate
         }
     }
 
