@@ -92,10 +92,6 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
     // MARK: - Dependencies
 
-    private var primaryStorage: OWSPrimaryStorage {
-        return SSKEnvironment.shared.primaryStorage
-    }
-
     private var syncManager: OWSSyncManagerProtocol {
         return SSKEnvironment.shared.syncManager
     }

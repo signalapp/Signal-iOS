@@ -181,7 +181,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let recipientIndexer: SearchIndexer<SignalServiceAddress> = SearchIndexer { recipientAddress, transaction in
-        let displayName = contactsManager.displayName(for: recipientAddress, transaction: transaction)
+        let displayName = contactsManager.displayName(for: recipientAddress, transaction: transaction.asAnyRead)
 
         let nationalNumber: String? = { (recipientId: String?) -> String? in
             guard let recipientId = recipientId else { return nil }

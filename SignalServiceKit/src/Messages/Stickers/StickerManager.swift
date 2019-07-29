@@ -59,10 +59,6 @@ public class StickerManager: NSObject {
         return SDSDatabaseStorage.shared
     }
 
-    private static var primaryStorage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
-    }
-
     private static var messageSenderJobQueue: MessageSenderJobQueue {
         return SSKEnvironment.shared.messageSenderJobQueue
     }

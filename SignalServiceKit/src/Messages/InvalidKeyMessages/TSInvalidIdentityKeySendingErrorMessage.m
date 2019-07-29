@@ -5,7 +5,6 @@
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
 #import "OWSFingerprint.h"
 #import "OWSIdentityManager.h"
-#import "OWSPrimaryStorage.h"
 #import "PreKeyBundle+jsonDict.h"
 #import "SSKSessionStore.h"
 #import "TSContactThread.h"

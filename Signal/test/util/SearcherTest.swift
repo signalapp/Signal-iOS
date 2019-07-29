@@ -9,7 +9,7 @@ import XCTest
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
 class FullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
-    func displayName(for address: SignalServiceAddress?, transaction: YapDatabaseReadTransaction) -> String {
+    func displayName(for address: SignalServiceAddress?, transaction: SDSAnyReadTransaction) -> String {
         return self.displayName(for: address)
     }
 

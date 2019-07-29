@@ -161,11 +161,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         }
     }
 
-    NSString *senderName = nil;
-    if (transaction.transitional_yapReadTransaction) {
-        senderName = [self.contactsManager displayNameForAddress:self.sender
-                                                     transaction:transaction.transitional_yapReadTransaction];
-    }
+    NSString *senderName = [self.contactsManager displayNameForAddress:self.sender transaction:transaction];
 
     if (self.isProtocolVersionUnknown) {
         if (senderName.length > 0) {

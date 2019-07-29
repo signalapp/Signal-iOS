@@ -4,7 +4,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
 @class SignalServiceAddress;
 @class TSGroupModel;
 @class TSThread;

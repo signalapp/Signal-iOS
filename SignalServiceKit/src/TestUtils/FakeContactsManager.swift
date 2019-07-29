@@ -8,7 +8,7 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return "Fake name"
     }
 
-    public func displayName(for address: SignalServiceAddress?, transaction: YapDatabaseReadTransaction) -> String {
+    public func displayName(for address: SignalServiceAddress?, transaction: SDSAnyReadTransaction) -> String {
         return self.displayName(for: address)
     }
 

@@ -208,12 +208,8 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
             return NSLocalizedString(@"UNSUPPORTED_ATTACHMENT", nil);
         case TSInfoMessageUserNotRegistered:
             if (self.unregisteredAddress.isValid) {
-                NSString *recipientName;
-                if (transaction.transitional_yapReadTransaction != nil) {
-                    recipientName = [self.contactsManager
-                        displayNameForAddress:self.unregisteredAddress
-                                  transaction:transaction.transitional_yapReadTransaction];
-                }
+                NSString *recipientName =
+                    [self.contactsManager displayNameForAddress:self.unregisteredAddress transaction:transaction];
                 return [NSString stringWithFormat:NSLocalizedString(@"ERROR_UNREGISTERED_USER_FORMAT",
                                                       @"Format string for 'unregistered user' error. Embeds {{the "
                                                       @"unregistered user's name or signal id}}."),
@@ -242,17 +238,13 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
         case TSInfoMessageUnknownProtocolVersion:
             break;
         case TSInfoMessageUserJoinedSignal: {
-            NSString *recipientName;
-            if (transaction.transitional_yapReadTransaction != nil) {
                 SignalServiceAddress *address = [TSContactThread contactAddressFromThreadId:self.uniqueThreadId
                                                                                 transaction:transaction];
-                recipientName =
-                    [self.contactsManager displayNameForAddress:address
-                                                    transaction:transaction.transitional_yapReadTransaction];
-            }
-            NSString *format = NSLocalizedString(@"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT",
-                @"Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}}");
-            return [NSString stringWithFormat:format, recipientName];
+                NSString *recipientName = [self.contactsManager displayNameForAddress:address transaction:transaction];
+                NSString *format = NSLocalizedString(@"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT",
+                    @"Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact "
+                    @"name}}");
+                return [NSString stringWithFormat:format, recipientName];
         }
     }
 

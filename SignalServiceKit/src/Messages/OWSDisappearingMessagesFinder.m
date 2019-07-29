@@ -3,7 +3,7 @@
 //
 
 #import "OWSDisappearingMessagesFinder.h"
-#import "OWSPrimaryStorage.h"
+#import "OWSStorage.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"

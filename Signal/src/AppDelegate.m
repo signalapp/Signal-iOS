@@ -1361,14 +1361,14 @@ static NSTimeInterval launchStartedAt;
     [SSKEnvironment.shared.reachabilityManager setup];
 
     if (!Environment.shared.preferences.hasGeneratedThumbnails) {
-        [self.primaryStorage.newDatabaseConnection
-            asyncReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                [TSAttachment anyEnumerateWithTransaction:transaction.asAnyRead
+        [self.databaseStorage
+            asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                [TSAttachment anyEnumerateWithTransaction:transaction
                                                     block:^(TSAttachment *attachment, BOOL *stop){
                                                         // no-op. It's sufficient to initWithCoder: each object.
                                                     }];
             }
-            completionBlock:^{
+            completion:^{
                 [Environment.shared.preferences setHasGeneratedThumbnails:YES];
             }];
     }

@@ -653,7 +653,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 - (nullable NSString *)cachedContactNameForAddress:(SignalServiceAddress *)address
-                                       transaction:(YapDatabaseReadTransaction *)transaction
+                                       transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address);
     OWSAssertDebug(transaction);
@@ -808,7 +808,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 - (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address
-                                            transaction:(YapDatabaseReadTransaction *)transaction
+                                            transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -834,7 +834,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 - (NSString *)displayNameForAddress:(nullable SignalServiceAddress *)address
-                        transaction:(YapDatabaseReadTransaction *)transaction
+                        transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -1064,7 +1064,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
-                                             transaction:(YapDatabaseReadTransaction *)transaction
+                                             transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address);
     OWSAssertDebug(transaction);
@@ -1082,7 +1082,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     // If contact intersection hasn't completed, it might exist on disk
     // even if it doesn't exist in memory yet.
     if (!signalAccount) {
-        signalAccount = [self.accountFinder signalAccountForAddress:address transaction:transaction.asAnyRead];
+        signalAccount = [self.accountFinder signalAccountForAddress:address transaction:transaction];
     }
 
     return signalAccount;

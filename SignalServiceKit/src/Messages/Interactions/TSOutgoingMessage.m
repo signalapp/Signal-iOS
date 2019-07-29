@@ -6,7 +6,6 @@
 #import "OWSContact.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingSyncMessage.h"
-#import "OWSPrimaryStorage.h"
 #import "ProtoUtils.h"
 #import "SSKEnvironment.h"
 #import "SignalRecipient.h"

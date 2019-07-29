@@ -26,8 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSIncomingSentMessageTranscript
 
-- (instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (instancetype)initWithProto:(SSKProtoSyncMessageSent *)sentProto transaction:(SDSAnyWriteTransaction *)transaction
 {
     self = [super init];
     if (!self) {
@@ -56,29 +55,26 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isRecipientUpdate) {
         // Fetch, don't create.  We don't want recipient updates to resurrect messages or threads.
         if (self.dataMessage.group) {
-            _thread = [TSGroupThread threadWithGroupId:_dataMessage.group.id transaction:transaction.asAnyRead];
+            _thread = [TSGroupThread threadWithGroupId:_dataMessage.group.id transaction:transaction];
         } else {
             OWSFailDebug(@"We should never receive a 'recipient update' for messages in contact threads.");
         }
         // Skip the other processing for recipient updates.
     } else {
         if (self.dataMessage.group) {
-            _thread =
-                [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction.asAnyWrite];
+            _thread = [TSGroupThread getOrCreateThreadWithGroupId:_dataMessage.group.id transaction:transaction];
         } else {
-            _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress
-                                                               transaction:transaction.asAnyWrite];
+            _thread = [TSContactThread getOrCreateThreadWithContactAddress:_recipientAddress transaction:transaction];
         }
 
-        _quotedMessage = [TSQuotedMessage quotedMessageForDataMessage:_dataMessage
-                                                               thread:_thread
-                                                          transaction:transaction.asAnyWrite];
-        _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction.asAnyWrite];
+        _quotedMessage =
+            [TSQuotedMessage quotedMessageForDataMessage:_dataMessage thread:_thread transaction:transaction];
+        _contact = [OWSContacts contactForDataMessage:_dataMessage transaction:transaction];
 
         NSError *linkPreviewError;
         _linkPreview = [OWSLinkPreview buildValidatedLinkPreviewWithDataMessage:_dataMessage
                                                                            body:_body
-                                                                    transaction:transaction.asAnyWrite
+                                                                    transaction:transaction
                                                                           error:&linkPreviewError];
         if (linkPreviewError && ![OWSLinkPreview isNoPreviewError:linkPreviewError]) {
             OWSLogError(@"linkPreviewError: %@", linkPreviewError);
@@ -86,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         NSError *stickerError;
         _messageSticker = [MessageSticker buildValidatedMessageStickerWithDataMessage:_dataMessage
-                                                                          transaction:transaction.asAnyWrite
+                                                                          transaction:transaction
                                                                                 error:&stickerError];
         if (stickerError && ![MessageSticker isNoStickerError:stickerError]) {
             OWSFailDebug(@"stickerError: %@", stickerError);

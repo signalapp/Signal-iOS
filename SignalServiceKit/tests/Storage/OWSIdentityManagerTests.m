@@ -12,8 +12,6 @@
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
-
 @interface OWSIdentityManagerTests : SSKBaseTestObjC
 
 @end

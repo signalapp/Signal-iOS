@@ -30,6 +30,7 @@ static NSString *const OWS104CreateRecipientIdentitiesMigrationId = @"104";
 
     NSMutableDictionary<NSString *, NSData *> *identityKeys = [NSMutableDictionary new];
 
+    NSString *const OWSPrimaryStorageTrustedKeysCollection = @"TSStorageManagerTrustedKeysCollection";
     [transaction
         enumerateKeysAndObjectsInCollection:OWSPrimaryStorageTrustedKeysCollection
                                  usingBlock:^(NSString *_Nonnull recipientId, id _Nonnull object, BOOL *_Nonnull stop) {

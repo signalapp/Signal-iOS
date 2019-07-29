@@ -31,13 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Storing our own identity key
 NSString *const OWSPrimaryStorageIdentityKeyStoreIdentityKey = @"TSStorageManagerIdentityKeyStoreIdentityKey";
-NSString *const OWSPrimaryStorageIdentityKeyStoreCollection = @"TSStorageManagerIdentityKeyStoreCollection";
-
-// Storing recipients identity keys
-NSString *const OWSPrimaryStorageTrustedKeysCollection = @"TSStorageManagerTrustedKeysCollection";
-
-NSString *const OWSIdentityManager_QueuedVerificationStateSyncMessages =
-    @"OWSIdentityManager_QueuedVerificationStateSyncMessages";
 
 // Don't trust an identity for sending to unless they've been around for at least this long
 const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
@@ -80,9 +73,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     }
 
     _ownIdentityKeyValueStore =
-        [[SDSKeyValueStore alloc] initWithCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
+        [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerIdentityKeyStoreCollection"];
     _queuedVerificationStateSyncMessagesKeyValueStore =
-        [[SDSKeyValueStore alloc] initWithCollection:OWSIdentityManager_QueuedVerificationStateSyncMessages];
+        [[SDSKeyValueStore alloc] initWithCollection:@"OWSIdentityManager_QueuedVerificationStateSyncMessages"];
     _databaseQueue = [databaseStorage newDatabaseQueue];
 
     OWSSingletonAssert();
