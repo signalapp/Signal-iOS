@@ -79,8 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWS2FAManager *ows2FAManager = [OWS2FAManager new];
     OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
     OWSReadReceiptManager *readReceiptManager = [OWSReadReceiptManager new];
-    OWSOutgoingReceiptManager *outgoingReceiptManager =
-        [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
+    OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
     id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
     id<OWSSyncManagerProtocol> syncManager = [[OWSMockSyncManager alloc] init];
     id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
