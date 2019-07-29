@@ -297,7 +297,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 {
     __block NSNumber *_Nullable value;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        value = [self.keyValueStore getOptionalNSNumber:kOWSSoundsStorageGlobalNotificationKey transaction:transaction];
+        value = [self.keyValueStore getNSNumber:kOWSSoundsStorageGlobalNotificationKey transaction:transaction];
     }];
     // Default to the global default.
     return (value ? (OWSSound)value.intValue : [self defaultNotificationSound]);
@@ -369,7 +369,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 {
     __block NSNumber *_Nullable value;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        value = [self.keyValueStore getOptionalNSNumber:thread.uniqueId transaction:transaction];
+        value = [self.keyValueStore getNSNumber:thread.uniqueId transaction:transaction];
     }];
     // Default to the "global" notification sound, which in turn will default to the global default.
     return (value ? (OWSSound)value.intValue : [self globalNotificationSound]);

@@ -145,7 +145,7 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 {
     __block NSInteger lastPreKeyId;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        lastPreKeyId = [self.metadataStore getInt:TSNextPrekeyIdKey transaction:transaction];
+        lastPreKeyId = [self.metadataStore getInt:TSNextPrekeyIdKey defaultValue:0 transaction:transaction];
     }];
 
     if (lastPreKeyId < 1) {

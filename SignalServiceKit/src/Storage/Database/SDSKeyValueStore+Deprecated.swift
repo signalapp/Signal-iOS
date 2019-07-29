@@ -111,9 +111,9 @@ public extension SDSKeyValueStore {
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
     @objc
-    func getInt(_ key: String) -> Int {
+    func getInt(_ key: String, defaultValue: Int) -> Int {
         return databaseStorage.readReturningResult { (transaction) in
-            return self.getInt(key, transaction: transaction)
+            return self.getInt(key, defaultValue: defaultValue, transaction: transaction)
         }
     }
 
@@ -129,9 +129,9 @@ public extension SDSKeyValueStore {
 
     @available(*, deprecated, message: "Avoid sneaky transactions by passing a transaction")
     @objc
-    func getUInt64(_ key: String) -> UInt64 {
+    func getUInt64(_ key: String, defaultValue: UInt64) -> UInt64 {
         return databaseStorage.readReturningResult { (transaction) in
-            return self.getUInt64(key, transaction: transaction)
+            return self.getUInt64(key, defaultValue: defaultValue, transaction: transaction)
         }
     }
 

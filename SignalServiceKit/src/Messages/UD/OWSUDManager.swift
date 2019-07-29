@@ -223,7 +223,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         let existingUUIDValue: UnidentifiedAccessMode?
         if let uuidString = address.uuidString,
-            let existingRawValue = uuidAccessStore.getOptionalInt(uuidString, transaction: transaction) {
+            let existingRawValue = uuidAccessStore.getInt(uuidString, transaction: transaction) {
 
             guard let value = UnidentifiedAccessMode(rawValue: existingRawValue) else {
                 owsFailDebug("Couldn't parse mode value.")
@@ -236,7 +236,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
         let existingPhoneNumberValue: UnidentifiedAccessMode?
         if let phoneNumber = address.phoneNumber,
-            let existingRawValue = phoneNumberAccessStore.getOptionalInt(phoneNumber, transaction: transaction) {
+            let existingRawValue = phoneNumberAccessStore.getInt(phoneNumber, transaction: transaction) {
 
             guard let value = UnidentifiedAccessMode(rawValue: existingRawValue) else {
                 owsFailDebug("Couldn't parse mode value.")
