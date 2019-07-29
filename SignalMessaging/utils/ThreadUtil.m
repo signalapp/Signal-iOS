@@ -13,7 +13,6 @@
 #import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSContactOffersInteraction.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
@@ -725,54 +724,16 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return @(position);
 }
 
-+ (BOOL)shouldShowGroupProfileBannerInThread:(TSThread *)thread blockingManager:(OWSBlockingManager *)blockingManager
++ (BOOL)addThreadToProfileWhitelist:(TSThread *)thread
 {
     OWSAssertDebug(thread);
-    OWSAssertDebug(blockingManager);
 
-    if (!thread.isGroupThread) {
-        return NO;
-    }
     if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
         return NO;
     }
-    if (![OWSProfileManager.sharedManager hasLocalProfile]) {
-        return NO;
-    }
-    if ([blockingManager isThreadBlocked:thread]) {
-        return NO;
-    }
 
-    BOOL hasUnwhitelistedMember = NO;
-    for (SignalServiceAddress *address in thread.recipientAddresses) {
-        if (![blockingManager isAddressBlocked:address]
-            && ![OWSProfileManager.sharedManager isUserInProfileWhitelist:address]) {
-            hasUnwhitelistedMember = YES;
-            break;
-        }
-    }
-    if (!hasUnwhitelistedMember) {
-        return NO;
-    }
+    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
     return YES;
-}
-
-+ (BOOL)addThreadToProfileWhitelistIfEmptyContactThread:(TSThread *)thread
-{
-    OWSAssertDebug(thread);
-
-    if (thread.isGroupThread) {
-        return NO;
-    }
-    if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
-        return NO;
-    }
-    if (!thread.shouldThreadBeVisible) {
-        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
-        return YES;
-    } else {
-        return NO;
-    }
 }
 
 #pragma mark - Delete Content

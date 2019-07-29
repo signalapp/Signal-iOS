@@ -784,19 +784,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         @"UNKNOWN_CONTACT_NAME", @"Displayed if for some reason we can't determine a contacts phone number *or* name");
 }
 
-- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address
-{
-    NSString *_Nullable profileName = [self.profileManager profileNameForAddress:address];
-    if (profileName.length == 0) {
-        return nil;
-    }
-
-    NSString *profileNameFormatString = NSLocalizedString(@"PROFILE_NAME_LABEL_FORMAT",
-        @"Prepend a simple marker to differentiate the profile name, embeds the contact's {{profile name}}.");
-
-    return [NSString stringWithFormat:profileNameFormatString, profileName];
-}
-
 - (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
 {
     return [self.profileManager profileNameForAddress:address];
@@ -807,158 +794,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self cachedContactNameForAddress:address];
 }
 
-- (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address
-                                            transaction:(SDSAnyReadTransaction *)transaction
+- (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(transaction);
+    OWSAssertDebug(address.isValid);
 
-    return [self cachedContactNameForAddress:address transaction:transaction];
-}
-
-- (NSString *)displayNameForAddress:(nullable SignalServiceAddress *)address
-{
-    OWSAssertDebug(address);
-
-    if (address == nil) {
-        return self.unknownContactName;
-    }
-
-    NSString *_Nullable displayName = [self nameFromSystemContactsForAddress:address];
-
-    if (displayName.length < 1) {
-        NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
-        displayName = phoneNumber ?: address.stringForDisplay;
-    }
-
-    return displayName;
-}
-
-- (NSString *)displayNameForAddress:(nullable SignalServiceAddress *)address
-                        transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    if (address == nil) {
-        return self.unknownContactName;
-    }
-
-    NSString *_Nullable displayName = [self nameFromSystemContactsForAddress:address transaction:transaction];
-
-    if (displayName.length < 1) {
-        NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
-        displayName = phoneNumber ?: address.stringForDisplay;
-    }
-
-    return displayName;
-}
-
-- (NSString *_Nonnull)displayNameForSignalAccount:(SignalAccount *)signalAccount
-{
-    OWSAssertDebug(signalAccount);
-
-    return [self displayNameForAddress:signalAccount.recipientAddress];
-}
-
-- (NSAttributedString *_Nonnull)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *)font
-{
-    OWSAssertDebug(signalAccount);
-    OWSAssertDebug(font);
-
-    return [self formattedFullNameForAddress:signalAccount.recipientAddress font:font];
-}
-
-- (NSAttributedString *)formattedFullNameForAddress:(SignalServiceAddress *)address font:(UIFont *)font
-{
-    OWSAssertDebug(address);
-    OWSAssertDebug(font);
-
-    UIFont *boldFont = [UIFont ows_mediumFontWithSize:font.pointSize];
-
-    NSDictionary<NSString *, id> *boldFontAttributes =
-        @{ NSFontAttributeName : boldFont, NSForegroundColorAttributeName : [Theme boldColor] };
-    NSDictionary<NSString *, id> *normalFontAttributes =
-        @{ NSFontAttributeName : font, NSForegroundColorAttributeName : [Theme primaryColor] };
-    NSDictionary<NSString *, id> *firstNameAttributes
-        = (self.shouldSortByGivenName ? boldFontAttributes : normalFontAttributes);
-    NSDictionary<NSString *, id> *lastNameAttributes
-        = (self.shouldSortByGivenName ? normalFontAttributes : boldFontAttributes);
-
-    NSString *cachedFirstName = [self cachedFirstNameForAddress:address];
-    NSString *cachedLastName = [self cachedLastNameForAddress:address];
-    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
-
-    NSMutableAttributedString *formattedName = [NSMutableAttributedString new];
-
-    if (cachedFirstName.length > 0 && cachedLastName.length > 0) {
-        NSAttributedString *firstName =
-            [[NSAttributedString alloc] initWithString:cachedFirstName attributes:firstNameAttributes];
-        NSAttributedString *lastName =
-            [[NSAttributedString alloc] initWithString:cachedLastName attributes:lastNameAttributes];
-
-        NSString *_Nullable cnContactId = self.allContactsMap[phoneNumber].cnContactId;
-        CNContact *_Nullable cnContact = [self cnContactWithId:cnContactId];
-        if (!cnContact) {
-            // If we don't have a CNContact for this recipient id, make one.
-            // Presumably [CNContactFormatter nameOrderForContact:] tries
-            // to localizes its result based on the languages/scripts used
-            // in the contact's fields.
-            CNMutableContact *formatContact = [CNMutableContact new];
-            formatContact.givenName = firstName.string;
-            formatContact.familyName = lastName.string;
-            cnContact = formatContact;
-        }
-        CNContactDisplayNameOrder nameOrder = [CNContactFormatter nameOrderForContact:cnContact];
-        NSAttributedString *_Nullable leftName, *_Nullable rightName;
-        if (nameOrder == CNContactDisplayNameOrderGivenNameFirst) {
-            leftName = firstName;
-            rightName = lastName;
-        } else {
-            leftName = lastName;
-            rightName = firstName;
-        }
-
-        [formattedName appendAttributedString:leftName];
-        [formattedName
-            appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:normalFontAttributes]];
-        [formattedName appendAttributedString:rightName];
-    } else if (cachedFirstName.length > 0) {
-        [formattedName appendAttributedString:[[NSAttributedString alloc] initWithString:cachedFirstName
-                                                                              attributes:firstNameAttributes]];
-    } else if (cachedLastName.length > 0) {
-        [formattedName appendAttributedString:[[NSAttributedString alloc] initWithString:cachedLastName
-                                                                              attributes:lastNameAttributes]];
-    } else if (phoneNumber) {
-        // Fallback to just their phone number, if we know it
-        NSString *phoneString =
-            [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
-        return [[NSAttributedString alloc] initWithString:phoneString attributes:normalFontAttributes];
-
-    } else {
-        // Otherwise, fallback to their uuid
-        return [[NSAttributedString alloc] initWithString:address.stringForDisplay attributes:normalFontAttributes];
-    }
-
-    // Append unique label for contacts with multiple Signal accounts
-    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address];
-    if (signalAccount && signalAccount.multipleAccountLabelText) {
-        OWSAssertDebug(signalAccount.multipleAccountLabelText.length > 0);
-
-        [formattedName
-            appendAttributedString:[[NSAttributedString alloc] initWithString:@" (" attributes:normalFontAttributes]];
-        [formattedName
-            appendAttributedString:[[NSAttributedString alloc] initWithString:signalAccount.multipleAccountLabelText
-                                                                   attributes:normalFontAttributes]];
-        [formattedName
-            appendAttributedString:[[NSAttributedString alloc] initWithString:@")" attributes:normalFontAttributes]];
-    }
-
-    return formattedName;
-}
-
-- (NSString *)contactOrProfileNameForAddress:(SignalServiceAddress *)address
-{
     // Prefer a saved name from system contacts, if available
-    NSString *_Nullable savedContactName = [self cachedContactNameForAddress:address];
+    NSString *_Nullable savedContactName = [self cachedContactNameForAddress:address transaction:transaction];
     if (savedContactName.length > 0) {
         return savedContactName;
     }
@@ -971,71 +812,31 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     NSString *_Nullable profileName = [self.profileManager profileNameForAddress:address];
 
     if (profileName.length > 0) {
-        NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
-            @"Label text combining the phone number and profile name separated by a simple demarcation character. "
-            @"Phone number should be most prominent. '%1$@' is replaced with {{phone number}} and '%2$@' is replaced "
-            @"with {{profile name}}");
-
-        NSString *numberAndProfileName = [NSString
-            stringWithFormat:numberAndProfileNameFormat, phoneNumber ?: address.stringForDisplay, profileName];
-        return numberAndProfileName;
+        return profileName;
     }
 
     // else fall back to phone number or UUID
     return phoneNumber ?: address.stringForDisplay;
 }
 
-- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
+- (NSString *)displayNameForAddress:(SignalServiceAddress *)address
 {
-    return [[NSAttributedString alloc] initWithString:[self contactOrProfileNameForAddress:address]];
+    OWSAssertDebug(address.isValid);
+
+    __block NSString *displayName;
+
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        displayName = [self displayNameForAddress:address transaction:transaction];
+    }];
+
+    return displayName;
 }
 
-- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
-                                                     primaryFont:(UIFont *)primaryFont
-                                                   secondaryFont:(UIFont *)secondaryFont
+- (NSString *_Nonnull)displayNameForSignalAccount:(SignalAccount *)signalAccount
 {
-    OWSAssertDebug(primaryFont);
-    OWSAssertDebug(secondaryFont);
+    OWSAssertDebug(signalAccount);
 
-    return [self attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
-                                        primaryAttributes:@{
-                                            NSFontAttributeName : primaryFont,
-                                        }
-                                      secondaryAttributes:@{
-                                          NSFontAttributeName : secondaryFont,
-                                      }];
-}
-
-- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
-                                               primaryAttributes:(NSDictionary *)primaryAttributes
-                                             secondaryAttributes:(NSDictionary *)secondaryAttributes
-{
-    OWSAssertDebug(primaryAttributes.count > 0);
-    OWSAssertDebug(secondaryAttributes.count > 0);
-
-    // Prefer a saved name from system contacts, if available
-    NSString *_Nullable savedContactName = [self cachedContactNameForAddress:address];
-    if (savedContactName.length > 0) {
-        return [[NSAttributedString alloc] initWithString:savedContactName attributes:primaryAttributes];
-    }
-
-    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
-    NSString *_Nullable profileName = [self.profileManager profileNameForAddress:address];
-
-    if (profileName.length > 0) {
-        NSAttributedString *result = [[NSAttributedString alloc] initWithString:phoneNumber ?: address.stringForDisplay
-                                                                     attributes:primaryAttributes];
-        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:@" "]];
-        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:@"~"
-                                                                                 attributes:secondaryAttributes]];
-        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:profileName
-                                                                                 attributes:secondaryAttributes]];
-        return [result copy];
-    }
-
-    // else fall back to phone number or UUID
-    return [[NSAttributedString alloc] initWithString:phoneNumber ?: address.stringForDisplay
-                                           attributes:primaryAttributes];
+    return [self displayNameForAddress:signalAccount.recipientAddress];
 }
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
@@ -1192,7 +993,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     if (name.length < 1) {
-        name = signalAccount.recipientAddress.stringForDisplay;
+        name = [self displayNameForSignalAccount:signalAccount];
     }
 
     return name;

@@ -122,7 +122,6 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         let font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(14.0, 18.0))
         let hSpacing = CGFloat(10)
         let hMargin = CGFloat(15)
-        let vSpacing = CGFloat(5)
         let vMargin = CGFloat(10)
 
         let toLabel = UILabel()
@@ -148,6 +147,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         nameLabel.setContentHuggingHorizontalLow()
         nameLabel.setCompressionResistanceHorizontalLow()
         nameLabel.autoPinTopToSuperviewMargin(withInset: vMargin)
+        nameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
 
         if let groupThread = self.thread as? TSGroupThread {
             let groupName = (groupThread.name().count > 0
@@ -155,7 +155,6 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
                 : MessageStrings.newGroupDefaultTitle)
 
             nameLabel.text = groupName
-            nameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
 
             return recipientRow
         }
@@ -164,38 +163,9 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
             return recipientRow
         }
 
-        nameLabel.attributedText = contactsManager.formattedFullName(for: contactThread.contactAddress, font: font)
-        nameLabel.textColor = Theme.primaryColor
-
-        if let profileName = self.profileName(contactThread: contactThread) {
-            // If there's a profile name worth showing, add it as a second line below the name.
-            let profileNameLabel = UILabel()
-            profileNameLabel.textColor = Theme.secondaryColor
-            profileNameLabel.font = font
-            profileNameLabel.text = profileName
-            profileNameLabel.lineBreakMode = .byTruncatingTail
-            recipientRow.addSubview(profileNameLabel)
-            profileNameLabel.autoPinEdge(.top, to: .bottom, of: nameLabel, withOffset: vSpacing)
-            profileNameLabel.autoPinLeading(toTrailingEdgeOf: toLabel, offset: hSpacing)
-            profileNameLabel.autoPinTrailingToSuperviewMargin(withInset: hMargin)
-            profileNameLabel.setContentHuggingHorizontalLow()
-            profileNameLabel.setCompressionResistanceHorizontalLow()
-            profileNameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
-        } else {
-            nameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
-        }
+        nameLabel.text = contactsManager.displayName(for: contactThread.contactAddress)
 
         return recipientRow
-    }
-
-    private func profileName(contactThread: TSContactThread) -> String? {
-        let contactAddress = contactThread.contactAddress
-
-        if contactsManager.hasNameInSystemContacts(for: contactAddress) {
-            // Don't display profile name when we have a veritas name in system Contacts
-            return nil
-        }
-        return contactsManager.formattedProfileName(for: contactAddress)
     }
 
     // MARK: - Event Handlers

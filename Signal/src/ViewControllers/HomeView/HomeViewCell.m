@@ -381,6 +381,17 @@ NS_ASSUME_NONNULL_BEGIN
                                      NSFontAttributeName : self.snippetFont.ows_mediumWeight,
                                      NSForegroundColorAttributeName : [Theme primaryColor],
                                  }]];
+    } else if (thread.hasPendingMessageRequest) {
+        // If you haven't accepted the message request for this thread, don't show the latest message
+        [snippetText
+            appendAttributedString:
+                [[NSAttributedString alloc]
+                    initWithString:NSLocalizedString(@"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
+                                       @"Table cell subtitle label for a conversation the user has not accepted.")
+                        attributes:@{
+                            NSFontAttributeName : self.snippetFont.ows_mediumWeight,
+                            NSForegroundColorAttributeName : [Theme primaryColor],
+                        }]];
     } else {
         if ([thread isMuted]) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
@@ -501,28 +512,22 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSAttributedString *name;
+    NSString *name;
     if (thread.isGroupThread) {
         if (thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
+            name = [MessageStrings newGroupDefaultTitle];
         } else {
-            name = [[NSAttributedString alloc] initWithString:thread.name];
+            name = thread.name;
         }
     } else {
         if (self.thread.threadRecord.isNoteToSelf) {
-            name = [[NSAttributedString alloc]
-                initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
-                    attributes:@{
-                        NSFontAttributeName : self.nameFont,
-                    }];
+            name = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
         } else {
-            name = [self.contactsManager attributedContactOrProfileNameForAddress:thread.contactAddress
-                                                                      primaryFont:self.nameFont
-                                                                    secondaryFont:self.nameSecondaryFont];
+            name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         }
     }
 
-    self.nameLabel.attributedText = name;
+    self.nameLabel.text = name;
 }
 
 #pragma mark - Typing Indicators

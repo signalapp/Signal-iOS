@@ -291,6 +291,33 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     [self handleUpdate];
 }
 
+#pragma mark - Thread Blocking
+
+- (void)addBlockedThread:(TSThread *)thread
+{
+    if (thread.isGroupThread) {
+        OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        [self addBlockedGroup:groupThread.groupModel];
+    } else {
+        OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        [self addBlockedAddress:contactThread.contactAddress];
+    }
+}
+
+- (void)removeBlockedThread:(TSThread *)thread
+{
+    if (thread.isGroupThread) {
+        OWSAssertDebug([thread isKindOfClass:[TSGroupThread class]]);
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        [self removeBlockedGroupId:groupThread.groupModel.groupId];
+    } else {
+        OWSAssertDebug([thread isKindOfClass:[TSContactThread class]]);
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        [self removeBlockedAddress:contactThread.contactAddress];
+    }
+}
 
 #pragma mark - Updates
 

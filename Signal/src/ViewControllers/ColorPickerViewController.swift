@@ -336,7 +336,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var hasPerMessageExpiration: Bool = false
     var shouldShowDate: Bool = false
     var shouldShowSenderAvatar: Bool = false
-    var senderName: NSAttributedString?
+    var senderName: String?
     var shouldHideFooter: Bool = false
     var isFirstInCluster: Bool = true
     var isLastInCluster: Bool = true

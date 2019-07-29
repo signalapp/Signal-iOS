@@ -14,6 +14,7 @@ public class ThreadViewModel: NSObject {
     @objc public let contactAddress: SignalServiceAddress?
     @objc public let name: String
     @objc public let isMuted: Bool
+    @objc public let hasPendingMessageRequest: Bool
 
     var isContactThread: Bool {
         return !isGroupThread
@@ -48,6 +49,7 @@ public class ThreadViewModel: NSObject {
             self.unreadCount = 0
         }
         self.hasUnreadMessages = unreadCount > 0
+        self.hasPendingMessageRequest = !SSKEnvironment.shared.profileManager.isThread(inProfileWhitelist: thread)
     }
 
     @objc

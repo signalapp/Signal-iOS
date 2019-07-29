@@ -1904,7 +1904,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                   messageType:TSInfoMessageTypeGroupQuit
                                                                 customMessage:message.customMessage];
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [infoMessage anyInsertWithTransaction:transaction];
+            // Only show the group quit message if there are other messages still in the group
+            if ([thread numberOfInteractionsWithTransaction:transaction] > 0) {
+                [infoMessage anyInsertWithTransaction:transaction];
+            }
         }];
     } else {
         // MJK TODO - remove senderTimestamp

@@ -20,7 +20,6 @@
 #import "FingerprintViewController.h"
 #import "NewGroupViewController.h"
 #import "OWSAudioPlayer.h"
-#import "OWSContactOffersCell.h"
 #import "OWSConversationSettingsViewController.h"
 #import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
@@ -68,7 +67,6 @@
 #import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
 #import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSContactOffersInteraction.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
 #import <SignalServiceKit/OWSMessageManager.h>
@@ -133,7 +131,8 @@ typedef enum : NSUInteger {
     UITextViewDelegate,
     ConversationCollectionViewDelegate,
     ConversationInputToolbarDelegate,
-    ConversationViewModelDelegate>
+    ConversationViewModelDelegate,
+    MessageRequestDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
@@ -203,6 +202,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) MenuActionsViewController *menuActionsViewController;
 @property (nonatomic) CGFloat extraContentInsetPadding;
 @property (nonatomic) CGFloat contentInsetBottom;
+
+@property (nonatomic, nullable) MessageRequestView *messageRequestView;
 
 @end
 
@@ -274,6 +275,11 @@ typedef enum : NSUInteger {
 - (OWSContactsManager *)contactsManager
 {
     return Environment.shared.contactsManager;
+}
+
+- (OWSProfileManager *)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
 }
 
 - (ContactsUpdater *)contactsUpdater
@@ -663,7 +669,9 @@ typedef enum : NSUInteger {
 
 - (nullable UIView *)inputAccessoryView
 {
-    if (self.isShowingSearchUI) {
+    if (self.messageRequestView) {
+        return self.messageRequestView;
+    } else if (self.isShowingSearchUI) {
         return self.searchController.resultsBar;
     } else {
         return self.inputToolbar;
@@ -676,8 +684,6 @@ typedef enum : NSUInteger {
             forCellWithReuseIdentifier:[OWSSystemMessageCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSTypingIndicatorCell class]
             forCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]];
-    [self.collectionView registerClass:[OWSContactOffersCell class]
-            forCellWithReuseIdentifier:[OWSContactOffersCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSMessageCell class]
             forCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]];
 }
@@ -772,6 +778,8 @@ typedef enum : NSUInteger {
         [self.collectionView.panGestureRecognizer
             requireGestureRecognizerToFail:self.navigationController.interactivePopGestureRecognizer];
     }
+
+    [self showMessageRequestDialogIfRequired];
 }
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
@@ -969,15 +977,6 @@ typedef enum : NSUInteger {
                         tapSelector:@selector(blockBannerViewWasTapped:)];
         return;
     }
-
-    if ([ThreadUtil shouldShowGroupProfileBannerInThread:self.thread blockingManager:self.blockingManager]) {
-        [self createBannerWithTitle:
-                  NSLocalizedString(@"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER",
-                      @"Text for banner in group conversation view that offers to share your profile with this group.")
-                        bannerColor:[UIColor ows_reminderDarkYellowColor]
-                        tapSelector:@selector(groupProfileWhitelistBannerWasTapped:)];
-        return;
-    }
 }
 
 - (void)createBannerWithTitle:(NSString *)title bannerColor:(UIColor *)bannerColor tapSelector:(SEL)tapSelector
@@ -1059,17 +1058,6 @@ typedef enum : NSUInteger {
             [self.navigationController pushViewController:vc animated:YES];
         }
     }
-}
-
-- (void)groupProfileWhitelistBannerWasTapped:(UIGestureRecognizer *)sender
-{
-    if (sender.state != UIGestureRecognizerStateRecognized) {
-        return;
-    }
-
-    [self presentAddThreadToProfileWhitelistWithSuccess:^{
-        [self ensureBannerState];
-    }];
 }
 
 - (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
@@ -1264,7 +1252,12 @@ typedef enum : NSUInteger {
         case ConversationViewActionNone:
             break;
         case ConversationViewActionCompose:
-            [self popKeyBoard];
+            // Don't pop the keyboard if we have a pending message request, since
+            // the user can't currently send a message until acting on this
+            if (!self.messageRequestView) {
+                [self popKeyBoard];
+            }
+
             // When we programmatically pop the keyboard here,
             // the scroll position gets into a weird state and
             // content is hidden behind the keyboard so we restore
@@ -1359,7 +1352,7 @@ typedef enum : NSUInteger {
 
 - (void)updateNavigationTitle
 {
-    NSAttributedString *name;
+    NSString *name;
     UIImage *_Nullable icon;
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *thread = (TSContactThread *)self.thread;
@@ -1367,15 +1360,9 @@ typedef enum : NSUInteger {
         OWSAssertDebug(thread.contactAddress);
 
         if (thread.isNoteToSelf) {
-            name = [[NSAttributedString alloc]
-                initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
-                    attributes:@{
-                        NSFontAttributeName : self.headerView.titlePrimaryFont,
-                    }];
+            name = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
         } else {
-            name = [self.contactsManager attributedContactOrProfileNameForAddress:thread.contactAddress
-                                                                      primaryFont:self.headerView.titlePrimaryFont
-                                                                    secondaryFont:self.headerView.titleSecondaryFont];
+            name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         }
 
         // If the user is in the system contacts, show a badge
@@ -1385,9 +1372,9 @@ typedef enum : NSUInteger {
         }
     } else {
         if (self.thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
+            name = [MessageStrings newGroupDefaultTitle];
         } else {
-            name = [[NSAttributedString alloc] initWithString:self.thread.name];
+            name = self.thread.name;
         }
     }
     self.title = nil;
@@ -1398,7 +1385,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    self.headerView.attributedTitle = name;
+    self.headerView.attributedTitle = [[NSAttributedString alloc] initWithString:name];
 }
 
 - (void)createHeaderViews
@@ -2270,103 +2257,6 @@ typedef enum : NSUInteger {
     [[OWSWindowManager sharedManager] showMenuActionsWindow:menuActionsViewController];
 }
 
-- (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction
-{
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread: %@", self.thread);
-        return;
-    }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-
-    NSString *displayName = [self.contactsManager displayNameForAddress:contactThread.contactAddress];
-    NSString *title =
-        [NSString stringWithFormat:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT",
-                                       @"Title format for action sheet that offers to block an unknown user."
-                                       @"Embeds {{the unknown user's name or phone number}}."),
-                  [BlockListUIUtils formatDisplayNameForAlertTitle:displayName]];
-
-    UIAlertController *actionSheet =
-        [UIAlertController alertControllerWithTitle:title message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-
-    [actionSheet addAction:[OWSAlerts cancelAction]];
-
-    UIAlertAction *blockAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION",
-                                           @"Action sheet that will block an unknown user.")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"block_user")
-                                 style:UIAlertActionStyleDestructive
-                               handler:^(UIAlertAction *action) {
-                                   OWSLogInfo(@"Blocking an unknown user.");
-                                   [self.blockingManager addBlockedAddress:contactThread.contactAddress];
-                                   // Delete the offers.
-                                   [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                       [contactThread anyUpdateContactThreadWithTransaction:transaction
-                                                                                      block:^(TSContactThread *thread) {
-                                                                                          thread.hasDismissedOffers
-                                                                                              = NO;
-                                                                                      }];
-                                       [interaction anyRemoveWithTransaction:transaction];
-                                   }];
-                               }];
-    [actionSheet addAction:blockAction];
-
-    [self dismissKeyBoard];
-    [self presentAlert:actionSheet];
-}
-
-- (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction
-{
-    if (!self.contactsManager.supportsContactEditing) {
-        OWSFailDebug(@"Contact editing not supported");
-        return;
-    }
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread: %@", [self.thread class]);
-        return;
-    }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-    [self.contactsViewHelper presentContactViewControllerForAddress:contactThread.contactAddress
-                                                 fromViewController:self
-                                                    editImmediately:YES];
-
-    // Delete the offers.
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [contactThread anyUpdateContactThreadWithTransaction:transaction
-                                                       block:^(TSContactThread *thread) {
-                                                           thread.hasDismissedOffers = NO;
-                                                       }];
-        [interaction anyRemoveWithTransaction:transaction];
-    }];
-}
-
-- (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction
-{
-    // This is accessed via the contact offer. Group whitelisting happens via a different interaction.
-    if (![self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSFailDebug(@"unexpected thread: %@", [self.thread class]);
-        return;
-    }
-    TSContactThread *contactThread = (TSContactThread *)self.thread;
-
-    [self presentAddThreadToProfileWhitelistWithSuccess:^() {
-        // Delete the offers.
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [contactThread anyUpdateContactThreadWithTransaction:transaction
-                                                           block:^(TSContactThread *thread) {
-                                                               thread.hasDismissedOffers = NO;
-                                                           }];
-            [interaction anyRemoveWithTransaction:transaction];
-        }];
-    }];
-}
-
-- (void)presentAddThreadToProfileWhitelistWithSuccess:(void (^)(void))successHandler
-{
-    [[OWSProfileManager sharedManager] presentAddThreadToProfileWhitelist:self.thread
-                                                       fromViewController:self
-                                                                  success:successHandler];
-}
-
 #pragma mark - Audio Setup
 
 - (void)prepareAudioPlayerForViewItem:(id<ConversationViewItem>)viewItem
@@ -3076,7 +2966,7 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"Sending contact share.");
 
-    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelist:self.thread];
 
     [self.databaseStorage
         asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -3480,6 +3370,11 @@ typedef enum : NSUInteger {
 
 - (void)markVisibleMessagesAsRead
 {
+    // Don't mark messages as read until the message request has been processed
+    if (self.messageRequestView) {
+        return;
+    }
+
     if (self.presentedViewController) {
         return;
     }
@@ -3724,7 +3619,7 @@ typedef enum : NSUInteger {
             }
         }
 
-        BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+        BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelist:self.thread];
 
         __block TSOutgoingMessage *message;
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
@@ -4313,7 +4208,7 @@ typedef enum : NSUInteger {
     //
     // We convert large text messages to attachments
     // which are presented as normal text messages.
-    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyContactThread:self.thread];
+    BOOL didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelist:self.thread];
     __block TSOutgoingMessage *message;
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -5190,6 +5085,130 @@ typedef enum : NSUInteger {
 
     // Scroll button layout depends on input toolbar size.
     [self updateScrollDownButtonLayout];
+}
+
+#pragma mark - Message Request
+
+- (void)showMessageRequestDialogIfRequired
+{
+    OWSAssertIsOnMainThread();
+
+    // If we're already showing the message request view, don't render it again
+    if (self.messageRequestView) {
+        return;
+    }
+
+    // If we're creating the thread, don't show the message request view
+    if (!self.thread.shouldThreadBeVisible) {
+        return;
+    }
+
+    // If the thread is already whitelisted, do nothing. The user has already
+    // accepted the request for this thread.
+    if ([self.profileManager isThreadInProfileWhitelist:self.thread]) {
+        return;
+    }
+
+    BOOL isThreadSystemContact = NO;
+    if (!self.isGroupConversation) {
+        TSContactThread *thread = (TSContactThread *)self.thread;
+        isThreadSystemContact = [self.contactsManager hasSignalAccountForAddress:thread.contactAddress];
+    }
+
+    // If this thread is a conversation with a system contact, add them to the profile
+    // whitelist immediately and do not show the request dialog. People in your system
+    // contacts get to bypass the message request flow.
+    if (isThreadSystemContact) {
+        [self.profileManager addThreadToProfileWhitelist:self.thread];
+        return;
+    }
+
+    self.messageRequestView = [[MessageRequestView alloc] initWithThread:self.thread];
+    self.messageRequestView.delegate = self;
+}
+
+- (void)dismissMessageRequestView
+{
+    OWSAssertIsOnMainThread();
+
+    if (!self.messageRequestView) {
+        return;
+    }
+
+    // Slide the request view off the bottom of the screen.
+    CGFloat bottomInset = 0;
+    if (@available(iOS 11, *)) {
+        bottomInset = self.view.safeAreaInsets.bottom;
+    }
+
+    MessageRequestView *dismissingView = self.messageRequestView;
+    self.messageRequestView = nil;
+
+    [self reloadInputViews];
+
+    // Add the view on top of the new input accessory view (if there is one)
+    // or our view, and then slide it off screen to reveal the new input view.
+    UIView *parentView = self.inputAccessoryView ?: self.view;
+
+    [parentView addSubview:dismissingView];
+    [dismissingView autoPinWidthToSuperview];
+    [dismissingView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    CGRect endFrame = dismissingView.bounds;
+    endFrame.origin.y -= endFrame.size.height + bottomInset;
+
+    [UIView animateWithDuration:0.2
+        animations:^{
+            dismissingView.bounds = endFrame;
+        }
+        completion:^(BOOL finished) {
+            [dismissingView removeFromSuperview];
+        }];
+}
+
+- (void)messageRequestViewDidTapBlock
+{
+    OWSAssertIsOnMainThread();
+
+    [self.blockingManager addBlockedThread:self.thread];
+    [self messageRequestViewDidTapDelete];
+}
+
+- (void)messageRequestViewDidTapDelete
+{
+    OWSAssertIsOnMainThread();
+
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        if ([self.thread isKindOfClass:[TSGroupThread class]]) {
+            TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+
+            // Quit the group if we're a member
+            if (groupThread.isLocalUserInGroup) {
+                TSOutgoingMessage *message = [TSOutgoingMessage outgoingMessageInThread:groupThread
+                                                                       groupMetaMessage:TSGroupMetaMessageQuit
+                                                                       expiresInSeconds:0];
+
+                [self.messageSenderJobQueue addMessage:message transaction:transaction];
+                [groupThread leaveGroupWithTransaction:transaction];
+            }
+
+            [groupThread softDeleteGroupThreadWithTransaction:transaction];
+        } else {
+            [self.thread anyRemoveWithTransaction:transaction];
+        }
+
+        [transaction addCompletionWithBlock:^{
+            [self.navigationController popViewControllerAnimated:YES];
+        }];
+    }];
+}
+
+- (void)messageRequestViewDidTapAccept
+{
+    OWSAssertIsOnMainThread();
+
+    [ThreadUtil addThreadToProfileWhitelist:self.thread];
+    [self dismissMessageRequestView];
 }
 
 @end

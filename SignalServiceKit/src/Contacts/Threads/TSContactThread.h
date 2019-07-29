@@ -30,8 +30,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
               contactPhoneNumber:(nullable NSString *)contactPhoneNumber
       contactThreadSchemaVersion:(NSUInteger)contactThreadSchemaVersion
                      contactUUID:(nullable NSString *)contactUUID
-              hasDismissedOffers:(BOOL)hasDismissedOffers
-NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:contactPhoneNumber:contactThreadSchemaVersion:contactUUID:hasDismissedOffers:));
+NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationColorName:creationDate:isArchivedByLegacyTimestampForSorting:lastMessageDate:messageDraft:mutedUntilDate:rowId:shouldThreadBeVisible:contactPhoneNumber:contactThreadSchemaVersion:contactUUID:));
 
 // clang-format on
 
@@ -42,8 +41,6 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
 - (instancetype)initWithContactAddress:(SignalServiceAddress *)contactAddress;
 
 @property (nonatomic, readonly) SignalServiceAddress *contactAddress;
-
-@property (nonatomic) BOOL hasDismissedOffers;
 
 + (instancetype)getOrCreateThreadWithContactAddress:(SignalServiceAddress *)contactAddress
     NS_SWIFT_NAME(getOrCreateThread(contactAddress:));
