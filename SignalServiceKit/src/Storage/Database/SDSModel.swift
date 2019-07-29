@@ -13,6 +13,8 @@ public protocol SDSModel: TSYapDatabaseObject {
     func anyInsert(transaction: SDSAnyWriteTransaction)
 
     func anyRemove(transaction: SDSAnyWriteTransaction)
+
+    static var shouldBeIndexedForFTS: Bool { get }
 }
 
 // MARK: -
@@ -46,8 +48,43 @@ public extension SDSModel {
         switch saveMode {
         case .insert:
             anyDidInsert(with: transaction)
+
+            if type(of: self).shouldBeIndexedForFTS {
+                FullTextSearchFinder().modelWasInserted(model: self, transaction: transaction)
+            }
         case .update:
             anyDidUpdate(with: transaction)
+
+            if type(of: self).shouldBeIndexedForFTS {
+                FullTextSearchFinder().modelWasUpdated(model: self, transaction: transaction)
+            }
+        }
+    }
+
+    func sdsRemove(transaction: SDSAnyWriteTransaction) {
+        guard shouldBeSaved else {
+            // Skipping remove.
+            return
+        }
+
+        anyWillRemove(with: transaction)
+
+        switch transaction.writeTransaction {
+        case .yapWrite(let ydbTransaction):
+            ydb_remove(with: ydbTransaction)
+        case .grdbWrite(let grdbTransaction):
+            do {
+                let record = try asRecord()
+                record.sdsRemove(transaction: grdbTransaction)
+            } catch {
+                owsFail("Remove failed: \(error)")
+            }
+        }
+
+        anyDidRemove(with: transaction)
+
+        if type(of: self).shouldBeIndexedForFTS {
+            FullTextSearchFinder().modelWasRemoved(model: self, transaction: transaction)
         }
     }
 }

@@ -81,14 +81,14 @@ NS_ASSUME_NONNULL_BEGIN
     return FullTextSearcher.shared;
 }
 
-- (YapDatabaseConnection *)uiDatabaseConnection
-{
-    return OWSPrimaryStorage.sharedManager.uiDatabaseConnection;
-}
-
 - (OWSContactsManager *)contactsManager
 {
     return Environment.shared.contactsManager;
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
 }
 
 #pragma mark -
@@ -954,12 +954,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak __typeof(self) weakSelf = self;
 
-    [self.uiDatabaseConnection
-        asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self.databaseStorage
+        asyncUIReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             self.searchResults = [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
                                                                                  transaction:transaction];
         }
-        completionBlock:^{
+        completion:^{
             __typeof(self) strongSelf = weakSelf;
             if (!strongSelf) {
                 return;

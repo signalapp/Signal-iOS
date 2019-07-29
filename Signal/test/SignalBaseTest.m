@@ -10,6 +10,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface SignalBaseTest ()
+
+@property (nonatomic) YapDatabaseConnection *ydbConnection;
+
+@end
+
+#pragma mark -
+
 @implementation SignalBaseTest
 
 - (void)setUp
@@ -25,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
     SetCurrentAppContext([TestAppContext new]);
     [MockSSKEnvironment activate];
     [MockEnvironment activate];
+
+    self.ydbConnection = [SSKEnvironment.shared.primaryStorage newDatabaseConnection];
 }
 
 - (void)tearDown
@@ -47,15 +57,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)yapReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
 {
     OWSAssert(block);
+    OWSAssert(self.ydbConnection);
 
-    [[SSKEnvironment.shared.primaryStorage newDatabaseConnection] readWithBlock:block];
+    [self.ydbConnection readWithBlock:block];
 }
 
 - (void)yapWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
     OWSAssert(block);
+    OWSAssert(self.ydbConnection);
 
-    [[SSKEnvironment.shared.primaryStorage newDatabaseConnection] readWriteWithBlock:block];
+    [self.ydbConnection readWriteWithBlock:block];
 }
 
 @end

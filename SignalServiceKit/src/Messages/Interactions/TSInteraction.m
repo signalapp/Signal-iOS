@@ -40,6 +40,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 @implementation TSInteraction
 
++ (BOOL)shouldBeIndexedForFTS
+{
+    return YES;
+}
+
 + (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
                                                     ofClass:(Class)clazz
                                             withTransaction:(YapDatabaseReadTransaction *)transaction

@@ -127,9 +127,8 @@ class ConversationPickerViewController: OWSViewController {
 
         return DispatchQueue.global().async(.promise) {
             return self.databaseStorage.readReturningResult { transaction in
-                // GRDB TODO - reconcile with GRDB FTS work
                 return self.fullTextSearcher.searchForComposeScreen(searchText: searchText,
-                                                                    transaction: transaction.transitional_yapReadTransaction!)
+                                                                    transaction: transaction)
             }
         }
     }
