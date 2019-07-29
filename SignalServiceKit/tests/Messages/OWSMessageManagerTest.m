@@ -80,10 +80,9 @@ NSString *const kAliceRecipientId = @"+13213214321";
 {
     XCTestExpectation *messageWasSent = [self expectationWithDescription:@"message was sent"];
 
-    OWSAssert([SSKEnvironment.shared.messageSender isKindOfClass:[OWSFakeMessageSender class]]);
-    OWSFakeMessageSender *fakeMessageSender = (OWSFakeMessageSender *)SSKEnvironment.shared.messageSender;
-    fakeMessageSender.sendMessageWasCalledBlock = ^(TSOutgoingMessage *sentMessage) {
-        XCTAssert([sentMessage isKindOfClass:[OWSSyncGroupsMessage class]]);
+    OWSAssertDebug([SSKEnvironment.shared.syncManager isKindOfClass:[OWSMockSyncManager class]]);
+    OWSMockSyncManager *mockSyncManager = (OWSMockSyncManager *)SSKEnvironment.shared.syncManager;
+    mockSyncManager.syncGroupsHook = ^{
         [messageWasSent fulfill];
     };
 

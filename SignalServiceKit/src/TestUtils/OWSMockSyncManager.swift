@@ -9,6 +9,10 @@ import PromiseKit
 
 @objc
 public class OWSMockSyncManager: NSObject, OWSSyncManagerProtocol {
+    public typealias MockBlock = () -> Void
+
+    @objc
+    public var syncGroupsHook: MockBlock?
 
     @objc
     public func sendConfigurationSyncMessage() {
@@ -39,6 +43,8 @@ public class OWSMockSyncManager: NSObject, OWSSyncManagerProtocol {
     @objc
     public func syncGroups(with transaction: SDSAnyWriteTransaction) {
         Logger.info("")
+
+        syncGroupsHook?()
     }
 }
 

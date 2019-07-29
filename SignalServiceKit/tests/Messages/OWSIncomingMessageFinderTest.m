@@ -72,11 +72,11 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = 1234;
     __block BOOL result;
 
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self.finder existsMessageWithTimestamp:timestamp
-                                                 address:self.sourceAddress
-                                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                                             transaction:transaction];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [InteractionFinder existsIncomingMessageWithTimestamp:timestamp
+                                                               address:self.sourceAddress
+                                                        sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                           transaction:transaction];
     }];
 
 
@@ -88,11 +88,11 @@ NS_ASSUME_NONNULL_BEGIN
                                authorAddress:self.sourceAddress
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self.finder existsMessageWithTimestamp:timestamp
-                                                 address:self.sourceAddress
-                                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                                             transaction:transaction];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [InteractionFinder existsIncomingMessageWithTimestamp:timestamp
+                                                               address:self.sourceAddress
+                                                        sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                           transaction:transaction];
     }];
 
     XCTAssertFalse(result);
@@ -102,11 +102,11 @@ NS_ASSUME_NONNULL_BEGIN
                                authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"some-other-address"]
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self.finder existsMessageWithTimestamp:timestamp
-                                                 address:self.sourceAddress
-                                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                                             transaction:transaction];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [InteractionFinder existsIncomingMessageWithTimestamp:timestamp
+                                                               address:self.sourceAddress
+                                                        sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                           transaction:transaction];
     }];
     XCTAssertFalse(result);
 
@@ -115,11 +115,11 @@ NS_ASSUME_NONNULL_BEGIN
                                authorAddress:self.sourceAddress
                               sourceDeviceId:OWSDevicePrimaryDeviceId + 1];
 
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self.finder existsMessageWithTimestamp:timestamp
-                                                 address:self.sourceAddress
-                                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                                             transaction:transaction];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [InteractionFinder existsIncomingMessageWithTimestamp:timestamp
+                                                               address:self.sourceAddress
+                                                        sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                           transaction:transaction];
     }];
     XCTAssertFalse(result);
 
@@ -128,11 +128,11 @@ NS_ASSUME_NONNULL_BEGIN
                                authorAddress:self.sourceAddress
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        result = [self.finder existsMessageWithTimestamp:timestamp
-                                                 address:self.sourceAddress
-                                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                                             transaction:transaction];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [InteractionFinder existsIncomingMessageWithTimestamp:timestamp
+                                                               address:self.sourceAddress
+                                                        sourceDeviceId:OWSDevicePrimaryDeviceId
+                                                           transaction:transaction];
     }];
 
     XCTAssertTrue(result);
