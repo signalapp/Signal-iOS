@@ -10,7 +10,6 @@
 #import "TSErrorMessage_privateConstructor.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -138,11 +137,11 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 }
 
 - (instancetype)initWithEnvelope:(SSKProtoEnvelope *)envelope
-                 withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                 withTransaction:(SDSAnyWriteTransaction *)transaction
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
-    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
-                                                                              transaction:transaction.asAnyWrite];
+    TSContactThread *contactThread =
+        [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress transaction:transaction];
 
     // Legit usage of senderTimestamp. We don't actually currently surface it in the UI, but it serves as
     // a reference to the envelope which we failed to process.
@@ -262,7 +261,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 }
 
 + (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
-                             withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                             withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
                           withTransaction:transaction
@@ -270,7 +269,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 }
 
 + (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                           withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
                           withTransaction:transaction
@@ -278,7 +277,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 }
 
 + (instancetype)invalidKeyExceptionWithEnvelope:(SSKProtoEnvelope *)envelope
-                                withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                                withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
                           withTransaction:transaction
@@ -286,7 +285,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 }
 
 + (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                           withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     return
         [[self alloc] initWithEnvelope:envelope withTransaction:transaction failedMessageType:TSErrorMessageNoSession];

@@ -627,7 +627,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     _storedMessageState = self.messageState;
 }
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     // It's not clear if we should wait until _all_ recipients have reached "sent or later"
     // (which could never occur if one group member is unregistered) or only wait until

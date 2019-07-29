@@ -742,48 +742,13 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 {
     OWSLogInfo(@"");
 
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self removeAllObjectsInCollection:[TSThread collection] class:[TSThread class] transaction:transaction];
-            [self removeAllObjectsInCollection:[TSInteraction collection]
-                                         class:[TSInteraction class]
-                                   transaction:transaction];
-            [self removeAllObjectsInCollection:[TSAttachment collection]
-                                         class:[TSAttachment class]
-                                   transaction:transaction];
-            [self removeAllObjectsInCollection:[SignalRecipient collection]
-                                         class:[SignalRecipient class]
-                                   transaction:transaction];
-        }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [TSThread anyRemoveAllWithInstantationWithTransaction:transaction];
+        [TSInteraction anyRemoveAllWithInstantationWithTransaction:transaction];
+        [TSAttachment anyRemoveAllWithInstantationWithTransaction:transaction];
+        [SignalRecipient anyRemoveAllWithInstantationWithTransaction:transaction];
+    }];
     [TSAttachmentStream deleteAttachments];
-}
-
-+ (void)removeAllObjectsInCollection:(NSString *)collection
-                               class:(Class) class
-                         transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    OWSAssertDebug(collection.length > 0);
-    OWSAssertDebug(class);
-    OWSAssertDebug(transaction);
-
-    NSArray<NSString *> *_Nullable uniqueIds = [transaction allKeysInCollection:collection];
-    if (!uniqueIds) {
-        OWSFailDebug(@"couldn't load uniqueIds for collection: %@.", collection);
-        return;
-    }
-    OWSLogInfo(@"Deleting %lu objects from: %@", (unsigned long)uniqueIds.count, collection);
-    NSUInteger count = 0;
-    for (NSString *uniqueId in uniqueIds) {
-        // We need to fetch each object, since [TSYapDatabaseObject removeWithTransaction:] sometimes does important
-        // work.
-        TSYapDatabaseObject *_Nullable object = [class fetchObjectWithUniqueID:uniqueId transaction:transaction];
-        if (!object) {
-            OWSFailDebug(@"couldn't load object for deletion: %@.", collection);
-            continue;
-        }
-        [object removeWithTransaction:transaction];
-        count++;
-    };
-    OWSLogInfo(@"Deleted %lu/%lu objects from: %@", (unsigned long)count, (unsigned long)uniqueIds.count, collection);
 }
 
 #pragma mark - Find Content

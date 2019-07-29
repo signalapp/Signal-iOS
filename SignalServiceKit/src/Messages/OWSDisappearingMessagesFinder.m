@@ -74,17 +74,14 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
                                       OWSAssertDebug([object isKindOfClass:[TSOutgoingMessage class]] || [object isKindOfClass:[TSIncomingMessage class]]);
                                       
                                       TSMessage *message = (TSMessage *)object;
-                                      if (transaction.transitional_yapReadTransaction) {
-                                          if ([message shouldStartExpireTimerWithTransaction:
-                                                           transaction.transitional_yapReadTransaction]) {
-                                              if ([message isKindOfClass:[TSIncomingMessage class]]) {
-                                                  TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
-                                                  if (!incomingMessage.wasRead) {
-                                                      return;
-                                                  }
+                                      if ([message shouldStartExpireTimerWithTransaction:transaction]) {
+                                          if ([message isKindOfClass:[TSIncomingMessage class]]) {
+                                              TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
+                                              if (!incomingMessage.wasRead) {
+                                                  return;
                                               }
-                                              [messageIds addObject:key];
                                           }
+                                          [messageIds addObject:key];
                                       }
                                   }];
 
@@ -178,11 +175,9 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
             continue;
         }
 
-        if (transaction.transitional_yapReadTransaction) {
-            if (![message shouldStartExpireTimerWithTransaction:transaction.transitional_yapReadTransaction]) {
-                OWSFailDebug(@"object: %@ shouldn't expire.", message);
-                continue;
-            }
+        if (![message shouldStartExpireTimerWithTransaction:transaction]) {
+            OWSFailDebug(@"object: %@ shouldn't expire.", message);
+            continue;
         }
 
         block(message);
@@ -262,7 +257,7 @@ static NSString *const OWSDisappearingMessageFinderExpiresAtIndex = @"index_mess
             }
             TSMessage *message = (TSMessage *)object;
 
-            if (![message shouldStartExpireTimerWithTransaction:transaction]) {
+            if (![message shouldStartExpireTimerWithTransaction:transaction.asAnyRead]) {
                 return;
             }
 

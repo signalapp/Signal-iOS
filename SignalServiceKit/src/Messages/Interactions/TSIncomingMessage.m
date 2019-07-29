@@ -13,7 +13,6 @@
 #import "TSGroupThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -165,46 +164,15 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 // --- CODE GENERATION MARKER
 
-+ (nullable instancetype)findMessageWithAddress:(SignalServiceAddress *)address
-                                      timestamp:(uint64_t)timestamp
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    __block TSIncomingMessage *foundMessage;
-    // In theory we could build a new secondaryIndex for (authorId,timestamp), but in practice there should
-    // be *very* few (millisecond) timestamps with multiple authors.
-    [TSDatabaseSecondaryIndexes
-        enumerateMessagesWithTimestamp:timestamp
-                             withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
-                                 TSInteraction *_Nullable interaction =
-                                     [TSInteraction anyFetchWithUniqueId:key transaction:transaction.asAnyRead];
-                                 if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-                                     TSIncomingMessage *message = (TSIncomingMessage *)interaction;
-
-                                     OWSAssertDebug(message.authorAddress.isValid);
-
-                                     if ([message.authorAddress isEqualToAddress:address]) {
-                                         foundMessage = message;
-                                     }
-                                 }
-                             }
-                      usingTransaction:transaction];
-
-    return foundMessage;
-}
-
-
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_IncomingMessage;
 }
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     for (NSString *attachmentId in self.attachmentIds) {
-        TSAttachment *_Nullable attachment =
-            [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction.asAnyRead];
+        TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             return NO;
         }

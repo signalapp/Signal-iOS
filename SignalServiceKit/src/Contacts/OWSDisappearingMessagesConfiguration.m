@@ -159,6 +159,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [super saveWithTransaction:transaction];
+
+    self.originalDictionaryValue = [self dictionaryValue];
+    self.newRecord = NO;
+}
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    self.originalDictionaryValue = [self dictionaryValue];
+    self.newRecord = NO;
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
     self.originalDictionaryValue = [self dictionaryValue];
     self.newRecord = NO;
 }

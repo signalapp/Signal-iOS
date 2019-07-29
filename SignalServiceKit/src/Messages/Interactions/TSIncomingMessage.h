@@ -106,19 +106,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-/*
- * Find a message matching the senderId and timestamp, if any.
- *
- * @param authorId
- *   Signal ID (i.e. e164) of the user who sent the message
- * @params timestamp
- *   When the message was created in milliseconds since epoch
- *
- */
-+ (nullable instancetype)findMessageWithAddress:(SignalServiceAddress *)address
-                                      timestamp:(uint64_t)timestamp
-                                    transaction:(YapDatabaseReadWriteTransaction *)transaction;
-
 // This will be 0 for messages created before we were tracking sourceDeviceId
 @property (nonatomic, readonly) UInt32 sourceDeviceId;
 

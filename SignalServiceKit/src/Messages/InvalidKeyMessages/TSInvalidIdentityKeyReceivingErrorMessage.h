@@ -50,7 +50,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 #ifdef DEBUG
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
-                                  withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                  withTransaction:(SDSAnyWriteTransaction *)transaction;
 #endif
 
 @end

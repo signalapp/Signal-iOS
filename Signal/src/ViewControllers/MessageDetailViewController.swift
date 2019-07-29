@@ -20,6 +20,14 @@ protocol MessageDetailViewDelegate: AnyObject {
 @objc
 class MessageDetailViewController: OWSViewController {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     @objc
     weak var delegate: MessageDetailViewDelegate?
 
@@ -424,13 +432,13 @@ class MessageDetailViewController: OWSViewController {
         return rows
     }
 
-    private func fetchAttachment(transaction: YapDatabaseReadTransaction) -> TSAttachment? {
+    private func fetchAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
         // TODO: Support multi-image messages.
         guard let attachmentId = message.attachmentIds.firstObject as? String else {
             return nil
         }
 
-        guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction.asAnyRead) else {
+        guard let attachment = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) else {
             Logger.warn("Missing attachment. Was it deleted?")
             return nil
         }
@@ -562,12 +570,12 @@ class MessageDetailViewController: OWSViewController {
 
         AssertIsOnMainThread()
 
-        try self.uiDatabaseConnection.read { transaction in
+        try databaseStorage.uiReadThrows { transaction in
             guard let uniqueId = self.message.uniqueId else {
                 Logger.error("Message is missing uniqueId.")
                 return
             }
-            guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead) as? TSMessage else {
+            guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
                 Logger.error("Message was deleted")
                 throw DetailViewError.messageWasDeleted
             }

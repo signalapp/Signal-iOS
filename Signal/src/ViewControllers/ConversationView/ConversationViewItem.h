@@ -53,7 +53,6 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
 @class TSAttachmentStream;
 @class TSInteraction;
 @class TSThread;
-@class YapDatabaseReadTransaction;
 
 @interface ConversationMediaAlbumItem : NSObject
 

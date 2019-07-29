@@ -97,16 +97,16 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 // --- CODE GENERATION MARKER
 
 + (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
-                             withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+                             withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+                           withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)invalidKeyExceptionWithEnvelope:(SSKProtoEnvelope *)envelope
-                                withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+                           withTransaction:(SDSAnyWriteTransaction *)transaction;
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
 

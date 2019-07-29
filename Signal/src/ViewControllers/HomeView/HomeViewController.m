@@ -1510,10 +1510,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     if (![[uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
                                                                           inNotifications:notifications]) {
 
-        [uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            SDSAnyReadTransaction *anyReadTransaction = transaction.asAnyRead;
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
-                                                               transaction:anyReadTransaction];
+                                                               transaction:transaction];
         }];
         [self updateViewState];
 

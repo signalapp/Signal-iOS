@@ -47,6 +47,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SelectThreadViewController
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 - (void)loadView
 {
     [super loadView];
@@ -209,12 +218,11 @@ NS_ASSUME_NONNULL_BEGIN
                             if (!cell.hasAccessoryText) {
                                 // Don't add a disappearing messages indicator if we've already added a "blocked" label.
                                 __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-                                [self.uiDatabaseConnection
-                                    readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-                                        disappearingMessagesConfiguration = [OWSDisappearingMessagesConfiguration
-                                            anyFetchWithUniqueId:thread.uniqueId
-                                                     transaction:transaction.asAnyRead];
-                                    }];
+                                [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                    disappearingMessagesConfiguration =
+                                        [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId
+                                                                                       transaction:transaction];
+                                }];
 
                                 if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
                                     DisappearingTimerConfigurationView *disappearingTimerConfigurationView =
@@ -327,9 +335,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __block TSThread *thread = nil;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         thread = [TSContactThread getOrCreateThreadWithContactAddress:signalAccount.recipientAddress
-                                                          transaction:transaction.asAnyWrite];
+                                                          transaction:transaction];
     }];
     OWSAssertDebug(thread);
 

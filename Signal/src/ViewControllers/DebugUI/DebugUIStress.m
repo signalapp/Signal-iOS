@@ -523,14 +523,14 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)hallucinateTwinGroup:(TSGroupThread *)groupThread
 {
     __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage
+        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             TSGroupModel *groupModel =
                 [[TSGroupModel alloc] initWithTitle:[groupThread.groupModel.groupName stringByAppendingString:@" Copy"]
                                             members:groupThread.groupModel.groupMembers
                                               image:groupThread.groupModel.groupImage
                                             groupId:[Randomness generateRandomBytes:kGroupIdLength]];
-            thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction.asAnyWrite];
+            thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
         }];
     OWSAssertDebug(thread);
 
@@ -559,13 +559,12 @@ NS_ASSUME_NONNULL_BEGIN
     [recipientAddresses addObject:self.tsAccountManager.localAddress];
 
     __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(
-        YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:NSUUID.UUID.UUIDString
                                                                members:recipientAddresses
                                                                  image:nil
                                                                groupId:[Randomness generateRandomBytes:kGroupIdLength]];
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction.asAnyWrite];
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
     }];
     OWSAssertDebug(thread);
 
