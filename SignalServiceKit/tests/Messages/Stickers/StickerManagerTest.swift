@@ -47,7 +47,7 @@ class StickerManagerTest: SSKBaseTestSwift {
         XCTAssertEqual(0, StickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
 
         let stickerInfo = StickerInfo.defaultValue
-        let stickerData = Randomness.generateRandomBytes(1)!
+        let stickerData = Randomness.generateRandomBytes(1)
 
         let expectation = self.expectation(description: "Wait for sticker to be installed.")
         StickerManager.installSticker(stickerInfo: stickerInfo,
@@ -95,7 +95,7 @@ class StickerManagerTest: SSKBaseTestSwift {
         XCTAssertEqual(0, stickerManager.suggestedStickers(forTextInput: "This is a flag: 🇨🇦").count)
 
         let stickerInfo = StickerInfo.defaultValue
-        let stickerData = Randomness.generateRandomBytes(1)!
+        let stickerData = Randomness.generateRandomBytes(1)
 
         let expectation = self.expectation(description: "Wait for sticker to be installed.")
         StickerManager.installSticker(stickerInfo: stickerInfo,
@@ -132,8 +132,8 @@ class StickerManagerTest: SSKBaseTestSwift {
     }
 
     func testInfos() {
-        let packId = Randomness.generateRandomBytes(16)!
-        let packKey = Randomness.generateRandomBytes(Int32(StickerManager.packKeyLength))!
+        let packId = Randomness.generateRandomBytes(16)
+        let packKey = Randomness.generateRandomBytes(Int32(StickerManager.packKeyLength))
         let stickerId: UInt32 = 0
 
         XCTAssertEqual(StickerPackInfo(packId: packId, packKey: packKey),

@@ -191,7 +191,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         let certificateData = try! SMKProtoServerCertificateCertificate.builder(id: 1,
                                                                                 key: serverKey ).buildSerializedData()
 
-        let signatureData = Randomness.generateRandomBytes(ECCSignatureLength)!
+        let signatureData = Randomness.generateRandomBytes(ECCSignatureLength)
 
         let wrapperProto = SMKProtoServerCertificate.builder(certificate: certificateData,
                                                              signature: signatureData)
@@ -211,7 +211,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         certificateBuilder.setSenderUuid(aliceUuid.uuidString)
         let certificateData = try! certificateBuilder.buildSerializedData()
 
-        let signatureData = Randomness.generateRandomBytes(ECCSignatureLength)!
+        let signatureData = Randomness.generateRandomBytes(ECCSignatureLength)
 
         let wrapperProto = try! SMKProtoSenderCertificate.builder(certificate: certificateData,
                                                                   signature: signatureData).build()

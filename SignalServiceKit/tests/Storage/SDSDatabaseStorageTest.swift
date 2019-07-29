@@ -51,7 +51,7 @@ class SDSDatabaseStorageTest: SSKBaseTestSwift {
 
         XCTAssertEqual(1, TSThread.anyFetchAll(databaseStorage: storage).count)
 
-        let groupId = Randomness.generateRandomBytes(Int32(kGroupIdLength))!
+        let groupId = Randomness.generateRandomBytes(Int32(kGroupIdLength))
         let groupModel = TSGroupModel(title: "Test Group",
                                       members: [contactAddress],
                                       image: nil,
