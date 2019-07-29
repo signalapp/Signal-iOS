@@ -82,6 +82,8 @@
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <SignalServiceKit/TSQuotedMessage.h>
 
+@import SafariServices;
+
 NS_ASSUME_NONNULL_BEGIN
 
 static const CGFloat kLoadMoreHeaderHeight = 60.f;
@@ -5209,6 +5211,16 @@ typedef enum : NSUInteger {
 
     [ThreadUtil addThreadToProfileWhitelist:self.thread];
     [self dismissMessageRequestView];
+}
+
+- (void)messageRequestViewDidTapLearnMore
+{
+    OWSAssertIsOnMainThread();
+
+    // TODO Message Request: Use right support url. Right now this just links to the profiles FAQ
+    SFSafariViewController *safariVC = [[SFSafariViewController alloc]
+        initWithURL:[NSURL URLWithString:@"https://support.signal.org/hc/en-us/articles/360007459591"]];
+    [self presentViewController:safariVC animated:YES completion:nil];
 }
 
 @end

@@ -1317,14 +1317,26 @@
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Block";
 
-/* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
-
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Delete";
 
+/* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+
+/* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+
+/* A button used to learn more about why you must share your profile. */
+"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Learn More";
+
+/* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+
+/* A button used to share your profile with an existing thread. */
+"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Share Profile";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Delivered";

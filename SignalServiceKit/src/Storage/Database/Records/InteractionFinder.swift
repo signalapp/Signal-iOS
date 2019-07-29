@@ -31,6 +31,7 @@ protocol InteractionFinderAdapter {
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
     func enumerateInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
     func enumerateUnseenInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
+    func existsOutgoingMessage(transaction: ReadTransaction) -> Bool
 
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 }
@@ -183,7 +184,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         case .yapRead(let yapRead):
             return yapAdapter.unreadCount(transaction: yapRead)
         case .grdbRead(let grdbRead):
-            return try grdbAdapter.unreadCount(transaction: grdbRead)
+            return grdbAdapter.unreadCount(transaction: grdbRead)
         }
     }
 
@@ -232,6 +233,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return yapAdapter.interaction(at: index, transaction: yapRead)
         case .grdbRead(let grdbRead):
             return try grdbAdapter.interaction(at: index, transaction: grdbRead)
+        }
+    }
+
+    @objc
+    public func existsOutgoingMessage(transaction: SDSAnyReadTransaction) -> Bool {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.existsOutgoingMessage(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.existsOutgoingMessage(transaction: grdbRead)
         }
     }
 }
@@ -415,6 +426,14 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
 
         return interaction
+    }
+
+    func existsOutgoingMessage(transaction: YapDatabaseReadTransaction) -> Bool {
+        guard let dbView = TSDatabaseView.threadOutgoingMessageDatabaseView(transaction) as? YapDatabaseAutoViewTransaction else {
+            owsFailDebug("unexpected view")
+            return false
+        }
+        return !dbView.isEmptyGroup(threadUniqueId)
     }
 
     // MARK: - private
@@ -724,6 +743,18 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         """
         let arguments: StatementArguments = [threadUniqueId, index]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
+    }
+
+    func existsOutgoingMessage(transaction: GRDBReadTransaction) -> Bool {
+        let sql = """
+            SELECT *
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) = ?
+            LIMIT 1
+        """
+        let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
+        return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction) != nil
     }
 }
 
