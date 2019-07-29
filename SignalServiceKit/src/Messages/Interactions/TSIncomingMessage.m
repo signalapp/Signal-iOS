@@ -164,40 +164,6 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
 
 // --- CODE GENERATION MARKER
 
-+ (nullable instancetype)findMessageWithAddress:(SignalServiceAddress *)address
-                                      timestamp:(uint64_t)timestamp
-                                    transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    if (transaction.transitional_yapReadTransaction == nil) {
-        return nil;
-    }
-
-    __block TSIncomingMessage *foundMessage;
-    // In theory we could build a new secondaryIndex for (authorId,timestamp), but in practice there should
-    // be *very* few (millisecond) timestamps with multiple authors.
-    [TSDatabaseSecondaryIndexes
-        enumerateMessagesWithTimestamp:timestamp
-                             withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
-                                 TSInteraction *_Nullable interaction =
-                                     [TSInteraction anyFetchWithUniqueId:key transaction:transaction];
-                                 if ([interaction isKindOfClass:[TSIncomingMessage class]]) {
-                                     TSIncomingMessage *message = (TSIncomingMessage *)interaction;
-
-                                     OWSAssertDebug(message.authorAddress.isValid);
-
-                                     if ([message.authorAddress isEqualToAddress:address]) {
-                                         foundMessage = message;
-                                     }
-                                 }
-                             }
-                      usingTransaction:transaction.transitional_yapReadTransaction];
-
-    return foundMessage;
-}
-
-
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_IncomingMessage;

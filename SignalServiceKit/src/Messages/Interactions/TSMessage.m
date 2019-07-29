@@ -465,12 +465,13 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         return NSLocalizedString(
             @"STICKER_MESSAGE_PREVIEW", @"Preview text shown in notifications and home view for sticker messages.");
     } else {
+        OWSFailDebug(@"message has no renderable content.");
         // TODO: We should do better here.
         return @"";
     }
 }
 
-// TODO: Convert to Any.
+// GRDB TODO: Convert to Any.
 - (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // StickerManager does reference counting of "known" sticker packs.
@@ -486,7 +487,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     [super saveWithTransaction:transaction];
 }
 
-// TODO: Convert to Any.
+// GRDB TODO: Convert to Any.
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // StickerManager does reference counting of "known" sticker packs.
