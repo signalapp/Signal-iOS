@@ -1352,7 +1352,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         BOOL shouldHideFooter = NO;
         BOOL isFirstInCluster = YES;
         BOOL isLastInCluster = YES;
-        NSAttributedString *_Nullable senderName = nil;
+        NSString *_Nullable senderName = nil;
 
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
         NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
@@ -1460,10 +1460,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                         || viewItem.hasCellHeader);
                 }
                 if (shouldShowSenderName) {
-                    senderName = [self.contactsManager
-                        attributedContactOrProfileNameForAddress:incomingSenderAddress
-                                               primaryAttributes:[OWSMessageBubbleView senderNamePrimaryAttributes]
-                                             secondaryAttributes:[OWSMessageBubbleView senderNameSecondaryAttributes]];
+                    senderName = [self.contactsManager displayNameForAddress:incomingSenderAddress];
                 }
 
                 // Show the sender avatar for incoming group messages unless

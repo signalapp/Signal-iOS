@@ -14,9 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ContactsManagerProtocol <NSObject>
 
-- (NSString *)displayNameForAddress:(nullable SignalServiceAddress *)address;
-- (NSString *)displayNameForAddress:(nullable SignalServiceAddress *)address
-                        transaction:(SDSAnyReadTransaction *)transaction;
+- (NSString *)displayNameForAddress:(SignalServiceAddress *)address;
+- (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 - (NSArray<SignalAccount *> *)signalAccounts;
 
 - (BOOL)isSystemContact:(NSString *)phoneNumber;

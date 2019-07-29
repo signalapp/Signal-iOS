@@ -146,7 +146,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         let update = CXCallUpdate()
 
         if showNamesOnCallScreen {
-            update.localizedCallerName = self.contactsManager.contactOrProfileName(for: call.remoteAddress)
+            update.localizedCallerName = self.contactsManager.displayName(for: call.remoteAddress)
             let type: CXHandle.HandleType
             let value: String
             if let phoneNumber = call.remoteAddress.phoneNumber {

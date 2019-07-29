@@ -940,7 +940,7 @@ const CGFloat kIconViewLength = 24;
                                    bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber]];
             addSubtitle(subtitle);
         } else {
-            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForAddress:recipientAddress];
+            NSString *_Nullable profileName = [self.contactsManager displayNameForAddress:recipientAddress];
             if (profileName) {
                 addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
             }

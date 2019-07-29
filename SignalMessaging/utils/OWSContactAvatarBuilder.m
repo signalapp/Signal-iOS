@@ -52,11 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
                        diameter:(NSUInteger)diameter
 {
     // Name for avatar initials.
-    NSString *_Nullable name = [OWSContactAvatarBuilder.contactsManager nameFromSystemContactsForAddress:address];
+    NSString *_Nullable name = [OWSContactAvatarBuilder.contactsManager displayNameForAddress:address];
 
-    if (name.length == 0) {
-        name = [OWSContactAvatarBuilder.contactsManager profileNameForAddress:address];
-    }
     if (name.length == 0) {
         name = address.stringForDisplay;
     }

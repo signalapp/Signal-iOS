@@ -501,28 +501,22 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSAttributedString *name;
+    NSString *name;
     if (thread.isGroupThread) {
         if (thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
+            name = [MessageStrings newGroupDefaultTitle];
         } else {
-            name = [[NSAttributedString alloc] initWithString:thread.name];
+            name = thread.name;
         }
     } else {
         if (self.thread.threadRecord.isNoteToSelf) {
-            name = [[NSAttributedString alloc]
-                initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
-                    attributes:@{
-                        NSFontAttributeName : self.nameFont,
-                    }];
+            name = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
         } else {
-            name = [self.contactsManager attributedContactOrProfileNameForAddress:thread.contactAddress
-                                                                      primaryFont:self.nameFont
-                                                                    secondaryFont:self.nameSecondaryFont];
+            name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         }
     }
 
-    self.nameLabel.attributedText = name;
+    self.nameLabel.text = name;
 }
 
 #pragma mark - Typing Indicators

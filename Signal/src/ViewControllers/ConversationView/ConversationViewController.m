@@ -1335,7 +1335,7 @@ typedef enum : NSUInteger {
 
 - (void)updateNavigationTitle
 {
-    NSAttributedString *name;
+    NSString *name;
     UIImage *_Nullable icon;
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *thread = (TSContactThread *)self.thread;
@@ -1343,15 +1343,9 @@ typedef enum : NSUInteger {
         OWSAssertDebug(thread.contactAddress);
 
         if (thread.isNoteToSelf) {
-            name = [[NSAttributedString alloc]
-                initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
-                    attributes:@{
-                        NSFontAttributeName : self.headerView.titlePrimaryFont,
-                    }];
+            name = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
         } else {
-            name = [self.contactsManager attributedContactOrProfileNameForAddress:thread.contactAddress
-                                                                      primaryFont:self.headerView.titlePrimaryFont
-                                                                    secondaryFont:self.headerView.titleSecondaryFont];
+            name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         }
 
         // If the user is in the system contacts, show a badge
@@ -1361,9 +1355,9 @@ typedef enum : NSUInteger {
         }
     } else {
         if (self.thread.name.length == 0) {
-            name = [[NSAttributedString alloc] initWithString:[MessageStrings newGroupDefaultTitle]];
+            name = [MessageStrings newGroupDefaultTitle];
         } else {
-            name = [[NSAttributedString alloc] initWithString:self.thread.name];
+            name = self.thread.name;
         }
     }
     self.title = nil;
@@ -1374,7 +1368,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    self.headerView.attributedTitle = name;
+    self.headerView.attributedTitle = [[NSAttributedString alloc] initWithString:name];
 }
 
 - (void)createHeaderViews

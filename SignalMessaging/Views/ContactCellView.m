@@ -21,7 +21,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 @interface ContactCellView ()
 
 @property (nonatomic) UILabel *nameLabel;
-@property (nonatomic) UILabel *profileNameLabel;
 @property (nonatomic) UIImageView *avatarView;
 @property (nonatomic) UILabel *subtitleLabel;
 @property (nonatomic) UILabel *accessoryLabel;
@@ -83,9 +82,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
-    self.profileNameLabel = [UILabel new];
-    self.profileNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-
     self.subtitleLabel = [UILabel new];
 
     self.accessoryLabel = [[UILabel alloc] init];
@@ -95,7 +91,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     self.nameContainerView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
-        self.profileNameLabel,
         self.subtitleLabel,
     ]];
     self.nameContainerView.axis = UILayoutConstraintAxisVertical;
@@ -117,12 +112,10 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 - (void)configureFontsAndColors
 {
     self.nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
-    self.profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.accessoryLabel.font = [UIFont ows_mediumFontWithSize:13.f];
 
     self.nameLabel.textColor = [Theme primaryColor];
-    self.profileNameLabel.textColor = [Theme secondaryColor];
     self.subtitleLabel.textColor = [Theme secondaryColor];
     self.accessoryLabel.textColor = Theme.middleGrayColor;
 }
@@ -139,18 +132,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         self.thread = [TSContactThread getThreadWithContactAddress:address transaction:transaction.asAnyRead];
     }];
-
-    BOOL isNoteToSelf = IsNoteToSelfEnabled() && address.isLocalAddress;
-    if (isNoteToSelf) {
-        self.nameLabel.attributedText = [[NSAttributedString alloc]
-            initWithString:NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.")
-                attributes:@{
-                    NSFontAttributeName : self.nameLabel.font,
-                }];
-    } else {
-        self.nameLabel.attributedText = [self.contactsManager formattedFullNameForAddress:address
-                                                                                     font:self.nameLabel.font];
-    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -244,29 +225,14 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateProfileName
 {
-    OWSContactsManager *contactsManager = self.contactsManager;
-    if (contactsManager == nil) {
-        OWSFailDebug(@"contactsManager should not be nil");
-        self.profileNameLabel.text = nil;
-        return;
-    }
-
-    SignalServiceAddress *address = self.address;
-    if (!address.isValid) {
-        OWSFailDebug(@"address should not be invalid");
-        self.profileNameLabel.text = nil;
-        return;
-    }
-
-    if ([contactsManager hasNameInSystemContactsForAddress:address]) {
-        // Don't display profile name when we have a veritas name in system Contacts
-        self.profileNameLabel.text = nil;
+    BOOL isNoteToSelf = IsNoteToSelfEnabled() && self.address.isLocalAddress;
+    if (isNoteToSelf) {
+        self.nameLabel.text = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
     } else {
-        // Use profile name, if any is available
-        self.profileNameLabel.text = [contactsManager formattedProfileNameForAddress:address];
+        self.nameLabel.text = [self.contactsManager displayNameForAddress:self.address];
     }
 
-    [self.profileNameLabel setNeedsLayout];
+    [self.nameLabel setNeedsLayout];
 }
 
 - (void)prepareForReuse
@@ -277,7 +243,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.accessoryMessage = nil;
     self.nameLabel.text = nil;
     self.subtitleLabel.text = nil;
-    self.profileNameLabel.text = nil;
     self.accessoryLabel.text = nil;
     for (UIView *subview in self.accessoryViewContainer.subviews) {
         [subview removeFromSuperview];

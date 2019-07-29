@@ -325,7 +325,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
     [self clearCachedLayoutState];
 }
 
-- (void)setSenderName:(nullable NSAttributedString *)senderName
+- (void)setSenderName:(nullable NSString *)senderName
 {
     if ([NSObject isNullableObject:senderName equalTo:_senderName]) {
         return;

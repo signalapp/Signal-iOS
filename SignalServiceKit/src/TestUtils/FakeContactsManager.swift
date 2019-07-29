@@ -4,11 +4,11 @@
 
 @objc(OWSFakeContactsManager)
 public class FakeContactsManager: NSObject, ContactsManagerProtocol {
-    public func displayName(for address: SignalServiceAddress?) -> String {
+    public func displayName(for address: SignalServiceAddress) -> String {
         return "Fake name"
     }
 
-    public func displayName(for address: SignalServiceAddress?, transaction: SDSAnyReadTransaction) -> String {
+    public func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         return self.displayName(for: address)
     }
 

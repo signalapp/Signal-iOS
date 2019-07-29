@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @class ImageCache;
+@class SDSAnyReadTransaction;
 @class SDSKeyValueStore;
 @class SignalAccount;
 @class SignalServiceAddress;
@@ -69,6 +70,16 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (BOOL)isSystemContact:(NSString *)phoneNumber;
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
+
+/// The name representing this address.
+///
+/// This will be the first of the following that exists for this address:
+/// - The matching name from system contacts
+/// - The name provided on the profile
+/// - The address' phone number
+/// - The address' UUID
+- (NSString *)displayNameForAddress:(SignalServiceAddress *)address;
+- (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 
 /**
@@ -76,28 +87,11 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
  */
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount;
 
-// Generally we prefer the formattedProfileName over the raw profileName so as to
-// distinguish a profile name apart from a name pulled from the system's contacts.
-// This helps clarify when the remote person chooses a potentially confusing profile name.
-- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address;
-- (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address;
-- (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address;
-
 - (nullable UIImage *)systemContactImageForAddress:(nullable SignalServiceAddress *)address;
 - (nullable UIImage *)profileImageForAddress:(nullable SignalServiceAddress *)address;
 - (nullable NSData *)profileImageDataForAddress:(nullable SignalServiceAddress *)address;
 
 - (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address;
-- (NSAttributedString *)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *)font;
-- (NSAttributedString *)formattedFullNameForAddress:(SignalServiceAddress *)address font:(UIFont *)font;
-- (NSString *)contactOrProfileNameForAddress:(SignalServiceAddress *)address;
-- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address;
-- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
-                                                     primaryFont:(UIFont *)primaryFont
-                                                   secondaryFont:(UIFont *)secondaryFont;
-- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
-                                               primaryAttributes:(NSDictionary *)primaryAttributes
-                                             secondaryAttributes:(NSDictionary *)secondaryAttributes;
 @end
 
 NS_ASSUME_NONNULL_END

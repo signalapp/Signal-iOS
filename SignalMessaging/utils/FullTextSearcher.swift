@@ -445,9 +445,8 @@ public class FullTextSearcher: NSObject {
     }
 
     private func indexingString(address: SignalServiceAddress) -> String {
-        let contactName = contactsManager.displayName(for: address)
-        let profileName = contactsManager.profileName(for: address)
+        let displayName = contactsManager.displayName(for: address)
 
-        return "\(address.phoneNumber ?? "") \(contactName) \(profileName ?? "")"
+        return "\(address.phoneNumber ?? "") \(displayName)"
     }
 }
