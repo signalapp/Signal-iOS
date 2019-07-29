@@ -1317,13 +1317,13 @@
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Block";
 
-/* A prompt asking if the user wants to accept a conversation invite. */
+/* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
 
 /* A button used to block a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Delete";
 
-/* A prompt asking if the user wants to accept a group invite. */
+/* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
 
 /* message status for message delivered to their recipient. */

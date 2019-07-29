@@ -69,7 +69,7 @@ class MessageRequestView: UIStackView {
         if let thread = thread as? TSGroupThread {
             let formatString = NSLocalizedString(
                 "MESSAGE_REQUEST_VIEW_GROUP_PROMPT_FORMAT",
-                comment: "A prompt asking if the user wants to accept a group invite."
+                comment: "A prompt asking if the user wants to accept a group invite. Embeds {{group name}}."
             )
 
             // Get the range of the formatter marker to calculate the start of the bold area
@@ -83,7 +83,7 @@ class MessageRequestView: UIStackView {
         } else if let thread = thread as? TSContactThread {
             let formatString = NSLocalizedString(
                 "MESSAGE_REQUEST_VIEW_CONTACT_PROMPT_FORMAT",
-                comment: "A prompt asking if the user wants to accept a conversation invite."
+                comment: "A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}."
             )
 
             // Get the range of the formatter marker to calculate the start of the bold area

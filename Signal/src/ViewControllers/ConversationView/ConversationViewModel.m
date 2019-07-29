@@ -1127,29 +1127,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     self.conversationProfileState = conversationProfileState;
 }
 
-- (nullable TSInteraction *)firstCallOrMessageForLoadedInteractions:(NSArray<TSInteraction *> *)loadedInteractions
-
-{
-    for (TSInteraction *interaction in loadedInteractions) {
-        switch (interaction.interactionType) {
-            case OWSInteractionType_Unknown:
-                OWSFailDebug(@"Unknown interaction type.");
-                return nil;
-            case OWSInteractionType_IncomingMessage:
-            case OWSInteractionType_OutgoingMessage:
-                return interaction;
-            case OWSInteractionType_Error:
-            case OWSInteractionType_Info:
-                break;
-            case OWSInteractionType_Call:
-            case OWSInteractionType_Offer:
-            case OWSInteractionType_TypingIndicator:
-                break;
-        }
-    }
-    return nil;
-}
-
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
 //
