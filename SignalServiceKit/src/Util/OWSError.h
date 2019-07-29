@@ -59,6 +59,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeAttachmentDownloadFailed,
     OWSErrorCodeAppExpired,
     OWSErrorCodeMissingLocalThread,
+    OWSErrorCodeContactSyncFailed,
 };
 
 extern NSString *const OWSErrorRecipientAddressKey;
