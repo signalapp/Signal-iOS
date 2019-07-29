@@ -11,6 +11,12 @@ public class YDBToGRDBMigration: NSObject {
 
     // MARK: - Other key stores
 
+    // This migration class resides in SignalMessaging. It ensures that we
+    // migrate an kv stores in SignalMessaging or its dependency SSK.
+    //
+    // However it doesn't know about any key-value stores defined in the
+    // Signal (or hypothetically the SignalShareExtension) target(s).
+    // So the migration logic needs to be informed of those stores.    
     private static var otherKeyStores = [String: SDSKeyValueStore]()
 
     @objc
