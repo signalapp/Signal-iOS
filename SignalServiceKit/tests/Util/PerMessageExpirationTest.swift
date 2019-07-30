@@ -35,7 +35,7 @@ class PerMessageExpirationTest: SSKBaseTestSwift {
             }
         }
         let latestCopy = { (message: TSMessage) -> TSMessage in
-            let uniqueId = message.uniqueId!
+            let uniqueId = message.uniqueId
             return self.databaseStorage.readReturningResult { transaction in
                 return TSMessage.anyFetch(uniqueId: uniqueId, transaction: transaction) as! TSMessage
             }

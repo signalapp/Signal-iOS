@@ -339,11 +339,7 @@ public class FullTextSearcher: NSObject {
                                          transaction: YapDatabaseReadTransaction) -> ConversationScreenSearchResultSet {
 
         var messages: [MessageSearchResult] = []
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return ConversationScreenSearchResultSet.empty
-        }
+        let threadId = thread.uniqueId
 
         self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, _: String?) in
             if let message = match as? TSMessage {
@@ -351,11 +347,7 @@ public class FullTextSearcher: NSObject {
                     return
                 }
 
-                guard let messageId = message.uniqueId else {
-                    owsFailDebug("messageId was unexpectedly nil")
-                    return
-                }
-
+                let messageId = message.uniqueId
                 let searchResult = MessageSearchResult(messageId: messageId, sortId: message.sortId)
                 messages.append(searchResult)
             }

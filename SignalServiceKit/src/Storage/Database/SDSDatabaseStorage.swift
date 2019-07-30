@@ -209,10 +209,7 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func touch(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let yap):
-            guard let uniqueId = interaction.uniqueId else {
-                owsFailDebug("uniqueId was unexpectedly nil")
-                return
-            }
+            let uniqueId = interaction.uniqueId
             yap.touchObject(forKey: uniqueId, inCollection: TSInteraction.collection())
         case .grdbWrite(let grdb):
             guard let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver else {
@@ -229,10 +226,7 @@ public class SDSDatabaseStorage: SDSTransactable {
     public func touch(thread: TSThread, transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let yap):
-            guard let uniqueId = thread.uniqueId else {
-                owsFailDebug("uniqueId was unexpectedly nil")
-                return
-            }
+            let uniqueId = thread.uniqueId
             yap.touchObject(forKey: uniqueId, inCollection: TSThread.collection())
         case .grdbWrite(let grdb):
             guard let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver else {

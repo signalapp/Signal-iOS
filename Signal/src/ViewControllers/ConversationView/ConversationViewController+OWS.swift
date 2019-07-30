@@ -5,11 +5,7 @@
 extension ConversationViewController {
     @objc
     func ensureIndexPath(of interaction: TSMessage) -> IndexPath? {
-        guard let interactionId = interaction.uniqueId else {
-            owsFailDebug("interactionId was unexpectedly nil")
-            return nil
-        }
-
+        let interactionId = interaction.uniqueId
         return databaseStorage.uiReadReturningResult { transaction in
             self.conversationViewModel.ensureLoadWindowContainsInteractionId(interactionId,
                                                                              transaction: transaction)

@@ -41,8 +41,7 @@ public class ThreadViewModel: NSObject {
             self.contactAddress = nil
         }
 
-        if let threadUniqueId = thread.uniqueId,
-            let unreadCount = try? InteractionFinder(threadUniqueId: threadUniqueId).unreadCount(transaction: transaction) {
+        if let unreadCount = try? InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction) {
             self.unreadCount = unreadCount
         } else {
             owsFailDebug("unreadCount was unexpectedly nil")

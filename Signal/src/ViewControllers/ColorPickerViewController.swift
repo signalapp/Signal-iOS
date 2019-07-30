@@ -374,7 +374,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     }
 
     func itemId() -> String {
-        return interaction.uniqueId!
+        return interaction.uniqueId
     }
 
     func dequeueCell(for collectionView: UICollectionView, indexPath: IndexPath) -> ConversationViewCell {

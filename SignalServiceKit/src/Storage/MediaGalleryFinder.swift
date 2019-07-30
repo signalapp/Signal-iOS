@@ -85,7 +85,7 @@ public class GRDBMediaGalleryFinder: NSObject {
     // MARK: - 
 
     var threadUniqueId: String {
-        return thread.uniqueId!
+        return thread.uniqueId
     }
 
     public static func setup(storage: GRDBDatabaseStorageAdapter) {
@@ -189,6 +189,6 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         WHERE \(attachmentColumn: .uniqueId) = ?
         """
 
-        return try! Int.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId, attachment.uniqueId!])
+        return try! Int.fetchOne(transaction.database, sql: sql, arguments: [threadUniqueId, attachment.uniqueId])
     }
 }

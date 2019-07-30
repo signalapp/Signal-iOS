@@ -571,10 +571,7 @@ class MessageDetailViewController: OWSViewController {
         AssertIsOnMainThread()
 
         try databaseStorage.uiReadThrows { transaction in
-            guard let uniqueId = self.message.uniqueId else {
-                Logger.error("Message is missing uniqueId.")
-                return
-            }
+            let uniqueId = self.message.uniqueId
             guard let newMessage = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) as? TSMessage else {
                 Logger.error("Message was deleted")
                 throw DetailViewError.messageWasDeleted
@@ -598,12 +595,7 @@ class MessageDetailViewController: OWSViewController {
             owsFailDebug("notifications was unexpectedly nil")
             return
         }
-
-        guard let uniqueId = self.message.uniqueId else {
-            Logger.error("Message is missing uniqueId.")
-            return
-        }
-
+        let uniqueId = self.message.uniqueId
         guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
                                                  inCollection: TSInteraction.collection(),
                                                  in: notifications) else {

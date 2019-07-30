@@ -168,9 +168,9 @@ class ThreadMapping: NSObject {
                                 updatedItemIds: Set<String>,
                                 transaction: SDSAnyReadTransaction) throws -> ThreadMappingDiff {
 
-        let oldThreadIds: [String] = threads.map { $0.uniqueId! }
+        let oldThreadIds: [String] = threads.map { $0.uniqueId }
         try update(isViewingArchive: isViewingArchive, transaction: transaction)
-        let newThreadIds: [String] = threads.map { $0.uniqueId! }
+        let newThreadIds: [String] = threads.map { $0.uniqueId }
 
         var rowChanges: [ThreadMappingRowChange] = []
 

@@ -17,14 +17,19 @@ NS_ASSUME_NONNULL_BEGIN
     return [self initWithUniqueId:[[NSUUID UUID] UUIDString]];
 }
 
-- (instancetype)initWithUniqueId:(NSString *_Nullable)aUniqueId
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _uniqueId = aUniqueId;
+    if (uniqueId.length > 0) {
+        _uniqueId = uniqueId;
+    } else {
+        OWSFailDebug(@"Invalid uniqueId.");
+        _uniqueId = [[NSUUID UUID] UUIDString];
+    }
 
     return self;
 }
@@ -34,6 +39,11 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super initWithCoder:coder];
     if (!self) {
         return self;
+    }
+
+    if (_uniqueId.length < 1) {
+        OWSFailDebug(@"Invalid uniqueId.");
+        _uniqueId = [[NSUUID UUID] UUIDString];
     }
 
     return self;

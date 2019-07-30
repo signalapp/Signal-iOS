@@ -676,6 +676,12 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     OWSAssertIsOnMainThread();
     OWSAssertDebug([self isAudio]);
 
+    if (CurrentAppContext().isRunningTests) {
+        // Return an arbitrary non-zero value to avoid
+        // expected exceptions in AVFoundation.
+        return 1.f;
+    }
+
     NSError *error;
     AVAudioPlayer *audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.originalMediaURL error:&error];
     if (error && [error.domain isEqualToString:NSOSStatusErrorDomain]

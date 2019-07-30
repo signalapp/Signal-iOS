@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Initialized object
  */
-- (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
@@ -126,7 +126,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  The unique identifier of the stored object
  */
-@property (nonatomic, nullable) NSString *uniqueId;
+@property (nonatomic, readonly) NSString *uniqueId;
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)remove;

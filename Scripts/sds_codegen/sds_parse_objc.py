@@ -851,6 +851,13 @@ if __name__ == "__main__":
     if os.path.isfile(src_path):
         process_file(src_path, swift_bridging_path, args.intermediates)
     else:
+        # First clear out existing .sdsjson files.
+        for rootdir, dirnames, filenames in os.walk(src_path):
+            for filename in filenames:
+                if filename.endswith(sds_common.SDS_JSON_FILE_EXTENSION):
+                    file_path = os.path.abspath(os.path.join(rootdir, filename))
+                    os.remove(file_path)
+                
         for rootdir, dirnames, filenames in os.walk(src_path):
             for filename in filenames:
                 file_path = os.path.abspath(os.path.join(rootdir, filename))

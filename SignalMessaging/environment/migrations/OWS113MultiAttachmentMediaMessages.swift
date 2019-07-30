@@ -42,11 +42,7 @@ public class OWS113MultiAttachmentMediaMessages: YDBDatabaseMigration {
                             return
                         }
 
-                        guard let messageId = message.uniqueId else {
-                            owsFailDebug("messageId was unexpectedly nil")
-                            return
-                        }
-
+                        let messageId = message.uniqueId
                         for attachmentId in message.attachmentIds {
                             legacyAttachments.append((attachmentId: attachmentId as! String, messageId: messageId))
                         }
