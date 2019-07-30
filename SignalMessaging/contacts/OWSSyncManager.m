@@ -268,90 +268,92 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                      debounce:(BOOL)debounce
 {
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        dispatch_async(self.serialQueue, ^{
-            if (debounce && self.isRequestInFlight) {
-                // De-bounce.  It's okay if we ignore some new changes;
-                // `sendSyncContactsMessageIfPossible` is called fairly
-                // often so we'll sync soon.
-                return resolve(@(1));
-            }
-
-            TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
-            if (thread == nil) {
-                OWSFailDebug(@"Missing thread.");
-                NSError *error
+        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+            dispatch_async(self.serialQueue, ^{
+                if (debounce && self.isRequestInFlight) {
+                    // De-bounce.  It's okay if we ignore some new changes;
+                    // `sendSyncContactsMessageIfPossible` is called fairly
+                    // often so we'll sync soon.
+                    return resolve(@(1));
+                }
+                
+                TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithSneakyTransaction];
+                if (thread == nil) {
+                    OWSFailDebug(@"Missing thread.");
+                    NSError *error
                     = OWSErrorWithCodeDescription(OWSErrorCodeContactSyncFailed, @"Could not sync contacts.");
-                return resolve(error);
-            }
-
-            OWSSyncContactsMessage *syncContactsMessage =
+                    return resolve(error);
+                }
+                
+                OWSSyncContactsMessage *syncContactsMessage =
                 [[OWSSyncContactsMessage alloc] initWithThread:thread
                                                 signalAccounts:signalAccounts
                                                identityManager:self.identityManager
                                                 profileManager:self.profileManager];
-            __block NSData *_Nullable messageData;
-            __block NSData *_Nullable lastMessageHash;
-            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
-                lastMessageHash =
+                __block NSData *_Nullable messageData;
+                __block NSData *_Nullable lastMessageHash;
+                [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                    messageData = [syncContactsMessage buildPlainTextAttachmentDataWithTransaction:transaction];
+                    lastMessageHash =
                     [OWSSyncManager.keyValueStore getData:kSyncManagerLastContactSyncKey transaction:transaction];
-            }];
-
-            if (!messageData) {
-                OWSFailDebug(@"Failed to serialize contacts sync message.");
-                NSError *error
-                    = OWSErrorWithCodeDescription(OWSErrorCodeContactSyncFailed, @"Could not sync contacts.");
-                return resolve(error);
-            }
-
-            NSData *_Nullable messageHash = [self hashForMessageData:messageData];
-            if (skipIfRedundant && messageHash != nil && lastMessageHash != nil &&
-                [lastMessageHash isEqual:messageHash]) {
-                // Ignore redundant contacts sync message.
-                return resolve(@(1));
-            }
-
-            if (debounce) {
-                self.isRequestInFlight = YES;
-            }
-
-            // DURABLE CLEANUP - we could replace the custom durability logic in this class
-            // with a durable JobQueue.
-            DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:messageData];
-            [self.messageSender sendTemporaryAttachment:dataSource
-                contentType:OWSMimeTypeApplicationOctetStream
-                inMessage:syncContactsMessage
-                success:^{
-                    OWSLogInfo(@"Successfully sent contacts sync message.");
-
-                    if (messageHash != nil) {
-                        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                            [OWSSyncManager.keyValueStore setData:messageHash
-                                                              key:kSyncManagerLastContactSyncKey
-                                                      transaction:transaction];
-                        }];
-                    }
-
-                    dispatch_async(self.serialQueue, ^{
-                        if (debounce) {
-                            self.isRequestInFlight = NO;
-                        }
-
-                        resolve(@(1));
-                    });
-                }
-                failure:^(NSError *error) {
-                    OWSLogError(@"Failed to send contacts sync message with error: %@", error);
-
-                    dispatch_async(self.serialQueue, ^{
-                        if (debounce) {
-                            self.isRequestInFlight = NO;
-                        }
-
-                        resolve(error);
-                    });
                 }];
-        });
+                
+                if (!messageData) {
+                    OWSFailDebug(@"Failed to serialize contacts sync message.");
+                    NSError *error
+                    = OWSErrorWithCodeDescription(OWSErrorCodeContactSyncFailed, @"Could not sync contacts.");
+                    return resolve(error);
+                }
+                
+                NSData *_Nullable messageHash = [self hashForMessageData:messageData];
+                if (skipIfRedundant && messageHash != nil && lastMessageHash != nil &&
+                    [lastMessageHash isEqual:messageHash]) {
+                    // Ignore redundant contacts sync message.
+                    return resolve(@(1));
+                }
+                
+                if (debounce) {
+                    self.isRequestInFlight = YES;
+                }
+                
+                // DURABLE CLEANUP - we could replace the custom durability logic in this class
+                // with a durable JobQueue.
+                DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:messageData];
+                [self.messageSender sendTemporaryAttachment:dataSource
+                                                contentType:OWSMimeTypeApplicationOctetStream
+                                                  inMessage:syncContactsMessage
+                                                    success:^{
+                                                        OWSLogInfo(@"Successfully sent contacts sync message.");
+                                                        
+                                                        if (messageHash != nil) {
+                                                            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                                                [OWSSyncManager.keyValueStore setData:messageHash
+                                                                                                  key:kSyncManagerLastContactSyncKey
+                                                                                          transaction:transaction];
+                                                            }];
+                                                        }
+                                                        
+                                                        dispatch_async(self.serialQueue, ^{
+                                                            if (debounce) {
+                                                                self.isRequestInFlight = NO;
+                                                            }
+                                                            
+                                                            resolve(@(1));
+                                                        });
+                                                    }
+                                                    failure:^(NSError *error) {
+                                                        OWSLogError(@"Failed to send contacts sync message with error: %@", error);
+                                                        
+                                                        dispatch_async(self.serialQueue, ^{
+                                                            if (debounce) {
+                                                                self.isRequestInFlight = NO;
+                                                            }
+                                                            
+                                                            resolve(error);
+                                                        });
+                                                    }];
+            });
+        }];
     }];
     return promise;
 }

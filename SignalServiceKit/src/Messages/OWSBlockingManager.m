@@ -75,6 +75,10 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     }
 
     OWSSingletonAssert();
+    
+    [AppReadiness runNowOrWhenAppWillBecomeReady:^{
+        [self ensureLazyInitializationOnLaunch];
+    }];
 
     return self;
 }
@@ -97,6 +101,15 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     OWSAssertDebug(SSKEnvironment.shared.messageSender);
 
     return SSKEnvironment.shared.messageSender;
+}
+
+
+- (void)ensureLazyInitializationOnLaunch
+{
+    @synchronized(self)
+    {
+        [self ensureLazyInitialization];
+    }
 }
 
 #pragma mark -
@@ -383,6 +396,8 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 // This method should only be called from within a synchronized block.
 - (void)ensureLazyInitialization
 {
+    OWSLogVerbose(@"");
+    
     if (_blockedPhoneNumberSet) {
         OWSAssertDebug(_blockedGroupMap);
         OWSAssertDebug(_blockedUUIDSet);
