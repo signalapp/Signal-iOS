@@ -366,6 +366,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var stickerAttachment: TSAttachmentStream?
     var isFailedSticker: Bool = false
     var perMessageExpirationState: PerMessageExpirationState = .incomingExpired
+    var mutualGroupNames: [String]?
 
     init(interaction: TSInteraction) {
         self.interaction = interaction

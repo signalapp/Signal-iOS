@@ -688,6 +688,8 @@ typedef enum : NSUInteger {
             forCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]];
     [self.collectionView registerClass:[OWSMessageCell class]
             forCellWithReuseIdentifier:[OWSMessageCell cellReuseIdentifier]];
+    [self.collectionView registerClass:[OWSThreadDetailsCell class]
+            forCellWithReuseIdentifier:[OWSThreadDetailsCell cellReuseIdentifier]];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification

@@ -136,6 +136,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
 @property (nonatomic, nullable) TSThread *incomingMessageAuthorThread;
 @property (nonatomic, nullable) NSString *authorConversationColorName;
 @property (nonatomic, nullable) ConversationStyle *conversationStyle;
+@property (nonatomic, nullable) NSArray<NSString *> *mutualGroupNames;
 
 @end
 
@@ -175,6 +176,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
     _conversationStyle = conversationStyle;
 
     [self setAuthorConversationColorNameWithTransaction:transaction];
+    [self setMutualGroupNamesWithTransaction:transaction];
 
     [self ensureViewState:transaction];
 
@@ -215,6 +217,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
     self.linkPreviewAttachment = nil;
 
     [self setAuthorConversationColorNameWithTransaction:transaction];
+    [self setMutualGroupNamesWithTransaction:transaction];
 
     [self clearCachedLayoutState];
 
@@ -226,6 +229,18 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
     OWSAssertDebug(transaction);
 
     switch (self.interaction.interactionType) {
+        case OWSInteractionType_ThreadDetails: {
+            OWSThreadDetailsInteraction *threadDetails = (OWSThreadDetailsInteraction *)self.interaction;
+            if ([threadDetails.thread isKindOfClass:[TSContactThread class]]) {
+                TSContactThread *contactThread = (TSContactThread *)threadDetails.thread;
+                _authorConversationColorName =
+                    [TSContactThread conversationColorNameForContactAddress:contactThread.contactAddress
+                                                                transaction:transaction];
+            } else {
+                _authorConversationColorName = nil;
+            }
+            break;
+        }
         case OWSInteractionType_TypingIndicator: {
             OWSTypingIndicatorInteraction *typingIndicator = (OWSTypingIndicatorInteraction *)self.interaction;
             _authorConversationColorName =
@@ -243,6 +258,26 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
         default:
             _authorConversationColorName = nil;
             break;
+    }
+}
+
+- (void)setMutualGroupNamesWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    _mutualGroupNames = nil;
+
+    if (self.interaction.interactionType != OWSInteractionType_ThreadDetails) {
+        return;
+    }
+
+    OWSThreadDetailsInteraction *threadDetails = (OWSThreadDetailsInteraction *)self.interaction;
+    if ([threadDetails.thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)threadDetails.thread;
+        _mutualGroupNames = [[TSGroupThread groupThreadsWithAddress:contactThread.contactAddress
+                                                        transaction:transaction] map:^(TSGroupThread *thread) {
+            return thread.groupNameOrDefault;
+        }];
     }
 }
 
@@ -485,6 +520,9 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
             case OWSInteractionType_TypingIndicator:
                 measurementCell = [OWSTypingIndicatorCell new];
                 break;
+            case OWSInteractionType_ThreadDetails:
+                measurementCell = [OWSThreadDetailsCell new];
+                break;
         }
 
         OWSAssertDebug(measurementCell);
@@ -542,6 +580,9 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
 
         case OWSInteractionType_TypingIndicator:
             return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSTypingIndicatorCell cellReuseIdentifier]
+                                                             forIndexPath:indexPath];
+        case OWSInteractionType_ThreadDetails:
+            return [collectionView dequeueReusableCellWithReuseIdentifier:[OWSThreadDetailsCell cellReuseIdentifier]
                                                              forIndexPath:indexPath];
     }
 }
@@ -691,7 +732,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
 
     switch (self.interaction.interactionType) {
         case OWSInteractionType_Unknown:
-        case OWSInteractionType_Offer:
+        case OWSInteractionType_ThreadDetails:
         case OWSInteractionType_TypingIndicator:
             return;
         case OWSInteractionType_Error:

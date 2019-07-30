@@ -95,7 +95,7 @@ class MessageRequestView: UIStackView {
 
             // Get the range of the formatter marker to calculate the start of the bold area
             boldRange = (formatString as NSString).range(of: "%@")
-            let groupName = thread.groupModel.groupName ?? TSGroupThread.defaultGroupName()
+            let groupName = thread.groupNameOrDefault
 
             // Update the length of the range to reflect the length of the string that will be inserted
             boldRange.length = groupName.count

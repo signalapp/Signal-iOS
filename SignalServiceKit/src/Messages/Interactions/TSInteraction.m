@@ -25,8 +25,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
             return @"OWSInteractionType_Call";
         case OWSInteractionType_Info:
             return @"OWSInteractionType_Info";
-        case OWSInteractionType_Offer:
-            return @"OWSInteractionType_Offer";
+        case OWSInteractionType_ThreadDetails:
+            return @"OWSInteractionType_ThreadDetails";
         case OWSInteractionType_TypingIndicator:
             return @"OWSInteractionType_TypingIndicator";
     }

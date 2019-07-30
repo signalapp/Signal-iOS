@@ -51,6 +51,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
 @class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
+@class TSGroupThread;
 @class TSInteraction;
 @class TSThread;
 
@@ -151,8 +152,11 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
 
-// NOTE: This property is only set for incoming messages.
+// NOTE: This property is only set for incoming messages, typing indicators, and thread details.
 @property (nonatomic, readonly, nullable) NSString *authorConversationColorName;
+
+// NOTE: This property is only set for conversation thread details
+@property (nonatomic, readonly, nullable) NSArray<NSString *> *mutualGroupNames;
 
 #pragma mark - MessageActions
 
