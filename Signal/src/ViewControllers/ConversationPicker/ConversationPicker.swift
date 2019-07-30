@@ -685,17 +685,10 @@ private class ConversationPickerFooterView: UIView {
     }()
 
     lazy var proceedButton: UIButton = {
-        let button = OWSButton { [weak self] in
+        let button = OWSButton.sendButton(imageName: "send-solid-24") { [weak self] in
             guard let self = self else { return }
             self.delegate?.conversationPickerFooterDelegateDidRequestProceed(self)
         }
-        let buttonWidth: CGFloat = 40
-        button.layer.cornerRadius = buttonWidth / 2
-        button.autoSetDimensions(to: CGSize(width: buttonWidth, height: buttonWidth))
-
-        button.setImage(imageName: "send-solid-24")
-        button.backgroundColor = .ows_signalBlue
-        button.tintColor = .white
 
         return button
     }()

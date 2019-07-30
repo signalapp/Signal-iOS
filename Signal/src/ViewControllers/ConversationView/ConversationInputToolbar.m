@@ -30,6 +30,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, VoiceMemoRecordingState){
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 
 const CGFloat kMinTextViewHeight = 36;
+const CGFloat kMinToolbarItemHeight = 40;
 const CGFloat kMaxTextViewHeight = 98;
 
 #pragma mark -
@@ -203,7 +204,7 @@ const CGFloat kMaxTextViewHeight = 98;
                           action:@selector(cameraButtonPressed)
                 forControlEvents:UIControlEventTouchUpInside];
     [self.cameraButton setTemplateImageName:@"camera-filled-24" tintColor:Theme.navbarIconColor];
-    [self.cameraButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
+    [self.cameraButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _cameraButton);
 
     _attachmentButton = [[UIButton alloc] init];
@@ -215,22 +216,20 @@ const CGFloat kMaxTextViewHeight = 98;
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
     [self.attachmentButton setTemplateImageName:@"ic_circled_plus" tintColor:Theme.navbarIconColor];
-    [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
+    [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
-    _sendButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.sendButton setTitle:MessageStrings.sendButton forState:UIControlStateNormal];
-    [self.sendButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
-    self.sendButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    self.sendButton.titleLabel.font = [UIFont ows_mediumFontWithSize:17.f];
-    self.sendButton.contentEdgeInsets = UIEdgeInsetsMake(0, 4, 0, 4);
-    [self.sendButton autoSetDimension:ALDimensionHeight toSize:kMinTextViewHeight];
-    [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    __weak __typeof(self) weakSelf = self;
+    _sendButton = [OWSButton sendButtonWithImageName:@"send-solid-24"
+                                               block:^{
+                                                   [weakSelf sendButtonPressed];
+                                               }];
+    self.sendButton.accessibilityLabel = MessageStrings.sendButton;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
 
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.voiceMemoButton setTemplateImageName:@"voice-memo-button" tintColor:Theme.navbarIconColor];
-    [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
+    [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
     _stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -238,7 +237,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.stickerButton addTarget:self
                            action:@selector(stickerButtonPressed)
                  forControlEvents:UIControlEventTouchUpInside];
-    [self.stickerButton autoSetDimensionsToSize:CGSizeMake(40, kMinTextViewHeight)];
+    [self.stickerButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _stickerButton);
 
     // We want to be permissive about the voice message gesture, so we hang
@@ -279,13 +278,18 @@ const CGFloat kMaxTextViewHeight = 98;
 
     // V Stack Wrapper
     const CGFloat vStackRounding = 18.f;
-    UIView *vStackWrapper = [UIView containerView];
-    vStackWrapper.layer.cornerRadius = vStackRounding;
-    vStackWrapper.clipsToBounds = YES;
-    [vStackWrapper addSubview:vStack];
-    [vStack ows_autoPinToSuperviewEdges];
-    [vStackWrapper setContentHuggingHorizontalLow];
-    [vStackWrapper setCompressionResistanceHorizontalLow];
+    UIView *vStackRoundingView = [UIView containerView];
+    vStackRoundingView.layer.cornerRadius = vStackRounding;
+    vStackRoundingView.clipsToBounds = YES;
+    [vStackRoundingView addSubview:vStack];
+    [vStack autoPinEdgesToSuperviewEdges];
+    [vStackRoundingView setContentHuggingHorizontalLow];
+    [vStackRoundingView setCompressionResistanceHorizontalLow];
+
+    UIView *vStackRoundingOffsetView = [UIView containerView];
+    [vStackRoundingOffsetView addSubview:vStackRoundingView];
+    CGFloat textViewCenterInset = (kMinToolbarItemHeight - kMinTextViewHeight) / 2;
+    [vStackRoundingView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 0, textViewCenterInset, 0)];
 
     // Media Stack
     UIStackView *mediaAndSendStack = [[UIStackView alloc] initWithArrangedSubviews:@[
@@ -302,7 +306,7 @@ const CGFloat kMaxTextViewHeight = 98;
     // H Stack
     UIStackView *hStack = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.attachmentButton,
-        vStackWrapper,
+        vStackRoundingOffsetView,
         mediaAndSendStack,
     ]];
     hStack.axis = UILayoutConstraintAxisHorizontal;
@@ -336,14 +340,14 @@ const CGFloat kMaxTextViewHeight = 98;
     if (@available(iOS 11, *)) {
         self.suggestedStickerView.insetsLayoutMarginsFromSafeArea = NO;
         vStack.insetsLayoutMarginsFromSafeArea = NO;
-        vStackWrapper.insetsLayoutMarginsFromSafeArea = NO;
+        vStackRoundingOffsetView.insetsLayoutMarginsFromSafeArea = NO;
         hStack.insetsLayoutMarginsFromSafeArea = NO;
         self.outerStack.insetsLayoutMarginsFromSafeArea = NO;
         self.insetsLayoutMarginsFromSafeArea = NO;
     }
     self.suggestedStickerView.preservesSuperviewLayoutMargins = NO;
     vStack.preservesSuperviewLayoutMargins = NO;
-    vStackWrapper.preservesSuperviewLayoutMargins = NO;
+    vStackRoundingOffsetView.preservesSuperviewLayoutMargins = NO;
     hStack.preservesSuperviewLayoutMargins = NO;
     self.outerStack.preservesSuperviewLayoutMargins = NO;
     self.preservesSuperviewLayoutMargins = NO;
@@ -351,7 +355,7 @@ const CGFloat kMaxTextViewHeight = 98;
     // Input buttons
     [self addSubview:self.stickerButton];
     [self.stickerButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
-    [self.stickerButton autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackWrapper withOffset:-4];
+    [self.stickerButton autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackRoundingView withOffset:-4];
 
     // Border
     //
@@ -366,7 +370,7 @@ const CGFloat kMaxTextViewHeight = 98;
     borderView.layer.borderWidth = CGHairlineWidthFraction(1.4);
     borderView.layer.cornerRadius = vStackRounding;
     [self addSubview:borderView];
-    [borderView autoPinToEdgesOfView:vStackWrapper];
+    [borderView autoPinToEdgesOfView:vStackRoundingView];
     [borderView setCompressionResistanceLow];
     [borderView setContentHuggingLow];
 

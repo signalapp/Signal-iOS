@@ -39,10 +39,10 @@ class AttachmentApprovalInputAccessoryView: UIView {
 
     let kGalleryRailViewHeight: CGFloat = 72
 
-    required init(options: AttachmentApprovalViewControllerOptions) {
+    required init(options: AttachmentApprovalViewControllerOptions, sendButtonImageName: String) {
         self.options = options
 
-        attachmentTextToolbar = AttachmentTextToolbar(options: options)
+        attachmentTextToolbar = AttachmentTextToolbar(options: options, sendButtonImageName: sendButtonImageName)
         attachmentCaptionToolbar = AttachmentCaptionToolbar()
 
         galleryRailView = GalleryRailView()

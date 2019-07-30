@@ -47,7 +47,9 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
         self.approvalMessageText = newMessageText
     }
 
-    // TODO override "Send" button content to be "Next"
+    var sendMediaNavApprovalButtonImageName: String {
+        return "arrow-right-24"
+    }
 }
 
 extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {

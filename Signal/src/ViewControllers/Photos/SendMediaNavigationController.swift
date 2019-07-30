@@ -13,6 +13,7 @@ protocol SendMediaNavDelegate: AnyObject {
 
     func sendMediaNavInitialMessageText(_ sendMediaNavigationController: SendMediaNavigationController) -> String?
     func sendMediaNav(_ sendMediaNavigationController: SendMediaNavigationController, didChangeMessageText newMessageText: String?)
+    var sendMediaNavApprovalButtonImageName: String { get }
 }
 
 @objc
@@ -291,6 +292,7 @@ class SendMediaNavigationController: OWSNavigationController {
         }
 
         let approvalViewController = AttachmentApprovalViewController(options: [.canAddMore],
+                                                                      sendButtonImageName: sendMediaNavDelegate.sendMediaNavApprovalButtonImageName,
                                                                       attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)

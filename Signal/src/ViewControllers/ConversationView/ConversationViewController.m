@@ -2963,6 +2963,13 @@ typedef enum : NSUInteger {
     [self.inputToolbar setMessageText:messageText animated:NO];
 }
 
+- (NSString *)sendMediaNavApprovalButtonImageName
+{
+    return @"send-solid-24";
+}
+
+#pragma mark -
+
 - (void)sendContactShare:(ContactShareViewModel *)contactShare
 {
     OWSAssertIsOnMainThread();
