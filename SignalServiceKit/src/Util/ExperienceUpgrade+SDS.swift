@@ -129,14 +129,9 @@ public extension ExperienceUpgrade {
     @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
     func anyUpsert(transaction: SDSAnyWriteTransaction) {
         let isInserting: Bool
-        if let uniqueId = uniqueId {
-            if ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
-                isInserting = false
-            } else {
-                isInserting = true
-            }
+        if ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
+            isInserting = false
         } else {
-            owsFailDebug("Missing uniqueId: \(type(of: self))")
             isInserting = true
         }
         sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
@@ -167,10 +162,6 @@ public extension ExperienceUpgrade {
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
     func anyUpdate(transaction: SDSAnyWriteTransaction, block: (ExperienceUpgrade) -> Void) {
-        guard let uniqueId = uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            return
-        }
 
         block(self)
 
@@ -217,11 +208,6 @@ public extension ExperienceUpgrade {
     }
 
     func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
-        guard let uniqueId = self.uniqueId else {
-            owsFailDebug("uniqueId was unexpectedly nil")
-            return
-        }
-
         guard let latestVersion = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             if !ignoreMissing {
                 owsFailDebug("`latest` was unexpectedly nil")
@@ -460,10 +446,7 @@ class ExperienceUpgradeSerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .experienceUpgrade
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 
         return ExperienceUpgradeRecord(id: id, recordType: recordType, uniqueId: uniqueId)
     }

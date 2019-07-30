@@ -144,14 +144,9 @@ public extension OWSContactQuery {
     @available(*, deprecated, message: "Use anyInsert() or anyUpdate() instead.")
     func anyUpsert(transaction: SDSAnyWriteTransaction) {
         let isInserting: Bool
-        if let uniqueId = uniqueId {
-            if OWSContactQuery.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
-                isInserting = false
-            } else {
-                isInserting = true
-            }
+        if OWSContactQuery.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil {
+            isInserting = false
         } else {
-            owsFailDebug("Missing uniqueId: \(type(of: self))")
             isInserting = true
         }
         sdsSave(saveMode: isInserting ? .insert : .update, transaction: transaction)
@@ -182,10 +177,6 @@ public extension OWSContactQuery {
     // This isn't a perfect arrangement, but in practice this will prevent
     // data loss and will resolve all known issues.
     func anyUpdate(transaction: SDSAnyWriteTransaction, block: (OWSContactQuery) -> Void) {
-        guard let uniqueId = uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            return
-        }
 
         block(self)
 
@@ -205,26 +196,7 @@ public extension OWSContactQuery {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        guard shouldBeSaved else {
-            // Skipping remove.
-            return
-        }
-
-        anyWillRemove(with: transaction)
-
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydb_remove(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsRemove(transaction: grdbTransaction)
-            } catch {
-                owsFail("Remove failed: \(error)")
-            }
-        }
-
-        anyDidRemove(with: transaction)
+        sdsRemove(transaction: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
@@ -232,11 +204,6 @@ public extension OWSContactQuery {
     }
 
     func anyReload(transaction: SDSAnyReadTransaction, ignoreMissing: Bool) {
-        guard let uniqueId = self.uniqueId else {
-            owsFailDebug("uniqueId was unexpectedly nil")
-            return
-        }
-
         guard let latestVersion = type(of: self).anyFetch(uniqueId: uniqueId, transaction: transaction) else {
             if !ignoreMissing {
                 owsFailDebug("`latest` was unexpectedly nil")
@@ -340,7 +307,7 @@ public extension OWSContactQuery {
                         break
                     }
                 }
-            } catch let error as NSError {
+            } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
         }
@@ -405,11 +372,19 @@ public extension OWSContactQuery {
                 owsFailDebug("deleteAll() failed: \(error)")
             }
         }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
     }
 
     class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
         anyEnumerate(transaction: transaction) { (instance, _) in
             instance.anyRemove(transaction: transaction)
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
         }
     }
 }
@@ -475,10 +450,7 @@ class OWSContactQuerySerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .contactQuery
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 
         // Base class properties
         let lastQueried: Date = model.lastQueried
