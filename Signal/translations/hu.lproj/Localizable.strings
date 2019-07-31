@@ -75,7 +75,7 @@
 "APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "A %@ verzió elérhető az App Store-ban.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "A New Version of Signal Is Available";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Új Signal verzió elérhető";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Frissítés";
@@ -156,7 +156,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Dokumentum kiválasztása sikertelen.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Készíts egy tömörített fájlt és azt próbáld meg elküldeni";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nem támogatott fájltípus";
@@ -261,13 +261,13 @@
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Letiltás";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ has been blocked.";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ letiltva.";
 
 /* The title of the 'user blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Felhasználó letiltva";
 
 /* The title of the 'group blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Group Blocked";
+"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Csoport letiltva";
 
 /* The message of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Nem tilthatod le saját magad.";
@@ -303,7 +303,7 @@
 "BUTTON_SELECT" = "Kiválasztás";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Call Again";
+"CALL_AGAIN_BUTTON_TITLE" = "Újrahívás";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
@@ -312,16 +312,16 @@
 "CALL_AUDIO_PERMISSION_TITLE" = "Mikrofon hozzáférés szükséges";
 
 /* notification body */
-"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Incoming Call";
+"CALL_INCOMING_NOTIFICATION_BODY" = "Bejövő hívás";
 
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Hívás";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Missed call because the caller's safety number changed.";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "Nem fogadott hívás. A hívó biztonsági azonosítója megváltozott.";
 
 /* notification body */
-"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Missed Call";
+"CALL_MISSED_NOTIFICATION_BODY" = "Nem fogadott hívás.";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "No Answer";
@@ -372,10 +372,10 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Switch to audio call";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Váltás hanghívásra";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Switch to video call";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Váltás videóhívásra";
 
 /* Label for the 'return to call' banner. */
 "CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
@@ -387,7 +387,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal felhasználó";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Take a picture and then send it";
+"CAMERA_BUTTON_HINT" = "Készíts egy képet és küldd el";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Kamera";
@@ -414,10 +414,10 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Visszaállítás";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Nem sikerült kapcsolódni az iCloud-hoz. Menj a Beállításokba és lépj be az iCloud-ba, biztonsági mentés készítéséhez";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Az iCloud nincs beállítva. Menj a Beállításokba és lépj be az iCloud-ba, biztonsági mentés készítéséhez.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
 "CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
@@ -426,10 +426,10 @@
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Csak te láthatod a választott színt.";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Conversation Color";
+"COLOR_PICKER_SHEET_TITLE" = "Beszélgetés színe";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Összehasonlítás vágólappal";
@@ -444,7 +444,7 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Meghívás";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Engedélyezd a kontaktokhoz való hozzáférést, hogy lásd kik Signal felhasználók közülük";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
@@ -471,13 +471,13 @@
 "CONFIRMATION_TITLE" = "Megerősítés";
 
 /* Label for a contact's postal address. */
-"CONTACT_ADDRESS" = "Address";
+"CONTACT_ADDRESS" = "Cím";
 
 /* An indicator that a contact has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Letiltva";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Not Verified";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Nem ellenőrzött";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Nem regisztrált szám";
@@ -489,34 +489,34 @@
 "CONTACT_EMAIL" = "Email";
 
 /* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "City";
+"CONTACT_FIELD_ADDRESS_CITY" = "Város";
 
 /* Label for the 'country' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_COUNTRY" = "Country";
+"CONTACT_FIELD_ADDRESS_COUNTRY" = "Ország";
 
 /* Label for the 'neighborhood' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Neighborhood";
 
 /* Label for the 'pobox' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
+"CONTACT_FIELD_ADDRESS_POBOX" = "Postafiók";
 
 /* Label for the 'postcode' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_POSTCODE" = "Postal Code";
+"CONTACT_FIELD_ADDRESS_POSTCODE" = "Irányítószám";
 
 /* Label for the 'region' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_REGION" = "Region";
 
 /* Label for the 'street' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_STREET" = "Street";
+"CONTACT_FIELD_ADDRESS_STREET" = "Utca";
 
 /* Label for the 'family name' field of a contact. */
-"CONTACT_FIELD_FAMILY_NAME" = "Family Name";
+"CONTACT_FIELD_FAMILY_NAME" = "Vezetéknév";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Given Name";
+"CONTACT_FIELD_GIVEN_NAME" = "Keresztnév";
 
 /* Label for the 'middle name' field of a contact. */
-"CONTACT_FIELD_MIDDLE_NAME" = "Middle Name";
+"CONTACT_FIELD_MIDDLE_NAME" = "Második keresztnév";
 
 /* Label for the 'name prefix' field of a contact. */
 "CONTACT_FIELD_NAME_PREFIX" = "Előtag";
@@ -525,10 +525,10 @@
 "CONTACT_FIELD_NAME_SUFFIX" = "Utótag";
 
 /* Label for the 'organization' field of a contact. */
-"CONTACT_FIELD_ORGANIZATION" = "Organization";
+"CONTACT_FIELD_ORGANIZATION" = "Szervezet";
 
 /* Label for a contact's phone number. */
-"CONTACT_PHONE" = "Phone";
+"CONTACT_PHONE" = "Telefonszám";
 
 /* table cell subtitle when contact card has no email */
 "CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Nincs elérhető email.";
@@ -543,34 +543,34 @@
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Kontakt megosztás";
 
 /* Title for the 'edit contact share name' view. */
-"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Edit Name";
+"CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Név szerkesztése";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Invalid contact.";
+"CONTACT_SHARE_INVALID_CONTACT" = "Helytelen kontakt";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nincs kontakt kiválasztva.";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Open in Maps";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Megnyitás a Térképek alkalmazásban";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send Email";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "E-mail küldése";
 
 /* Indicates that a contact has no name. */
-"CONTACT_WITHOUT_NAME" = "Unnamed Contact";
+"CONTACT_WITHOUT_NAME" = "Névtelen kontakt";
 
 /* Message for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This cannot be undone.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Beszélgetés törlése?";
 
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+"CONVERSATION_SEARCH_NO_RESULTS" = "Nincs egyezés";
 
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 találat";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
@@ -582,7 +582,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Hozzáadás létező kontakthoz";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Block This Group";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Csoport letiltása";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Felhasználó letiltása";
@@ -591,7 +591,7 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontakt részletek";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Conversation Color";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Beszélgetés színe";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Csoport részletek";
@@ -603,7 +603,7 @@
 "CONVERSATION_SETTINGS_MUTE_LABEL" = "Elnémítás";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nincs némítva";
 
 /* Label for button to mute a thread for a day. */
 "CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Elnémítás egy napra";
@@ -627,7 +627,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Új kontakt";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
+"CONVERSATION_SETTINGS_SEARCH" = "Beszélgetés keresése";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap to Change";
@@ -636,7 +636,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Feloldás";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "This group can see your profile.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Ez a csoport láthatja a profilod.";
 
 /* Indicates that user's profile has been shared with a user. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Ez a felhasználó hozzáfér a profilodhoz.";
@@ -654,16 +654,16 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Hozzáadás a kontaktokhoz";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Profil megosztása ezzel a felhasználóval";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Ez a felhasználó nem szerepel a kontaktjaid között.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Loading More Messages…";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "További üzenetek betöltése...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Koppints a részletekért";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Felhasználó letiltása";
@@ -687,10 +687,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "%@ órája";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "%@ perce";
 
 /* The present; the current time. */
 "DATE_NOW" = "Most";

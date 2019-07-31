@@ -1563,7 +1563,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Некорректный номер";
 
 /* Explanation in the 'onboarding profile' view. */
-"ONBOARDING_PROFILE_EXPLANATION" = "Профили Signal всегда защищены сквозным шифрованием, и сервис Signal никогда не имеет доступ к этой информации.";
+"ONBOARDING_PROFILE_EXPLANATION" = "Профили Signal защищены сквозным шифрованием, и сервис Signal никогда не имеет доступа к этой информации.";
 
 /* Placeholder text for the profile name in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Ваше имя";

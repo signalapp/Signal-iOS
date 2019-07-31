@@ -1147,7 +1147,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "安全番号の変更があったので受信できませんでした。";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ はSignal上にいます";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "不正な音声ファイル";
@@ -1980,7 +1980,7 @@
 "SCAN_QR_CODE_VIEW_TITLE" = "QRコードを読み取る";
 
 /* Indicates a delay of zero seconds, and that 'screen lock activity' will timeout immediately. */
-"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "即座";
+"SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "即時";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
 "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "認証情報にアクセスできませんでした。";
@@ -2331,19 +2331,19 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "詳細を知る";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "送信者の秘匿化";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "送信者の封印";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "アイコンを表示する";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "送信者の秘匿化を用いて届けられたメッセージで「メッセージの詳細」を選択した際に、ステータスアイコンを表示します。";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "送信者が封印されたメッセージで「詳細」を選んだときにステータスアイコンを表示します。";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "全員を許可する";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "あなたのプロファイルを共有しておらず、連絡先にもないユーザからのメッセージ受信において、送信者の秘匿化を有効にします。";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "送信者が連絡先になく、あなたがプロファイルを共有してない人であっても、送信者の封印を有効にします。";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "バージョン";
