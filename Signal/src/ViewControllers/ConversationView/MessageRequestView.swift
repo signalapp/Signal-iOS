@@ -35,10 +35,7 @@ class MessageRequestView: UIStackView {
 
         var hasSentMessages = false
         databaseStorage.uiRead { transaction in
-            guard let threadUniqueId = thread.uniqueId else {
-                return owsFailDebug("unexpectedly missing thread id")
-            }
-            hasSentMessages = InteractionFinder(threadUniqueId: threadUniqueId).existsOutgoingMessage(transaction: transaction)
+            hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
         }
 
         // We want the background to extend to the bottom of the screen
