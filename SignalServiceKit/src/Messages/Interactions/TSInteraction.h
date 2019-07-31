@@ -16,8 +16,8 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_Error,
     OWSInteractionType_Call,
     OWSInteractionType_Info,
-    OWSInteractionType_Offer,
     OWSInteractionType_TypingIndicator,
+    OWSInteractionType_ThreadDetails
 };
 
 NSString *NSStringFromOWSInteractionType(OWSInteractionType value);

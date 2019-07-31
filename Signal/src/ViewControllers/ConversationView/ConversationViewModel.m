@@ -1127,6 +1127,28 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     self.conversationProfileState = conversationProfileState;
 }
 
+- (nullable TSInteraction *)firstCallOrMessageForLoadedInteractions:(NSArray<TSInteraction *> *)loadedInteractions
+{
+    for (TSInteraction *interaction in loadedInteractions) {
+        switch (interaction.interactionType) {
+            case OWSInteractionType_Unknown:
+                OWSFailDebug(@"Unknown interaction type.");
+                return nil;
+            case OWSInteractionType_IncomingMessage:
+            case OWSInteractionType_OutgoingMessage:
+                return interaction;
+            case OWSInteractionType_Error:
+            case OWSInteractionType_Info:
+                break;
+            case OWSInteractionType_Call:
+            case OWSInteractionType_ThreadDetails:
+            case OWSInteractionType_TypingIndicator:
+                break;
+        }
+    }
+    return nil;
+}
+
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
 //
@@ -1179,6 +1201,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
           };
 
     NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
+    BOOL canLoadMoreItems = self.messageMapping.canLoadMore;
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 
     for (NSString *uniqueId in loadedUniqueIds) {
@@ -1202,6 +1225,25 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             continue;
         }
         [interactionIds addObject:interaction.uniqueId];
+    }
+
+    // If we're at the start of the conversation, show the thread details item
+    if (!canLoadMoreItems) {
+        TSInteraction *_Nullable firstCallOrMessage = [self firstCallOrMessageForLoadedInteractions:interactions];
+        uint64_t threadDetailsTimestamp;
+        if (firstCallOrMessage) {
+            threadDetailsTimestamp = firstCallOrMessage.timestamp - 1;
+        } else {
+            threadDetailsTimestamp = 1;
+        }
+
+        OWSThreadDetailsInteraction *threadDetailsInteraction =
+            [[OWSThreadDetailsInteraction alloc] initWithThread:self.thread timestamp:threadDetailsTimestamp];
+        id<ConversationViewItem> _Nullable threadDetailsItem = tryToAddViewItem(threadDetailsInteraction);
+        if (!threadDetailsItem) {
+            OWSFailDebug(@"thread details should never be filtered out");
+            // Do nothing.
+        }
     }
 
     for (TSInteraction *interaction in interactions) {
@@ -1252,7 +1294,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         BOOL canShowDate = NO;
         switch (viewItem.interaction.interactionType) {
             case OWSInteractionType_Unknown:
-            case OWSInteractionType_Offer:
             case OWSInteractionType_TypingIndicator:
                 canShowDate = NO;
                 break;
@@ -1270,7 +1311,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
         BOOL shouldShowDate = NO;
         if (previousViewItemTimestamp == 0) {
-            shouldShowDateOnNextViewItem = YES;
+            // Only show for the first item if the date is not today
+            shouldShowDateOnNextViewItem
+                = ![DateUtil dateIsToday:[NSDate ows_dateWithMillisecondsSince1970:viewItemTimestamp]];
         } else if (![DateUtil isSameDayWithTimestamp:previousViewItemTimestamp timestamp:viewItemTimestamp]) {
             shouldShowDateOnNextViewItem = YES;
         }

@@ -238,6 +238,15 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return self.groupModel.groupName ?: self.class.defaultGroupName;
 }
 
+- (NSString *)groupNameOrDefault
+{
+    if (self.groupModel.groupName.length == 0) {
+        return self.class.defaultGroupName;
+    }
+
+    return self.groupModel.groupName;
+}
+
 + (NSString *)defaultGroupName
 {
     return NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
