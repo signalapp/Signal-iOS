@@ -42,6 +42,7 @@ public class ThreadDetailsCell: ConversationViewCell {
         titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_bold()
         titleLabel.textColor = Theme.primaryColor
         titleLabel.numberOfLines = 0
+        titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
         titleLabel.setContentHuggingHigh()
         titleLabel.setCompressionResistanceHigh()
@@ -49,6 +50,7 @@ public class ThreadDetailsCell: ConversationViewCell {
         detailsLabel.font = .ows_dynamicTypeSubheadline
         detailsLabel.textColor = Theme.secondaryColor
         detailsLabel.numberOfLines = 0
+        detailsLabel.lineBreakMode = .byWordWrapping
         detailsLabel.textAlignment = .center
         detailsLabel.setContentHuggingHigh()
         detailsLabel.setCompressionResistanceHigh()
@@ -60,6 +62,7 @@ public class ThreadDetailsCell: ConversationViewCell {
         mutualGroupsLabel.font = .ows_dynamicTypeSubheadline
         mutualGroupsLabel.textColor = Theme.secondaryColor
         mutualGroupsLabel.numberOfLines = 0
+        mutualGroupsLabel.lineBreakMode = .byWordWrapping
         mutualGroupsLabel.textAlignment = .center
         mutualGroupsLabel.setContentHuggingHigh()
         mutualGroupsLabel.setCompressionResistanceHigh()

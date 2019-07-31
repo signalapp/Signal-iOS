@@ -747,12 +747,13 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     func existsOutgoingMessage(transaction: GRDBReadTransaction) -> Bool {
         let sql = """
-            SELECT *
+            SELECT 1
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .recordType) = ?
             LIMIT 1
         """
+
         let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction) != nil
     }

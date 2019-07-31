@@ -135,6 +135,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                 threadUniqueId:(NSString *)threadUniqueId
                                                    transaction:(YapDatabaseReadTransaction *)transaction;
 
+#pragma mark - Message Request
+
++ (BOOL)hasPendingMessageRequest:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
++ (BOOL)existsOutgoingMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

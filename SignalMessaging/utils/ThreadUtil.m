@@ -83,6 +83,16 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return SSKEnvironment.shared.databaseStorage;
 }
 
++ (OWSProfileManager *)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
+}
+
++ (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
 #pragma mark - Durable Message Enqueue
 
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText
@@ -805,6 +815,50 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         OWSLogError(@"more than one matching interaction in thread.");
     }
     return interactions.firstObject;
+}
+
+#pragma mark - Message Request
+
++ (BOOL)hasPendingMessageRequest:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+{
+    // If we're creating the thread, don't show the message request view
+    if (!thread.shouldThreadBeVisible) {
+        return NO;
+    }
+
+    // If the thread is already whitelisted, do nothing. The user has already
+    // accepted the request for this thread.
+    if ([self.profileManager isThreadInProfileWhitelist:thread]) {
+        return NO;
+    }
+
+    BOOL hasSentMessages = [self existsOutgoingMessage:thread transaction:transaction];
+
+    if (hasSentMessages && !SSKFeatureFlags.phoneNumberPrivacy) {
+        return NO;
+    }
+
+    BOOL isThreadSystemContact = NO;
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        isThreadSystemContact = [self.contactsManager hasSignalAccountForAddress:contactThread.contactAddress];
+    }
+
+    // If this thread is a conversation with a system contact, add them to the profile
+    // whitelist immediately and do not show the request dialog. People in your system
+    // contacts get to bypass the message request flow.
+    if (isThreadSystemContact) {
+        [self.profileManager addThreadToProfileWhitelist:thread];
+        return NO;
+    }
+
+    return YES;
+}
+
++ (BOOL)existsOutgoingMessage:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+{
+    InteractionFinder *finder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    return [finder existsOutgoingMessageWithTransaction:transaction];
 }
 
 @end

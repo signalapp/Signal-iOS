@@ -35,8 +35,12 @@ class MessageRequestView: UIStackView {
 
         var hasSentMessages = false
         databaseStorage.uiRead { transaction in
-            hasSentMessages = InteractionFinder(threadUniqueId: thread.uniqueId).existsOutgoingMessage(transaction: transaction)
+            hasSentMessages = ThreadUtil.existsOutgoingMessage(thread, transaction: transaction)
         }
+
+        // If phone number privacy feature is not enabled, we expect this
+        //  flow to never be hit when hasSentMEssages would be false.
+        assert(!hasSentMessages || FeatureFlags.phoneNumberPrivacy)
 
         // We want the background to extend to the bottom of the screen
         // behind the safe area, so we add that inset to our bottom inset
