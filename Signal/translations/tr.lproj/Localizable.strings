@@ -949,7 +949,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Güvenlik numarası değişti.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Signal sürümünüzün süresi doldu. Lütfen mesaj gönderebilmek için güncelleyin.";
+"ERROR_SENDING_EXPIRED" = "Signal sürümünüz kullanım dışı kaldı. Lütfen mesaj gönderebilmek için güncelleyin.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Kayıtlı Olmayan Kullanıcı: %@";
@@ -961,7 +961,7 @@
 "EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Hadi Başlayalım";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Signal sürümünüzün süresi doldu! Mesajlar artık gönderilemeyecek. En son sürüme güncellemek için dokunun.";
+"EXPIRATION_ERROR" = "Signal sürümünüz kullanım dışı kaldı! Mesajlar artık gönderilemeyecek. En son sürüme güncellemek için dokunun.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Signal sürümünüz %d gün içinde kullanım dışı kalacak. En yeni sürüme güncellemek için dokunun.";
@@ -1147,7 +1147,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Güvenlik numaraları değiştiğinden arama karşılanmadı.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal'e katıldı!";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Geçersiz ses dosyası.";
@@ -2244,7 +2244,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kişi Signal'e Katıldı";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Etkinlikler";
+"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Olaylar";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Bildirimler";

@@ -116,19 +116,12 @@ class PerMessageExpirationViewController: OWSViewController {
         contentView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         contentView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
 
-        let mediaAspectRatio: CGFloat
-        let mediaView: UIView
-        if let mediaTuple = buildMediaView() {
-            mediaAspectRatio = mediaTuple.aspectRatio
-            mediaView = mediaTuple.mediaView
-        } else {
-            mediaAspectRatio = 1
-            mediaView = UIView()
-            mediaView.backgroundColor = Theme.darkThemeOffBackgroundColor
-        }
+        let defaultMediaView = UIView()
+        defaultMediaView.backgroundColor = Theme.darkThemeOffBackgroundColor
+        let mediaView = buildMediaView() ?? defaultMediaView
 
         contentView.addSubview(mediaView)
-        _ = contentView.applyScaleAspectFitLayout(subview: mediaView, aspectRatio: mediaAspectRatio)
+        mediaView.autoPinEdgesToSuperviewEdges()
 
         let hMargin: CGFloat = 16
         let vMargin: CGFloat = 20
@@ -146,15 +139,18 @@ class PerMessageExpirationViewController: OWSViewController {
         view.addSubview(dismissButton)
         dismissButton.autoPinEdge(.leading, to: .leading, of: mediaView)
         dismissButton.autoPinEdge(.top, to: .top, of: mediaView)
-        dismissButton.setShadow(opacity: 0.33)
+        dismissButton.setShadow(opacity: 0.66)
 
         view.addGestureRecognizer(UITapGestureRecognizer(target: self,
                                                          action: #selector(rootViewWasTapped)))
+        let verticalSwipe = UISwipeGestureRecognizer(target: self, action: #selector(rootViewWasSwiped))
+        verticalSwipe.direction = [.up, .down]
+        view.addGestureRecognizer(verticalSwipe)
 
         setupDatabaseObservation()
     }
 
-    private func buildMediaView() -> (mediaView: UIView, aspectRatio: CGFloat)? {
+    private func buildMediaView() -> UIView? {
         guard attachmentStream.isValidVisualMedia else {
             return nil
         }
@@ -173,8 +169,6 @@ class PerMessageExpirationViewController: OWSViewController {
                     owsFailDebug("Attachment has invalid size.")
                     return nil
             }
-            let aspectRatio = image.size.width / image.size.height
-
             let animatedImageView = YYAnimatedImageView()
             // We need to specify a contentMode since the size of the image
             // might not match the aspect ratio of the view.
@@ -183,8 +177,9 @@ class PerMessageExpirationViewController: OWSViewController {
             // some performance cost.
             animatedImageView.layer.minificationFilter = .trilinear
             animatedImageView.layer.magnificationFilter = .trilinear
+            animatedImageView.layer.allowsEdgeAntialiasing = true
             animatedImageView.image = image
-            return (mediaView: animatedImageView, aspectRatio: aspectRatio)
+            return animatedImageView
         } else if attachmentStream.isImage {
             guard let image = UIImage(contentsOfFile: filePath) else {
                 owsFailDebug("Could not load attachment.")
@@ -195,7 +190,6 @@ class PerMessageExpirationViewController: OWSViewController {
                     owsFailDebug("Attachment has invalid size.")
                     return nil
             }
-            let aspectRatio = image.size.width / image.size.height
 
             let imageView = UIImageView()
             // We need to specify a contentMode since the size of the image
@@ -205,8 +199,9 @@ class PerMessageExpirationViewController: OWSViewController {
             // some performance cost.
             imageView.layer.minificationFilter = .trilinear
             imageView.layer.magnificationFilter = .trilinear
+            imageView.layer.allowsEdgeAntialiasing = true
             imageView.image = image
-            return (mediaView: imageView, aspectRatio: aspectRatio)
+            return imageView
         } else {
             owsFailDebug("Unexpected content type: \(attachmentStream.contentType).")
             return nil
@@ -305,6 +300,13 @@ class PerMessageExpirationViewController: OWSViewController {
 
     @objc
     func rootViewWasTapped(sender: UIGestureRecognizer) {
+        AssertIsOnMainThread()
+
+        dismiss(animated: true)
+    }
+
+    @objc
+    func rootViewWasSwiped(sender: UIGestureRecognizer) {
         AssertIsOnMainThread()
 
         dismiss(animated: true)

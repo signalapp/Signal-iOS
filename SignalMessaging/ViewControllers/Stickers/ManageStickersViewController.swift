@@ -417,18 +417,27 @@ public class ManageStickersViewController: OWSTableViewController {
         let bubbleView = UIView()
         bubbleView.backgroundColor = Theme.offBackgroundColor
         bubbleView.layer.cornerRadius = 8
+        bubbleView.setCompressionResistanceLow()
+        bubbleView.setContentHuggingLow()
+        cell.contentView.addSubview(bubbleView)
+        bubbleView.autoPinEdgesToSuperviewMargins()
 
         let label = UILabel()
         label.text = labelText
         label.font = UIFont.ows_dynamicTypeCaption1
         label.textColor = Theme.secondaryColor
         label.textAlignment = .center
-        bubbleView.addSubview(label)
-        label.autoPinHeightToSuperview(withMargin: 24)
-        label.autoPinWidthToSuperview(withMargin: 16)
-
-        cell.contentView.addSubview(bubbleView)
-        bubbleView.ows_autoPinToSuperviewMargins()
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.setCompressionResistanceHigh()
+        label.setContentHuggingHigh()
+        cell.contentView.addSubview(label)
+        // This sidesteps an apparent bug in iOS Auto Layout.
+        if #available(iOS 11.0, *) {
+            label.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(top: 24, leading: 16, bottom: 24, trailing: 16))
+        } else {
+            label.autoPinEdgesToSuperviewMargins()
+        }
 
         return cell
     }
