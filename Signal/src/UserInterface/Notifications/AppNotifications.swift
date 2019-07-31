@@ -225,14 +225,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.incomingCallBody
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId,
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
             AppNotificationUserInfoKey.localCallId: call.localId.uuidString
         ]
 
@@ -263,14 +257,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBody
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
         let userInfo: [String: Any] = [
-            AppNotificationUserInfoKey.threadId: threadId,
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
             AppNotificationUserInfoKey.callBackAddress: remoteAddress
         ]
 
@@ -302,14 +290,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
+            AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
 
         DispatchQueue.main.async {
@@ -340,14 +322,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
         let userInfo: [String: Any] = [
-            AppNotificationUserInfoKey.threadId: threadId,
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
             AppNotificationUserInfoKey.callBackAddress: remoteAddress
         ]
 
@@ -409,12 +385,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         case .namePreview:
             notificationBody = messageText
         }
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
         assert((notificationBody ?? notificationTitle) != nil)
 
         var category = AppNotificationCategory.incomingMessage
@@ -429,7 +399,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
+            AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
 
         DispatchQueue.main.async {
@@ -453,12 +423,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
+        let threadId = thread.uniqueId
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId
         ]
@@ -496,12 +461,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         let notificationBody = infoOrErrorMessage.previewText(with: transaction)
-
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return
-        }
-
+        let threadId = thread.uniqueId
         let userInfo = [
             AppNotificationUserInfoKey.threadId: threadId
         ]

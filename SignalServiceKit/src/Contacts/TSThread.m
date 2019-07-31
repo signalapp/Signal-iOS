@@ -74,7 +74,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return @"TSThread";
 }
 
-- (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
 {
     self = [super initWithUniqueId:uniqueId];
 

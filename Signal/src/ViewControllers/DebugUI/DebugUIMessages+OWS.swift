@@ -22,7 +22,7 @@ public extension DebugUIMessages {
     class func deleteRandomMessages(count: UInt, thread: TSThread, transaction: SDSAnyWriteTransaction) {
         Logger.info("deleteRandomMessages: \(count)")
 
-        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId!)
+        let interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
 
         let messageCount = interactionFinder.count(transaction: transaction)
 

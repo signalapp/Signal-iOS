@@ -79,11 +79,7 @@ public class LongTextViewController: OWSViewController {
             return
         }
 
-        guard let uniqueId = self.viewItem.interaction.uniqueId else {
-            Logger.error("Message is missing uniqueId.")
-            return
-        }
-
+        let uniqueId = self.viewItem.interaction.uniqueId
         guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
                                                   inCollection: TSInteraction.collection(),
                                                   in: notifications) else {

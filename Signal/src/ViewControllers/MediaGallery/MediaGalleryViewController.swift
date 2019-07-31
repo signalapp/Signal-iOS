@@ -54,7 +54,7 @@ public class MediaGalleryItem: Equatable, Hashable {
         self.attachmentStream = attachmentStream
         self.captionForDisplay = attachmentStream.caption?.filterForDisplay
         self.galleryDate = GalleryDate(message: message)
-        self.albumIndex = message.attachmentIds.index(of: attachmentStream.uniqueId!)
+        self.albumIndex = message.attachmentIds.index(of: attachmentStream.uniqueId)
         self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.sortId, attachmentSortKey: albumIndex)
     }
 
@@ -88,11 +88,7 @@ public class MediaGalleryItem: Equatable, Hashable {
     // MARK: Hashable
 
     public func hash(into hasher: inout Hasher) {
-        if let uniqueId = attachmentStream.uniqueId {
-            hasher.combine(uniqueId)
-        } else {
-            hasher.combine(attachmentStream)
-        }
+        hasher.combine(attachmentStream.uniqueId)
     }
 
     // MARK: Sorting

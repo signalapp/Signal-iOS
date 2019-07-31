@@ -58,10 +58,7 @@ class TSErrorMessageSerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .errorMessage
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 
         // Base class properties
         let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp

@@ -22,7 +22,6 @@ class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {
         self.yapWrite { transaction in
             message = OutgoingMessageFactory().build(transaction: transaction.asAnyWrite)
         }
-        message.uniqueId = nil
 
         do {
             _ = try SSKMessageSenderJobRecord(message: message, removeMessageAfterSending: false, label: MessageSenderJobQueue.jobRecordLabel)

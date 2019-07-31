@@ -58,10 +58,7 @@ class TSContactThreadSerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .contactThread
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 
         // Base class properties
         let archivalDate: Date? = model.archivalDate

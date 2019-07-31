@@ -58,10 +58,7 @@ class TSGroupThreadSerializer: SDSSerializer {
         let id: Int64? = nil
 
         let recordType: SDSRecordType = .groupThread
-        guard let uniqueId: String = model.uniqueId else {
-            owsFailDebug("Missing uniqueId.")
-            throw SDSError.missingRequiredField
-        }
+        let uniqueId: String = model.uniqueId
 
         // Base class properties
         let archivalDate: Date? = model.archivalDate

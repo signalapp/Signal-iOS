@@ -10,11 +10,7 @@ public typealias AccountId = String
 @objc
 public extension SignalRecipient {
     var accountId: AccountId! {
-        guard let accountId = uniqueId else {
-            owsFailDebug("UniqueID unexpectedly nil")
-            return nil
-        }
-        return accountId
+        return uniqueId
     }
 }
 

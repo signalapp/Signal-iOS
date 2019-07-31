@@ -68,9 +68,7 @@ class PerMessageExpirationViewController: OWSViewController {
     private class func loadPresentation(interaction: TSInteraction) -> Presentation? {
         var presentation: Presentation?
         databaseStorage.write { transaction in
-            guard let interactionId = interaction.uniqueId else {
-                return
-            }
+            let interactionId = interaction.uniqueId
             guard let message = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction) as? TSMessage else {
                 return
             }
@@ -267,9 +265,7 @@ class PerMessageExpirationViewController: OWSViewController {
         AssertIsOnMainThread()
 
         let shouldDismiss: Bool = databaseStorage.uiReadReturningResult { transaction in
-            guard let uniqueId = self.message.uniqueId else {
-                return true
-            }
+            let uniqueId = self.message.uniqueId
             guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil else {
                 return true
             }

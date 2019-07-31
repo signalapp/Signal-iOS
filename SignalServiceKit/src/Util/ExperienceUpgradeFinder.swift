@@ -53,8 +53,8 @@ public enum ExperienceUpgradeId: String {
     @objc
     public func allUnseen(transaction: SDSAnyReadTransaction) -> [ExperienceUpgrade] {
         let seen = ExperienceUpgrade.anyFetchAll(transaction: transaction)
-        let seenIds = seen.map { $0.uniqueId! }
-        return allExperienceUpgrades.filter { !seenIds.contains($0.uniqueId!) }
+        let seenIds = seen.map { $0.uniqueId }
+        return allExperienceUpgrades.filter { !seenIds.contains($0.uniqueId) }
     }
 
     @objc

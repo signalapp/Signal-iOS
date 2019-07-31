@@ -222,15 +222,11 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     private func ensureOutgoingIndicators(forThread thread: TSThread) -> OutgoingIndicators? {
         AssertIsOnMainThread()
 
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("Thread missing id")
-            return nil
-        }
-        if let outgoingIndicators = outgoingIndicatorsMap[threadId] {
+        if let outgoingIndicators = outgoingIndicatorsMap[thread.uniqueId] {
             return outgoingIndicators
         }
         let outgoingIndicators = OutgoingIndicators(delegate: self, thread: thread)
-        outgoingIndicatorsMap[threadId] = outgoingIndicators
+        outgoingIndicatorsMap[thread.uniqueId] = outgoingIndicators
         return outgoingIndicators
     }
 
@@ -474,11 +470,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             guard delegate.areTypingIndicatorsEnabled() else {
                 return
             }
-            guard let threadId = thread.uniqueId else {
-                owsFailDebug("Thread is missing id.")
-                return
-            }
-            NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: threadId)
+            NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: thread.uniqueId)
         }
     }
 }

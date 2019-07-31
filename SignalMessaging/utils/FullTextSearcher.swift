@@ -340,22 +340,13 @@ public class FullTextSearcher: NSObject {
 
         var messages: [MessageSearchResult] = []
 
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("threadId was unexpectedly nil")
-            return ConversationScreenSearchResultSet.empty
-        }
-
         self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, _: String?) in
             if let message = match as? TSMessage {
-                guard message.uniqueThreadId == threadId else {
+                guard message.uniqueThreadId == thread.uniqueId else {
                     return
                 }
 
-                guard let messageId = message.uniqueId else {
-                    owsFailDebug("messageId was unexpectedly nil")
-                    return
-                }
-
+                let messageId = message.uniqueId
                 let searchResult = MessageSearchResult(messageId: messageId, sortId: message.sortId)
                 messages.append(searchResult)
             }

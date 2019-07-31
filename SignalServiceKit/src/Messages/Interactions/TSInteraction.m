@@ -104,7 +104,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     OWSAssertDebug(timestamp > 0);
 
-    self = [super initWithUniqueId:[[NSUUID UUID] UUIDString]];
+    self = [super init];
 
     if (!self) {
         return self;
@@ -289,10 +289,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (void)ensureIdsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    if (!self.uniqueId) {
+    if (self.uniqueId.length < 1) {
         OWSFailDebug(@"Missing uniqueId.");
-        self.uniqueId = [NSUUID new].UUIDString;
     }
+
     if (self.sortId == 0) {
         self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection] transaction:transaction];
     }

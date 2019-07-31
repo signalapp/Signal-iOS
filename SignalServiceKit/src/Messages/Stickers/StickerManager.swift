@@ -628,10 +628,7 @@ public class StickerManager: NSObject {
         guard let emojiString = installedSticker.emojiString else {
             return
         }
-        guard let stickerId = installedSticker.uniqueId else {
-            owsFailDebug("Sticker is missing unique id.")
-            return
-        }
+        let stickerId = installedSticker.uniqueId
         for emoji in allEmoji(inEmojiString: emojiString) {
             emojiMapStore.appendToStringSet(key: emoji,
                                             value: stickerId,
@@ -646,10 +643,7 @@ public class StickerManager: NSObject {
         guard let emojiString = installedSticker.emojiString else {
             return
         }
-        guard let stickerId = installedSticker.uniqueId else {
-            owsFailDebug("Sticker is missing unique id.")
-            return
-        }
+        let stickerId = installedSticker.uniqueId
         for emoji in allEmoji(inEmojiString: emojiString) {
             emojiMapStore.removeFromStringSet(key: emoji,
                                               value: stickerId,

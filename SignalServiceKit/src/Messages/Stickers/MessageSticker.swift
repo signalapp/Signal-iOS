@@ -119,9 +119,7 @@ public class MessageSticker: MTLModel {
         let attachment = try saveAttachment(dataProto: dataProto,
                                             stickerInfo: stickerInfo,
                                             transaction: transaction)
-        guard let attachmentId = attachment.uniqueId else {
-            throw StickerError.assertionFailure
-        }
+        let attachmentId = attachment.uniqueId
 
         let messageSticker = MessageSticker(info: stickerInfo, attachmentId: attachmentId)
         guard messageSticker.isValid else {
@@ -215,10 +213,6 @@ public class MessageSticker: MTLModel {
             throw StickerError.assertionFailure
         }
         attachment.anyInsert(transaction: transaction)
-
-        guard let attachmentId = attachment.uniqueId else {
-            throw StickerError.assertionFailure
-        }
-        return attachmentId
+        return attachment.uniqueId
     }
 }
