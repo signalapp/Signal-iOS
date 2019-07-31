@@ -276,9 +276,6 @@ NS_ASSUME_NONNULL_BEGIN
         [otherContactsSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
-                            SelectThreadViewController *strongSelf = weakSelf;
-                            OWSCAssertDebug(strongSelf);
-
                             ContactTableViewCell *cell = [ContactTableViewCell new];
                             BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                             if (isBlocked) {

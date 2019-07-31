@@ -523,7 +523,7 @@ static NSTimeInterval launchStartedAt;
     OWSLogInfo(@"Build Carthage Version: %@", buildDetails[@"CarthageVersion"]);
     OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
 
-    OWSLogInfo(@"Build Expires in: %ld days", SSKAppExpiry.daysUntilBuildExpiry);
+    OWSLogInfo(@"Build Expires in: %ld days", (long)SSKAppExpiry.daysUntilBuildExpiry);
 }
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken

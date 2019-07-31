@@ -171,9 +171,6 @@ NS_ASSUME_NONNULL_BEGIN
     for (SignalServiceAddress *address in sortedAddresses) {
         [section addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
-                                 ShowGroupMembersViewController *strongSelf = weakSelf;
-                                 OWSCAssertDebug(strongSelf);
-
                                  ContactTableViewCell *cell = [ContactTableViewCell new];
                                  OWSVerificationState verificationState =
                                      [[OWSIdentityManager sharedManager] verificationStateForAddress:address];
