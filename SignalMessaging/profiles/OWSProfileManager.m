@@ -1404,6 +1404,53 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     }
 }
 
+#pragma mark - User Interface
+
+- (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
+                        fromViewController:(UIViewController *)fromViewController
+                                   success:(void (^)(void))successHandler
+{
+    OWSAssertIsOnMainThread();
+
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:nil
+                                                            preferredStyle:UIAlertControllerStyleActionSheet];
+
+    NSString *shareTitle = NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE",
+        @"Button to confirm that user wants to share their profile with a user or group.");
+    [alert addAction:[UIAlertAction actionWithTitle:shareTitle
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share_profile")
+                                              style:UIAlertActionStyleDefault
+                                            handler:^(UIAlertAction *_Nonnull action) {
+                                                [self userAddedThreadToProfileWhitelist:thread];
+                                                successHandler();
+                                            }]];
+    [alert addAction:[OWSAlerts cancelAction]];
+
+    [fromViewController presentAlert:alert];
+}
+
+- (void)userAddedThreadToProfileWhitelist:(TSThread *)thread
+{
+    OWSAssertIsOnMainThread();
+
+    BOOL isFeatureEnabled = NO;
+    if (!isFeatureEnabled) {
+        OWSLogWarn(@"skipping sending profile-key message because the feature is not yet fully available.");
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+        return;
+    }
+
+    // MJK TODO - should be safe to remove this senderTimestamp
+    OWSProfileKeyMessage *message = [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
+                                                                           inThread:thread];
+    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+
+    [self.databaseQueue writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+    }];
+}
+
 #pragma mark - Notifications
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification

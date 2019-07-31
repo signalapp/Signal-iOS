@@ -91,6 +91,12 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (NSSet<NSString *> *)allProfileAvatarFilePaths;
 
+#pragma mark - User Interface
+
+- (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
+                        fromViewController:(UIViewController *)fromViewController
+                                   success:(void (^)(void))successHandler;
+
 @end
 
 NS_ASSUME_NONNULL_END
