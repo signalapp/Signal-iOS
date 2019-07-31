@@ -213,8 +213,6 @@ public class MessageSticker: MTLModel {
             throw StickerError.assertionFailure
         }
         attachment.anyInsert(transaction: transaction)
-
-        let attachmentId = attachment.uniqueId
-        return attachmentId
+        return attachment.uniqueId
     }
 }

@@ -41,12 +41,7 @@ public class ThreadViewModel: NSObject {
             self.contactAddress = nil
         }
 
-        if let unreadCount = try? InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction) {
-            self.unreadCount = unreadCount
-        } else {
-            owsFailDebug("unreadCount was unexpectedly nil")
-            self.unreadCount = 0
-        }
+        self.unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction)
         self.hasUnreadMessages = unreadCount > 0
         self.hasPendingMessageRequest = !SSKEnvironment.shared.profileManager.isThread(inProfileWhitelist: thread)
     }

@@ -339,11 +339,10 @@ public class FullTextSearcher: NSObject {
                                          transaction: YapDatabaseReadTransaction) -> ConversationScreenSearchResultSet {
 
         var messages: [MessageSearchResult] = []
-        let threadId = thread.uniqueId
 
         self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, _: String?) in
             if let message = match as? TSMessage {
-                guard message.uniqueThreadId == threadId else {
+                guard message.uniqueThreadId == thread.uniqueId else {
                     return
                 }
 

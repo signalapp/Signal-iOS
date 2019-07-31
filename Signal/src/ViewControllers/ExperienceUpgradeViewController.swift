@@ -277,8 +277,7 @@ public class ExperienceUpgradeViewController: OWSViewController {
 
     @objc
     public class func viewController(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> UIViewController? {
-        let uniqueId = experienceUpgrade.uniqueId
-        guard let identifier = ExperienceUpgradeId(rawValue: uniqueId) else {
+        guard let identifier = ExperienceUpgradeId(rawValue: experienceUpgrade.uniqueId) else {
             owsFailDebug("unknown experience upgrade. skipping")
             return nil
         }

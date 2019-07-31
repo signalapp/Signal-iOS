@@ -225,9 +225,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.incomingCallBody
-        let threadId = thread.uniqueId
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId,
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
             AppNotificationUserInfoKey.localCallId: call.localId.uuidString
         ]
 
@@ -258,9 +257,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBody
-        let threadId = thread.uniqueId
         let userInfo: [String: Any] = [
-            AppNotificationUserInfoKey.threadId: threadId,
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
             AppNotificationUserInfoKey.callBackAddress: remoteAddress
         ]
 
@@ -292,9 +290,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-        let threadId = thread.uniqueId
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
+            AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
 
         DispatchQueue.main.async {
@@ -325,9 +322,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             threadIdentifier = thread.uniqueId
         }
         let notificationBody = NotificationStrings.missedCallBecauseOfIdentityChangeBody
-        let threadId = thread.uniqueId
         let userInfo: [String: Any] = [
-            AppNotificationUserInfoKey.threadId: threadId,
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
             AppNotificationUserInfoKey.callBackAddress: remoteAddress
         ]
 
@@ -389,7 +385,6 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         case .namePreview:
             notificationBody = messageText
         }
-        let threadId = thread.uniqueId
         assert((notificationBody ?? notificationTitle) != nil)
 
         var category = AppNotificationCategory.incomingMessage
@@ -404,7 +399,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         }
 
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
+            AppNotificationUserInfoKey.threadId: thread.uniqueId
         ]
 
         DispatchQueue.main.async {
