@@ -21,7 +21,7 @@ public struct StorageService {
             self.data = data
         }
 
-        static func generate() -> ContactIdentifier {
+        public static func generate() -> ContactIdentifier {
             return .init(data: Randomness.generateRandomBytes(identifierLength))
         }
     }
@@ -362,8 +362,7 @@ public extension StorageService {
             let identifier = StorageService.ContactIdentifier.generate()
 
             let recordBuilder = StorageServiceProtoContactRecord.builder(key: identifier.data)
-            recordBuilder.setProfileKey(Randomness.generateRandomBytes(16))
-            recordBuilder.setProfileName(testNames[i])
+            recordBuilder.setServiceUuid(testNames[i])
 
             contactsInManifest.append(try! recordBuilder.build())
         }
@@ -418,12 +417,7 @@ public extension StorageService {
                 throw StorageError.assertion
             }
 
-            guard contact!.profileName == contactsInManifest.first!.profileName else {
-                owsFailDebug("this should be the contact we set")
-                throw StorageError.assertion
-            }
-
-            guard contact!.profileKey == contactsInManifest.first!.profileKey else {
+            guard contact!.serviceUuid == contactsInManifest.first!.serviceUuid else {
                 owsFailDebug("this should be the contact we set")
                 throw StorageError.assertion
             }
@@ -443,15 +437,11 @@ public extension StorageService {
                     throw StorageError.assertion
                 }
 
-                guard contact.profileName == matchingContact.profileName else {
+                guard contact.serviceUuid == matchingContact.serviceUuid else {
                     owsFailDebug("this should be a contact we set")
                     throw StorageError.assertion
                 }
 
-                guard contact.profileKey == matchingContact.profileKey else {
-                    owsFailDebug("this should be the contact we set")
-                    throw StorageError.assertion
-                }
             }
 
         // Fetch a contact that doesn't exist
@@ -500,8 +490,7 @@ public extension StorageService {
             let identifier = ContactIdentifier.generate()
 
             let recordBuilder = StorageServiceProtoContactRecord.builder(key: identifier.data)
-            recordBuilder.setProfileKey(Randomness.generateRandomBytes(16))
-            recordBuilder.setProfileName(testNames[0])
+            recordBuilder.setServiceUuid(testNames[0])
 
             oldManifestBuilder.setKeys([identifier.data])
 

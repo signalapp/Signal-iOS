@@ -229,7 +229,8 @@ extension YDBToGRDBMigration {
             GRDBKeyValueStoreMigrator<Any>(label: "udManager.uuidAccessStore", keyStore: udManager.uuidAccessStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.phoneNumber", keyStore: CallKitIdStore.phoneNumber(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
             GRDBKeyValueStoreMigrator<Any>(label: "CallKitIdStore.uuid", keyStore: CallKitIdStore.uuidStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
-            GRDBKeyValueStoreMigrator<Any>(label: "signalService", keyStore: signalService.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1)
+            GRDBKeyValueStoreMigrator<Any>(label: "signalService", keyStore: signalService.keyValueStore(), ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1),
+            GRDBKeyValueStoreMigrator<Any>(label: "OWSStorageServiceOperation", keyStore: StorageServiceOperation.keyValueStore, ydbTransaction: ydbTransaction, memorySamplerRatio: 0.1)
         ]
 
         for (label, keyStore) in YDBToGRDBMigration.otherKeyStores {
