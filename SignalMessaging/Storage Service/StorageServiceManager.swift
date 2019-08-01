@@ -4,14 +4,25 @@
 
 import Foundation
 
-@objc(OWSStorageServiceOperation)
-class StorageServiceOperation: OWSOperation {
+@objc(OWSStorageServiceManager)
+class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
+
+    @objc
+    static let shared = StorageServiceManager()
+
+    override init() {
+        super.init()
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.scheduleBackupIfNecessary()
+        }
+    }
+
     // MARK: -
 
     @objc
-    static func recordPendingDeletions(deletedIds: [AccountId]) {
-        let operation = StorageServiceOperation(mode: .pendingDeletions(deletedIds))
-        operationQueue.addOperation(operation)
+    func recordPendingDeletions(deletedIds: [AccountId]) {
+        let operation = StorageServiceOperation(mode: .pendingAccountIdDeletions(deletedIds))
+        StorageServiceOperation.operationQueue.addOperation(operation)
 
         // Schedule a backup to run in the next 10 minutes
         // if one hasn't been scheduled already.
@@ -19,9 +30,9 @@ class StorageServiceOperation: OWSOperation {
     }
 
     @objc
-    static func recordPendingUpdate(updatedIds: [AccountId]) {
-        let operation = StorageServiceOperation(mode: .pendingUpdates(updatedIds))
-        operationQueue.addOperation(operation)
+    func recordPendingDeletions(deletedAddresses: [SignalServiceAddress]) {
+        let operation = StorageServiceOperation(mode: .pendingAddressDeletions(deletedAddresses))
+        StorageServiceOperation.operationQueue.addOperation(operation)
 
         // Schedule a backup to run in the next 10 minutes
         // if one hasn't been scheduled already.
@@ -29,17 +40,73 @@ class StorageServiceOperation: OWSOperation {
     }
 
     @objc
-    static func backupPendingChanges() {
+    func recordPendingUpdates(updatedIds: [AccountId]) {
+        let operation = StorageServiceOperation(mode: .pendingAccountIdUpdates(updatedIds))
+        StorageServiceOperation.operationQueue.addOperation(operation)
+
+        // Schedule a backup to run in the next 10 minutes
+        // if one hasn't been scheduled already.
+        scheduleBackupIfNecessary()
+    }
+
+    @objc
+    func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {
+        let operation = StorageServiceOperation(mode: .pendingAddressUpdates(updatedAddresses))
+        StorageServiceOperation.operationQueue.addOperation(operation)
+
+        // Schedule a backup to run in the next 10 minutes
+        // if one hasn't been scheduled already.
+        scheduleBackupIfNecessary()
+    }
+
+    @objc
+    func backupPendingChanges() {
         let operation = StorageServiceOperation(mode: .backup)
-        operationQueue.addOperation(operation)
+        StorageServiceOperation.operationQueue.addOperation(operation)
     }
 
     @objc
-    static func restoreManifestIfNecessary() {
+    func restoreManifestIfNecessary() {
         let operation = StorageServiceOperation(mode: .restore)
-        operationQueue.addOperation(operation)
+        StorageServiceOperation.operationQueue.addOperation(operation)
     }
 
+    // MARK: - Backup Scheduling
+
+    private static var scheduledBackupInterval: TimeInterval = kMinuteInterval * 10
+    private var backupTimer: Timer?
+
+    // Schedule a one time backup. By default, this will happen ten
+    // minutes after the first pending change is recorded.
+    private func scheduleBackupIfNecessary() {
+        DispatchQueue.main.async {
+            // If we already have a backup scheduled, do nothing
+            guard self.backupTimer == nil else { return }
+
+            self.backupTimer = Timer.scheduledTimer(
+                timeInterval: StorageServiceManager.scheduledBackupInterval,
+                target: self,
+                selector: #selector(self.backupTimerFired),
+                userInfo: nil,
+                repeats: false
+            )
+        }
+    }
+
+    @objc func backupTimerFired(_ timer: Timer) {
+        AssertIsOnMainThread()
+
+        backupTimer?.invalidate()
+        backupTimer = nil
+
+        backupPendingChanges()
+    }
+}
+
+// MARK: -
+
+@objc(OWSStorageServiceOperation)
+class StorageServiceOperation: OWSOperation {
     // MARK: - Dependencies
 
     private var databaseStorage: SDSDatabaseStorage {
@@ -52,54 +119,27 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: -
 
-    private static let operationQueue: OperationQueue = {
+    fileprivate static let operationQueue: OperationQueue = {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
         queue.name = logTag()
         return queue
     }()
 
-    private enum Mode {
-        case pendingUpdates([AccountId])
-        case pendingDeletions([AccountId])
+    fileprivate enum Mode {
+        case pendingAccountIdUpdates([AccountId])
+        case pendingAddressUpdates([SignalServiceAddress])
+        case pendingAccountIdDeletions([AccountId])
+        case pendingAddressDeletions([SignalServiceAddress])
         case backup
         case restore
     }
     private let mode: Mode
 
-    private init(mode: Mode) {
+    fileprivate init(mode: Mode) {
         self.mode = mode
         super.init()
         self.remainingRetries = 4
-    }
-
-    // MARK: - Backup Scheduling
-
-    private static var scheduledBackupInterval: TimeInterval = kMinuteInterval * 10
-    private static var backupTimer: Timer?
-
-    // Schedule a one time backup. By default, this will happen ten
-    // minutes after the first pending change is recorded.
-    private static func scheduleBackupIfNecessary() {
-        // If we already have a backup scheduled, do nothing
-        DispatchQueue.main.async {
-            guard backupTimer == nil else { return }
-
-            backupTimer = Timer.scheduledTimer(
-                timeInterval: scheduledBackupInterval,
-                target: self,
-                selector: #selector(backupTimerFired),
-                userInfo: nil,
-                repeats: false
-            )
-        }
-    }
-
-    @objc private static func backupTimerFired(_ timer: Timer) {
-        backupTimer?.invalidate()
-        backupTimer = nil
-
-        backupPendingChanges()
     }
 
     // MARK: - Run
@@ -109,10 +149,14 @@ class StorageServiceOperation: OWSOperation {
         Logger.debug("")
 
         switch mode {
-        case .pendingUpdates(let updatedIds):
+        case .pendingAccountIdUpdates(let updatedIds):
             recordPendingUpdates(updatedIds)
-        case .pendingDeletions(let deletedIds):
+        case .pendingAddressUpdates(let updatedAddresses):
+            recordPendingUpdates(updatedAddresses)
+        case .pendingAccountIdDeletions(let deletedIds):
             recordPendingDeletions(deletedIds)
+        case .pendingAddressDeletions(let deletedAddresses):
+            recordPendingDeletions(deletedAddresses)
         case .backup:
             backupPendingChanges()
         case .restore:
@@ -122,21 +166,51 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: Mark Pending Changes
 
-    private func recordPendingUpdates(_ updatedIds: [AccountId]) {
+    private func recordPendingUpdates(_ updatedAddresses: [SignalServiceAddress]) {
         databaseStorage.write { transaction in
-            var pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
-
-            for accountId in updatedIds {
-                pendingChanges[accountId] = .updated
+            let updatedIds = updatedAddresses.map { address in
+                OWSAccountIdFinder().ensureAccountId(forAddress: address, transaction: transaction)
             }
 
-            StorageServiceOperation.setAccountChangeMap(pendingChanges, transaction: transaction)
+            self.recordPendingUpdates(updatedIds, transaction: transaction)
         }
+    }
+
+    private func recordPendingUpdates(_ updatedIds: [AccountId]) {
+        databaseStorage.write { transaction in
+            self.recordPendingUpdates(updatedIds, transaction: transaction)
+        }
+    }
+
+    private func recordPendingUpdates(_ updatedIds: [AccountId], transaction: SDSAnyWriteTransaction) {
+        var pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
+
+        for accountId in updatedIds {
+            pendingChanges[accountId] = .updated
+        }
+
+        StorageServiceOperation.setAccountChangeMap(pendingChanges, transaction: transaction)
 
         reportSuccess()
     }
 
+    private func recordPendingDeletions(_ deletedAddress: [SignalServiceAddress]) {
+        databaseStorage.write { transaction in
+            let deletedIds = deletedAddress.map { address in
+                OWSAccountIdFinder().ensureAccountId(forAddress: address, transaction: transaction)
+            }
+
+            self.recordPendingDeletions(deletedIds, transaction: transaction)
+        }
+    }
+
     private func recordPendingDeletions(_ deletedIds: [AccountId]) {
+        databaseStorage.write { transaction in
+            self.recordPendingDeletions(deletedIds, transaction: transaction)
+        }
+    }
+
+    private func recordPendingDeletions(_ deletedIds: [AccountId], transaction: SDSAnyWriteTransaction) {
         databaseStorage.write { transaction in
             var pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
 
@@ -220,6 +294,11 @@ class StorageServiceOperation: OWSOperation {
                 identifierMap[accountId] = nil
 
                 return contactIdentifier
+        }
+
+        // If we have no pending changes, we have nothing left to do
+        guard !deletedIdentifiers.isEmpty || !updatedRecords.isEmpty else {
+            return reportSuccess()
         }
 
         // Bump the manifest version
@@ -324,7 +403,7 @@ class StorageServiceOperation: OWSOperation {
                 StorageServiceOperation.setManifestVersion(manifest.version, transaction: transaction)
                 StorageServiceOperation.setAccountToIdentifierMap(identifierMap, transaction: transaction)
 
-                if backupAfterSuccess { self.addDependency(StorageServiceOperation(mode: .backup)) }
+                if backupAfterSuccess { StorageServiceManager.shared.backupPendingChanges() }
 
                 self.reportSuccess()
             }

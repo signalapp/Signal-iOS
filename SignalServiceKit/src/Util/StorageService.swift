@@ -5,6 +5,18 @@
 import Foundation
 import PromiseKit
 
+@objc(OWSStorageServiceManagerProtocol)
+public protocol StorageServiceManagerProtocol {
+    func recordPendingDeletions(deletedIds: [AccountId])
+    func recordPendingDeletions(deletedAddresses: [SignalServiceAddress])
+
+    func recordPendingUpdates(updatedIds: [AccountId])
+    func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
+
+    func backupPendingChanges()
+    func restoreManifestIfNecessary()
+}
+
 public struct StorageService {
     public enum StorageError: Error {
         case assertion
