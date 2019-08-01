@@ -124,6 +124,12 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
 }
 
+- (void)clearIdentityKey
+{
+    [self.dbConnection removeObjectForKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey
+                             inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
+}
+
 - (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
 {
     __block NSData *_Nullable result = nil;

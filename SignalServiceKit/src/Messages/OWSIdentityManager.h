@@ -36,6 +36,7 @@ extern const NSUInteger kStoredIdentityKeyLength;
 + (instancetype)sharedManager;
 
 - (void)generateNewIdentityKey;
+- (void)clearIdentityKey;
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey

@@ -249,6 +249,12 @@
                           accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_seed")
                                          selector:@selector(showSeed)
                                             color:[UIColor ows_materialBlueColor]]];
+
+    [section
+     addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"Clear All Data", @"")
+                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"clear_all_data")
+                                         selector:@selector(clearAllData)
+                                            color:[UIColor ows_destructiveRedColor]]];
     
     if (TSAccountManager.sharedInstance.isDeregistered) {
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
@@ -519,6 +525,25 @@
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:mnemonic preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Copy", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { UIPasteboard.generalPasteboard.string = mnemonic; }]];
+    [self presentAlert:alert];
+}
+
+- (void)clearAllData
+{
+    NSString *title = NSLocalizedString(@"Clear All Data", @"");
+    NSString *message = NSLocalizedString(@"Are you sure you want to clear all your data? This will delete your entire account, including all conversations and your personal key pair.", @"");
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [ThreadUtil deleteAllContent];
+        [SSKEnvironment.shared.identityManager clearIdentityKey];
+        [LKAPI clearRandomSnodePool];
+        [LKAPI stopLongPolling];
+        UIViewController *rootViewController = [[OnboardingController new] initialViewController];
+        OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
+        navigationController.navigationBarHidden = YES;
+        UIApplication.sharedApplication.keyWindow.rootViewController = navigationController;
+    }]];
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
     [self presentAlert:alert];
 }
 

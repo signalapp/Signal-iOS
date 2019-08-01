@@ -41,6 +41,10 @@ public extension LokiAPI {
     // MARK: Clearnet Setup
     fileprivate static let seedNodePool: Set<String> = [ "http://3.104.19.14:22023", "http://13.238.53.205:38157", "http://imaginary.stream:38157" ]
     fileprivate static var randomSnodePool: Set<LokiAPITarget> = []
+
+    @objc public static func clearRandomSnodePool() {
+        randomSnodePool.removeAll()
+    }
     
     // MARK: Internal API
     private static func getRandomSnode() -> Promise<LokiAPITarget> {
