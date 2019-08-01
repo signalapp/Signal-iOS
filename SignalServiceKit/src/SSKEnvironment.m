@@ -84,7 +84,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                         databaseStorage:(SDSDatabaseStorage *)databaseStorage
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
-                  storageServiceManager:(<OWSStorageServiceManagerProtocol>)storageServiceManager
+                  storageServiceManager:(<StorageServiceManagerProtocol>)storageServiceManager
 {
     self = [super init];
     if (!self) {

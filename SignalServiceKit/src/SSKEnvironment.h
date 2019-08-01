@@ -43,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol SSKReachabilityManager;
 @protocol OWSSyncManagerProtocol;
 @protocol OWSTypingIndicators;
-@protocol OWSStorageServiceManagerProtocol;
+@protocol StorageServiceManagerProtocol;
 
 @interface SSKEnvironment : NSObject
 
@@ -80,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
                         databaseStorage:(SDSDatabaseStorage *)databaseStorage
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
-                  storageServiceManager:(<OWSStorageServiceManagerProtocol>)storageServiceManager
+                  storageServiceManager:(<StorageServiceManagerProtocol>)storageServiceManager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -125,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSAttachmentDownloads *attachmentDownloads;
 @property (nonatomic, readonly) SignalServiceAddressCache *signalServiceAddressCache;
 @property (nonatomic, readonly) AccountServiceClient *accountServiceClient;
-@property (nonatomic, readonly) id<OWSStorageServiceManagerProtocol> storageServiceManager;
+@property (nonatomic, readonly) id<StorageServiceManagerProtocol> storageServiceManager;
 
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;

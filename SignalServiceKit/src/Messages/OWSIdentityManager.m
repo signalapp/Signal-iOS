@@ -109,7 +109,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     return SSKEnvironment.shared.tsAccountManager;
 }
 
-- (id<OWSStorageServiceManagerProtocol>)storageServiceManager
+- (id<StorageServiceManagerProtocol>)storageServiceManager
 {
     return SSKEnvironment.shared.storageServiceManager;
 }

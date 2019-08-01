@@ -51,7 +51,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     return SSKEnvironment.shared.socketManager;
 }
 
-+ (id<OWSStorageServiceManagerProtocol>)storageServiceManager
++ (id<StorageServiceManagerProtocol>)storageServiceManager
 {
     return SSKEnvironment.shared.storageServiceManager;
 }

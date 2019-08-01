@@ -177,6 +177,12 @@ class StorageServiceOperation: OWSOperation {
             return reportSuccess()
         }
 
+        // We don't have backup keys, do nothing. We'll try a
+        // fresh restore once the keys are set.
+        guard KeyBackupService.hasLocalKeys else {
+            return reportSuccess()
+        }
+
         switch mode {
         case .backup:
             backupPendingChanges()
@@ -367,37 +373,96 @@ class StorageServiceOperation: OWSOperation {
             manifestVersion = StorageServiceOperation.manifestVersion(transaction: transaction)
         }
 
-        guard manifestVersion == nil else {
-            // Nothing to do, we already have a local manifest
-            return reportSuccess()
-        }
-
         StorageService.fetchManifest().done(on: .global()) { manifest in
             guard let manifest = manifest else {
                 // There is no existing manifest, lets create one with all our contacts.
+                return self.createNewManifest(version: 1)
+            }
 
-                var allAccountIds = [AccountId]()
+            guard manifest.version != manifestVersion else {
+                // Our manifest version matches the server version, nothing to do here.
+                return self.reportSuccess()
+            }
 
-                self.databaseStorage.read { transaction in
-                    SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
-                        if recipient.devices.count > 0 {
-                            allAccountIds.append(recipient.accountId)
-                        }
-                    }
+            // Our manifest is not the latest, merge in the latest copy.
+            self.mergeLocalManifest(withRemoteManifest: manifest, backupAfterSuccess: false)
+
+        }.catch { error in
+            if let storageError = error as? StorageService.StorageError {
+
+                // If we succeeded to fetch the manifest but were unable to decrypt it,
+                // it likely means our keys changed. Create a new manifest with the
+                // latest version of our backup key.
+                if case .decryptionFailed(let previousManifestVersion) = storageError {
+                    return self.createNewManifest(version: previousManifestVersion + 1)
                 }
 
-                StorageServiceManager.shared.recordPendingUpdates(updatedIds: allAccountIds)
-                StorageServiceManager.shared.backupPendingChanges()
+                return self.reportError(storageError)
+            }
+
+            self.reportError(OWSAssertionError("received unexpected error when fetching manifest"))
+        }.retainUntilComplete()
+    }
+
+    private func createNewManifest(version: UInt64) {
+        var allContactRecords: [StorageServiceProtoContactRecord] = []
+        var identifierMap: BidirectionalDictionary<AccountId, StorageService.ContactIdentifier> = [:]
+
+        databaseStorage.read { transaction in
+            SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
+                if recipient.devices.count > 0 {
+                    let contactIdentifier = StorageService.ContactIdentifier.generate()
+                    identifierMap[recipient.accountId] = contactIdentifier
+
+                    do {
+                        allContactRecords.append(
+                            try StorageServiceProtoContactRecord.build(
+                                for: recipient.accountId,
+                                contactIdentifier: contactIdentifier,
+                                transaction: transaction
+                            )
+                        )
+                    } catch {
+                        // We'll just skip it, something may be wrong with our local data.
+                        // We'll try and backup this contact again when something changes.
+                        owsFailDebug("unexpectedly failed to build contact record")
+                    }
+                }
+            }
+        }
+
+        let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: version)
+        manifestBuilder.setKeys(allContactRecords.map { $0.key })
+
+        let manifest: StorageServiceProtoManifestRecord
+        do {
+            manifest = try manifestBuilder.build()
+        } catch {
+            return reportError(OWSAssertionError("failed to build proto"))
+        }
+
+        StorageService.updateManifest(
+            manifest,
+            newContacts: allContactRecords,
+            deletedContacts: []
+        ).done(on: .global()) { conflictingManifest in
+            guard let conflictingManifest = conflictingManifest else {
+                // Successfuly updated, store our changes.
+                self.databaseStorage.write { transaction in
+                    StorageServiceOperation.setAccountChangeMap([:], transaction: transaction)
+                    StorageServiceOperation.setManifestVersion(version, transaction: transaction)
+                    StorageServiceOperation.setAccountToIdentifierMap(identifierMap, transaction: transaction)
+                }
 
                 return self.reportSuccess()
             }
 
-            self.mergeExistingManifestWithNewManifest(manifest, backupAfterSuccess: false)
+            // We got a conflicting manifest that we were able to decrypt, so we may not need
+            // to recreate our manifest after all. Throw away all our work, resolve conflicts,
+            // and try again.
+            self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
         }.catch { error in
-            owsFailDebug("received unexpected error while fetching manifest \(error)")
-            let retryableError = error as NSError
-            retryableError.isRetryable = true
-            self.reportError(withUndefinedRetry: retryableError)
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 

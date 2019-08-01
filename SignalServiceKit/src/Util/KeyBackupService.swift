@@ -347,6 +347,9 @@ public class KeyBackupService: NSObject {
     private static func storeMasterKey(_ masterKey: Data) {
         do {
             try keychainStorage.set(data: masterKey, service: keychainService, key: masterKeyKeychainIdentifer)
+
+            // Our master key did change, reencrypt and backup our social graph
+            SSKEnvironment.shared.storageServiceManager.restoreOrCreateManifestIfNecessary()
         } catch {
             owsFail("Failed to store master key in keychain")
         }

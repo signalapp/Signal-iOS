@@ -49,7 +49,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     return SDSDatabaseStorage.shared;
 }
 
-- (id<OWSStorageServiceManagerProtocol>)storageServiceManager
+- (id<StorageServiceManagerProtocol>)storageServiceManager
 {
     return SSKEnvironment.shared.storageServiceManager;
 }

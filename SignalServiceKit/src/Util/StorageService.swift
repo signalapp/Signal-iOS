@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 
-@objc(OWSStorageServiceManagerProtocol)
+@objc
 public protocol StorageServiceManagerProtocol {
     func recordPendingDeletions(deletedIds: [AccountId])
     func recordPendingDeletions(deletedAddresses: [SignalServiceAddress])
@@ -21,6 +21,7 @@ public struct StorageService {
     public enum StorageError: OperationError {
         case assertion
         case retryableAssertion
+        case decryptionFailed(manifestVersion: UInt64)
 
         public var isRetryable: Bool {
             guard case .retryableAssertion = self else { return false }
@@ -53,8 +54,13 @@ public struct StorageService {
         return storageRequest(withMethod: "GET", endpoint: "v1/contacts/manifest").map(on: .global()) { response in
             switch response.status {
             case .success:
-                let encryptedManifestData = try StorageServiceProtoContactsManifest.parseData(response.data).value
-                let manifestData = try KeyBackupService.decryptWithMasterKey(encryptedManifestData)
+                let encryptedManifestContainer = try StorageServiceProtoContactsManifest.parseData(response.data)
+                let manifestData: Data
+                do {
+                    manifestData = try KeyBackupService.decryptWithMasterKey(encryptedManifestContainer.value)
+                } catch {
+                    throw StorageError.decryptionFailed(manifestVersion: encryptedManifestContainer.version)
+                }
                 return try StorageServiceProtoManifestRecord.parseData(manifestData)
             case .notFound:
                 return nil
