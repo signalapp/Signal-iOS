@@ -13,5 +13,5 @@ class FakeStorageServiceManager: NSObject, StorageServiceManagerProtocol {
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {}
 
     func backupPendingChanges() {}
-    func restoreManifestIfNecessary() {}
+    func restoreOrCreateManifestIfNecessary() {}
 }

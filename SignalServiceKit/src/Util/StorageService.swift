@@ -14,7 +14,7 @@ public protocol StorageServiceManagerProtocol {
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress])
 
     func backupPendingChanges()
-    func restoreManifestIfNecessary()
+    func restoreOrCreateManifestIfNecessary()
 }
 
 public struct StorageService {

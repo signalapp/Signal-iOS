@@ -12,9 +12,26 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     override init() {
         super.init()
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
-            self.scheduleBackupIfNecessary()
-        }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registrationStateDidChange),
+            name: .RegistrationStateDidChange,
+            object: nil
+        )
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady { self.registrationStateDidChange() }
+    }
+
+    @objc private func registrationStateDidChange() {
+        guard TSAccountManager.sharedInstance().isRegisteredAndReady else { return }
+
+        // Schedule a restore. This will do nothing unless we've never
+        // registered a manifest before.
+        self.restoreOrCreateManifestIfNecessary()
+
+        // If we have any pending changes since we last launch, back them up now.
+        self.backupPendingChanges()
     }
 
     // MARK: -
@@ -66,8 +83,8 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     }
 
     @objc
-    func restoreManifestIfNecessary() {
-        let operation = StorageServiceOperation(mode: .restore)
+    func restoreOrCreateManifestIfNecessary() {
+        let operation = StorageServiceOperation(mode: .restoreOrCreate)
         StorageServiceOperation.operationQueue.addOperation(operation)
     }
 
@@ -132,7 +149,7 @@ class StorageServiceOperation: OWSOperation {
         case pendingAccountIdDeletions([AccountId])
         case pendingAddressDeletions([SignalServiceAddress])
         case backup
-        case restore
+        case restoreOrCreate
     }
     private let mode: Mode
 
@@ -146,7 +163,12 @@ class StorageServiceOperation: OWSOperation {
 
     // Called every retry, this is where the bulk of the operation's work should go.
     override public func run() {
-        Logger.debug("")
+        Logger.info("\(mode)")
+
+        // Do nothing until the feature is enabled.
+        guard FeatureFlags.socialGraphOnServer else {
+            return reportSuccess()
+        }
 
         switch mode {
         case .pendingAccountIdUpdates(let updatedIds):
@@ -159,8 +181,8 @@ class StorageServiceOperation: OWSOperation {
             recordPendingDeletions(deletedAddresses)
         case .backup:
             backupPendingChanges()
-        case .restore:
-            restoreManifestIfNecessary()
+        case .restoreOrCreate:
+            restoreOrCreateManifestIfNecessary()
         }
     }
 
@@ -337,12 +359,12 @@ class StorageServiceOperation: OWSOperation {
             self.mergeExistingManifestWithNewManifest(conflictingManifest, backupAfterSuccess: true)
         }.catch { error in
             self.reportError(withUndefinedRetry: error)
-        }
+        }.retainUntilComplete()
     }
 
     // MARK: Restore
 
-    private func restoreManifestIfNecessary() {
+    private func restoreOrCreateManifestIfNecessary() {
         var manifestVersion: UInt64?
         databaseStorage.read { transaction in
             manifestVersion = StorageServiceOperation.manifestVersion(transaction: transaction)
@@ -350,12 +372,26 @@ class StorageServiceOperation: OWSOperation {
 
         guard manifestVersion == nil else {
             // Nothing to do, we already have a local manifest
-            return
+            return reportSuccess()
         }
 
         StorageService.fetchManifest().done(on: .global()) { manifest in
             guard let manifest = manifest else {
-                // There is no existing manifest, we're done!
+                // There is no existing manifest, lets create one with all our contacts.
+
+                var allAccountIds = [AccountId]()
+
+                self.databaseStorage.read { transaction in
+                    SignalRecipient.anyEnumerate(transaction: transaction) { recipient, _ in
+                        if recipient.devices.count > 0 {
+                            allAccountIds.append(recipient.accountId)
+                        }
+                    }
+                }
+
+                StorageServiceManager.shared.recordPendingUpdates(updatedIds: allAccountIds)
+                StorageServiceManager.shared.backupPendingChanges()
+
                 return self.reportSuccess()
             }
 
@@ -365,7 +401,7 @@ class StorageServiceOperation: OWSOperation {
             let retryableError = error as NSError
             retryableError.isRetryable = true
             self.reportError(withUndefinedRetry: retryableError)
-        }
+        }.retainUntilComplete()
     }
 
     // MARK: - Conflict Resolution
@@ -412,7 +448,7 @@ class StorageServiceOperation: OWSOperation {
             let retryableError = error as NSError
             retryableError.isRetryable = true
             self.reportError(withUndefinedRetry: retryableError)
-        }
+        }.retainUntilComplete()
     }
 
     // MARK: - Accessors
@@ -439,7 +475,7 @@ class StorageServiceOperation: OWSOperation {
 
     private static func setAccountToIdentifierMap( _ dictionary: BidirectionalDictionary<AccountId, StorageService.ContactIdentifier>, transaction: SDSAnyWriteTransaction) {
         keyValueStore.setObject(
-            AnyBidirectionalDictionary(dictionary.mapValues { $0.data } ),
+            AnyBidirectionalDictionary(dictionary.mapValues { $0.data }),
             key: accountToIdentifierMapKey,
             transaction: transaction
         )
