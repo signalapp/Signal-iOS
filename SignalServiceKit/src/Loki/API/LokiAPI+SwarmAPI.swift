@@ -58,7 +58,7 @@ public extension LokiAPI {
                     "limit" : 24,
                     "fields" : [
                         "public_ip" : true,
-                        "storage_port" : true,
+                        "storage_port" : true
                     ]
                 ]
             ])
