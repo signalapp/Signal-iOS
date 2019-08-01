@@ -5102,28 +5102,13 @@ typedef enum : NSUInteger {
         return;
     }
 
-    // If we're creating the thread, don't show the message request view
-    if (!self.thread.shouldThreadBeVisible) {
-        return;
-    }
+    __block BOOL hasPendingMessageRequest = NO;
 
-    // If the thread is already whitelisted, do nothing. The user has already
-    // accepted the request for this thread.
-    if ([self.profileManager isThreadInProfileWhitelist:self.thread]) {
-        return;
-    }
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        hasPendingMessageRequest = [ThreadUtil hasPendingMessageRequest:self.thread transaction:transaction];
+    }];
 
-    BOOL isThreadSystemContact = NO;
-    if (!self.isGroupConversation) {
-        TSContactThread *thread = (TSContactThread *)self.thread;
-        isThreadSystemContact = [self.contactsManager hasSignalAccountForAddress:thread.contactAddress];
-    }
-
-    // If this thread is a conversation with a system contact, add them to the profile
-    // whitelist immediately and do not show the request dialog. People in your system
-    // contacts get to bypass the message request flow.
-    if (isThreadSystemContact) {
-        [self.profileManager addThreadToProfileWhitelist:self.thread];
+    if (!hasPendingMessageRequest) {
         return;
     }
 

@@ -17,7 +17,7 @@ public class ThreadDetailsCell: ConversationViewCell {
     }
 
     private let avatarContainer = UIView()
-    private let avatarView = AvatarImageView()
+    private var avatarView: ConversationAvatarImageView?
     private let avatarDiameter: CGFloat = 112
 
     private let titleLabel = UILabel()
@@ -37,16 +37,12 @@ public class ThreadDetailsCell: ConversationViewCell {
         self.layoutMargins = .zero
         self.contentView.layoutMargins = .zero
 
-        avatarContainer.addSubview(avatarView)
         avatarContainer.layoutMargins = UIEdgeInsets(top: 0, leading: 0, bottom: avatarBottomInset, trailing: 0)
-
-        avatarView.autoSetDimension(.height, toSize: avatarDiameter)
-        avatarView.autoHCenterInSuperview()
-        avatarView.autoPinHeightToSuperviewMargins()
 
         titleLabel.font = UIFont.ows_dynamicTypeTitle1.ows_bold()
         titleLabel.textColor = Theme.primaryColor
         titleLabel.numberOfLines = 0
+        titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.textAlignment = .center
         titleLabel.setContentHuggingHigh()
         titleLabel.setCompressionResistanceHigh()
@@ -54,6 +50,7 @@ public class ThreadDetailsCell: ConversationViewCell {
         detailsLabel.font = .ows_dynamicTypeSubheadline
         detailsLabel.textColor = Theme.secondaryColor
         detailsLabel.numberOfLines = 0
+        detailsLabel.lineBreakMode = .byWordWrapping
         detailsLabel.textAlignment = .center
         detailsLabel.setContentHuggingHigh()
         detailsLabel.setCompressionResistanceHigh()
@@ -65,6 +62,7 @@ public class ThreadDetailsCell: ConversationViewCell {
         mutualGroupsLabel.font = .ows_dynamicTypeSubheadline
         mutualGroupsLabel.textColor = Theme.secondaryColor
         mutualGroupsLabel.numberOfLines = 0
+        mutualGroupsLabel.lineBreakMode = .byWordWrapping
         mutualGroupsLabel.textAlignment = .center
         mutualGroupsLabel.setContentHuggingHigh()
         mutualGroupsLabel.setCompressionResistanceHigh()
@@ -93,11 +91,9 @@ public class ThreadDetailsCell: ConversationViewCell {
     }
 
     private func configureAvatarView() {
-        var avatarImage: UIImage?
 
         defer {
-            avatarView.image = avatarImage
-            avatarContainer.isHidden = avatarImage == nil
+            avatarContainer.isHidden = avatarView?.image == nil
         }
 
         guard let viewItem = self.viewItem else {
@@ -108,7 +104,21 @@ public class ThreadDetailsCell: ConversationViewCell {
             return owsFailDebug("Missing threadDetails")
         }
 
-        avatarImage = OWSAvatarBuilder.buildImage(thread: threadDetails.thread, diameter: UInt(avatarDiameter))
+        guard avatarView == nil else {
+            self.avatarView?.updateImage()
+            return
+        }
+
+        self.avatarView = ConversationAvatarImageView(
+            thread: threadDetails.thread,
+            diameter: UInt(avatarDiameter),
+            contactsManager: Environment.shared.contactsManager
+        )
+
+        avatarContainer.addSubview(avatarView!)
+        avatarView?.autoSetDimension(.height, toSize: avatarDiameter)
+        avatarView?.autoHCenterInSuperview()
+        avatarView?.autoPinHeightToSuperviewMargins()
     }
 
     private func configureTitleLabel() {
@@ -207,6 +217,13 @@ public class ThreadDetailsCell: ConversationViewCell {
             groupsToInsert = Array(groupsToInsert[0...1])
         }
 
+        var formatStringCount = formatString.components(separatedBy: "%@").count
+        if formatString.count > 1 { formatStringCount -= 1 }
+
+        guard formatStringCount == groupsToInsert.count else {
+            return owsFailDebug("Incorrect number of format characters in string")
+        }
+
         let mutableAttributedString = NSMutableAttributedString(string: formatString)
 
         // We don't use `String(format:)` so that we can make sure each group name is bold.
@@ -228,6 +245,8 @@ public class ThreadDetailsCell: ConversationViewCell {
             }
 
             mutableAttributedString.replaceCharacters(in: nextInsertionPoint, with: "\(mutualGroupNames.count - 2)")
+        } else if mutableAttributedString.string.range(of: "%lu") != nil {
+            return owsFailDebug("unexpected format string remaining in string")
         }
 
         attributedString = mutableAttributedString
@@ -269,5 +288,12 @@ public class ThreadDetailsCell: ConversationViewCell {
         }
 
         return CGSizeCeil(CGSize(width: viewWidth, height: height))
+    }
+
+    public override func prepareForReuse() {
+        super.prepareForReuse()
+
+        avatarView?.removeFromSuperview()
+        avatarView = nil
     }
 }

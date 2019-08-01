@@ -43,7 +43,7 @@ public class ThreadViewModel: NSObject {
 
         self.unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction)
         self.hasUnreadMessages = unreadCount > 0
-        self.hasPendingMessageRequest = !SSKEnvironment.shared.profileManager.isThread(inProfileWhitelist: thread)
+        self.hasPendingMessageRequest = ThreadUtil.hasPendingMessageRequest(thread, transaction: transaction)
     }
 
     @objc

@@ -433,6 +433,58 @@ const CGFloat kIconViewLength = 24;
                   actionBlock:nil]];
     }
 
+    // Show profile status and allow sharing your profile for threads that are not in the whitelist.
+    // This goes away when phoneNumberPrivacy is enabled, since profile sharing become mandatory.
+    if (SSKFeatureFlags.phoneNumberPrivacy || isNoteToSelf) {
+        // Do nothing
+    } else if ([self.profileManager isThreadInProfileWhitelist:self.thread]) {
+        [mainSection
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            OWSConversationSettingsViewController *strongSelf = weakSelf;
+                            OWSCAssertDebug(strongSelf);
+
+                            return [strongSelf
+                                      labelCellWithName:
+                                          (strongSelf.isGroupThread
+                                                  ? NSLocalizedString(
+                                                      @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
+                                                      @"Indicates that user's profile has been shared with a group.")
+                                                  : NSLocalizedString(
+                                                      @"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
+                                                      @"Indicates that user's profile has been shared with a user."))
+                                               iconName:@"table_ic_share_profile"
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                            OWSConversationSettingsViewController,
+                                                            @"profile_is_shared")];
+                        }
+                                    actionBlock:nil]];
+    } else {
+        [mainSection
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            OWSConversationSettingsViewController *strongSelf = weakSelf;
+                            OWSCAssertDebug(strongSelf);
+
+                            UITableViewCell *cell = [strongSelf
+                                 disclosureCellWithName:
+                                     (strongSelf.isGroupThread
+                                             ? NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP",
+                                                 @"Action that shares user profile with a group.")
+                                             : NSLocalizedString(@"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER",
+                                                 @"Action that shares user profile with a user."))
+                                               iconName:@"table_ic_share_profile"
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                            OWSConversationSettingsViewController, @"share_profile")];
+                            cell.userInteractionEnabled = !strongSelf.hasLeftGroup;
+
+                            return cell;
+                        }
+                        actionBlock:^{
+                            [weakSelf showShareProfileAlert];
+                        }]];
+    }
+
     [mainSection addItem:[OWSTableItem
                              itemWithCustomCellBlock:^{
                                  UITableViewCell *cell = [OWSTableItem newCell];
@@ -1075,6 +1127,15 @@ const CGFloat kIconViewLength = 24;
 }
 
 #pragma mark - Actions
+
+- (void)showShareProfileAlert
+{
+    [self.profileManager presentAddThreadToProfileWhitelist:self.thread
+                                         fromViewController:self
+                                                    success:^{
+                                                        [self updateTableContents];
+                                                    }];
+}
 
 - (void)showVerificationView
 {
