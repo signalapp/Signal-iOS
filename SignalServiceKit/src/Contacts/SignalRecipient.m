@@ -51,6 +51,11 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     return SSKEnvironment.shared.socketManager;
 }
 
++ (id<OWSStorageServiceManagerProtocol>)storageServiceManager
+{
+    return SSKEnvironment.shared.storageServiceManager;
+}
+
 #pragma mark -
 
 + (instancetype)getOrBuildUnsavedRecipientForAddress:(SignalServiceAddress *)address
@@ -284,17 +289,24 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
                                                                       mustHaveDevices:YES
                                                                           transaction:transaction];
 
-
     if (existingInstance == nil) {
         OWSLogDebug(@"creating recipient: %@", address);
 
         SignalRecipient *newInstance = [[self alloc] initWithAddress:address];
         [newInstance anyInsertWithTransaction:transaction];
+
+        // Record with the new contact in the social graph
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ newInstance.accountId ]];
+
         return newInstance;
     }
 
+    BOOL hasChanged = NO;
+
     // If we've learned a users UUID, record it.
     if (existingInstance.recipientUUID == nil && address.uuid != nil) {
+        hasChanged = YES;
+
         [existingInstance anyUpdateWithTransaction:transaction
                                              block:^(SignalRecipient *latestCopy) {
                                                  latestCopy.recipientUUID = address.uuidString;
@@ -303,11 +315,18 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
     // If we've learned a users phone number, record it.
     if (existingInstance.recipientPhoneNumber == nil && address.phoneNumber != nil) {
+        hasChanged = YES;
+
         OWSFailDebug(@"unexpectedly learned about a users phone number");
         [existingInstance anyUpdateWithTransaction:transaction
                                              block:^(SignalRecipient *latestCopy) {
                                                  latestCopy.recipientPhoneNumber = address.phoneNumber;
                                              }];
+    }
+
+    // Record the updated contact in the social graph
+    if (hasChanged) {
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ existingInstance.accountId ]];
     }
 
     return existingInstance;
@@ -350,6 +369,9 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
                                               [signalRecipient removeDevices:recipient.devices.set];
                                           }];
         }
+
+        // Remove the contact from our social graph
+        [self.storageServiceManager recordPendingDeletionsWithDeletedIds:@[ recipient.accountId ]];
     }
 }
 
