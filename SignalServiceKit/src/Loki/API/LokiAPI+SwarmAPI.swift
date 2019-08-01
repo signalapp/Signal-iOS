@@ -51,8 +51,18 @@ public extension LokiAPI {
         if randomSnodePool.isEmpty {
             let target = seedNodePool.randomElement()!
             let url = URL(string: "\(target)/json_rpc")!
-            let request = TSRequest(url: url, method: "POST", parameters: [ "method" : "get_service_nodes" ])
-            print("[Loki] Invoking get_service_nodes on \(target).")
+            let request = TSRequest(url: url, method: "POST", parameters: [
+                "method" : "get_n_service_nodes",
+                "params" : [
+                    "active_only" : true,
+                    "limit" : 24,
+                    "fields" : [
+                        "public_ip" : true,
+                        "storage_port" : true,
+                    ]
+                ]
+            ])
+            print("[Loki] Invoking get_n_service_nodes on \(target).")
             return TSNetworkManager.shared().makePromise(request: request).map { intermediate in
                 let rawResponse = intermediate.responseObject
                 guard let json = rawResponse as? JSON, let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw "Failed to update random snode pool from: \(rawResponse)." }
