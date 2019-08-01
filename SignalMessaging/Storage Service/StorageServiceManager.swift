@@ -102,6 +102,8 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
             // If we already have a backup scheduled, do nothing
             guard self.backupTimer == nil else { return }
 
+            Logger.info("")
+
             self.backupTimer = Timer.scheduledTimer(
                 timeInterval: StorageServiceManager.scheduledBackupInterval,
                 target: self,
@@ -114,6 +116,8 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc func backupTimerFired(_ timer: Timer) {
         AssertIsOnMainThread()
+
+        Logger.info("")
 
         backupTimer?.invalidate()
         backupTimer = nil
@@ -214,6 +218,8 @@ class StorageServiceOperation: OWSOperation {
     }
 
     private static func recordPendingUpdates(_ updatedIds: [AccountId], transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
+
         var pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
 
         for accountId in updatedIds {
@@ -244,6 +250,8 @@ class StorageServiceOperation: OWSOperation {
     }
 
     private static func recordPendingDeletions(_ deletedIds: [AccountId], transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
+
         var pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
 
         for accountId in deletedIds {
@@ -350,6 +358,7 @@ class StorageServiceOperation: OWSOperation {
             guard let conflictingManifest = conflictingManifest else {
                 // Successfuly updated, store our changes.
                 self.databaseStorage.write { transaction in
+                    StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
                     StorageServiceOperation.setAccountChangeMap(pendingChanges, transaction: transaction)
                     StorageServiceOperation.setManifestVersion(version, transaction: transaction)
                     StorageServiceOperation.setAccountToIdentifierMap(identifierMap, transaction: transaction)
@@ -449,6 +458,7 @@ class StorageServiceOperation: OWSOperation {
             guard let conflictingManifest = conflictingManifest else {
                 // Successfuly updated, store our changes.
                 self.databaseStorage.write { transaction in
+                    StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
                     StorageServiceOperation.setAccountChangeMap([:], transaction: transaction)
                     StorageServiceOperation.setManifestVersion(version, transaction: transaction)
                     StorageServiceOperation.setAccountToIdentifierMap(identifierMap, transaction: transaction)
@@ -471,10 +481,30 @@ class StorageServiceOperation: OWSOperation {
     private func mergeLocalManifest(withRemoteManifest manifest: StorageServiceProtoManifestRecord, backupAfterSuccess: Bool) {
         var identifierMap: BidirectionalDictionary<AccountId, StorageService.ContactIdentifier> = [:]
         var pendingChanges: [AccountId: ChangeState] = [:]
+        var consecutiveConflicts = 0
 
-        databaseStorage.read { transaction in
+        databaseStorage.write { transaction in
             identifierMap = StorageServiceOperation.accountToIdentifierMap(transaction: transaction)
             pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
+
+            // Increment our conflict count.
+            consecutiveConflicts = StorageServiceOperation.consecutiveConflicts(transaction: transaction)
+            consecutiveConflicts += 1
+            StorageServiceOperation.setConsecutiveConflicts(consecutiveConflicts, transaction: transaction)
+        }
+
+        // If we've tried many times in a row to resolve conflicts, something weird is happening
+        // (potentially a bug on the service or a race with another app). Give up and wait until
+        // the next backup runs.
+        guard consecutiveConflicts <= StorageServiceOperation.maxConsecutiveConflicts else {
+            owsFailDebug("unexpectedly have had numerous repeated conflicts")
+
+            // Clear out the consecutive conflicts count so we can try again later.
+            databaseStorage.write { transaction in
+                StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
+            }
+
+            return reportError(OWSAssertionError("exceeded max consectuive conflicts, creating a new manifest"))
         }
 
         // Fetch all the contacts in the new manifest and resolve any conflicts appropriately.
@@ -497,6 +527,7 @@ class StorageServiceOperation: OWSOperation {
                     }
                 }
 
+                StorageServiceOperation.setConsecutiveConflicts(0, transaction: transaction)
                 StorageServiceOperation.setAccountChangeMap(pendingChanges, transaction: transaction)
                 StorageServiceOperation.setManifestVersion(manifest.version, transaction: transaction)
                 StorageServiceOperation.setAccountToIdentifierMap(identifierMap, transaction: transaction)
@@ -519,6 +550,7 @@ class StorageServiceOperation: OWSOperation {
     private static let accountToIdentifierMapKey = "accountToIdentifierMap"
     private static let accountChangeMapKey = "accountChangeMap"
     private static let manifestVersionKey = "manifestVersion"
+    private static let consecutiveConflictsKey = "consecutiveConflicts"
 
     private static func manifestVersion(transaction: SDSAnyReadTransaction) -> UInt64? {
         return keyValueStore.getUInt64(manifestVersionKey, transaction: transaction)
@@ -556,5 +588,15 @@ class StorageServiceOperation: OWSOperation {
 
     private static func setAccountChangeMap(_ map: [AccountId: ChangeState], transaction: SDSAnyWriteTransaction) {
         keyValueStore.setObject(map.mapValues { $0.rawValue }, key: accountChangeMapKey, transaction: transaction)
+    }
+
+    private static var maxConsecutiveConflicts = 3
+
+    private static func consecutiveConflicts(transaction: SDSAnyReadTransaction) -> Int {
+        return keyValueStore.getInt(consecutiveConflictsKey, transaction: transaction) ?? 0
+    }
+
+    private static func setConsecutiveConflicts( _ consecutiveConflicts: Int, transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setInt(consecutiveConflicts, key: consecutiveConflictsKey, transaction: transaction)
     }
 }
