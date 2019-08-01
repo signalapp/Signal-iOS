@@ -608,7 +608,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                                                         error:&updateError];
                                                      }];
 
-    // If we have a thread details item, insert it into the updated items. We assume it always needs to update.
+    // If we have a thread details item, insert it into the updated items. We assume
+    // it always needs to update, because it's rarely actually loaded and can be changed
+    // by a large number of thread updates.
     if (self.hasThreadDetailsViewItem) {
         updatedInteractionIds = [updatedInteractionIds setByAddingObject:self.threadDetailsUniqueId];
     }
@@ -659,7 +661,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     NSSet<NSString *> *updatedInteractionIds = [self.messageMapping updatedItemIdsFor:notifications];
 
-    // If we have a thread details item, insert it into the updated items. We assume it always needs to update.
+    // If we have a thread details item, insert it into the updated items. We assume
+    // it always needs to update, because it's rarely actually loaded and can be changed
+    // by a large number of thread updates.
     if (self.hasThreadDetailsViewItem) {
         updatedInteractionIds = [updatedInteractionIds setByAddingObject:self.threadDetailsUniqueId];
     }
@@ -688,7 +692,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableSet<NSString *> *diffRemovedItemIds = [diff.removedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffUpdatedItemIds = [diff.updatedItemIds mutableCopy];
 
-    // If we have a thread details item, insert it into the updated items. We assume it always needs to update.
+    // If we have a thread details item, insert it into the updated items. We assume
+    // it always needs to update, because it's rarely actually loaded and can be changed
+    // by a large number of thread updates.
     if (self.hasThreadDetailsViewItem) {
         [diffUpdatedItemIds addObject:self.threadDetailsUniqueId];
     }
@@ -1732,14 +1738,14 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         switch (interaction.interactionType) {
             case OWSInteractionType_Unknown:
                 OWSFailDebug(@"Unknown interaction type.");
-                return nil;
+                break;
+            case OWSInteractionType_Call:
             case OWSInteractionType_IncomingMessage:
             case OWSInteractionType_OutgoingMessage:
                 return interaction;
             case OWSInteractionType_Error:
             case OWSInteractionType_Info:
                 break;
-            case OWSInteractionType_Call:
             case OWSInteractionType_ThreadDetails:
             case OWSInteractionType_TypingIndicator:
                 break;
