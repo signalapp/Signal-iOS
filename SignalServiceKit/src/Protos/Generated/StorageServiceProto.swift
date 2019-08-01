@@ -908,6 +908,9 @@ extension StorageServiceProtoContactRecordProfile.StorageServiceProtoContactReco
         if hasBlocked {
             builder.setBlocked(blocked)
         }
+        if hasWhitelisted {
+            builder.setWhitelisted(whitelisted)
+        }
         return builder
     }
 
@@ -983,6 +986,11 @@ extension StorageServiceProtoContactRecordProfile.StorageServiceProtoContactReco
             proto.blocked = valueParam
         }
 
+        @objc
+        public func setWhitelisted(_ valueParam: Bool) {
+            proto.whitelisted = valueParam
+        }
+
         @objc public func build() throws -> StorageServiceProtoContactRecord {
             return try StorageServiceProtoContactRecord.parseProto(proto)
         }
@@ -1025,6 +1033,13 @@ extension StorageServiceProtoContactRecordProfile.StorageServiceProtoContactReco
     }
     @objc public var hasBlocked: Bool {
         return proto.hasBlocked
+    }
+
+    @objc public var whitelisted: Bool {
+        return proto.whitelisted
+    }
+    @objc public var hasWhitelisted: Bool {
+        return proto.hasWhitelisted
     }
 
     @objc public var hasValidService: Bool {

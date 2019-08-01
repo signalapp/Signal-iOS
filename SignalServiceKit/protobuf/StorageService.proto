@@ -63,6 +63,7 @@ message ContactRecord {
   optional Profile  profile     = 4;
   optional Identity identity    = 5;
   optional bool     blocked     = 6;
+  optional bool     whitelisted = 7;
 }
 
 message ManifestRecord {

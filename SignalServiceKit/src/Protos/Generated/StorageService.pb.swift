@@ -147,10 +147,6 @@ struct StorageServiceProtos_WriteOperation {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
-/// Placeholder record protos, these are serialized, encrypted, and
-/// set in the Contact and ContactsManifest value fields defined above
-///
-/// We need to decide what contact data we'd actually like to sync
 struct StorageServiceProtos_ContactRecord {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -210,6 +206,15 @@ struct StorageServiceProtos_ContactRecord {
   var hasBlocked: Bool {return _storage._blocked != nil}
   /// Clears the value of `blocked`. Subsequent reads from it will return its default value.
   mutating func clearBlocked() {_uniqueStorage()._blocked = nil}
+
+  var whitelisted: Bool {
+    get {return _storage._whitelisted ?? false}
+    set {_uniqueStorage()._whitelisted = newValue}
+  }
+  /// Returns true if `whitelisted` has been explicitly set.
+  var hasWhitelisted: Bool {return _storage._whitelisted != nil}
+  /// Clears the value of `whitelisted`. Subsequent reads from it will return its default value.
+  mutating func clearWhitelisted() {_uniqueStorage()._whitelisted = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -561,6 +566,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     4: .same(proto: "profile"),
     5: .same(proto: "identity"),
     6: .same(proto: "blocked"),
+    7: .same(proto: "whitelisted"),
   ]
 
   fileprivate class _StorageClass {
@@ -570,6 +576,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     var _profile: StorageServiceProtos_ContactRecord.Profile? = nil
     var _identity: StorageServiceProtos_ContactRecord.Identity? = nil
     var _blocked: Bool? = nil
+    var _whitelisted: Bool? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -582,6 +589,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       _profile = source._profile
       _identity = source._identity
       _blocked = source._blocked
+      _whitelisted = source._whitelisted
     }
   }
 
@@ -603,6 +611,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         case 4: try decoder.decodeSingularMessageField(value: &_storage._profile)
         case 5: try decoder.decodeSingularMessageField(value: &_storage._identity)
         case 6: try decoder.decodeSingularBoolField(value: &_storage._blocked)
+        case 7: try decoder.decodeSingularBoolField(value: &_storage._whitelisted)
         default: break
         }
       }
@@ -629,6 +638,9 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       if let v = _storage._blocked {
         try visitor.visitSingularBoolField(value: v, fieldNumber: 6)
       }
+      if let v = _storage._whitelisted {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 7)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -644,6 +656,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
         if _storage._profile != rhs_storage._profile {return false}
         if _storage._identity != rhs_storage._identity {return false}
         if _storage._blocked != rhs_storage._blocked {return false}
+        if _storage._whitelisted != rhs_storage._whitelisted {return false}
         return true
       }
       if !storagesAreEqual {return false}

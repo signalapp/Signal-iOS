@@ -832,6 +832,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             }
         }
         completion:^{
+            // Mark the new whitelisted addresses for update
+            if (newAddresses.count > 0) {
+                [OWSStorageServiceManager.shared recordPendingUpdatesWithUpdatedAddresses:newAddresses.allObjects];
+            }
+
             for (SignalServiceAddress *address in newAddresses) {
                 [[NSNotificationCenter defaultCenter]
                     postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange

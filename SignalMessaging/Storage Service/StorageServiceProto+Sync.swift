@@ -45,11 +45,6 @@ extension StorageServiceProtoContactRecord {
             throw StorageService.StorageError.assertion
         }
 
-        guard profileManager.isUser(inProfileWhitelist: address) else {
-            owsFailDebug("attempted to backup a contact that wasn't whitelisted")
-            throw StorageService.StorageError.assertion
-        }
-
         let builder = StorageServiceProtoContactRecord.builder(key: contactIdentifier.data)
 
         if let phoneNumber = address.phoneNumber {
@@ -61,6 +56,7 @@ extension StorageServiceProtoContactRecord {
         }
 
         builder.setBlocked(blockingManager.isAddressBlocked(address))
+        builder.setWhitelisted(profileManager.isUser(inProfileWhitelist: address))
 
         // Identity
         let identityBuilder = StorageServiceProtoContactRecordIdentity.builder()
@@ -146,6 +142,16 @@ extension StorageServiceProtoContactRecord {
         if hasBlocked, blocked != blockingManager.isAddressBlocked(address) {
             if blocked {
                 blockingManager.addBlockedAddress(address)
+            } else {
+                mergeState = .needsUpdate(recipient.accountId)
+            }
+        }
+
+        // If our whitelist state doesn't match the conflicted version, default to
+        // being whitelisted. There's currently no way to unwhitelist a contact.
+        if hasWhitelisted, whitelisted != profileManager.isUser(inProfileWhitelist: address) {
+            if whitelisted {
+                profileManager.addUser(toProfileWhitelist: address)
             } else {
                 mergeState = .needsUpdate(recipient.accountId)
             }
