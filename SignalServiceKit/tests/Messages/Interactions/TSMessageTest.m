@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         contactShare:nil
                                                          linkPreview:nil
                                                       messageSticker:nil
-                                 perMessageExpirationDurationSeconds:0];
+                                                   isViewOnceMessage:NO];
 
     XCTAssertEqual(0, message.expiresAt);
 }
@@ -60,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         contactShare:nil
                                                          linkPreview:nil
                                                       messageSticker:nil
-                                 perMessageExpirationDurationSeconds:0];
+                                                   isViewOnceMessage:NO];
     XCTAssertEqual(now + expirationMs, message.expiresAt);
 }
 

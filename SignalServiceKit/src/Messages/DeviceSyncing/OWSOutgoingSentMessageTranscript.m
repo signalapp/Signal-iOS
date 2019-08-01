@@ -72,10 +72,14 @@ NS_ASSUME_NONNULL_BEGIN
     [sentBuilder setIsRecipientUpdate:self.isRecipientUpdate];
 
     SSKProtoDataMessage *_Nullable dataMessage;
-    if (self.message.hasPerMessageExpiration) {
+    if (self.message.isViewOnceMessage) {
         // Create data message without renderable content.
         SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
         [dataBuilder setTimestamp:self.message.timestamp];
+
+        OWSAssertDebug(SSKFeatureFlags.viewOnceSending);
+        [dataBuilder setIsViewOnce:YES];
+        [dataBuilder setRequiredProtocolVersion:(uint32_t)SSKProtos.viewOnceMessagesProtocolVersion];
 
         NSError *error;
         dataMessage = [dataBuilder buildAndReturnError:&error];

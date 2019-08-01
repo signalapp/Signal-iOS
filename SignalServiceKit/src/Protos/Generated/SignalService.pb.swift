@@ -655,14 +655,14 @@ struct SignalServiceProtos_DataMessage {
   /// Clears the value of `requiredProtocolVersion`. Subsequent reads from it will return its default value.
   mutating func clearRequiredProtocolVersion() {_uniqueStorage()._requiredProtocolVersion = nil}
 
-  var messageTimer: UInt32 {
-    get {return _storage._messageTimer ?? 0}
-    set {_uniqueStorage()._messageTimer = newValue}
+  var isViewOnce: Bool {
+    get {return _storage._isViewOnce ?? false}
+    set {_uniqueStorage()._isViewOnce = newValue}
   }
-  /// Returns true if `messageTimer` has been explicitly set.
-  var hasMessageTimer: Bool {return _storage._messageTimer != nil}
-  /// Clears the value of `messageTimer`. Subsequent reads from it will return its default value.
-  mutating func clearMessageTimer() {_uniqueStorage()._messageTimer = nil}
+  /// Returns true if `isViewOnce` has been explicitly set.
+  var hasIsViewOnce: Bool {return _storage._isViewOnce != nil}
+  /// Clears the value of `isViewOnce`. Subsequent reads from it will return its default value.
+  mutating func clearIsViewOnce() {_uniqueStorage()._isViewOnce = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -699,7 +699,8 @@ struct SignalServiceProtos_DataMessage {
     typealias RawValue = Int
     case initial // = 0
     case messageTimers // = 1
-    static let current = messageTimers
+    case viewOnce // = 2
+    static let current = viewOnce
 
     init() {
       self = .initial
@@ -709,6 +710,7 @@ struct SignalServiceProtos_DataMessage {
       switch rawValue {
       case 0: self = .initial
       case 1: self = .messageTimers
+      case 2: self = .viewOnce
       default: return nil
       }
     }
@@ -717,6 +719,7 @@ struct SignalServiceProtos_DataMessage {
       switch self {
       case .initial: return 0
       case .messageTimers: return 1
+      case .viewOnce: return 2
       }
     }
 
@@ -1632,14 +1635,14 @@ struct SignalServiceProtos_SyncMessage {
     set {_uniqueStorage()._stickerPackOperation = newValue}
   }
 
-  var messageTimerRead: SignalServiceProtos_SyncMessage.MessageTimerRead {
-    get {return _storage._messageTimerRead ?? SignalServiceProtos_SyncMessage.MessageTimerRead()}
-    set {_uniqueStorage()._messageTimerRead = newValue}
+  var viewOnceOpen: SignalServiceProtos_SyncMessage.ViewOnceOpen {
+    get {return _storage._viewOnceOpen ?? SignalServiceProtos_SyncMessage.ViewOnceOpen()}
+    set {_uniqueStorage()._viewOnceOpen = newValue}
   }
-  /// Returns true if `messageTimerRead` has been explicitly set.
-  var hasMessageTimerRead: Bool {return _storage._messageTimerRead != nil}
-  /// Clears the value of `messageTimerRead`. Subsequent reads from it will return its default value.
-  mutating func clearMessageTimerRead() {_uniqueStorage()._messageTimerRead = nil}
+  /// Returns true if `viewOnceOpen` has been explicitly set.
+  var hasViewOnceOpen: Bool {return _storage._viewOnceOpen != nil}
+  /// Clears the value of `viewOnceOpen`. Subsequent reads from it will return its default value.
+  mutating func clearViewOnceOpen() {_uniqueStorage()._viewOnceOpen = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -2012,7 +2015,7 @@ struct SignalServiceProtos_SyncMessage {
     fileprivate var _type: SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum? = nil
   }
 
-  struct MessageTimerRead {
+  struct ViewOnceOpen {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
@@ -3136,7 +3139,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     10: .same(proto: "preview"),
     11: .same(proto: "sticker"),
     12: .same(proto: "requiredProtocolVersion"),
-    13: .same(proto: "messageTimer"),
+    14: .same(proto: "isViewOnce"),
   ]
 
   fileprivate class _StorageClass {
@@ -3152,7 +3155,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _preview: [SignalServiceProtos_DataMessage.Preview] = []
     var _sticker: SignalServiceProtos_DataMessage.Sticker? = nil
     var _requiredProtocolVersion: UInt32? = nil
-    var _messageTimer: UInt32? = nil
+    var _isViewOnce: Bool? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -3171,7 +3174,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _preview = source._preview
       _sticker = source._sticker
       _requiredProtocolVersion = source._requiredProtocolVersion
-      _messageTimer = source._messageTimer
+      _isViewOnce = source._isViewOnce
     }
   }
 
@@ -3199,7 +3202,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
         case 11: try decoder.decodeSingularMessageField(value: &_storage._sticker)
         case 12: try decoder.decodeSingularUInt32Field(value: &_storage._requiredProtocolVersion)
-        case 13: try decoder.decodeSingularUInt32Field(value: &_storage._messageTimer)
+        case 14: try decoder.decodeSingularBoolField(value: &_storage._isViewOnce)
         default: break
         }
       }
@@ -3244,8 +3247,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if let v = _storage._requiredProtocolVersion {
         try visitor.visitSingularUInt32Field(value: v, fieldNumber: 12)
       }
-      if let v = _storage._messageTimer {
-        try visitor.visitSingularUInt32Field(value: v, fieldNumber: 13)
+      if let v = _storage._isViewOnce {
+        try visitor.visitSingularBoolField(value: v, fieldNumber: 14)
       }
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -3268,7 +3271,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._preview != rhs_storage._preview {return false}
         if _storage._sticker != rhs_storage._sticker {return false}
         if _storage._requiredProtocolVersion != rhs_storage._requiredProtocolVersion {return false}
-        if _storage._messageTimer != rhs_storage._messageTimer {return false}
+        if _storage._isViewOnce != rhs_storage._isViewOnce {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -3289,7 +3292,8 @@ extension SignalServiceProtos_DataMessage.Flags: SwiftProtobuf._ProtoNameProvidi
 extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "INITIAL"),
-    1: .aliased(proto: "MESSAGE_TIMERS", aliases: ["CURRENT"]),
+    1: .same(proto: "MESSAGE_TIMERS"),
+    2: .aliased(proto: "VIEW_ONCE", aliases: ["CURRENT"]),
   ]
 }
 
@@ -4146,7 +4150,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     9: .same(proto: "configuration"),
     8: .same(proto: "padding"),
     10: .same(proto: "stickerPackOperation"),
-    11: .same(proto: "messageTimerRead"),
+    11: .same(proto: "viewOnceOpen"),
   ]
 
   fileprivate class _StorageClass {
@@ -4160,7 +4164,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _configuration: SignalServiceProtos_SyncMessage.Configuration? = nil
     var _padding: Data? = nil
     var _stickerPackOperation: [SignalServiceProtos_SyncMessage.StickerPackOperation] = []
-    var _messageTimerRead: SignalServiceProtos_SyncMessage.MessageTimerRead? = nil
+    var _viewOnceOpen: SignalServiceProtos_SyncMessage.ViewOnceOpen? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -4177,7 +4181,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _configuration = source._configuration
       _padding = source._padding
       _stickerPackOperation = source._stickerPackOperation
-      _messageTimerRead = source._messageTimerRead
+      _viewOnceOpen = source._viewOnceOpen
     }
   }
 
@@ -4203,7 +4207,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 8: try decoder.decodeSingularBytesField(value: &_storage._padding)
         case 9: try decoder.decodeSingularMessageField(value: &_storage._configuration)
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._stickerPackOperation)
-        case 11: try decoder.decodeSingularMessageField(value: &_storage._messageTimerRead)
+        case 11: try decoder.decodeSingularMessageField(value: &_storage._viewOnceOpen)
         default: break
         }
       }
@@ -4242,7 +4246,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if !_storage._stickerPackOperation.isEmpty {
         try visitor.visitRepeatedMessageField(value: _storage._stickerPackOperation, fieldNumber: 10)
       }
-      if let v = _storage._messageTimerRead {
+      if let v = _storage._viewOnceOpen {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 11)
       }
     }
@@ -4264,7 +4268,7 @@ extension SignalServiceProtos_SyncMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._configuration != rhs_storage._configuration {return false}
         if _storage._padding != rhs_storage._padding {return false}
         if _storage._stickerPackOperation != rhs_storage._stickerPackOperation {return false}
-        if _storage._messageTimerRead != rhs_storage._messageTimerRead {return false}
+        if _storage._viewOnceOpen != rhs_storage._viewOnceOpen {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -4744,8 +4748,8 @@ extension SignalServiceProtos_SyncMessage.StickerPackOperation.TypeEnum: SwiftPr
   ]
 }
 
-extension SignalServiceProtos_SyncMessage.MessageTimerRead: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".MessageTimerRead"
+extension SignalServiceProtos_SyncMessage.ViewOnceOpen: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".ViewOnceOpen"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "sender"),
     2: .same(proto: "timestamp"),
@@ -4771,7 +4775,7 @@ extension SignalServiceProtos_SyncMessage.MessageTimerRead: SwiftProtobuf.Messag
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: SignalServiceProtos_SyncMessage.MessageTimerRead, rhs: SignalServiceProtos_SyncMessage.MessageTimerRead) -> Bool {
+  static func ==(lhs: SignalServiceProtos_SyncMessage.ViewOnceOpen, rhs: SignalServiceProtos_SyncMessage.ViewOnceOpen) -> Bool {
     if lhs._sender != rhs._sender {return false}
     if lhs._timestamp != rhs._timestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

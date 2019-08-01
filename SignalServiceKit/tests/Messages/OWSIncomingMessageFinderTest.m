@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                       messageSticker:nil
                                                                                      serverTimestamp:nil
                                                                                      wasReceivedByUD:NO
-                                                                 perMessageExpirationDurationSeconds:0];
+                                                                                   isViewOnceMessage:NO];
     [incomingMessage save];
 }
 

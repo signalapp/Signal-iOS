@@ -463,11 +463,11 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             try db.create(index: "index_jobs_on_label",
                           on: JobRecordRecord.databaseTableName,
                           columns: [JobRecordRecord.columnName(.label)])
-            try db.create(index: "index_interactions_with_per_message_expiration",
+            try db.create(index: "index_interactions_on_view_once",
                           on: InteractionRecord.databaseTableName,
                           columns: [
-                            InteractionRecord.columnName(.perMessageExpirationDurationSeconds),
-                            InteractionRecord.columnName(.perMessageExpirationHasExpired)
+                            InteractionRecord.columnName(.isViewOnceMessage),
+                            InteractionRecord.columnName(.isViewOnceComplete)
                 ])
             try db.create(index: "index_key_value_store_on_collection_and_key",
                           on: SDSKeyValueStore.table.tableName,

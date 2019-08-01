@@ -56,7 +56,7 @@
                                                      messageSticker:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO
-                                perMessageExpirationDurationSeconds:0];
+                                                  isViewOnceMessage:NO];
     [incomingMessage save];
 
     TSOutgoingMessage *outgoingMessage =
@@ -72,7 +72,7 @@
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
-                                perMessageExpirationDurationSeconds:0];
+                                                  isViewOnceMessage:NO];
     [outgoingMessage save];
 
     [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
@@ -123,7 +123,7 @@
                                                      messageSticker:nil
                                                     serverTimestamp:nil
                                                     wasReceivedByUD:NO
-                                perMessageExpirationDurationSeconds:0];
+                                                  isViewOnceMessage:NO];
     [incomingMessage save];
 
     __block TSAttachmentStream *outgoingAttachment;
@@ -151,7 +151,7 @@
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
-                                perMessageExpirationDurationSeconds:0];
+                                                  isViewOnceMessage:NO];
     [outgoingMessage save];
 
     // Sanity check

@@ -36,34 +36,32 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             return @"OWSMessageCellType_OversizeTextDownloading";
         case OWSMessageCellType_StickerMessage:
             return @"OWSMessageCellType_StickerMessage";
-        case OWSMessageCellType_PerMessageExpiration:
-            return @"OWSMessageCellType_PerMessageExpiration";
+        case OWSMessageCellType_ViewOnce:
+            return @"OWSMessageCellType_ViewOnce";
     }
 }
 
-NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellType)
+NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 {
     switch (cellType) {
-        case PerMessageExpirationState_Unknown:
-            return @"PerMessageExpirationState_Unknown";
-        case PerMessageExpirationState_IncomingExpired:
-            return @"PerMessageExpirationState_IncomingExpired";
-        case PerMessageExpirationState_IncomingDownloading:
-            return @"PerMessageExpirationState_IncomingDownloading";
-        case PerMessageExpirationState_IncomingFailed:
-            return @"PerMessageExpirationState_IncomingFailed";
-        case PerMessageExpirationState_IncomingAvailable:
-            return @"PerMessageExpirationState_IncomingAvailable";
-        case PerMessageExpirationState_IncomingInvalidContent:
-            return @"PerMessageExpirationState_IncomingInvalidContent";
-        case PerMessageExpirationState_OutgoingSending:
-            return @"PerMessageExpirationState_OutgoingSending";
-        case PerMessageExpirationState_OutgoingFailed:
-            return @"PerMessageExpirationState_OutgoingFailed";
-        case PerMessageExpirationState_OutgoingSentAvailable:
-            return @"PerMessageExpirationState_OutgoingSentAvailable";
-        case PerMessageExpirationState_OutgoingSentExpired:
-            return @"PerMessageExpirationState_OutgoingSentExpired";
+        case ViewOnceMessageState_Unknown:
+            return @"ViewOnceMessageState_Unknown";
+        case ViewOnceMessageState_IncomingExpired:
+            return @"ViewOnceMessageState_IncomingExpired";
+        case ViewOnceMessageState_IncomingDownloading:
+            return @"ViewOnceMessageState_IncomingDownloading";
+        case ViewOnceMessageState_IncomingFailed:
+            return @"ViewOnceMessageState_IncomingFailed";
+        case ViewOnceMessageState_IncomingAvailable:
+            return @"ViewOnceMessageState_IncomingAvailable";
+        case ViewOnceMessageState_IncomingInvalidContent:
+            return @"ViewOnceMessageState_IncomingInvalidContent";
+        case ViewOnceMessageState_OutgoingSending:
+            return @"ViewOnceMessageState_OutgoingSending";
+        case ViewOnceMessageState_OutgoingFailed:
+            return @"ViewOnceMessageState_OutgoingFailed";
+        case ViewOnceMessageState_OutgoingSentExpired:
+            return @"ViewOnceMessageState_OutgoingSentExpired";
     }
 }
 
@@ -125,7 +123,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
 @property (nonatomic, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, nullable) TSAttachmentStream *stickerAttachment;
 @property (nonatomic) BOOL isFailedSticker;
-@property (nonatomic) PerMessageExpirationState perMessageExpirationState;
+@property (nonatomic) ViewOnceMessageState viewOnceMessageState;
 @property (nonatomic, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, nullable) TSAttachmentPointer *attachmentPointer;
 @property (nonatomic, nullable) ContactShareViewModel *contactShare;
@@ -198,7 +196,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
     self.stickerInfo = nil;
     self.stickerAttachment = nil;
     self.isFailedSticker = NO;
-    self.perMessageExpirationState = PerMessageExpirationState_Unknown;
+    self.viewOnceMessageState = ViewOnceMessageState_Unknown;
     self.contactShare = nil;
     self.systemMessageText = nil;
     self.authorConversationColorName = nil;
@@ -277,7 +275,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
     return message.hasPerConversationExpiration;
 }
 
-- (BOOL)hasPerMessageExpiration
+- (BOOL)isViewOnceMessage
 {
     if (self.interaction.interactionType != OWSInteractionType_OutgoingMessage
         && self.interaction.interactionType != OWSInteractionType_IncomingMessage) {
@@ -285,7 +283,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
     }
 
     TSMessage *message = (TSMessage *)self.interaction;
-    return message.hasPerMessageExpiration;
+    return message.isViewOnceMessage;
 }
 
 - (BOOL)hasCellHeader
@@ -407,13 +405,13 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
     [self clearCachedLayoutState];
 }
 
-- (void)setPerMessageExpirationState:(PerMessageExpirationState)perMessageExpirationState
+- (void)setViewOnceMessageState:(ViewOnceMessageState)viewOnceMessageState
 {
-    if (_perMessageExpirationState == perMessageExpirationState) {
+    if (_viewOnceMessageState == viewOnceMessageState) {
         return;
     }
 
-    _perMessageExpirationState = perMessageExpirationState;
+    _viewOnceMessageState = viewOnceMessageState;
 
     [self clearCachedLayoutState];
 }
@@ -711,8 +709,8 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
 
     TSMessage *message = (TSMessage *)self.interaction;
 
-    if (message.hasPerMessageExpiration) {
-        [self configurePerMessageExpiration:message transaction:transaction];
+    if (message.isViewOnceMessage) {
+        [self configureViewOnceMessage:message transaction:transaction];
         return;
     }
 
@@ -871,80 +869,65 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
     }
 }
 
-- (void)configurePerMessageExpiration:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
+- (void)configureViewOnceMessage:(TSMessage *)message transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(message != nil);
     OWSAssertDebug(transaction != nil);
-    OWSAssertDebug(message.hasPerMessageExpiration);
+    OWSAssertDebug(message.isViewOnceMessage);
 
     if (self.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        if (message.isViewOnceComplete) {
+            self.messageCellType = OWSMessageCellType_ViewOnce;
+            self.viewOnceMessageState = ViewOnceMessageState_OutgoingSentExpired;
+            return;
+        }
+
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)message;
         switch (outgoingMessage.messageState) {
             case TSOutgoingMessageStateSending:
-                self.perMessageExpirationState = PerMessageExpirationState_OutgoingSending;
+                self.viewOnceMessageState = ViewOnceMessageState_OutgoingSending;
                 break;
             case TSOutgoingMessageStateFailed:
-                self.perMessageExpirationState = PerMessageExpirationState_OutgoingFailed;
+                self.viewOnceMessageState = ViewOnceMessageState_OutgoingFailed;
                 break;
             default:
-                if (message.perMessageExpirationHasExpired) {
-                    self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentExpired;
-                } else {
-                    NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction];
-                    // TODO: We currently only support single attachments for messages
-                    //       with per-message expiration.
-                    TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
-                    if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
-                        OWSFailDebug(@"Invalid outgoing attachment.");
-                        self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentExpired;
-                    } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
-                        TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
-                        if (attachmentStream.isValidVisualMedia
-                            && (attachmentStream.isImage || attachmentStream.isAnimated)) {
-                            self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentAvailable;
-                            self.attachmentStream = attachmentStream;
-                        } else {
-                            OWSFailDebug(@"Invalid outgoing attachment.");
-                            self.perMessageExpirationState = PerMessageExpirationState_OutgoingSentExpired;
-                        }
-                    }
-                }
+                self.viewOnceMessageState = ViewOnceMessageState_OutgoingSentExpired;
                 break;
         }
-        self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+        self.messageCellType = OWSMessageCellType_ViewOnce;
         return;
     }
-    if (message.perMessageExpirationHasExpired) {
-        self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-        self.perMessageExpirationState = PerMessageExpirationState_IncomingExpired;
+    if (message.isViewOnceComplete) {
+        self.messageCellType = OWSMessageCellType_ViewOnce;
+        self.viewOnceMessageState = ViewOnceMessageState_IncomingExpired;
         return;
     }
 
     NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction];
-    // TODO: We currently only support single attachments for messages
-    //       with per-message expiration.
+    // TODO: We currently only support single attachments for
+    //       view-once messages.
     TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
     if ([mediaAttachment isKindOfClass:[TSAttachmentPointer class]]) {
-        self.messageCellType = OWSMessageCellType_PerMessageExpiration;
+        self.messageCellType = OWSMessageCellType_ViewOnce;
         self.attachmentPointer = (TSAttachmentPointer *)mediaAttachment;
-        self.perMessageExpirationState = (self.attachmentPointer.state == TSAttachmentPointerStateFailed
-                ? PerMessageExpirationState_IncomingFailed
-                : PerMessageExpirationState_IncomingDownloading);
+        self.viewOnceMessageState = (self.attachmentPointer.state == TSAttachmentPointerStateFailed
+                ? ViewOnceMessageState_IncomingFailed
+                : ViewOnceMessageState_IncomingDownloading);
         return;
     } else if ([mediaAttachment isKindOfClass:[TSAttachmentStream class]]) {
         TSAttachmentStream *attachmentStream = (TSAttachmentStream *)mediaAttachment;
         if (attachmentStream.isValidVisualMedia && (attachmentStream.isImage || attachmentStream.isAnimated)) {
-            self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-            self.perMessageExpirationState = PerMessageExpirationState_IncomingAvailable;
+            self.messageCellType = OWSMessageCellType_ViewOnce;
+            self.viewOnceMessageState = ViewOnceMessageState_IncomingAvailable;
             self.attachmentStream = attachmentStream;
         } else {
-            self.messageCellType = OWSMessageCellType_PerMessageExpiration;
-            self.perMessageExpirationState = PerMessageExpirationState_IncomingInvalidContent;
+            self.messageCellType = OWSMessageCellType_ViewOnce;
+            self.viewOnceMessageState = ViewOnceMessageState_IncomingInvalidContent;
         }
         return;
     }
 
-    OWSFailDebug(@"Invalid media for message with per-message expiration.");
+    OWSFailDebug(@"Invalid media for view-once message.");
     self.messageCellType = OWSMessageCellType_Unknown;
 }
 
@@ -1143,8 +1126,8 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
         case OWSMessageCellType_OversizeTextDownloading:
             OWSFailDebug(@"Can't copy not-yet-downloaded attachment");
             return;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Can't copy message with per-message expiration");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"Can't copy view once message");
             return;
     }
 }
@@ -1190,8 +1173,8 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
                 OWSFailDebug(@"Sticked not yet downloaded.");
             }
             return;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Can't copy message with per-message expiration");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"Can't copy view once message");
             return;
     }
 }
@@ -1256,8 +1239,8 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
                 OWSFailDebug(@"Sticked not yet downloaded.");
             }
             return;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Can't share message with per-message expiration");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"Can't share view once message");
             return;
     }
 }
@@ -1287,7 +1270,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
         }
         case OWSMessageCellType_OversizeTextDownloading:
         case OWSMessageCellType_StickerMessage:
-        case OWSMessageCellType_PerMessageExpiration:
+        case OWSMessageCellType_ViewOnce:
             return NO;
     }
 }
@@ -1328,7 +1311,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
         }
         case OWSMessageCellType_OversizeTextDownloading:
         case OWSMessageCellType_StickerMessage:
-        case OWSMessageCellType_PerMessageExpiration:
+        case OWSMessageCellType_ViewOnce:
             return NO;
     }
 }
@@ -1360,8 +1343,8 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
             return;
         case OWSMessageCellType_StickerMessage:
             return [self saveSticker];
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Can't save message with per-message expiration");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"Can't save view once message");
             return;
     }
 }
@@ -1460,7 +1443,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState cellTyp
             return NO;
         case OWSMessageCellType_StickerMessage:
             return self.stickerAttachment != nil;
-        case OWSMessageCellType_PerMessageExpiration:
+        case OWSMessageCellType_ViewOnce:
             return NO;
     }
 }

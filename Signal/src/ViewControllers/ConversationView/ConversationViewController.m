@@ -27,8 +27,8 @@
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSMath.h"
 #import "OWSMessageCell.h"
-#import "OWSMessageHiddenView.h"
 #import "OWSMessageStickerView.h"
+#import "OWSMessageViewOnceView.h"
 #import "OWSSystemMessageCell.h"
 #import "Signal-Swift.h"
 #import "TSAttachmentPointer.h"
@@ -129,7 +129,7 @@ typedef enum : NSUInteger {
     MenuActionsViewControllerDelegate,
     OWSMessageBubbleViewDelegate,
     OWSMessageStickerViewDelegate,
-    OWSMessageHiddenViewDelegate,
+    OWSMessageViewOnceViewDelegate,
     UICollectionViewDelegate,
     UICollectionViewDataSource,
     UIDocumentMenuDelegate,
@@ -2681,16 +2681,16 @@ typedef enum : NSUInteger {
     [self presentViewController:packView animated:YES completion:nil];
 }
 
-#pragma mark - OWSMessageHiddenViewDelegate
+#pragma mark - OWSMessageViewOnceViewDelegate
 
-- (void)didTapAttachmentWithPerMessageExpiration:(id<ConversationViewItem>)viewItem
-                                attachmentStream:(TSAttachmentStream *)attachmentStream
+- (void)didTapViewOnceAttachment:(id<ConversationViewItem>)viewItem
+                attachmentStream:(TSAttachmentStream *)attachmentStream
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(viewItem);
     OWSAssertDebug(attachmentStream);
 
-    [PerMessageExpirationViewController tryToPresentWithInteraction:viewItem.interaction from:self];
+    [ViewOnceMessageViewController tryToPresentWithInteraction:viewItem.interaction from:self];
 }
 
 #pragma mark - ContactEditingDelegate
@@ -4580,7 +4580,7 @@ typedef enum : NSUInteger {
         OWSMessageCell *messageCell = (OWSMessageCell *)cell;
         messageCell.messageBubbleView.delegate = self;
         messageCell.messageStickerView.delegate = self;
-        messageCell.messageHiddenView.delegate = self;
+        messageCell.messageViewOnceView.delegate = self;
 
         // There are cases where we don't have a navigation controller, such as if we got here through 3d touch.
         // Make sure we only register the gesture interaction if it actually exists. This helps the swipe back

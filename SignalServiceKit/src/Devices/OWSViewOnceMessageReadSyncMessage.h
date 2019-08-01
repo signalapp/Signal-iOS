@@ -6,7 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSPerMessageExpirationReadSyncMessage : OWSOutgoingSyncMessage
+@interface OWSViewOnceMessageReadSyncMessage : OWSOutgoingSyncMessage
 
 @property (nonatomic, readonly) NSString *senderId;
 @property (nonatomic, readonly) uint64_t messageIdTimestamp;
