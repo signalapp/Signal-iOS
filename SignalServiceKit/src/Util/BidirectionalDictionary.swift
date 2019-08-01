@@ -4,17 +4,62 @@
 
 import Foundation
 
-/// A dictionary that maintains a 1:1 key <-> value mapping and allows lookup by value or key.
-public final class BidirectionalDictionary<ElementOne: Hashable, ElementTwo: Hashable>: NSObject, NSCoding {
-    private var forwardDictionary = [ElementOne: ElementTwo]()
-    private var backwardDictionary = [ElementTwo: ElementOne]()
+@objc
+public final class AnyBidirectionalDictionary: NSObject, NSCoding {
+    fileprivate let forwardDictionary: Dictionary<AnyHashable, AnyHashable>
+    fileprivate let backwardDictionary: Dictionary<AnyHashable, AnyHashable>
 
-    public required override init() {
+    public init<ElementOne: Hashable, ElementTwo: Hashable>(_ bidirectionalDictionary: BidirectionalDictionary<ElementOne, ElementTwo>) {
+        forwardDictionary = .init(uniqueKeysWithValues: bidirectionalDictionary.forwardDictionary.map {
+            (AnyHashable($0.key), AnyHashable($0.value))
+        })
+        backwardDictionary = .init(uniqueKeysWithValues: bidirectionalDictionary.backwardDictionary.map {
+            (AnyHashable($0.key), AnyHashable($0.value))
+        })
+    }
+
+    // MARK: - NSCoding
+
+    @objc public func encode(with aCoder: NSCoder) {
+        aCoder.encode(forwardDictionary, forKey: "forwardDictionary")
+        aCoder.encode(backwardDictionary, forKey: "backwardDictionary")
+    }
+
+    @objc public init?(coder aDecoder: NSCoder) {
+        forwardDictionary = aDecoder.decodeObject(forKey: "forwardDictionary") as? [AnyHashable: AnyHashable] ?? [:]
+        backwardDictionary = aDecoder.decodeObject(forKey: "backwardDictionary") as? [AnyHashable: AnyHashable] ?? [:]
+
+        guard forwardDictionary.count == backwardDictionary.count else {
+            owsFailDebug("incorrect backing values")
+            return nil
+        }
+    }
+}
+
+/// A dictionary that maintains a 1:1 key <-> value mapping and allows lookup by value or key.
+public struct BidirectionalDictionary<ElementOne: Hashable, ElementTwo: Hashable> {
+    fileprivate typealias ForwardType = [ElementOne: ElementTwo]
+    fileprivate typealias BackwardType = [ElementTwo: ElementOne]
+
+    fileprivate var forwardDictionary: ForwardType
+    fileprivate var backwardDictionary: [ElementTwo: ElementOne]
+
+    public init() {
         forwardDictionary = [:]
         backwardDictionary = [:]
     }
 
-    public convenience init(uniqueKeysWithValues elements: [(ElementOne, ElementTwo)]) {
+    public init?(_ anyBidirectionalDictionary: AnyBidirectionalDictionary) {
+        guard let forwardDictionary = anyBidirectionalDictionary.forwardDictionary as? ForwardType,
+            let backwardDictionary = anyBidirectionalDictionary.backwardDictionary as? BackwardType else {
+            return nil
+        }
+
+        self.forwardDictionary = forwardDictionary
+        self.backwardDictionary = backwardDictionary
+    }
+
+    public init(uniqueKeysWithValues elements: [(ElementOne, ElementTwo)]) {
         self.init()
         elements.forEach { self[$0] = $1 }
     }
@@ -58,23 +103,6 @@ public final class BidirectionalDictionary<ElementOne: Hashable, ElementTwo: Has
     public var count: Int {
         assert(forwardDictionary.count == backwardDictionary.count)
         return forwardDictionary.count
-    }
-
-    // MARK: - NSCoding
-
-    public func encode(with aCoder: NSCoder) {
-        aCoder.encode(forwardDictionary, forKey: "forwardDictionary")
-        aCoder.encode(backwardDictionary, forKey: "backwardDictionary")
-    }
-
-    public init?(coder aDecoder: NSCoder) {
-        forwardDictionary = aDecoder.decodeObject(forKey: "forwardDictionary") as? [ElementOne: ElementTwo] ?? [:]
-        backwardDictionary = aDecoder.decodeObject(forKey: "backwardDictionary") as? [ElementTwo: ElementOne] ?? [:]
-
-        guard forwardDictionary.count == backwardDictionary.count else {
-            owsFailDebug("incorrect backing values")
-            return nil
-        }
     }
 }
 
@@ -142,7 +170,7 @@ extension BidirectionalDictionary: ExpressibleByDictionaryLiteral {
     public typealias Key = ElementOne
     public typealias Value = ElementTwo
 
-    public convenience init(dictionaryLiteral elements: (ElementOne, ElementTwo)...) {
+    public init(dictionaryLiteral elements: (ElementOne, ElementTwo)...) {
         self.init(uniqueKeysWithValues: elements)
     }
 }

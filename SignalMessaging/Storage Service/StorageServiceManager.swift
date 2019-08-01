@@ -430,12 +430,19 @@ class StorageServiceOperation: OWSOperation {
     }
 
     private static func accountToIdentifierMap(transaction: SDSAnyReadTransaction) -> BidirectionalDictionary<AccountId, StorageService.ContactIdentifier> {
-        let accountIdToIdentifierData = keyValueStore.getObject(accountToIdentifierMapKey, transaction: transaction) as? BidirectionalDictionary<AccountId, Data> ?? [:]
-        return accountIdToIdentifierData.mapValues { .init(data: $0) }
+        guard let anyDictionary = keyValueStore.getObject(accountToIdentifierMapKey, transaction: transaction) as? AnyBidirectionalDictionary,
+            let dictionary = BidirectionalDictionary<AccountId, Data>(anyDictionary) else {
+            return [:]
+        }
+        return dictionary.mapValues { .init(data: $0) }
     }
 
-    private static func setAccountToIdentifierMap( _ map: BidirectionalDictionary<AccountId, StorageService.ContactIdentifier>, transaction: SDSAnyWriteTransaction) {
-        keyValueStore.setObject(map.mapValues { $0.data }, key: accountToIdentifierMapKey, transaction: transaction)
+    private static func setAccountToIdentifierMap( _ dictionary: BidirectionalDictionary<AccountId, StorageService.ContactIdentifier>, transaction: SDSAnyWriteTransaction) {
+        keyValueStore.setObject(
+            AnyBidirectionalDictionary(dictionary.mapValues { $0.data } ),
+            key: accountToIdentifierMapKey,
+            transaction: transaction
+        )
     }
 
     private enum ChangeState: Int {
