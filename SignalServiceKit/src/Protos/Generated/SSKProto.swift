@@ -6364,13 +6364,16 @@ extension SSKProtoGroupDetails.SSKProtoGroupDetailsBuilder {
 
     // MARK: - SSKProtoPackStickerBuilder
 
-    @objc public class func builder(id: UInt32, emoji: String) -> SSKProtoPackStickerBuilder {
-        return SSKProtoPackStickerBuilder(id: id, emoji: emoji)
+    @objc public class func builder(id: UInt32) -> SSKProtoPackStickerBuilder {
+        return SSKProtoPackStickerBuilder(id: id)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoPackStickerBuilder {
-        let builder = SSKProtoPackStickerBuilder(id: id, emoji: emoji)
+        let builder = SSKProtoPackStickerBuilder(id: id)
+        if let _value = emoji {
+            builder.setEmoji(_value)
+        }
         return builder
     }
 
@@ -6380,11 +6383,10 @@ extension SSKProtoGroupDetails.SSKProtoGroupDetailsBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(id: UInt32, emoji: String) {
+        @objc fileprivate init(id: UInt32) {
             super.init()
 
             setId(id)
-            setEmoji(emoji)
         }
 
         @objc public func setId(_ valueParam: UInt32) {
@@ -6408,14 +6410,20 @@ extension SSKProtoGroupDetails.SSKProtoGroupDetailsBuilder {
 
     @objc public let id: UInt32
 
-    @objc public let emoji: String
+    @objc public var emoji: String? {
+        guard proto.hasEmoji else {
+            return nil
+        }
+        return proto.emoji
+    }
+    @objc public var hasEmoji: Bool {
+        return proto.hasEmoji
+    }
 
     private init(proto: SignalServiceProtos_Pack.Sticker,
-                 id: UInt32,
-                 emoji: String) {
+                 id: UInt32) {
         self.proto = proto
         self.id = id
-        self.emoji = emoji
     }
 
     @objc
@@ -6434,18 +6442,12 @@ extension SSKProtoGroupDetails.SSKProtoGroupDetailsBuilder {
         }
         let id = proto.id
 
-        guard proto.hasEmoji else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: emoji")
-        }
-        let emoji = proto.emoji
-
         // MARK: - Begin Validation Logic for SSKProtoPackSticker -
 
         // MARK: - End Validation Logic for SSKProtoPackSticker -
 
         let result = SSKProtoPackSticker(proto: proto,
-                                         id: id,
-                                         emoji: emoji)
+                                         id: id)
         return result
     }
 

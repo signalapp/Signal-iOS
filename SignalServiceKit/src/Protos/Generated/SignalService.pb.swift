@@ -2582,7 +2582,6 @@ struct SignalServiceProtos_Pack {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
-    /// @required
     var emoji: String {
       get {return _emoji ?? String()}
       set {_emoji = newValue}

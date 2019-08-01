@@ -433,7 +433,6 @@ message Pack {
   message Sticker {
     // @required
     optional uint32 id    = 1;
-    // @required
     optional string emoji = 2;
   }
 
