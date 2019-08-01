@@ -49,6 +49,11 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     return SDSDatabaseStorage.shared;
 }
 
+- (id<StorageServiceManagerProtocol>)storageServiceManager
+{
+    return SSKEnvironment.shared.storageServiceManager;
+}
+
 #pragma mark -
 
 + (SDSKeyValueStore *)keyValueStore
@@ -150,6 +155,8 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
     OWSLogInfo(@"addBlockedAddress: %@", address);
 
+    BOOL wasBlocked = [self isAddressBlocked:address];
+
     @synchronized(self)
     {
         [self ensureLazyInitialization];
@@ -163,6 +170,10 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         }
     }
 
+    if (wasBlocked != [self isAddressBlocked:address]) {
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:@[ address ]];
+    }
+
     [self handleUpdate];
 }
 
@@ -171,6 +182,8 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     OWSAssertDebug(address.isValid);
 
     OWSLogInfo(@"removeBlockedAddress: %@", address);
+
+    BOOL wasBlocked = [self isAddressBlocked:address];
 
     @synchronized(self)
     {
@@ -183,6 +196,11 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         if (address.uuidString && [_blockedUUIDSet containsObject:address.uuidString]) {
             [_blockedUUIDSet removeObject:address.uuidString];
         }
+    }
+
+    // The block state changed, schedule a backup with the storage service
+    if (wasBlocked != [self isAddressBlocked:address]) {
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedAddresses:@[ address ]];
     }
 
     [self handleUpdate];

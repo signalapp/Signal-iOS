@@ -100,4 +100,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let phoneNumberPrivacy = false
+
+    @objc
+    public static let socialGraphOnServer = registrationLockV2 && pinsForEveryone && !IsUsingProductionService() && build.includes(.dev)
 }

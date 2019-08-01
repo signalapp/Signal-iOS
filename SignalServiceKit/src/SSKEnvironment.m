@@ -84,6 +84,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                         databaseStorage:(SDSDatabaseStorage *)databaseStorage
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
+                  storageServiceManager:(<StorageServiceManagerProtocol>)storageServiceManager
 {
     self = [super init];
     if (!self) {
@@ -123,6 +124,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(databaseStorage);
     OWSAssertDebug(signalServiceAddressCache);
     OWSAssertDebug(accountServiceClient);
+    OWSAssertDebug(storageServiceManager);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -157,6 +159,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _databaseStorage = databaseStorage;
     _signalServiceAddressCache = signalServiceAddressCache;
     _accountServiceClient = accountServiceClient;
+    _storageServiceManager = storageServiceManager;
 
     return self;
 }

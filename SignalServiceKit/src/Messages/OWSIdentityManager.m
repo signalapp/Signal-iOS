@@ -109,6 +109,11 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     return SSKEnvironment.shared.tsAccountManager;
 }
 
+- (id<StorageServiceManagerProtocol>)storageServiceManager
+{
+    return SSKEnvironment.shared.storageServiceManager;
+}
+
 #pragma mark -
 
 - (void)observeNotifications
@@ -240,6 +245,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
         [self fireIdentityStateChangeNotification];
 
+        // Identity key was created, schedule a social graph backup
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ accountId ]];
+
         return NO;
     }
 
@@ -273,6 +281,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         [self clearSyncMessageForAccountId:accountId transaction:transaction];
 
         [self fireIdentityStateChangeNotification];
+
+        // Identity key was changed, schedule a social graph backup
+        [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ accountId ]];
 
         return YES;
     }
@@ -341,6 +352,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
         // Cancel any pending verification state sync messages for this recipient.
         [self clearSyncMessageForAddress:address transaction:transaction];
     }
+
+    // Verification state has changed, schedule a social graph backup
+    [self.storageServiceManager recordPendingUpdatesWithUpdatedIds:@[ accountId ]];
 
     [self fireIdentityStateChangeNotification];
 }

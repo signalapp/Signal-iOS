@@ -38,24 +38,32 @@ message WriteOperation {
   repeated bytes            deleteKey     = 3;
 }
 
-// Placeholder record protos, these are serialized, encrypted, and
-// set in the Contact and ContactsManifest value fields defined above
-//
-// We need to decide what contact data we'd actually like to sync
 message ContactRecord {
+  message Identity {
+    enum State {
+      DEFAULT    = 0;
+      VERIFIED   = 1;
+      UNVERIFIED = 2;
+    }
+
+    optional bytes key   = 1;
+    optional State state = 2;
+  }
+
+  message Profile {
+    optional string name   = 1;
+    optional bytes  key    = 2;
+    optional bytes  avatar = 3;
+  }
+
   // @required
-  optional bytes  key               = 1;
-  optional string serviceUuid       = 2;
-  optional string serviceE164       = 3;
-  optional string profileName       = 4;
-  optional bytes  profileAvatar     = 5;
-  optional bytes  profileKey        = 6;
-  optional string conversationColor = 7;
-  optional uint32 conversationTimer = 8;
-  optional string notificationTone  = 9;
-  optional bytes  identityKey       = 10;
-  optional bool   verified          = 11;
-  optional bool   blocked           = 12;
+  optional bytes    key         = 1;
+  optional string   serviceUuid = 2;
+  optional string   serviceE164 = 3;
+  optional Profile  profile     = 4;
+  optional Identity identity    = 5;
+  optional bool     blocked     = 6;
+  optional bool     whitelisted = 7;
 }
 
 message ManifestRecord {

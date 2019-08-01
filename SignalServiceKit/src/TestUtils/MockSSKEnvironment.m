@@ -87,6 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
     StickerManager *stickerManager = [[StickerManager alloc] init];
     SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
     AccountServiceClient *accountServiceClient = [FakeAccountServiceClient new];
+    OWSFakeStorageServiceManager *storageServiceManager = [OWSFakeStorageServiceManager new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -120,7 +121,8 @@ NS_ASSUME_NONNULL_BEGIN
                            stickerManager:stickerManager
                           databaseStorage:databaseStorage
                 signalServiceAddressCache:signalServiceAddressCache
-                     accountServiceClient:accountServiceClient];
+                     accountServiceClient:accountServiceClient
+                    storageServiceManager:storageServiceManager];
 
     if (!self) {
         return nil;
