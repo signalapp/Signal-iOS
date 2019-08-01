@@ -73,22 +73,22 @@ public final class LokiAPI : NSObject {
             return invoke(.sendMessage, on: target, associatedWith: destination, parameters: parameters)
         }
         func sendLokiMessageUsingSwarmAPI() -> Promise<Set<RawResponsePromise>> {
-            let powPromise = lokiMessage.calculatePoW()
-            let swarmPromise = getTargetSnodes(for: destination)
-            return when(fulfilled: powPromise, swarmPromise).map { lokiMessageWithPoW, swarm in
-                return Set(swarm.map {
-                    sendLokiMessage(lokiMessageWithPoW, to: $0).map { rawResponse in
-                        if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
-                            guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }
-                            print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
-                            LokiAPI.powDifficulty = UInt(powDifficulty)
-                        } else {
-                            print("[Loki] Failed to update proof of work difficulty from: \(rawResponse).")
+            return lokiMessage.calculatePoW().then { lokiMessageWithPoW in
+                return getTargetSnodes(for: destination).map { swarm in
+                    return Set(swarm.map { target in
+                        sendLokiMessage(lokiMessageWithPoW, to: target).map { rawResponse in
+                            if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
+                                guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }
+                                print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
+                                LokiAPI.powDifficulty = UInt(powDifficulty)
+                            } else {
+                                print("[Loki] Failed to update proof of work difficulty from: \(rawResponse).")
+                            }
+                            return rawResponse
                         }
-                        return rawResponse
-                    }
-                })
-            }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+                    })
+                }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+            }
         }
         if let peer = LokiP2PAPI.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {
             let target = LokiAPITarget(address: peer.address, port: peer.port)
