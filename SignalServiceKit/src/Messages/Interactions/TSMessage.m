@@ -209,6 +209,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _schemaVersion = OWSMessageSchemaVersion;
 
     // Upgrades legacy messages.
+    //
+    // TODO: We can eventually remove this migration since
+    //       per-message expiration was never released to
+    //       production.
     NSNumber *_Nullable perMessageExpirationDurationSeconds =
         [coder decodeObjectForKey:@"perMessageExpirationDurationSeconds"];
     if (perMessageExpirationDurationSeconds.unsignedIntegerValue > 0) {

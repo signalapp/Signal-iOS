@@ -155,7 +155,9 @@ class ViewOnceMessageViewController: OWSViewController {
             //
             // * Move the attachment file to a temporary file.
             // * Create an empty placeholder file in the old attachment
-            //   file's location so that TSAttachmentStream.
+            //   file's location so that TSAttachmentStream's invariant
+            //   of always corresponding to an underlying file on disk
+            //   remains true.
             // * Delete the temporary file when this view is dismissed.
             // * If the app terminates at any step during this process,
             //   either: a) the file wasn't moved, the message wasn't
