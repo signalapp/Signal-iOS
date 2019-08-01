@@ -226,7 +226,8 @@ message DataMessage {
 
     INITIAL = 0;
     MESSAGE_TIMERS = 1;
-    CURRENT = 1;
+    VIEW_ONCE = 2;
+    CURRENT = 2;
   }
 
   optional string            body                    =  1;
@@ -241,7 +242,7 @@ message DataMessage {
   repeated Preview           preview                 = 10;
   optional Sticker           sticker                 = 11;
   optional uint32            requiredProtocolVersion = 12;
-  optional uint32            messageTimer            = 13;
+  optional bool              isViewOnce              = 14;
 }
 
 message NullMessage {
@@ -340,7 +341,7 @@ message SyncMessage {
     optional Type  type    = 3;
   }
 
-  message MessageTimerRead {
+  message ViewOnceOpen {
     // @required
     optional string sender    = 1;
     // @required
@@ -357,7 +358,7 @@ message SyncMessage {
   optional Configuration        configuration        =  9;
   optional bytes                padding              =  8;
   repeated StickerPackOperation stickerPackOperation = 10;
-  optional MessageTimerRead     messageTimerRead     = 11;
+  optional ViewOnceOpen         viewOnceOpen         = 11;
 }
 
 message AttachmentPointer {

@@ -1643,22 +1643,22 @@
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
 
-/* Label that indicates that 'per-message expiration' is active. */
+/* Label that indicates that 'view-once messages' is active. */
 "PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "写真が消去されます";
 
-/* Label for messages with per-message expiration that have invalid content. */
+/* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "受信中にエラー";
 
 /* Notification for incoming disappearing photo. */
 "PER_MESSAGE_EXPIRATION_NOTIFICATION" = "写真が消去されます";
 
-/* Label for outgoing messages with per-message expiration. */
+/* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "写真";
 
-/* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "写真を見る";
 
-/* Label for messages with per-message expiration indicating that the local user has viewed the message's contents. */
+/* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "閲覧済み";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */

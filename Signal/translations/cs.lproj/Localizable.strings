@@ -1643,22 +1643,22 @@
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
 
-/* Label that indicates that 'per-message expiration' is active. */
+/* Label that indicates that 'view-once messages' is active. */
 "PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Disappearing Photo";
 
-/* Label for messages with per-message expiration that have invalid content. */
+/* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Chyba při zpracování příchozí zprávy";
 
 /* Notification for incoming disappearing photo. */
 "PER_MESSAGE_EXPIRATION_NOTIFICATION" = "Disappearing Photo";
 
-/* Label for outgoing messages with per-message expiration. */
+/* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Fotografie";
 
-/* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "Zobrazit fotku";
 
-/* Label for messages with per-message expiration indicating that the local user has viewed the message's contents. */
+/* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Viewed";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */

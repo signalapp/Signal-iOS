@@ -136,7 +136,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                        contactShare:transcript.contact
                                                         linkPreview:transcript.linkPreview
                                                      messageSticker:transcript.messageSticker
-                                perMessageExpirationDurationSeconds:transcript.perMessageExpirationDurationSeconds];
+                                                  isViewOnceMessage:transcript.isViewOnceMessage];
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:transcript.attachmentPointerProtos
@@ -206,10 +206,14 @@ NS_ASSUME_NONNULL_BEGIN
                                                              transaction:transaction];
     [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
                                                                           transaction:transaction];
-    [PerMessageExpiration expireIfNecessaryWithMessage:outgoingMessage
-                                           transaction:transaction.asAnyWrite];
+    if (outgoingMessage.isViewOnceMessage) {
+        // To be extra-conservative, always mark
+        [ViewOnceMessages markAsCompleteWithMessage:outgoingMessage
+                                   sendSyncMessages:NO
+                                        transaction:transaction.asAnyWrite];
+    } else if (outgoingMessage.hasAttachments) {
+        // Don't download attachments for "view-once" messages.
 
-    if (outgoingMessage.hasAttachments) {
         [self.attachmentDownloads
             downloadAllAttachmentsForMessage:outgoingMessage
                                  transaction:transaction.asAnyRead

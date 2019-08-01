@@ -46,7 +46,7 @@ NSString *const OWSPreferencesKeyShouldNotifyOfNewAccountKey = @"OWSPreferencesK
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
 NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
-NSString *const OWSPreferencesKeyIsPerMessageExpirationEnabled = @"OWSPreferencesKeyIsPerMessageExpirationEnabled";
+NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKeyIsViewOnceMessagesEnabled";
 
 @implementation OWSPreferences
 
@@ -416,18 +416,18 @@ NSString *const OWSPreferencesKeyIsPerMessageExpirationEnabled = @"OWSPreference
     return [self hasValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
 }
 
-- (BOOL)isPerMessageExpirationEnabled
+- (BOOL)isViewOnceMessagesEnabled
 {
-    if (SSKFeatureFlags.perMessageExpiration) {
-        return [self boolForKey:OWSPreferencesKeyIsPerMessageExpirationEnabled defaultValue:NO];
+    if (SSKFeatureFlags.viewOnceSending) {
+        return [self boolForKey:OWSPreferencesKeyIsViewOnceMessagesEnabled defaultValue:NO];
     } else {
         return NO;
     }
 }
 
-- (void)setIsPerMessageExpirationEnabled:(BOOL)value
+- (void)setIsViewOnceMessagesEnabled:(BOOL)value
 {
-    [self setBool:value forKey:OWSPreferencesKeyIsPerMessageExpirationEnabled];
+    [self setBool:value forKey:OWSPreferencesKeyIsViewOnceMessagesEnabled];
 }
 
 #pragma mark direct call connectivity (non-TURN)

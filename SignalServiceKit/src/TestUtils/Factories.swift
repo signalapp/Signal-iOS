@@ -142,7 +142,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                      contactShare: contactShareBuilder(),
                                      linkPreview: linkPreviewBuilder(),
                                      messageSticker: messageStickerBuilder(),
-                                     perMessageExpirationDurationSeconds: perMessageExpirationDurationSecondsBuilder())
+                                     isViewOnceMessage: isViewOnceMessageBuilder())
 
         return item
     }
@@ -220,8 +220,8 @@ public class OutgoingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var perMessageExpirationDurationSecondsBuilder: () -> UInt32 = {
-        return 0
+    public var isViewOnceMessageBuilder: () -> Bool = {
+        return false
     }
 
     // MARK: Delivery Receipts
@@ -271,7 +271,7 @@ public class IncomingMessageFactory: NSObject, Factory {
                                      messageSticker: messageStickerBuilder(),
                                      serverTimestamp: serverTimestampBuilder(),
                                      wasReceivedByUD: wasReceivedByUDBuilder(),
-                                     perMessageExpirationDurationSeconds: perMessageExpirationDurationSecondsBuilder())
+                                     isViewOnceMessage: isViewOnceMessageBuilder())
 
         item.anyInsert(transaction: transaction)
 
@@ -356,8 +356,8 @@ public class IncomingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var perMessageExpirationDurationSecondsBuilder: () -> UInt32 = {
-        return 0
+    public var isViewOnceMessageBuilder: () -> Bool = {
+        return false
     }
 }
 

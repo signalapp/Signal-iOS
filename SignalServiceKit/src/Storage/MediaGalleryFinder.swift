@@ -111,7 +111,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
             LEFT JOIN \(InteractionRecord.databaseTableName)
                 ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
                 AND \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .perMessageExpirationDurationSeconds) = 0
+                AND \(interactionColumn: .isViewOnceMessage) = FALSE
             WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
                 AND \(attachmentColumn: .albumMessageId) IS NOT NULL
                 AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
@@ -134,7 +134,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         LEFT JOIN \(InteractionRecord.databaseTableName)
             ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
             AND \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .perMessageExpirationDurationSeconds) = 0
+            AND \(interactionColumn: .isViewOnceMessage) = FALSE
         WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
             AND \(attachmentColumn: .albumMessageId) IS NOT NULL
             AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
@@ -151,7 +151,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
         LEFT JOIN \(InteractionRecord.databaseTableName)
             ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
             AND \(interactionColumn: .threadUniqueId) = ?
-            AND \(interactionColumn: .perMessageExpirationDurationSeconds) = 0
+            AND \(interactionColumn: .isViewOnceMessage) = FALSE
         WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
             AND \(attachmentColumn: .albumMessageId) IS NOT NULL
             AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE
@@ -182,7 +182,7 @@ extension GRDBMediaGalleryFinder: MediaGalleryFinder {
             LEFT JOIN \(InteractionRecord.databaseTableName)
                 ON \(attachmentColumn: .albumMessageId) = \(interactionColumnFullyQualified: .uniqueId)
                 AND \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .perMessageExpirationDurationSeconds) = 0
+                AND \(interactionColumn: .isViewOnceMessage) = FALSE
             WHERE \(attachmentColumnFullyQualified: .recordType) = \(SDSRecordType.attachmentStream.rawValue)
               AND \(attachmentColumn: .albumMessageId) IS NOT NULL
               AND IsVisualMediaContentType(\(attachmentColumn: .contentType)) IS TRUE

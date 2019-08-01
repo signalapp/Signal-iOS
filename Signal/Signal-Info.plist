@@ -7,7 +7,7 @@
 		<key>CarthageVersion</key>
 		<string>0.33.0</string>
 		<key>OSXVersion</key>
-		<string>10.14.5</string>
+		<string>10.14.6</string>
 		<key>WebRTCCommit</key>
 		<string>e742b8b9bc8f2c6d088d9a212fa326ebbba52784 M75 working w/ iOS9</string>
 	</dict>

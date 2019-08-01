@@ -970,7 +970,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
         if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-            OWSFailDebug(@"Object has unexpected type: %@", [attachment class]);
+            //            OWSFailDebug(@"Object has unexpected type: %@", [attachment class]);
             return;
         }
         attachmentStream = (TSAttachmentStream *)attachment;

@@ -1007,11 +1007,11 @@ NS_ASSUME_NONNULL_BEGIN
         for (SSKProtoSyncMessageStickerPackOperation *packOperationProto in syncMessage.stickerPackOperation) {
             [StickerManager processIncomingStickerPackOperation:packOperationProto transaction:transaction];
         }
-    } else if (syncMessage.messageTimerRead != nil) {
-        OWSLogInfo(@"Received per-message expiration sync message");
-        [PerMessageExpiration processIncomingSyncMessage:syncMessage.messageTimerRead
-                                                envelope:envelope
-                                             transaction:transaction];
+    } else if (syncMessage.viewOnceOpen != nil) {
+        OWSLogInfo(@"Received view-once read receipt sync message");
+        [ViewOnceMessages processIncomingSyncMessage:syncMessage.viewOnceOpen
+                                            envelope:envelope
+                                         transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
@@ -1501,6 +1501,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"stickerError: %@", stickerError);
     }
 
+    BOOL isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce;
+
     // Legit usage of senderTimestamp when creating an incoming group message record
     TSIncomingMessage *incomingMessage =
         [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
@@ -1516,7 +1518,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      messageSticker:messageSticker
                                                     serverTimestamp:serverTimestamp
                                                     wasReceivedByUD:wasReceivedByUD
-                                perMessageExpirationDurationSeconds:dataMessage.messageTimer];
+                                                  isViewOnceMessage:isViewOnceMessage];
     if (!incomingMessage) {
         OWSFailDebug(@"Missing incomingMessage.");
         return nil;
@@ -1608,7 +1610,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogWarn(@"GRDB TODO");
     }
 
-    [PerMessageExpiration applyEarlyReadReceiptsForIncomingMessage:incomingMessage transaction:transaction];
+    [ViewOnceMessages applyEarlyReadReceiptsForIncomingMessage:incomingMessage transaction:transaction];
 
     [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
                                                                     inThread:thread

@@ -33,7 +33,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
                    contactShare: nil,
                    linkPreview: nil,
                    messageSticker: nil,
-                   perMessageExpirationDurationSeconds: 0)
+                   isViewOnceMessage: false)
     }
 
     @objc

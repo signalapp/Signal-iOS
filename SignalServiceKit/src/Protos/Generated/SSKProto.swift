@@ -3033,12 +3033,14 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
     @objc public enum SSKProtoDataMessageProtocolVersion: Int32 {
         case initial = 0
         case messageTimers = 1
+        case viewOnce = 2
     }
 
     private class func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos_DataMessage.ProtocolVersion) -> SSKProtoDataMessageProtocolVersion {
         switch value {
         case .initial: return .initial
         case .messageTimers: return .messageTimers
+        case .viewOnce: return .viewOnce
         }
     }
 
@@ -3046,6 +3048,7 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         switch value {
         case .initial: return .initial
         case .messageTimers: return .messageTimers
+        case .viewOnce: return .viewOnce
         }
     }
 
@@ -3088,8 +3091,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         if hasRequiredProtocolVersion {
             builder.setRequiredProtocolVersion(requiredProtocolVersion)
         }
-        if hasMessageTimer {
-            builder.setMessageTimer(messageTimer)
+        if hasIsViewOnce {
+            builder.setIsViewOnce(isViewOnce)
         }
         return builder
     }
@@ -3166,8 +3169,8 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
             proto.requiredProtocolVersion = valueParam
         }
 
-        @objc public func setMessageTimer(_ valueParam: UInt32) {
-            proto.messageTimer = valueParam
+        @objc public func setIsViewOnce(_ valueParam: Bool) {
+            proto.isViewOnce = valueParam
         }
 
         @objc public func build() throws -> SSKProtoDataMessage {
@@ -3241,11 +3244,11 @@ extension SSKProtoDataMessageSticker.SSKProtoDataMessageStickerBuilder {
         return proto.hasRequiredProtocolVersion
     }
 
-    @objc public var messageTimer: UInt32 {
-        return proto.messageTimer
+    @objc public var isViewOnce: Bool {
+        return proto.isViewOnce
     }
-    @objc public var hasMessageTimer: Bool {
-        return proto.hasMessageTimer
+    @objc public var hasIsViewOnce: Bool {
+        return proto.hasIsViewOnce
     }
 
     private init(proto: SignalServiceProtos_DataMessage,
@@ -4873,25 +4876,25 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
 
 #endif
 
-// MARK: - SSKProtoSyncMessageMessageTimerRead
+// MARK: - SSKProtoSyncMessageViewOnceOpen
 
-@objc public class SSKProtoSyncMessageMessageTimerRead: NSObject {
+@objc public class SSKProtoSyncMessageViewOnceOpen: NSObject {
 
-    // MARK: - SSKProtoSyncMessageMessageTimerReadBuilder
+    // MARK: - SSKProtoSyncMessageViewOnceOpenBuilder
 
-    @objc public class func builder(sender: String, timestamp: UInt64) -> SSKProtoSyncMessageMessageTimerReadBuilder {
-        return SSKProtoSyncMessageMessageTimerReadBuilder(sender: sender, timestamp: timestamp)
+    @objc public class func builder(sender: String, timestamp: UInt64) -> SSKProtoSyncMessageViewOnceOpenBuilder {
+        return SSKProtoSyncMessageViewOnceOpenBuilder(sender: sender, timestamp: timestamp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SSKProtoSyncMessageMessageTimerReadBuilder {
-        let builder = SSKProtoSyncMessageMessageTimerReadBuilder(sender: sender, timestamp: timestamp)
+    @objc public func asBuilder() -> SSKProtoSyncMessageViewOnceOpenBuilder {
+        let builder = SSKProtoSyncMessageViewOnceOpenBuilder(sender: sender, timestamp: timestamp)
         return builder
     }
 
-    @objc public class SSKProtoSyncMessageMessageTimerReadBuilder: NSObject {
+    @objc public class SSKProtoSyncMessageViewOnceOpenBuilder: NSObject {
 
-        private var proto = SignalServiceProtos_SyncMessage.MessageTimerRead()
+        private var proto = SignalServiceProtos_SyncMessage.ViewOnceOpen()
 
         @objc fileprivate override init() {}
 
@@ -4910,22 +4913,22 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
             proto.timestamp = valueParam
         }
 
-        @objc public func build() throws -> SSKProtoSyncMessageMessageTimerRead {
-            return try SSKProtoSyncMessageMessageTimerRead.parseProto(proto)
+        @objc public func build() throws -> SSKProtoSyncMessageViewOnceOpen {
+            return try SSKProtoSyncMessageViewOnceOpen.parseProto(proto)
         }
 
         @objc public func buildSerializedData() throws -> Data {
-            return try SSKProtoSyncMessageMessageTimerRead.parseProto(proto).serializedData()
+            return try SSKProtoSyncMessageViewOnceOpen.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: SignalServiceProtos_SyncMessage.MessageTimerRead
+    fileprivate let proto: SignalServiceProtos_SyncMessage.ViewOnceOpen
 
     @objc public let sender: String
 
     @objc public let timestamp: UInt64
 
-    private init(proto: SignalServiceProtos_SyncMessage.MessageTimerRead,
+    private init(proto: SignalServiceProtos_SyncMessage.ViewOnceOpen,
                  sender: String,
                  timestamp: UInt64) {
         self.proto = proto
@@ -4938,12 +4941,12 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageMessageTimerRead {
-        let proto = try SignalServiceProtos_SyncMessage.MessageTimerRead(serializedData: serializedData)
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageViewOnceOpen {
+        let proto = try SignalServiceProtos_SyncMessage.ViewOnceOpen(serializedData: serializedData)
         return try parseProto(proto)
     }
 
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.MessageTimerRead) throws -> SSKProtoSyncMessageMessageTimerRead {
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.ViewOnceOpen) throws -> SSKProtoSyncMessageViewOnceOpen {
         guard proto.hasSender else {
             throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sender")
         }
@@ -4954,13 +4957,13 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
         }
         let timestamp = proto.timestamp
 
-        // MARK: - Begin Validation Logic for SSKProtoSyncMessageMessageTimerRead -
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageViewOnceOpen -
 
-        // MARK: - End Validation Logic for SSKProtoSyncMessageMessageTimerRead -
+        // MARK: - End Validation Logic for SSKProtoSyncMessageViewOnceOpen -
 
-        let result = SSKProtoSyncMessageMessageTimerRead(proto: proto,
-                                                         sender: sender,
-                                                         timestamp: timestamp)
+        let result = SSKProtoSyncMessageViewOnceOpen(proto: proto,
+                                                     sender: sender,
+                                                     timestamp: timestamp)
         return result
     }
 
@@ -4971,14 +4974,14 @@ extension SSKProtoSyncMessageStickerPackOperation.SSKProtoSyncMessageStickerPack
 
 #if DEBUG
 
-extension SSKProtoSyncMessageMessageTimerRead {
+extension SSKProtoSyncMessageViewOnceOpen {
     @objc public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerReadBuilder {
-    @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageMessageTimerRead? {
+extension SSKProtoSyncMessageViewOnceOpen.SSKProtoSyncMessageViewOnceOpenBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageViewOnceOpen? {
         return try! self.build()
     }
 }
@@ -5024,8 +5027,8 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
             builder.setPadding(_value)
         }
         builder.setStickerPackOperation(stickerPackOperation)
-        if let _value = messageTimerRead {
-            builder.setMessageTimerRead(_value)
+        if let _value = viewOnceOpen {
+            builder.setViewOnceOpen(_value)
         }
         return builder
     }
@@ -5088,8 +5091,8 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
             proto.stickerPackOperation = wrappedItems.map { $0.proto }
         }
 
-        @objc public func setMessageTimerRead(_ valueParam: SSKProtoSyncMessageMessageTimerRead) {
-            proto.messageTimerRead = valueParam.proto
+        @objc public func setViewOnceOpen(_ valueParam: SSKProtoSyncMessageViewOnceOpen) {
+            proto.viewOnceOpen = valueParam.proto
         }
 
         @objc public func build() throws -> SSKProtoSyncMessage {
@@ -5121,7 +5124,7 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
 
     @objc public let stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation]
 
-    @objc public let messageTimerRead: SSKProtoSyncMessageMessageTimerRead?
+    @objc public let viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?
 
     @objc public var padding: Data? {
         guard proto.hasPadding else {
@@ -5143,7 +5146,7 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
                  verified: SSKProtoVerified?,
                  configuration: SSKProtoSyncMessageConfiguration?,
                  stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation],
-                 messageTimerRead: SSKProtoSyncMessageMessageTimerRead?) {
+                 viewOnceOpen: SSKProtoSyncMessageViewOnceOpen?) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -5154,7 +5157,7 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
         self.verified = verified
         self.configuration = configuration
         self.stickerPackOperation = stickerPackOperation
-        self.messageTimerRead = messageTimerRead
+        self.viewOnceOpen = viewOnceOpen
     }
 
     @objc
@@ -5209,9 +5212,9 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
         var stickerPackOperation: [SSKProtoSyncMessageStickerPackOperation] = []
         stickerPackOperation = try proto.stickerPackOperation.map { try SSKProtoSyncMessageStickerPackOperation.parseProto($0) }
 
-        var messageTimerRead: SSKProtoSyncMessageMessageTimerRead? = nil
-        if proto.hasMessageTimerRead {
-            messageTimerRead = try SSKProtoSyncMessageMessageTimerRead.parseProto(proto.messageTimerRead)
+        var viewOnceOpen: SSKProtoSyncMessageViewOnceOpen? = nil
+        if proto.hasViewOnceOpen {
+            viewOnceOpen = try SSKProtoSyncMessageViewOnceOpen.parseProto(proto.viewOnceOpen)
         }
 
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
@@ -5228,7 +5231,7 @@ extension SSKProtoSyncMessageMessageTimerRead.SSKProtoSyncMessageMessageTimerRea
                                          verified: verified,
                                          configuration: configuration,
                                          stickerPackOperation: stickerPackOperation,
-                                         messageTimerRead: messageTimerRead)
+                                         viewOnceOpen: viewOnceOpen)
         return result
     }
 

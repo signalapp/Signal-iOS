@@ -595,7 +595,7 @@ NS_ASSUME_NONNULL_BEGIN
                 // Ignore both kinds of disappearing messages.
                 if ([object isKindOfClass:[TSMessage class]]) {
                     TSMessage *message = object;
-                    if (message.hasPerConversationExpiration || message.hasPerMessageExpiration) {
+                    if (message.hasPerConversationExpiration || message.isViewOnceMessage) {
                         return NO;
                     }
                 }

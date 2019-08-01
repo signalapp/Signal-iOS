@@ -16,27 +16,26 @@ typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_MediaMessage,
     OWSMessageCellType_OversizeTextDownloading,
     OWSMessageCellType_StickerMessage,
-    OWSMessageCellType_PerMessageExpiration,
+    OWSMessageCellType_ViewOnce,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 #pragma mark -
 
-typedef NS_ENUM(NSUInteger, PerMessageExpirationState) {
-    PerMessageExpirationState_Unknown = 0,
-    PerMessageExpirationState_IncomingExpired,
-    PerMessageExpirationState_IncomingDownloading,
-    PerMessageExpirationState_IncomingFailed,
-    PerMessageExpirationState_IncomingAvailable,
-    PerMessageExpirationState_IncomingInvalidContent,
-    PerMessageExpirationState_OutgoingSending,
-    PerMessageExpirationState_OutgoingFailed,
-    PerMessageExpirationState_OutgoingSentAvailable,
-    PerMessageExpirationState_OutgoingSentExpired,
+typedef NS_ENUM(NSUInteger, ViewOnceMessageState) {
+    ViewOnceMessageState_Unknown = 0,
+    ViewOnceMessageState_IncomingExpired,
+    ViewOnceMessageState_IncomingDownloading,
+    ViewOnceMessageState_IncomingFailed,
+    ViewOnceMessageState_IncomingAvailable,
+    ViewOnceMessageState_IncomingInvalidContent,
+    ViewOnceMessageState_OutgoingSending,
+    ViewOnceMessageState_OutgoingFailed,
+    ViewOnceMessageState_OutgoingSentExpired,
 };
 
-NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
+NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 @class ContactShareViewModel;
 @class ConversationViewCell;
@@ -93,7 +92,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
 @property (nonatomic, readonly) BOOL hasCellHeader;
 
 @property (nonatomic, readonly) BOOL hasPerConversationExpiration;
-@property (nonatomic, readonly) BOOL hasPerMessageExpiration;
+@property (nonatomic, readonly) BOOL isViewOnceMessage;
 
 @property (nonatomic) BOOL shouldShowDate;
 @property (nonatomic) BOOL shouldShowSenderAvatar;
@@ -147,7 +146,7 @@ NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
 @property (nonatomic, readonly, nullable) StickerInfo *stickerInfo;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *stickerAttachment;
 @property (nonatomic, readonly) BOOL isFailedSticker;
-@property (nonatomic, readonly) PerMessageExpirationState perMessageExpirationState;
+@property (nonatomic, readonly) ViewOnceMessageState viewOnceMessageState;
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
 
