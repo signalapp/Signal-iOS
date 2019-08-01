@@ -13,14 +13,16 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
     override init() {
         super.init()
 
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(registrationStateDidChange),
-            name: .RegistrationStateDidChange,
-            object: nil
-        )
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.registrationStateDidChange()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady { self.registrationStateDidChange() }
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(self.registrationStateDidChange),
+                name: .RegistrationStateDidChange,
+                object: nil
+            )
+        }
     }
 
     @objc private func registrationStateDidChange() {
@@ -38,7 +40,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     func recordPendingDeletions(deletedIds: [AccountId]) {
-        let operation = StorageServiceOperation(mode: .pendingAccountIdDeletions(deletedIds))
+        let operation = StorageServiceOperation.recordPendingDeletions(deletedIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
         // Schedule a backup to run in the next 10 minutes
@@ -48,7 +50,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     func recordPendingDeletions(deletedAddresses: [SignalServiceAddress]) {
-        let operation = StorageServiceOperation(mode: .pendingAddressDeletions(deletedAddresses))
+        let operation = StorageServiceOperation.recordPendingDeletions(deletedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
         // Schedule a backup to run in the next 10 minutes
@@ -58,7 +60,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     func recordPendingUpdates(updatedIds: [AccountId]) {
-        let operation = StorageServiceOperation(mode: .pendingAccountIdUpdates(updatedIds))
+        let operation = StorageServiceOperation.recordPendingUpdates(updatedIds)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
         // Schedule a backup to run in the next 10 minutes
@@ -68,7 +70,7 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 
     @objc
     func recordPendingUpdates(updatedAddresses: [SignalServiceAddress]) {
-        let operation = StorageServiceOperation(mode: .pendingAddressUpdates(updatedAddresses))
+        let operation = StorageServiceOperation.recordPendingUpdates(updatedAddresses)
         StorageServiceOperation.operationQueue.addOperation(operation)
 
         // Schedule a backup to run in the next 10 minutes
@@ -126,8 +128,12 @@ class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
 class StorageServiceOperation: OWSOperation {
     // MARK: - Dependencies
 
+    private static var databaseStorage: SDSDatabaseStorage {
+        return .shared
+    }
+
     private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
+        return .shared
     }
 
     static var keyValueStore: SDSKeyValueStore {
@@ -136,6 +142,11 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: -
 
+    // We only ever want to be doing one storage operation at a time.
+    // Pending updates queued up after a backup operation will not get
+    // applied until the following backup. This allows us to be certain
+    // when we do things like resolve conflicts that we're not going to
+    // blow away any pending updates / deletions.
     fileprivate static let operationQueue: OperationQueue = {
         let queue = OperationQueue()
         queue.maxConcurrentOperationCount = 1
@@ -144,10 +155,6 @@ class StorageServiceOperation: OWSOperation {
     }()
 
     fileprivate enum Mode {
-        case pendingAccountIdUpdates([AccountId])
-        case pendingAddressUpdates([SignalServiceAddress])
-        case pendingAccountIdDeletions([AccountId])
-        case pendingAddressDeletions([SignalServiceAddress])
         case backup
         case restoreOrCreate
     }
@@ -171,14 +178,6 @@ class StorageServiceOperation: OWSOperation {
         }
 
         switch mode {
-        case .pendingAccountIdUpdates(let updatedIds):
-            recordPendingUpdates(updatedIds)
-        case .pendingAddressUpdates(let updatedAddresses):
-            recordPendingUpdates(updatedAddresses)
-        case .pendingAccountIdDeletions(let deletedIds):
-            recordPendingDeletions(deletedIds)
-        case .pendingAddressDeletions(let deletedAddresses):
-            recordPendingDeletions(deletedAddresses)
         case .backup:
             backupPendingChanges()
         case .restoreOrCreate:
@@ -188,23 +187,27 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: Mark Pending Changes
 
-    private func recordPendingUpdates(_ updatedAddresses: [SignalServiceAddress]) {
-        databaseStorage.write { transaction in
-            let updatedIds = updatedAddresses.map { address in
-                OWSAccountIdFinder().ensureAccountId(forAddress: address, transaction: transaction)
+    fileprivate static func recordPendingUpdates(_ updatedAddresses: [SignalServiceAddress]) -> Operation {
+        return BlockOperation {
+            databaseStorage.write { transaction in
+                let updatedIds = updatedAddresses.map { address in
+                    OWSAccountIdFinder().ensureAccountId(forAddress: address, transaction: transaction)
+                }
+
+                recordPendingUpdates(updatedIds, transaction: transaction)
             }
-
-            self.recordPendingUpdates(updatedIds, transaction: transaction)
         }
     }
 
-    private func recordPendingUpdates(_ updatedIds: [AccountId]) {
-        databaseStorage.write { transaction in
-            self.recordPendingUpdates(updatedIds, transaction: transaction)
+    fileprivate static func recordPendingUpdates(_ updatedIds: [AccountId]) -> Operation {
+        return BlockOperation {
+            databaseStorage.write { transaction in
+                recordPendingUpdates(updatedIds, transaction: transaction)
+            }
         }
     }
 
-    private func recordPendingUpdates(_ updatedIds: [AccountId], transaction: SDSAnyWriteTransaction) {
+    private static func recordPendingUpdates(_ updatedIds: [AccountId], transaction: SDSAnyWriteTransaction) {
         var pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
 
         for accountId in updatedIds {
@@ -212,38 +215,36 @@ class StorageServiceOperation: OWSOperation {
         }
 
         StorageServiceOperation.setAccountChangeMap(pendingChanges, transaction: transaction)
-
-        reportSuccess()
     }
 
-    private func recordPendingDeletions(_ deletedAddress: [SignalServiceAddress]) {
-        databaseStorage.write { transaction in
-            let deletedIds = deletedAddress.map { address in
-                OWSAccountIdFinder().ensureAccountId(forAddress: address, transaction: transaction)
+    fileprivate static func recordPendingDeletions(_ deletedAddress: [SignalServiceAddress]) -> Operation {
+        return BlockOperation {
+            databaseStorage.write { transaction in
+                let deletedIds = deletedAddress.map { address in
+                    OWSAccountIdFinder().ensureAccountId(forAddress: address, transaction: transaction)
+                }
+
+                recordPendingDeletions(deletedIds, transaction: transaction)
             }
-
-            self.recordPendingDeletions(deletedIds, transaction: transaction)
         }
     }
 
-    private func recordPendingDeletions(_ deletedIds: [AccountId]) {
-        databaseStorage.write { transaction in
-            self.recordPendingDeletions(deletedIds, transaction: transaction)
-        }
-    }
-
-    private func recordPendingDeletions(_ deletedIds: [AccountId], transaction: SDSAnyWriteTransaction) {
-        databaseStorage.write { transaction in
-            var pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
-
-            for accountId in deletedIds {
-                pendingChanges[accountId] = .deleted
+    fileprivate static func recordPendingDeletions(_ deletedIds: [AccountId]) -> Operation {
+        return BlockOperation {
+            databaseStorage.write { transaction in
+                recordPendingDeletions(deletedIds, transaction: transaction)
             }
+        }
+    }
 
-            StorageServiceOperation.setAccountChangeMap(pendingChanges, transaction: transaction)
+    private static func recordPendingDeletions(_ deletedIds: [AccountId], transaction: SDSAnyWriteTransaction) {
+        var pendingChanges = StorageServiceOperation.accountChangeMap(transaction: transaction)
+
+        for accountId in deletedIds {
+            pendingChanges[accountId] = .deleted
         }
 
-        reportSuccess()
+        StorageServiceOperation.setAccountChangeMap(pendingChanges, transaction: transaction)
     }
 
     // MARK: Backup
@@ -263,37 +264,36 @@ class StorageServiceOperation: OWSOperation {
             // Build an up-to-date contact record for every pending update
             updatedRecords =
                 pendingChanges.lazy.filter { $0.value == .updated }.compactMap { accountId, _ in
-                    var hasBuildError = false
-
-                    defer {
-                        // Clear the pending change only if we were able to successfully build a record.
-                        if !hasBuildError {
-                            pendingChanges[accountId] = nil
-                        }
-                    }
-
                     do {
                         guard let contactIdentifier = identifierMap[accountId] else {
                             // This is a new contact, we need to generate an ID
                             let contactIdentifier = StorageService.ContactIdentifier.generate()
                             identifierMap[accountId] = contactIdentifier
 
-                            return try StorageServiceProtoContactRecord.build(
+                            let record = try StorageServiceProtoContactRecord.build(
                                 for: accountId,
                                 contactIdentifier: contactIdentifier,
                                 transaction: transaction
                             )
+
+                            // Clear pending changes
+                            pendingChanges[accountId] = nil
+
+                            return record
                         }
 
-                        return try StorageServiceProtoContactRecord.build(
+                        let record = try StorageServiceProtoContactRecord.build(
                             for: accountId,
                             contactIdentifier: contactIdentifier,
                             transaction: transaction
                         )
+
+                        // Clear pending changes
+                        pendingChanges[accountId] = nil
+
+                        return record
                     } catch {
                         owsFailDebug("Unexpectedly failed to process changes for account \(error)")
-                        hasBuildError = true
-
                         // If for some reason we failed, we'll just skip it and try this account again next backup.
                         return nil
                     }
@@ -302,7 +302,7 @@ class StorageServiceOperation: OWSOperation {
 
         // Lookup the contact identifier for every pending deletion
         let deletedIdentifiers: [StorageService.ContactIdentifier] =
-            pendingChanges.filter { $0.value == .deleted }.compactMap { accountId, _ in
+            pendingChanges.lazy.filter { $0.value == .deleted }.compactMap { accountId, _ in
                 // Clear the pending change
                 pendingChanges[accountId] = nil
 
@@ -333,10 +333,7 @@ class StorageServiceOperation: OWSOperation {
         do {
             manifest = try manifestBuilder.build()
         } catch {
-            owsFailDebug("unexpectedly failed to build manifest \(error)")
-            let retryableError = error as NSError
-            retryableError.isRetryable = true
-            return reportError(withUndefinedRetry: retryableError)
+            return reportError(OWSAssertionError("failed to build proto"))
         }
 
         StorageService.updateManifest(
@@ -356,7 +353,7 @@ class StorageServiceOperation: OWSOperation {
             }
 
             // Throw away all our work, resolve conflicts, and try again.
-            self.mergeExistingManifestWithNewManifest(conflictingManifest, backupAfterSuccess: true)
+            self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
         }.catch { error in
             self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
@@ -406,7 +403,7 @@ class StorageServiceOperation: OWSOperation {
 
     // MARK: - Conflict Resolution
 
-    private func mergeExistingManifestWithNewManifest(_ manifest: StorageServiceProtoManifestRecord, backupAfterSuccess: Bool) {
+    private func mergeLocalManifest(withRemoteManifest manifest: StorageServiceProtoManifestRecord, backupAfterSuccess: Bool) {
         var identifierMap: BidirectionalDictionary<AccountId, StorageService.ContactIdentifier> = [:]
         var pendingChanges: [AccountId: ChangeState] = [:]
 
@@ -419,7 +416,7 @@ class StorageServiceOperation: OWSOperation {
         StorageService.fetchContacts(for: manifest.keys.map { .init(data: $0) }).done(on: .global()) { contacts in
             self.databaseStorage.write { transaction in
                 for contact in contacts {
-                    switch contact.mergeWithExisting(transaction: transaction) {
+                    switch contact.mergeWithLocalContact(transaction: transaction) {
                     case .invalid:
                         // This contact record was invalid, ignore it.
                         // we'll clear it out in the next backup.
@@ -444,10 +441,11 @@ class StorageServiceOperation: OWSOperation {
                 self.reportSuccess()
             }
         }.catch { error in
-            owsFailDebug("received unexpected error while fetching contacts \(error)")
-            let retryableError = error as NSError
-            retryableError.isRetryable = true
-            self.reportError(withUndefinedRetry: retryableError)
+            if let storageError = error as? StorageService.StorageError {
+                return self.reportError(storageError)
+            }
+
+            self.reportError(OWSAssertionError("received unexpected error when fetching contacts"))
         }.retainUntilComplete()
     }
 

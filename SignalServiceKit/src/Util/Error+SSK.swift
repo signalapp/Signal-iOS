@@ -4,13 +4,13 @@
 
 import Foundation
 
-struct OWSAssertionError: OperationError {
-    let isRetryable: Bool = false
-    let errorCode: Int = OWSErrorCode.assertionFailure.rawValue
+public struct OWSAssertionError: OperationError {
+    public let isRetryable: Bool = false
+    public let errorCode: Int = OWSErrorCode.assertionFailure.rawValue
 
-    let description: String
+    public let description: String
 
-    init(_ description: String) {
+    public init(_ description: String) {
         owsFailDebug("assertionError: \(description)")
         self.description = description
     }

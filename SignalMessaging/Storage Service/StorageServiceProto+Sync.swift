@@ -97,7 +97,7 @@ extension StorageServiceProtoContactRecord {
         case invalid
     }
 
-    func mergeWithExisting(transaction: SDSAnyWriteTransaction) -> MergeState {
+    func mergeWithLocalContact(transaction: SDSAnyWriteTransaction) -> MergeState {
         guard let address = serviceAddress else {
             owsFailDebug("address unexpectedly missing for contact")
             return .invalid

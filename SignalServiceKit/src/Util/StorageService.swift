@@ -18,8 +18,14 @@ public protocol StorageServiceManagerProtocol {
 }
 
 public struct StorageService {
-    public enum StorageError: Error {
+    public enum StorageError: OperationError {
         case assertion
+        case retryableAssertion
+
+        public var isRetryable: Bool {
+            guard case .retryableAssertion = self else { return false }
+            return true
+        }
     }
 
     /// An identifier representing a given contact object.
@@ -54,7 +60,7 @@ public struct StorageService {
                 return nil
             default:
                 owsFailDebug("unexpected response \(response.status)")
-                throw StorageError.assertion
+                throw StorageError.retryableAssertion
             }
         }
     }
@@ -111,7 +117,7 @@ public struct StorageService {
                 return try StorageServiceProtoManifestRecord.parseData(manifestData)
             default:
                 owsFailDebug("unexpected response \(response.status)")
-                throw StorageError.assertion
+                throw StorageError.retryableAssertion
             }
         }
     }
@@ -138,7 +144,7 @@ public struct StorageService {
         }.map(on: .global()) { response in
             guard case .success = response.status else {
                 owsFailDebug("unexpected response \(response.status)")
-                throw StorageError.assertion
+                throw StorageError.retryableAssertion
             }
 
             let contactsProto = try StorageServiceProtoContacts.parseData(response.data)
@@ -245,19 +251,21 @@ public struct StorageService {
                     case 404:
                         status = .notFound
                     default:
-                        if let error = error {
-                            owsFailDebug("response error \(error)")
-                            return resolver.reject(error)
-                        }
-
                         owsFailDebug("invalid response \(response.statusCode)")
-                        return resolver.reject(StorageError.assertion)
+                        if response.statusCode >= 500 {
+                            // This is a server error, retry
+                            return resolver.reject(StorageError.retryableAssertion)
+                        } else if let error = error {
+                            return resolver.reject(error)
+                        } else {
+                            return resolver.reject(StorageError.assertion)
+                        }
                     }
 
                     // We should always receive response data, for some responses it will be empty.
                     guard let responseData = responseObject as? Data else {
                         owsFailDebug("missing response data")
-                        return resolver.reject(StorageError.assertion)
+                        return resolver.reject(StorageError.retryableAssertion)
                     }
 
                     // The layers that use this only want to process 200 and 409 responses,
