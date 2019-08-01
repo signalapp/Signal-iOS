@@ -8,7 +8,7 @@ public final class LokiAPI : NSObject {
     
     // MARK: Settings
     private static let version = "v1"
-    private static let maxRetryCount: UInt = 2
+    private static let maxRetryCount: UInt = 4
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
