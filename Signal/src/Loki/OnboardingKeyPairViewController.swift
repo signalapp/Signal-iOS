@@ -216,6 +216,7 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
         let onSuccess = { [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.onboardingController.verificationDidComplete(fromView: strongSelf)
+            UserDefaults.standard.set(true, forKey: "didUpdateForMainnet")
         }
         if let userName = userName {
             OWSProfileManager.shared().updateLocalProfileName(userName, avatarImage: nil, success: onSuccess, failure: onSuccess) // Try to save the user name but ignore the result

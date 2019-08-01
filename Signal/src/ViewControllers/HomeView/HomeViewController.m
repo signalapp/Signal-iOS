@@ -671,8 +671,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
     NSString *buildNumberAsString = [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleVersion"];
     NSInteger buildNumber = buildNumberAsString.integerValue;
-    NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
-    BOOL didUpdateForMainnet = [userDefaults boolForKey:@"didUpdateForMainnet"];
+    BOOL didUpdateForMainnet = [NSUserDefaults.standardUserDefaults boolForKey:@"didUpdateForMainnet"];
     if ((buildNumber == 8 || buildNumber == 9) && !didUpdateForMainnet) {
         NSString *title = NSLocalizedString(@"Update Required", @"");
         NSString *message = NSLocalizedString(@"This version of Loki Messenger is no longer supported. Please press OK to reset your account and migrate to the latest version.", @"");
@@ -686,7 +685,6 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
             OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
             navigationController.navigationBarHidden = YES;
             UIApplication.sharedApplication.keyWindow.rootViewController = navigationController;
-            [userDefaults setBool:YES forKey:@"didUpdateForMainnet"];
         }]];
         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
         [self presentAlert:alert];
