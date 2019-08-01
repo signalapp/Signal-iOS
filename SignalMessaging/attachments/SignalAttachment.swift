@@ -250,7 +250,6 @@ public class SignalAttachment: NSObject {
 
     @objc
     public func buildOutgoingAttachmentInfo(message: TSMessage) -> OutgoingAttachmentInfo {
-        assert(message.uniqueId != nil)
         return OutgoingAttachmentInfo(dataSource: dataSource,
                                       contentType: mimeType,
                                       sourceFilename: filenameOrDefault,

@@ -268,7 +268,8 @@ NS_ASSUME_NONNULL_BEGIN
                       initWithThread:thread
                              groupId:[Randomness generateRandomBytes:kGroupIdLength]];
                   [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-                      [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage transaction:transaction];
+                      [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage.asOutbound
+                                                 transaction:transaction];
                   }];
               }],
         [OWSTableItem itemWithTitle:@"Message with stalled timer"
@@ -3947,7 +3948,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                expiresInSeconds:0];
         [message updateWithCustomMessage:NSLocalizedString(@"GROUP_CREATED", nil) transaction:transaction];
 
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asOutbound transaction:transaction];
     }];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

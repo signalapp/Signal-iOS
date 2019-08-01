@@ -10,7 +10,7 @@ public extension MessageSender {
     /**
      * Wrap message sending in a Promise for easier callback chaining.
      */
-    func sendPromise(message: TSOutgoingMessage) -> Promise<Void> {
+    func sendPromise(message: OutboundMessage) -> Promise<Void> {
         let promise: Promise<Void> = Promise { resolver in
             self.send(message, success: { resolver.fulfill(()) }, failure: resolver.reject)
         }

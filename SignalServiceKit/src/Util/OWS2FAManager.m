@@ -279,7 +279,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
 
 - (void)setLastSuccessfulReminderDate:(nullable NSDate *)date
 {
-    OWSLogDebug(@"Seting setLastSuccessfulReminderDate:%@", date);
+    OWSLogDebug(@"Setting setLastSuccessfulReminderDate:%@", date);
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [OWS2FAManager.keyValueStore setDate:date
                                          key:kOWS2FAManager_LastSuccessfulReminderDateKey

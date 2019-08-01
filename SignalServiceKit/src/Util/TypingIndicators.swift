@@ -343,7 +343,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             }
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
-            messageSender.sendPromise(message: message).retainUntilComplete()
+            messageSender.sendPromise(message: message.asOutbound).retainUntilComplete()
         }
     }
 

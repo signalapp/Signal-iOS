@@ -692,10 +692,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     // DURABLE CLEANUP - we could replace the custom durability logic in this class
     // with a durable JobQueue.
-    [self.messageSender sendMessage:nullMessage
+    [self.messageSender sendMessage:nullMessage.asOutbound
         success:^{
             OWSLogInfo(@"Successfully sent verification state NullMessage");
-            [self.messageSender sendMessage:message
+            [self.messageSender sendMessage:message.asOutbound
                 success:^{
                     OWSLogInfo(@"Successfully sent verification state sync message");
 

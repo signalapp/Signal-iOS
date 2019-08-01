@@ -607,7 +607,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     [fromViewController
         presentAlert:progressAlert
           completion:^{
-              [self.messageSender sendMessage:message
+              [self.messageSender sendMessage:message.asOutbound
                   success:^{
                       OWSLogInfo(@"Resending attachment succeeded.");
                       dispatch_async(dispatch_get_main_queue(), ^{

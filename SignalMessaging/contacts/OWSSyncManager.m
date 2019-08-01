@@ -191,7 +191,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                            showTypingIndicators:showTypingIndicators
                                                sendLinkPreviews:sendLinkPreviews];
 
-        [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction];
+        [self.messageSenderJobQueue addMessage:syncConfigurationMessage.asOutbound transaction:transaction];
     }];
 }
 

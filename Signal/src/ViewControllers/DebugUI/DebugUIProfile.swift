@@ -54,7 +54,7 @@ class DebugUIProfile: DebugUIPage {
 
                 // MJK TODO - should be safe to remove this senderTimestamp
                 let message = OWSProfileKeyMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: aThread)
-                strongSelf.messageSender.sendPromise(message: message).done {
+                strongSelf.messageSender.sendPromise(message: message.asOutbound).done {
                     Logger.info("Successfully sent profile key message to thread: \(String(describing: aThread))")
                 }.catch { _ in
                     owsFailDebug("Failed to send profile key message to thread: \(String(describing: aThread))")

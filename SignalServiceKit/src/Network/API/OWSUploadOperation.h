@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class TSAttachmentStream;
 @class TSOutgoingMessage;
 
 extern NSString *const kAttachmentUploadProgressNotification;

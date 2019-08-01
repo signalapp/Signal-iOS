@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 @class OWSBlockingManager;
+@class OutboundMessage;
 @class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
 @class TSInvalidIdentityKeySendingErrorMessage;
@@ -62,7 +63,7 @@ NS_SWIFT_NAME(MessageSender)
  * Send and resend text messages or resend messages with existing attachments.
  * If you haven't yet created the attachment, see the `sendAttachment:` variants.
  */
-- (void)sendMessage:(TSOutgoingMessage *)message
+- (void)sendMessage:(OutboundMessage *)message
             success:(void (^)(void))successHandler
             failure:(void (^)(NSError *error))failureHandler;
 
@@ -77,11 +78,6 @@ NS_SWIFT_NAME(MessageSender)
              inMessage:(TSOutgoingMessage *)outgoingMessage
                success:(void (^)(void))successHandler
                failure:(void (^)(NSError *error))failureHandler;
-
-- (void)sendAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
-              inMessage:(TSOutgoingMessage *)message
-                success:(void (^)(void))successHandler
-                failure:(void (^)(NSError *error))failureHandler;
 
 /**
  * Same as `sendAttachment:`, but deletes the local copy of the attachment after sending.
@@ -104,10 +100,10 @@ NS_SWIFT_NAME(MessageSender)
                                       transaction:(SDSAnyWriteTransaction *)transaction;
 
 /// Writes attachment to disk and applies original filename to message attributes
-+ (void)prepareAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
-                 inMessage:(TSOutgoingMessage *)outgoingMessage
-         completionHandler:(void (^)(NSError *_Nullable error))completionHandler
-    NS_SWIFT_NAME(prepareAttachments(_:inMessage:completionHandler:));
++ (BOOL)insertAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
+               forMessage:(TSOutgoingMessage *)outgoingMessage
+              transaction:(SDSAnyWriteTransaction *)transaction
+                    error:(NSError **)error;
 
 @end
 

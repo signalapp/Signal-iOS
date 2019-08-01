@@ -87,7 +87,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                messageSender:(OWSMessageSender *)messageSender
                                                   completion:(void (^)(NSError *_Nullable error))completion;
 
-
 #pragma mark - dynamic interactions
 
 // This method will create and/or remove any offers and indicators
