@@ -668,6 +668,29 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     [self updateBarButtonItems];
 
     [self applyTheme];
+
+    NSString *buildNumberAsString = [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleVersion"];
+    NSInteger buildNumber = buildNumberAsString.integerValue;
+    NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
+    BOOL didUpdateForMainnet = [userDefaults boolForKey:@"didUpdateForMainnet"];
+    if ((buildNumber == 8 || buildNumber == 9) && !didUpdateForMainnet) {
+        NSString *title = NSLocalizedString(@"Update Required", @"");
+        NSString *message = NSLocalizedString(@"This version of Loki Messenger is no longer supported. Please press OK to reset your account and migrate to the latest version.", @"");
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [ThreadUtil deleteAllContent];
+            [SSKEnvironment.shared.identityManager clearIdentityKey];
+            [LKAPI clearRandomSnodePool];
+            [LKAPI stopLongPolling];
+            UIViewController *rootViewController = [[OnboardingController new] initialViewController];
+            OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
+            navigationController.navigationBarHidden = YES;
+            UIApplication.sharedApplication.keyWindow.rootViewController = navigationController;
+            [userDefaults setBool:YES forKey:@"didUpdateForMainnet"];
+        }]];
+        [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
+        [self presentAlert:alert];
+    }
 }
 
 - (void)applyDefaultBackButton

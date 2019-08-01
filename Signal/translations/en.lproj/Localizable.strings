@@ -2603,3 +2603,5 @@
 "Clear All Data" = "Clear All Data";
 "Are you sure you want to clear all your data? This will delete your entire account, including all conversations and your personal key pair." = "Are you sure you want to clear all your data? This will delete your entire account, including all conversations and your personal key pair.";
 "Cancel" = "Cancel";
+"Update Required" = "Update Required";
+"This version of Loki Messenger is no longer supported. Please press OK to reset your account and migrate to the latest version." = "This version of Loki Messenger is no longer supported. Please press OK to reset your account and migrate to the latest version.";
