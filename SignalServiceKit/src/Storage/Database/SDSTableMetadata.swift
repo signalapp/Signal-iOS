@@ -113,11 +113,5 @@ public class SDSTableMetadata: NSObject {
                 }
             }
         }
-
-        try database.create(index: "index_\(tableName)_on_uniqueId",
-                      on: tableName,
-                      columns: [
-                        "uniqueId"
-            ])
     }
 }

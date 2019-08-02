@@ -275,7 +275,7 @@ class GRDBFullTextSearchFinder: NSObject {
     static let databaseTableName: String = "signal_grdb_fts"
     static let uniqueIdColumn: String = "uniqueId"
     static let collectionColumn: String = "collection"
-    static let ftsContentColumn: String = "ftsContent"
+    static let ftsContentColumn: String = "ftsIndexableContent"
 
     class func createTables(database: Database) throws {
         try database.create(virtualTable: databaseTableName, using: FTS5()) { table in
@@ -348,7 +348,6 @@ class GRDBFullTextSearchFinder: NSObject {
     }
 
     public class func allModelsWereRemoved(collection: String, transaction: GRDBWriteTransaction) {
-        //            try transaction.database.execute(
         executeUpdate(
             sql: """
             DELETE FROM \(databaseTableName)
@@ -358,7 +357,7 @@ class GRDBFullTextSearchFinder: NSObject {
             transaction: transaction)
     }
 
-    private static let disableFTS = true
+    private static let disableFTS = false
 
     private class func executeUpdate(sql: String,
                                      arguments: StatementArguments,
