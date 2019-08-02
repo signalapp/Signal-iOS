@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
 @class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class SignalAttachment;
 @class SignalServiceAddress;
 @class StickerInfo;
@@ -57,6 +58,14 @@ NS_ASSUME_NONNULL_BEGIN
                              quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
                              linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
                                   transaction:(SDSAnyReadTransaction *)transaction;
+
++ (nullable TSOutgoingMessage *)createUnsentMessageWithText:(nullable NSString *)fullMessageText
+                                           mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
+                                                   inThread:(TSThread *)thread
+                                           quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                           linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
+                                                transaction:(SDSAnyWriteTransaction *)transaction
+                                                      error:(NSError **)error;
 
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread;
 + (void)enqueueLeaveGroupMessageInThread:(TSGroupThread *)thread;

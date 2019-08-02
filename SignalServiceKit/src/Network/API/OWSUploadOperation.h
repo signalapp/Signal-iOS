@@ -7,7 +7,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachmentStream;
-@class TSOutgoingMessage;
 
 extern NSString *const kAttachmentUploadProgressNotification;
 extern NSString *const kAttachmentUploadProgressKey;
@@ -15,7 +14,7 @@ extern NSString *const kAttachmentUploadAttachmentIDKey;
 
 @interface OWSUploadOperation : OWSOperation
 
-@property (nullable, readonly) NSError *lastError;
+@property (readonly, nonatomic, nullable) TSAttachmentStream *completedUpload;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId NS_DESIGNATED_INITIALIZER;

@@ -248,6 +248,21 @@ public class SignalAttachment: NSObject {
         return errorDescription
     }
 
+    public func cloneAttachment() throws -> SignalAttachment {
+        let sourceUrl = dataUrl!
+        let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
+        try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
+
+        let clonedDataSource = try DataSourcePath.dataSource(with: newUrl,
+                                                             shouldDeleteOnDeallocation: true)
+        clonedDataSource.sourceFilename = sourceFilename
+
+        let attachment = SignalAttachment(dataSource: clonedDataSource, dataUTI: self.dataUTI)
+        attachment.captionText = self.captionText
+
+        return attachment
+    }
+
     @objc
     public func buildOutgoingAttachmentInfo(message: TSMessage) -> OutgoingAttachmentInfo {
         return OutgoingAttachmentInfo(dataSource: dataSource,

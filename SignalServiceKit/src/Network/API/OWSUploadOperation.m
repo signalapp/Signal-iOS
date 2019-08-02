@@ -31,6 +31,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 @interface OWSUploadOperation ()
 
 @property (readonly, nonatomic) NSString *attachmentId;
+@property (nonatomic, nullable) TSAttachmentStream *completedUpload;
 
 @end
 
@@ -90,6 +91,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
     if (attachmentStream.isUploaded) {
         OWSLogDebug(@"Attachment previously uploaded.");
+        self.completedUpload = attachmentStream;
         [self reportSuccess];
         return;
     }
@@ -102,12 +104,14 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                              [self fireNotificationWithProgress:uploadProgress.fractionCompleted];
                          }]
             .thenInBackground(^{
-                [attachmentStream updateAsUploadedWithEncryptionKey:upload.encryptionKey
-                                                             digest:upload.digest
-                                                           serverId:upload.serverId
-                                                         completion:^{
-                                                             [self reportSuccess];
-                                                         }];
+                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    [attachmentStream updateAsUploadedWithEncryptionKey:upload.encryptionKey
+                                                                 digest:upload.digest
+                                                               serverId:upload.serverId
+                                                            transaction:transaction];
+                }];
+                self.completedUpload = attachmentStream;
+                [self reportSuccess];
             })
             .catchInBackground(^(NSError *error) {
                 OWSLogError(@"Failed: %@", error);

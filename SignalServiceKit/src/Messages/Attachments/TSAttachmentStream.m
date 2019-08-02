@@ -916,20 +916,19 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (void)updateAsUploadedWithEncryptionKey:(NSData *)encryptionKey
                                    digest:(NSData *)digest
                                  serverId:(UInt64)serverId
-                               completion:(dispatch_block_t)completion
+                              transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(encryptionKey.length > 0);
     OWSAssertDebug(digest.length > 0);
     OWSAssertDebug(serverId > 0);
 
-    [self
-        applyChangeAsyncToLatestCopyWithChangeBlock:^(TSAttachmentStream *attachment) {
-            [attachment setEncryptionKey:encryptionKey];
-            [attachment setDigest:digest];
-            [attachment setServerId:serverId];
-            [attachment setIsUploaded:YES];
-        }
-                                         completion:completion];
+    [self anyUpdateAttachmentStreamWithTransaction:transaction
+                                             block:^(TSAttachmentStream *attachment) {
+                                                 [attachment setEncryptionKey:encryptionKey];
+                                                 [attachment setDigest:digest];
+                                                 [attachment setServerId:serverId];
+                                                 [attachment setIsUploaded:YES];
+                                             }];
 }
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail
