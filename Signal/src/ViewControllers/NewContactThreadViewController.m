@@ -511,8 +511,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   BOOL isBlocked = [strongSelf.contactsViewHelper
                                       isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                                   if (isBlocked) {
-                                      cell.accessoryMessage = NSLocalizedString(
-                                          @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                      cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                   }
 
                                   [cell configureWithRecipientAddress:signalAccount.recipientAddress];
@@ -566,8 +565,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
                                 BOOL isBlocked = [helper isSignalServiceAddressBlocked:address];
                                 if (isBlocked) {
-                                    cell.accessoryMessage = NSLocalizedString(
-                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                    cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                 }
                                 [cell configureWithRecipientAddress:address];
 
@@ -623,8 +621,7 @@ NS_ASSUME_NONNULL_BEGIN
                             ContactTableViewCell *cell = [ContactTableViewCell new];
                             BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                             if (isBlocked) {
-                                cell.accessoryMessage = NSLocalizedString(
-                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                             }
 
                             [cell configureWithRecipientAddress:signalAccount.recipientAddress];
@@ -960,8 +957,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.uiDatabaseConnection
         asyncReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
             self.searchResults = [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
-                                                                                 transaction:transaction
-                                                                             contactsManager:self.contactsManager];
+                                                                                 transaction:transaction];
         }
         completionBlock:^{
             __typeof(self) strongSelf = weakSelf;

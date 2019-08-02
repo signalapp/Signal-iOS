@@ -473,7 +473,7 @@
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "Address";
 
-/* An indicator that a contact has been blocked. */
+/* An indicator that a contact or group has been blocked. */
 "CONTACT_CELL_IS_BLOCKED" = "Blocked";
 
 /* An indicator that a contact is no longer verified. */
@@ -565,6 +565,21 @@
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+
+/* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+
+/* table section header for section containing groups */
+"CONVERSATION_PICKER_SECTION_GROUPS" = "Groups";
+
+/* table section header for section containing recent conversations */
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Recent Chats";
+
+/* table section header for section containing contacts */
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+
+/* navbar header */
+"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
@@ -2107,6 +2122,9 @@
 
 /* No comment provided by engineer. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Search by name or number";
+
+/* placeholder text in an empty search field */
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Search";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "Other Contacts";

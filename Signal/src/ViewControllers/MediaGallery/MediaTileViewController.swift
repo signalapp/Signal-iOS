@@ -95,7 +95,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         collectionView.backgroundColor = Theme.darkThemeBackgroundColor
 
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
-        collectionView.register(MediaGallerySectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier)
+        collectionView.register(DarkThemeCollectionViewSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: DarkThemeCollectionViewSectionHeader.reuseIdentifier)
         collectionView.register(MediaGalleryStaticHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MediaGalleryStaticHeader.reuseIdentifier)
 
         collectionView.delegate = self
@@ -342,7 +342,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
                 sectionHeader.configure(title: title)
                 return sectionHeader
             default:
-                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MediaGallerySectionHeader.reuseIdentifier, for: indexPath) as? MediaGallerySectionHeader else {
+                guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: DarkThemeCollectionViewSectionHeader.reuseIdentifier, for: indexPath) as? DarkThemeCollectionViewSectionHeader else {
                     owsFailDebug("unable to build section header for indexPath: \(indexPath)")
                     return defaultView
                 }
@@ -868,71 +868,6 @@ private class MediaTileViewLayout: UICollectionViewFlowLayout {
             contentSizeBeforeInsertingToTop = nil
             isInsertingCellsToTop = false
         }
-    }
-}
-
-private class MediaGallerySectionHeader: UICollectionReusableView {
-
-    static let reuseIdentifier = "MediaGallerySectionHeader"
-
-    // HACK: scrollbar incorrectly appears *behind* section headers
-    // in collection view on iOS11 =(
-    private class AlwaysOnTopLayer: CALayer {
-        override var zPosition: CGFloat {
-            get { return 0 }
-            set {}
-        }
-    }
-
-    let label: UILabel
-
-    override class var layerClass: AnyClass {
-        get {
-            // HACK: scrollbar incorrectly appears *behind* section headers
-            // in collection view on iOS11 =(
-            if #available(iOS 11, *) {
-                return AlwaysOnTopLayer.self
-            } else {
-                return super.layerClass
-            }
-        }
-    }
-
-    override init(frame: CGRect) {
-        label = UILabel()
-        label.textColor = Theme.darkThemePrimaryColor
-
-        let blurEffect = Theme.darkThemeBarBlurEffect
-        let blurEffectView = UIVisualEffectView(effect: blurEffect)
-
-        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
-        super.init(frame: frame)
-
-        self.backgroundColor = Theme.darkThemeNavbarBackgroundColor.withAlphaComponent(OWSNavigationBar.backgroundBlurMutingFactor)
-
-        self.addSubview(blurEffectView)
-        self.addSubview(label)
-
-        blurEffectView.autoPinEdgesToSuperviewEdges()
-        label.autoPinEdge(toSuperviewMargin: .trailing)
-        label.autoPinEdge(toSuperviewMargin: .leading)
-        label.autoVCenterInSuperview()
-    }
-
-    @available(*, unavailable, message: "Unimplemented")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
-    public func configure(title: String) {
-        self.label.text = title
-    }
-
-    override public func prepareForReuse() {
-        super.prepareForReuse()
-
-        self.label.text = nil
     }
 }
 

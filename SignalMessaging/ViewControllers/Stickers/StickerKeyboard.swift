@@ -86,19 +86,13 @@ public class StickerKeyboard: UIStackView {
         autoresizingMask = .flexibleHeight
         alignment = .fill
 
-        addBackgroundView(withBackgroundColor: keyboardBackgroundColor)
+        addBackgroundView(withBackgroundColor: Theme.keyboardBackgroundColor)
 
         addArrangedSubview(headerView)
 
         populateHeaderView()
 
         setupPaging()
-    }
-
-    private var keyboardBackgroundColor: UIColor {
-        return (Theme.isDarkThemeEnabled
-            ? UIColor.ows_gray90
-            : UIColor.ows_gray02)
     }
 
     @objc public func wasPresented() {
@@ -153,7 +147,7 @@ public class StickerKeyboard: UIStackView {
         headerView.spacing = StickerKeyboard.packCoverSpacing
         headerView.axis = .horizontal
         headerView.alignment = .center
-        headerView.backgroundColor = keyboardBackgroundColor
+        headerView.backgroundColor = Theme.keyboardBackgroundColor
         headerView.layoutMargins = UIEdgeInsets(top: 6, leading: 6, bottom: 6, trailing: 6)
         headerView.isLayoutMarginsRelativeArrangement = true
 
@@ -165,7 +159,7 @@ public class StickerKeyboard: UIStackView {
             searchButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "searchButton")
         }
 
-        packsCollectionView.backgroundColor = keyboardBackgroundColor
+        packsCollectionView.backgroundColor = Theme.keyboardBackgroundColor
         headerView.addArrangedSubview(packsCollectionView)
 
         let manageButton = buildHeaderButton("plus-24") { [weak self] in
@@ -323,7 +317,7 @@ public class StickerKeyboard: UIStackView {
         stickerPagesContainer.autoMatch(.width, to: .width, of: stickerPagingScrollView, withMultiplier: numberOfPages)
 
         for (index, collectionView) in stickerPackCollectionViews.enumerated() {
-            collectionView.backgroundColor = keyboardBackgroundColor
+            collectionView.backgroundColor = Theme.keyboardBackgroundColor
             collectionView.isDirectionalLockEnabled = true
             collectionView.stickerDelegate = self
             stickerPagesContainer.addSubview(collectionView)

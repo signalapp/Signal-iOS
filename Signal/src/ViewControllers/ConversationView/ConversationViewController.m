@@ -1364,7 +1364,7 @@ typedef enum : NSUInteger {
         OWSAssertDebug(thread.contactAddress);
 
         if (thread.isNoteToSelf) {
-            name = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
+            name = MessageStrings.noteToSelf;
         } else {
             name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         }
@@ -2962,6 +2962,13 @@ typedef enum : NSUInteger {
 {
     [self.inputToolbar setMessageText:messageText animated:NO];
 }
+
+- (NSString *)sendMediaNavApprovalButtonImageName
+{
+    return @"send-solid-24";
+}
+
+#pragma mark -
 
 - (void)sendContactShare:(ContactShareViewModel *)contactShare
 {

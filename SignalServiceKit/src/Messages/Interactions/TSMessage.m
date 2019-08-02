@@ -465,8 +465,8 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         return NSLocalizedString(
             @"STICKER_MESSAGE_PREVIEW", @"Preview text shown in notifications and home view for sticker messages.");
     } else {
-        OWSFailDebug(@"message has no renderable content.");
-        // TODO: We should do better here.
+        // This can happen when initially saving outgoing messages with camera first capture
+        // over the homeview.
         return @"";
     }
 }

@@ -547,8 +547,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                     BOOL isBlocked =
                                         [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                                     if (isBlocked) {
-                                        cell.accessoryMessage = NSLocalizedString(@"CONTACT_CELL_IS_BLOCKED",
-                                            @"An indicator that a contact has been blocked.");
+                                        cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                     } else {
                                         cell.accessoryMessage =
                                             [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];

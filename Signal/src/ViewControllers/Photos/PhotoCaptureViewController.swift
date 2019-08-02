@@ -86,7 +86,7 @@ class PhotoCaptureViewController: OWSViewController {
             VolumeButtons.shared?.addObserver(observer: photoCapture)
         }
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillAppear(animated)
         isVisible = false
@@ -293,6 +293,9 @@ class PhotoCaptureViewController: OWSViewController {
             transformFromOrientation = CGAffineTransform(rotationAngle: .halfPi)
         case .landscapeRight:
             transformFromOrientation = CGAffineTransform(rotationAngle: -1 * .halfPi)
+        @unknown default:
+            owsFailDebug("unexpected captureOrientation: \(captureOrientation.rawValue)")
+            transformFromOrientation = .identity
         }
 
         // Don't "unrotate" the switch camera icon if the front facing camera had been selected.
@@ -368,6 +371,10 @@ class PhotoCaptureViewController: OWSViewController {
             imageName = "ic_flash_mode_on"
         case .off:
             imageName = "ic_flash_mode_off"
+        @unknown default:
+            owsFailDebug("unexpected photoCapture.flashMode: \(photoCapture.flashMode.rawValue)")
+
+            imageName = "ic_flash_mode_auto"
         }
 
         self.flashModeControl.setImage(imageName: imageName)
@@ -623,6 +630,8 @@ class CaptureButton: UIView {
 
             touchTimer?.invalidate()
             touchTimer = nil
+        @unknown default:
+            owsFailDebug("unexpected gesture state: \(gesture.state.rawValue)")
         }
     }
 }

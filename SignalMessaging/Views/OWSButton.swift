@@ -55,6 +55,21 @@ public class OWSButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - Common Style Reuse
+
+    @objc
+    public class func sendButton(imageName: String, block: @escaping () -> Void) -> OWSButton {
+        let button = OWSButton(imageName: imageName, tintColor: .white, block: block)
+
+        let buttonWidth: CGFloat = 40
+        button.layer.cornerRadius = buttonWidth / 2
+        button.autoSetDimensions(to: CGSize(width: buttonWidth, height: buttonWidth))
+
+        button.backgroundColor = .ows_signalBlue
+
+        return button
+    }
+
     // MARK: -
 
     @objc

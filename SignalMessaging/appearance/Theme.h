@@ -29,6 +29,7 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *middleGrayColor;
 @property (class, readonly, nonatomic) UIColor *placeholderColor;
 @property (class, readonly, nonatomic) UIColor *hairlineColor;
+@property (class, readonly, nonatomic) UIColor *outlineColor;
 
 #pragma mark - Global App Colors
 
@@ -51,6 +52,7 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *darkThemeNavbarBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *darkThemeBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *darkThemePrimaryColor;
+@property (class, readonly, nonatomic) UIColor *darkThemeSecondaryColor;
 @property (class, readonly, nonatomic) UIBlurEffect *darkThemeBarBlurEffect;
 @property (class, readonly, nonatomic) UIColor *galleryHighlightColor;
 @property (class, readonly, nonatomic) UIColor *darkThemeOffBackgroundColor;
@@ -61,6 +63,7 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *searchFieldBackgroundColor;
 @property (class, readonly, nonatomic) UIBlurEffect *barBlurEffect;
 @property (class, readonly, nonatomic) UIKeyboardAppearance keyboardAppearance;
+@property (class, readonly, nonatomic) UIColor *keyboardBackgroundColor;
 @property (class, readonly, nonatomic) UIKeyboardAppearance darkThemeKeyboardAppearance;
 
 #pragma mark -

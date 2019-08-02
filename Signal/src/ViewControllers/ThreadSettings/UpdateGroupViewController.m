@@ -283,8 +283,7 @@ NS_ASSUME_NONNULL_BEGIN
                             BOOL isBlocked = [contactsViewHelper isSignalServiceAddressBlocked:address];
                             if (isPreviousMember) {
                                 if (isBlocked) {
-                                    cell.accessoryMessage = NSLocalizedString(
-                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                    cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                 } else {
                                     cell.selectionStyle = UITableViewCellSelectionStyleNone;
                                 }

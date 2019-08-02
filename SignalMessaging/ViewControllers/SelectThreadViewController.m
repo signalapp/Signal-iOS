@@ -209,8 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                             BOOL isBlocked = [helper isThreadBlocked:thread];
                             if (isBlocked) {
-                                cell.accessoryMessage = NSLocalizedString(
-                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                             }
 
                             [cell configureWithThread:thread];
@@ -283,8 +282,7 @@ NS_ASSUME_NONNULL_BEGIN
                             ContactTableViewCell *cell = [ContactTableViewCell new];
                             BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                             if (isBlocked) {
-                                cell.accessoryMessage = NSLocalizedString(
-                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                             }
                             [cell configureWithRecipientAddress:signalAccount.recipientAddress];
                             return cell;

@@ -29,9 +29,17 @@ import Foundation
 
     @objc
     static public let errorAlertTitle = NSLocalizedString("ALERT_ERROR_TITLE", comment: "")
+
+    @objc
+    static public let searchPlaceholder = NSLocalizedString("SEARCH_FIELD_PLACE_HOLDER_TEXT", comment: "placeholder text in an empty search field")
 }
 
-@objc public class MessageStrings: NSObject {
+@objc
+public class MessageStrings: NSObject {
+
+    @objc
+    static public let conversationIsBlocked = NSLocalizedString("CONTACT_CELL_IS_BLOCKED", comment: "An indicator that a contact or group has been blocked.")
+
     @objc
     static public let newGroupDefaultTitle = NSLocalizedString("NEW_GROUP_DEFAULT_TITLE", comment: "Used in place of the group name when a group has not yet been named.")
 
@@ -43,6 +51,9 @@ import Foundation
 
     @objc
     static public let sendButton =  NSLocalizedString("SEND_BUTTON_TITLE", comment: "Label for the button to send a message")
+
+    @objc
+    static public let noteToSelf = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
 }
 
 @objc

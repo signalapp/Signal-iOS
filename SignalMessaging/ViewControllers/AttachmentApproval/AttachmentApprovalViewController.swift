@@ -87,7 +87,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     public var isEditingCaptions = false {
         didSet {
-            updateContents()
+            updateContents(isApproved: false)
         }
     }
 
@@ -101,10 +101,11 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     let kSpacingBetweenItems: CGFloat = 20
 
     required public init(options: AttachmentApprovalViewControllerOptions,
+                         sendButtonImageName: String,
                          attachmentApprovalItems: [AttachmentApprovalItem]) {
         assert(attachmentApprovalItems.count > 0)
         self.receivedOptions = options
-        self.bottomToolView = AttachmentApprovalInputAccessoryView(options: options)
+        self.bottomToolView = AttachmentApprovalInputAccessoryView(options: options, sendButtonImageName: sendButtonImageName)
 
         let pageOptions: [UIPageViewController.OptionsKey: Any] = [.interPageSpacing: kSpacingBetweenItems]
         super.init(transitionStyle: .scroll,
@@ -130,9 +131,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     }
 
     @objc
-    public class func wrappedInNavController(attachments: [SignalAttachment], approvalDelegate: AttachmentApprovalViewControllerDelegate) -> OWSNavigationController {
+    public class func wrappedInNavController(attachments: [SignalAttachment],
+                                             approvalDelegate: AttachmentApprovalViewControllerDelegate)
+        -> OWSNavigationController {
         let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0) }
         let vc = AttachmentApprovalViewController(options: [.hasCancel],
+                                                  sendButtonImageName: "send-solid-24",
                                                   attachmentApprovalItems: attachmentApprovalItems)
         vc.approvalDelegate = approvalDelegate
         let navController = OWSNavigationController(rootViewController: vc)
@@ -152,7 +156,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     @objc func didBecomeActive() {
         AssertIsOnMainThread()
 
-        updateContents()
+        updateContents(isApproved: false)
     }
 
     // MARK: - Subviews
@@ -222,14 +226,14 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         }
         navigationBar.overrideTheme(type: .clear)
 
-        updateContents()
+        updateContents(isApproved: false)
     }
 
     override public func viewDidAppear(_ animated: Bool) {
         Logger.debug("")
 
         super.viewDidAppear(animated)
-        updateContents()
+        updateContents(isApproved: false)
         approvalDelegate?.attachmentApprovalDidAppear(self)
     }
 
@@ -238,9 +242,9 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         super.viewWillDisappear(animated)
     }
 
-    private func updateContents() {
+    private func updateContents(isApproved: Bool) {
         updateNavigationBar()
-        updateInputAccessory()
+        updateInputAccessory(isApproved: isApproved)
 
         touchInterceptorView.isHidden = !isEditingCaptions
 
@@ -259,7 +263,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         return !shouldHideControls
     }
 
-    public func updateInputAccessory() {
+    public func updateInputAccessory(isApproved: Bool) {
         var currentPageViewController: AttachmentPrepViewController?
         if pageViewControllers.count == 1 {
             currentPageViewController = pageViewControllers.first
@@ -274,7 +278,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
         bottomToolView.update(isEditingCaptions: isEditingCaptions,
                               currentAttachmentItem: currentAttachmentItem,
-                              shouldHideControls: shouldHideControls)
+                              shouldHideControls: shouldHideControls,
+                              isApproved: isApproved)
     }
 
     public var messageText: String? {
@@ -541,7 +546,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
                                     if let completion = completion {
                                         completion(finished)
                                     }
-                                    self?.updateContents()
+                                    self?.updateContents(isApproved: false)
         }
     }
 
@@ -752,8 +757,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         // and remains visible momentarily after share extension is dismissed.
         // It's easiest to just hide it at this point since we're done with it.
         currentPageViewController.shouldAllowAttachmentViewResizing = false
-        attachmentTextToolbar.isUserInteractionEnabled = false
-        attachmentTextToolbar.isHidden = true
+        updateContents(isApproved: true)
 
         // Generate the attachments once, so that any changes we
         // make below are reflected afterwards.
@@ -774,7 +778,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
     }
 
     func attachmentTextToolbarDidTogglePerMessageExpiration(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        updateContents()
+        updateContents(isApproved: false)
     }
 }
 
@@ -786,7 +790,7 @@ extension AttachmentApprovalViewController: AttachmentPrepViewControllerDelegate
     }
 
     func prepViewControllerUpdateControls() {
-        updateInputAccessory()
+        updateInputAccessory(isApproved: false)
     }
 }
 
