@@ -23,6 +23,8 @@ extern NSString *const OWSFrontingHost_GoogleQatar;
 
 + (BOOL)isCensoredPhoneNumber:(NSString *)e164PhoneNumber;
 
++ (AFSecurityPolicy *)pinningPolicyWithCertNames:(NSArray<NSString *> *)certNames;
+
 @property (nonatomic, readonly) NSString *signalServiceReflectorHost;
 @property (nonatomic, readonly) NSString *CDNReflectorHost;
 @property (nonatomic, readonly) NSURL *domainFrontBaseURL;
