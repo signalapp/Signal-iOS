@@ -681,6 +681,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
             [SSKEnvironment.shared.identityManager clearIdentityKey];
             [LKAPI clearRandomSnodePool];
             [LKAPI stopLongPolling];
+            [SSKEnvironment.shared.tsAccountManager resetForReregistration];
             UIViewController *rootViewController = [[OnboardingController new] initialViewController];
             OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
             navigationController.navigationBarHidden = YES;
