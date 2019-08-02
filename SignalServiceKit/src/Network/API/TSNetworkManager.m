@@ -99,6 +99,8 @@ dispatch_queue_t NetworkManagerQueue()
     }
 
     if (canUseAuth && request.shouldHaveAuthorizationHeaders) {
+        OWSAssertDebug(request.authUsername.length > 0);
+        OWSAssertDebug(request.authPassword.length > 0);
         [self.sessionManager.requestSerializer setAuthorizationHeaderFieldWithUsername:request.authUsername
                                                                               password:request.authPassword];
     }

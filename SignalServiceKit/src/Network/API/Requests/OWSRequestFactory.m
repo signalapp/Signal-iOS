@@ -263,7 +263,10 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *path = [NSString stringWithFormat:@"v1/accounts/apn/preauth/%@/%@", pushToken, recipientId];
     NSURL *url = [NSURL URLWithString:path];
 
-    return [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];
+    TSRequest *request = [TSRequest requestWithUrl:url method:@"GET" parameters:@{}];
+    request.shouldHaveAuthorizationHeaders = NO;
+
+    return request;
 }
 
 + (TSRequest *)requestVerificationCodeRequestWithPhoneNumber:(NSString *)phoneNumber
