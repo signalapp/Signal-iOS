@@ -672,7 +672,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     NSString *buildNumberAsString = [NSBundle.mainBundle objectForInfoDictionaryKey:@"CFBundleVersion"];
     NSInteger buildNumber = buildNumberAsString.integerValue;
     BOOL didUpdateForMainnet = [NSUserDefaults.standardUserDefaults boolForKey:@"didUpdateForMainnet"];
-    if ((buildNumber == 8 || buildNumber == 9) && !didUpdateForMainnet) {
+    if ((buildNumber == 8 || buildNumber == 9 || buildNumber == 10) && !didUpdateForMainnet) {
         NSString *title = NSLocalizedString(@"Update Required", @"");
         NSString *message = NSLocalizedString(@"This version of Loki Messenger is no longer supported. Please press OK to reset your account and migrate to the latest version.", @"");
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
