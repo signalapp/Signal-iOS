@@ -112,6 +112,10 @@ extension OWSLinkedDeviceReadReceipt: SDSModel {
     public func asRecord() throws -> SDSRecord {
         return try serializer.asRecord()
     }
+
+    public var sdsTableName: String {
+        return LinkedDeviceReadReceiptRecord.databaseTableName
+    }
 }
 
 // MARK: - Table Metadata
@@ -439,7 +443,9 @@ public extension OWSLinkedDeviceReadReceipt {
         assert(sql.count > 0)
 
         do {
-            guard let record = try LinkedDeviceReadReceiptRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+            // There are significant perf benefits to using a cached statement.
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            guard let record = try LinkedDeviceReadReceiptRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
 
