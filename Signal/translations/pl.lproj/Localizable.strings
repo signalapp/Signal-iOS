@@ -1332,6 +1332,9 @@
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Dostarczono";
 
+/* message status while message is downloading. */
+"MESSAGE_STATUS_DOWNLOADING" = "Pobieranie";
+
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Wysyłanie nie powiodło się.";
 
@@ -1643,7 +1646,7 @@
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
 
-/* Label that indicates that 'view-once messages' is active. */
+/* Label that indicates that 'view-once' is active. */
 "PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Znikające zdjęcie";
 
 /* Label for view-once messages that have invalid content. */

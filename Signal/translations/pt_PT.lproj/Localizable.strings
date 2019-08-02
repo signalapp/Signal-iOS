@@ -1147,7 +1147,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Chamada não atendida visto que o número de segurança mudou.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ está no Signal!";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ficheiro áudio inválido.";
@@ -1331,6 +1331,9 @@
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Entregue";
+
+/* message status while message is downloading. */
+"MESSAGE_STATUS_DOWNLOADING" = "A descarregar";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Falha no envio.";
@@ -1643,7 +1646,7 @@
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
 
-/* Label that indicates that 'view-once messages' is active. */
+/* Label that indicates that 'view-once' is active. */
 "PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Destruição de fotografia";
 
 /* Label for view-once messages that have invalid content. */
