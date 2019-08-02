@@ -56,6 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, readonly)
     NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates;
 @property (nonatomic, readonly) NSUInteger outgoingMessageSchemaVersion;
+@property (nonatomic, readonly) TSOutgoingMessageState storedMessageState;
 
 @end
 
@@ -227,14 +228,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSUnknownProtocolVersionMessage (SDS)
 
 @property (nonatomic, readonly) NSUInteger unknownProtocolVersionMessageSchemaVersion;
-
-@end
-
-#pragma mark -
-
-@interface TSOutgoingMessage (SDS)
-
-@property (nonatomic, readonly) TSOutgoingMessageState storedMessageState;
 
 @end
 

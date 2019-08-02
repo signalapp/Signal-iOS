@@ -222,7 +222,7 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
 }
 
 @objc
-class SignalServiceAddressCache: NSObject {
+public class SignalServiceAddressCache: NSObject {
     private let serialQueue = DispatchQueue(label: "SignalServiceAddressCache")
 
     private var uuidToPhoneNumberCache = [UUID: String]()

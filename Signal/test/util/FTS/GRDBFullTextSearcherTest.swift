@@ -67,10 +67,16 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         return FullTextSearcher.shared
     }
 
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
     // MARK: - Test Life Cycle
 
     override func tearDown() {
         super.tearDown()
+
+        SDSDatabaseStorage.shouldLogDBQueries = true
     }
 
     override func setUp() {
@@ -477,6 +483,57 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
         AssertValidResultSet(query: "HOPE", expectedResultCount: 1)
         AssertValidResultSet(query: "DESPAIR", expectedResultCount: 2)
         AssertValidResultSet(query: "DEFEAT", expectedResultCount: 0)
+    }
+
+    // MARK: - Perf
+
+    func testPerf() {
+        // Logging queries is expensive and affects the results of this test.
+        // This is restored in tearDown().
+        SDSDatabaseStorage.shouldLogDBQueries = false
+
+        let aliceE164 = "+13213214321"
+        let aliceUuid = UUID()
+        tsAccountManager.registerForTests(withLocalNumber: aliceE164, uuid: aliceUuid)
+
+        let string1 = "krazy"
+        let string2 = "kat"
+        let messageCount: UInt = 100
+
+        Bench(title: "Populate Index", memorySamplerRatio: 1) { _ in
+            self.write { transaction in
+                let groupModel = TSGroupModel(title: "Perf", members: [aliceRecipient, bobRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
+                let thread = TSGroupThread.getOrCreateThread(with: groupModel, transaction: transaction)
+
+                TSOutgoingMessage(in: thread, messageBody: string1, attachmentId: nil).anyInsert(transaction: transaction)
+
+                for _ in 0...messageCount {
+                    let message = TSOutgoingMessage(in: thread, messageBody: UUID().uuidString, attachmentId: nil)
+                    message.anyInsert(transaction: transaction)
+                    message.update(withMessageBody: UUID().uuidString, transaction: transaction)
+                }
+
+                TSOutgoingMessage(in: thread, messageBody: string2, attachmentId: nil).anyInsert(transaction: transaction)
+            }
+        }
+
+        Bench(title: "Search", memorySamplerRatio: 1) { _ in
+            self.read { transaction in
+                let finder = FullTextSearchFinder()
+
+                let getMatchCount = { (searchText: String) -> UInt in
+                    var count: UInt = 0
+                    finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match, snippet, _) in
+                        Logger.verbose("searchText: \(searchText), match: \(match), snippet: \(snippet)")
+                        count += 1
+                    }
+                    return count
+                }
+                XCTAssertEqual(1, getMatchCount(string1))
+                XCTAssertEqual(1, getMatchCount(string2))
+                XCTAssertEqual(0, getMatchCount(UUID().uuidString))
+            }
+        }
     }
 
     // MARK: - Helpers

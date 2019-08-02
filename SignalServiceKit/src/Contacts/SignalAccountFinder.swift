@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-class AnySignalAccountFinder: NSObject {
+public class AnySignalAccountFinder: NSObject {
     let grdbAdapter = GRDBSignalAccountFinder()
     let yapdbAdapter = YAPDBSignalServiceAddressIndex()
 }

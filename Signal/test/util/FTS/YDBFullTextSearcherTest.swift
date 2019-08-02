@@ -67,6 +67,10 @@ class YDBFullTextSearcherTest: SignalBaseTest {
         return FullTextSearcher.shared
     }
 
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
+    }
+
     // MARK: - Test Life Cycle
 
     override func tearDown() {
@@ -292,6 +296,53 @@ class YDBFullTextSearcherTest: SignalBaseTest {
         resultSet = getResultSet(searchText: "fax 2223")
         XCTAssertEqual(1, resultSet.messages.count)
         XCTAssertEqual(["My fax is: 222-333-4444"], bodies(forMessageResults: resultSet.messages))
+    }
+
+    // MARK: - Perf
+
+    func testPerf() {
+        let aliceE164 = "+13213214321"
+        let aliceUuid = UUID()
+        tsAccountManager.registerForTests(withLocalNumber: aliceE164, uuid: aliceUuid)
+
+        let string1 = "krazy"
+        let string2 = "kat"
+        let messageCount: UInt = 100
+
+        Bench(title: "Populate Index", memorySamplerRatio: 1) { _ in
+            self.yapWrite { transaction in
+                let groupModel = TSGroupModel(title: "Perf", members: [aliceRecipient, bobRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
+                let thread = TSGroupThread.getOrCreateThread(with: groupModel, transaction: transaction.asAnyWrite)
+
+                TSOutgoingMessage(in: thread, messageBody: string1, attachmentId: nil).anyInsert(transaction: transaction.asAnyWrite)
+
+                for _ in 0...messageCount {
+                    let message = TSOutgoingMessage(in: thread, messageBody: UUID().uuidString, attachmentId: nil)
+                    message.anyInsert(transaction: transaction.asAnyWrite)
+                    message.update(withMessageBody: UUID().uuidString, transaction: transaction.asAnyWrite)
+                }
+
+                TSOutgoingMessage(in: thread, messageBody: string2, attachmentId: nil).anyInsert(transaction: transaction.asAnyWrite)
+            }
+        }
+
+        Bench(title: "Search", memorySamplerRatio: 1) { _ in
+            self.yapRead { transaction in
+                let finder = FullTextSearchFinder()
+
+                let getMatchCount = { (searchText: String) -> UInt in
+                    var count: UInt = 0
+                    finder.enumerateObjects(searchText: searchText, transaction: transaction.asAnyRead) { (match, snippet, _) in
+                        Logger.verbose("searchText: \(searchText), match: \(match), snippet: \(snippet)")
+                        count += 1
+                    }
+                    return count
+                }
+                XCTAssertEqual(1, getMatchCount(string1))
+                XCTAssertEqual(1, getMatchCount(string2))
+                XCTAssertEqual(0, getMatchCount(UUID().uuidString))
+            }
+        }
     }
 
     // MARK: Helpers

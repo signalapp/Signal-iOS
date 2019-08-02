@@ -987,8 +987,12 @@ extension %s: SDSModel {
     public func asRecord() throws -> SDSRecord {
         return try serializer.asRecord()
     }
+
+    public var sdsTableName: String {
+        return %s.databaseTableName
+    }
 }
-''' % ( str(clazz.name), )
+''' % ( str(clazz.name), record_name, )
 
     
     if not has_sds_superclass:
@@ -1388,7 +1392,9 @@ public extension %s {
         assert(sql.count > 0)
         
         do {
-            guard let record = try %s.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+            // There are significant perf benefits to using a cached statement.
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            guard let record = try %s.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
             

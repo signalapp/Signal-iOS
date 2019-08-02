@@ -93,6 +93,6 @@ class GRDBMessageContentJobFinder: MessageContentJobFinder {
             WHERE \(messageContentJobColumn: .uniqueId) in (\(commaSeparatedIds))
         """
 
-        try! transaction.database.execute(sql: sql)
+        transaction.executeWithCachedStatement(sql: sql)
     }
 }
