@@ -194,7 +194,7 @@ class ViewOnceMessageViewController: OWSViewController {
                 return
             }
             guard OWSFileSystem.fileOrFolderExists(atPath: tempFilePath) else {
-                owsFailDebug("Missing placeholder file.")
+                owsFailDebug("Missing temp file.")
                 return
             }
             // This should be redundant since temp files are
@@ -210,10 +210,12 @@ class ViewOnceMessageViewController: OWSViewController {
             // to an underlying file on disk.
             guard OWSFileSystem.ensureFileExists(originalFilePath) else {
                 owsFailDebug("Couldn't create placeholder file.")
+                OWSFileSystem.deleteFile(tempFilePath)
                 return
             }
             guard OWSFileSystem.fileOrFolderExists(atPath: originalFilePath) else {
                 owsFailDebug("Missing placeholder file.")
+                OWSFileSystem.deleteFile(tempFilePath)
                 return
             }
 

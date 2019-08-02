@@ -429,7 +429,8 @@ NS_ASSUME_NONNULL_BEGIN
                 @"the local user has viewed the message's contents.");
             break;
         case ViewOnceMessageState_IncomingDownloading:
-            self.label.text = @"";
+            self.label.text
+                = NSLocalizedString(@"MESSAGE_STATUS_DOWNLOADING", @"message status while message is downloading.");
             break;
         case ViewOnceMessageState_IncomingFailed:
             self.label.text = CommonStrings.retryButton;
@@ -511,6 +512,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     MediaDownloadView *downloadView =
         [[MediaDownloadView alloc] initWithAttachmentId:uniqueId radius:self.downloadProgressRadius];
+    [downloadView setProgressColor:self.textColor];
     [downloadView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [downloadView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
     [downloadView setContentHuggingHigh];
