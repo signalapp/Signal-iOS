@@ -570,6 +570,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                           columns: [
                             ContactQueryRecord.columnName(.lastQueried)
                 ])
+
+            try GRDBFullTextSearchFinder.createTables(database: db)
         }
         return migrator
     }()

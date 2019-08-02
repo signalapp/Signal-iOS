@@ -74,6 +74,11 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return @"TSThread";
 }
 
++ (BOOL)shouldBeIndexedForFTS
+{
+    return YES;
+}
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
 {
     self = [super initWithUniqueId:uniqueId];

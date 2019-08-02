@@ -8,7 +8,7 @@ import XCTest
 
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
-class FullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
+class YDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
     func displayName(for address: SignalServiceAddress?, transaction: SDSAnyReadTransaction) -> String {
         return self.displayName(for: address)
     }
@@ -57,16 +57,14 @@ class FullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
 private let bobRecipient = SignalServiceAddress(phoneNumber: "+49030183000")
 private let aliceRecipient = SignalServiceAddress(phoneNumber: "+12345678900")
 
-class FullTextSearcherTest: SignalBaseTest {
+// MARK: -
+
+class YDBFullTextSearcherTest: SignalBaseTest {
 
     // MARK: - Dependencies
 
     var searcher: FullTextSearcher {
         return FullTextSearcher.shared
-    }
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
     }
 
     // MARK: - Test Life Cycle
@@ -78,43 +76,43 @@ class FullTextSearcherTest: SignalBaseTest {
     override func setUp() {
         super.setUp()
 
-        FullTextSearchFinder.ensureDatabaseExtensionRegistered(storage: OWSPrimaryStorage.shared())
+        YDBFullTextSearchFinder.ensureDatabaseExtensionRegistered(storage: OWSPrimaryStorage.shared())
 
         // Replace this singleton.
-        SSKEnvironment.shared.contactsManager = FullTextSearcherContactsManager()
+        SSKEnvironment.shared.contactsManager = YDBFullTextSearcherContactsManager()
 
-        self.write { transaction in
+        self.yapWrite { transaction in
             let bookModel = TSGroupModel(title: "Book Club", members: [aliceRecipient, bobRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
-            let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction)
-            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction)
+            let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction.asAnyWrite)
+            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyRead)
 
             let snackModel = TSGroupModel(title: "Snack Club", members: [aliceRecipient], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
-            let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
-            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction)
+            let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction.asAnyWrite)
+            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyRead)
 
-            let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction)
-            self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction)
+            let aliceContactThread = TSContactThread.getOrCreateThread(withContactAddress: aliceRecipient, transaction: transaction.asAnyWrite)
+            self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction.asAnyRead)
 
-            let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: bobRecipient, transaction: transaction)
-            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
+            let bobContactThread = TSContactThread.getOrCreateThread(withContactAddress: bobRecipient, transaction: transaction.asAnyWrite)
+            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction.asAnyRead)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
-            helloAlice.anyInsert(transaction: transaction)
+            helloAlice.anyInsert(transaction: transaction.asAnyWrite)
 
             let goodbyeAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Goodbye Alice", attachmentId: nil)
-            goodbyeAlice.anyInsert(transaction: transaction)
+            goodbyeAlice.anyInsert(transaction: transaction.asAnyWrite)
 
             let helloBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Hello Book Club", attachmentId: nil)
-            helloBookClub.anyInsert(transaction: transaction)
+            helloBookClub.anyInsert(transaction: transaction.asAnyWrite)
 
             let goodbyeBookClub = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "Goodbye Book Club", attachmentId: nil)
-            goodbyeBookClub.anyInsert(transaction: transaction)
+            goodbyeBookClub.anyInsert(transaction: transaction.asAnyWrite)
 
             let bobsPhoneNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My phone number is: 321-321-4321", attachmentId: nil)
-            bobsPhoneNumber.anyInsert(transaction: transaction)
+            bobsPhoneNumber.anyInsert(transaction: transaction.asAnyWrite)
 
             let bobsFaxNumber = TSOutgoingMessage(in: bookClubGroupThread, messageBody: "My fax is: 222-333-4444", attachmentId: nil)
-            bobsFaxNumber.anyInsert(transaction: transaction)
+            bobsFaxNumber.anyInsert(transaction: transaction.asAnyWrite)
         }
     }
 
@@ -238,6 +236,7 @@ class FullTextSearcherTest: SignalBaseTest {
         XCTAssertEqual(aliceThread, resultSet.messages.first?.thread)
 
         resultSet = getResultSet(searchText: "Hello")
+
         XCTAssertEqual(2, resultSet.messages.count)
         XCTAssert(resultSet.messages.map { $0.thread }.contains(aliceThread))
         XCTAssert(resultSet.messages.map { $0.thread }.contains(bookClubThread))
@@ -300,13 +299,13 @@ class FullTextSearcherTest: SignalBaseTest {
     func bodies<T>(forMessageResults messageResults: [ConversationSearchResult<T>]) -> [String] {
         var result = [String]()
 
-        self.read { transaction in
+        self.yapRead { transaction in
             for messageResult in messageResults {
                 guard let messageId = messageResult.messageId else {
                     owsFailDebug("message result missing message id")
                     continue
                 }
-                guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
+                guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction.asAnyRead) else {
                     owsFailDebug("couldn't load interaction for message result")
                     continue
                 }
@@ -332,101 +331,9 @@ class FullTextSearcherTest: SignalBaseTest {
 
     private func getResultSet(searchText: String) -> HomeScreenSearchResultSet {
         var results: HomeScreenSearchResultSet!
-        self.databaseStorage.read { transaction in
-            results = self.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction, contactsManager: SSKEnvironment.shared.contactsManager)
+        self.yapRead { transaction in
+            results = self.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction.asAnyRead, contactsManager: SSKEnvironment.shared.contactsManager)
         }
         return results
-    }
-}
-
-class SearcherTest: SignalBaseTest {
-
-    struct TestCharacter {
-        let name: String
-        let description: String
-        let phoneNumber: String?
-    }
-
-    let smerdyakov = TestCharacter(name: "Pavel Fyodorovich Smerdyakov", description: "A rusty hue in the sky", phoneNumber: nil)
-    let stinkingLizaveta = TestCharacter(name: "Stinking Lizaveta", description: "object of pity", phoneNumber: "+13235555555")
-    let regularLizaveta = TestCharacter(name: "Lizaveta", description: "", phoneNumber: "1 (415) 555-5555")
-
-    let indexer = { (character: TestCharacter) in
-        return "\(character.name) \(character.description) \(character.phoneNumber ?? "")"
-    }
-
-    var searcher: Searcher<TestCharacter> {
-        return Searcher(indexer: indexer)
-    }
-
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-
-    func testSimple() {
-        XCTAssert(searcher.matches(item: smerdyakov, query: "Pavel"))
-        XCTAssert(searcher.matches(item: smerdyakov, query: "pavel"))
-        XCTAssertFalse(searcher.matches(item: smerdyakov, query: "asdf"))
-        XCTAssertFalse(searcher.matches(item: smerdyakov, query: ""))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Pity"))
-    }
-
-    func testRepeats() {
-        XCTAssert(searcher.matches(item: smerdyakov, query: "pavel pavel"))
-        XCTAssertFalse(searcher.matches(item: smerdyakov, query: "pavelpavel"))
-    }
-
-    func testSplitWords() {
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Lizaveta"))
-        XCTAssert(searcher.matches(item: regularLizaveta, query: "Lizaveta"))
-
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Stinking Lizaveta"))
-        XCTAssertFalse(searcher.matches(item: regularLizaveta, query: "Stinking Lizaveta"))
-
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Lizaveta Stinking"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Lizaveta St"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "  Lizaveta St "))
-    }
-
-    func testFormattingChars() {
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "323"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "1-323-555-5555"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "13235555555"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "+1-323"))
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Liza +1-323"))
-
-        // Sanity check, match both by names
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Liza"))
-        XCTAssert(searcher.matches(item: regularLizaveta, query: "Liza"))
-
-        // Disambiguate the two Liza's by area code
-        XCTAssert(searcher.matches(item: stinkingLizaveta, query: "Liza 323"))
-        XCTAssertFalse(searcher.matches(item: regularLizaveta, query: "Liza 323"))
-    }
-
-    func testSearchQuery() {
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza"), "\"Liza\"*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza +1-323"), "\"1323\"* \"Liza\"*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "\"\\ `~!@#$%^&*()_+-={}|[]:;'<>?,./Liza +1-323"), "\"1323\"* \"Liza\"*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "renaldo RENALDO reñaldo REÑALDO"), "\"RENALDO\"* \"REÑALDO\"* \"renaldo\"* \"reñaldo\"*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "😏"), "\"😏\"*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "alice 123 bob 456"), "\"123456\"* \"alice\"* \"bob\"*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Li!za"), "\"Liza\"*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza Liza"), "\"Liza\"*")
-        XCTAssertEqual(FullTextSearchFinder.query(searchText: "Liza liza"), "\"Liza\"* \"liza\"*")
-    }
-
-    func testTextNormalization() {
-        XCTAssertEqual(FullTextSearchFinder.normalize(text: "Liza"), "Liza")
-        XCTAssertEqual(FullTextSearchFinder.normalize(text: "Liza +1-323"), "Liza 1323")
-        XCTAssertEqual(FullTextSearchFinder.normalize(text: "\"\\ `~!@#$%^&*()_+-={}|[]:;'<>?,./Liza +1-323"), "Liza 1323")
-        XCTAssertEqual(FullTextSearchFinder.normalize(text: "renaldo RENALDO reñaldo REÑALDO"), "renaldo RENALDO reñaldo REÑALDO")
-        XCTAssertEqual(FullTextSearchFinder.normalize(text: "😏"), "😏")
     }
 }

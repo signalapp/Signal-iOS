@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/TSYapDatabaseObject.h>
+#import <SignalServiceKit/BaseModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +23,7 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
 //
 // It is critical for coherency that all DB operations for this
 // class should be done on OWSProfileManager's databaseQueue.
-@interface OWSUserProfile : TSYapDatabaseObject
+@interface OWSUserProfile : BaseModel
 
 @property (atomic, readonly) SignalServiceAddress *address;
 @property (atomic, readonly, nullable) OWSAES256Key *profileKey;

@@ -219,7 +219,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
                                       [TSDatabaseView asyncRegisterPerMessageExpirationMessagesDatabaseView:self];
 
-                                      [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
+                                      [YDBFullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
                                       [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];
                                       [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
                                       [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];

@@ -236,12 +236,12 @@ public class FullTextSearcher: NSObject {
 
     @objc
     public func searchForComposeScreen(searchText: String,
-                                       transaction: YapDatabaseReadTransaction) -> ComposeScreenSearchResultSet {
+                                       transaction: SDSAnyReadTransaction) -> ComposeScreenSearchResultSet {
 
         var signalContacts: [ContactSearchResult] = []
         var groups: [GroupSearchResult] = []
 
-        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, _: String?) in
+        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, _: String?, _: UnsafeMutablePointer<ObjCBool>) in
 
             switch match {
             case let signalAccount as SignalAccount:
@@ -249,8 +249,8 @@ public class FullTextSearcher: NSObject {
                 signalContacts.append(searchResult)
             case let groupThread as TSGroupThread:
                 let sortKey = ConversationSortKey(creationDate: groupThread.creationDate,
-                                                  lastMessageReceivedAtDate: groupThread.lastInteractionForInbox(transaction: transaction.asAnyRead)?.receivedAtDate())
-                let threadViewModel = ThreadViewModel(thread: groupThread, transaction: transaction.asAnyRead)
+                                                  lastMessageReceivedAtDate: groupThread.lastInteractionForInbox(transaction: transaction)?.receivedAtDate())
+                let threadViewModel = ThreadViewModel(thread: groupThread, transaction: transaction)
                 let searchResult = GroupSearchResult(thread: threadViewModel, sortKey: sortKey)
                 groups.append(searchResult)
             case is TSContactThread:
@@ -277,18 +277,13 @@ public class FullTextSearcher: NSObject {
     public func searchForHomeScreen(searchText: String,
                                     transaction: SDSAnyReadTransaction) -> HomeScreenSearchResultSet {
 
-        // GRDB TODO:
-        guard let ydbTransaction = transaction.transitional_yapReadTransaction else {
-            return HomeScreenSearchResultSet(searchText: searchText, conversations: [], contacts: [], messages: [])
-        }
-
         var conversations: [ConversationSearchResult<ConversationSortKey>] = []
         var contacts: [ContactSearchResult] = []
         var messages: [ConversationSearchResult<MessageSortKey>] = []
 
         var existingConversationAddresses: Set<SignalServiceAddress> = Set()
 
-        self.finder.enumerateObjects(searchText: searchText, transaction: ydbTransaction) { (match: Any, snippet: String?) in
+        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, snippet: String?, _: UnsafeMutablePointer<ObjCBool>) in
 
             if let thread = match as? TSThread {
                 let threadViewModel = ThreadViewModel(thread: thread, transaction: transaction)
@@ -336,11 +331,11 @@ public class FullTextSearcher: NSObject {
 
     public func searchWithinConversation(thread: TSThread,
                                          searchText: String,
-                                         transaction: YapDatabaseReadTransaction) -> ConversationScreenSearchResultSet {
+                                         transaction: SDSAnyReadTransaction) -> ConversationScreenSearchResultSet {
 
         var messages: [MessageSearchResult] = []
 
-        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, _: String?) in
+        self.finder.enumerateObjects(searchText: searchText, transaction: transaction) { (match: Any, _: String?, _: UnsafeMutablePointer<ObjCBool>) in
             if let message = match as? TSMessage {
                 guard message.uniqueThreadId == thread.uniqueId else {
                     return

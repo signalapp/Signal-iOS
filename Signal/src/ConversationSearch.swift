@@ -19,6 +19,14 @@ public protocol ConversationSearchControllerDelegate: UISearchControllerDelegate
 @objc
 public class ConversationSearchController: NSObject {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     @objc
     public static let kMinimumSearchTextLength: UInt = 2
 
@@ -53,12 +61,6 @@ public class ConversationSearchController: NSObject {
 
     func applyTheme() {
         OWSSearchBar.applyTheme(to: uiSearchController.searchBar)
-    }
-
-    // MARK: Dependencies
-
-    var dbReadConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadConnection
     }
 }
 
@@ -97,12 +99,12 @@ extension ConversationSearchController: UISearchResultsUpdating {
         }
 
         var resultSet: ConversationScreenSearchResultSet?
-        self.dbReadConnection.asyncRead({ [weak self] transaction in
+        databaseStorage.asyncRead(block: { [weak self] transaction in
             guard let self = self else {
                 return
             }
             resultSet = self.dbSearcher.searchWithinConversation(thread: self.thread, searchText: searchText, transaction: transaction)
-        }, completionBlock: { [weak self] in
+        }, completion: { [weak self] in
             guard let self = self else {
                 return
             }

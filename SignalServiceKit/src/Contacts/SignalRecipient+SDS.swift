@@ -209,26 +209,7 @@ public extension SignalRecipient {
     }
 
     func anyRemove(transaction: SDSAnyWriteTransaction) {
-        guard shouldBeSaved else {
-            // Skipping remove.
-            return
-        }
-
-        anyWillRemove(with: transaction)
-
-        switch transaction.writeTransaction {
-        case .yapWrite(let ydbTransaction):
-            ydb_remove(with: ydbTransaction)
-        case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsRemove(transaction: grdbTransaction)
-            } catch {
-                owsFail("Remove failed: \(error)")
-            }
-        }
-
-        anyDidRemove(with: transaction)
+        sdsRemove(transaction: transaction)
     }
 
     func anyReload(transaction: SDSAnyReadTransaction) {
@@ -339,7 +320,7 @@ public extension SignalRecipient {
                         break
                     }
                 }
-            } catch let error as NSError {
+            } catch let error {
                 owsFailDebug("Couldn't fetch models: \(error)")
             }
         }
@@ -404,11 +385,19 @@ public extension SignalRecipient {
                 owsFailDebug("deleteAll() failed: \(error)")
             }
         }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
+        }
     }
 
     class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
         anyEnumerate(transaction: transaction) { (instance, _) in
             instance.anyRemove(transaction: transaction)
+        }
+
+        if shouldBeIndexedForFTS {
+            FullTextSearchFinder.allModelsWereRemoved(collection: collection(), transaction: transaction)
         }
     }
 }

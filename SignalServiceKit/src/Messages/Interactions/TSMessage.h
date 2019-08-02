@@ -122,6 +122,13 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (void)updateWithMessageSticker:(MessageSticker *)messageSticker transaction:(SDSAnyWriteTransaction *)transaction;
 
+#ifdef DEBUG
+
+// This method is for testing purposes only.
+- (void)updateWithMessageBody:(nullable NSString *)messageBody transaction:(SDSAnyWriteTransaction *)transaction;
+
+#endif
+
 #pragma mark - Per-message expiration
 
 // This method is used when we start expiration of per-message expiration.

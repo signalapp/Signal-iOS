@@ -624,6 +624,21 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                                     }];
 }
 
+#ifdef DEBUG
+
+// This method is for testing purposes only.
+- (void)updateWithMessageBody:(nullable NSString *)messageBody transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    [self anyUpdateMessageWithTransaction:transaction
+                                    block:^(TSMessage *message) {
+                                        message.body = messageBody;
+                                    }];
+}
+
+#endif
+
 #pragma mark - Renderable Content
 
 - (BOOL)hasRenderableContent

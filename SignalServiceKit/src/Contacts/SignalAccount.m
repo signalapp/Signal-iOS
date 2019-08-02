@@ -22,6 +22,11 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 
 @implementation SignalAccount
 
++ (BOOL)shouldBeIndexedForFTS
+{
+    return YES;
+}
+
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
 {
     OWSAssertDebug(signalRecipient);
