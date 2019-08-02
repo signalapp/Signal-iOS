@@ -60,7 +60,7 @@ public class FeatureFlags: NSObject {
     public static let viewOnceSending = false
 
     // This shouldn't be enabled _in production_ but it should be enabled in beta and developer builds.
-    private static let isBetaBuild = false
+    private static let isBetaBuild = true
 
     // Don't enable this flag in production.
     @objc
