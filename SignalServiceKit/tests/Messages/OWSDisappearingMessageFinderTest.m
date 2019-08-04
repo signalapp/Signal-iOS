@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
     [unExpiringMessage2 save];
 
     __block NSArray<TSMessage *> *actualMessages;
-    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
         actualMessages = [self.finder fetchExpiredMessagesWithTransaction:transaction];
     }];
 
@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
     [unExpiringMessage2 save];
 
     __block NSArray<TSMessage *> *actualMessages;
-    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
         actualMessages = [self.finder fetchUnstartedExpiringMessagesInThread:self.thread
                                                                  transaction:transaction];
     }];
@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     __block NSNumber *nextExpirationTimestamp;
 
-    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *transaction) {
         XCTAssertNotNil(self.finder);
         nextExpirationTimestamp = [self.finder nextExpirationTimestampWithTransaction:transaction];
     }];

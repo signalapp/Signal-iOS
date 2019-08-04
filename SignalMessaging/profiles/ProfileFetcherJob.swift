@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -74,6 +74,10 @@ public class ProfileFetcherJob: NSObject {
         return SSKEnvironment.shared.tsAccountManager
     }
 
+    private var sessionStore: SSKSessionStore {
+        return SSKSessionStore()
+    }
+
     // MARK: -
 
     public func run(recipientIds: [String]) {
@@ -98,7 +102,7 @@ public class ProfileFetcherJob: NSObject {
             Logger.error("background task time ran out before profile fetch completed.")
         })
 
-        DispatchQueue.main.async {
+        DispatchQueue.global().async {
             for recipientId in recipientIds {
                 self.getAndUpdateProfile(recipientId: recipientId)
             }
@@ -112,10 +116,11 @@ public class ProfileFetcherJob: NSObject {
     public func getAndUpdateProfile(recipientId: String, remainingRetries: Int = 3) {
         self.getProfile(recipientId: recipientId).map(on: DispatchQueue.global()) { profile in
             self.updateProfile(signalServiceProfile: profile)
-        }.catch { error in
+        }.catch(on: DispatchQueue.global()) { error in
             switch error {
-            case ProfileFetcherJobError.throttled(let lastTimeInterval):
-                Logger.info("skipping updateProfile: \(recipientId), lastTimeInterval: \(lastTimeInterval)")
+            case ProfileFetcherJobError.throttled:
+                // skipping
+                break
             case let error as SignalServiceProfile.ValidationError:
                 Logger.warn("skipping updateProfile retry. Invalid profile for: \(recipientId) error: \(error)")
             default:
@@ -129,7 +134,6 @@ public class ProfileFetcherJob: NSObject {
     }
 
     public func getProfile(recipientId: String) -> Promise<SignalServiceProfile> {
-        AssertIsOnMainThread()
         if !ignoreThrottling {
             if let lastDate = ProfileFetcherJob.fetchDateMap[recipientId] {
                 let lastTimeInterval = fabs(lastDate.timeIntervalSinceNow)
@@ -162,8 +166,6 @@ public class ProfileFetcherJob: NSObject {
     private func requestProfile(recipientId: String,
                                 udAccess: OWSUDAccess?,
                                 canFailoverUDAuth: Bool) -> Promise<SignalServiceProfile> {
-        AssertIsOnMainThread()
-
         let requestMaker = RequestMaker(label: "Profile Fetch",
                                         requestFactoryBlock: { (udAccessKeyForRequest) -> TSRequest in
             return OWSRequestFactory.getProfileRequest(recipientId: recipientId, udAccessKey: udAccessKeyForRequest)
@@ -229,9 +231,9 @@ public class ProfileFetcherJob: NSObject {
 
     private func verifyIdentityUpToDateAsync(recipientId: String, latestIdentityKey: Data) {
         primaryStorage.newDatabaseConnection().asyncReadWrite { (transaction) in
-            if self.identityManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, protocolContext: transaction) {
+            if self.identityManager.saveRemoteIdentity(latestIdentityKey, recipientId: recipientId, transaction: transaction.asAnyWrite) {
                 Logger.info("updated identity key with fetched profile for recipient: \(recipientId)")
-                self.primaryStorage.archiveAllSessions(forContact: recipientId, protocolContext: transaction)
+                self.sessionStore.archiveAllSessions(forContact: recipientId, transaction: transaction.asAnyWrite)
             } else {
                 // no change in identity.
             }

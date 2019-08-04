@@ -44,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil];
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
     }];
 }
@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil];
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [message updateWithSentRecipient:self.contactId wasSentByUD:NO transaction:transaction];
         XCTAssertTrue([message shouldStartExpireTimerWithTransaction:transaction]);
     }];
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil];
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
     }];
 }
@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       quotedMessage:nil
                                                        contactShare:nil
                                                         linkPreview:nil];
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self yapWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [message updateWithMarkingAllUnsentRecipientsAsSendingWithTransaction:transaction];
         XCTAssertFalse([message shouldStartExpireTimerWithTransaction:transaction]);
     }];

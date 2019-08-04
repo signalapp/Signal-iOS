@@ -32,55 +32,57 @@ import Foundation
 public protocol Factory {
     associatedtype ObjectType: TSYapDatabaseObject
 
-    var dbConnection: YapDatabaseConnection { get }
+    static var databaseStorage: SDSDatabaseStorage { get }
+    var databaseStorage: SDSDatabaseStorage { get }
 
-    func readWrite(block: @escaping (YapDatabaseReadWriteTransaction) -> Void)
+    static func write(block: @escaping (SDSAnyWriteTransaction) -> Void)
+    func write(block: @escaping (SDSAnyWriteTransaction) -> Void)
 
     // MARK: Factory Methods
     func create() -> ObjectType
-    func create(transaction: YapDatabaseReadWriteTransaction) -> ObjectType
+    func create(transaction: SDSAnyWriteTransaction) -> ObjectType
 
     func create(count: UInt) -> [ObjectType]
-    func create(count: UInt, transaction: YapDatabaseReadWriteTransaction) -> [ObjectType]
+    func create(count: UInt, transaction: SDSAnyWriteTransaction) -> [ObjectType]
 }
 
 public extension Factory {
 
-    static public var dbConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection
+    static var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
-    public var dbConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
-    static public func readWrite(block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
-        dbConnection.readWrite(block)
+    static func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        databaseStorage.write(block: block)
     }
 
-    public func readWrite(block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
-        dbConnection.readWrite(block)
+    func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        databaseStorage.write(block: block)
     }
 
     // MARK: Factory Methods
 
-    public func create() -> ObjectType {
+    func create() -> ObjectType {
         var item: ObjectType!
-        self.readWrite { transaction in
+        write { transaction in
             item = self.create(transaction: transaction)
         }
         return item
     }
 
-    public func create(count: UInt) -> [ObjectType] {
+    func create(count: UInt) -> [ObjectType] {
         var items: [ObjectType] = []
-        self.readWrite { transaction in
+        write { transaction in
             items = self.create(count: count, transaction: transaction)
         }
         return items
     }
 
-    public func create(count: UInt, transaction: YapDatabaseReadWriteTransaction) -> [ObjectType] {
+    func create(count: UInt, transaction: SDSAnyWriteTransaction) -> [ObjectType] {
         return (0..<count).map { _ in return create(transaction: transaction) }
     }
 }
@@ -93,9 +95,9 @@ public class ContactThreadFactory: NSObject, Factory {
     // MARK: Factory
 
     @objc
-    public func create(transaction: YapDatabaseReadWriteTransaction) -> TSContactThread {
+    public func create(transaction: SDSAnyWriteTransaction) -> TSContactThread {
         let threadId = generateContactThreadId()
-        let thread = TSContactThread.getOrCreateThread(withContactId: threadId, transaction: transaction)
+        let thread = TSContactThread.getOrCreateThread(withContactId: threadId, anyTransaction: transaction)
 
         let incomingMessageFactory = IncomingMessageFactory()
         incomingMessageFactory.threadCreator = { _ in return thread }
@@ -127,7 +129,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
     // MARK: Factory
 
     @objc
-    public func build(transaction: YapDatabaseReadWriteTransaction) -> TSOutgoingMessage {
+    public func build(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
         let item = TSOutgoingMessage(outgoingMessageWithTimestamp: timestampBuilder(),
                                      in: threadCreator(transaction),
                                      messageBody: messageBodyBuilder(),
@@ -138,15 +140,17 @@ public class OutgoingMessageFactory: NSObject, Factory {
                                      groupMetaMessage: groupMetaMessageBuilder(),
                                      quotedMessage: quotedMessageBuilder(),
                                      contactShare: contactShareBuilder(),
-                                     linkPreview: linkPreviewBuilder())
+                                     linkPreview: linkPreviewBuilder(),
+                                     messageSticker: messageStickerBuilder(),
+                                     perMessageExpirationDurationSeconds: perMessageExpirationDurationSecondsBuilder())
 
         return item
     }
 
     @objc
-    public func create(transaction: YapDatabaseReadWriteTransaction) -> TSOutgoingMessage {
+    public func create(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
         let item = self.build(transaction: transaction)
-        item.save(with: transaction)
+        item.anyInsert(transaction: transaction)
 
         return item
     }
@@ -154,7 +158,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
     // MARK: Dependent Factories
 
     @objc
-    public var threadCreator: (YapDatabaseReadWriteTransaction) -> TSThread = { transaction in
+    public var threadCreator: (SDSAnyWriteTransaction) -> TSThread = { transaction in
         ContactThreadFactory().create(transaction: transaction)
     }
 
@@ -210,19 +214,29 @@ public class OutgoingMessageFactory: NSObject, Factory {
         return nil
     }
 
+    @objc
+    public var messageStickerBuilder: () -> MessageSticker? = {
+        return nil
+    }
+
+    @objc
+    public var perMessageExpirationDurationSecondsBuilder: () -> UInt32 = {
+        return 0
+    }
+
     // MARK: Delivery Receipts
 
     @objc
     public func buildDeliveryReceipt() -> OWSReceiptsForSenderMessage {
         var item: OWSReceiptsForSenderMessage!
-        self.readWrite { transaction in
+        write { transaction in
             item = self.buildDeliveryReceipt(transaction: transaction)
         }
         return item
     }
 
     @objc
-    public func buildDeliveryReceipt(transaction: YapDatabaseReadWriteTransaction) -> OWSReceiptsForSenderMessage {
+    public func buildDeliveryReceipt(transaction: SDSAnyWriteTransaction) -> OWSReceiptsForSenderMessage {
         let item = OWSReceiptsForSenderMessage.deliveryReceiptsForSenderMessage(with: threadCreator(transaction),
                                                                                 messageTimestamps: messageTimestampsBuilder())
         return item
@@ -235,15 +249,18 @@ public class OutgoingMessageFactory: NSObject, Factory {
 }
 
 @objc
-class IncomingMessageFactory: NSObject, Factory {
+public class IncomingMessageFactory: NSObject, Factory {
 
     // MARK: Factory
 
     @objc
-    public func create(transaction: YapDatabaseReadWriteTransaction) -> TSIncomingMessage {
+    public func create(transaction: SDSAnyWriteTransaction) -> TSIncomingMessage {
+
+        let thread = threadCreator(transaction)
+
         let item = TSIncomingMessage(incomingMessageWithTimestamp: timestampBuilder(),
-                                     in: threadCreator(transaction),
-                                     authorId: authorIdBuilder(),
+                                     in: thread,
+                                     authorId: authorIdBuilder(thread),
                                      sourceDeviceId: sourceDeviceIdBuilder(),
                                      messageBody: messageBodyBuilder(),
                                      attachmentIds: attachmentIdsBuilder(),
@@ -251,10 +268,12 @@ class IncomingMessageFactory: NSObject, Factory {
                                      quotedMessage: quotedMessageBuilder(),
                                      contactShare: contactShareBuilder(),
                                      linkPreview: linkPreviewBuilder(),
+                                     messageSticker: messageStickerBuilder(),
                                      serverTimestamp: serverTimestampBuilder(),
-                                     wasReceivedByUD: wasReceivedByUDBuilder())
+                                     wasReceivedByUD: wasReceivedByUDBuilder(),
+                                     perMessageExpirationDurationSeconds: perMessageExpirationDurationSecondsBuilder())
 
-        item.save(with: transaction)
+        item.anyInsert(transaction: transaction)
 
         return item
     }
@@ -262,7 +281,7 @@ class IncomingMessageFactory: NSObject, Factory {
     // MARK: Dependent Factories
 
     @objc
-    public var threadCreator: (YapDatabaseReadWriteTransaction) -> TSThread = { transaction in
+    public var threadCreator: (SDSAnyWriteTransaction) -> TSThread = { transaction in
         ContactThreadFactory().create(transaction: transaction)
     }
 
@@ -279,8 +298,16 @@ class IncomingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var authorIdBuilder: () -> String = {
-        return CommonGenerator.contactId
+    public var authorIdBuilder: (TSThread) -> String = { thread in
+        switch thread {
+        case let contactThread as TSContactThread:
+            return contactThread.contactIdentifier()
+        case let groupThread as TSGroupThread:
+            return groupThread.recipientIdentifiers.ows_randomElement() ?? CommonGenerator.contactId
+        default:
+            owsFailDebug("unexpected thread type")
+            return CommonGenerator.contactId
+        }
     }
 
     @objc
@@ -314,6 +341,11 @@ class IncomingMessageFactory: NSObject, Factory {
     }
 
     @objc
+    public var messageStickerBuilder: () -> MessageSticker? = {
+        return nil
+    }
+
+    @objc
     public var serverTimestampBuilder: () -> NSNumber? = {
         return nil
     }
@@ -321,6 +353,11 @@ class IncomingMessageFactory: NSObject, Factory {
     @objc
     public var wasReceivedByUDBuilder: () -> Bool = {
         return false
+    }
+
+    @objc
+    public var perMessageExpirationDurationSecondsBuilder: () -> UInt32 = {
+        return 0
     }
 }
 
@@ -331,10 +368,10 @@ class GroupThreadFactory: NSObject, Factory {
     public var messageCount: UInt = 0
 
     @objc
-    public func create(transaction: YapDatabaseReadWriteTransaction) -> TSGroupThread {
+    public func create(transaction: SDSAnyWriteTransaction) -> TSGroupThread {
         let thread = TSGroupThread.getOrCreateThread(with: groupModelBuilder(self),
-                                                     transaction: transaction)
-        thread.save(with: transaction)
+                                                     anyTransaction: transaction)
+        thread.anyInsert(transaction: transaction)
 
         let incomingMessageFactory = IncomingMessageFactory()
         incomingMessageFactory.threadCreator = { _ in return thread }
@@ -344,7 +381,6 @@ class GroupThreadFactory: NSObject, Factory {
 
         (0..<messageCount).forEach { _ in
             if [true, false].ows_randomElement()! {
-                incomingMessageFactory.authorIdBuilder = { thread.recipientIdentifiers.ows_randomElement()!  }
                 _ = incomingMessageFactory.create(transaction: transaction)
             } else {
                 _ = outgoingMessageFactory.create(transaction: transaction)
@@ -392,14 +428,14 @@ class AttachmentStreamFactory: NSObject, Factory {
     @objc
     class public func create(contentType: String, dataSource: DataSource) -> TSAttachmentStream {
         var item: TSAttachmentStream!
-        readWrite { transaction in
+        write { transaction in
             item = create(contentType: contentType, dataSource: dataSource, transaction: transaction)
         }
         return item
     }
 
     @objc
-    class public func create(contentType: String, dataSource: DataSource, transaction: YapDatabaseReadWriteTransaction) -> TSAttachmentStream {
+    class public func create(contentType: String, dataSource: DataSource, transaction: SDSAnyWriteTransaction) -> TSAttachmentStream {
         let factory = AttachmentStreamFactory()
         factory.contentTypeBuilder = { return contentType }
         factory.byteCountBuilder = { return UInt32(dataSource.dataLength()) }
@@ -408,7 +444,7 @@ class AttachmentStreamFactory: NSObject, Factory {
         let attachmentStream = factory.build(transaction: transaction)
         dataSource.write(toPath: attachmentStream.originalFilePath!)
 
-        attachmentStream.save(with: transaction)
+        attachmentStream.anyInsert(transaction: transaction)
 
         return attachmentStream
     }
@@ -416,15 +452,15 @@ class AttachmentStreamFactory: NSObject, Factory {
     // MARK: Factory
 
     @objc
-    public func create(transaction: YapDatabaseReadWriteTransaction) -> TSAttachmentStream {
+    public func create(transaction: SDSAnyWriteTransaction) -> TSAttachmentStream {
         let attachmentStream = build(transaction: transaction)
-        attachmentStream.save(with: transaction)
+        attachmentStream.anyInsert(transaction: transaction)
 
         return attachmentStream
     }
 
     @objc
-    public func build(transaction: YapDatabaseReadTransaction) -> TSAttachmentStream {
+    public func build(transaction: SDSAnyReadTransaction) -> TSAttachmentStream {
         return build()
     }
 
@@ -434,7 +470,8 @@ class AttachmentStreamFactory: NSObject, Factory {
                                                   byteCount: byteCountBuilder(),
                                                   sourceFilename: sourceFilenameBuilder(),
                                                   caption: captionBuilder(),
-                                                  albumMessageId: albumMessageIdBuilder())
+                                                  albumMessageId: albumMessageIdBuilder(),
+                                                  shouldAlwaysPad: false)
 
         return attachmentStream
     }

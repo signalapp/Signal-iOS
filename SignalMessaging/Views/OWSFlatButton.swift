@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,6 +14,16 @@ public class OWSFlatButton: UIView {
 
     private var upColor: UIColor?
     private var downColor: UIColor?
+
+    @objc
+    public override var accessibilityIdentifier: String? {
+        didSet {
+            guard let accessibilityIdentifier = self.accessibilityIdentifier else {
+                return
+            }
+            button.accessibilityIdentifier = "\(accessibilityIdentifier).button"
+        }
+    }
 
     override public var backgroundColor: UIColor? {
         willSet {
@@ -166,5 +176,26 @@ public class OWSFlatButton: UIView {
     @objc
     internal func buttonPressed() {
         pressedBlock?()
+    }
+
+    @objc
+    public func enableMultilineLabel() {
+        button.titleLabel?.numberOfLines = 0
+        button.titleLabel?.lineBreakMode = .byWordWrapping
+        button.titleLabel?.textAlignment = .center
+    }
+
+    @objc
+    public var font: UIFont? {
+        return button.titleLabel?.font
+    }
+
+    @objc
+    public func autoSetHeightUsingFont() {
+        guard let font = font else {
+            owsFailDebug("Missing button font.")
+            return
+        }
+        autoSetDimension(.height, toSize: font.lineHeight * 2.5)
     }
 }

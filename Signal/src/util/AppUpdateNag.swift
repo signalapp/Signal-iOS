@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -115,7 +115,7 @@ class AppUpdateNag: NSObject {
         }
 
         switch frontmostViewController {
-        case is HomeViewController, is RegistrationViewController:
+        case is HomeViewController, is OnboardingSplashViewController:
             self.setLastNagDate(Date())
             self.clearFirstHeardOfNewVersionDate()
             presentUpgradeNag(appStoreRecord: appStoreRecord)
@@ -144,7 +144,9 @@ class AppUpdateNag: NSObject {
         }
 
         alert.addAction(updateAction)
-        alert.addAction(UIAlertAction(title: dismissButtonText, style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: dismissButtonText, style: .cancel) { _ in
+            Logger.info("dismissed upgrade notice")
+        })
 
         OWSAlerts.showAlert(alert)
     }

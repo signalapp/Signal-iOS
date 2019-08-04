@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingSentMessageTranscript.h"
@@ -22,20 +22,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @interface OWSOutgoingSentMessageTranscript ()
 
 @property (nonatomic, readonly) TSOutgoingMessage *message;
+
 // sentRecipientId is the recipient of message, for contact thread messages.
 // It is used to identify the thread/conversation to desktop.
 @property (nonatomic, readonly, nullable) NSString *sentRecipientId;
 
+@property (nonatomic, readonly) BOOL isRecipientUpdate;
+
 @end
+
+#pragma mark -
 
 @implementation OWSOutgoingSentMessageTranscript
 
-- (instancetype)initWithOutgoingMessage:(TSOutgoingMessage *)message
+- (instancetype)initWithOutgoingMessage:(TSOutgoingMessage *)message isRecipientUpdate:(BOOL)isRecipientUpdate
 {
-    self = [super init];
+    OWSAssertDebug(message);
+
+    // The sync message's timestamp must match the original outgoing message's timestamp.
+    self = [super initWithTimestamp:message.timestamp];
 
     if (!self) {
         return self;
@@ -44,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     _message = message;
     // This will be nil for groups.
     _sentRecipientId = message.thread.contactIdentifier;
+    _isRecipientUpdate = isRecipientUpdate;
 
     return self;
 }
@@ -56,14 +67,30 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     SSKProtoSyncMessageSentBuilder *sentBuilder = [SSKProtoSyncMessageSent builder];
-    [sentBuilder setTimestamp:self.message.timestamp];
+    [sentBuilder setTimestamp:self.timestamp];
     [sentBuilder setDestination:self.sentRecipientId];
+    [sentBuilder setIsRecipientUpdate:self.isRecipientUpdate];
 
-    SSKProtoDataMessage *_Nullable dataMessage = [self.message buildDataMessage:self.sentRecipientId];
+    SSKProtoDataMessage *_Nullable dataMessage;
+    if (self.message.hasPerMessageExpiration) {
+        // Create data message without renderable content.
+        SSKProtoDataMessageBuilder *dataBuilder = [SSKProtoDataMessage builder];
+        [dataBuilder setTimestamp:self.message.timestamp];
+
+        NSError *error;
+        dataMessage = [dataBuilder buildAndReturnError:&error];
+        if (error || !dataMessage) {
+            OWSFailDebug(@"could not build protobuf: %@", error);
+            return nil;
+        }
+    } else {
+        dataMessage = [self.message buildDataMessage:self.sentRecipientId];
+    }
     if (!dataMessage) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
     }
+
     [sentBuilder setMessage:dataMessage];
     [sentBuilder setExpirationStartTimestamp:self.message.timestamp];
 

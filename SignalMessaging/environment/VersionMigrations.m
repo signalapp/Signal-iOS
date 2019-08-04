@@ -5,7 +5,7 @@
 #import "VersionMigrations.h"
 #import "Environment.h"
 #import "OWSDatabaseMigrationRunner.h"
-#import "SignalKeyingStorage.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
@@ -19,13 +19,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #define NEEDS_TO_REGISTER_PUSH_KEY @"Register For Push"
 #define NEEDS_TO_REGISTER_ATTRIBUTES @"Register Attributes"
-
-@interface SignalKeyingStorage (VersionMigrations)
-
-+ (void)storeString:(NSString *)string forKey:(NSString *)key;
-+ (void)storeData:(NSData *)data forKey:(NSString *)key;
-
-@end
 
 @implementation VersionMigrations
 
@@ -67,7 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) {
         OWSLogError(@"Migrating from RedPhone no longer supported. Quitting.");
         // Not translating these as so few are affected.
-        UIAlertController *alertController = [UIAlertController
+        UIAlertController *alert = [UIAlertController
             alertControllerWithTitle:@"You must reinstall Signal"
                              message:
                                  @"Sorry, your installation is too old for us to update. You'll have to start fresh."
@@ -78,9 +71,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                            handler:^(UIAlertAction *_Nonnull action) {
                                                                OWSFail(@"Obsolete install.");
                                                            }];
-        [alertController addAction:quitAction];
+        [alert addAction:quitAction];
 
-        [CurrentAppContext().frontmostViewController presentViewController:alertController animated:YES completion:nil];
+        [CurrentAppContext().frontmostViewController presentAlert:alert];
     }
 
     if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [self.tsAccountManager isRegistered]) {

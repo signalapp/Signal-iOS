@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel.h>
@@ -7,12 +7,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
 @class TSThread;
-@class YapDatabaseReadWriteTransaction;
 
 @interface OWSAttachmentInfo : MTLModel
 
@@ -39,7 +39,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
+- (instancetype)initWithAttachmentId:(nullable NSString *)attachmentId
+                         contentType:(NSString *)contentType
+                      sourceFilename:(NSString *)sourceFilename
+        thumbnailAttachmentPointerId:(nullable NSString *)thumbnailAttachmentPointerId
+         thumbnailAttachmentStreamId:(nullable NSString *)thumbnailAttachmentStreamId NS_DESIGNATED_INITIALIZER;
+
 @end
+
+#pragma mark -
 
 typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
     TSQuotedMessageContentSourceUnknown,
@@ -79,7 +87,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 
 // Before sending, persist a thumbnail attachment derived from the quoted attachment
 - (NSArray<TSAttachmentStream *> *)createThumbnailAttachmentsIfNecessaryWithTransaction:
-    (YapDatabaseReadWriteTransaction *)transaction;
+    (SDSAnyWriteTransaction *)transaction;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -99,7 +107,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 
 + (nullable instancetype)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage
                                               thread:(TSThread *)thread
-                                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                         transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

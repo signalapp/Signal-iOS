@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -29,7 +29,7 @@ struct AudioSource: Hashable {
 
     init(portDescription: AVAudioSessionPortDescription) {
 
-        let isBuiltInEarPiece = portDescription.portType == AVAudioSessionPortBuiltInMic
+        let isBuiltInEarPiece = portDescription.portType == AVAudioSession.Port.builtInMic
 
         // portDescription.portName works well for BT linked devices, but if we are using
         // the built in mic, we have "iPhone Microphone" which is a little awkward.
@@ -77,12 +77,14 @@ struct AudioSource: Hashable {
         return lhsPortDescription.uid == rhsPortDescription.uid
     }
 
-    var hashValue: Int {
+    public func hash(into hasher: inout Hasher) {
         guard let portDescription = self.portDescription else {
             assert(self.isBuiltInSpeaker)
-            return "Built In Speaker".hashValue
+            hasher.combine("Built In Speaker")
+            return
         }
-        return portDescription.uid.hash
+
+        hasher.combine(portDescription.uid)
     }
 }
 
@@ -129,7 +131,7 @@ protocol CallAudioServiceDelegate: class {
         // Configure audio session so we don't prompt user with Record permission until call is connected.
 
         audioSession.configureRTCAudio()
-        NotificationCenter.default.addObserver(forName: .AVAudioSessionRouteChange, object: avAudioSession, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: avAudioSession, queue: nil) { _ in
             assert(!Thread.isMainThread)
             self.updateIsSpeakerphoneEnabled()
         }
@@ -201,7 +203,7 @@ protocol CallAudioServiceDelegate: class {
 
     private func updateIsSpeakerphoneEnabled() {
         let value = avAudioSession.currentRoute.outputs.contains { (portDescription: AVAudioSessionPortDescription) -> Bool in
-            return portDescription.portName == AVAudioSessionPortBuiltInSpeaker
+            return portDescription.portType == .builtInSpeaker
         }
         DispatchQueue.main.async {
             self.isSpeakerphoneEnabled = value
@@ -213,8 +215,8 @@ protocol CallAudioServiceDelegate: class {
 
         guard let call = call, !call.isTerminated else {
             // Revert to default audio
-            setAudioSession(category: AVAudioSessionCategorySoloAmbient,
-                            mode: AVAudioSessionModeDefault)
+            setAudioSession(category: .soloAmbient,
+                            mode: .default)
             return
         }
 
@@ -224,12 +226,12 @@ protocol CallAudioServiceDelegate: class {
         // to setPreferredInput to call.audioSource.portDescription in this case,
         // but in practice I'm seeing the call revert to the bluetooth headset.
         // Presumably something else (in WebRTC?) is touching our shared AudioSession. - mjk
-        let options: AVAudioSessionCategoryOptions = call.audioSource?.isBuiltInEarPiece == true ? [] : [.allowBluetooth]
+        let options: AVAudioSession.CategoryOptions = call.audioSource?.isBuiltInEarPiece == true ? [] : [.allowBluetooth]
 
         if call.state == .localRinging {
             // SoloAmbient plays through speaker, but respects silent switch
-            setAudioSession(category: AVAudioSessionCategorySoloAmbient,
-                            mode: AVAudioSessionModeDefault)
+            setAudioSession(category: .soloAmbient,
+                            mode: .default)
         } else if call.hasLocalVideo {
             // Because ModeVideoChat affects gain, we don't want to apply it until the call is connected.
             // otherwise sounds like ringing will be extra loud for video vs. speakerphone
@@ -238,16 +240,16 @@ protocol CallAudioServiceDelegate: class {
             // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
             // option, and inspect AVAudioSession.sharedInstance.categoryOptions == 0. And availableInputs
             // does not include my linked bluetooth device
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
-                            mode: AVAudioSessionModeVideoChat,
+            setAudioSession(category: .playAndRecord,
+                            mode: .videoChat,
                             options: options)
         } else {
             // Apple Docs say that setting mode to AVAudioSessionModeVoiceChat has the
             // side effect of setting options: .allowBluetooth, when I remove the (seemingly unnecessary)
             // option, and inspect AVAudioSession.sharedInstance.categoryOptions == 0. And availableInputs
             // does not include my linked bluetooth device
-            setAudioSession(category: AVAudioSessionCategoryPlayAndRecord,
-                            mode: AVAudioSessionModeVoiceChat,
+            setAudioSession(category: .playAndRecord,
+                            mode: .voiceChat,
                             options: options)
         }
 
@@ -346,7 +348,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
-        play(sound: OWSSound.callFailure)
+        play(sound: .callEnded)
         handleCallEnded(call: call)
     }
 
@@ -354,6 +356,7 @@ protocol CallAudioServiceDelegate: class {
         AssertIsOnMainThread()
         Logger.debug("")
 
+        play(sound: .callEnded)
         handleCallEnded(call: call)
     }
 
@@ -363,6 +366,7 @@ protocol CallAudioServiceDelegate: class {
 
         vibrate()
 
+        play(sound: .callEnded)
         handleCallEnded(call: call)
     }
 
@@ -384,7 +388,7 @@ protocol CallAudioServiceDelegate: class {
 
         // Stop solo audio, revert to default.
         isSpeakerphoneEnabled = false
-        setAudioSession(category: AVAudioSessionCategorySoloAmbient)
+        setAudioSession(category: .soloAmbient)
     }
 
     // MARK: Playing Sounds
@@ -488,9 +492,9 @@ protocol CallAudioServiceDelegate: class {
         return AudioSource(portDescription: portDescription)
     }
 
-    private func setAudioSession(category: String,
-                                 mode: String? = nil,
-                                 options: AVAudioSessionCategoryOptions = AVAudioSessionCategoryOptions(rawValue: 0)) {
+    private func setAudioSession(category: AVAudioSession.Category,
+                                 mode: AVAudioSession.Mode? = nil,
+                                 options: AVAudioSession.CategoryOptions = AVAudioSession.CategoryOptions(rawValue: 0)) {
 
         AssertIsOnMainThread()
 
@@ -534,8 +538,7 @@ protocol CallAudioServiceDelegate: class {
                 if oldOptions != options {
                     Logger.debug("audio session changed options: \(oldOptions) -> \(options) ")
                 }
-                try avAudioSession.setCategory(category, with: options)
-
+                try avAudioSession.ows_setCategory(category, with: options)
             }
         } catch {
             let message = "failed to set category: \(category) mode: \(String(describing: mode)), options: \(options) with error: \(error)"

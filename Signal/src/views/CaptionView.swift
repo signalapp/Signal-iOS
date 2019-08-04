@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 public protocol CaptionContainerViewDelegate: class {
@@ -27,13 +27,13 @@ public class CaptionContainerView: UIView {
     }
 
     func updatePagerTransition(ratioComplete: CGFloat) {
-        if let currentText = self.currentText, currentText.count > 1 {
+        if let currentText = self.currentText, currentText.count > 0 {
             currentCaptionView.alpha = 1 - ratioComplete
         } else {
             currentCaptionView.alpha = 0
         }
 
-        if let pendingText = self.pendingText, pendingText.count > 1 {
+        if let pendingText = self.pendingText, pendingText.count > 0 {
             pendingCaptionView.alpha = ratioComplete
         } else {
             pendingCaptionView.alpha = 0
@@ -165,7 +165,7 @@ private class CaptionView: UIView {
         override var intrinsicContentSize: CGSize {
             var size = super.intrinsicContentSize
 
-            if size.height == UIViewNoIntrinsicMetric {
+            if size.height == UIView.noIntrinsicMetric {
                 size.height = layoutManager.usedRect(for: textContainer).height + textContainerInset.top + textContainerInset.bottom
             }
             size.height = min(kMaxHeight, size.height)

@@ -3,11 +3,11 @@
 //
 
 public extension CGPoint {
-    public func offsetBy(dx: CGFloat) -> CGPoint {
+    func offsetBy(dx: CGFloat) -> CGPoint {
         return CGPoint(x: x + dx, y: y)
     }
 
-    public func offsetBy(dy: CGFloat) -> CGPoint {
+    func offsetBy(dy: CGFloat) -> CGPoint {
         return CGPoint(x: x, y: y + dy)
     }
 }
@@ -103,7 +103,7 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
     }
 
     public func imageState() -> LinkPreviewImageState {
-        if linkPreviewDraft.imageFilePath != nil {
+        if linkPreviewDraft.imageData != nil {
             return .loaded
         } else {
             return .none
@@ -113,11 +113,12 @@ public class LinkPreviewDraft: NSObject, LinkPreviewState {
     public func image() -> UIImage? {
         assert(imageState() == .loaded)
 
-        guard let imageFilepath = linkPreviewDraft.imageFilePath else {
+        guard let imageData = linkPreviewDraft.imageData else {
             return nil
         }
-        guard let image = UIImage(contentsOfFile: imageFilepath) else {
-            owsFail("Could not load image: \(imageFilepath)")
+        guard let image = UIImage(data: imageData) else {
+            owsFailDebug("Could not load image: \(imageData.count)")
+            return nil
         }
         return image
     }
@@ -210,9 +211,24 @@ public class LinkPreviewSent: NSObject, LinkPreviewState {
             owsFailDebug("Attachment is missing file path.")
             return nil
         }
-        guard let image = UIImage(contentsOfFile: imageFilepath) else {
-            owsFail("Could not load image: \(imageFilepath)")
+
+        guard NSData.ows_isValidImage(atPath: imageFilepath, mimeType: attachmentStream.contentType) else {
+            owsFailDebug("Invalid image.")
+            return nil
         }
+
+        let imageClass: UIImage.Type
+        if attachmentStream.contentType == OWSMimeTypeImageWebp {
+            imageClass = YYImage.self
+        } else {
+            imageClass = UIImage.self
+        }
+
+        guard let image = imageClass.init(contentsOfFile: imageFilepath) else {
+            owsFailDebug("Could not load image: \(imageFilepath)")
+            return nil
+        }
+
         return image
     }
 }
@@ -528,8 +544,24 @@ public class LinkPreviewView: UIStackView {
     private let sentHeroVMargin: CGFloat = 7
 
     private func sentIsHero(state: LinkPreviewSent) -> Bool {
+        if isSticker(state: state) {
+            return false
+        }
+
         let imageSize = state.imageSize
         return imageSize.width >= sentMinimumHeroSize && imageSize.height >= sentMinimumHeroSize
+    }
+
+    private func isSticker(state: LinkPreviewSent) -> Bool {
+        guard let urlString = state.urlString() else {
+            owsFailDebug("Link preview is missing url.")
+            return false
+        }
+        guard let url = URL(string: urlString) else {
+            owsFailDebug("Could not parse URL.")
+            return false
+        }
+        return StickerPackInfo.isStickerPackShare(url)
     }
 
     private let sentTitleLineCount: Int = 2
@@ -713,7 +745,7 @@ public class LinkPreviewView: UIStackView {
         let activityIndicatorStyle: UIActivityIndicatorView.Style = (Theme.isDarkThemeEnabled
             ? .white
             : .gray)
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: activityIndicatorStyle)
+        let activityIndicator = UIActivityIndicatorView(style: activityIndicatorStyle)
         activityIndicator.startAnimating()
         addArrangedSubview(activityIndicator)
         let activityIndicatorSize: CGFloat = 25
@@ -818,16 +850,16 @@ public class LinkPreviewView: UIStackView {
         if let heroImageView = self.heroImageView {
             let borderView = OWSBubbleShapeView(draw: ())
             borderView.strokeColor = Theme.primaryColor
-            borderView.strokeThickness = CGHairlineWidth()
+            borderView.strokeThickness = CGHairlineWidthFraction(1.8)
             heroImageView.addSubview(borderView)
             bubbleView.addPartnerView(borderView)
             borderView.ows_autoPinToSuperviewEdges()
         }
         if let sentBodyView = self.sentBodyView {
             let borderView = OWSBubbleShapeView(draw: ())
-            let borderColor = UIColor(rgbHex: Theme.isDarkThemeEnabled ? 0x0F1012 : 0xD5D6D6)
+            let borderColor = (Theme.isDarkThemeEnabled ? UIColor.ows_gray60 : UIColor.ows_gray15)
             borderView.strokeColor = borderColor
-            borderView.strokeThickness = CGHairlineWidth()
+            borderView.strokeThickness = CGHairlineWidthFraction(1.8)
             sentBodyView.addSubview(borderView)
             bubbleView.addPartnerView(borderView)
             borderView.ows_autoPinToSuperviewEdges()

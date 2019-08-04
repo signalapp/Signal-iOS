@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAttachmentInfo
 
-- (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
+- (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
     OWSAssertDebug([attachmentStream isKindOfClass:[TSAttachmentStream class]]);
     OWSAssertDebug(attachmentStream.uniqueId);
@@ -41,6 +41,26 @@ NS_ASSUME_NONNULL_BEGIN
     _attachmentId = attachmentId;
     _contentType = contentType;
     _sourceFilename = sourceFilename;
+
+    return self;
+}
+
+- (instancetype)initWithAttachmentId:(nullable NSString *)attachmentId
+                         contentType:(NSString *)contentType
+                      sourceFilename:(NSString *)sourceFilename
+        thumbnailAttachmentPointerId:(nullable NSString *)thumbnailAttachmentPointerId
+         thumbnailAttachmentStreamId:(nullable NSString *)thumbnailAttachmentStreamId
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _attachmentId = attachmentId;
+    _contentType = contentType;
+    _sourceFilename = sourceFilename;
+    _thumbnailAttachmentPointerId = thumbnailAttachmentPointerId;
+    _thumbnailAttachmentStreamId = thumbnailAttachmentStreamId;
 
     return self;
 }
@@ -108,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (TSQuotedMessage *_Nullable)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage
                                                    thread:(TSThread *)thread
-                                              transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                              transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(dataMessage);
 
@@ -143,6 +163,19 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (quotedMessage) {
         bodySource = TSQuotedMessageContentSourceLocal;
+
+        if (quotedMessage.hasPerMessageExpiration) {
+            // We construct a quote that does not include any of the
+            // quoted message's renderable content.
+            body = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE",
+                @"Label for outgoing messages with per-message expiration.");
+            // Legit usage of senderTimestamp - this class references the message it is quoting by it's sender timestamp
+            return [[TSQuotedMessage alloc] initWithTimestamp:timestamp
+                                                     authorId:authorId
+                                                         body:body
+                                                   bodySource:TSQuotedMessageContentSourceLocal
+                                receivedQuotedAttachmentInfos:@[]];
+        }
 
         NSString *localText = [quotedMessage bodyTextWithTransaction:transaction];
         if (localText.length > 0) {
@@ -179,7 +212,7 @@ NS_ASSUME_NONNULL_BEGIN
                 thread.uniqueId,
                 (unsigned long)timestamp);
 
-            [localThumbnail saveWithTransaction:transaction];
+            [localThumbnail anyInsertWithTransaction:transaction];
 
             attachmentInfo.thumbnailAttachmentStreamId = localThumbnail.uniqueId;
         } else if (quotedAttachment.thumbnail) {
@@ -191,7 +224,7 @@ NS_ASSUME_NONNULL_BEGIN
             TSAttachmentPointer *_Nullable thumbnailPointer =
                 [TSAttachmentPointer attachmentPointerFromProto:thumbnailAttachmentProto albumMessage:nil];
             if (thumbnailPointer) {
-                [thumbnailPointer saveWithTransaction:transaction];
+                [thumbnailPointer anyInsertWithTransaction:transaction];
 
                 attachmentInfo.thumbnailAttachmentPointerId = thumbnailPointer.uniqueId;
             } else {
@@ -224,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                threadId:(NSString *)threadId
                                                                authorId:(NSString *)authorId
                                                             contentType:(NSString *)contentType
-                                                            transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                                            transaction:(SDSAnyWriteTransaction *)transaction
 {
     TSMessage *_Nullable quotedMessage =
         [self findQuotedMessageWithTimestamp:timestamp threadId:threadId authorId:authorId transaction:transaction];
@@ -234,10 +267,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSAttachment *_Nullable attachmentToQuote = nil;
     if (quotedMessage.attachmentIds.count > 0) {
-        attachmentToQuote = [quotedMessage attachmentsWithTransaction:transaction].firstObject;
+        attachmentToQuote = [quotedMessage bodyAttachmentsWithTransaction:transaction].firstObject;
     } else if (quotedMessage.linkPreview && quotedMessage.linkPreview.imageAttachmentId.length > 0) {
         attachmentToQuote =
-            [TSAttachment fetchObjectWithUniqueID:quotedMessage.linkPreview.imageAttachmentId transaction:transaction];
+            [TSAttachment anyFetchWithUniqueId:quotedMessage.linkPreview.imageAttachmentId transaction:transaction];
+    } else if (quotedMessage.messageSticker && quotedMessage.messageSticker.attachmentId.length > 0) {
+        attachmentToQuote =
+            [TSAttachment anyFetchWithUniqueId:quotedMessage.messageSticker.attachmentId transaction:transaction];
     }
     if (![attachmentToQuote isKindOfClass:[TSAttachmentStream class]]) {
         return nil;
@@ -252,7 +288,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable TSMessage *)findQuotedMessageWithTimestamp:(uint64_t)timestamp
                                               threadId:(NSString *)threadId
                                               authorId:(NSString *)authorId
-                                           transaction:(YapDatabaseReadWriteTransaction *)transaction
+                                           transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -269,8 +305,20 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    for (TSMessage *message in
-        [TSInteraction interactionsWithTimestamp:timestamp ofClass:TSMessage.class withTransaction:transaction]) {
+    NSError *error;
+    NSArray<TSInteraction *> *interactions =
+        [InteractionFinder interactionsWithTimestamp:timestamp
+                                              filter:^(TSInteraction *interaction) {
+                                                  return [interaction isKindOfClass:[TSMessage class]];
+                                              }
+                                         transaction:transaction
+                                               error:&error];
+    if (error != nil) {
+        OWSFailDebug(@"Error loading interactions: %@", error);
+        return nil;
+    }
+    for (TSInteraction *interaction in interactions) {
+        TSMessage *message = (TSMessage *)interaction;
         if (![message.uniqueThreadId isEqualToString:threadId]) {
             continue;
         }
@@ -350,14 +398,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Before sending, persist a thumbnail attachment derived from the quoted attachment
 - (NSArray<TSAttachmentStream *> *)createThumbnailAttachmentsIfNecessaryWithTransaction:
-    (YapDatabaseReadWriteTransaction *)transaction
+    (SDSAnyWriteTransaction *)transaction
 {
     NSMutableArray<TSAttachmentStream *> *thumbnailAttachments = [NSMutableArray new];
 
     for (OWSAttachmentInfo *info in self.quotedAttachments) {
 
         OWSAssertDebug(info.attachmentId);
-        TSAttachment *attachment = [TSAttachment fetchObjectWithUniqueID:info.attachmentId transaction:transaction];
+        TSAttachment *attachment = [TSAttachment anyFetchWithUniqueId:info.attachmentId transaction:transaction];
         if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
             continue;
         }
@@ -368,7 +416,7 @@ NS_ASSUME_NONNULL_BEGIN
             continue;
         }
 
-        [thumbnailStream saveWithTransaction:transaction];
+        [thumbnailStream anyInsertWithTransaction:transaction];
         info.thumbnailAttachmentStreamId = thumbnailStream.uniqueId;
         [thumbnailAttachments addObject:thumbnailStream];
     }

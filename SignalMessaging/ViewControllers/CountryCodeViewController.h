@@ -4,6 +4,8 @@
 
 #import "OWSTableViewController.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class CountryCodeViewController;
 
 @protocol CountryCodeViewControllerDelegate <NSObject>
@@ -26,3 +28,5 @@
 @property (nonatomic) UIInterfaceOrientationMask interfaceOrientationMask;
 
 @end
+
+NS_ASSUME_NONNULL_END

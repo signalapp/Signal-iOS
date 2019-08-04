@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageTimerView.h"
@@ -63,7 +63,7 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 
 - (void)configureWithExpirationTimestamp:(uint64_t)expirationTimestamp
                   initialDurationSeconds:(uint32_t)initialDurationSeconds
-                               tintColor:(UIColor *)tintColor;
+                               tintColor:(UIColor *)tintColor
 {
     self.expirationTimestamp = expirationTimestamp;
     self.initialDurationSeconds = initialDurationSeconds;

@@ -115,12 +115,15 @@ NS_ASSUME_NONNULL_BEGIN
     CGRect beginningTextRect = [self firstRectForRange:beginningTextRange];
 
     CGFloat topInset = beginningTextRect.origin.y;
-    CGFloat leftInset = beginningTextRect.origin.x;
+    CGFloat leadingInset = beginningTextRect.origin.x;
 
-    // we use Left instead of Leading, since it's based on the prior CGRect offset
     self.placeholderConstraints = @[
-        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:leftInset],
-        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeRight],
+        [self.placeholderView autoMatchDimension:ALDimensionWidth
+                                     toDimension:ALDimensionWidth
+                                          ofView:self
+                                      withOffset:-leadingInset],
+        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
+        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:leadingInset],
         [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:topInset],
     ];
 }
@@ -140,6 +143,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)canBecomeFirstResponder
 {
     return YES;
+}
+
+- (BOOL)becomeFirstResponder
+{
+    BOOL result = [super becomeFirstResponder];
+
+    if (result) {
+        [self.textViewToolbarDelegate textViewDidBecomeFirstResponder:self];
+    }
+
+    return result;
 }
 
 - (BOOL)pasteboardHasPossibleAttachment
@@ -187,6 +201,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.inputTextViewDelegate textViewDidChange:self];
     [self.textViewToolbarDelegate textViewDidChange:self];
+}
+
+- (void)textViewDidChangeSelection:(UITextView *)textView
+{
+    [self.textViewToolbarDelegate textViewDidChangeSelection:self];
 }
 
 #pragma mark - Key Commands

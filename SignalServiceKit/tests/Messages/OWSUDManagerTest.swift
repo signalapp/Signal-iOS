@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
 import Foundation
+import Curve25519Kit
 import SignalCoreKit
 import SignalMetadataKit
 @testable import SignalServiceKit
@@ -22,7 +23,7 @@ class MockCertificateValidator: NSObject, SMKCertificateValidator {
 
 class OWSUDManagerTest: SSKBaseTestSwift {
 
-    // MARK: - Singletons
+    // MARK: - Dependencies
 
     private var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
@@ -36,7 +37,8 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         return SSKEnvironment.shared.profileManager
     }
 
-    // MARK: registration
+    // MARK: - Setup/Teardown
+
     let aliceRecipientId = "+13213214321"
 
     override func setUp() {
@@ -49,17 +51,8 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         udManager.certificateValidator = MockCertificateValidator()
 
-        let serverCertificate = SMKServerCertificate(keyId: 1,
-                                                     key: try! ECPublicKey(keyData: Randomness.generateRandomBytes(ECCKeyLength)),
-                                                     signatureData: Randomness.generateRandomBytes(ECCSignatureLength))
-        let senderCertificate = SMKSenderCertificate(signer: serverCertificate,
-                                                     key: try! ECPublicKey(keyData: Randomness.generateRandomBytes(ECCKeyLength)),
-                                                     senderDeviceId: 1,
-                                                     senderRecipientId: aliceRecipientId,
-                                                     expirationTimestamp: NSDate.ows_millisecondTimeStamp() + kWeekInMs,
-                                                     signatureData: Randomness.generateRandomBytes(ECCSignatureLength))
-
-        udManager.setSenderCertificate(try! senderCertificate.serialized())
+        let senderCertificate = try! SMKSenderCertificate(serializedData: buildSenderCertificateProto().serializedData())
+        udManager.setSenderCertificate(senderCertificate.serializedData)
     }
 
     override func tearDown() {
@@ -67,10 +60,12 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         super.tearDown()
     }
 
+    // MARK: - Tests
+
     func testMode_self() {
 
         XCTAssert(udManager.hasSenderCertificate())
-        XCTAssert(tsAccountManager.isRegistered())
+        XCTAssert(tsAccountManager.isRegistered)
         XCTAssertNotNil(tsAccountManager.localNumber())
         XCTAssert(tsAccountManager.localNumber()!.count > 0)
 
@@ -103,7 +98,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     func testMode_noProfileKey() {
 
         XCTAssert(udManager.hasSenderCertificate())
-        XCTAssert(tsAccountManager.isRegistered())
+        XCTAssert(tsAccountManager.isRegistered)
         XCTAssertNotNil(tsAccountManager.localNumber())
         XCTAssert(tsAccountManager.localNumber()!.count > 0)
 
@@ -141,7 +136,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
     func testMode_withProfileKey() {
         XCTAssert(udManager.hasSenderCertificate())
-        XCTAssert(tsAccountManager.isRegistered())
+        XCTAssert(tsAccountManager.isRegistered)
         XCTAssertNotNil(tsAccountManager.localNumber())
         XCTAssert(tsAccountManager.localNumber()!.count > 0)
 
@@ -176,5 +171,39 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         XCTAssertEqual(.unrestricted, udManager.unidentifiedAccessMode(forRecipientId: bobRecipientId))
         udAccess = udManager.udAccess(forRecipientId: bobRecipientId, requireSyncAccess: false)!
         XCTAssert(udAccess.isRandomKey)
+    }
+
+    // MARK: - Util
+
+    func buildServerCertificateProto() -> SMKProtoServerCertificate {
+        let serverKey = try! Curve25519.generateKeyPair().ecPublicKey().serialized
+        let certificateData = try! SMKProtoServerCertificateCertificate.builder(id: 1,
+                                                                                key: serverKey ).buildSerializedData()
+
+        let signatureData = Randomness.generateRandomBytes(ECCSignatureLength)!
+
+        let wrapperProto = SMKProtoServerCertificate.builder(certificate: certificateData,
+                                                             signature: signatureData)
+
+        return try! wrapperProto.build()
+    }
+
+    func buildSenderCertificateProto() -> SMKProtoSenderCertificate {
+        let expires = NSDate.ows_millisecondTimeStamp() + kWeekInMs
+        let identityKey = try! Curve25519.generateKeyPair().ecPublicKey().serialized
+        let signer = buildServerCertificateProto()
+        let certificateData = try! SMKProtoSenderCertificateCertificate.builder(sender: aliceRecipientId,
+                                                                                senderDevice: 1,
+                                                                                expires: expires,
+                                                                                identityKey: identityKey,
+                                                                                signer: signer)
+            .buildSerializedData()
+
+        let signatureData = Randomness.generateRandomBytes(ECCSignatureLength)!
+
+        let wrapperProto = try! SMKProtoSenderCertificate.builder(certificate: certificateData,
+                                                                  signature: signatureData).build()
+
+        return wrapperProto
     }
 }

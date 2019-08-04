@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "RegistrationUtils.h"
-#import "CodeVerificationViewController.h"
 #import "OWSNavigationController.h"
+#import "Signal-Swift.h"
+#import <PromiseKit/PromiseKit.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -23,14 +24,19 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
++ (AccountManager *)accountManager
+{
+    return AppEnvironment.shared.accountManager;
+}
+
 #pragma mark -
 
 + (void)showReregistrationUIFromViewController:(UIViewController *)fromViewController
 {
-    UIAlertController *actionSheetController =
+    UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
 
-    [actionSheetController
+    [actionSheet
         addAction:[UIAlertAction
                       actionWithTitle:NSLocalizedString(@"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER",
                                           @"Label for button that lets users re-register using the same phone number.")
@@ -39,9 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
                                   [RegistrationUtils reregisterWithFromViewController:fromViewController];
                               }]];
 
-    [actionSheetController addAction:[OWSAlerts cancelAction]];
+    [actionSheet addAction:[OWSAlerts cancelAction]];
 
-    [fromViewController presentViewController:actionSheetController animated:YES completion:nil];
+    [fromViewController presentAlert:actionSheet];
 }
 
 + (void)reregisterWithFromViewController:(UIViewController *)fromViewController
@@ -59,16 +65,23 @@ NS_ASSUME_NONNULL_BEGIN
         presentFromViewController:fromViewController
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [self.tsAccountManager
-                          registerWithPhoneNumber:self.tsAccountManager.reregisterationPhoneNumber
-                          success:^{
-                              OWSLogInfo(@"re-registering: send verification code succeeded.");
+                      NSString *phoneNumber = self.tsAccountManager.reregistrationPhoneNumber;
+                      [[self.accountManager requestAccountVerificationObjCWithRecipientId:phoneNumber
+                                                                             captchaToken:nil
+                                                                                    isSMS:true]
+                              .then(^{
+                                  OWSLogInfo(@"re-registering: send verification code succeeded.");
 
-                              dispatch_async(dispatch_get_main_queue(), ^{
                                   [modalActivityIndicator dismissWithCompletion:^{
-                                      CodeVerificationViewController *viewController =
-                                          [CodeVerificationViewController new];
-
+                                      OnboardingController *onboardingController = [OnboardingController new];
+                                      OnboardingPhoneNumber *onboardingPhoneNumber =
+                                          [[OnboardingPhoneNumber alloc] initWithE164:phoneNumber
+                                                                            userInput:phoneNumber];
+                                      [onboardingController updateWithPhoneNumber:onboardingPhoneNumber];
+                                      OnboardingVerificationViewController *viewController =
+                                          [[OnboardingVerificationViewController alloc]
+                                              initWithOnboardingController:onboardingController];
+                                      [viewController hideBackLink];
                                       OWSNavigationController *navigationController =
                                           [[OWSNavigationController alloc] initWithRootViewController:viewController];
                                       navigationController.navigationBarHidden = YES;
@@ -76,12 +89,9 @@ NS_ASSUME_NONNULL_BEGIN
                                       [UIApplication sharedApplication].delegate.window.rootViewController
                                           = navigationController;
                                   }];
-                              });
-                          }
-                          failure:^(NSError *error) {
-                              OWSLogError(@"re-registering: send verification code failed.");
-
-                              dispatch_async(dispatch_get_main_queue(), ^{
+                              })
+                              .catch(^(NSError *error) {
+                                  OWSLogError(@"re-registering: send verification code failed.");
                                   [modalActivityIndicator dismissWithCompletion:^{
                                       if (error.code == 400) {
                                           [OWSAlerts showAlertWithTitle:NSLocalizedString(@"REGISTRATION_ERROR", nil)
@@ -92,9 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 message:error.localizedRecoverySuggestion];
                                       }
                                   }];
-                              });
-                          }
-                          smsVerification:YES];
+                              }) retainUntilComplete];
                   }];
 }
 

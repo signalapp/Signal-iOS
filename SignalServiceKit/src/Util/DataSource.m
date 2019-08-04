@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DataSource.h"
@@ -323,7 +323,6 @@ NS_ASSUME_NONNULL_BEGIN
     @synchronized(self)
     {
         if (!self.cachedData) {
-            OWSLogError(@"---- reading data");
             self.cachedData = [NSData dataWithContentsOfFile:self.filePath];
         }
         if (!self.cachedData) {

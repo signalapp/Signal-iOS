@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalApp.h"
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     DispatchMainThreadSafe(^{
         UIViewController *frontmostVC = [[UIApplication sharedApplication] frontmostViewController];
-
+        
         if ([frontmostVC isKindOfClass:[ConversationViewController class]]) {
             ConversationViewController *conversationVC = (ConversationViewController *)frontmostVC;
             if ([conversationVC.thread.uniqueId isEqualToString:thread.uniqueId]) {
@@ -117,12 +117,43 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
         }
-
+        
         [self.homeViewController presentThread:thread action:action focusMessageId:focusMessageId animated:isAnimated];
     });
 }
 
-- (void)didChangeCallLoggingPreference:(NSNotification *)notitication
+- (void)presentConversationAndScrollToFirstUnreadMessageForThreadId:(NSString *)threadId animated:(BOOL)isAnimated
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(threadId.length > 0);
+
+    OWSLogInfo(@"");
+
+    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
+    if (thread == nil) {
+        OWSFailDebug(@"unable to find thread with id: %@", threadId);
+        return;
+    }
+
+    DispatchMainThreadSafe(^{
+        UIViewController *frontmostVC = [[UIApplication sharedApplication] frontmostViewController];
+
+        if ([frontmostVC isKindOfClass:[ConversationViewController class]]) {
+            ConversationViewController *conversationVC = (ConversationViewController *)frontmostVC;
+            if ([conversationVC.thread.uniqueId isEqualToString:thread.uniqueId]) {
+                [conversationVC scrollToFirstUnreadMessage:isAnimated];
+                return;
+            }
+        }
+
+        [self.homeViewController presentThread:thread
+                                        action:ConversationViewActionNone
+                                focusMessageId:nil
+                                      animated:isAnimated];
+    });
+}
+
+- (void)didChangeCallLoggingPreference:(NSNotification *)notification
 {
     [AppEnvironment.shared.callService createCallUIAdapter];
 }
@@ -137,25 +168,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     [OWSStorage resetAllStorage];
     [OWSUserProfile resetProfileStorage];
-    [Environment.shared.preferences clear];
-
-    [self clearAllNotifications];
+    [Environment.shared.preferences removeAllValues];
+    [AppEnvironment.shared.notificationPresenter clearAllNotifications];
+    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appSharedDataDirectoryPath]];
+    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appDocumentDirectoryPath]];
+    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem cachesDirectoryPath]];
+    [OWSFileSystem deleteContentsOfDirectory:OWSTemporaryDirectory()];
+    [OWSFileSystem deleteContentsOfDirectory:NSTemporaryDirectory()];
 
     [DebugLogger.sharedLogger wipeLogs];
     exit(0);
-}
-
-+ (void)clearAllNotifications
-{
-    OWSLogInfo(@"clearAllNotifications.");
-
-    // This will cancel all "scheduled" local notifications that haven't
-    // been presented yet.
-    [UIApplication.sharedApplication cancelAllLocalNotifications];
-    // To clear all already presented local notifications, we need to
-    // set the app badge number to zero after setting it to a non-zero value.
-    [UIApplication sharedApplication].applicationIconBadgeNumber = 1;
-    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
 - (void)showHomeView
@@ -166,6 +188,9 @@ NS_ASSUME_NONNULL_BEGIN
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     appDelegate.window.rootViewController = navigationController;
     OWSAssertDebug([navigationController.topViewController isKindOfClass:[HomeViewController class]]);
+
+    // Clear the signUpFlowNavigationController.
+    [self setSignUpFlowNavigationController:nil];
 }
 
 @end

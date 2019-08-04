@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -33,6 +33,25 @@ public enum OWSMediaError: Error {
         return thumbnailImage
     }
 
+    @objc public class func thumbnail(forWebpAtPath path: String, maxDimension: CGFloat) throws -> UIImage {
+        Logger.verbose("thumbnailing image: \(path)")
+
+        guard FileManager.default.fileExists(atPath: path) else {
+            throw OWSMediaError.failure(description: "Media file missing.")
+        }
+        guard NSData.ows_isValidImage(atPath: path) else {
+            throw OWSMediaError.failure(description: "Invalid image.")
+        }
+        let data = try Data(contentsOf: URL(fileURLWithPath: path)) as NSData
+        guard let stillImage = data.stillForWebpData() else {
+            throw OWSMediaError.failure(description: "Could not generate still.")
+        }
+        guard let thumbnailImage = stillImage.resized(withMaxDimensionPoints: maxDimension) else {
+            throw OWSMediaError.failure(description: "Could not thumbnail image.")
+        }
+        return thumbnailImage
+    }
+
     @objc public class func thumbnail(forVideoAtPath path: String, maxDimension: CGFloat) throws -> UIImage {
         Logger.verbose("thumbnailing video: \(path)")
 
@@ -50,7 +69,7 @@ public enum OWSMediaError: Error {
         let generator = AVAssetImageGenerator(asset: asset)
         generator.maximumSize = maxSize
         generator.appliesPreferredTrackTransform = true
-        let time: CMTime = CMTimeMake(1, 60)
+        let time: CMTime = CMTimeMake(value: 1, timescale: 60)
         let cgImage = try generator.copyCGImage(at: time, actualTime: nil)
         let image = UIImage(cgImage: cgImage)
         return image

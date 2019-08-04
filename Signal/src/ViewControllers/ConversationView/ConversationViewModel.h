@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ConversationStyle;
 @class ConversationViewModel;
 @class OWSQuotedReplyModel;
+@class SDSAnyReadTransaction;
 @class TSOutgoingMessage;
 @class TSThread;
 @class ThreadDynamicInteractions;
@@ -31,6 +32,19 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
     ConversationUpdateItemType_Delete,
     ConversationUpdateItemType_Update,
 };
+
+#pragma mark -
+
+@interface ConversationViewState : NSObject
+
+@property (nonatomic, readonly) NSArray<id<ConversationViewItem>> *viewItems;
+@property (nonatomic, readonly) NSDictionary<NSString *, NSNumber *> *interactionIndexMap;
+// We have to track interactionIds separately.  We can't just use interactionIndexMap.allKeys,
+// as that won't preserve ordering.
+@property (nonatomic, readonly) NSArray<NSString *> *interactionIds;
+@property (nonatomic, readonly, nullable) NSNumber *unreadIndicatorIndex;
+
+@end
 
 #pragma mark -
 
@@ -63,18 +77,19 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 @protocol ConversationViewModelDelegate <NSObject>
 
 - (void)conversationViewModelWillUpdate;
-- (void)conversationViewModelDidUpdate:(ConversationUpdate *)conversationUpdate;
+
+- (void)conversationViewModelDidUpdate:(ConversationUpdate *)conversationUpdate
+                           transaction:(SDSAnyReadTransaction *)transaction;
+- (void)conversationViewModelDidUpdateWithSneakyTransaction:(ConversationUpdate *)conversationUpdate;
 
 - (void)conversationViewModelWillLoadMoreItems;
 - (void)conversationViewModelDidLoadMoreItems;
 - (void)conversationViewModelDidLoadPrevPage;
-- (void)conversationViewModelRangeDidChange;
+- (void)conversationViewModelRangeDidChangeWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 // Called after the view model recovers from a severe error
 // to prod the view to reset its scroll state, etc.
 - (void)conversationViewModelDidReset;
-
-- (BOOL)isObservingVMUpdates;
 
 - (ConversationStyle *)conversationStyle;
 
@@ -84,7 +99,7 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 
 @interface ConversationViewModel : NSObject
 
-@property (nonatomic, readonly) NSArray<id<ConversationViewItem>> *viewItems;
+@property (nonatomic, readonly) ConversationViewState *viewState;
 @property (nonatomic, nullable) NSString *focusMessageIdOnOpen;
 @property (nonatomic, readonly, nullable) ThreadDynamicInteractions *dynamicInteractions;
 
@@ -93,19 +108,26 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
           focusMessageIdOnOpen:(nullable NSString *)focusMessageIdOnOpen
                       delegate:(id<ConversationViewModelDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
-- (void)ensureDynamicInteractions;
+- (void)ensureDynamicInteractionsAndUpdateIfNecessaryWithSneakyTransaction:(BOOL)updateIfNecessary;
+
+- (void)ensureDynamicInteractionsAndUpdateIfNecessary:(BOOL)updateIfNecessary
+                                          transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)clearUnreadMessagesIndicator;
 
-- (void)loadAnotherPageOfMessages;
+- (void)loadAnotherPageOfMessagesWithTransaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)viewDidResetContentAndLayout;
+- (void)viewDidResetContentAndLayoutWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)viewDidLoad;
 
 - (BOOL)canLoadMoreItems;
 
-- (nullable NSIndexPath *)ensureLoadWindowContainsQuotedReply:(OWSQuotedReplyModel *)quotedReply;
+- (nullable NSIndexPath *)ensureLoadWindowContainsQuotedReply:(OWSQuotedReplyModel *)quotedReply
+                                                  transaction:(SDSAnyReadTransaction *)transaction;
+
+- (nullable NSIndexPath *)ensureLoadWindowContainsInteractionId:(NSString *)interactionId
+                                                    transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)appendUnsavedOutgoingTextMessage:(TSOutgoingMessage *)outgoingMessage;
 

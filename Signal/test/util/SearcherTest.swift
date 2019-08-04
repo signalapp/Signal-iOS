@@ -8,7 +8,7 @@ import XCTest
 
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
-class ConversationSearcherContactsManager: NSObject, ContactsManagerProtocol {
+class FullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
     func displayName(forPhoneIdentifier recipientId: String?, transaction: YapDatabaseReadTransaction) -> String {
         return self.displayName(forPhoneIdentifier: recipientId)
     }
@@ -57,11 +57,11 @@ class ConversationSearcherContactsManager: NSObject, ContactsManagerProtocol {
 private let bobRecipientId = "+49030183000"
 private let aliceRecipientId = "+12345678900"
 
-class ConversationSearcherTest: SignalBaseTest {
+class FullTextSearcherTest: SignalBaseTest {
 
     // MARK: - Dependencies
-    var searcher: ConversationSearcher {
-        return ConversationSearcher.shared
+    var searcher: FullTextSearcher {
+        return FullTextSearcher.shared
     }
 
     var dbConnection: YapDatabaseConnection {
@@ -80,22 +80,22 @@ class ConversationSearcherTest: SignalBaseTest {
         FullTextSearchFinder.ensureDatabaseExtensionRegistered(storage: OWSPrimaryStorage.shared())
 
         // Replace this singleton.
-        SSKEnvironment.shared.contactsManager = ConversationSearcherContactsManager()
+        SSKEnvironment.shared.contactsManager = FullTextSearcherContactsManager()
 
         self.dbConnection.readWrite { transaction in
             let bookModel = TSGroupModel(title: "Book Club", memberIds: [aliceRecipientId, bobRecipientId], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
             let bookClubGroupThread = TSGroupThread.getOrCreateThread(with: bookModel, transaction: transaction)
-            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction)
+            self.bookClubThread = ThreadViewModel(thread: bookClubGroupThread, transaction: transaction.asAnyWrite)
 
             let snackModel = TSGroupModel(title: "Snack Club", memberIds: [aliceRecipientId], image: nil, groupId: Randomness.generateRandomBytes(kGroupIdLength))
             let snackClubGroupThread = TSGroupThread.getOrCreateThread(with: snackModel, transaction: transaction)
-            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction)
+            self.snackClubThread = ThreadViewModel(thread: snackClubGroupThread, transaction: transaction.asAnyWrite)
 
             let aliceContactThread = TSContactThread.getOrCreateThread(withContactId: aliceRecipientId, transaction: transaction)
-            self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction)
+            self.aliceThread = ThreadViewModel(thread: aliceContactThread, transaction: transaction.asAnyWrite)
 
             let bobContactThread = TSContactThread.getOrCreateThread(withContactId: bobRecipientId, transaction: transaction)
-            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction)
+            self.bobEmptyThread = ThreadViewModel(thread: bobContactThread, transaction: transaction.asAnyWrite)
 
             let helloAlice = TSOutgoingMessage(in: aliceContactThread, messageBody: "Hello Alice", attachmentId: nil)
             helloAlice.save(with: transaction)

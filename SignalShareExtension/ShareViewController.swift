@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -23,7 +23,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
     enum ShareViewControllerError: Error {
         case assertionError(description: String)
         case unsupportedMedia
-        case notRegistered()
+        case notRegistered
         case obsoleteShare
     }
 
@@ -179,12 +179,12 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // We don't need to use RTCInitializeSSL() in the SAE.
 
-        if tsAccountManager.isRegistered() {
+        if tsAccountManager.isRegistered {
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             DispatchQueue.global().async { [weak self] in
                 guard let _ = self else { return }
-                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber)")
+                Logger.info("running post launch block for registered user: \(String(describing: TSAccountManager.localNumber))")
 
                 // We don't need to use OWSDisappearingMessagesJob in the SAE.
 
@@ -200,10 +200,10 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // We don't need to prod the TSSocketManager in the SAE.
         }
 
-        if tsAccountManager.isRegistered() {
+        if tsAccountManager.isRegistered {
             DispatchQueue.main.async { [weak self] in
                 guard let _ = self else { return }
-                Logger.info("running post launch block for registered user: \(TSAccountManager.localNumber)")
+                Logger.info("running post launch block for registered user: \(String(describing: TSAccountManager.localNumber))")
 
                 // We don't need to use the TSSocketManager in the SAE.
 
@@ -261,8 +261,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
 
-        if tsAccountManager.isRegistered() {
-            Logger.info("localNumber: \(TSAccountManager.localNumber)")
+        if tsAccountManager.isRegistered {
+            Logger.info("localNumber: \(String(describing: TSAccountManager.localNumber))")
 
             // We don't need to use messageFetcherJob in the SAE.
 
@@ -293,8 +293,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.debug("")
 
-        if tsAccountManager.isRegistered() {
-            Logger.info("localNumber: \(TSAccountManager.localNumber)")
+        if tsAccountManager.isRegistered {
+            Logger.info("localNumber: \(String(describing: TSAccountManager.localNumber))")
 
             // We don't need to use ExperienceUpgradeFinder in the SAE.
 
@@ -333,7 +333,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.info("Presenting content view")
 
-        if !tsAccountManager.isRegistered() {
+        if !tsAccountManager.isRegistered {
             showNotRegisteredView()
         } else if !OWSProfileManager.shared().localProfileExists() {
             // This is a rare edge case, but we want to ensure that the user
@@ -459,7 +459,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         // If a user unregisters in the main app, the SAE should shut down
         // immediately.
-        guard !tsAccountManager.isRegistered() else {
+        guard !tsAccountManager.isRegistered else {
             // If user is registered, do nothing.
             return
         }
@@ -475,7 +475,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             // If root view is an error view, do nothing.
             return
         }
-        throw ShareViewControllerError.notRegistered()
+        throw ShareViewControllerError.notRegistered
     }
 
     // MARK: ShareViewDelegate, SAEFailedViewDelegate
@@ -663,10 +663,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         var visualMediaItemProviders = [NSItemProvider]()
         var hasNonVisualMedia = false
         for attachment in attachments {
-            guard let itemProvider = attachment as? NSItemProvider else {
-                owsFailDebug("Unexpected attachment type: \(String(describing: attachment))")
-                continue
-            }
+            let itemProvider: NSItemProvider = attachment
             if isVisualMediaItem(itemProvider: itemProvider) {
                 visualMediaItemProviders.append(itemProvider)
             } else {
@@ -694,15 +691,11 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             }
             return isUrlItem(itemProvider: itemProvider)
         }) {
-            if let itemProvider = preferredAttachment as? NSItemProvider {
-                return [itemProvider]
-            } else {
-                owsFailDebug("Unexpected attachment type: \(String(describing: preferredAttachment))")
-            }
+            return [preferredAttachment]
         }
 
         // else return whatever is available
-        if let itemProvider = inputItem.attachments?.first as? NSItemProvider {
+        if let itemProvider = inputItem.attachments?.first {
             return [itemProvider]
         } else {
             owsFailDebug("Missing attachment.")
@@ -866,7 +859,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                                 isConvertibleToTextMessage: isConvertibleToTextMessage))
                 }
             } else if let image = value as? UIImage {
-                if let data = UIImagePNGRepresentation(image) {
+                if let data = image.pngData() {
                     let tempFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: "png")
                     do {
                         let url = NSURL.fileURL(withPath: tempFilePath)

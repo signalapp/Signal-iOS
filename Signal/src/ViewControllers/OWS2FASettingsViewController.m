@@ -122,6 +122,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.pinTextfield addTarget:self
                           action:@selector(textFieldDidChange:)
                 forControlEvents:UIControlEventEditingChanged];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _pinTextfield);
     [self.view addSubview:self.pinTextfield];
 }
 
@@ -144,6 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
             : NSLocalizedString(@"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS",
                   @"Indicates that user has 'two factor auth pin' disabled."));
     UILabel *instructionsLabel = [self createLabelWithText:instructions];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, instructionsLabel);
 
     [self createTableView];
 
@@ -191,6 +193,7 @@ NS_ASSUME_NONNULL_BEGIN
     [instructionsLabel autoPinTopToSuperviewMarginWithInset:kVSpacing];
     [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:self.hMargin];
     [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:self.hMargin];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, instructionsLabel);
 
     [self.pinTextfield autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:instructionsLabel withOffset:kVSpacing];
     [self.pinTextfield autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:self.hMargin];
@@ -221,17 +224,19 @@ NS_ASSUME_NONNULL_BEGIN
                     addItem:[OWSTableItem disclosureItemWithText:
                                               NSLocalizedString(@"ENABLE_2FA_VIEW_DISABLE_2FA",
                                                   @"Label for the 'enable two-factor auth' item in the settings view")
+                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"enable_2fa")
                                                      actionBlock:^{
                                                          [weakSelf tryToDisable2FA];
                                                      }]];
             } else {
-                [section
-                    addItem:[OWSTableItem disclosureItemWithText:
-                                              NSLocalizedString(@"ENABLE_2FA_VIEW_ENABLE_2FA",
-                                                  @"Label for the 'enable two-factor auth' item in the settings view")
-                                                     actionBlock:^{
-                                                         [weakSelf showEnable2FAWorkUI];
-                                                     }]];
+                [section addItem:[OWSTableItem
+                                      disclosureItemWithText:
+                                          NSLocalizedString(@"ENABLE_2FA_VIEW_ENABLE_2FA",
+                                              @"Label for the 'enable two-factor auth' item in the settings view")
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"disable_2fa")
+                                                 actionBlock:^{
+                                                     [weakSelf showEnable2FAWorkUI];
+                                                 }]];
             }
             [contents addSection:section];
             self.tableViewController.contents = contents;
@@ -259,19 +264,23 @@ NS_ASSUME_NONNULL_BEGIN
     // Note: This affects how the "back" button will look if another
     //       view is pushed on top of this one, not how the "back"
     //       button looks when this view is visible.
-    self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
+    UIBarButtonItem *backButton =
+        [[UIBarButtonItem alloc] initWithTitle:CommonStrings.backButton
                                          style:UIBarButtonItemStylePlain
                                         target:self
-                                        action:@selector(backButtonWasPressed)];
+                                        action:@selector(backButtonWasPressed)
+                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
+    self.navigationItem.backBarButtonItem = backButton;
 
     if (self.shouldHaveNextButton) {
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-            initWithTitle:NSLocalizedString(@"ENABLE_2FA_VIEW_NEXT_BUTTON",
-                              @"Label for the 'next' button in the 'enable two factor auth' views.")
-                    style:UIBarButtonItemStylePlain
-                   target:self
-                   action:@selector(nextButtonWasPressed)];
+        UIBarButtonItem *nextButton = [[UIBarButtonItem alloc]
+                      initWithTitle:NSLocalizedString(@"ENABLE_2FA_VIEW_NEXT_BUTTON",
+                                        @"Label for the 'next' button in the 'enable two factor auth' views.")
+                              style:UIBarButtonItemStylePlain
+                             target:self
+                             action:@selector(nextButtonWasPressed)
+            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"next")];
+        self.navigationItem.rightBarButtonItem = nextButton;
     } else {
         self.navigationItem.rightBarButtonItem = nil;
     }

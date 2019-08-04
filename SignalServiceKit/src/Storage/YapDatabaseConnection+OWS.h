@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -13,7 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface YapDatabaseConnection (OWS)
 
 - (BOOL)hasObjectForKey:(NSString *)key inCollection:(NSString *)collection;
-- (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection;
 - (BOOL)boolForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(BOOL)defaultValue;
 - (double)doubleForKey:(NSString *)key inCollection:(NSString *)collection defaultValue:(double)defaultValue;
 - (int)intForKey:(NSString *)key inCollection:(NSString *)collection;
@@ -24,7 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)dataForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable ECKeyPair *)keyPairForKey:(NSString *)key inCollection:(NSString *)collection;
 - (nullable PreKeyRecord *)preKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
-- (nullable SignedPreKeyRecord *)signedPreKeyRecordForKey:(NSString *)key inCollection:(NSString *)collection;
 
 - (NSUInteger)numberOfKeysInCollection:(NSString *)collection;
 
@@ -36,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeObjectForKey:(NSString *)string inCollection:(NSString *)collection;
 - (void)setInt:(int)integer forKey:(NSString *)key inCollection:(NSString *)collection;
 - (void)setDate:(NSDate *)value forKey:(NSString *)key inCollection:(NSString *)collection;
-- (int)incrementIntForKey:(NSString *)key inCollection:(NSString *)collection;
 
 - (void)purgeCollection:(NSString *)collection;
 

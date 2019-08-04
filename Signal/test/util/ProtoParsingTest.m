@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalBaseTest.h"
@@ -60,6 +60,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId
 {
+    return nil;
+}
+
+- (nonnull NSString *)displayNameForPhoneIdentifier:(NSString * _Nullable)recipientId transaction:(nonnull YapDatabaseReadTransaction *)transaction {
     return nil;
 }
 

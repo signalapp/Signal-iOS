@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -191,7 +191,7 @@ protocol CallObserver: class {
     func removeObserver(_ observer: CallObserver) {
         AssertIsOnMainThread()
 
-        while let index = observers.index(where: { $0.value === observer }) {
+        while let index = observers.firstIndex(where: { $0.value === observer }) {
             observers.remove(at: index)
         }
     }
@@ -211,12 +211,12 @@ protocol CallObserver: class {
 
         // Mark incomplete calls as completed if call has connected.
         if state == .connected &&
-            callRecord.callType == RPRecentCallTypeOutgoingIncomplete {
-            callRecord.updateCallType(RPRecentCallTypeOutgoing)
+            callRecord.callType == .outgoingIncomplete {
+            callRecord.updateCallType(.outgoing)
         }
         if state == .connected &&
-            callRecord.callType == RPRecentCallTypeIncomingIncomplete {
-            callRecord.updateCallType(RPRecentCallTypeIncoming)
+            callRecord.callType == .incomingIncomplete {
+            callRecord.updateCallType(.incoming)
         }
     }
 

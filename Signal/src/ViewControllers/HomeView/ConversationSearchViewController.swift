@@ -37,8 +37,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         return OWSPrimaryStorage.shared().uiDatabaseConnection
     }
 
-    var searcher: ConversationSearcher {
-        return ConversationSearcher.shared
+    var searcher: FullTextSearcher {
+        return FullTextSearcher.shared
     }
 
     private var contactsManager: OWSContactsManager {
@@ -64,7 +64,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         blockListCache = BlockListCache()
         blockListCache.startObservingAndSyncState(delegate: self)
 
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
         tableView.separatorColor = Theme.cellSeparatorColor
 
@@ -73,8 +73,8 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier())
 
         NotificationCenter.default.addObserver(self,
-                                               selector: #selector(yapDatabaseModified),
-                                               name: NSNotification.Name.YapDatabaseModified,
+                                               selector: #selector(uiDatabaseModified),
+                                               name: .OWSUIDatabaseConnectionDidUpdate,
                                                object: OWSPrimaryStorage.shared().dbNotificationObject)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
@@ -101,7 +101,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         NotificationCenter.default.removeObserver(self)
     }
 
-    @objc internal func yapDatabaseModified(notification: NSNotification) {
+    @objc internal func uiDatabaseModified(notification: NSNotification) {
         AssertIsOnMainThread()
 
         refreshSearchResults()
@@ -272,7 +272,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
                 if let messageSnippet = searchResult.snippet {
                     overrideSnippet = NSAttributedString(string: messageSnippet,
                                                          attributes: [
-                                                            NSAttributedStringKey.foregroundColor: Theme.secondaryColor
+                                                            NSAttributedString.Key.foregroundColor: Theme.secondaryColor
                     ])
                 } else {
                     owsFailDebug("message search result is missing message snippet")
@@ -296,7 +296,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         guard nil != self.tableView(tableView, titleForHeaderInSection: section) else {
             return 0
         }
-        return UITableViewAutomaticDimension
+        return UITableView.automaticDimension
     }
 
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -310,13 +310,10 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         label.font = UIFont.ows_dynamicTypeBody.ows_mediumWeight()
         label.tag = section
 
-        let hMargin: CGFloat = 15
-        let vMargin: CGFloat = 4
         let wrapper = UIView()
         wrapper.backgroundColor = Theme.offBackgroundColor
         wrapper.addSubview(label)
-        label.autoPinWidthToSuperview(withMargin: hMargin)
-        label.autoPinHeightToSuperview(withMargin: vMargin)
+        label.autoPinEdgesToSuperviewMargins()
 
         return wrapper
     }
@@ -433,7 +430,7 @@ class EmptySearchResultCell: UITableViewCell {
     static let reuseIdentifier = "EmptySearchResultCell"
 
     let messageLabel: UILabel
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         self.messageLabel = UILabel()
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -28,9 +28,12 @@ public class MessageFetcherJob: NSObject {
         return SSKEnvironment.shared.messageReceiver
     }
 
-private
-    var signalService: OWSSignalService {
+    private var signalService: OWSSignalService {
         return OWSSignalService.sharedInstance()
+    }
+
+    private var tsAccountManager: TSAccountManager {
+        return TSAccountManager.sharedInstance()
     }
 
     // MARK: 
@@ -38,6 +41,11 @@ private
     @discardableResult
     public func run() -> Promise<Void> {
         Logger.debug("")
+
+        guard tsAccountManager.isRegisteredAndReady else {
+            owsFailDebug("isRegisteredAndReady was unexpectedly false")
+            return Promise.value(())
+        }
 
         guard signalService.isCensorshipCircumventionActive else {
             Logger.debug("delegating message fetching to SocketManager since we're using normal transport.")
@@ -142,7 +150,8 @@ private
                 throw ParamParser.ParseError.invalidFormat("timestamp")
             }
 
-            let builder = SSKProtoEnvelope.builder(type: type, timestamp: timestamp)
+            let builder = SSKProtoEnvelope.builder(timestamp: timestamp)
+            builder.setType(type)
 
             if let source: String = try params.optional(key: "source") {
                 builder.setSource(source)

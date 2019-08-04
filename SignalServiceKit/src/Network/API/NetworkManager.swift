@@ -1,16 +1,16 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import PromiseKit
 
-enum NetworkManagerError: Error {
+public enum NetworkManagerError: Error {
     /// Wraps TSNetworkManager failure callback params in a single throwable error
     case taskError(task: URLSessionDataTask, underlyingError: Error)
 }
 
-extension NetworkManagerError {
+public extension NetworkManagerError {
     var isNetworkError: Bool {
         switch self {
         case .taskError(_, let underlyingError):
@@ -24,12 +24,29 @@ extension NetworkManagerError {
             return task.statusCode()
         }
     }
+
+    var underlyingError: Error {
+        switch self {
+        case .taskError(_, let underlyingError):
+            return underlyingError
+        }
+    }
 }
 
-extension TSNetworkManager {
-    public typealias NetworkManagerResult = (task: URLSessionDataTask, responseObject: Any?)
+extension NetworkManagerError: CustomNSError {
+    public var errorCode: Int {
+        return statusCode
+    }
 
-    public func makePromise(request: TSRequest) -> Promise<NetworkManagerResult> {
+    public var errorUserInfo: [String: Any] {
+        return [NSUnderlyingErrorKey: underlyingError]
+    }
+}
+
+public extension TSNetworkManager {
+    typealias NetworkManagerResult = (task: URLSessionDataTask, responseObject: Any?)
+
+    func makePromise(request: TSRequest) -> Promise<NetworkManagerResult> {
         let (promise, resolver) = Promise<NetworkManagerResult>.pending()
 
         self.makeRequest(request,

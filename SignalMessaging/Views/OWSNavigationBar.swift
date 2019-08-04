@@ -48,11 +48,24 @@ public class OWSNavigationBar: UINavigationBar {
         applyTheme()
 
         NotificationCenter.default.addObserver(self, selector: #selector(callDidChange), name: .OWSWindowManagerCallDidChange, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: .UIApplicationDidChangeStatusBarFrame, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didChangeStatusBarFrame), name: UIApplication.didChangeStatusBarFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
                                                name: .ThemeDidChange,
                                                object: nil)
+    }
+
+    // MARK: FirstResponder Stubbing
+
+    @objc
+    public weak var stubbedNextResponder: UIResponder?
+
+    override public var next: UIResponder? {
+        if let stubbedNextResponder = self.stubbedNextResponder {
+            return stubbedNextResponder
+        }
+
+        return super.next
     }
 
     // MARK: Theme
@@ -62,7 +75,7 @@ public class OWSNavigationBar: UINavigationBar {
             return
         }
 
-        if UIAccessibilityIsReduceTransparencyEnabled() {
+        if UIAccessibility.isReduceTransparencyEnabled {
             blurEffectView?.isHidden = true
             let color = Theme.navbarBackgroundColor
             let backgroundImage = UIImage(color: color)
@@ -192,33 +205,57 @@ public class OWSNavigationBar: UINavigationBar {
 
     @objc
     public enum NavigationBarThemeOverride: Int {
-        case clear, alwaysDark
+        case clear, alwaysDark, removeOverride
     }
 
     @objc
     public func overrideTheme(type: NavigationBarThemeOverride) {
-        respectsTheme = false
+        let applyDarkThemeOverride = {
+            self.barStyle = .black
+            self.titleTextAttributes = [NSAttributedString.Key.foregroundColor: Theme.darkThemePrimaryColor]
+            self.barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
+            self.tintColor = Theme.darkThemePrimaryColor
+        }
 
-        barStyle = .black
-        titleTextAttributes = [NSAttributedStringKey.foregroundColor: Theme.darkThemePrimaryColor]
-        barTintColor = Theme.darkThemeBackgroundColor.withAlphaComponent(0.6)
-        tintColor = Theme.darkThemePrimaryColor
+        let removeDarkThemeOverride = {
+            self.barStyle = Theme.barStyle
+            self.titleTextAttributes = [NSAttributedString.Key.foregroundColor: Theme.primaryColor]
+            self.barTintColor = Theme.backgroundColor.withAlphaComponent(0.6)
+            self.tintColor = Theme.primaryColor
+        }
+
+        let applyTransparentBarOverride = {
+            self.blurEffectView?.isHidden = true
+            self.clipsToBounds = true
+
+            // Making a toolbar transparent requires setting an empty uiimage
+            self.setBackgroundImage(UIImage(), for: .default)
+            self.shadowImage = UIImage()
+            self.backgroundColor = .clear
+        }
+
+        let removeTransparentBarOverride = {
+            self.blurEffectView?.isHidden = false
+            self.clipsToBounds = false
+
+            self.setBackgroundImage(nil, for: .default)
+            self.shadowImage = nil
+        }
 
         switch type {
         case .clear:
-            blurEffectView?.isHidden = true
-            clipsToBounds = true
-
-            // Making a toolbar transparent requires setting an empty uiimage
-            setBackgroundImage(UIImage(), for: .default)
-            shadowImage = UIImage()
-            backgroundColor = .clear
+            respectsTheme = false
+            applyDarkThemeOverride()
+            applyTransparentBarOverride()
         case .alwaysDark:
-            blurEffectView?.isHidden = false
-            clipsToBounds = false
-
-            setBackgroundImage(nil, for: .default)
-            shadowImage = nil
+            respectsTheme = false
+            applyDarkThemeOverride()
+            removeTransparentBarOverride()
+        case .removeOverride:
+            respectsTheme = true
+            removeDarkThemeOverride()
+            removeTransparentBarOverride()
+            applyTheme()
         }
     }
 }

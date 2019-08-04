@@ -56,8 +56,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                                        quotedMessage:nil
                                                                                         contactShare:nil
                                                                                          linkPreview:nil
+                                                                                      messageSticker:nil
                                                                                      serverTimestamp:nil
-                                                                                     wasReceivedByUD:NO];
+                                                                                     wasReceivedByUD:NO
+                                                                 perMessageExpirationDurationSeconds:0];
     [incomingMessage save];
 }
 
@@ -67,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t timestamp = 1234;
     __block BOOL result;
 
-    [self readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
                                                 sourceId:self.sourceId
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
@@ -83,7 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     authorId:self.sourceId
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
                                                 sourceId:self.sourceId
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
@@ -97,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     authorId:@"some-other-author-id"
                               sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
                                                 sourceId:self.sourceId
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
@@ -110,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     authorId:self.sourceId
                               sourceDeviceId:OWSDevicePrimaryDeviceId + 1];
 
-    [self readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
                                                 sourceId:self.sourceId
                                           sourceDeviceId:OWSDevicePrimaryDeviceId
@@ -121,7 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
     // The real deal...
     [self createIncomingMessageWithTimestamp:timestamp authorId:self.sourceId sourceDeviceId:OWSDevicePrimaryDeviceId];
 
-    [self readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
+    [self yapReadWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         result = [self.finder existsMessageWithTimestamp:timestamp
                                                 sourceId:self.sourceId
                                           sourceDeviceId:OWSDevicePrimaryDeviceId

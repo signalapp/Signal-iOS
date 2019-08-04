@@ -26,22 +26,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
+    return [self initWithOWSNavbar];
+}
+
+- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
+{
+
+    self = [self initWithOWSNavbar];
+    if (!self) {
+        return self;
+    }
+    [self pushViewController:rootViewController animated:NO];
+
+    return self;
+}
+
+- (instancetype)initWithOWSNavbar
+{
     self = [super initWithNavigationBarClass:[OWSNavigationBar class] toolbarClass:nil];
     if (!self) {
         return self;
     }
     [self setupNavbar];
-
-    return self;
-}
-
-- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
-{
-    self = [self init];
-    if (!self) {
-        return self;
-    }
-    [self pushViewController:rootViewController animated:NO];
 
     return self;
 }
@@ -67,6 +73,14 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
 
     self.interactivePopGestureRecognizer.delegate = self;
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    if (self.ows_prefersStatusBarHidden) {
+        return self.ows_prefersStatusBarHidden.boolValue;
+    }
+    return [super prefersStatusBarHidden];
 }
 
 #pragma mark - UINavigationBarDelegate
@@ -199,10 +213,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    if (self.topViewController) {
-        return self.topViewController.supportedInterfaceOrientations;
+    if (self.visibleViewController) {
+        if (@available(iOS 10, *)) {
+            // do nothing
+        } else {
+            // Avoid crash in SAE on iOS9
+            if (!CurrentAppContext().isMainApp) {
+                return UIInterfaceOrientationMaskAllButUpsideDown;
+            }
+        }
+        return self.visibleViewController.supportedInterfaceOrientations;
     } else {
-        return UIInterfaceOrientationMaskPortrait;
+        return UIInterfaceOrientationMaskAllButUpsideDown;
     }
 }
 

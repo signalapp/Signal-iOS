@@ -245,9 +245,9 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
     return OutageDetection.sharedManager;
 }
 
-- (OWSPrimaryStorage *)primaryStorage
+- (SDSDatabaseStorage *)databaseStorage
 {
-    return SSKEnvironment.shared.primaryStorage;
+    return SDSDatabaseStorage.shared;
 }
 
 - (id<NotificationsProtocol>)notificationsManager
@@ -528,8 +528,8 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    WebSocketProtoWebSocketMessageBuilder *messageBuilder =
-        [WebSocketProtoWebSocketMessage builderWithType:WebSocketProtoWebSocketMessageTypeRequest];
+    WebSocketProtoWebSocketMessageBuilder *messageBuilder = [WebSocketProtoWebSocketMessage builder];
+    [messageBuilder setType:WebSocketProtoWebSocketMessageTypeRequest];
     [messageBuilder setRequest:requestProto];
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
@@ -702,7 +702,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
             if (self.tsAccountManager.isRegisteredAndReady) {
                 [self.tsAccountManager setIsDeregistered:YES];
             } else {
-                OWSFailDebug(@"Ignoring auth failure; not registered and ready.");
+                OWSLogWarn(@"Ignoring auth failure; not registered and ready.");
             }
         }
     }
@@ -730,12 +730,14 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    if (wsMessage.type == WebSocketProtoWebSocketMessageTypeRequest) {
+    if (!wsMessage.hasType) {
+        OWSFailDebug(@"webSocket:didReceiveMessage: missing type.");
+    } else if (wsMessage.unwrappedType == WebSocketProtoWebSocketMessageTypeRequest) {
         [self processWebSocketRequestMessage:wsMessage.request];
-    } else if (wsMessage.type == WebSocketProtoWebSocketMessageTypeResponse) {
+    } else if (wsMessage.unwrappedType == WebSocketProtoWebSocketMessageTypeResponse) {
         [self processWebSocketResponseMessage:wsMessage.response];
     } else {
-        OWSLogWarn(@"webSocket:didReceiveMessage: unknown.");
+        OWSFailDebug(@"webSocket:didReceiveMessage: unknown.");
     }
 }
 
@@ -773,7 +775,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
                 BOOL useSignalingKey = [message.headers containsObject:@"X-Signal-Key: true"];
                 NSData *_Nullable decryptedPayload;
                 if (useSignalingKey) {
-                    NSString *_Nullable signalingKey = TSAccountManager.signalingKey;
+                    NSString *_Nullable signalingKey = self.tsAccountManager.storedSignalingKey;
                     OWSAssertDebug(signalingKey);
                     decryptedPayload =
                         [Cryptography decryptAppleMessagePayload:message.body withSignalingKey:signalingKey];
@@ -795,12 +797,11 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
             }
 
             if (!success) {
-                [[self.primaryStorage newDatabaseConnection]
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                        [self.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                           transaction:transaction];
-                    }];
+                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+                    [self.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                       transaction:transaction];
+                }];
             }
 
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -835,8 +836,8 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    WebSocketProtoWebSocketMessageBuilder *messageBuilder =
-        [WebSocketProtoWebSocketMessage builderWithType:WebSocketProtoWebSocketMessageTypeResponse];
+    WebSocketProtoWebSocketMessageBuilder *messageBuilder = [WebSocketProtoWebSocketMessage builder];
+    [messageBuilder setType:WebSocketProtoWebSocketMessageTypeResponse];
     [messageBuilder setResponse:response];
 
     NSData *_Nullable messageData = [messageBuilder buildSerializedDataAndReturnError:&error];
@@ -901,7 +902,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
 {
     return [NSString stringWithFormat:@"?login=%@&password=%@",
                      [[TSAccountManager localNumber] stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],
-                     [TSAccountManager serverAuthToken]];
+                     self.tsAccountManager.storedServerAuthToken];
 }
 
 #pragma mark - Socket LifeCycle

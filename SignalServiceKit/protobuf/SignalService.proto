@@ -24,7 +24,6 @@ message Envelope {
     UNIDENTIFIED_SENDER = 6;
   }
 
-  // @required
   optional Type   type            = 1;
   optional string source          = 2;
   optional uint32 sourceDevice    = 7;
@@ -40,16 +39,15 @@ message Envelope {
 }
 
 message TypingMessage {
-    enum Action {
-        STARTED = 0;
-        STOPPED = 1;
-    }
+  enum Action {
+    STARTED = 0;
+    STOPPED = 1;
+  }
 
-    // @required
-    optional uint64 timestamp = 1;
-    // @required
-    optional Action action = 2;
-    optional bytes groupId = 3;
+  // @required
+  optional uint64 timestamp = 1;
+  optional Action action = 2;
+  optional bytes groupId = 3;
 }
 
 message Content {
@@ -100,7 +98,6 @@ message CallMessage {
     // @required
     optional uint64 id = 1;
   }
-
 
   optional Offer     offer     = 1;
   optional Answer    answer    = 2;
@@ -213,16 +210,38 @@ message DataMessage {
     optional AttachmentPointer image = 3;
   }
 
-  optional string             body        = 1;
-  repeated AttachmentPointer  attachments = 2;
-  optional GroupContext       group       = 3;
-  optional uint32             flags       = 4;
-  optional uint32             expireTimer = 5;
-  optional bytes              profileKey  = 6;
-  optional uint64             timestamp   = 7;
-  optional Quote              quote       = 8;
-  repeated Contact            contact     = 9;
-  repeated Preview preview = 10;
+  message Sticker {
+    // @required
+    optional bytes packId = 1;
+    // @required
+    optional bytes packKey = 2;
+    // @required
+    optional uint32 stickerId = 3;
+    // @required
+    optional AttachmentPointer data = 4;
+  }
+
+  enum ProtocolVersion {
+    option allow_alias = true;
+
+    INITIAL = 0;
+    MESSAGE_TIMERS = 1;
+    CURRENT = 1;
+  }
+
+  optional string            body                    =  1;
+  repeated AttachmentPointer attachments             =  2;
+  optional GroupContext      group                   =  3;
+  optional uint32            flags                   =  4;
+  optional uint32            expireTimer             =  5;
+  optional bytes             profileKey              =  6;
+  optional uint64            timestamp               =  7;
+  optional Quote             quote                   =  8;
+  repeated Contact           contact                 =  9;
+  repeated Preview           preview                 = 10;
+  optional Sticker           sticker                 = 11;
+  optional uint32            requiredProtocolVersion = 12;
+  optional uint32            messageTimer            = 13;
 }
 
 message NullMessage {
@@ -235,7 +254,6 @@ message ReceiptMessage {
     READ     = 1;
   }
 
-  // @required
   optional Type   type      = 1;
   repeated uint64 timestamp = 2;
 }
@@ -265,6 +283,7 @@ message SyncMessage {
     optional DataMessage                message                  = 3;
     optional uint64                     expirationStartTimestamp = 4;
     repeated UnidentifiedDeliveryStatus unidentifiedStatus       = 5;
+    optional bool                       isRecipientUpdate        = 6 [default = false];
   }
 
   message Contacts {
@@ -292,7 +311,6 @@ message SyncMessage {
       CONFIGURATION = 4;
     }
 
-    // @required
     optional Type type = 1;
   }
 
@@ -304,21 +322,42 @@ message SyncMessage {
   }
 
   message Configuration {
-      optional bool readReceipts                   = 1;
-      optional bool unidentifiedDeliveryIndicators = 2;
-      optional bool typingIndicators               = 3;
-      optional bool linkPreviews                   = 4;
+    optional bool readReceipts                   = 1;
+    optional bool unidentifiedDeliveryIndicators = 2;
+    optional bool typingIndicators               = 3;
+    optional bool linkPreviews                   = 4;
   }
 
-  optional Sent          sent          = 1;
-  optional Contacts      contacts      = 2;
-  optional Groups        groups        = 3;
-  optional Request       request       = 4;
-  repeated Read          read          = 5;
-  optional Blocked       blocked       = 6;
-  optional Verified      verified      = 7;
-  optional Configuration configuration = 9;
-  optional bytes         padding       = 8;
+  message StickerPackOperation {
+    enum Type {
+      INSTALL = 0;
+      REMOVE  = 1;
+    }
+    // @required
+    optional bytes packId = 1;
+    // @required
+    optional bytes packKey = 2;
+    optional Type  type    = 3;
+  }
+
+  message MessageTimerRead {
+    // @required
+    optional string sender    = 1;
+    // @required
+    optional uint64 timestamp = 2;
+  }
+
+  optional Sent                 sent                 =  1;
+  optional Contacts             contacts             =  2;
+  optional Groups               groups               =  3;
+  optional Request              request              =  4;
+  repeated Read                 read                 =  5;
+  optional Blocked              blocked              =  6;
+  optional Verified             verified             =  7;
+  optional Configuration        configuration        =  9;
+  optional bytes                padding              =  8;
+  repeated StickerPackOperation stickerPackOperation = 10;
+  optional MessageTimerRead     messageTimerRead     = 11;
 }
 
 message AttachmentPointer {
@@ -350,7 +389,6 @@ message GroupContext {
   }
   // @required
   optional bytes             id      = 1;
-  // @required
   optional Type              type    = 2;
   optional string            name    = 3;
   repeated string            members = 4;
@@ -389,4 +427,18 @@ message GroupDetails {
   optional uint32 expireTimer = 6;
   optional string color       = 7;
   optional bool   blocked     = 8;
+}
+
+message Pack {
+  message Sticker {
+    // @required
+    optional uint32 id    = 1;
+    // @required
+    optional string emoji = 2;
+  }
+
+  optional string  title    = 1;
+  optional string  author   = 2;
+  optional Sticker cover    = 3;
+  repeated Sticker stickers = 4;
 }

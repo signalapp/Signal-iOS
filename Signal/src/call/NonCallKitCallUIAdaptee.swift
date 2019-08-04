@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,17 +11,17 @@ import SignalMessaging
  */
 class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
 
-    let notificationsAdapter: CallNotificationsAdapter
+    let notificationPresenter: NotificationPresenter
     let callService: CallService
 
     // Starting/Stopping incoming call ringing is our apps responsibility for the non CallKit interface.
     let hasManualRinger = true
 
-    required init(callService: CallService, notificationsAdapter: CallNotificationsAdapter) {
+    required init(callService: CallService, notificationPresenter: NotificationPresenter) {
         AssertIsOnMainThread()
 
         self.callService = callService
-        self.notificationsAdapter = notificationsAdapter
+        self.notificationPresenter = notificationPresenter
 
         super.init()
     }
@@ -59,14 +59,14 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         if UIApplication.shared.applicationState == .active {
             Logger.debug("skipping notification since app is already active.")
         } else {
-            notificationsAdapter.presentIncomingCall(call, callerName: callerName)
+            notificationPresenter.presentIncomingCall(call, callerName: callerName)
         }
     }
 
     func reportMissedCall(_ call: SignalCall, callerName: String) {
         AssertIsOnMainThread()
 
-        notificationsAdapter.presentMissedCall(call, callerName: callerName)
+        notificationPresenter.presentMissedCall(call, callerName: callerName)
     }
 
     func answerCall(localId: UUID) {

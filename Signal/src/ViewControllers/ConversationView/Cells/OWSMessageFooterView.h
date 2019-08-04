@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -11,9 +11,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSMessageFooterView : UIStackView
 
 - (void)configureWithConversationViewItem:(id<ConversationViewItem>)viewItem
-                        isOverlayingMedia:(BOOL)isOverlayingMedia
                         conversationStyle:(ConversationStyle *)conversationStyle
-                               isIncoming:(BOOL)isIncoming;
+                               isIncoming:(BOOL)isIncoming
+                        isOverlayingMedia:(BOOL)isOverlayingMedia
+                          isOutsideBubble:(BOOL)isOutsideBubble;
 
 - (CGSize)measureWithConversationViewItem:(id<ConversationViewItem>)viewItem;
 

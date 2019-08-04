@@ -1,14 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKBaseTestObjC.h"
 #import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "TestAppContext.h"
-
-@import CocoaLumberjack;
+#import <CocoaLumberjack/CocoaLumberjack.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,15 +37,24 @@ NS_ASSUME_NONNULL_BEGIN
     [super tearDown];
 }
 
-- (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+-(void)readWithBlock:(void (^)(SDSAnyReadTransaction *))block
+{
+    [SDSDatabaseStorage.shared readWithBlock:block];
+}
+
+-(void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *))block
+{
+    [SDSDatabaseStorage.shared writeWithBlock:block];
+}
+
+- (void)yapReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
 {
     OWSAssert(block);
 
     [[SSKEnvironment.shared.primaryStorage newDatabaseConnection] readWithBlock:block];
 }
 
-
-- (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
+- (void)yapWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
     OWSAssert(block);
 

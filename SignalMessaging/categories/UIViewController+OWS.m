@@ -1,12 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "Theme.h"
 #import "UIColor+OWS.h"
+#import "UIUtil.h"
 #import "UIView+OWS.h"
 #import "UIViewController+OWS.h"
 #import <SignalCoreKit/iOSVersions.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,20 +17,33 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIViewController *)findFrontmostViewController:(BOOL)ignoringAlerts
 {
+    NSMutableArray<UIViewController *> *visitedViewControllers = [NSMutableArray new];
+
     UIViewController *viewController = self;
     while (YES) {
+        [visitedViewControllers addObject:viewController];
+
         UIViewController *_Nullable nextViewController = viewController.presentedViewController;
         if (nextViewController) {
-            if (ignoringAlerts) {
-                if ([nextViewController isKindOfClass:[UIAlertController class]]) {
-                    break;
+            if (!ignoringAlerts || ![nextViewController isKindOfClass:[UIAlertController class]]) {
+                if ([visitedViewControllers containsObject:nextViewController]) {
+                    // Cycle detected.
+                    return viewController;
                 }
+                viewController = nextViewController;
+                continue;
             }
-            viewController = nextViewController;
-        } else if ([viewController isKindOfClass:[UINavigationController class]]) {
+        }
+
+        if ([viewController isKindOfClass:[UINavigationController class]]) {
             UINavigationController *navigationController = (UINavigationController *)viewController;
-            if (navigationController.topViewController) {
-                viewController = navigationController.topViewController;
+            nextViewController = navigationController.topViewController;
+            if (nextViewController) {
+                if ([visitedViewControllers containsObject:nextViewController]) {
+                    // Cycle detected.
+                    return viewController;
+                }
+                viewController = nextViewController;
             } else {
                 break;
             }
@@ -104,10 +119,13 @@ NS_ASSUME_NONNULL_BEGIN
         return [[UIBarButtonItem alloc] initWithImage:backImage
                                                 style:UIBarButtonItemStylePlain
                                                target:target
-                                               action:selector];
+                                               action:selector
+                              accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
     }
 
-    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    UIBarButtonItem *backItem =
+        [[UIBarButtonItem alloc] initWithCustomView:backButton
+                            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
     backItem.width = buttonFrame.size.width;
 
     return backItem;

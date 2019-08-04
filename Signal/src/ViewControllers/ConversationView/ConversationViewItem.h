@@ -9,18 +9,34 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, OWSMessageCellType) {
     OWSMessageCellType_Unknown,
-    OWSMessageCellType_TextMessage,
-    OWSMessageCellType_OversizeTextMessage,
+    OWSMessageCellType_TextOnlyMessage,
     OWSMessageCellType_Audio,
     OWSMessageCellType_GenericAttachment,
-    OWSMessageCellType_DownloadingAttachment,
     OWSMessageCellType_ContactShare,
-    OWSMessageCellType_MediaAlbum,
+    OWSMessageCellType_MediaMessage,
+    OWSMessageCellType_OversizeTextDownloading,
+    OWSMessageCellType_StickerMessage,
+    OWSMessageCellType_PerMessageExpiration,
 };
 
 NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 #pragma mark -
+
+typedef NS_ENUM(NSUInteger, PerMessageExpirationState) {
+    PerMessageExpirationState_Unknown = 0,
+    PerMessageExpirationState_IncomingExpired,
+    PerMessageExpirationState_IncomingDownloading,
+    PerMessageExpirationState_IncomingFailed,
+    PerMessageExpirationState_IncomingAvailable,
+    PerMessageExpirationState_IncomingInvalidContent,
+    PerMessageExpirationState_OutgoingSending,
+    PerMessageExpirationState_OutgoingFailed,
+    PerMessageExpirationState_OutgoingSentAvailable,
+    PerMessageExpirationState_OutgoingSentExpired,
+};
+
+NSString *NSStringForPerMessageExpirationState(PerMessageExpirationState value);
 
 @class ContactShareViewModel;
 @class ConversationViewCell;
@@ -29,6 +45,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @class OWSLinkPreview;
 @class OWSQuotedReplyModel;
 @class OWSUnreadIndicator;
+@class SDSAnyReadTransaction;
+@class StickerInfo;
 @class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
@@ -65,8 +83,6 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 
 @property (nonatomic, readonly) TSInteraction *interaction;
 
-@property (nonatomic, readonly, nullable) OWSQuotedReplyModel *quotedReply;
-
 @property (nonatomic, readonly) BOOL isGroupThread;
 
 @property (nonatomic, readonly) BOOL hasBodyText;
@@ -76,7 +92,8 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 @property (nonatomic, readonly) BOOL hasQuotedText;
 @property (nonatomic, readonly) BOOL hasCellHeader;
 
-@property (nonatomic, readonly) BOOL isExpiringMessage;
+@property (nonatomic, readonly) BOOL hasPerConversationExpiration;
+@property (nonatomic, readonly) BOOL hasPerMessageExpiration;
 
 @property (nonatomic) BOOL shouldShowDate;
 @property (nonatomic) BOOL shouldShowSenderAvatar;
@@ -90,7 +107,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (ConversationViewCell *)dequeueCellForCollectionView:(UICollectionView *)collectionView
                                              indexPath:(NSIndexPath *)indexPath;
 
-- (void)replaceInteraction:(TSInteraction *)interaction transaction:(YapDatabaseReadTransaction *)transaction;
+- (void)replaceInteraction:(TSInteraction *)interaction transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)clearCachedLayoutState;
 
@@ -120,10 +137,17 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 // if a load has previously failed.
 @property (nonatomic) BOOL didCellMediaFailToLoad;
 
+@property (nonatomic, readonly, nullable) OWSQuotedReplyModel *quotedReply;
+
 @property (nonatomic, readonly, nullable) ContactShareViewModel *contactShare;
 
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) TSAttachment *linkPreviewAttachment;
+
+@property (nonatomic, readonly, nullable) StickerInfo *stickerInfo;
+@property (nonatomic, readonly, nullable) TSAttachmentStream *stickerAttachment;
+@property (nonatomic, readonly) BOOL isFailedSticker;
+@property (nonatomic, readonly) PerMessageExpirationState perMessageExpirationState;
 
 @property (nonatomic, readonly, nullable) NSString *systemMessageText;
 
@@ -162,7 +186,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType);
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                       isGroupThread:(BOOL)isGroupThread
-                        transaction:(YapDatabaseReadTransaction *)transaction
+                        transaction:(SDSAnyReadTransaction *)transaction
                   conversationStyle:(ConversationStyle *)conversationStyle;
 
 @end

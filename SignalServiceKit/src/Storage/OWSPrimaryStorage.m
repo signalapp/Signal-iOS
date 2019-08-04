@@ -12,12 +12,12 @@
 #import "OWSFileSystem.h"
 #import "OWSIncomingMessageFinder.h"
 #import "OWSIncompleteCallsJob.h"
-#import "OWSMediaGalleryFinder.h"
 #import "OWSMessageReceiver.h"
 #import "OWSStorage+Subclass.h"
 #import "SSKEnvironment.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
+#import "YAPDBMediaGalleryFinder.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -29,7 +29,7 @@ NSString *const OWSUIDatabaseConnectionDidUpdateExternallyNotification = @"OWSUI
 
 NSString *const OWSUIDatabaseConnectionNotificationsKey = @"OWSUIDatabaseConnectionNotificationsKey";
 
-void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
+void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t completion)
 {
     OWSCAssertDebug(storage);
 
@@ -43,6 +43,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
                 [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
             }
         }
+
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
     }];
 }
 
@@ -52,6 +54,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 @property (atomic) BOOL areAsyncRegistrationsComplete;
 @property (atomic) BOOL areSyncRegistrationsComplete;
+@property (nonatomic, readonly) YapDatabaseConnectionPool *dbReadPool;
 
 @end
 
@@ -75,10 +78,10 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     if (self) {
         [self loadDatabase];
 
-        _dbReadConnection = [self newDatabaseConnection];
+        _dbReadPool = [[YapDatabaseConnectionPool alloc] initWithDatabase:self.database];
         _dbReadWriteConnection = [self newDatabaseConnection];
         _uiDatabaseConnection = [self newDatabaseConnection];
-        
+
         // Increase object cache limit. Default is 250.
         _uiDatabaseConnection.objectCacheLimit = 500;
         [_uiDatabaseConnection beginLongLivedReadTransaction];
@@ -156,7 +159,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 - (void)resetStorage
 {
-    _dbReadConnection = nil;
+    _dbReadPool = nil;
+    _uiDatabaseConnection = nil;
     _dbReadWriteConnection = nil;
 
     [super resetStorage];
@@ -179,6 +183,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
 - (void)runAsyncRegistrationsWithCompletion:(void (^_Nonnull)(void))completion
 {
+    OWSAssertIsOnMainThread();
     OWSAssertDebug(completion);
     OWSAssertDebug(self.database);
 
@@ -189,47 +194,68 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     // All sync registrations must be done before all async registrations,
     // or the sync registrations will block on the async registrations.
     [TSDatabaseView asyncRegisterLegacyThreadInteractionsDatabaseView:self];
+
     [TSDatabaseView asyncRegisterThreadInteractionsDatabaseView:self];
-    [TSDatabaseView asyncRegisterThreadDatabaseView:self];
-    [TSDatabaseView asyncRegisterUnreadDatabaseView:self];
-    [self asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex]
-                        withName:[TSDatabaseSecondaryIndexes registerTimeStampIndexExtensionName]];
-
-    [OWSMessageReceiver asyncRegisterDatabaseExtension:self];
-    [OWSBatchMessageProcessor asyncRegisterDatabaseExtension:self];
-
-    [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
-    [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
-    [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
-
-    [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
-    [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];
-    [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:self];
-    [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
-    [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
-    [OWSIncompleteCallsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
-    [OWSFailedAttachmentDownloadsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
-    [OWSMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
-    [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
-    [SSKJobRecordFinder asyncRegisterDatabaseExtensionObjCWithStorage:self];
 
     [self.database
-        flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+        flushExtensionRequestsWithCompletionQueue:dispatch_get_main_queue()
                                   completionBlock:^{
-                                      OWSAssertDebug(!self.areAsyncRegistrationsComplete);
-                                      OWSLogVerbose(@"async registrations complete.");
+                                      OWSAssertIsOnMainThread();
 
-                                      self.areAsyncRegistrationsComplete = YES;
+                                      // Building this view requires TSMessageDatabaseViewExtensionName which is
+                                      // registered above in asyncRegisterThreadInteractionsDatabaseView.
+                                      [TSDatabaseView asyncRegisterThreadDatabaseView:self];
 
-                                      completion();
+                                      [TSDatabaseView asyncRegisterUnreadDatabaseView:self];
+                                      [self asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex]
+                                                          withName:[TSDatabaseSecondaryIndexes
+                                                                       registerTimeStampIndexExtensionName]];
 
-                                      [self verifyDatabaseViews];
+                                      [OWSMessageReceiver asyncRegisterDatabaseExtension:self];
+                                      [YAPDBMessageContentJobFinder asyncRegisterDatabaseExtension:self];
+
+                                      [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
+                                      [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
+                                      [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
+                                      [TSDatabaseView asyncRegisterPerMessageExpirationMessagesDatabaseView:self];
+
+                                      [FullTextSearchFinder asyncRegisterDatabaseExtensionWithStorage:self];
+                                      [OWSIncomingMessageFinder asyncRegisterExtensionWithPrimaryStorage:self];
+                                      [TSDatabaseView asyncRegisterSecondaryDevicesDatabaseView:self];
+                                      [OWSDisappearingMessagesFinder asyncRegisterDatabaseExtensions:self];
+                                      [OWSFailedMessagesJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+                                      [OWSIncompleteCallsJob asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+                                      [OWSFailedAttachmentDownloadsJob
+                                          asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+                                      [YAPDBMediaGalleryFinder asyncRegisterDatabaseExtensionsWithPrimaryStorage:self];
+                                      [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
+                                      [YAPDBJobRecordFinderSetup asyncRegisterDatabaseExtensionObjCWithStorage:self];
+
+                                      [self.database
+                                          flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(
+                                                                                        DISPATCH_QUEUE_PRIORITY_DEFAULT,
+                                                                                        0)
+                                                                    completionBlock:^{
+                                                                        OWSAssertDebug(
+                                                                            !self.areAsyncRegistrationsComplete);
+                                                                        OWSLogVerbose(@"async registrations complete.");
+
+                                                                        // We verify that all database views registered
+                                                                        // successfully and are accessible on launch
+                                                                        // _before_ "database is ready".  This ensures
+                                                                        // that if a view becomes corrupted it, we
+                                                                        // detect that now and increment the view
+                                                                        // version, so that it will be rebuilt on next
+                                                                        // launch. Otherwise, the app might crash later
+                                                                        // in a place that won't increment the view
+                                                                        // version.
+                                                                        VerifyRegistrationsForPrimaryStorage(self, ^{
+                                                                            self.areAsyncRegistrationsComplete = YES;
+
+                                                                            completion();
+                                                                        });
+                                                                    }];
                                   }];
-}
-
-- (void)verifyDatabaseViews
-{
-    VerifyRegistrationsForPrimaryStorage(self);
 }
 
 + (void)protectFiles
@@ -424,6 +450,11 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 + (YapDatabaseConnection *)dbReadConnection
 {
     return OWSPrimaryStorage.sharedManager.dbReadConnection;
+}
+
+- (YapDatabaseConnection *)dbReadConnection
+{
+    return self.dbReadPool.connection;
 }
 
 + (YapDatabaseConnection *)dbReadWriteConnection

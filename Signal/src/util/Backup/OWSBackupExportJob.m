@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupExportJob.h"
 #import "OWSBackupIO.h"
 #import "OWSDatabaseMigration.h"
 #import "Signal-Swift.h"
+#import <CloudKit/CloudKit.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -17,8 +18,6 @@
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSMessage.h>
 #import <SignalServiceKit/TSThread.h>
-
-@import CloudKit;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -134,10 +133,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     SignalIOSProtoBackupSnapshotBackupEntityBuilder *entityBuilder =
-        [SignalIOSProtoBackupSnapshotBackupEntity builderWithType:entityType
-                                                       entityData:data
-                                                       collection:collection
-                                                              key:key];
+        [SignalIOSProtoBackupSnapshotBackupEntity builderWithEntityData:data collection:collection key:key];
+    [entityBuilder setType:entityType];
 
     NSError *error;
     SignalIOSProtoBackupSnapshotBackupEntity *_Nullable entity = [entityBuilder buildAndReturnError:&error];
@@ -595,10 +592,10 @@ NS_ASSUME_NONNULL_BEGIN
             [TSInteraction collection],
             [TSInteraction class],
             ^(id object) {
-                // Ignore disappearing messages.
+                // Ignore both kinds of disappearing messages.
                 if ([object isKindOfClass:[TSMessage class]]) {
                     TSMessage *message = object;
-                    if (message.isExpiringMessage) {
+                    if (message.hasPerConversationExpiration || message.hasPerMessageExpiration) {
                         return NO;
                     }
                 }

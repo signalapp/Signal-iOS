@@ -20,10 +20,9 @@ class OWSColorPickerAccessoryView: NeverClearView {
     required init(color: UIColor) {
         super.init(frame: .zero)
 
-        let circleView = CircleView()
+        let circleView = CircleView(diameter: kSwatchSize)
         circleView.backgroundColor = color
         addSubview(circleView)
-        circleView.autoSetDimensions(to: CGSize(width: kSwatchSize, height: kSwatchSize))
         circleView.autoPinEdgesToSuperviewEdges()
     }
 
@@ -32,14 +31,7 @@ class OWSColorPickerAccessoryView: NeverClearView {
     }
 }
 
-@objc (OWSCircleView)
-class CircleView: UIView {
-    override var bounds: CGRect {
-        didSet {
-            self.layer.cornerRadius = self.bounds.size.height / 2
-        }
-    }
-}
+// MARK: -
 
 protocol ColorViewDelegate: class {
     func colorViewWasTapped(_ colorView: ColorView)
@@ -285,7 +277,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
         let kRowLength = 4
         let rows: [UIView] = colorViews.chunked(by: kRowLength).map { colorViewsInRow in
             let row = UIStackView(arrangedSubviews: colorViewsInRow)
-            row.distribution = UIStackViewDistribution.equalSpacing
+            row.distribution = UIStackView.Distribution.equalSpacing
             return row
         }
         let rowsStackView = UIStackView(arrangedSubviews: rows)
@@ -314,7 +306,8 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var hasQuotedAttachment: Bool = false
     var hasQuotedText: Bool = false
     var hasCellHeader: Bool = false
-    var isExpiringMessage: Bool = false
+    var hasPerConversationExpiration: Bool = false
+    var hasPerMessageExpiration: Bool = false
     var shouldShowDate: Bool = false
     var shouldShowSenderAvatar: Bool = false
     var senderName: NSAttributedString?
@@ -325,7 +318,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var lastAudioMessageView: OWSAudioMessageView?
     var audioDurationSeconds: CGFloat = 0
     var audioProgressSeconds: CGFloat = 0
-    var messageCellType: OWSMessageCellType = .textMessage
+    var messageCellType: OWSMessageCellType = .textOnlyMessage
     var displayableBodyText: DisplayableText?
     var attachmentStream: TSAttachmentStream?
     var attachmentPointer: TSAttachmentPointer?
@@ -343,6 +336,10 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var hasCachedLayoutState: Bool = false
     var linkPreview: OWSLinkPreview?
     var linkPreviewAttachment: TSAttachment?
+    var stickerInfo: StickerInfo?
+    var stickerAttachment: TSAttachmentStream?
+    var isFailedSticker: Bool = false
+    var perMessageExpirationState: PerMessageExpirationState = .incomingExpired
 
     override init() {
         super.init()
@@ -357,7 +354,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
         return ConversationViewCell(forAutoLayout: ())
     }
 
-    func replace(_ interaction: TSInteraction, transaction: YapDatabaseReadTransaction) {
+    func replace(_ interaction: TSInteraction, transaction: SDSAnyReadTransaction) {
         owsFailDebug("unexpected invocation")
         return
     }
@@ -455,15 +452,17 @@ private class MockIncomingMessage: TSIncomingMessage {
                    quotedMessage: nil,
                    contactShare: nil,
                    linkPreview: nil,
+                   messageSticker: nil,
                    serverTimestamp: nil,
-                   wasReceivedByUD: false)
+                   wasReceivedByUD: false,
+                   perMessageExpirationDurationSeconds: 0)
     }
 
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
+    required init(dictionary dictionaryValue: [String: Any]!) throws {
         fatalError("init(dictionary:) has not been implemented")
     }
 
@@ -485,14 +484,16 @@ private class MockOutgoingMessage: TSOutgoingMessage {
                    groupMetaMessage: .unspecified,
                    quotedMessage: nil,
                    contactShare: nil,
-                   linkPreview: nil)
+                   linkPreview: nil,
+                   messageSticker: nil,
+                   perMessageExpirationDurationSeconds: 0)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
+    required init(dictionary dictionaryValue: [String: Any]!) throws {
         fatalError("init(dictionary:) has not been implemented")
     }
 

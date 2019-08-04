@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -56,13 +56,15 @@ public class OWS113MultiAttachmentMediaMessages: OWSDatabaseMigration {
             self.dbReadWriteConnection().readWrite { transaction in
                 for (attachmentId, messageId) in legacyAttachments {
                     autoreleasepool {
-                        guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {
+                        // NOTE: Use legacy fetch.
+                        guard let attachment = TSAttachment.ydb_fetch(uniqueId: attachmentId, transaction: transaction) else {
                             Logger.warn("missing attachment for messageId: \(messageId)")
                             return
                         }
 
                         attachment.migrateAlbumMessageId(messageId)
-                        attachment.save(with: transaction)
+                        // NOTE: Use legacy save.
+                        attachment.ydb_save(with: transaction)
                     }
                 }
                 self.save(with: transaction)

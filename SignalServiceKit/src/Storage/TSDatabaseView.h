@@ -21,6 +21,8 @@ extern NSString *const TSUnreadDatabaseViewExtensionName;
 extern NSString *const TSUnseenDatabaseViewExtensionName;
 extern NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName;
 extern NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName;
+extern NSString *const TSPerMessageExpirationMessagesDatabaseViewExtensionName;
+extern NSString *const TSPerMessageExpirationMessagesGroup;
 
 extern NSString *const TSSecondaryDevicesDatabaseViewExtensionName;
 
@@ -40,6 +42,8 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 + (id)threadOutgoingMessageDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
 + (id)threadSpecialMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
+
++ (id)perMessageExpirationMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction;
 
 #pragma mark - Registration
 
@@ -64,6 +68,8 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 + (void)asyncRegisterUnseenDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage;
+
++ (void)asyncRegisterPerMessageExpirationMessagesDatabaseView:(OWSStorage *)storage;
 
 + (void)asyncRegisterSecondaryDevicesDatabaseView:(OWSStorage *)storage;
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSystemMessageCell.h"
@@ -11,6 +11,7 @@
 #import "UIView+OWS.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
+#import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSErrorMessage.h>
@@ -24,6 +25,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
 @property (nonatomic) NSString *title;
 @property (nonatomic) SystemMessageActionBlock block;
+@property (nonatomic) NSString *accessibilityIdentifier;
 
 @end
 
@@ -31,11 +33,14 @@ typedef void (^SystemMessageActionBlock)(void);
 
 @implementation SystemMessageAction
 
-+ (SystemMessageAction *)actionWithTitle:(NSString *)title block:(SystemMessageActionBlock)block
++ (SystemMessageAction *)actionWithTitle:(NSString *)title
+                                   block:(SystemMessageActionBlock)block
+                 accessibilityIdentifier:(NSString *)accessibilityIdentifier
 {
     SystemMessageAction *action = [SystemMessageAction new];
     action.title = title;
     action.block = block;
+    action.accessibilityIdentifier = accessibilityIdentifier;
     return action;
 }
 
@@ -192,8 +197,10 @@ typedef void (^SystemMessageActionBlock)(void);
         UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
         self.button.titleLabel.font = buttonFont;
         self.button.hidden = NO;
+        self.button.accessibilityIdentifier = self.action.accessibilityIdentifier;
     } else {
         self.button.hidden = YES;
+        self.button.accessibilityIdentifier = nil;
     }
     CGSize buttonSize = [self.button sizeThatFits:CGSizeZero];
 
@@ -274,6 +281,14 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
                 return nil;
+            case TSInfoMessageUnknownProtocolVersion:
+                OWSAssertDebug([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]);
+                if ([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]) {
+                    OWSUnknownProtocolVersionMessage *message = (OWSUnknownProtocolVersionMessage *)interaction;
+                    result = [UIImage imageNamed:(message.isProtocolVersionUnknown ? @"message_status_failed"
+                                                                                   : @"check-circle-outline-28")];
+                }
+                break;
             case TSInfoMessageTypeDisappearingMessagesUpdate: {
                 BOOL areDisappearingMessagesEnabled = YES;
                 if ([interaction isKindOfClass:[OWSDisappearingConfigurationUpdateInfoMessage class]]) {
@@ -296,7 +311,10 @@ typedef void (^SystemMessageActionBlock)(void);
                         return nil;
                     }
                 }
-                result = [UIImage imageNamed:@"system_message_verified"];
+                result = [UIImage imageNamed:@"check-circle-outline-28"];
+                break;
+            case TSInfoMessageUserJoinedSignal:
+                result = [UIImage imageNamed:@"emoji-heart-filled-28"];
                 break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
@@ -413,19 +431,23 @@ typedef void (^SystemMessageActionBlock)(void);
             return nil;
         case TSErrorMessageNonBlockingIdentityChange:
             return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
-                                    @"Label for button to verify a user's safety number.")
-                          block:^{
-                              [weakSelf.delegate tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
-                          }];
+                        actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
+                                            @"Label for button to verify a user's safety number.")
+                                  block:^{
+                                      [weakSelf.delegate
+                                          tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"verify_safety_number")];
         case TSErrorMessageWrongTrustedIdentityKey:
             return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
-                                    @"Label for button to verify a user's safety number.")
-                          block:^{
-                              [weakSelf.delegate
-                                  tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
-                          }];
+                        actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
+                                            @"Label for button to verify a user's safety number.")
+                                  block:^{
+                                      [weakSelf.delegate
+                                          tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)
+                                                                                   message];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"verify_safety_number")];
         case TSErrorMessageMissingKeyId:
         case TSErrorMessageNoSession:
             return nil;
@@ -433,7 +455,8 @@ typedef void (^SystemMessageActionBlock)(void);
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
                                                   block:^{
                                                       [weakSelf.delegate tappedCorruptedMessage:message];
-                                                  }];
+                                                  }
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reset_session")];
         case TSErrorMessageDuplicateMessage:
         case TSErrorMessageInvalidVersion:
             return nil;
@@ -444,19 +467,20 @@ typedef void (^SystemMessageActionBlock)(void);
             return [SystemMessageAction actionWithTitle:CommonStrings.retryButton
                                                   block:^{
                                                       [weakSelf.delegate resendGroupUpdateForErrorMessage:message];
-                                                  }];
+                                                  }
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"retry")];
     }
 
     OWSLogWarn(@"Unhandled tap for error message:%@", message);
     return nil;
 }
 
-- (nullable SystemMessageAction *)actionForInfoMessage:(TSInfoMessage *)message
+- (nullable SystemMessageAction *)actionForInfoMessage:(TSInfoMessage *)infoMessage
 {
-    OWSAssertDebug(message);
+    OWSAssertDebug(infoMessage);
 
     __weak OWSSystemMessageCell *weakSelf = self;
-    switch (message.messageType) {
+    switch (infoMessage.messageType) {
         case TSInfoMessageUserNotRegistered:
         case TSInfoMessageTypeSessionDidEnd:
             return nil;
@@ -479,23 +503,46 @@ typedef void (^SystemMessageActionBlock)(void);
             return nil;
         case TSInfoMessageTypeGroupQuit:
             return nil;
+        case TSInfoMessageUnknownProtocolVersion: {
+            if (![infoMessage isKindOfClass:[OWSUnknownProtocolVersionMessage class]]) {
+                OWSFailDebug(@"Unexpected message type.");
+                return nil;
+            }
+            OWSUnknownProtocolVersionMessage *message = (OWSUnknownProtocolVersionMessage *)infoMessage;
+            if (message.isProtocolVersionUnknown) {
+                return [SystemMessageAction
+                            actionWithTitle:NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON",
+                                                @"Label for button that lets users upgrade the app.")
+                                      block:^{
+                                          [weakSelf showUpgradeAppUI];
+                                      }
+                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_upgrade_app_ui")];
+            }
+            return nil;
+        }
         case TSInfoMessageTypeDisappearingMessagesUpdate:
-            return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_TAP_TO_CHANGE",
-                                                            @"Label for button that opens conversation settings.")
-                                                  block:^{
-                                                      [weakSelf.delegate showConversationSettings];
-                                                  }];
+            return [SystemMessageAction
+                        actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_TAP_TO_CHANGE",
+                                            @"Label for button that opens conversation settings.")
+                                  block:^{
+                                      [weakSelf.delegate showConversationSettings];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_conversation_settings")];
         case TSInfoMessageVerificationStateChange:
             return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
-                          block:^{
-                              [weakSelf.delegate
-                                  showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)message)
-                                                                     .recipientId];
-                          }];
+                        actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
+                                  block:^{
+                                      [weakSelf.delegate
+                                          showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)
+                                                                                 infoMessage)
+                                                                             .recipientId];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")];
+        case TSInfoMessageUserJoinedSignal:
+            return nil;
     }
 
-    OWSLogInfo(@"Unhandled tap for info message: %@", message);
+    OWSLogInfo(@"Unhandled tap for info message: %@", infoMessage);
     return nil;
 }
 
@@ -513,14 +560,16 @@ typedef void (^SystemMessageActionBlock)(void);
                 [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALLBACK_BUTTON_TITLE", @"notification action")
                                                block:^{
                                                    [weakSelf.delegate handleCallTap:call];
-                                               }];
+                                               }
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")];
         case RPRecentCallTypeOutgoing:
         case RPRecentCallTypeOutgoingMissed:
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALL_AGAIN_BUTTON_TITLE",
                                                             @"Label for button that lets users call a contact again.")
                                                   block:^{
                                                       [weakSelf.delegate handleCallTap:call];
-                                                  }];
+                                                  }
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_again")];
         case RPRecentCallTypeOutgoingIncomplete:
         case RPRecentCallTypeIncomingIncomplete:
             return nil;
@@ -565,6 +614,12 @@ typedef void (^SystemMessageActionBlock)(void);
     } else {
         self.action.block();
     }
+}
+
+- (void)showUpgradeAppUI
+{
+    NSString *url = @"https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8";
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:url]];
 }
 
 #pragma mark - Reuse

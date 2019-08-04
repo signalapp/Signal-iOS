@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -320,7 +320,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             // Show no action buttons for contacts without a phone number.
             break
         case .unknown:
-            let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+            let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
             topView.addSubview(activityIndicator)
             activityIndicator.autoPinEdge(.top, to: .bottom, of: lastView, withOffset: 10)
             activityIndicator.autoHCenterInSuperview()
@@ -428,11 +428,8 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         button.layoutMargins = .zero
         button.autoSetDimension(.width, toSize: buttonSize, relation: .greaterThanOrEqual)
 
-        let circleView = UIView()
+        let circleView = CircleView(diameter: buttonSize)
         circleView.backgroundColor = Theme.backgroundColor
-        circleView.autoSetDimension(.width, toSize: buttonSize)
-        circleView.autoSetDimension(.height, toSize: buttonSize)
-        circleView.layer.cornerRadius = buttonSize * 0.5
         button.addSubview(circleView)
         circleView.autoPinEdge(toSuperviewEdge: .top)
         circleView.autoHCenterInSuperview()
@@ -566,7 +563,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
                                                 UIPasteboard.general.string = phoneNumber.phoneNumber
         })
         actionSheet.addAction(OWSAlerts.cancelAction)
-        present(actionSheet, animated: true)
+        presentAlert(actionSheet)
     }
 
     func callPhoneNumberWithSystemCall(phoneNumber: OWSContactPhoneNumber) {
@@ -594,7 +591,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
                                                 UIPasteboard.general.string = email.email
         })
         actionSheet.addAction(OWSAlerts.cancelAction)
-        present(actionSheet, animated: true)
+        presentAlert(actionSheet)
     }
 
     func openEmailInEmailApp(email: OWSContactEmail) {
@@ -624,7 +621,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
                                                 UIPasteboard.general.string = strongSelf.formatAddressForQuery(address: address)
         })
         actionSheet.addAction(OWSAlerts.cancelAction)
-        present(actionSheet, animated: true)
+        presentAlert(actionSheet)
     }
 
     func openAddressInMaps(address: OWSContactAddress) {

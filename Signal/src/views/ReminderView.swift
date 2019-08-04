@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,7 +40,7 @@ class ReminderView: UIView {
         notImplemented()
     }
 
-    private init(mode: ReminderViewMode,
+    init(mode: ReminderViewMode,
          text: String, tapAction: Action?) {
         self.mode = mode
         self.tapAction = tapAction
@@ -63,7 +63,7 @@ class ReminderView: UIView {
     func setupSubviews() {
         let textColor: UIColor
         let iconColor: UIColor
-        switch (mode) {
+        switch mode {
         case .nag:
             self.backgroundColor = UIColor.ows_reminderYellow
             textColor = UIColor.ows_gray90

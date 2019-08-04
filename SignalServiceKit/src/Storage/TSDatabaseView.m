@@ -11,6 +11,7 @@
 #import "TSInvalidIdentityKeyErrorMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
 #import <YapDatabase/YapDatabaseViewTypes.h>
@@ -42,6 +43,9 @@ NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName = @"TSThreadOut
 NSString *const TSUnreadDatabaseViewExtensionName = @"TSUnreadDatabaseViewExtensionName";
 NSString *const TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtensionName";
 NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName = @"TSThreadSpecialMessagesDatabaseViewExtensionName";
+NSString *const TSPerMessageExpirationMessagesDatabaseViewExtensionName
+    = @"TSPerMessageExpirationMessagesDatabaseViewExtensionName";
+NSString *const TSPerMessageExpirationMessagesGroup = @"TSPerMessageExpirationMessagesGroup";
 NSString *const TSSecondaryDevicesDatabaseViewExtensionName = @"TSSecondaryDevicesDatabaseViewExtensionName";
 NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName
     = @"TSLazyRestoreAttachmentsDatabaseViewExtensionName";
@@ -159,6 +163,32 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     }];
 
     [self registerMessageDatabaseViewWithName:TSThreadSpecialMessagesDatabaseViewExtensionName
+                                 viewGrouping:viewGrouping
+                                      version:@"2"
+                                      storage:storage];
+}
+
++ (void)asyncRegisterPerMessageExpirationMessagesDatabaseView:(OWSStorage *)storage
+{
+    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
+        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
+        if (![object isKindOfClass:[TSInteraction class]]) {
+            OWSFailDebug(@"Unexpected entity %@ in collection: %@", [object class], collection);
+            return nil;
+        }
+        if (![object isKindOfClass:[TSMessage class]]) {
+            return nil;
+        }
+        TSMessage *message = (TSMessage *)object;
+        if (message.hasPerMessageExpiration &&
+            !message.perMessageExpirationHasExpired) {
+            return TSPerMessageExpirationMessagesGroup;
+        } else {
+            return nil;
+        }
+    }];
+
+    [self registerMessageDatabaseViewWithName:TSPerMessageExpirationMessagesDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
                                       version:@"2"
                                       storage:storage];
@@ -330,13 +360,21 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
         TSThread *thread2 = (TSThread *)object2;
         if ([group isEqualToString:TSArchiveGroup] || [group isEqualToString:TSInboxGroup]) {
 
+            NSDate *longAgo = [NSDate dateWithTimeIntervalSince1970:0];
+
             TSInteraction *_Nullable lastInteractionForInbox1 =
-                [thread1 lastInteractionForInboxWithTransaction:transaction];
+                [thread1 lastInteractionForInboxWithTransaction:transaction.asAnyRead];
             NSDate *date1 = lastInteractionForInbox1 ? lastInteractionForInbox1.receivedAtDate : thread1.creationDate;
+            if (date1 == nil) {
+                date1 = longAgo;
+            }
 
             TSInteraction *_Nullable lastInteractionForInbox2 =
-                [thread2 lastInteractionForInboxWithTransaction:transaction];
+                [thread2 lastInteractionForInboxWithTransaction:transaction.asAnyRead];
             NSDate *date2 = lastInteractionForInbox2 ? lastInteractionForInbox2.receivedAtDate : thread2.creationDate;
+            if (date2 == nil) {
+                date2 = longAgo;
+            }
 
             return [date1 compare:date2];
         }
@@ -494,7 +532,6 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
     id result = [transaction ext:TSThreadOutgoingMessageDatabaseViewExtensionName];
     OWSAssertDebug(result);
-
     return result;
 }
 
@@ -504,7 +541,15 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
 
     id result = [transaction ext:TSThreadSpecialMessagesDatabaseViewExtensionName];
     OWSAssertDebug(result);
+    return result;
+}
 
++ (id)perMessageExpirationMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    id result = [transaction ext:TSPerMessageExpirationMessagesDatabaseViewExtensionName];
+    OWSAssertDebug(result);
     return result;
 }
 

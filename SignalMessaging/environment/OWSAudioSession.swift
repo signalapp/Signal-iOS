@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,7 +18,7 @@ public class AudioActivity: NSObject {
     }
 
     deinit {
-        audioSession.ensureAudioSessionActivationStateAfterDelay()
+        audioSession.ensureAudioState()
     }
 
     // MARK: Dependencies
@@ -39,7 +39,7 @@ public class OWSAudioSession: NSObject {
 
     @objc
     public func setup() {
-        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: .UIDeviceProximityStateDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(proximitySensorStateDidChange(notification:)), name: UIDevice.proximityStateDidChangeNotification, object: nil)
     }
 
     // MARK: Dependencies
@@ -54,7 +54,7 @@ public class OWSAudioSession: NSObject {
 
     // MARK: 
 
-    private var currentActivities: [Weak<AudioActivity>] = []
+    public private(set) var currentActivities: [Weak<AudioActivity>] = []
     var aggregateBehaviors: Set<OWSAudioBehavior> {
         return Set(self.currentActivities.compactMap { $0.value?.behavior })
     }
@@ -69,7 +69,7 @@ public class OWSAudioSession: NSObject {
         self.currentActivities.append(Weak(value: audioActivity))
 
         do {
-            try ensureAudioCategory()
+            try reconcileAudioCategory()
             return true
         } catch {
             owsFailDebug("failed with error: \(error)")
@@ -86,13 +86,29 @@ public class OWSAudioSession: NSObject {
 
         currentActivities = currentActivities.filter { return $0.value != audioActivity }
         do {
-            try ensureAudioCategory()
+            try reconcileAudioCategory()
         } catch {
-            owsFailDebug("error in ensureAudioCategory: \(error)")
+            owsFailDebug("error in reconcileAudioCategory: \(error)")
         }
     }
 
-    func ensureAudioCategory() throws {
+    @objc
+    public func ensureAudioState() {
+        objc_sync_enter(self)
+        defer { objc_sync_exit(self) }
+        do {
+            try reconcileAudioCategory()
+        } catch {
+            owsFailDebug("error in ensureAudioState: \(error)")
+        }
+    }
+
+    @objc
+    func proximitySensorStateDidChange(notification: Notification) {
+        ensureAudioState()
+    }
+
+    private func reconcileAudioCategory() throws {
         if aggregateBehaviors.contains(.audioMessagePlayback) {
             self.proximityMonitoringManager.add(lifetime: self)
         } else {
@@ -105,44 +121,36 @@ public class OWSAudioSession: NSObject {
             // Eventually it would be nice to consolidate more of the audio
             // session handling.
         } else if aggregateBehaviors.contains(.playAndRecord) {
-            assert(avAudioSession.recordPermission() == .granted)
-            try avAudioSession.setCategory(AVAudioSessionCategoryRecord)
+            assert(avAudioSession.recordPermission == .granted)
+            try avAudioSession.setCategory(.record)
         } else if aggregateBehaviors.contains(.audioMessagePlayback) {
             if self.device.proximityState {
                 Logger.debug("proximityState: true")
 
-                try avAudioSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
+                try avAudioSession.setCategory(.playAndRecord)
                 try avAudioSession.overrideOutputAudioPort(.none)
             } else {
                 Logger.debug("proximityState: false")
-                try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
+                try avAudioSession.setCategory(.playback)
             }
         } else if aggregateBehaviors.contains(.playback) {
-            try avAudioSession.setCategory(AVAudioSessionCategoryPlayback)
+            try avAudioSession.setCategory(.playback)
         } else {
-            ensureAudioSessionActivationStateAfterDelay()
+            if avAudioSession.category != AVAudioSession.Category.soloAmbient {
+                Logger.debug("reverting to default audio category: soloAmbient")
+                try avAudioSession.setCategory(.soloAmbient)
+            }
+
+            ensureAudioSessionActivationState()
         }
     }
 
-    @objc
-    func proximitySensorStateDidChange(notification: Notification) {
-        do {
-            try ensureAudioCategory()
-        } catch {
-            owsFailDebug("error in response to proximity change: \(error)")
+    func ensureAudioSessionActivationState(remainingRetries: UInt = 3) {
+        guard remainingRetries > 0 else {
+            owsFailDebug("ensureAudioSessionActivationState has no remaining retries")
+            return
         }
-    }
 
-    fileprivate func ensureAudioSessionActivationStateAfterDelay() {
-        // Without this delay, we sometimes error when deactivating the audio session with:
-        //     Error Domain=NSOSStatusErrorDomain Code=560030580 “The operation couldn’t be completed. (OSStatus error 560030580.)”
-        // aka "AVAudioSessionErrorCodeIsBusy"
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
-            self.ensureAudioSessionActivationState()
-        }
-    }
-
-    private func ensureAudioSessionActivationState() {
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
 
@@ -168,9 +176,21 @@ public class OWSAudioSession: NSObject {
         do {
             // When playing audio in Signal, other apps audio (e.g. Music) is paused.
             // By notifying when we deactivate, the other app can resume playback.
-            try avAudioSession.setActive(false, with: [.notifyOthersOnDeactivation])
-        } catch {
-            owsFailDebug("failed with error: \(error)")
+            try avAudioSession.setActive(false, options: [.notifyOthersOnDeactivation])
+        } catch let error as NSError {
+            if error.code == AVAudioSession.ErrorCode.isBusy.rawValue {
+                // Occasionally when trying to deactivate the audio session, we get a "busy" error.
+                // In that case we should retry after a delay.
+                //
+                // Error Domain=NSOSStatusErrorDomain Code=560030580 “The operation couldn’t be completed. (OSStatus error 560030580.)”
+                // aka "AVAudioSessionErrorCodeIsBusy"
+                DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) {
+                    self.ensureAudioSessionActivationState(remainingRetries: remainingRetries - 1)
+                }
+                return
+            } else {
+                owsFailDebug("failed with error: \(error)")
+            }
         }
     }
 

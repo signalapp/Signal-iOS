@@ -75,5 +75,7 @@ third-party contributors since Apple's Push Notification service pushes
 will only work with Open Whisper Systems production code signing
 certificate.
 
+Turn on Push Notifications on the Capabilities tab if you want to register a new Signal account using the application installed via XCode.
+
 If you have any other issues, please ask on the [community forum](https://whispersystems.discoursehosting.net/).
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -110,7 +110,7 @@ public class MediaUploadView: UIView {
         bezierPath2.append(UIBezierPath(ovalIn: outerCircleBounds))
         shapeLayer2.path = bezierPath2.cgPath
         shapeLayer2.fillColor = UIColor(white: 1.0, alpha: 0.4).cgColor
-        shapeLayer2.fillRule = kCAFillRuleEvenOdd
+        shapeLayer2.fillRule = .evenOdd
 
         CATransaction.commit()
     }

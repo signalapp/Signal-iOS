@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIFont+OWS.h"
+#import <SignalCoreKit/iOSVersions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,6 +32,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIFont *)ows_boldFontWithSize:(CGFloat)size
 {
     return [UIFont boldSystemFontOfSize:size];
+}
+
++ (UIFont *)ows_monospacedDigitFontWithSize:(CGFloat)size
+{
+    return [self monospacedDigitSystemFontOfSize:size weight:UIFontWeightRegular];
 }
 
 #pragma mark - Icon Fonts
@@ -97,6 +103,99 @@ NS_ASSUME_NONNULL_BEGIN
     return [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
 }
 
+#pragma mark - Dynamic Type Clamped
+
++ (UIFont *)preferredFontForTextStyleClamped:(UIFontTextStyle)fontTextStyle
+{
+    // We clamp the dynamic type sizes at the max size available
+    // without "larger accessibility sizes" enabled.
+    static NSDictionary<UIFontTextStyle, NSNumber *> *maxPointSizeMap = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSMutableDictionary<UIFontTextStyle, NSNumber *> *map = [@{
+            UIFontTextStyleTitle1 : @(34.0),
+            UIFontTextStyleTitle2 : @(28.0),
+            UIFontTextStyleTitle3 : @(26.0),
+            UIFontTextStyleHeadline : @(23.0),
+            UIFontTextStyleBody : @(23.0),
+            UIFontTextStyleSubheadline : @(21.0),
+            UIFontTextStyleFootnote : @(19.0),
+            UIFontTextStyleCaption1 : @(18.0),
+            UIFontTextStyleCaption2 : @(17.0),
+        } mutableCopy];
+        if (@available(iOS 11.0, *)) {
+            map[UIFontTextStyleLargeTitle] = @(40.0);
+        }
+        maxPointSizeMap = map;
+    });
+
+    UIFont *font = [UIFont preferredFontForTextStyle:fontTextStyle];
+    NSNumber *_Nullable maxPointSize = maxPointSizeMap[fontTextStyle];
+    if (maxPointSize) {
+        if (maxPointSize.floatValue < font.pointSize) {
+            return [font fontWithSize:maxPointSize.floatValue];
+        }
+    } else {
+        OWSFailDebug(@"Missing max point size for style: %@", fontTextStyle);
+    }
+
+    return font;
+}
+
++ (UIFont *)ows_dynamicTypeLargeTitle1ClampedFont
+{
+    if (@available(iOS 11.0, *)) {
+        return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleLargeTitle];
+    } else {
+        return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleTitle1];
+    }
+}
+
++ (UIFont *)ows_dynamicTypeTitle1ClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleTitle1];
+}
+
++ (UIFont *)ows_dynamicTypeTitle2ClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleTitle2];
+}
+
++ (UIFont *)ows_dynamicTypeTitle3ClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleTitle3];
+}
+
++ (UIFont *)ows_dynamicTypeHeadlineClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleHeadline];
+}
+
++ (UIFont *)ows_dynamicTypeBodyClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleBody];
+}
+
++ (UIFont *)ows_dynamicTypeSubheadlineClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleSubheadline];
+}
+
++ (UIFont *)ows_dynamicTypeFootnoteClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleFootnote];
+}
+
++ (UIFont *)ows_dynamicTypeCaption1ClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleCaption1];
+}
+
++ (UIFont *)ows_dynamicTypeCaption2ClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleCaption2];
+}
+
 #pragma mark - Styles
 
 - (UIFont *)ows_italic
@@ -129,6 +228,12 @@ NS_ASSUME_NONNULL_BEGIN
     UIFont *derivedFont = [UIFont systemFontOfSize:self.pointSize weight:UIFontWeightMedium];
     return derivedFont;
 }
+
+- (UIFont *)ows_monospaced
+{
+    return [self.class ows_monospacedDigitFontWithSize:self.pointSize];
+}
+
 
 @end
 

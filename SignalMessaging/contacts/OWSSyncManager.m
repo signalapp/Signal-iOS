@@ -88,7 +88,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     return SSKEnvironment.shared.messageSender;
 }
 
-- (SSKMessageSenderJobQueue *)messageSenderJobQueue
+- (MessageSenderJobQueue *)messageSenderJobQueue
 {
     OWSAssertDebug(SSKEnvironment.shared.messageSenderJobQueue);
 
@@ -225,7 +225,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             return;
         }
 
-        [self sendConfigurationSyncMessage_AppReady];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self sendConfigurationSyncMessage_AppReady];
+        });
     }];
 }
 
@@ -239,16 +241,17 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     BOOL areReadReceiptsEnabled = SSKEnvironment.shared.readReceiptManager.areReadReceiptsEnabled;
     BOOL showUnidentifiedDeliveryIndicators = Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators;
     BOOL showTypingIndicators = self.typingIndicators.areTypingIndicatorsEnabled;
-    BOOL sendLinkPreviews = SSKPreferences.areLinkPreviewsEnabled;
-
-    OWSSyncConfigurationMessage *syncConfigurationMessage =
-        [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled
-                                      showUnidentifiedDeliveryIndicators:showUnidentifiedDeliveryIndicators
-                                                    showTypingIndicators:showTypingIndicators
-                                                        sendLinkPreviews:sendLinkPreviews];
 
     [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction];
+        BOOL sendLinkPreviews = [SSKPreferences areLinkPreviewsEnabledWithTransaction:transaction.asAnyRead];
+
+        OWSSyncConfigurationMessage *syncConfigurationMessage =
+            [[OWSSyncConfigurationMessage alloc] initWithReadReceiptsEnabled:areReadReceiptsEnabled
+                                          showUnidentifiedDeliveryIndicators:showUnidentifiedDeliveryIndicators
+                                                        showTypingIndicators:showTypingIndicators
+                                                            sendLinkPreviews:sendLinkPreviews];
+
+        [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction.asAnyWrite];
     }];
 }
 

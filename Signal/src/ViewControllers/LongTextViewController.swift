@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,15 +7,36 @@ import SignalServiceKit
 import SignalMessaging
 
 @objc
+public protocol LongTextViewDelegate {
+    @objc
+    func longTextViewMessageWasDeleted(_ longTextViewController: LongTextViewController)
+}
+
+@objc
 public class LongTextViewController: OWSViewController {
 
-    // MARK: Properties
+    // MARK: - Dependencies
+
+    var uiDatabaseConnection: YapDatabaseConnection {
+        return OWSPrimaryStorage.shared().uiDatabaseConnection
+    }
+
+    // MARK: - Properties
+
+    @objc
+    weak var delegate: LongTextViewDelegate?
 
     let viewItem: ConversationViewItem
 
-    let messageBody: String
-
     var messageTextView: UITextView!
+
+    var displayableText: DisplayableText? {
+        return viewItem.displayableBodyText
+    }
+
+    var fullText: String {
+        return displayableText?.fullText ?? ""
+    }
 
     // MARK: Initializers
 
@@ -27,21 +48,7 @@ public class LongTextViewController: OWSViewController {
     @objc
     public required init(viewItem: ConversationViewItem) {
         self.viewItem = viewItem
-
-        self.messageBody = LongTextViewController.displayableText(viewItem: viewItem)
-
         super.init(nibName: nil, bundle: nil)
-    }
-
-    private class func displayableText(viewItem: ConversationViewItem) -> String {
-        guard viewItem.hasBodyText else {
-            return ""
-        }
-        guard let displayableText = viewItem.displayableBodyText else {
-            return ""
-        }
-        let messageBody = displayableText.fullText
-        return messageBody
     }
 
     // MARK: View Lifecycle
@@ -55,6 +62,54 @@ public class LongTextViewController: OWSViewController {
         createViews()
 
         self.messageTextView.contentOffset = CGPoint(x: 0, y: self.messageTextView.contentInset.top)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(uiDatabaseDidUpdate),
+                                               name: .OWSUIDatabaseConnectionDidUpdate,
+                                               object: OWSPrimaryStorage.shared().dbNotificationObject)
+    }
+
+    // MARK: - DB
+
+    @objc internal func uiDatabaseDidUpdate(notification: NSNotification) {
+        AssertIsOnMainThread()
+
+        guard let notifications = notification.userInfo?[OWSUIDatabaseConnectionNotificationsKey] as? [Notification] else {
+            owsFailDebug("notifications was unexpectedly nil")
+            return
+        }
+
+        guard let uniqueId = self.viewItem.interaction.uniqueId else {
+            Logger.error("Message is missing uniqueId.")
+            return
+        }
+
+        guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
+                                                  inCollection: TSInteraction.collection(),
+                                                  in: notifications) else {
+                                                    Logger.debug("No relevant changes.")
+                                                    return
+        }
+
+        do {
+            try uiDatabaseConnection.read { transaction in
+                guard TSInteraction.fetch(uniqueId: uniqueId, transaction: transaction) != nil else {
+                    Logger.error("Message was deleted")
+                    throw LongTextViewError.messageWasDeleted
+                }
+            }
+        } catch LongTextViewError.messageWasDeleted {
+            DispatchQueue.main.async {
+                self.delegate?.longTextViewMessageWasDeleted(self)
+            }
+        } catch {
+            owsFailDebug("unexpected error: \(error)")
+
+        }
+    }
+
+    enum LongTextViewError: Error {
+        case messageWasDeleted
     }
 
     // MARK: - Create Views
@@ -74,24 +129,26 @@ public class LongTextViewController: OWSViewController {
         messageTextView.showsVerticalScrollIndicator = true
         messageTextView.isUserInteractionEnabled = true
         messageTextView.textColor = Theme.primaryColor
-        messageTextView.dataDetectorTypes = kOWSAllowedDataDetectorTypes
-        messageTextView.text = messageBody
+        if let displayableText = displayableText {
+            messageTextView.text = fullText
+            messageTextView.ensureShouldLinkifyText(displayableText.shouldAllowLinkification)
+        } else {
+            owsFailDebug("displayableText was unexpectedly nil")
+            messageTextView.text = ""
+        }
 
-        // RADAR #18669
-        // https://github.com/lionheart/openradar-mirror/issues/18669
-        //
-        // UITextView’s linkTextAttributes property has type [String : Any]! but should be [NSAttributedStringKey : Any]! in Swift 4.
-        let linkTextAttributes: [String: Any] = [
-            NSAttributedStringKey.foregroundColor.rawValue: Theme.primaryColor,
-            NSAttributedStringKey.underlineColor.rawValue: Theme.primaryColor,
-            NSAttributedStringKey.underlineStyle.rawValue: NSUnderlineStyle.styleSingle.rawValue
+        let linkTextAttributes: [NSAttributedString.Key: Any] = [
+            NSAttributedString.Key.foregroundColor: Theme.primaryColor,
+            NSAttributedString.Key.underlineColor: Theme.primaryColor,
+            NSAttributedString.Key.underlineStyle: NSUnderlineStyle.single.rawValue
         ]
         messageTextView.linkTextAttributes = linkTextAttributes
 
         view.addSubview(messageTextView)
         messageTextView.autoPinEdge(toSuperviewEdge: .top)
-        messageTextView.autoPinEdge(toSuperviewMargin: .leading)
-        messageTextView.autoPinEdge(toSuperviewMargin: .trailing)
+        messageTextView.autoPinEdge(toSuperviewEdge: .leading)
+        messageTextView.autoPinEdge(toSuperviewEdge: .trailing)
+        messageTextView.textContainerInset = UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
 
         let footer = UIToolbar()
         view.addSubview(footer)
@@ -109,6 +166,6 @@ public class LongTextViewController: OWSViewController {
     // MARK: - Actions
 
     @objc func shareButtonPressed() {
-        AttachmentSharing.showShareUI(forText: messageBody)
+        AttachmentSharing.showShareUI(forText: fullText)
     }
 }

@@ -40,7 +40,7 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
 
         updateContents()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChange), name: .UIContentSizeCategoryDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
     }
 
     private let draftMarginTop: CGFloat = 6

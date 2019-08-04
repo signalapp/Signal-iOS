@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIViewController+Permissions.h"
@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                               }];
         [alert addAction:dismissAction];
 
-        [self presentViewController:alert animated:YES completion:nil];
+        [self presentAlert:alert];
     } else if (status == AVAuthorizationStatusAuthorized) {
         callback(YES);
     } else if (status == AVAuthorizationStatusNotDetermined) {
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   }];
             [alert addAction:dismissAction];
 
-            [self presentViewController:alert animated:YES completion:nil];
+            [self presentAlert:alert];
         });
     };
 

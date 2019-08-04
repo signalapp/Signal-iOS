@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SignalCoreKit
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -360,13 +361,16 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
 
     // MARK: - WebSocketProtoWebSocketMessageBuilder
 
-    @objc public class func builder(type: WebSocketProtoWebSocketMessageType) -> WebSocketProtoWebSocketMessageBuilder {
-        return WebSocketProtoWebSocketMessageBuilder(type: type)
+    @objc public class func builder() -> WebSocketProtoWebSocketMessageBuilder {
+        return WebSocketProtoWebSocketMessageBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> WebSocketProtoWebSocketMessageBuilder {
-        let builder = WebSocketProtoWebSocketMessageBuilder(type: type)
+        let builder = WebSocketProtoWebSocketMessageBuilder()
+        if let _value = type {
+            builder.setType(_value)
+        }
         if let _value = request {
             builder.setRequest(_value)
         }
@@ -381,12 +385,6 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         private var proto = WebSocketProtos_WebSocketMessage()
 
         @objc fileprivate override init() {}
-
-        @objc fileprivate init(type: WebSocketProtoWebSocketMessageType) {
-            super.init()
-
-            setType(type)
-        }
 
         @objc public func setType(_ valueParam: WebSocketProtoWebSocketMessageType) {
             proto.type = WebSocketProtoWebSocketMessageTypeUnwrap(valueParam)
@@ -411,18 +409,32 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
 
     fileprivate let proto: WebSocketProtos_WebSocketMessage
 
-    @objc public let type: WebSocketProtoWebSocketMessageType
-
     @objc public let request: WebSocketProtoWebSocketRequestMessage?
 
     @objc public let response: WebSocketProtoWebSocketResponseMessage?
 
+    public var type: WebSocketProtoWebSocketMessageType? {
+        guard proto.hasType else {
+            return nil
+        }
+        return WebSocketProtoWebSocketMessage.WebSocketProtoWebSocketMessageTypeWrap(proto.type)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc public var unwrappedType: WebSocketProtoWebSocketMessageType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: WebSocketMessage.type.")
+        }
+        return WebSocketProtoWebSocketMessage.WebSocketProtoWebSocketMessageTypeWrap(proto.type)
+    }
+    @objc public var hasType: Bool {
+        return proto.hasType
+    }
+
     private init(proto: WebSocketProtos_WebSocketMessage,
-                 type: WebSocketProtoWebSocketMessageType,
                  request: WebSocketProtoWebSocketRequestMessage?,
                  response: WebSocketProtoWebSocketResponseMessage?) {
         self.proto = proto
-        self.type = type
         self.request = request
         self.response = response
     }
@@ -438,11 +450,6 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
     }
 
     fileprivate class func parseProto(_ proto: WebSocketProtos_WebSocketMessage) throws -> WebSocketProtoWebSocketMessage {
-        guard proto.hasType else {
-            throw WebSocketProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
-        }
-        let type = WebSocketProtoWebSocketMessageTypeWrap(proto.type)
-
         var request: WebSocketProtoWebSocketRequestMessage? = nil
         if proto.hasRequest {
             request = try WebSocketProtoWebSocketRequestMessage.parseProto(proto.request)
@@ -458,7 +465,6 @@ extension WebSocketProtoWebSocketResponseMessage.WebSocketProtoWebSocketResponse
         // MARK: - End Validation Logic for WebSocketProtoWebSocketMessage -
 
         let result = WebSocketProtoWebSocketMessage(proto: proto,
-                                                    type: type,
                                                     request: request,
                                                     response: response)
         return result

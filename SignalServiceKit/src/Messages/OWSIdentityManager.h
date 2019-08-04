@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecipientIdentity.h"
@@ -23,29 +23,33 @@ extern const NSUInteger kStoredIdentityKeyLength;
 #endif
 
 @class OWSRecipientIdentity;
-@class OWSStorage;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+@class SDSDatabaseStorage;
 @class SSKProtoVerified;
-@class YapDatabaseReadWriteTransaction;
 
 // This class can be safely accessed and used from any thread.
 @interface OWSIdentityManager : NSObject <IdentityKeyStore>
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage;
 
 + (instancetype)sharedManager;
 
 - (void)generateNewIdentityKey;
 
+- (nullable ECKeyPair *)identityKeyPairWithTransaction:(SDSAnyReadTransaction *)transaction;
+
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
                  recipientId:(NSString *)recipientId
        isUserInitiatedChange:(BOOL)isUserInitiatedChange
-                 transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                 transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId;
 - (OWSVerificationState)verificationStateForRecipientId:(NSString *)recipientId
-                                            transaction:(YapDatabaseReadTransaction *)transaction;
+                                            transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
                  identityKey:(NSData *)identityKey
@@ -63,9 +67,20 @@ extern const NSUInteger kStoredIdentityKeyLength;
 
 // This method can be called from any thread.
 - (void)throws_processIncomingSyncMessage:(SSKProtoVerified *)verified
-                              transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                              transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)saveRemoteIdentity:(NSData *)identityKey recipientId:(NSString *)recipientId;
+
+- (BOOL)saveRemoteIdentity:(NSData *)identityKey
+               recipientId:(NSString *)recipientId
+               transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (BOOL)isTrustedIdentityKey:(NSData *)identityKey
+                 recipientId:(NSString *)recipientId
+                   direction:(TSMessageDirection)direction
+                 transaction:(SDSAnyReadTransaction *)transaction;
+
+- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId transaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - Debug
 
@@ -73,11 +88,34 @@ extern const NSUInteger kStoredIdentityKeyLength;
 
 #if DEBUG
 // Clears everything except the local identity key.
-- (void)clearIdentityState:(YapDatabaseReadWriteTransaction *)transaction;
-
-- (void)snapshotIdentityState:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)restoreIdentityState:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)clearIdentityState:(SDSAnyWriteTransaction *)transaction;
 #endif
+
+#pragma mark - Deprecated IdentityStore methods
+
+- (nullable ECKeyPair *)identityKeyPair:(nullable id<SPKProtocolWriteContext>)protocolContext
+    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
+
+- (int)localRegistrationId:(nullable id<SPKProtocolWriteContext>)protocolContext
+    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
+
+- (BOOL)saveRemoteIdentity:(NSData *)identityKey
+               recipientId:(NSString *)recipientId
+           protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
+    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
+
+- (BOOL)isTrustedIdentityKey:(NSData *)identityKey
+                 recipientId:(NSString *)recipientId
+                   direction:(TSMessageDirection)direction
+             protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
+    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
+
+- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
+    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
+
+- (nullable NSData *)identityKeyForRecipientId:(NSString *)recipientId
+                               protocolContext:(nullable id<SPKProtocolReadContext>)protocolContext
+    DEPRECATED_MSG_ATTRIBUTE("use the strongly typed `transaction:` flavor instead");
 
 @end
 

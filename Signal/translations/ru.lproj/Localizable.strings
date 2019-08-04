@@ -5,7 +5,7 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "Принять новый код безопасности";
 
 /* Label for 'audio call' button in contact view. */
-"ACTION_AUDIO_CALL" = "Вызов Signal";
+"ACTION_AUDIO_CALL" = "Звонок Signal";
 
 /* Label for 'invite' button in contact view. */
 "ACTION_INVITE" = "Пригласить в Signal";
@@ -18,7 +18,7 @@
 "ACTION_SHARE_CONTACT" = "Поделиться контактом";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Видеовызов";
+"ACTION_VIDEO_CALL" = "Видеозвонок";
 
 /* A label for the 'add by phone number' button in the 'add group member' view */
 "ADD_GROUP_MEMBER_VIEW_BUTTON" = "Добавить";
@@ -33,13 +33,13 @@
 "ADD_GROUP_MEMBER_VIEW_TITLE" = "Добавить участника";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Вы хотите поделиться Вашим профилем с данной группой?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Вы хотите поделиться своим профилем с этой группой?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "Вы хотите добавить этого пользователя в свои контакты?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Вы хотите поделиться Вашим профилем с данным пользователем?";
+"ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Вы хотите поделиться своим профилем с этим пользователем?";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Отклонить";
@@ -53,23 +53,14 @@
 /* The label for the 'save' button in action sheets. */
 "ALERT_SAVE" = "Сохранить";
 
-/* No comment provided by engineer. */
+/* notification action */
 "ANSWER_CALL_BUTTON_TITLE" = "Ответить";
 
-/* No comment provided by engineer. */
+/* notification body */
 "APN_Message" = "Новое сообщение!";
 
-/* No comment provided by engineer. */
-"APN_MESSAGE_FROM" = "Сообщение от";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP" = "Сообщение в группе";
-
-/* No comment provided by engineer. */
-"APN_MESSAGE_IN_GROUP_DETAILED" = "%@ в группе %@: %@";
-
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal не может запуститься. Пожалуйста, отправьте журналы отладки на support@signal.org, чтобы мы смогли исправить эту проблему.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal не может запуститься. Пожалуйста, отправьте журнал отладки на support@signal.org, чтобы мы смогли исправить эту проблему.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Ошибка";
@@ -99,19 +90,19 @@
 "ATTACHMENT" = "Вложение";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Достигнуто ограничение заголовка.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Достигнуто ограничение подписи.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Добавить заголовок...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Добавить подпись…";
+
+/* Title for 'caption' mode of the attachment approval view. */
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Подпись";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Тип файла: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Размер: %@";
-
-/* One-line label indicating the user can add no more text to the media message field. */
-"ATTACHMENT_APPROVAL_MESSAGE_LENGTH_LIMIT_REACHED" = "Достигнут предел сообщения.";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Отправить";
@@ -120,31 +111,25 @@
 "ATTACHMENT_DEFAULT_FILENAME" = "Вложение";
 
 /* Status label when an attachment download has failed. */
-"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Не удалось скачать. Нажмите, чтобы попробовать ещё раз.";
-
-/* Status label when an attachment is currently downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_IN_PROGRESS" = "Загрузка...";
-
-/* Status label when an attachment is enqueued, but hasn't yet started downloading */
-"ATTACHMENT_DOWNLOADING_STATUS_QUEUED" = "В очереди";
+"ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Не удалось скачать. Нажмите, чтобы попробовать еще раз.";
 
 /* The title of the 'attachment error' alert. */
 "ATTACHMENT_ERROR_ALERT_TITLE" = "Ошибка отправки вложения";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Невозможно конвертировать изображение.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Не удалось конвертировать изображение.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Невозможно обработать видео.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Не удалось обработать видео.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Невозможно распознать изображение.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Не удалось распознать изображение.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Не удается удалить метаданные из изображения.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Не удалось удалить метаданные из изображения.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Невозможно изменить размер изображения.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Не удалось изменить размер изображения.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
 "ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Вложение слишком большое.";
@@ -159,10 +144,10 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Вложение пустое.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Сделать новую фотографию или выбрать одну из существующих и отправить ее";
+"ATTACHMENT_HINT" = "Выберите или сделайте фотографию и затем отправьте ее";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Добавить вложение";
+"ATTACHMENT_LABEL" = "Вложение";
 
 /* attachment menu option to send contact */
 "ATTACHMENT_MENU_CONTACT_BUTTON" = "Контакт";
@@ -182,11 +167,11 @@
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Динамик";
 
-/* button text for back button */
+/* return to the previous screen */
 "BACK_BUTTON" = "Назад";
 
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Не удалось экспортировать резервную копию.";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Не удалось экспортировать данные резервной копии.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
 "BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Неверный ответ сервиса";
@@ -219,7 +204,7 @@
 "BACKUP_IMPORT_PHASE_FINALIZING" = "Завершение резервного копирования";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Импорт резервной копии";
+"BACKUP_IMPORT_PHASE_IMPORT" = "Импорт резервной копии.";
 
 /* Indicates that the backup database is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Восстановление базы данных";
@@ -240,16 +225,16 @@
 "BACKUP_RESTORE_STATUS" = "Статус";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Неожиданная ошибка резерной копии";
+"BACKUP_UNEXPECTED_ERROR" = "Неожиданная ошибка резервной копии";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Вы больше не будете получать сообщения и обновления из этой группы.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Вы больше не будете получать сообщения и обновления от этой группы.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Заблокировать";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Заблокировать и покинуть группу \"%@\"?";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Заблокировать и покинуть группу «%@»?";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
 "BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Заблокировать %@?";
@@ -291,19 +276,19 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Ошибка";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ был разблокирован.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ был(-a) разблокирован(-a).";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Теперь участники группы могут снова добавить вас в группу.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Теперь существующие участники могут снова добавить вас в группу.";
 
 /* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Блокировка";
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Заблокировать";
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Заблокировать %@?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Заблокированные пользователи не смогут звонить или отправлять сообщения Вам.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Заблокированные пользователи не смогут звонить вам или отправлять вам сообщения.";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Продолжить";
@@ -311,26 +296,32 @@
 /* Label for generic done button. */
 "BUTTON_DONE" = "Готово";
 
-/* Label for redo button. */
-"BUTTON_REDO" = "Вернуть";
+/* Label for the 'next' button. */
+"BUTTON_NEXT" = "Далее";
 
 /* Button text to enable batch selection mode */
-"BUTTON_SELECT" = "Выбор";
-
-/* Label for undo button. */
-"BUTTON_UNDO" = "Вернуть";
+"BUTTON_SELECT" = "Выбрать";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Вызвать снова";
+"CALL_AGAIN_BUTTON_TITLE" = "Позвонить снова";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Вы можете разрешить Signal использовать микрофон в приложении \"Настройки\", чтобы совершать звонки и записывать голосовые сообщения в Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Вы можете разрешить Signal использовать микрофон в приложении «Настройки», чтобы совершать звонки и записывать голосовые сообщения в Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Требуется доступ к микрофону";
 
+/* notification body */
+"CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Входящий звонок";
+
 /* Accessibility label for placing call button */
 "CALL_LABEL" = "Позвонить";
+
+/* notification body */
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Пропущенный звонок, так как код безопасности звонившего изменился.";
+
+/* notification body */
+"CALL_MISSED_NOTIFICATION_BODY" = "☎️ Пропущенный звонок";
 
 /* Call setup status label after outgoing call times out */
 "CALL_SCREEN_STATUS_NO_ANSWER" = "Нет ответа";
@@ -339,10 +330,10 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "Вызов";
+"CALL_USER_ALERT_CALL_BUTTON" = "Позвонить";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Хотите позвонить %@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Вы хотите позвонить %@?";
 
 /* Title for alert offering to call a user. */
 "CALL_USER_ALERT_TITLE" = "Позвонить?";
@@ -356,17 +347,20 @@
 /* Accessibility label for declining incoming calls */
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Отклонить входящий звонок";
 
+/* tooltip label when remote party has enabled their video */
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Нажмите здесь, чтобы включить свое видео";
+
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Завершить звонок";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Откл. микр.";
+"CALL_VIEW_MUTE_LABEL" = "Отключить микрофон";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Вы можете включить интеграцию звонков iOS в настройках приватности Signal, чтобы отвечать на звонки с заблокированного экрана.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Вы можете включить интеграцию звонков c iOS в своих настройках приватности Signal, чтобы отвечать на входящие звонки с вашего заблокированного экрана.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Вы можете включить интеграцию звонков iOS в настройках приватности Signal, чтобы видеть имя и номер телефона вызывающего контакта.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Вы можете включить интеграцию звонков с iOS в своих настройках приватности Signal, чтобы видеть имя и номер телефона для входящих звонков.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Не сейчас";
@@ -375,25 +369,31 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Показать настройки конфиденциальности";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Переключение направления камеры";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Переключение направление камеры";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Только аудио";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Переключиться на аудиозвонок";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Вкл. видео";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Переключиться на видеозвонок";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Нажмите, чтобы вернуться к вызову";
+"CALL_WINDOW_RETURN_TO_CALL" = "Нажмите, чтобы вернуться к звонку";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Перезвонить";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Абонент Signal";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Пользователь Signal";
+
+/* Accessibility hint describing what you can do with the camera button */
+"CAMERA_BUTTON_HINT" = "Сделайте фотографию и затем отправьте ее";
+
+/* Accessibility label for camera button. */
+"CAMERA_BUTTON_LABEL" = "Камера";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Этот пользователь не может быть проверен до тех пор, пока Вы не обменяетесь сообщениями с ним.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Этот пользователь не может быть подтвержден, пока вы не обменяетесь сообщениями с ним.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Ошибка";
@@ -405,7 +405,7 @@
 "CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Не восстанавливать";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Невозможно определить, есть ли резервная копия, которую можно восстановить.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Не удалось определить, есть ли резервная копия, которую можно восстановить.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Ошибка";
@@ -414,25 +414,25 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Восстановить";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal не смог определить состояние Вашего аккаунта iCloud. Войдите в свой аккаунт iCloud в настройках iOS для резервного копирования данных из Signal.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal не смог определить состояние вашего аккаунта iCloud. Войдите в свой аккаунт iCloud в приложении «Настройки» для резервного копирования данных Signal.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Отсутствует аккаунт iCloud. Войдите в Ваш аккаунт iCloud в настройках iOS для резервного копирования данных из Signal.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Отсутствует аккаунт iCloud. Войдите в свой аккаунт iCloud в приложении «Настройки» для резервного копирования данных Signal.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Отказ доступа к Вашему аккаунту iCloud для резерного копирования. Разрешите Signal доступ к аккаунту iCloud в настройках iOS для резерного копирования данных из Signal.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Доступ к вашему аккаунту iCloud для резервного копирования был запрещен. Разрешите Signal доступ к своему аккаунту iCloud в приложении «Настройки» для резервного копирования данных Signal.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Выберите цвет исходящих сообщений для этого разговора.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Только вы увидите цвет, который выберете.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Только вы увидите цвет, который вы выберете.";
 
 /* Modal Sheet title when picking a conversation color. */
 "COLOR_PICKER_SHEET_TITLE" = "Цвет разговора";
 
 /* Activity Sheet label */
-"COMPARE_SAFETY_NUMBER_ACTION" = "Сравнить с буфером";
+"COMPARE_SAFETY_NUMBER_ACTION" = "Сравнить с буфером обмена";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Контакты";
@@ -444,28 +444,28 @@
 "COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Пригласить";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Вы можете разрешить доступ к контактам в Настройках, чтобы видеть какие из ваших контактов используют Signal.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Вы можете разрешить доступ к контактам в приложении «Настройки», чтобы видеть, какие из ваших контактов являются пользователями Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ваши переписки будут удалены, а регистрация на сервере будет прекращена. После завершения процесса приложение перезапустится.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Это действие сбросит приложение, удалив ваши сообщения и отменив регистрацию на сервере. Приложение закроется после завершения этого процесса.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Вы действительно хотите удалить свою учетную запись?";
 
 /* Alert body */
-"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Вы больше не сможете отправлять и получать сообщения в этой группе.";
+"CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Вы больше не сможете отправлять или получать сообщения в этой группе.";
 
 /* Alert title */
-"CONFIRM_LEAVE_GROUP_TITLE" = "Вы хотите покинуть группу?";
+"CONFIRM_LEAVE_GROUP_TITLE" = "Вы действительно хотите покинуть?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Привязать устройство";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Привязать новое устройство";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ мог переустановить Signal или сменить устройство. Сверьте ваши коды безопасности для того, чтобы убедиться в конфиденциальности общения.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ мог(-ла) переустановить Signal или сменить устройство. Подтвердите ваш код безопасности с ними для того, чтобы убедиться в конфиденциальности.";
 
 /* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Код безопасности %@ сменился";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Код безопасности с %@ изменился";
 
 /* Generic button text to proceed with an action */
 "CONFIRMATION_TITLE" = "Подтвердите";
@@ -477,7 +477,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Заблокирован";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Не проверен";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Не подтвержден";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Незарегистрированный номер";
@@ -537,7 +537,7 @@
 "CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Нет номера телефона.";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Выбрать контакт";
+"CONTACT_PICKER_TITLE" = "Выберите контакт";
 
 /* Title for the 'Approve contact share' view. */
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Поделиться контактом";
@@ -549,7 +549,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Недопустимый контакт.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Поля контакта не выбраны.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Ни одно из полей контакта не выбрано.";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Открыть в Картах";
@@ -566,8 +566,17 @@
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Удалить разговор?";
 
+/* keyboard toolbar label when no messages match the search string */
+"CONVERSATION_SEARCH_NO_RESULTS" = "Нет совпадений";
+
+/* keyboard toolbar label when exactly 1 message matches the search string */
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 совпадение";
+
+/* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d из %d совпадений";
+
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Настройки разговоров";
+"CONVERSATION_SETTINGS" = "Настройки разговора";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Добавить в существующий контакт";
@@ -576,7 +585,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Заблокировать эту группу";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Блокировать этого пользователя";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Заблокировать этого пользователя";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Информация о контакте";
@@ -609,13 +618,16 @@
 "CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Беззвучный режим на 1 неделю";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Беззвучный режим на год";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Беззвучный режим на 1 год";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "до %@";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "Создать новый контакт";
+
+/* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
+"CONVERSATION_SETTINGS_SEARCH" = "Искать в разговоре";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Нажмите, чтобы изменить";
@@ -624,31 +636,31 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Включить звук";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Данная группа может просматривать Ваш профиль.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Эта группа может видеть ваш профиль.";
 
 /* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Данный пользователь может просматривать Ваш профиль.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Этот пользователь может видеть ваш профиль.";
 
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Поделиться профилем";
 
 /* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Поделиться Вашим профилем";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Поделиться своим профилем";
 
 /* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Поделиться Вашим профилем";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Поделиться своим профилем";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Добавить в контакты";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Поделиться вашим профилем с этим пользователем";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Поделиться своим профилем с этим пользователем";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Этот пользователь отсутствует в списке контактов.";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Этого пользователя нет в ваших контактах.";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Загружаем больше сообщений...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Загружаем больше сообщений…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Показать полностью";
@@ -657,7 +669,7 @@
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Блокировать этого пользователя";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Перезапуск рабочей сессии исправит получение сообщений от пользователя %@ в дальнейшем, но не обеспечит доступ к уже скомпрометированным сообщениям.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Сброс вашей сессии позволит вам получать будущие сообщения от %@, но он не восстановит уже поврежденные сообщения.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Выберите код страны";
@@ -666,7 +678,7 @@
 "CREATE_NEW_GROUP" = "Создать новую группу";
 
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Перемещение и масштабирование";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Переместить и масштабировать";
 
 /* Subtitle shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Это может занять несколько минут.";
@@ -699,10 +711,10 @@
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Не удалось загрузить журналы.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "Что вы хотите сделать со ссылкой на журнал отладки?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Что вы хотите сделать со ссылкой на свой журнал отладки?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Не удалось найти журналы.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Не удалось найти никаких журналов.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Открыть отчет об ошибке";
@@ -711,7 +723,7 @@
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Копировать ссылку";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Поддержка по электронной почте";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Отправить эл. письмо в поддержку";
 
 /* Label for the 'send to last thread' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Отправить в последнюю тему";
@@ -727,10 +739,10 @@
 "DEBUG_LOG_ALERT_TITLE" = "Еще один шаг";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Невозможно открыть приложение электронной почты.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Не удалось открыть приложение электронной почты.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Ссылка была скопирована в буфер обмена. Вы перенаправлены в список проблем нашего репозитория GitHub.";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "Ссылка была скопирована в ваш буфер обмена. Вы будете перенаправлены в список проблем на GitHub.";
 
 /* Title of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Перенаправление на GitHub";
@@ -748,37 +760,37 @@
 "DEVICE_LINKED_AT_LABEL" = "Привязано: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Ошибка обновления списка устройств.";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Не удалось обновить список устройств.";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Исчезающие сообщения";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear, see the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Сообщения в этой беседе исчезнут после %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Сообщения в этом разговоре будут исчезать через %@.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "При включении этой настройки сообщения, отправленные и полученные в этом разговоре, будут исчезать после прочтения.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "В настоящее время сообщения удаляются после %@";
+"DISAPPEARING_MESSAGES_HINT" = "В настоящее время сообщения исчезают через %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Настройка автоматического удаления сообщений";
+"DISAPPEARING_MESSAGES_LABEL" = "Настройки исчезающих сообщений";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Закрыть";
 
 /* Section title for the 'domain fronting country' view. */
-"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Место обхода цензуры";
+"DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Местоположение обхода цензуры";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Вы можете предоставить доступ к контактам в Настройках.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Вы можете предоставить доступ в приложении «Настройки».";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal требуется доступ к контактам для редактирования информации у контактов.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal требуется доступ к контактам для редактирования информации контактов.";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Изменить группу";
+"EDIT_GROUP_ACTION" = "Редактировать группу";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Контакты";
@@ -787,7 +799,7 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Редактировать группу";
 
 /* Label for the cell that lets you add a new member to a group. */
-"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Добавить...";
+"EDIT_GROUP_MEMBERS_ADD_MEMBER" = "Добавить…";
 
 /* a title for the members section of the 'new/update group' view. */
 "EDIT_GROUP_MEMBERS_SECTION_TITLE" = "Участники";
@@ -799,49 +811,31 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Обновить";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Сохранить изменения, сделанные Вами в этой группе?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Хотите ли вы сохранить изменения, сделанные вами в этой группе?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Несохраненные изменения";
 
 /* Short name for edit menu item to copy contents of media message. */
-"EDIT_ITEM_COPY_ACTION" = "Скопировать";
+"EDIT_ITEM_COPY_ACTION" = "Копировать";
 
 /* No comment provided by engineer. */
 "EDIT_TXT" = "Редактировать";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Привет!\n\nЯ использую Signal на айфоне для сохранения приватности моих сообщений. Если ты его установишь, доступ к нашей переписке и звонкам будет только у нас.\n\nSignal разрабатывается для айфонов и андроид-устройств. Ссылка для скачивания: %@\n\nSignal, как и другие приложения для переписки, поддерживает отправку картинок и видео, звонки и групповые чаты. Важное отличие – все это будет видно только собеседникам, даже создатели Signal не могут получить доступ к этой информации!\n\nПодробнее о людях из Open Whisper Systems, создающих Signal, тут: %@";
+"EMAIL_INVITE_BODY" = "Привет!\n\nВ последнее время я использую Signal, чтобы сохранять переписки на моем iPhone конфиденциальными. Я хочу, чтобы это приложение было установлено и у тебя, чтобы мы могли быть уверены, что только ты и я можем читать наши сообщения или слышать наши звонки.\n\nSignal доступен для iPhone и Android. Скачай его здесь: %@\n\nSignal работает так же, как твое приложение для переписки. Мы можем отправлять картинки и видео, делать звонки, и создавать групповые чаты. Лучшая часть - это то, что никто, кроме нас, не может видеть ничего из этого, даже люди, который делают Signal!\n\nПодробнее об Open Whisper Systems, людях, делающих Signal, тут: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
-"EMAIL_INVITE_SUBJECT" = "Переходи на Signal!";
-
-/* Body text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TEXT" = "Вы можете архивировать неактивные разговоры в ваших Входящих.";
-
-/* Header text an existing user sees when viewing an empty archive */
-"EMPTY_ARCHIVE_TITLE" = "Очистить ваш список разговоров";
+"EMAIL_INVITE_SUBJECT" = "Давай перейдем на Signal";
 
 /* Full width label displayed when attempting to compose message */
-"EMPTY_CONTACTS_LABEL_LINE1" = "Ни у кого из ваших контактов не установлен Signal.";
+"EMPTY_CONTACTS_LABEL_LINE1" = "Ни у кого из ваших контактов нет Signal.";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Почему бы вам не пригласить кого-нибудь?";
 
-/* Body text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TEXT" = "Нажмите на кнопку создания";
-
-/* Header text a new user sees when viewing an empty inbox */
-"EMPTY_INBOX_NEW_USER_TITLE" = "Начните свой первый разговор в Signal!";
-
-/* Body text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TEXT" = "Пусто. Ноль. Нетуньки.";
-
-/* Header text an existing user sees when viewing an empty inbox */
-"EMPTY_INBOX_TITLE" = "Сообщений нет";
-
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Подтвердите PIN-код.";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Подтвердите свой PIN-код.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Не удалось отключить блокировку регистрации.";
@@ -862,13 +856,13 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN-код не совпадает.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Введите PIN-код блокировки регистрации. Вам будет предложено ввести этот PIN-код в следующий раз, когда вы будете повторно регистрировать этот телефонный номер в Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Введите PIN-код блокировки регистрации. Вам будет предложено ввести этот PIN-код в следующий раз, когда вы будете регистрировать этот номер в Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
 "ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Для повышения безопасности включите PIN-код блокировки регистрации, который будет необходим для того, чтобы зарегистрировать этот телефонный номер в Signal повторно.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Блокировка регистрации включена. Вам нужно будет ввести PIN-код при повторной регистрации вашего номера телефона в Signal.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Блокировка регистрации включена. Вам нужно будет ввести свой PIN-код при повторной регистрации вашего номера телефона в Signal.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Блокировка регистрации";
@@ -883,46 +877,49 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Не удалось получить доступ к контактам.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Ошибка отправки сообщения.";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Не удалось отправить сообщение.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Невозможно отправить в связи с неактуальными данными о ключах.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Не удалось отправить в связи с неактуальными данными о предварительных ключах.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Не удалось отправить сообщение пользователю, так как Вы заблокировали его.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Не удалось отправить сообщение пользователю, так как вы заблокировали его.";
 
 /* Error message indicating that message send failed due to failed attachment write */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Ошибка записи и отправки вложения.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_FAILED_ATTACHMENT_WRITE" = "Не удалось записать и отправить вложение.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal не смог подключиться к Интернету. Пожалуйста, попробуйте позже.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal не смог подключиться к интернету. Пожалуйста, попробуйте позже.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Ошибка отправки сообщения из-за отсутствия действующих получателей.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Отправка сообщения не удалась из-за отсутствия действительных получателей.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Сбой сетевого запроса.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Ошибка сетевого запроса.";
 
 /* Error indicating that a socket request timed out. */
 "ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Время ожидания сетевого запроса истекло.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Неверный ответ от службы.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Неверный ответ от сервиса.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Это устройство больше не зарегистрировано с вашим номером телефона. Пожалуйста, переустановите Signal.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Ошибка работы сервера. Пожалуйста, повторите действие позднее.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Ошибка сервера. Пожалуйста, повторите попытку позднее.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Неизвестная ошибка.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Произошла неизвестная ошибка.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Получатель не использует Signal.";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Получатель не является пользователем Signal.";
+
+/* Error message indicating that attachment download(s) failed. */
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Не удалось скачать вложение.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Ошибка приёма вложения. Попросите этот контакт отправить сообщение снова после обновления Signal до последней версии.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Ошибка вложения: Попросите этот контакт отправить их сообщение снова после обновления до последней версии Signal.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Получен дубликат сообщения.";
@@ -931,25 +928,28 @@
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Ключ получателя недействителен.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Полученное сообщение не синхронизировано.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Полученное сообщение было не синхронизировано.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Получено сообщение несовместимое с этой версией приложения.";
+"ERROR_MESSAGE_INVALID_VERSION" = "Получено сообщение, несовместимое с этой версией.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "Нет доступных сеансов связи для контакта.";
+"ERROR_MESSAGE_NO_SESSION" = "Нет доступных сессий для контакта.";
 
 /* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Код безопасности изменился.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Ваши коды безопасности с %@ изменились.";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Ваш код безопасности с %@ изменился.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "Неизвестная ошибка.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Произошла неизвестная ошибка.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Код безопасности изменился";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Код безопасности изменился.";
+
+/* Error indicating a send failure due to an expired application. */
+"ERROR_SENDING_EXPIRED" = "Ваша версия Signal устарела. Пожалуйста, обновитесь, чтобы продолжить обмен сообщениями.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Незарегистрированный пользователь: %@";
@@ -957,47 +957,59 @@
 /* Button to dismiss/ignore the one time splash screen that appears after upgrading */
 "EXPERIENCE_UPGRADE_DISMISS_BUTTON" = "Не сейчас";
 
+/* Button to dismiss/ignore the one time splash screen that appears after upgrading */
+"EXPERIENCE_UPGRADE_LETS_GO_BUTTON" = "Поехали";
+
+/* Label notifying the user that the app has expired. */
+"EXPIRATION_ERROR" = "Ваша версия Signal устарела! Сообщения больше не будут отправляться успешно. Нажмите, чтобы обновиться до последней версии.";
+
+/* Label warning the user that the app will expire soon. */
+"EXPIRATION_WARNING_SOON" = "Ваша версия Signal перестанет работать через %d дней. Нажмите, чтобы обновиться до последней версии.";
+
+/* Label warning the user that the app will expire today. */
+"EXPIRATION_WARNING_TODAY" = "Ваша версия Signal перестанет работать сегодня. Нажмите, чтобы обновиться до последней версии.";
+
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Слишком много ошибок с этим контактом. Пожалуйста, попробуйте позже.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Число безопасности с 1%@ изменилось. Рекомендуется его подтвердить перед отправкой сообщения снова.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Ваш код безопасности с %@ недавно изменился. Возможно, вы захотите подтвердить его перед повторной отправкой этого сообщения.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Ошибка проверки кода безопасности!";
+"FAILED_VERIFICATION_TITLE" = "Не удалось подтвердить код безопасности!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Отметить как проверенный";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Отметить как подтвержденный";
 
 /* No comment provided by engineer. */
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Сбросить сессию";
 
 /* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Завершение создания группы";
+"FINISH_GROUP_CREATION_LABEL" = "Завершить создание группы";
 
 /* Label indicating media gallery is empty */
-"GALLERY_TILES_EMPTY_GALLERY" = "В этой беседе нет медиафайлов.";
+"GALLERY_TILES_EMPTY_GALLERY" = "У вас нет медиа в этом разговоре.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Загрузка новых медиа...";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Загрузка новых медиа…";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Загрузка старых медиа...";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Загрузка старых медиа…";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Вложение";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "Не удалось получить запрошенный GIF. Убедитесь, что вы подключены к сети.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "Не удалось получить запрошенный GIF. Пожалуйста, убедитесь, что вы подключены к интернету.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "Произошла неизвестная ошибка.";
 
 /* Shown when selected GIF couldn't be fetched */
-"GIF_PICKER_FAILURE_ALERT_TITLE" = "Не удается выбрать GIF";
+"GIF_PICKER_FAILURE_ALERT_TITLE" = "Не удалось выбрать GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Пожалуйста, введите ваш поиск.";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Пожалуйста, введите свой поиск.";
 
 /* Title for the 'GIF picker' dialog. */
 "GIF_PICKER_VIEW_TITLE" = "Поиск GIF";
@@ -1009,7 +1021,7 @@
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Нет результатов.";
 
 /* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Введите ваш поиск.";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Введите свой поиск.";
 
 /* No comment provided by engineer. */
 "GROUP_AVATAR_CHANGED" = "Аватар изменен.";
@@ -1018,16 +1030,16 @@
 "GROUP_CREATED" = "Группа создана.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Не все участники могут быть добавлены в группу. Нажмите, чтобы повторить попытку. ";
+"GROUP_CREATION_FAILED" = "Не всех участников удалось добавить в группу. Нажмите, чтобы повторить попытку.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Управление группой";
 
 /* No comment provided by engineer. */
-"GROUP_MEMBER_JOINED" = "В группе новый участник — %@";
+"GROUP_MEMBER_JOINED" = " %@ присоединился(-лась) к группе. ";
 
 /* No comment provided by engineer. */
-"GROUP_MEMBER_LEFT" = "%@ покинул группу.";
+"GROUP_MEMBER_LEFT" = " %@ покинул(-а) группу. ";
 
 /* Button label to add information to an unknown contact */
 "GROUP_MEMBERS_ADD_CONTACT_INFO" = "Добавить контакт";
@@ -1036,16 +1048,16 @@
 "GROUP_MEMBERS_CALL" = "Позвонить";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Сбросить верификацию для всех";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Сбросить подтверждение для всех";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Это действие сбросит проверки всех участников группы, чьи коды безопасности изменились с тех пор, как они были проверены в последний раз.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Это действие сбросит подтверждения всех участников группы, чьи коды безопасности изменились с тех пор, как они были подтверждены в последний раз.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Участники";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Больше не отмечен как проверенный";
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Больше не отмечен как подтвержденный";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Отправить сообщение";
@@ -1071,8 +1083,20 @@
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Поиск";
 
+/* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Некоторые из ваших контактов уже в Signal, включая %@.";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Некоторые из ваших контактов уже в Signal, включая %@ и %@.";
+
+/* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Некоторые из ваших контактов уже в Signal, включая %@, %@ и %@.";
+
+/* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Начните свой первый разговор здесь.";
+
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Результаты не найдены для '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Не найдены результаты для «%@»";
 
 /* Title for the home view's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Архив";
@@ -1080,62 +1104,59 @@
 /* Title for the home view's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
-/* Label for brush button in image editor. */
-"IMAGE_EDITOR_BRUSH_BUTTON" = "Кисть";
-
-/* Label for crop button in image editor. */
-"IMAGE_EDITOR_CROP_BUTTON" = "Обрезка";
-
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Поделиться более, чем %@ элементами невозможно.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Вы не можете поделиться больше, чем %@ элементами.";
 
 /* alert title */
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Не удалось выбрать вложение.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Соединение...";
+"IN_CALL_CONNECTING" = "Соединение…";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Переподключение...";
+"IN_CALL_RECONNECTING" = "Переподключение…";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Вызов...";
+"IN_CALL_RINGING" = "Звонок…";
 
 /* Call setup status label */
-"IN_CALL_SECURING" = "Собеседник ответил. Обеспечиваем безопасность...";
+"IN_CALL_SECURING" = "Отвечено. Обеспечиваем безопасность…";
 
 /* Call setup status label */
 "IN_CALL_TERMINATED" = "Звонок завершен.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Эти разговоры архивированы и будут появляться во Входящих только когда получены новые сообщения.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Эти разговоры архивированы и появятся во Входящих, только если будут получены новые сообщения.";
+
+/* Message shown in the home view when the inbox is empty. */
+"INBOX_VIEW_EMPTY_INBOX" = "Дайте своим входящим кое-что, о чем можно написать домой. Начните, отправив сообщение другу.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Вы можете разрешить доступ к контактам в настройках iOS, чтобы видеть имена контактов в списке переписок Signal.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Вы можете разрешить доступ к контактам в приложении «Настройки», чтобы видеть имена контактов в вашем списке разговоров Signal.";
 
-/* notification body */
+/* info message text in conversation view */
 "INCOMING_CALL" = "Входящий звонок";
-
-/* notification body */
-"INCOMING_CALL_FROM" = "Входящий звонок от %@";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "Вы отклонили звонок";
 
-/* No comment provided by engineer. */
-"INCOMING_INCOMPLETE_CALL" = "Входящий вызов";
+/* info message text in conversation view */
+"INCOMING_INCOMPLETE_CALL" = "Входящий звонок";
 
 /* info message text shown in conversation view */
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Звонок не был принят, так как код безопасности собеседника изменился.";
 
+/* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ теперь в Signal!";
+
 /* Message for the alert indicating that an audio file is invalid. */
-"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Некорректный аудиофайл";
+"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Некорректный аудиофайл.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Вы можете разрешить доступ к контактам в настройках iOS, чтобы приглашать друзей в Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Вы можете разрешить доступ к контактам в приложении «Настройки», чтобы приглашать своих друзей в Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Разрешить доступ к контактам";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Разрешите доступ к контактам";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Пригласите друзей в Signal";
@@ -1147,13 +1168,13 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Пригласить друзей";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Одновременное приглашение нескольких пользователей отправит групповое сообщение, получатели которого смогут видеть друг друга.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Одновременное приглашение нескольких пользователей отправит групповое сообщение, и получатели смогут видеть друг друга.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
-"KEEP_MESSAGES_DURATION" = "Сообщения будут исчезать через %@.";
+"KEEP_MESSAGES_DURATION" = "Сообщения исчезают через %@.";
 
 /* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Сообщения не будут исчезать.";
+"KEEP_MESSAGES_FOREVER" = "Сообщения не исчезают.";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Покинуть";
@@ -1162,13 +1183,13 @@
 "LEAVE_GROUP_ACTION" = "Покинуть группу";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "QR-код не действителен. Пожалуйста, убедитесь, что вы считываете QR-код с устройства, которое вы хотите подключить.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Этот QR-код недействителен. Пожалуйста, убедитесь, что вы сканируете QR-код, показанный на устройстве, которое вы хотите привязать.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Ошибка привязки устройства";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Не удалось привязать устройство";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Это устройство будет видеть ваши группы и контакты, получит доступ к вашим разговорам и сможет отправлять сообщения от вашего имени.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Это устройство сможет видеть ваши группы и контакты, получит доступ к вашим разговорам и сможет отправлять сообщения от вашего имени.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Привязать это устройство?";
@@ -1177,7 +1198,7 @@
 "LINK_DEVICE_RESTART" = "Повторить попытку";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Отсканируйте QR-код, который отображается на устройстве, которое вы хотите привязать.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Просканируйте QR-код, отображаемый на устройстве, которое вы хотите привязать.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Сканировать QR-код";
@@ -1192,7 +1213,7 @@
 "LINKED_DEVICES_TITLE" = "Привязанные устройства";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Ошибка привязки устройства";
+"LINKING_DEVICE_FAILED_TITLE" = "Не удалось привязать устройство";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Участники группы";
@@ -1222,7 +1243,7 @@
 "MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Удалить сообщение";
 
 /* embeds {{sender name}} and {{sent datetime}}, e.g. 'Sarah on 10/30/18, 3:29' */
-"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ на %@";
+"MEDIA_GALLERY_LANDSCAPE_TITLE_FORMAT" = "%@ - %@";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -1231,7 +1252,7 @@
 "MEDIA_GALLERY_SENDER_NAME_YOU" = "Вы";
 
 /* Section header in media gallery collection view */
-"MEDIA_GALLERY_THIS_MONTH_HEADER" = "Этот месяц";
+"MEDIA_GALLERY_THIS_MONTH_HEADER" = "В этом месяце";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_MEDIA" = "Копировать медиа";
@@ -1267,7 +1288,7 @@
 "MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Размер файла";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "Тип MIME";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME тип";
 
 /* Status label for messages which are delivered. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_DELIVERED" = "Доставлено";
@@ -1285,7 +1306,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Отправлено";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Пропущенные";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Пропущено";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Загрузка";
@@ -1312,7 +1333,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Доставлено";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Отправка не удалась";
+"MESSAGE_STATUS_FAILED" = "Отправка не удалась.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Ошибка";
@@ -1321,31 +1342,31 @@
 "MESSAGE_STATUS_READ" = "Прочитано";
 
 /* message status if message delivery to a recipient is skipped. We skip delivering group messages to users who have left the group or unregistered their Signal account. */
-"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Пропущенные";
+"MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Пропущено";
 
 /* Label indicating that a message failed to send. */
 "MESSAGE_STATUS_SEND_FAILED" = "Ошибка отправки";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Отправка...";
+"MESSAGE_STATUS_SENDING" = "Отправка…";
 
 /* status message for sent messages */
 "MESSAGE_STATUS_SENT" = "Отправлено";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Загрузка...";
+"MESSAGE_STATUS_UPLOADING" = "Загрузка…";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Новое сообщение";
 
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как проверенный. Нажмите для опций.";
+"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как подтвержденный. Нажмите для опций.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
 "MESSAGES_VIEW_CONTACT_BLOCKED" = "Вы заблокировали этого пользователя";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
-"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как проверенный. Нажмите для опций.";
+"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ больше не отмечен как подтвержденный. Нажмите для опций.";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Вы заблокировали 1 участника этой группы";
@@ -1357,13 +1378,13 @@
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Вы заблокировали %@ участников этой группы";
 
 /* Text for banner in group conversation view that offers to share your profile with this group. */
-"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Поделиться своим профилем с этой группой?";
+"MESSAGES_VIEW_GROUP_PROFILE_WHITELIST_BANNER" = "Поделиться вашим профилем с этой группой?";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Больше, чем один участник этой группы больше не отмечен как проверенный. Нажмите для опций.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Более одного участника этой группы больше не отмечены как подтвержденные. Нажмите для опций.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Нажмите сюда, чтобы открыть настройки";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Нажмите здесь для настроек";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Новые сообщения";
@@ -1374,46 +1395,37 @@
 /* Messages that indicates that there are more unseen messages including safety number changes. */
 "MESSAGES_VIEW_UNREAD_INDICATOR_HAS_MORE_UNSEEN_MESSAGES_AND_SAFETY_NUMBER_CHANGES" = "Есть больше непрочитанных сообщений (включая изменения кода безопасности).";
 
-/* notification title */
+/* info message text in conversation view */
 "MISSED_CALL" = "Пропущенный звонок";
-
-/* notification title. Embeds {{caller's name or phone number}} */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITH_CALLER_NAME" = "Звонок пропущен от %@, так как код безопасности изменился.";
-
-/* notification title */
-"MISSED_CALL_WITH_CHANGED_IDENTITY_BODY_WITHOUT_CALLER_NAME" = "Звонок пропущен, так как код безопасности звонившего изменился.";
 
 /* Alert body
    Alert body when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Вы можете разрешить доступ к камере в настройках iOS, чтобы совершать видеозвонки в Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Вы можете разрешить доступ к камере в приложении «Настройки», чтобы совершать видеозвонки в Signal.";
 
 /* Alert title
    Alert title when camera is not authorized */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal необходим доступ к камере устройства.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal необходим доступ к вашей камере.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Вы можете предоставить это разрешение в Настройках.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Вы можете предоставить это разрешение в приложении «Настройки».";
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal требуется доступ к вашим фотографиям для этой функции.";
 
-/* notification title. Embeds {{caller's name or phone number}} */
-"MSGVIEW_MISSED_CALL_WITH_NAME" = "Пропущенный звонок от %@.";
-
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "Вы не можете связать больше устройств.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Вы не можете привязать больше устройств.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Вы достигли максимального количества устройств, которые в настоящее время можно связать с вашим аккаунтом. Удалите устройство и повторите попытку.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Вы достигли максимального количества устройств, которые в настоящее время можно связать с вашим аккаунтом. Пожалуйста, удалите устройство и повторите попытку.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Вы не будете получать уведомления для бесед в беззвучном режиме.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Вы не будете получать уведомления для разговоров в беззвучном режиме.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Пропустить";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Пожалуйста, убедитесь, что вы в сети, и попробуйте снова.";
+"NETWORK_ERROR_RECOVERY" = "Пожалуйста, убедитесь, что вы онлайн, и попробуйте снова.";
 
 /* Indicates to the user that censorship circumvention has been activated. */
 "NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE" = "Обход цензуры: включен";
@@ -1422,13 +1434,13 @@
 "NETWORK_STATUS_CONNECTED" = "Соединено";
 
 /* No comment provided by engineer. */
-"NETWORK_STATUS_CONNECTING" = "Соединяем...";
+"NETWORK_STATUS_CONNECTING" = "Соединение";
 
 /* Error indicating that this device is no longer registered. */
-"NETWORK_STATUS_DEREGISTERED" = "Больше не зарегистрирован";
+"NETWORK_STATUS_DEREGISTERED" = "Больше не зарегистрировано";
 
 /* No comment provided by engineer. */
-"NETWORK_STATUS_HEADER" = "Сетевой статус";
+"NETWORK_STATUS_HEADER" = "Статус сети";
 
 /* No comment provided by engineer. */
 "NETWORK_STATUS_OFFLINE" = "Не в сети";
@@ -1440,7 +1452,7 @@
 "NEW_GROUP_ADD_NON_CONTACT" = "Добавить по номеру телефона";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Добавить фотографию группы";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Установить фотографию группы";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Создать";
@@ -1449,7 +1461,10 @@
 "NEW_GROUP_DEFAULT_TITLE" = "Новая группа";
 
 /* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Участники";
+"NEW_GROUP_MEMBER_LABEL" = "Участник";
+
+/* notification title. Embeds {{author name}} and {{group name}} */
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ в %@";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Дайте имя этой группе";
@@ -1458,7 +1473,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Прочие пользователи";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Вы хотите отменить правки?";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Вы хотите отменить эти изменения?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Несохраненные изменения";
@@ -1473,25 +1488,22 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Найти пользователя";
 
 /* Label for a button that lets users search for contacts by phone number */
-"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Поиск по номеру телефона";
+"NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Поиск контактов по номеру телефона";
 
 /* Label for 1:1 conversation with yourself. */
-"NOTE_TO_SELF" = "Примечание для себя";
+"NOTE_TO_SELF" = "Заметка для себя";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Возможно, вы получили сообщения во время перезапуска вашего %@.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Вы могли получить сообщения, пока ваш %@ перезапускался.";
 
 /* No comment provided by engineer. */
-"NOTIFICATION_SEND_FAILED" = "Ваше сообщение не отправлено %@ из-за ошибки.";
+"NOTIFICATIONS_FOOTER_WARNING" = "Из-за известных недостатков в push-сервисе Apple, предпросмотр сообщений будет показан, только если оно получено в течение 30 секунд после отправки. Из-за этого наклейка на значке приложения может показывать неверное число.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Из-за известных недостатков в push-сервисе Apple, предпросмотр сообщения будет показан, только если оно получено в течение 30 секунд после отправки. Из-за этого наклейка на значке приложения может показывать неверное число.";
-
-/* No comment provided by engineer. */
-"NOTIFICATIONS_NONE" = "Ни имени, ни содержимого";
+"NOTIFICATIONS_NONE" = "Без имени и содержимого";
 
 /* Table cell switch label. When disabled, Signal will not play notification sounds while the app is in the foreground. */
-"NOTIFICATIONS_SECTION_INAPP" = "Уведомления в открытом приложении";
+"NOTIFICATIONS_SECTION_INAPP" = "Играть, когда приложение открыто";
 
 /* Label for settings UI that allows user to change the notification sound. */
 "NOTIFICATIONS_SECTION_SOUNDS" = "Звуки";
@@ -1506,31 +1518,148 @@
 "NOTIFICATIONS_SHOW" = "Показывать";
 
 /* No comment provided by engineer. */
-"OK" = "Ок";
+"OK" = "ОК";
+
+/* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Вы исчерпали все попытки ввода PIN-кода, вы можете попытаться зарегистрироваться заново через 7 дней.";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_1" = "Для этого номера телефона включена блокировка регистрации. Пожалуйста, введите PIN-код блокировки регистрации.";
+
+/* The first explanation in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_EXPLANATION_2" = "Ваш PIN-код блокировки регистрации не совпадает с автоматическим кодом подтверждения, который был отправлен на ваш телефон в предыдущем шаге.";
+
+/* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Я забыл свой PIN-код";
+
+/* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN" = "Неверный PIN";
+
+/* Label indicating that the 2fa pin is invalid with a retry count in the 'onboarding 2fa' view. */
+"ONBOARDING_2FA_INVALID_PIN_FORMAT" = "Неверный PIN-код, у вас осталось %lu попыток.";
+
+/* Title of the 'onboarding 2FA' view. */
+"ONBOARDING_2FA_TITLE" = "Блокировка регистрации";
+
+/* Title of the 'onboarding Captcha' view. */
+"ONBOARDING_CAPTCHA_TITLE" = "Добавьте немного человечности в свои сообщения";
+
+/* Label for the 'give access' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Включить разрешения";
+
+/* Explanation in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Информация о ваших контактах всегда передается в защищенном виде.";
+
+/* Label for the 'not now' button in the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Не сейчас";
+
+/* Title of the 'onboarding permissions' view. */
+"ONBOARDING_PERMISSIONS_TITLE" = "Signal может давать вам знать, когда вы получаете сообщение (и от кого оно)";
+
+/* Title of the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Введите свой номер телефона, чтобы начать";
+
+/* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Некорректный номер";
+
+/* Explanation in the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_EXPLANATION" = "Профили Signal защищены сквозным шифрованием, и сервис Signal никогда не имеет доступа к этой информации.";
+
+/* Placeholder text for the profile name in the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_NAME_PLACEHOLDER" = "Ваше имя";
+
+/* Title of the 'onboarding profile' view. */
+"ONBOARDING_PROFILE_TITLE" = "Настройте свой профиль";
+
+/* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Условия и Политика конфиденциальности";
+
+/* Title of the 'onboarding splash' view. */
+"ONBOARDING_SPLASH_TITLE" = "Возьмите конфиденциальность с собой.\nБудьте собой в каждом сообщении.";
+
+/* Label for the link that lets users change their phone number in the onboarding views. */
+"ONBOARDING_VERIFICATION_BACK_LINK" = "Неправильный номер?";
+
+/* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Я не получил код (доступно через %@)";
+
+/* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Связаться со службой поддержки Signal";
+
+/* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "Этот код неверен";
+
+/* Label for link that can be used when the original code did not arrive. */
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Я не получил код";
+
+/* Message for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Пожалуйста, убедитесь, что вы в зоне доступа мобильной сети и можете принимать SMS-сообщения.";
+
+/* Title for the 'resend code' alert in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Нет кода?";
+
+/* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Отправить код еще раз";
+
+/* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Позвоните мне вместо SMS";
+
+/* Label for link that can be used when the resent code did not arrive. */
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Все еще нет кода?";
+
+/* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Введите код, который мы отправили на %@";
+
+/* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Мы только что отправили код еще раз на %@";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Настройки";
 
 /* Info Message when {{other user}} disables or doesn't support disappearing messages */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ отключил(а) исчезающие сообщения.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ отключил(-а) исчезающие сообщения.";
 
 /* Info Message when {{other user}} updates message expiration to {{time amount}}, see the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ установил(а) время исчезновения сообщений — %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ установил(-а) время исчезновения сообщений — %@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "У Signal возникли технические неполадки. Мы прилагаем все усилия, чтобы как можно быстрее восстановить обслуживание.";
 
-/* No comment provided by engineer. */
+/* info message text in conversation view */
 "OUTGOING_CALL" = "Исходящий звонок";
 
-/* No comment provided by engineer. */
-"OUTGOING_INCOMPLETE_CALL" = "Исходящий вызов";
+/* info message text in conversation view */
+"OUTGOING_INCOMPLETE_CALL" = "Исходящий звонок";
 
 /* info message recorded in conversation history when local user tries and fails to call another user. */
-"OUTGOING_MISSED_CALL" = "Неотвеченный исходящий вызов";
+"OUTGOING_MISSED_CALL" = "Неотвеченный исходящий звонок";
 
 /* A display format for oversize text messages. */
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
+
+/* Error indicating that a PDF could not be displayed. */
+"PDF_VIEW_COULD_NOT_RENDER" = "Не удалось отобразить PDF";
+
+/* Navbar title for for PDF view. */
+"PDF_VIEW_TITLE" = "PDF";
+
+/* Label that indicates that 'per-message expiration' is active. */
+"PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Исчезающая фотография";
+
+/* Label for messages with per-message expiration that have invalid content. */
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Ошибка при обработке входящего сообщения";
+
+/* Notification for incoming disappearing photo. */
+"PER_MESSAGE_EXPIRATION_NOTIFICATION" = "Исчезающая фотография";
+
+/* Label for outgoing messages with per-message expiration. */
+"PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Фото";
+
+/* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
+"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "Просмотреть фотографию";
+
+/* Label for messages with per-message expiration indicating that the local user has viewed the message's contents. */
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Просмотрено";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Например: %@";
@@ -1554,7 +1683,7 @@
 "PHONE_NUMBER_TYPE_MOBILE" = "Мобильный";
 
 /* Label for 'Other' phone numbers. */
-"PHONE_NUMBER_TYPE_OTHER" = "Другой";
+"PHONE_NUMBER_TYPE_OTHER" = "Прочий";
 
 /* Label for 'Other FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_OTHER_FAX" = "Прочий факс";
@@ -1571,20 +1700,29 @@
 /* Label for 'Work FAX' phone numbers. */
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Рабочий факс";
 
+/* alert title, generic error preventing user from capturing a photo */
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Не удалось сделать снимок.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Не удалось сделать снимок.";
+
+/* alert title */
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Не удалось настроить камеру.";
+
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Безымянный альбом";
 
 /* Accessibility label for button to start media playback */
-"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Воспроизвести";
+"PLAY_BUTTON_ACCESSABILITY_LABEL" = "Воспроизвести медиа";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Вы не отметили %@ как проверенный.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Вы не отметили %@ как подтвержденный.";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Проверен";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Подтвержден";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ проверен.";
+"PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ подтвержден.";
 
 /* Label for a link to more information about safety numbers and verification. */
 "PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Узнать больше";
@@ -1593,19 +1731,19 @@
 "PRIVACY_TAP_TO_SCAN" = "Нажмите для сканирования";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Сбросить проверку";
+"PRIVACY_UNVERIFY_BUTTON" = "Сбросить подтверждение";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Это не код безопасности для %@. Убедитесь, что подтверждаете соединение с верным пользователем.";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Это не похоже на ваш код безопасности с %@. Вы подтверждаете верного пользователя?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Содержимое буфера обмена не является кодом безопасности для данного собеседника.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Номер в вашем буфере обмена не похож на правильный код безопасности для этого разговора.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal не обнаружил код безопасности в вашем буфере обмена. Скопируйте еще раз.";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal не смог найти никакой код безопасности в вашем буфере обмена. Правильно ли вы его скопировали?";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Каждой паре пользователей Signal присваивается определенный код безопасности. Убедитесь, что пользователь %@ отображает *ваш* код.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "У каждой пары пользователей Signal есть свой общий код безопасности. Убедитесь, что %@ показывает именно *ваш* код.";
 
 /* alert body */
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "У вас старая версия Signal. Вам необходимо обновиться перед подтверждением.";
@@ -1614,13 +1752,13 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "У вашего собеседника старая версия Signal. Ему необходимо обновиться перед подтверждением.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Сканированный код не похож на число безопасности. Убедитесь, что Вы и Ваш собеседник используете последнюю версию Signal.";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Сканированный код не похож на код безопасности. Убедитесь, что вы и ваш собеседник используете актуальную версию Signal.";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Чтобы подтвердить безопасность сквозного шифрования при общении с %@, сравните код, показанный выше, с кодом на устройстве вашего собеседника.\n\nТакже вы можете просканировать его или попросить собеседника просканировать ваш код.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Если вы желаете подтвердить безопасность вашего сквозного шифрования с %@, сравните код, показанный выше, с кодом на устройстве вашего собеседника.\n\nТакже вы можете просканировать код на их телефоне или попросить их просканировать ваш код.";
 
 /* Navbar title */
-"PRIVACY_VERIFICATION_TITLE" = "Подтверждение кода безопасности";
+"PRIVACY_VERIFICATION_TITLE" = "Подтвердите код безопасности";
 
 /* Button that lets user mark another user's identity as verified. */
 "PRIVACY_VERIFY_BUTTON" = "Отметить как подтвержденный";
@@ -1638,13 +1776,13 @@
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Установить аватар профиля";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Удалить Аватар";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Удалить аватар";
 
 /* Error message shown when user tries to update profile with a profile name that is too long. */
-"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Слишком длинное имя профиля.";
+"PROFILE_VIEW_ERROR_PROFILE_NAME_TOO_LONG" = "Ваше имя профиля слишком длинное.";
 
 /* Error message shown when a profile update fails. */
-"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Ошибка обновления профиля.";
+"PROFILE_VIEW_ERROR_UPDATE_FAILED" = "Обновление профиля не удалось.";
 
 /* Default text for the profile name field of the profile view. */
 "PROFILE_VIEW_NAME_DEFAULT_TEXT" = "Введите ваше имя";
@@ -1653,7 +1791,7 @@
 "PROFILE_VIEW_PROFILE_AVATAR_FIELD" = "Аватар";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профиль Signal будет виден вашим контактам, когда вы инициируете новые разговоры и когда делитесь чем-либо с другими пользователями и группами.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профиль Signal будет виден вашим контактам, когда вы инициируете новые разговоры, и когда вы делитесь им с другими пользователями и группами.";
 
 /* Link to more information about the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Нажмите здесь, чтобы узнать больше.";
@@ -1667,14 +1805,14 @@
 /* Title for the profile view. */
 "PROFILE_VIEW_TITLE" = "Профиль";
 
-/* No comment provided by engineer. */
-"PUSH_MANAGER_MARKREAD" = "Отметить как прочтенное";
+/* Notification action button title */
+"PUSH_MANAGER_MARKREAD" = "Отметить как прочитанное";
 
-/* No comment provided by engineer. */
+/* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Ответить";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Это устройство было заново зарегистрировано для получения push-уведомлений.";
+"PUSH_REGISTER_SUCCESS" = "Успешно перерегистрировались на push-уведомления.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Push-уведомления";
@@ -1683,10 +1821,10 @@
 "QUESTIONMARK_PUNCTUATION" = "?";
 
 /* Indicates the author of a quoted message. Embeds {{the author's name or phone number}}. */
-"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Ответить %@";
+"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Ответ %@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Отвечает вам";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Ответ вам";
 
 /* message header label when quoting yourself */
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF" = "Ответ себе";
@@ -1719,37 +1857,28 @@
 "REGISTER_2FA_FORGOT_PIN" = "Я забыл свой PIN-код.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Регистрация этого номера телефона без PIN-кода блокировки регистрации будет возможна после 7 дней с момента последней активности номера в Signal.";
-
-/* Instructions to enter the 'two-factor auth pin' in the 2FA registration view. */
-"REGISTER_2FA_INSTRUCTIONS" = "Для этого номера телефона включена блокировка регистрации. Пожалуйста, введите PIN-код блокировки регистрации.\nPIN-код блокировки регистрации не связан с кодом подтверждения, который был отправлен на ваш телефон на последнем шаге.";
-
-/* Title for alert indicating that attempt to register with 'two-factor auth' failed. */
-"REGISTER_2FA_REGISTRATION_FAILED_ALERT_TITLE" = "Регистрация не удалась";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Регистрация этого номера телефона без вашего PIN-кода блокировки регистрации будет возможна после 7 дней с момента последней активности этого номера телефона в Signal.";
 
 /* Label for 'submit' button in the 2FA registration view. */
-"REGISTER_2FA_SUBMIT_BUTTON" = "Подтвердить";
+"REGISTER_2FA_SUBMIT_BUTTON" = "Отправить";
 
 /* No comment provided by engineer. */
 "REGISTER_CONTACTS_WELCOME" = "Добро пожаловать!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Повторить";
+"REGISTER_FAILED_TRY_AGAIN" = "Повторить еще раз";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_BODY" = "Слишком часто. Попробуйте через минуту";
+"REGISTER_RATE_LIMITING_BODY" = "Вы пытались слишком часто. Пожалуйста, подождите минуту, прежде чем пытаться снова.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "Слишком часто. Попробуйте через минуту";
+"REGISTER_RATE_LIMITING_ERROR" = "Вы пытались слишком часто. Пожалуйста, подождите минуту, прежде чем пытаться снова.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Не удалось перерегистрироваться для push-уведомлений.";
+"REGISTRATION_BODY" = "Не удалось перерегистрироваться на push-уведомления.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Код страны";
-
-/* Navigation title shown when user is re-registering after having enabled registration lock */
-"REGISTRATION_ENTER_LOCK_PIN_NAV_TITLE" = "Блокировка регистрации";
 
 /* Placeholder text for the phone number textfield */
 "REGISTRATION_ENTERNUMBER_DEFAULT_TEXT" = "Введите номер";
@@ -1758,70 +1887,55 @@
 "REGISTRATION_ERROR" = "Ошибка регистрации";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Невозможно активировать аккаунт до подтверждения отправленного вам кода.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Мы не можем активировать ваш аккаунт до того, как вы подтвердите код, который мы вам отправили.";
 
 /* alert body when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_BODY" = "При регистрации произойдет отключение Signal  на любом другом устройстве, зарегистрированном с этим номером телефона.";
+"REGISTRATION_IPAD_CONFIRM_BODY" = "При регистрации произойдет отключение Signal на любом другом устройстве, зарегистрированном с этим номером телефона.";
 
 /* button text to proceed with registration when on an iPad */
-"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Зарегистрируйте этот iPad";
+"REGISTRATION_IPAD_CONFIRM_BUTTON" = "Зарегистрировать этот iPad";
 
 /* alert title when registering an iPad */
-"REGISTRATION_IPAD_CONFIRM_TITLE" = "У вас уже есть аккаунт Signal?";
-
-/* one line label below submit button on registration screen, which links to an external webpage. */
-"REGISTRATION_LEGAL_TERMS_LINK" = "Условия и политика конфиденциальности";
-
-/* legal disclaimer, embeds a tappable {{link title}} which is styled as a hyperlink */
-"REGISTRATION_LEGAL_TOP_MATTER_FORMAT" = "Регистрируясь на этом устройстве, вы соглашаетесь с %@ Signal";
-
-/* embedded in legal topmatter, styled as a link */
-"REGISTRATION_LEGAL_TOP_MATTER_LINK_TITLE" = "условиями";
+"REGISTRATION_IPAD_CONFIRM_TITLE" = "У вас уже есть учетная запись Signal?";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "Этот формат телефонного номера не поддерживается. Пожалуйста, обратитесь в поддержку.";
+"REGISTRATION_NON_VALID_NUMBER" = "Этот формат номера телефона не поддерживается, пожалуйста, обратитесь в поддержку.";
 
 /* Label for the phone number textfield */
-"REGISTRATION_PHONENUMBER_BUTTON" = "Телефонный номер";
+"REGISTRATION_PHONENUMBER_BUTTON" = "Номер телефона";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "Вы должны зарегистрироваться перед тем как вы сможете отправить сообщение.";
-
-/* No comment provided by engineer. */
-"REGISTRATION_TITLE_LABEL" = "Ваш телефонный номер";
+"REGISTRATION_RESTRICTED_MESSAGE" = "Вы должны зарегистрироваться перед тем, как вы сможете отправить сообщение.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Ошибка подтверждения";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Введенные цифры отличаются от тех, что мы вам отправили. Попробовать еще раз?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Отправленные вами цифры не совпадают с теми, которые мы вам отправили. Хотите проверить еще раз?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Некорректный PIN-код блокировки регистрации";
-
-/* No comment provided by engineer. */
-"REGISTRATION_VERIFY_DEVICE" = "Регистрация";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Неверный PIN-код блокировки регистрации.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Пожалуйста введите корректный номер телефона для регистрации";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Пожалуйста, введите корректный номер телефона, чтобы зарегистрироваться.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Некорректный номер телефона";
 
 /* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Пожалуйста введите номер телефона для регистрации";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Пожалуйста, введите номер телефона, чтобы зарегистрироваться.";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Не является телефонным номером";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Нет номера телефона";
 
-/* No comment provided by engineer. */
+/* notification action */
 "REJECT_CALL_BUTTON_TITLE" = "Отклонить";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "Телефонный номер, который вы пытаетесь зарегистрировать, уже зарегистрирован на другом сервере. Пожалуйста, отмените там регистрацию и попробуйте заново.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Номер телефона, который вы пытаетесь зарегистрировать, уже зарегистрирован на другом сервере, пожалуйста, отмените там регистрацию и попробуйте еще раз.";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Блокировка регистрации включена для вашего номера телефона. Чтобы помочь вам запомнить PIN-код блокировки регистрации, Signal будет периодически просить вас подтвердить его.";
+"REMINDER_2FA_BODY" = "Блокировка регистрации включена для вашего номера телефона. Чтобы помочь вам запомнить PIN-код блокировки регистрации, Signal периодически будет просить вас его подтвердить.";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Напоминание:";
@@ -1830,16 +1944,16 @@
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Блокировка регистрации помогает защитить ваш номер телефона от несанкционированных попыток регистрации. Эта функция может быть отключена в любое время в настройках конфиденциальности Signal.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Введите PIN-код блокировки регистрации";
+"REMINDER_2FA_NAV_TITLE" = "Введите свой PIN-код блокировки регистрации";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Вы можете установить новый PIN-код в настройках конфиденциальности.";
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "PIN-код неверен.";
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Это неверный PIN-код.";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Зарегистрироваться заново";
+"REREGISTER_FOR_PUSH" = "Перерегистрироваться на push-уведомления";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Повторить";
@@ -1854,13 +1968,13 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Отправить в любом случае";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Наш код безопасности:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Наш код безопасности Signal:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Код безопасности с пользователем %@ изменился. Возможно, вы хотите его подтвердить.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ваш код безопасности с %@ изменился. Возможно, вы захотите его подтвердить.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Отсканируйте QR-код на устройстве пользователя.";
+"SCAN_CODE_INSTRUCTIONS" = "Просканируйте QR-код на устройстве своего контакта.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "Сканировать QR-код";
@@ -1878,13 +1992,13 @@
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Слишком много неудачных попыток аутентификации. Пожалуйста, повторите попытку позже.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Вы должны включить код доступа в настройках iOS, чтобы использовать блокировку экрана.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Вы должны включить код доступа в приложении «Настройки», чтобы использовать блокировку экрана.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Вы должны включить код доступа в настройках iOS, чтобы использовать блокировку экрана.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Вы должны включить код доступа в приложении «Настройки», чтобы использовать блокировку экрана.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Вы должны включить код доступа в настройках iOS, чтобы использовать блокировку экрана.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Вы должны включить код доступа в приложении «Настройки», чтобы использовать блокировку экрана.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Аутентификация для открытия Signal.";
@@ -1908,7 +2022,7 @@
 "SEARCH_SECTION_MESSAGES" = "Сообщения";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "Безопасный сеанс связи был сброшен.";
+"SECURE_SESSION_RESET" = "Защищенный сеанс связи был сброшен.";
 
 /* Label for 'select GIF to attach' action sheet button */
 "SELECT_GIF_BUTTON" = "GIF";
@@ -1922,23 +2036,38 @@
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Отправить еще раз";
 
-/* Label for the send button in the conversation view. */
+/* Label for the button to send a message */
 "SEND_BUTTON_TITLE" = "Отправить";
 
+/* notification body */
+"SEND_FAILED_NOTIFICATION_BODY" = "Ваше сообщение не удалось отправить.";
+
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Ошибка отправки приглашения, пожалуйста, повторить попытку.";
+"SEND_INVITE_FAILURE" = "Не удалось отправить приглашение, пожалуйста, повторите попытку позже.";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Вы пригласили своего друга в Signal!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Пригласить %@ по SMS";
+"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Пригласить по SMS: %@";
+
+/* alert title when user attempts to leave the send media flow when they have an in-progress album */
+"SEND_MEDIA_ABANDON_TITLE" = "Отклонить медиа?";
+
+/* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Отклонить медиа";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Вернуться в камеру";
+
+/* alert action when the user decides not to cancel the media flow after all. */
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Вернуться в медиатеку";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Пригласить друга через незащищенное SMS?";
 
 /* No comment provided by engineer. */
-"SEND_SMS_INVITE_TITLE" = "Хотите пригласить этот номер в Signal:";
+"SEND_SMS_INVITE_TITLE" = "Вы хотите пригласить следующий номер в Signal:";
 
 /* Navbar title */
 "SETTINGS_ABOUT" = "О программе";
@@ -1947,28 +2076,31 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_CONTACT_TITLE" = "Заблокировать контакт";
 
 /* Title for the 'block phone number' section of the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Заблокировать номер";
+"SETTINGS_ADD_TO_BLOCK_LIST_BLOCK_PHONE_NUMBER_TITLE" = "Заблокировать номер телефона";
 
 /* Title for the 'add to block list' view. */
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Заблокировать";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Обходить цензуру";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Обход цензуры";
 
 /* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Местоположение: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Если включить данную функцию, то Signal будет пытаться обойти цензуру (блокировку провайдером). Не включайте данную функцию в тех местах, где Signal не цензурируется.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Если включить данную функцию, то Signal будет пытаться обойти цензуру (блокировку провайдером). Не включайте данную функцию, если вы не находитесь в месте, где Signal цензурируется.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Обход цензуры (блокировки провайдером) был активирован на основе номера телефона Вашего аккаунта.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Обход цензуры (блокировки провайдером) был активирован на основе номера телефона вашей учетной записи.";
+
+/* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Вы вручную отключили обход цензуры.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Обход цензуры (блокировки провайдером) может быть активирован только при подключении к интернету.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Обход цензуры (блокировки провайдером) может быть активирован, только когда есть подключение к интернету.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Обход цензуры не требуется: Вы уже подключены к Signal.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Обход цензуры не требуется; вы уже подключены к сервису Signal.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Обход цензуры";
@@ -1989,7 +2121,7 @@
 "SETTINGS_BACKUP" = "Резервная копия";
 
 /* Label for 'backup now' button in the backup settings view. */
-"SETTINGS_BACKUP_BACKUP_NOW" = "Создать резервную копию";
+"SETTINGS_BACKUP_BACKUP_NOW" = "Создать резервную копию сейчас";
 
 /* Label for 'cancel backup' button in the backup settings view. */
 "SETTINGS_BACKUP_CANCEL_BACKUP" = "Отменить резервное копирование";
@@ -2001,16 +2133,16 @@
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "Статус iCloud";
 
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Ошибка восстановления из резерной копии";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Ошибка восстановления из резервной копии";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Восстановление не производится";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Восстановление из резервной копии не производится";
 
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Восстановление из резерной копии в процессе";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Восстановление из резервной копии в процессе";
 
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Восстановление резервной копии успешно завершилось";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Восстановление из резервной копии успешно выполнено";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "Этап";
@@ -2022,40 +2154,40 @@
 "SETTINGS_BACKUP_STATUS" = "Статус";
 
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Сбой резервного копирования";
+"SETTINGS_BACKUP_STATUS_FAILED" = "Ошибка резервного копирования";
 
 /* Indicates that app is not backing up. */
 "SETTINGS_BACKUP_STATUS_IDLE" = "Ожидание";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Резервное копирование";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Выполняется резервное копирование";
 
 /* Indicates that the last backup succeeded. */
-"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Резервное копирование выполнено";
+"SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Резервное копирование успешно выполнено";
 
 /* A label for the 'add phone number' button in the block list table. */
 "SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Добавить заблокированного пользователя";
 
 /* A label that indicates the user has no Signal contacts. */
-"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "К сожалению, у Вас нет ни одного контакта, пользующегося Signal.";
+"SETTINGS_BLOCK_LIST_NO_CONTACTS" = "У вас нет контактов, использующих Signal.";
 
 /* A label that indicates the user's search has no matching results. */
-"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Ничего не найдено";
+"SETTINGS_BLOCK_LIST_NO_SEARCH_RESULTS" = "Поиск не дал результатов";
 
 /* Label for the block list section of the settings view */
 "SETTINGS_BLOCK_LIST_TITLE" = "Заблокированные";
 
 /* Table cell label */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Всегда пересылать вызовы";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Всегда ретранслировать звонки";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Переадресовывать все звонки через сервер Signal, чтобы не раскрывать Ваш IP адрес контакту. Включение функции ухудшит качество звонков.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Ретранслировать все звонки через сервер Signal, чтобы не раскрывать ваш IP-адрес собеседнику. Включение опции ухудшит качество звонков.";
 
 /* No comment provided by engineer. */
-"SETTINGS_CLEAR_HISTORY" = "Очистить историю";
+"SETTINGS_CLEAR_HISTORY" = "Очистить историю разговоров";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Авторские права Signal Messenger\nЛицензия GPLv3";
+"SETTINGS_COPYRIGHT" = "Авторские права Signal Messenger \n Лицензировано под GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Удалить учетную запись";
@@ -2064,7 +2196,7 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Удалить все данные";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Вы уверены, что хотите удалить всю историю (сообщения, вложения, звонки и т. д.? Это действие необратимо.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Вы действительно хотите удалить всю историю (сообщения, вложения, звонки и т. д.? Это действие необратимо.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Удалить все";
@@ -2073,28 +2205,28 @@
 "SETTINGS_HELP_HEADER" = "Помощь";
 
 /* Section header */
-"SETTINGS_HISTORYLOG_TITLE" = "Очистить историю";
+"SETTINGS_HISTORYLOG_TITLE" = "Очистить историю разговоров";
 
 /* No comment provided by engineer. */
 "SETTINGS_INFORMATION_HEADER" = "Информация";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Пригласите друзей";
+"SETTINGS_INVITE_TITLE" = "Пригласите своих друзей";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "Вы можете связаться со мной, используя @signalapp. Получить его сейчас: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Вы можете связаться со мной, используя @signalapp. Скачайте его сейчас: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Звук сообщения";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Условия и политика конфиденциальности";
+"SETTINGS_LEGAL_TERMS_CELL" = "Условия и Политика конфиденциальности";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Отправлять предпросмотр ссылки";
+"SETTINGS_LINK_PREVIEWS" = "Отправлять предпросмотры ссылок";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Предварительный просмотр поддерживается для ссылок Imgur, Instagram, Reddit и YouTube.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Предварительный просмотр поддерживается для ссылок Imgur, Instagram, Pinterest, Reddit и YouTube.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Предпросмотры ссылок";
@@ -2103,25 +2235,31 @@
 "SETTINGS_NAV_BAR_TITLE" = "Настройки";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Во время блокировки телефона могут появляться уведомления о звонках и сообщениях. Возможно, вы пожелаете ограничить то, что будет показано в этих уведомлениях.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Уведомления о звонках и сообщениях могут появляться, пока ваш телефон заблокирован. Возможно, вы пожелаете ограничить то, что будет показано в этих уведомлениях.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Содержимое уведомления";
+
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Контакт присоединился к Signal";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "События";
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Уведомления";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Показывать имя и номер вызывающего абонента";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Показывать имя и номер звонящего";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Показывать вызовы в списке \"Недавние\" в приложении Tелефон iOS.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Показывать звонки в списке «Недавние» в приложении Tелефон iOS.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Показать вызовы в Недавних";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Показать звонки в Недавних";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Интеграция вызовов с iOS";
+"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Интеграция звонков с iOS";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Конфиденциальность";
@@ -2130,16 +2268,16 @@
 "SETTINGS_READ_RECEIPT" = "Уведомления о прочтении";
 
 /* An explanation of the 'read receipts' setting. */
-"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Просматривайте и делитесь отчетами о прочтении сообщений. Этот параметр является необязательным и применяется ко всем разговорам.";
+"SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Видеть и показывать другим, когда сообщения были прочитаны. Этот параметр является необязательным и применяется ко всем разговорам.";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Повторная регистрация";
+"SETTINGS_REREGISTER_BUTTON" = "Повторно зарегистрироваться";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Тайм-аут блокировки экрана";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Разблокировать Signal, используя Touch ID, Face ID, или кода вашего устройства iOS. Вы также можете отвечать на входящие вызовы и получать уведомления о сообщениях, пока включена блокировка экрана. Настройки уведомлений Signal позволяют настраивать отображаемую информацию.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Разблокировать экран Signal, используя Touch ID, Face ID или код вашего устройства iOS. Вы по-прежнему сможете отвечать на входящие вызовы и получать уведомления о сообщениях, пока включена блокировка экрана. Настройки уведомлений Signal позволяют вам настраивать отображаемую информацию.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Блокировка экрана";
@@ -2151,10 +2289,10 @@
 "SETTINGS_SCREEN_SECURITY" = "Включить защиту экрана";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Запретить предпросмотр содержимого Signal в переключателе приложений iOS.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Предотвращать появление предпросмотра Signal в переключателе приложений iOS.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Если включить интеграцию вызовов с iOS, то вызовы Signal будут проходить через встроенную систему звонков iOS, отображая их на заблокированном экране и сохраняя в истории вызовов телефона. Обратите внимание, что если на Вашем устройстве включен iCloud, то в этом случае информация о звонках может отправляться в Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Интеграция звонков с iOS показывает звонки Signal на заблокированном экране и в истории звонков системы. При желании вы можете показывать имя и номер вашего контакта. Если на вашем устройстве включен iCloud, то эта история звонков будет отправляться в Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Уведомления";
@@ -2187,7 +2325,7 @@
 "SETTINGS_TYPING_INDICATORS" = "Индикаторы ввода";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "Даёт знать собеседнику и Вам о том, что происходит набор сообщения. Функция опциональна и применима ко всем перепискам.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Видеть и показывать другим, когда сообщения набираются. Этот параметр является необязательным и применяется ко всем разговорам.";
 
 /* Label for a link to more info about unidentified delivery. */
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Узнать больше";
@@ -2199,13 +2337,13 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Показывать индикаторы";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Показывать значок на экране “Подробнее”, если сообщение было доставлено по технологии запечатанного отправителя.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Показывать значок статуса при выборе «Подробнее» для сообщений, доставленных с использованием запечатанного отправителя.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Разрешить от всех";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Разрешить запечатанного отправителя для входящих сообщений от людей не из контактов и тех, с кем вы ещё не делились профилем.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Включить запечатанного отправителя для входящих сообщений от людей не из контактов и тех, с кем вы еще не делились своим профилем.";
 
 /* No comment provided by engineer. */
 "SETTINGS_VERSION" = "Версия";
@@ -2220,28 +2358,28 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Ваш код безопасности с %@ недавно изменился. Вы можете проверить его в основном приложении перед повторной отправкой.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Ваш код безопасности с %@ недавно изменился. Возможно, вы захотите подтвердить его в основном приложении перед повторной отправкой.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "Загрузка...";
+"SHARE_EXTENSION_LOADING" = "Загрузка…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Запустите приложение Signal для регистрации.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Запустите приложение Signal, чтобы зарегистрироваться.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Не зарегистрированы";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Signal не зарегистрирован";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Запустите приложение Signal для обновления или регистрации.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Запустите приложение Signal, чтобы обновиться или зарегистрироваться.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Не готов";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Signal не готов";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Не удалось отправить вложение";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Загрузка...";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Загрузка…";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Не удалось подготовить вложение";
@@ -2253,22 +2391,67 @@
 "SHOW_SAFETY_NUMBER_ACTION" = "Показать код безопасности";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Показать переписку";
+"SHOW_THREAD_BUTTON_TITLE" = "Показать разговор";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "Предлагаю установить Signal! Вот ссылка:";
+"SMS_INVITE_BODY" = "Я предлагаю установить Signal! Вот ссылка:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Нет";
 
+/* Preview text shown in notifications and home view for sticker messages. */
+"STICKER_MESSAGE_PREVIEW" = "Стикер-сообщение";
+
+/* Tooltip indicating that a sticker pack was installed. */
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Набор стикеров установлен";
+
+/* Label for a sticker that failed to download. */
+"STICKERS_FAILED_DOWNLOAD" = "Стикер";
+
+/* Label for the 'install sticker pack' button. */
+"STICKERS_INSTALL_BUTTON" = "Установить";
+
+/* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Серия художников Signal";
+
+/* Title for the 'available known stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Полученные вами стикеры";
+
+/* Title for the 'installed stickers' section of the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Установленные стикеры";
+
+/* Label indicating that the user has no installed sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Нет установленных стикеров";
+
+/* Label indicating that the user has no known sticker packs. */
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Стикеры из входящих сообщений появятся здесь";
+
+/* Title for the 'manage stickers' view. */
+"STICKERS_MANAGE_VIEW_TITLE" = "Стикеры";
+
+/* Default title for sticker packs. */
+"STICKERS_PACK_DEFAULT_TITLE" = "Набор стикеров";
+
+/* Error message shown when a sticker pack failed to install. */
+"STICKERS_PACK_INSTALL_FAILED" = "Не удалось установить набор стикеров.";
+
+/* Title of the 'share sticker pack' view. */
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Поделиться набором стикеров";
+
+/* The default title for the 'sticker pack' view. */
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Набор стикеров";
+
+/* Label for the 'uninstall sticker pack' button. */
+"STICKERS_UNINSTALL_BUTTON" = "Удалить";
+
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ваш код безопасности совпал с %@. Вы можете отметить этот контакт как проверенный.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ваш код безопасности с %@ совпал. Вы можете отметить этот контакт как подтвержденный.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Коды безопасности совпадают!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Код безопасности совпадает!";
 
 /* Label for button to verify a user's safety number. */
-"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Верифицировать код безопасности";
+"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Подтвердить код безопасности";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ дней";
@@ -2295,16 +2478,16 @@
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@с";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ дня";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ день";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ часа";
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ час";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ минуты";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ минута";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ недели";
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ неделя";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS" = "%@ недель";
@@ -2321,14 +2504,35 @@
 /* Pressing this button moves an archived thread from the archive back to the inbox */
 "UNARCHIVE_ACTION" = "Разархивировать";
 
-/* In Inbox view, last message label for thread with corrupted attachment. */
-"UNKNOWN_ATTACHMENT_LABEL" = "Неизвестное вложение";
-
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Пользователя нет в Вашем списке контактов. Заблокировать его?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Пользователя нет в вашем списке контактов. Хотите ли вы заблокировать этого пользователя?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Неизвестный контакт";
+
+/* Label for unknown countries. */
+"UNKNOWN_COUNTRY_NAME" = "Неизвестная страна";
+
+/* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Одно из ваших устройств отправило сообщение, которое не может быть обработано или отображено, поскольку оно использует новую функцию Signal.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ отправил(-a) вам сообщение, которое не может быть обработано или отображено, поскольку оно использует новую функцию Signal.";
+
+/* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Вы получили сообщение, которое не может быть обработано или отображено, поскольку оно использует новую функцию Signal.";
+
+/* Label for button that lets users upgrade the app. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Обновить Signal сейчас";
+
+/* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Выполнено обновление до последней версии Signal. Теперь вы можете получать этот тип сообщений на вашем устройстве.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Вы можете попросить %@ повторно отправить это сообщение, так как теперь вы используете актуальную версию Signal.";
+
+/* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Вы можете попросить отправителя повторно отправить это сообщение, так как теперь вы используете актуальную версию Signal.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Неизвестно";
@@ -2337,7 +2541,7 @@
 "UNLINK_ACTION" = "Отвязать";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Это устройство больше не сможет отправлять и получать сообщения, если оно отвязано.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Это устройство больше не сможет отправлять и получать сообщения, если оно будет отвязано.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Отвязать «%@»?";
@@ -2349,7 +2553,7 @@
 "UNNAMED_DEVICE" = "Безымянное устройство";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Не удалось отменить регистрацию Signal.";
+"UNREGISTER_SIGNAL_FAIL" = "Не удалось отменить регистрацию в Signal.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Получено вложение неподдерживаемого типа.";
@@ -2358,115 +2562,43 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Ваше устройство не поддерживает эту функцию.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Вы не можете удалить участников группы. Для этого необходимо, чтобы участники покинули группу самостоятельно. Либо просто создайте новую группу без какого-либо участника.";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Вы не можете удалять участников группы. Для этого необходимо, чтобы участник покинул группу, либо вы можете создать новую группу без этого участника.";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Не поддерживается";
 
-/* Description of CallKit to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_CALLKIT_DESCRIPTION" = "Ответить на входящий звонок с экрана блокировки можно при включенной интеграции вызовов с iOS. Мы отключили это по умолчанию в целях соблюдения Вашей приватности";
+/* Body text for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Зачем использовать слова, когда можно использовать стикеры? Нажмите этот значок на своей клавиатуре:";
 
-/* button label shown once when when user upgrades app, in context of call kit */
-"UPGRADE_EXPERIENCE_CALLKIT_PRIVACY_SETTINGS_BUTTON" = "Узнайте больше в настройках приватности. ";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_CALLKIT_TITLE" = "Просто перетащите на Ответ";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_ENABLE_TYPING_INDICATOR_BUTTON" = "Включить индикаторы ввода";
-
-/* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_DESCRIPTION" = "Optional link previews are now supported for some of the most popular sites on the Internet.";
-
-/* Subtitle for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_SUBTITLE" = "You can disable or enable this feature anytime in your Signal settings (Privacy > Send link previews).";
-
-/* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_LINK_PREVIEWS_TITLE" = "Предпросмотры ссылок";
-
-/* Description for notification audio customization */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_DESCRIPTION" = "Теперь вы можете выбирать звуки уведомлений по умолчанию и для разговора, а сигнал вызова будет воспроизводить ту мелодию звонка, которую вы выбрали для каждого системного контакта.";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_SETTINGS_BUTTON" = "Просмотр параметров уведомлений";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_NOTIFICATION_AUDIO_TITLE" = "Обновленные звуки вызовов и сообщений";
-
-/* button label shown one time, after user upgrades app */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_BUTTON" = "Настроить ваш профиль";
-
-/* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_DESCRIPTION" = "Теперь вы можете поделиться фотографией профиля и именем с друзьями в Signal";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_PROFILES_TITLE" = "Готовы к крупному плану?";
-
-/* Description of new profile feature for upgrading (existing) users */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_DESCRIPTION" = "Теперь у вас есть возможность узнавать и делиться о прочтении сообщений.";
-
-/* button label shown one time, after upgrade */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_PRIVACY_SETTINGS" = "Включите отчеты о прочтении в настройках конфиденциальности.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_INTRODUCING_READ_RECEIPTS_TITLE" = "Введение в отчеты о прочтении";
-
-/* Body text for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_DESCRIPTION" = "Теперь вы можете видеть и показывать другим, когда вы набираете сообщения.";
-
-/* Header for upgrading users */
-"UPGRADE_EXPERIENCE_INTRODUCING_TYPING_INDICATORS_TITLE" = "Представляем индикаторы ввода";
-
-/* Description of video calling to upgrading (existing) users */
-"UPGRADE_EXPERIENCE_VIDEO_DESCRIPTION" = "Теперь Signal поддерживает приватные видеозвонки. Просто начните вызов как обычно и нажмите кнопку с изображением камеры на экране.";
-
-/* Header for upgrade experience */
-"UPGRADE_EXPERIENCE_VIDEO_TITLE" = "Добро пожаловать в Видео Звонки!";
+/* Header for stickers splash screen */
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Представляем стикеры";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Для Signal требуется iOS 9 или новее. Пожалуйста, используйте функцию Обновление ПО в программе Настройки.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "В скором времени Signal будет работать только на iOS 10 и выше. Пожалуйста, обновите iOS, перейдя в приложение Настройки >> Основные >> Обновление ПО.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Обновите IOS";
-
-/* button text for back button on verification view */
-"VERIFICATION_BACK_BUTTON" = "Назад";
-
-/* Text field placeholder for SMS verification code during registration */
-"VERIFICATION_CHALLENGE_DEFAULT_TEXT" = "Код подтверждения";
-
-/* button text during registration to request phone number verification be done via phone call */
-"VERIFICATION_CHALLENGE_SEND_VIA_VOICE" = "Сообщить код посредством голосовой связи";
-
-/* button text during registration to request another SMS code be sent */
-"VERIFICATION_CHALLENGE_SUBMIT_AGAIN" = "Прислать код подтвеждения по SMS";
-
-/* button text during registration to submit your SMS verification code. */
-"VERIFICATION_CHALLENGE_SUBMIT_CODE" = "Подтвердить";
-
-/* Label indicating the phone number currently being verified. */
-"VERIFICATION_PHONE_NUMBER_FORMAT" = "Введите код подтверждения, который мы отправим %@";
+"UPGRADE_IOS_ALERT_TITLE" = "Обновите iOS";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Вы отметили %@ как непроверенный.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Вы отметили %@ как неподтвержденный.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Вы отметили %@ как проверенный на другом устройстве.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Вы отметили %@ как неподтвержденный на другом устройстве.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Вы отметили %@ как проверенный.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Вы отметили %@ как подтвержденный.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Вы отметили %@ как проверенный на другом устройстве";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Вы отметили %@ как подтвержденный на другом устройстве.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "Состояние проверки изменено.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "Состояние подтверждения изменено.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "Посмотреть номер безопасности";
+"VERIFY_PRIVACY" = "Просмотреть код безопасности";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "Просмотр кодов безопасности";
+"VERIFY_PRIVACY_MULTIPLE" = "Проверить коды безопасности";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Проведите для отмены";
@@ -2475,7 +2607,7 @@
 "VOICE_MESSAGE_FILE_NAME" = "Голосовое сообщение";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Нажмите и удерживайте для записи голосового сообщения";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Нажмите и удерживайте, чтобы записать голосовое сообщение.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Голосовое сообщение";

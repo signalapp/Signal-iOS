@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 @objc class DebugUIFileBrowser: OWSTableViewController {
@@ -153,7 +153,7 @@
                     textField.text = strongSelf.fileURL.lastPathComponent
                 }
 
-                strongSelf.present(alert, animated: true)
+                strongSelf.presentAlert(alert)
             },
 
             OWSTableItem.disclosureItem(withText: "➡ Move") { [weak self] in
@@ -198,7 +198,7 @@
                     textField.text = oldDirectory.path
                 }
 
-                strongSelf.present(alert, animated: true)
+                strongSelf.presentAlert(alert)
             },
 
             OWSTableItem.disclosureItem(withText: "❌ Delete") { [weak self] in
@@ -233,7 +233,7 @@
 
                 alert.addAction(UIAlertAction(title: "Dismiss", style: .default))
 
-                strongSelf.present(alert, animated: true)
+                strongSelf.presentAlert(alert)
             },
 
             OWSTableItem.disclosureItem(withText: "🔒 Set File Protection") { [weak self] in
@@ -273,7 +273,7 @@
                 }
                 actionSheet.addAction(OWSAlerts.cancelAction)
 
-                strongSelf.present(actionSheet, animated: true)
+                strongSelf.presentAlert(actionSheet)
             }
         ]
 
@@ -311,7 +311,7 @@
                     textField.placeholder = "File Name"
                 }
 
-                strongSelf.present(alert, animated: true)
+                strongSelf.presentAlert(alert)
             }
 
             managementItems.append(createFileItem)
@@ -352,7 +352,7 @@
                     textField.placeholder = "Dir Name"
                 }
 
-                strongSelf.present(alert, animated: true)
+                strongSelf.presentAlert(alert)
             }
             managementItems.append(createDirItem)
 

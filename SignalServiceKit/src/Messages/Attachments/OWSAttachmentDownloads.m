@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAttachmentDownloads.h"
@@ -7,6 +7,7 @@
 #import "MIMETypeUtil.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSBackgroundTask.h"
+#import "OWSDisappearingMessagesJob.h"
 #import "OWSDispatch.h"
 #import "OWSError.h"
 #import "OWSFileSystem.h"
@@ -23,8 +24,8 @@
 #import "TSThread.h"
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Cryptography.h>
+#import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -41,7 +42,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
 @interface OWSAttachmentDownloadJob : NSObject
 
-@property (nonatomic, readonly) TSAttachmentPointer *attachmentPointer;
+@property (nonatomic, readonly) NSString *attachmentId;
 @property (nonatomic, readonly, nullable) TSMessage *message;
 @property (nonatomic, readonly) AttachmentDownloadSuccess success;
 @property (nonatomic, readonly) AttachmentDownloadFailure failure;
@@ -53,17 +54,17 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
 @implementation OWSAttachmentDownloadJob
 
-- (instancetype)initWithAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-                                  message:(nullable TSMessage *)message
-                                  success:(AttachmentDownloadSuccess)success
-                                  failure:(AttachmentDownloadFailure)failure
+- (instancetype)initWithAttachmentId:(NSString *)attachmentId
+                             message:(nullable TSMessage *)message
+                             success:(AttachmentDownloadSuccess)success
+                             failure:(AttachmentDownloadFailure)failure
 {
     self = [super init];
     if (!self) {
         return self;
     }
 
-    _attachmentPointer = attachmentPointer;
+    _attachmentId = attachmentId;
     _message = message;
     _success = success;
     _failure = failure;
@@ -90,9 +91,9 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
 #pragma mark - Dependencies
 
-- (OWSPrimaryStorage *)primaryStorage
+- (SDSDatabaseStorage *)databaseStorage
 {
-    return SSKEnvironment.shared.primaryStorage;
+    return SSKEnvironment.shared.databaseStorage;
 }
 
 - (TSNetworkManager *)networkManager
@@ -100,6 +101,10 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     return SSKEnvironment.shared.networkManager;
 }
 
+- (AFHTTPSessionManager *)cdnSessionManager
+{
+    return OWSSignalService.sharedInstance.CDNSessionManager;
+}
 
 #pragma mark -
 
@@ -130,18 +135,52 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     }
 }
 
+- (void)downloadBodyAttachmentsForMessage:(TSMessage *)message
+                              transaction:(SDSAnyReadTransaction *)transaction
+                                  success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
+                                  failure:(void (^)(NSError *error))failure
+{
+    [self downloadAttachmentsForMessage:message
+                            attachments:[message bodyAttachmentsWithTransaction:transaction]
+                            transaction:transaction
+                                success:success
+                                failure:failure];
+}
+
+- (void)downloadAllAttachmentsForMessage:(TSMessage *)message
+                             transaction:(SDSAnyReadTransaction *)transaction
+                                 success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
+                                 failure:(void (^)(NSError *error))failure
+{
+    [self downloadAttachmentsForMessage:message
+                            attachments:[message allAttachmentsWithTransaction:transaction]
+                            transaction:transaction
+                                success:success
+                                failure:failure];
+}
+
 - (void)downloadAttachmentsForMessage:(TSMessage *)message
-                          transaction:(YapDatabaseReadTransaction *)transaction
+                          attachments:(NSArray<TSAttachment *> *)attachments
+                          transaction:(SDSAnyReadTransaction *)transaction
                               success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                               failure:(void (^)(NSError *error))failure
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(message);
+    OWSAssertDebug(attachments.count > 0);
+
+    if (CurrentAppContext().isRunningTests) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSError *error = [OWSAttachmentDownloads buildError];
+            failure(error);
+        });
+        return;
+    }
 
     NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray array];
     NSMutableArray<TSAttachmentPointer *> *attachmentPointers = [NSMutableArray new];
 
-    for (TSAttachment *attachment in [message attachmentsWithTransaction:transaction]) {
+    for (TSAttachment *attachment in attachments) {
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
             TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
             [attachmentStreams addObject:attachmentStream];
@@ -165,16 +204,25 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 }
 
 - (void)downloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
+                          message:(nullable TSMessage *)message
                           success:(void (^)(NSArray<TSAttachmentStream *> *attachmentStreams))success
                           failure:(void (^)(NSError *error))failure
 {
     OWSAssertDebug(attachmentPointer);
 
+    if (CurrentAppContext().isRunningTests) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSError *error = [OWSAttachmentDownloads buildError];
+            failure(error);
+        });
+        return;
+    }
+
     [self enqueueJobsForAttachmentStreams:@[]
                        attachmentPointers:@[
                            attachmentPointer,
                        ]
-                                  message:nil
+                                  message:message
                                   success:success
                                   failure:failure];
 }
@@ -199,7 +247,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         NSMutableArray<AnyPromise *> *promises = [NSMutableArray array];
         for (TSAttachmentPointer *attachmentPointer in attachmentPointers) {
             AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-                [self enqueueJobForAttachmentPointer:attachmentPointer
+                [self enqueueJobForAttachmentId:attachmentPointer.uniqueId
                     message:message
                     success:^(TSAttachmentStream *attachmentStream) {
                         @synchronized(attachmentStreams) {
@@ -243,26 +291,26 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     });
 }
 
-- (void)enqueueJobForAttachmentPointer:(TSAttachmentPointer *)attachmentPointer
-                               message:(nullable TSMessage *)message
-                               success:(void (^)(TSAttachmentStream *attachmentStream))success
-                               failure:(void (^)(NSError *error))failure
+- (void)enqueueJobForAttachmentId:(NSString *)attachmentId
+                          message:(nullable TSMessage *)message
+                          success:(void (^)(TSAttachmentStream *attachmentStream))success
+                          failure:(void (^)(NSError *error))failure
 {
-    OWSAssertDebug(attachmentPointer);
+    OWSAssertDebug(attachmentId.length > 0);
 
-    OWSAttachmentDownloadJob *job = [[OWSAttachmentDownloadJob alloc] initWithAttachmentPointer:attachmentPointer
-                                                                                        message:message
-                                                                                        success:success
-                                                                                        failure:failure];
+    OWSAttachmentDownloadJob *job = [[OWSAttachmentDownloadJob alloc] initWithAttachmentId:attachmentId
+                                                                                   message:message
+                                                                                   success:success
+                                                                                   failure:failure];
 
     @synchronized(self) {
         [self.attachmentDownloadJobQueue addObject:job];
     }
 
-    [self startDownloadIfPossible];
+    [self tryToStartNextDownload];
 }
 
-- (void)startDownloadIfPossible
+- (void)tryToStartNextDownload
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         OWSAttachmentDownloadJob *_Nullable job;
@@ -276,66 +324,126 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             if (!job) {
                 return;
             }
-            if (self.downloadingJobMap[job.attachmentPointer.uniqueId] != nil) {
+            if (self.downloadingJobMap[job.attachmentId] != nil) {
                 // Ensure we only have one download in flight at a time for a given attachment.
                 OWSLogWarn(@"Ignoring duplicate download.");
                 return;
             }
             [self.attachmentDownloadJobQueue removeObjectAtIndex:0];
-            self.downloadingJobMap[job.attachmentPointer.uniqueId] = job;
+            self.downloadingJobMap[job.attachmentId] = job;
         }
 
-        [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            job.attachmentPointer.state = TSAttachmentPointerStateDownloading;
-            [job.attachmentPointer saveWithTransaction:transaction];
+        __block TSAttachmentPointer *_Nullable attachmentPointer;
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
+            TSAttachment *_Nullable attachment =
+                [TSAttachmentPointer anyFetchWithUniqueId:job.attachmentId transaction:transaction];
+            if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                return;
+            }
+
+            attachmentPointer = (TSAttachmentPointer *)attachment;
+            [attachmentPointer anyUpdateWithTransaction:transaction
+                                                  block:^(TSAttachment *attachment) {
+                                                      if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                                                          OWSFailDebug(@"Unexpected object: %@", attachment.class);
+                                                          return;
+                                                      }
+                                                      TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
+                                                      pointer.state = TSAttachmentPointerStateDownloading;
+                                                  }];
 
             if (job.message) {
-                [job.message touchWithTransaction:transaction];
+                if (transaction.transitional_yapWriteTransaction) {
+                    [job.message touchWithTransaction:transaction.transitional_yapWriteTransaction];
+                }
             }
         }];
 
+        if (!attachmentPointer) {
+            // Abort.
+            [self tryToStartNextDownload];
+            return;
+        }
+
         [self retrieveAttachmentForJob:job
+            attachmentPointer:attachmentPointer
             success:^(TSAttachmentStream *attachmentStream) {
                 OWSLogVerbose(@"Attachment download succeeded.");
 
-                [self.primaryStorage.dbReadWriteConnection
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        [attachmentStream saveWithTransaction:transaction];
+                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    TSAttachment *_Nullable existingAttachment =
+                        [TSAttachment anyFetchWithUniqueId:attachmentStream.uniqueId transaction:transaction];
+                    if (!existingAttachment) {
+                        OWSFailDebug(@"Attachment no longer exists.");
+                        return;
+                    }
+                    if (![existingAttachment isKindOfClass:[TSAttachmentPointer class]]) {
+                        OWSFailDebug(@"Attachment unexpectedly already saved.");
+                        return;
+                    }
 
-                        if (job.message) {
-                            [job.message touchWithTransaction:transaction];
+                    [existingAttachment anyRemoveWithTransaction:transaction];
+                    [attachmentStream anyInsertWithTransaction:transaction];
+
+                    if (job.message) {
+                        if (transaction.transitional_yapWriteTransaction) {
+                            [job.message touchWithTransaction:transaction.transitional_yapWriteTransaction];
+
+                            [transaction.transitional_yapWriteTransaction
+                                addCompletionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                   completionBlock:^{
+                                       [OWSDisappearingMessagesJob.sharedJob schedulePass];
+                                   }];
                         }
-                    }];
+                    }
+                }];
 
                 job.success(attachmentStream);
 
                 @synchronized(self) {
-                    [self.downloadingJobMap removeObjectForKey:job.attachmentPointer.uniqueId];
+                    [self.downloadingJobMap removeObjectForKey:job.attachmentId];
                 }
 
-                [self startDownloadIfPossible];
+                [self tryToStartNextDownload];
             }
             failure:^(NSError *error) {
                 OWSLogError(@"Attachment download failed with error: %@", error);
 
-                [self.primaryStorage.dbReadWriteConnection
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        job.attachmentPointer.mostRecentFailureLocalizedText = error.localizedDescription;
-                        job.attachmentPointer.state = TSAttachmentPointerStateFailed;
-                        [job.attachmentPointer saveWithTransaction:transaction];
+                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
+                    TSAttachment *_Nullable attachment =
+                        [TSAttachmentPointer anyFetchWithUniqueId:job.attachmentId transaction:transaction];
+                    if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                        return;
+                    }
+                    TSAttachmentPointer *attachmentPointer = (TSAttachmentPointer *)attachment;
+                    [attachmentPointer
+                        anyUpdateWithTransaction:transaction
+                                           block:^(TSAttachment *attachment) {
+                                               if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                                                   OWSFailDebug(@"Unexpected object: %@", attachment.class);
+                                                   return;
+                                               }
+                                               TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
+                                               pointer.mostRecentFailureLocalizedText = error.localizedDescription;
+                                               pointer.state = TSAttachmentPointerStateFailed;
+                                           }];
 
-                        if (job.message) {
-                            [job.message touchWithTransaction:transaction];
+                    if (job.message) {
+                        if (transaction.transitional_yapWriteTransaction) {
+                            [job.message touchWithTransaction:transaction.transitional_yapWriteTransaction];
                         }
-                    }];
+                    }
+                }];
 
                 @synchronized(self) {
-                    [self.downloadingJobMap removeObjectForKey:job.attachmentPointer.uniqueId];
+                    [self.downloadingJobMap removeObjectForKey:job.attachmentId];
                 }
 
                 job.failure(error);
 
-                [self startDownloadIfPossible];
+                [self tryToStartNextDownload];
             }];
     });
 }
@@ -343,11 +451,12 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 #pragma mark -
 
 - (void)retrieveAttachmentForJob:(OWSAttachmentDownloadJob *)job
+               attachmentPointer:(TSAttachmentPointer *)attachmentPointer
                          success:(void (^)(TSAttachmentStream *attachmentStream))successHandler
                          failure:(void (^)(NSError *error))failureHandler
 {
     OWSAssertDebug(job);
-    TSAttachmentPointer *attachmentPointer = job.attachmentPointer;
+    OWSAssertDebug(attachmentPointer);
 
     __block OWSBackgroundTask *_Nullable backgroundTask =
         [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
@@ -373,63 +482,29 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     if (attachmentPointer.serverId < 100) {
         OWSLogError(@"Suspicious attachment id: %llu", (unsigned long long)attachmentPointer.serverId);
     }
-    TSRequest *request = [OWSRequestFactory attachmentRequestWithAttachmentId:attachmentPointer.serverId];
-
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
-            if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                OWSLogError(@"Failed retrieval of attachment. Response had unexpected format.");
-                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                return markAndHandleFailure(error);
+    dispatch_async([OWSDispatch attachmentsQueue], ^{
+        [self downloadJob:job
+            attachmentPointer:(TSAttachmentPointer *)attachmentPointer
+            success:^(NSString *encryptedDataFilePath) {
+                [self decryptAttachmentPath:encryptedDataFilePath
+                          attachmentPointer:attachmentPointer
+                                    success:markAndHandleSuccess
+                                    failure:markAndHandleFailure];
             }
-            NSString *location = [(NSDictionary *)responseObject objectForKey:@"location"];
-            if (!location) {
-                OWSLogError(@"Failed retrieval of attachment. Response had no location.");
-                NSError *error = OWSErrorMakeUnableToProcessServerResponseError();
-                return markAndHandleFailure(error);
-            }
-
-            dispatch_async([OWSDispatch attachmentsQueue], ^{
-                [self downloadFromLocation:location
-                    job:job
-                    success:^(NSString *encryptedDataFilePath) {
-                        [self decryptAttachmentPath:encryptedDataFilePath
-                                  attachmentPointer:attachmentPointer
-                                            success:markAndHandleSuccess
-                                            failure:markAndHandleFailure];
-                    }
-                    failure:^(NSURLSessionTask *_Nullable task, NSError *error) {
-                        if (attachmentPointer.serverId < 100) {
-                            // This looks like the symptom of the "frequent 404
-                            // downloading attachments with low server ids".
-                            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-                            NSInteger statusCode = [httpResponse statusCode];
-                            OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
-                                (int)statusCode,
-                                (unsigned long long)attachmentPointer.serverId,
-                                error);
-                        }
-                        markAndHandleFailure(error);
-                    }];
-            });
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents errorAttachmentRequestFailed]);
-            }
-            OWSLogError(@"Failed retrieval of attachment with error: %@", error);
-            if (attachmentPointer.serverId < 100) {
-                // This _shouldn't_ be the symptom of the "frequent 404
-                // downloading attachments with low server ids".
-                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
-                NSInteger statusCode = [httpResponse statusCode];
-                OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
-                    (int)statusCode,
-                    (unsigned long long)attachmentPointer.serverId,
-                    error);
-            }
-            return markAndHandleFailure(error);
-        }];
+            failure:^(NSURLSessionTask *_Nullable task, NSError *error) {
+                if (attachmentPointer.serverId < 100) {
+                    // This looks like the symptom of the "frequent 404
+                    // downloading attachments with low server ids".
+                    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
+                    NSInteger statusCode = [httpResponse statusCode];
+                    OWSFailDebug(@"%d Failure with suspicious attachment id: %llu, %@",
+                        (int)statusCode,
+                        (unsigned long long)attachmentPointer.serverId,
+                        error);
+                }
+                markAndHandleFailure(error);
+            }];
+    });
 }
 
 - (void)decryptAttachmentPath:(NSString *)encryptedDataFilePath
@@ -447,8 +522,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             NSData *_Nullable encryptedData = [NSData dataWithContentsOfFile:encryptedDataFilePath];
             if (!encryptedData) {
                 OWSLogError(@"Could not load encrypted data.");
-                NSError *error = OWSErrorWithCodeDescription(
-                    OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+                NSError *error = [OWSAttachmentDownloads buildError];
                 return failure(error);
             }
 
@@ -485,8 +559,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     }
 
     if (!plaintext) {
-        NSError *error = OWSErrorWithCodeDescription(
-            OWSErrorCodeFailedToDecryptMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+        NSError *error = [OWSAttachmentDownloads buildError];
         failureHandler(error);
         return;
     }
@@ -515,19 +588,18 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     return _serialQueue;
 }
 
-- (void)downloadFromLocation:(NSString *)location
-                         job:(OWSAttachmentDownloadJob *)job
-                     success:(void (^)(NSString *encryptedDataPath))successHandler
-                     failure:(void (^)(NSURLSessionTask *_Nullable task, NSError *error))failureHandlerParam
+- (void)downloadJob:(OWSAttachmentDownloadJob *)job
+    attachmentPointer:(TSAttachmentPointer *)attachmentPointer
+              success:(void (^)(NSString *encryptedDataPath))successHandler
+              failure:(void (^)(NSURLSessionTask *_Nullable task, NSError *error))failureHandlerParam
 {
     OWSAssertDebug(job);
-    TSAttachmentPointer *attachmentPointer = job.attachmentPointer;
+    OWSAssertDebug(attachmentPointer);
 
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    manager.requestSerializer = [AFHTTPRequestSerializer serializer];
-    [manager.requestSerializer setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    AFHTTPSessionManager *manager = self.cdnSessionManager;
     manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    NSString *urlPath = [NSString stringWithFormat:@"attachments/%llu", attachmentPointer.serverId];
+    NSURL *url = [[NSURL alloc] initWithString:urlPath relativeToURL:manager.baseURL];
 
     // We want to avoid large downloads from a compromised or buggy service.
     const long kMaxDownloadSize = 150 * 1024 * 1024;
@@ -551,9 +623,10 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     NSString *method = @"GET";
     NSError *serializationError = nil;
     NSMutableURLRequest *request = [manager.requestSerializer requestWithMethod:method
-                                                                      URLString:location
+                                                                      URLString:url.absoluteString
                                                                      parameters:nil
                                                                           error:&serializationError];
+    [request setValue:OWSMimeTypeApplicationOctetStream forHTTPHeaderField:@"Content-Type"];
     if (serializationError) {
         return failureHandler(serializationError);
     }
@@ -615,7 +688,6 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                 return;
             }
 
-
             NSString *contentLength = headers[@"Content-Length"];
             if (![contentLength isKindOfClass:[NSString class]]) {
                 OWSLogError(@"Attachment download missing or invalid content length.");
@@ -637,29 +709,26 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         destination:^(NSURL *targetPath, NSURLResponse *response) {
             return tempFileURL;
         }
-        completionHandler:^(NSURLResponse *response, NSURL *_Nullable filePath, NSError *_Nullable error) {
+        completionHandler:^(NSURLResponse *response, NSURL *_Nullable completionUrl, NSError *_Nullable error) {
             if (error) {
                 failureHandler(error);
                 return;
             }
-            if (![tempFileURL isEqual:filePath]) {
+            if (![tempFileURL isEqual:completionUrl]) {
                 OWSLogError(@"Unexpected temp file path.");
-                NSError *error = OWSErrorWithCodeDescription(
-                    OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+                NSError *error = [OWSAttachmentDownloads buildError];
                 return failureHandler(error);
             }
 
             NSNumber *_Nullable fileSize = [OWSFileSystem fileSizeOfPath:tempFilePath];
             if (!fileSize) {
                 OWSLogError(@"Could not determine attachment file size.");
-                NSError *error = OWSErrorWithCodeDescription(
-                    OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+                NSError *error = [OWSAttachmentDownloads buildError];
                 return failureHandler(error);
             }
             if (fileSize.unsignedIntegerValue > kMaxDownloadSize) {
                 OWSLogError(@"Attachment download length exceeds max size.");
-                NSError *error = OWSErrorWithCodeDescription(
-                    OWSErrorCodeInvalidMessage, NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @""));
+                NSError *error = [OWSAttachmentDownloads buildError];
                 return failureHandler(error);
             }
             successHandler(tempFilePath);
@@ -677,6 +746,14 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                              kAttachmentDownloadAttachmentIDKey : attachmentId
                                          }];
 }
+
++ (NSError *)buildError
+{
+    return OWSErrorWithCodeDescription(OWSErrorCodeAttachmentDownloadFailed,
+        NSLocalizedString(@"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED",
+            @"Error message indicating that attachment download(s) failed."));
+}
+
 
 @end
 

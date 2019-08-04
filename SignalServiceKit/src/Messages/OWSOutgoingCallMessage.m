@@ -26,7 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
                                   groupMetaMessage:TSGroupMetaMessageUnspecified
                                      quotedMessage:nil
                                       contactShare:nil
-                                       linkPreview:nil];
+                                       linkPreview:nil
+                                    messageSticker:nil
+               perMessageExpirationDurationSeconds:0];
     if (!self) {
         return self;
     }
@@ -54,18 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _answerMessage = answerMessage;
-
-    return self;
-}
-
-- (instancetype)initWithThread:(TSThread *)thread iceUpdateMessage:(SSKProtoCallMessageIceUpdate *)iceUpdateMessage
-{
-    self = [self initWithThread:thread];
-    if (!self) {
-        return self;
-    }
-
-    _iceUpdateMessages = @[ iceUpdateMessage ];
 
     return self;
 }
@@ -189,7 +179,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (self.answerMessage) {
         payload = @"answerMessage";
     } else if (self.iceUpdateMessages.count > 0) {
-        payload = @"iceUpdateMessage";
+        payload = [NSString stringWithFormat:@"iceUpdateMessages: %lu", (unsigned long)self.iceUpdateMessages.count];
     } else if (self.hangupMessage) {
         payload = @"hangupMessage";
     } else if (self.busyMessage) {

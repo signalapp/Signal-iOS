@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSCountryMetadata.h"
@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSCountryMetadata countryMetadataWithName:@"Andorra" tld:@".ad" frontingDomain:nil countryCode:@"AD"],
             [OWSCountryMetadata countryMetadataWithName:@"United Arab Emirates"
                                                     tld:@".ae"
-                                         frontingDomain:OWSCensorshipConfiguration_SouqFrontingHost
+                                         frontingDomain:OWSFrontingHost_GoogleUAE
                                             countryCode:@"AE"],
             [OWSCountryMetadata countryMetadataWithName:@"Afghanistan" tld:@".af" frontingDomain:nil countryCode:@"AF"],
             [OWSCountryMetadata countryMetadataWithName:@"Antigua and Barbuda"
@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSCountryMetadata countryMetadataWithName:@"Estonia" tld:@".ee" frontingDomain:nil countryCode:@"EE"],
             [OWSCountryMetadata countryMetadataWithName:@"Egypt"
                                                     tld:@".eg"
-                                         frontingDomain:OWSCensorshipConfiguration_SouqFrontingHost
+                                         frontingDomain:OWSFrontingHost_GoogleEgypt
                                             countryCode:@"EG"],
             [OWSCountryMetadata countryMetadataWithName:@"Spain" tld:@".es" frontingDomain:nil countryCode:@"ES"],
             [OWSCountryMetadata countryMetadataWithName:@"Ethiopia" tld:@".et" frontingDomain:nil countryCode:@"ET"],
@@ -255,7 +255,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSCountryMetadata countryMetadataWithName:@"New Zealand" tld:@".nz" frontingDomain:nil countryCode:@"NZ"],
             [OWSCountryMetadata countryMetadataWithName:@"Oman"
                                                     tld:@".om"
-                                         frontingDomain:OWSCensorshipConfiguration_SouqFrontingHost
+                                         frontingDomain:OWSFrontingHost_GoogleOman
                                             countryCode:@"OM"],
             [OWSCountryMetadata countryMetadataWithName:@"Pakistan" tld:@".pk" frontingDomain:nil countryCode:@"PK"],
             [OWSCountryMetadata countryMetadataWithName:@"Panama" tld:@".pa" frontingDomain:nil countryCode:@"PA"],
@@ -279,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
             [OWSCountryMetadata countryMetadataWithName:@"Paraguay" tld:@".py" frontingDomain:nil countryCode:@"PY"],
             [OWSCountryMetadata countryMetadataWithName:@"Qatar"
                                                     tld:@".qa"
-                                         frontingDomain:OWSCensorshipConfiguration_SouqFrontingHost
+                                         frontingDomain:OWSFrontingHost_GoogleQatar
                                             countryCode:@"QA"],
             [OWSCountryMetadata countryMetadataWithName:@"Romania" tld:@".ro" frontingDomain:nil countryCode:@"RO"],
             [OWSCountryMetadata countryMetadataWithName:@"Serbia" tld:@".rs" frontingDomain:nil countryCode:@"RS"],

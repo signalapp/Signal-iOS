@@ -15,12 +15,14 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 @interface OWSOperation ()
 
-@property (nullable) NSError *failingError;
+@property (nonatomic, nullable) NSError *failingError;
 @property (atomic) OWSOperationState operationState;
 @property (nonatomic) OWSBackgroundTask *backgroundTask;
 
 // This property should only be accessed on the main queue.
 @property (nonatomic) NSTimer *_Nullable retryTimer;
+
+@property (nonatomic) NSUInteger errorCount;
 
 @end
 
@@ -171,6 +173,8 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
         error.isFatal,
         error.isRetryable,
         (unsigned long)self.remainingRetries);
+
+    self.errorCount += 1;
 
     [self didReportError:error];
 

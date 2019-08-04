@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewController.h"
@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class CallService;
 @class CallUIAdapter;
 @class HomeViewController;
-@class NotificationsManager;
 @class OWSMessageFetcherJob;
 @class OWSNavigationController;
 @class OWSWebRTCCallMessageHandler;
@@ -47,11 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
                       focusMessageId:(nullable NSString *)focusMessageId
                             animated:(BOOL)isAnimated;
 
+- (void)presentConversationAndScrollToFirstUnreadMessageForThreadId:(NSString *)threadId animated:(BOOL)isAnimated;
+
 #pragma mark - Methods
 
 + (void)resetAppData;
 
-+ (void)clearAllNotifications;
 
 - (void)showHomeView;
 

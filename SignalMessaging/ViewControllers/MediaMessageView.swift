@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -138,8 +138,8 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         let audioPlayButton = UIButton()
         self.audioPlayButton = audioPlayButton
         setAudioIconToPlay()
-        audioPlayButton.imageView?.layer.minificationFilter = kCAFilterTrilinear
-        audioPlayButton.imageView?.layer.magnificationFilter = kCAFilterTrilinear
+        audioPlayButton.imageView?.layer.minificationFilter = .trilinear
+        audioPlayButton.imageView?.layer.magnificationFilter = .trilinear
         audioPlayButton.addTarget(self, action: #selector(audioPlayButtonPressed), for: .touchUpInside)
         let buttonSize = createHeroViewSize()
         audioPlayButton.autoSetDimension(.width, toSize: buttonSize)
@@ -221,8 +221,8 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         }
 
         let imageView = UIImageView(image: image)
-        imageView.layer.minificationFilter = kCAFilterTrilinear
-        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        imageView.layer.minificationFilter = .trilinear
+        imageView.layer.magnificationFilter = .trilinear
         let aspectRatio = image.size.width / image.size.height
         addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
         contentView = imageView
@@ -243,8 +243,8 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         }
 
         let imageView = UIImageView(image: image)
-        imageView.layer.minificationFilter = kCAFilterTrilinear
-        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        imageView.layer.minificationFilter = .trilinear
+        imageView.layer.magnificationFilter = .trilinear
         let aspectRatio = image.size.width / image.size.height
         addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
         contentView = imageView
@@ -307,8 +307,8 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         let image = UIImage(named: imageName)
         assert(image != nil)
         let imageView = UIImageView(image: image)
-        imageView.layer.minificationFilter = kCAFilterTrilinear
-        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        imageView.layer.minificationFilter = .trilinear
+        imageView.layer.magnificationFilter = .trilinear
         imageView.layer.shadowColor = UIColor.black.cgColor
         let shadowScaling = 5.0
         imageView.layer.shadowRadius = CGFloat(2.0 * shadowScaling)

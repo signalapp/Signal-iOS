@@ -1,15 +1,15 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsManagerProtocol.h"
-#import "TSYapDatabaseObject.h"
+#import <Mantle/MTLModel+NSCoding.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 extern const int32_t kGroupIdLength;
 
-@interface TSGroupModel : TSYapDatabaseObject
+@interface TSGroupModel : MTLModel
 
 @property (nonatomic) NSArray<NSString *> *groupMemberIds;
 @property (nullable, readonly, nonatomic) NSString *groupName;
@@ -22,6 +22,10 @@ extern const int32_t kGroupIdLength;
                     memberIds:(NSArray<NSString *> *)memberIds
                         image:(nullable UIImage *)image
                       groupId:(NSData *)groupId;
+
+- (instancetype)initWithGroupId:(NSData *)groupId
+                 groupMemberIds:(NSArray<NSString *> *)groupMemberIds
+                      groupName:(nullable NSString *)groupName;
 
 - (BOOL)isEqual:(id)other;
 - (BOOL)isEqualToGroupModel:(TSGroupModel *)model;

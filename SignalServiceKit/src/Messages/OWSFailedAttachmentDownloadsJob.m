@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFailedAttachmentDownloadsJob.h"
 #import "OWSPrimaryStorage.h"
 #import "TSAttachmentPointer.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
@@ -64,10 +65,11 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
     // Since we can't directly mutate the enumerated attachments, we store only their ids in hopes
     // of saving a little memory and then enumerate the (larger) TSAttachment objects one at a time.
     for (NSString *attachmentId in [self fetchAttemptingOutAttachmentIdsWithTransaction:transaction]) {
-        TSAttachmentPointer *_Nullable attachment =
-            [TSAttachmentPointer fetchObjectWithUniqueID:attachmentId transaction:transaction];
+        TSAttachment *_Nullable attachment =
+            [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction.asAnyRead];
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
-            block(attachment);
+            TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
+            block(pointer);
         } else {
             OWSLogError(@"unexpected object: %@", attachment);
         }
@@ -82,8 +84,15 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
             [self enumerateAttemptingOutAttachmentsWithBlock:^(TSAttachmentPointer *attachment) {
                 // sanity check
                 if (attachment.state != TSAttachmentPointerStateFailed) {
-                    attachment.state = TSAttachmentPointerStateFailed;
-                    [attachment saveWithTransaction:transaction];
+                    [attachment anyUpdateWithTransaction:transaction.asAnyWrite
+                                                   block:^(TSAttachment *attachment) {
+                                                       if (![attachment isKindOfClass:[TSAttachmentPointer class]]) {
+                                                           OWSFailDebug(@"unexpected object: %@", attachment);
+                                                           return;
+                                                       }
+                                                       TSAttachmentPointer *pointer = (TSAttachmentPointer *)attachment;
+                                                       pointer.state = TSAttachmentPointerStateFailed;
+                                                   }];
                     count++;
                 }
             }

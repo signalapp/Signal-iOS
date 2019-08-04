@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIColor+OWS.h"
@@ -39,6 +39,8 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *cellSelectedColor;
 @property (class, readonly, nonatomic) UIColor *cellSeparatorColor;
 
+@property (class, readonly, nonatomic) UIColor *cursorColor;
+
 // In some contexts, e.g. media viewing/sending, we always use "dark theme" UI regardless of the
 // users chosen theme.
 @property (class, readonly, nonatomic) UIColor *darkThemeNavbarIconColor;
@@ -47,6 +49,7 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *darkThemePrimaryColor;
 @property (class, readonly, nonatomic) UIBlurEffect *darkThemeBarBlurEffect;
 @property (class, readonly, nonatomic) UIColor *galleryHighlightColor;
+@property (class, readonly, nonatomic) UIColor *darkThemeOffBackgroundColor;
 
 #pragma mark -
 
@@ -60,6 +63,8 @@ extern NSString *const ThemeDidChangeNotification;
 
 @property (class, readonly, nonatomic) UIColor *toastForegroundColor;
 @property (class, readonly, nonatomic) UIColor *toastBackgroundColor;
+
+@property (class, readonly, nonatomic) UIColor *scrollButtonBackgroundColor;
 
 @end
 

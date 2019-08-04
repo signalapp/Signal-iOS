@@ -138,6 +138,7 @@ public class FullTextSearchFinder: NSObject {
     // This is a hot method, especially while running large migrations.
     // Changes to it should go through a profiler to make sure large migrations
     // aren't adversely affected.
+    @objc
     public class func normalize(text: String) -> String {
         // 1. Filter out invalid characters.
         let filtered = text.removeCharacters(characterSet: charactersToRemove)
@@ -172,7 +173,7 @@ public class FullTextSearchFinder: NSObject {
         var result = recipientIndexer.index(recipientId, transaction: transaction)
 
         if IsNoteToSelfEnabled(),
-            let localNumber = tsAccountManager.storedOrCachedLocalNumber(transaction),
+            let localNumber = tsAccountManager.storedOrCachedLocalNumber(transaction.asAnyRead),
             localNumber == recipientId {
 
             let noteToSelfLabel = NSLocalizedString("NOTE_TO_SELF", comment: "Label for 1:1 conversation with yourself.")
@@ -204,7 +205,7 @@ public class FullTextSearchFinder: NSObject {
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: YapDatabaseReadTransaction) in
-        if let bodyText = message.bodyText(with: transaction) {
+        if let bodyText = message.bodyText(with: transaction.asAnyRead) {
             return bodyText
         }
         return ""
@@ -222,6 +223,10 @@ public class FullTextSearchFinder: NSObject {
             }
             return self.contactThreadIndexer.index(contactThread, transaction: transaction)
         } else if let message = object as? TSMessage {
+            guard !message.hasPerMessageExpiration else {
+                // Don't index "one-off disappearing messages".
+                return nil
+            }
             return self.messageIndexer.index(message, transaction: transaction)
         } else if let signalAccount = object as? SignalAccount {
             return self.recipientIndexer.index(signalAccount.recipientId, transaction: transaction)
@@ -235,7 +240,7 @@ public class FullTextSearchFinder: NSObject {
     private static let dbExtensionName: String = "FullTextSearchFinderExtension"
 
     private func ext(transaction: YapDatabaseReadTransaction) -> YapDatabaseFullTextSearchTransaction? {
-        return transaction.ext(FullTextSearchFinder.dbExtensionName) as? YapDatabaseFullTextSearchTransaction
+        return transaction.safeFullTextSearchTransaction(FullTextSearchFinder.dbExtensionName)
     }
 
     @objc

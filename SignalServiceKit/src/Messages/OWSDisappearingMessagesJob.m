@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDisappearingMessagesJob.h"
@@ -17,6 +17,7 @@
 #import "TSMessage.h"
 #import "TSThread.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -180,7 +181,7 @@ void AssertIsOnDisappearingMessagesQueue()
 {
     OWSAssertDebug(transaction);
 
-    if (!message.isExpiringMessage) {
+    if (!message.hasPerConversationExpiration) {
         return;
     }
 
@@ -189,7 +190,7 @@ void AssertIsOnDisappearingMessagesQueue()
 
     // Don't clobber if multiple actions simultaneously triggered expiration.
     if (message.expireStartedAt == 0 || message.expireStartedAt > expirationStartedAt) {
-        [message updateWithExpireStartedAt:expirationStartedAt transaction:transaction];
+        [message updateWithExpireStartedAt:expirationStartedAt transaction:transaction.asAnyWrite];
     }
 
     [transaction addCompletionQueue:nil
@@ -272,6 +273,13 @@ void AssertIsOnDisappearingMessagesQueue()
 
             [self runLoop];
         });
+    });
+}
+
+- (void)schedulePass
+{
+    dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
+        [self runLoop];
     });
 }
 

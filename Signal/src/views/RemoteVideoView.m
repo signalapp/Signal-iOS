@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "RemoteVideoView.h"
@@ -37,7 +37,10 @@ NS_ASSUME_NONNULL_BEGIN
 // Currently RTC only supports metal on 64bit machines
 #if defined(__arm64__)
     // On 64-bit, iOS9+: uses the MetalKit backed view for improved battery/rendering performance.
-    if (_videoRenderer == nil) {
+    if (@available(iOS 13, *)) {
+        // Currently, the metal backed view doesn't render remote video on iOS 13.
+        // TODO: iOS 13 – Check if this is resolved in later iOS13 betas / a WebRTC update
+    } else if (_videoRenderer == nil) {
 
         // It is insufficient to check the RTC_SUPPORTS_METAL macro to determine Metal support.
         // RTCMTLVideoView requires the MTKView class, available only in iOS9+
@@ -104,7 +107,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CGFloat aspectRatio = remoteVideoSize.width / remoteVideoSize.height;
-
     OWSLogVerbose(@"Remote video size: width: %f height: %f ratio: %f",
         remoteVideoSize.width,
         remoteVideoSize.height,
@@ -125,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
         // to approximate "scale to fill" contentMode
         // - Pin aspect ratio
         // - Width and height is *at least* as wide as superview
-        [constraints addObject:[videoView autoPinToAspectRatio:aspectRatio]];
+        [constraints addObject:[videoView autoPinToAspectRatioWithSize:remoteVideoSize]];
         [constraints addObject:[videoView autoSetDimension:ALDimensionWidth
                                                     toSize:containingView.width
                                                   relation:NSLayoutRelationGreaterThanOrEqual]];

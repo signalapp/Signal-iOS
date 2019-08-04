@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "Theme.h"
@@ -7,6 +7,7 @@
 #import "UIUtil.h"
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/YapDatabaseConnection+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,24 +17,60 @@ NSString *const ThemeDidChangeNotification = @"ThemeDidChangeNotification";
 NSString *const ThemeCollection = @"ThemeCollection";
 NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
+
+@interface Theme ()
+
+@property (nonatomic) NSNumber *isDarkThemeEnabledNumber;
+
+@end
+
 @implementation Theme
+
++ (instancetype)sharedInstance
+{
+    static dispatch_once_t onceToken;
+    static Theme *instance;
+    dispatch_once(&onceToken, ^{
+        instance = [Theme new];
+    });
+
+    return instance;
+}
 
 + (BOOL)isDarkThemeEnabled
 {
+    return [self.sharedInstance isDarkThemeEnabled];
+}
+
+- (BOOL)isDarkThemeEnabled
+{
+    OWSAssertIsOnMainThread();
+
     if (!CurrentAppContext().isMainApp) {
         // Ignore theme in app extensions.
         return NO;
     }
 
-    return [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:ThemeKeyThemeEnabled
-                                                           inCollection:ThemeCollection
-                                                           defaultValue:NO];
+    if (self.isDarkThemeEnabledNumber == nil) {
+        BOOL isDarkThemeEnabled = [OWSPrimaryStorage.sharedManager.dbReadConnection boolForKey:ThemeKeyThemeEnabled
+                                                                                  inCollection:ThemeCollection
+                                                                                  defaultValue:NO];
+        self.isDarkThemeEnabledNumber = @(isDarkThemeEnabled);
+    }
+
+    return self.isDarkThemeEnabledNumber.boolValue;
 }
 
 + (void)setIsDarkThemeEnabled:(BOOL)value
 {
+    return [self.sharedInstance setIsDarkThemeEnabled:value];
+}
+
+- (void)setIsDarkThemeEnabled:(BOOL)value
+{
     OWSAssertIsOnMainThread();
 
+    self.isDarkThemeEnabledNumber = @(value);
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection setBool:value
                                                             forKey:ThemeKeyThemeEnabled
                                                       inCollection:ThemeCollection];
@@ -50,10 +87,14 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? Theme.darkThemeBackgroundColor : UIColor.ows_whiteColor);
 }
 
++ (UIColor *)darkThemeOffBackgroundColor
+{
+    return [UIColor colorWithWhite:0.2f alpha:1.f];
+}
+
 + (UIColor *)offBackgroundColor
 {
-    return (
-        Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.2f alpha:1.f] : [UIColor colorWithWhite:0.94f alpha:1.f]);
+    return (Theme.isDarkThemeEnabled ? self.darkThemeOffBackgroundColor : UIColor.ows_gray05Color);
 }
 
 + (UIColor *)primaryColor
@@ -103,7 +144,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ? self.darkThemeNavbarIconColor : UIColor.ows_gray60Color);
 }
 
-+ (UIColor *)darkThemeNavbarIconColor;
++ (UIColor *)darkThemeNavbarIconColor
 {
     return UIColor.ows_gray25Color;
 }
@@ -126,6 +167,11 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIColor *)cellSeparatorColor
 {
     return Theme.hairlineColor;
+}
+
++ (UIColor *)cursorColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_materialBlueColor;
 }
 
 + (UIColor *)darkThemeBackgroundColor
@@ -164,11 +210,10 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return Theme.isDarkThemeEnabled ? self.darkThemeKeyboardAppearance : UIKeyboardAppearanceDefault;
 }
 
-+ (UIKeyboardAppearance)darkThemeKeyboardAppearance;
++ (UIKeyboardAppearance)darkThemeKeyboardAppearance
 {
     return UIKeyboardAppearanceDark;
 }
-
 
 #pragma mark - Search Bar
 
@@ -179,7 +224,7 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 
 + (UIColor *)searchFieldBackgroundColor
 {
-    return Theme.isDarkThemeEnabled ? Theme.offBackgroundColor : UIColor.ows_gray05Color;
+    return Theme.offBackgroundColor;
 }
 
 #pragma mark -
@@ -192,6 +237,12 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
 + (UIColor *)toastBackgroundColor
 {
     return (Theme.isDarkThemeEnabled ? UIColor.ows_gray75Color : UIColor.ows_gray60Color);
+}
+
++ (UIColor *)scrollButtonBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.25f alpha:1.f]
+                                    : [UIColor colorWithWhite:0.95f alpha:1.f];
 }
 
 @end

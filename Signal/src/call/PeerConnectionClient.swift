@@ -13,10 +13,6 @@ import SignalMessaging
 // Binding them to a file constant seems to work around the problem.
 let kAudioTrackType = kRTCMediaStreamTrackKindAudio
 let kVideoTrackType = kRTCMediaStreamTrackKindVideo
-let kMediaConstraintsMinWidth = kRTCMediaConstraintsMinWidth
-let kMediaConstraintsMaxWidth = kRTCMediaConstraintsMaxWidth
-let kMediaConstraintsMinHeight = kRTCMediaConstraintsMinHeight
-let kMediaConstraintsMaxHeight = kRTCMediaConstraintsMaxHeight
 
 /**
  * The PeerConnectionClient notifies it's delegate (the CallService) of key events in the call signaling life cycle
@@ -169,6 +165,10 @@ class PeerConnectionProxy: NSObject, RTCPeerConnectionDelegate, RTCDataChannelDe
 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         self.get()?.peerConnection(peerConnection, didOpen: dataChannel)
+    }
+
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange connectionState: RTCPeerConnectionState) {
+        self.get()?.peerConnection(peerConnection, didChange: connectionState)
     }
 
     // MARK: - RTCDataChannelDelegate
@@ -1046,6 +1046,10 @@ class PeerConnectionClient: NSObject, RTCPeerConnectionDelegate, RTCDataChannelD
         }
     }
 
+    internal func peerConnection(_ peerConnectionParam: RTCPeerConnection, didChange connectionState: RTCPeerConnectionState) {
+        Logger.info("didChange PeerConnectionState:\(connectionState.debugDescription)")
+    }
+
     // MARK: Helpers
 
     /**
@@ -1346,6 +1350,25 @@ fileprivate extension RTCIceConnectionState {
             return "closed"
         case .count:
             return "count"
+        }
+    }
+}
+
+fileprivate extension RTCPeerConnectionState {
+    var debugDescription: String {
+        switch self {
+        case .new:
+            return "new"
+        case .connecting:
+            return "connecting"
+        case .connected:
+            return "connected"
+        case .disconnected:
+            return "disconnected"
+        case .failed:
+            return "failed"
+        case .closed:
+            return "closed"
         }
     }
 }

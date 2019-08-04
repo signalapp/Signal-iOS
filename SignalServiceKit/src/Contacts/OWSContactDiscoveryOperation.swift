@@ -1,14 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc(OWSLegacyContactDiscoveryOperation)
-class LegacyContactDiscoveryBatchOperation: OWSOperation {
+public class LegacyContactDiscoveryBatchOperation: OWSOperation {
 
     @objc
-    var registeredRecipientIds: Set<String>
+    public var registeredRecipientIds: Set<String>
 
     private let recipientIdsToLookup: [String]
     private var networkManager: TSNetworkManager {
@@ -18,7 +18,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
     // MARK: Initializers
 
     @objc
-    required init(recipientIdsToLookup: [String]) {
+    public required init(recipientIdsToLookup: [String]) {
         self.recipientIdsToLookup = recipientIdsToLookup
         self.registeredRecipientIds = Set()
 
@@ -30,7 +30,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
     // MARK: OWSOperation Overrides
 
     // Called every retry, this is where the bulk of the operation's work should go.
-    override func run() {
+    override public func run() {
         Logger.debug("")
 
         guard !isCancelled else {
@@ -82,7 +82,7 @@ class LegacyContactDiscoveryBatchOperation: OWSOperation {
     }
 
     // Called at most one time.
-    override func didSucceed() {
+    override public func didSucceed() {
         // Compare against new CDS service
         let modernCDSOperation = CDSOperation(recipientIdsToLookup: self.recipientIdsToLookup)
         let cdsFeedbackOperation = CDSFeedbackOperation(legacyRegisteredRecipientIds: self.registeredRecipientIds)
@@ -203,10 +203,6 @@ class CDSBatchOperation: OWSOperation {
         return TSNetworkManager.shared()
     }
 
-    private var contactDiscoveryService: ContactDiscoveryService {
-        return ContactDiscoveryService.shared()
-    }
-
     // MARK: Initializers
 
     public required init(recipientIdsToLookup: [String]) {
@@ -230,7 +226,7 @@ class CDSBatchOperation: OWSOperation {
             return
         }
 
-        contactDiscoveryService.performRemoteAttestation(success: { (remoteAttestation: RemoteAttestation) in
+        RemoteAttestation.perform(for: .contactDiscovery, success: { (remoteAttestation: RemoteAttestation) in
             self.makeContactDiscoveryRequest(remoteAttestation: remoteAttestation)
         },
                                                          failure: self.reportError)
@@ -252,15 +248,15 @@ class CDSBatchOperation: OWSOperation {
             return
         }
 
-        let request = OWSRequestFactory.enclaveContactDiscoveryRequest(withId: remoteAttestation.requestId,
-                                                                       addressCount: UInt(recipientIdsToLookup.count),
-                                                                       encryptedAddressData: encryptionResult.ciphertext,
-                                                                       cryptIv: encryptionResult.initializationVector,
-                                                                       cryptMac: encryptionResult.authTag,
-                                                                       enclaveId: remoteAttestation.enclaveId,
-                                                                       authUsername: remoteAttestation.auth.username,
-                                                                       authPassword: remoteAttestation.auth.password,
-                                                                       cookies: remoteAttestation.cookies)
+        let request = OWSRequestFactory.cdsEnclaveRequest(withRequestId: remoteAttestation.requestId,
+                                                          addressCount: UInt(recipientIdsToLookup.count),
+                                                          encryptedAddressData: encryptionResult.ciphertext,
+                                                          cryptIv: encryptionResult.initializationVector,
+                                                          cryptMac: encryptionResult.authTag,
+                                                          enclaveName: remoteAttestation.enclaveName,
+                                                          authUsername: remoteAttestation.auth.username,
+                                                          authPassword: remoteAttestation.auth.password,
+                                                          cookies: remoteAttestation.cookies)
 
         self.networkManager.makeRequest(request,
                                         success: { (task, responseDict) in
@@ -400,11 +396,11 @@ class CDSBatchOperation: OWSOperation {
 
 class CDSFeedbackOperation: OWSOperation {
 
-    enum FeedbackResult: String {
+    enum FeedbackResult {
         case ok
         case mismatch
-        case attestationError = "attestation-error"
-        case unexpectedError = "unexpected-error"
+        case attestationError(reason: String)
+        case unexpectedError(reason: String)
     }
 
     private let legacyRegisteredRecipientIds: Set<String>
@@ -455,10 +451,24 @@ class CDSFeedbackOperation: OWSOperation {
             case ContactDiscoveryError.serverError, ContactDiscoveryError.clientError:
                 // Server already has this information, no need submit feedback
                 self.reportSuccess()
-            case ContactDiscoveryServiceError.attestationFailed:
-                self.makeRequest(result: .attestationError)
+            case let raError as RemoteAttestationError:
+                let reason = raError.reason
+                switch raError.code {
+                case .assertionError:
+                    self.makeRequest(result: .unexpectedError(reason: "Remote Attestation assertionError: \(reason ?? "unknown")"))
+                case .failed:
+                    self.makeRequest(result: .attestationError(reason: "Remote Attestation failed: \(reason ?? "unknown")"))
+                @unknown default:
+                    self.makeRequest(result: .unexpectedError(reason: "Remote Attestation assertionError: unknown raError.code"))
+                }
+            case ContactDiscoveryError.assertionError(let assertionDescription):
+                self.makeRequest(result: .unexpectedError(reason: "assertionError: \(assertionDescription)"))
+            case ContactDiscoveryError.parseError(description: let parseErrorDescription):
+                self.makeRequest(result: .unexpectedError(reason: "parseError: \(parseErrorDescription)"))
             default:
-                self.makeRequest(result: .unexpectedError)
+                let nsError = error as NSError
+                let reason = "unexpectedError code:\(nsError.code)"
+                self.makeRequest(result: .unexpectedError(reason: reason))
             }
 
             return
@@ -474,7 +484,18 @@ class CDSFeedbackOperation: OWSOperation {
     }
 
     func makeRequest(result: FeedbackResult) {
-        let request = OWSRequestFactory.cdsFeedbackRequest(result: result.rawValue)
+        let reason: String?
+        switch result {
+        case .ok:
+            reason = nil
+        case .mismatch:
+            reason = nil
+        case .attestationError(let attestationErrorReason):
+            reason = attestationErrorReason
+        case .unexpectedError(let unexpectedErrorReason):
+            reason = unexpectedErrorReason
+        }
+        let request = OWSRequestFactory.cdsFeedbackRequest(status: result.statusPath, reason: reason)
         self.networkManager.makeRequest(request,
                                         success: { _, _ in self.reportSuccess() },
                                         failure: { _, error in self.reportError(error) })
@@ -486,5 +507,26 @@ extension Array {
         return stride(from: 0, to: self.count, by: chunkSize).map {
             Array(self[$0..<Swift.min($0 + chunkSize, self.count)])
         }
+    }
+}
+
+extension CDSFeedbackOperation.FeedbackResult {
+    var statusPath: String {
+        switch self {
+        case .ok:
+            return "ok"
+        case .mismatch:
+            return "mismatch"
+        case .attestationError:
+            return "attestation-error"
+        case .unexpectedError:
+            return "unexpected-error"
+        }
+    }
+}
+
+extension RemoteAttestationError {
+    var reason: String? {
+        return userInfo[RemoteAttestationErrorKey_Reason] as? String
     }
 }

@@ -79,6 +79,7 @@ public enum CallError: Error {
     case timeout(description: String)
     case obsoleteCall(description: String)
     case fatalError(description: String)
+    case messageSendFailure(underlyingError: Error)
 }
 
 // Should be roughly synced with Android client for consistency
@@ -99,8 +100,15 @@ protocol CallServiceObserver: class {
                               remoteVideoTrack: RTCVideoTrack?)
 }
 
+protocol SignalCallDataDelegate: class {
+    func outgoingIceUpdateDidFail(call: SignalCall, error: Error)
+}
+
 // Gather all per-call state in one place.
 private class SignalCallData: NSObject {
+
+    fileprivate weak var delegate: SignalCallDataDelegate?
+
     public let call: SignalCall
 
     // Used to coordinate promises across delegate methods
@@ -147,8 +155,9 @@ private class SignalCallData: NSObject {
         }
     }
 
-    required init(call: SignalCall) {
+    required init(call: SignalCall, delegate: SignalCallDataDelegate) {
         self.call = call
+        self.delegate = delegate
 
         let (callConnectedPromise, callConnectedResolver) = Promise<Void>.pending()
         self.callConnectedPromise = callConnectedPromise
@@ -192,11 +201,85 @@ private class SignalCallData: NSObject {
 
         peerConnectionClient?.terminate()
         Logger.debug("setting peerConnectionClient")
+
+        outgoingIceUpdateQueue.removeAll()
+    }
+
+    // MARK: - Dependencies
+
+    private var messageSender: MessageSender {
+        return SSKEnvironment.shared.messageSender
+    }
+
+    // MARK: - Outgoing ICE updates.
+
+    // Setting up a call involves sending many (currently 20+) ICE updates.
+    // We send messages serially in order to preserve outgoing message order.
+    // There are so many ICE updates per call that the cost of sending all of
+    // those messages becomes significant.  So we batch outgoing ICE updates,
+    // making sure that we only have one outgoing ICE update message at a time.
+    //
+    // This variable should only be accessed on the main thread.
+    private var outgoingIceUpdateQueue = [SSKProtoCallMessageIceUpdate]()
+    private var outgoingIceUpdatesInFlight = false
+
+    func sendOrEnqueue(outgoingIceUpdate iceUpdateProto: SSKProtoCallMessageIceUpdate) {
+        AssertIsOnMainThread()
+
+        outgoingIceUpdateQueue.append(iceUpdateProto)
+
+        tryToSendIceUpdates()
+    }
+
+    private func tryToSendIceUpdates() {
+        AssertIsOnMainThread()
+
+        guard !outgoingIceUpdatesInFlight else {
+            Logger.verbose("Enqueued outgoing ice update")
+            return
+        }
+
+        let iceUpdateProtos = outgoingIceUpdateQueue
+        guard iceUpdateProtos.count > 0 else {
+            // Nothing in the queue.
+            return
+        }
+
+        outgoingIceUpdateQueue.removeAll()
+        outgoingIceUpdatesInFlight = true
+
+        /**
+         * Sent by both parties out of band of the RTC calling channels, as part of setting up those channels. The messages
+         * include network accessibility information from the perspective of each client. Once compatible ICEUpdates have been
+         * exchanged, the clients can connect.
+         */
+        let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessages: iceUpdateProtos)
+        let sendPromise = self.messageSender.sendPromise(message: callMessage)
+            .done { [weak self] in
+                AssertIsOnMainThread()
+
+                guard let strongSelf = self else {
+                    return
+                }
+
+                strongSelf.outgoingIceUpdatesInFlight = false
+                strongSelf.tryToSendIceUpdates()
+            }.catch { [weak self] (error) in
+                AssertIsOnMainThread()
+
+                guard let strongSelf = self else {
+                    return
+                }
+
+                strongSelf.outgoingIceUpdatesInFlight = false
+                strongSelf.delegate?.outgoingIceUpdateDidFail(call: strongSelf.call, error: error)
+        }
+        sendPromise.retainUntilComplete()
     }
 }
 
 // This class' state should only be accessed on the main queue.
-@objc public class CallService: NSObject, CallObserver, PeerConnectionClientDelegate {
+@objc public class CallService: NSObject, CallObserver, PeerConnectionClientDelegate, SignalCallDataDelegate {
 
     // MARK: - Properties
 
@@ -216,6 +299,7 @@ private class SignalCallData: NSObject {
         didSet {
             AssertIsOnMainThread()
 
+            oldValue?.delegate = nil
             oldValue?.call.removeObserver(self)
             callData?.call.addObserverAndSyncState(observer: self)
 
@@ -258,7 +342,7 @@ private class SignalCallData: NSObject {
         }
     }
 
-    weak var localCaptureSession: AVCaptureSession? {
+    var localCaptureSession: AVCaptureSession? {
         get {
             AssertIsOnMainThread()
 
@@ -273,6 +357,7 @@ private class SignalCallData: NSObject {
             return callData?.remoteVideoTrack
         }
     }
+
     var isRemoteVideoEnabled: Bool {
         get {
             AssertIsOnMainThread()
@@ -318,8 +403,8 @@ private class SignalCallData: NSObject {
         return AppEnvironment.shared.accountManager
     }
 
-    private var notificationsAdapter: CallNotificationsAdapter {
-        return AppEnvironment.shared.callNotificationsAdapter
+    private var notificationPresenter: NotificationPresenter {
+        return AppEnvironment.shared.notificationPresenter
     }
 
     // MARK: - Notifications
@@ -344,7 +429,7 @@ private class SignalCallData: NSObject {
             Logger.warn("ending current call in. Did user toggle callkit preference while in a call?")
             self.terminateCall()
         }
-        self.callUIAdapter = CallUIAdapter(callService: self, contactsManager: self.contactsManager, notificationsAdapter: self.notificationsAdapter)
+        self.callUIAdapter = CallUIAdapter(callService: self, contactsManager: self.contactsManager, notificationPresenter: self.notificationPresenter)
     }
 
     // MARK: - Service Actions
@@ -355,6 +440,9 @@ private class SignalCallData: NSObject {
     func handleOutgoingCall(_ call: SignalCall) -> Promise<Void> {
         AssertIsOnMainThread()
 
+        let callId = call.signalingId
+        BenchEventStart(title: "Outgoing Call Connection", eventId: "call-\(callId)")
+
         guard self.call == nil else {
             let errorDescription = "call was unexpectedly already set."
             Logger.error(errorDescription)
@@ -363,15 +451,16 @@ private class SignalCallData: NSObject {
             return Promise(error: CallError.assertionError(description: errorDescription))
         }
 
-        let callData = SignalCallData(call: call)
+        let callData = SignalCallData(call: call, delegate: self)
         self.callData = callData
 
         // MJK TODO remove this timestamp param
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeOutgoingIncomplete, in: call.thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .outgoingIncomplete, in: call.thread)
         callRecord.save()
         call.callRecord = callRecord
 
-        let promise = getIceServers().then { iceServers -> Promise<HardenedRTCSessionDescription> in
+        let promise = getIceServers()
+            .then { iceServers -> Promise<HardenedRTCSessionDescription> in
             Logger.debug("got ice servers:\(iceServers) for call: \(call.identifiersForLogs)")
 
             guard self.call == call else {
@@ -379,7 +468,7 @@ private class SignalCallData: NSObject {
             }
 
             guard callData.peerConnectionClient == nil else {
-                let errorDescription = "peerconnection was unexpectedly already set."
+                let errorDescription = "peerConnectionClient was unexpectedly already set."
                 Logger.error(errorDescription)
                 OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionAlreadySet(), file: #file, function: #function, line: #line)
                 throw CallError.assertionError(description: errorDescription)
@@ -404,9 +493,9 @@ private class SignalCallData: NSObject {
 
             Logger.info("session description for outgoing call: \(call.identifiersForLogs), sdp: \(sessionDescription.logSafeDescription).")
 
-            return firstly {
+            return
                 peerConnectionClient.setLocalSessionDescription(sessionDescription)
-            }.then { _ -> Promise<Void> in
+            .then { _ -> Promise<Void> in
                 do {
                     let offerBuilder = SSKProtoCallMessageOffer.builder(id: call.signalingId,
                                                                         sessionDescription: sessionDescription.sdp)
@@ -500,9 +589,8 @@ private class SignalCallData: NSObject {
 
         let sessionDescription = RTCSessionDescription(type: .answer, sdp: sessionDescription)
 
-        firstly {
-          peerConnectionClient.setRemoteSessionDescription(sessionDescription)
-        }.done {
+        peerConnectionClient.setRemoteSessionDescription(sessionDescription)
+        .done {
             Logger.debug("successfully set remote description")
         }.catch { error in
             if let callError = error as? CallError {
@@ -522,23 +610,35 @@ private class SignalCallData: NSObject {
     public func handleMissedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        // Insert missed call record
-        if let callRecord = call.callRecord {
-            if callRecord.callType == RPRecentCallTypeIncoming {
-                callRecord.updateCallType(RPRecentCallTypeIncomingMissed)
-            }
-        } else {
+        if call.callRecord == nil {
             // MJK TODO remove this timestamp param
             call.callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                      withCallNumber: call.thread.contactIdentifier(),
-                                     callType: RPRecentCallTypeIncomingMissed,
+                                     callType: .incomingMissed,
                                      in: call.thread)
         }
 
-        assert(call.callRecord != nil)
-        call.callRecord?.save()
+        guard let callRecord = call.callRecord else {
+            handleFailedCall(failedCall: call, error: .assertionError(description: "callRecord was unexpectedly nil"))
+            return
+        }
 
-        self.callUIAdapter.reportMissedCall(call)
+        switch callRecord.callType {
+        case .incomingMissed:
+            callRecord.save()
+            callUIAdapter.reportMissedCall(call)
+        case .incomingIncomplete, .incoming:
+            callRecord.updateCallType(.incomingMissed)
+            callUIAdapter.reportMissedCall(call)
+        case .outgoingIncomplete:
+            callRecord.updateCallType(.outgoingMissed)
+        case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing:
+            owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
+            callRecord.save()
+        default:
+            callRecord.save()
+            owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
+        }
     }
 
     /**
@@ -583,6 +683,9 @@ private class SignalCallData: NSObject {
         }
 
         call.state = .remoteBusy
+        assert(call.callRecord != nil)
+        call.callRecord?.updateCallType(.outgoingMissed)
+
         callUIAdapter.remoteBusy(call)
         terminateCall()
     }
@@ -593,6 +696,8 @@ private class SignalCallData: NSObject {
      */
     public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String) {
         AssertIsOnMainThread()
+
+        BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(callId)")
 
         let newCall = SignalCall.incomingCall(localId: UUID(), remotePhoneNumber: thread.contactIdentifier(), signalingId: callId)
 
@@ -608,17 +713,17 @@ private class SignalCallData: NSObject {
             switch untrustedIdentity!.verificationState {
             case .verified:
                 owsFailDebug("shouldn't have missed a call due to untrusted identity if the identity is verified")
-                self.notificationsAdapter.presentMissedCall(newCall, callerName: callerName)
+                self.notificationPresenter.presentMissedCall(newCall, callerName: callerName)
             case .default:
-                self.notificationsAdapter.presentMissedCallBecauseOfNewIdentity(call: newCall, callerName: callerName)
+                self.notificationPresenter.presentMissedCallBecauseOfNewIdentity(call: newCall, callerName: callerName)
             case .noLongerVerified:
-                self.notificationsAdapter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName)
+                self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName)
             }
 
             // MJK TODO remove this timestamp param
             let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
                                     withCallNumber: thread.contactIdentifier(),
-                                    callType: RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
+                                    callType: .incomingMissedBecauseOfChangedIdentity,
                                     in: thread)
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
@@ -664,7 +769,7 @@ private class SignalCallData: NSObject {
 
         Logger.info("starting new call: \(newCall.identifiersForLogs)")
 
-        let callData = SignalCallData(call: newCall)
+        let callData = SignalCallData(call: newCall, delegate: self)
         self.callData = callData
 
         var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)", completionBlock: { [weak self] status in
@@ -686,9 +791,8 @@ private class SignalCallData: NSObject {
             strongSelf.handleFailedCall(failedCall: newCall, error: timeout)
         })
 
-        firstly {
-            getIceServers()
-        }.then { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
+        getIceServers()
+            .then { (iceServers: [RTCIceServer]) -> Promise<HardenedRTCSessionDescription> in
             // FIXME for first time call recipients I think we'll see mic/camera permission requests here,
             // even though, from the users perspective, no incoming call is yet visible.
             guard self.call == newCall else {
@@ -857,23 +961,24 @@ private class SignalCallData: NSObject {
 
             Logger.info("sending ICE Candidate \(call.identifiersForLogs).")
 
+            let iceUpdateProto: SSKProtoCallMessageIceUpdate
             do {
-                /**
-                 * Sent by both parties out of band of the RTC calling channels, as part of setting up those channels. The messages
-                 * include network accessibility information from the perspective of each client. Once compatible ICEUpdates have been
-                 * exchanged, the clients can connect.
-                 */
                 let iceUpdateBuilder = SSKProtoCallMessageIceUpdate.builder(id: call.signalingId,
-                                                                                                        sdpMid: sdpMid,
-                                                                                                        sdpMlineIndex: UInt32(iceCandidate.sdpMLineIndex),
-                                                                                                        sdp: iceCandidate.sdp)
-                let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessage: try iceUpdateBuilder.build())
-                let sendPromise = self.messageSender.sendPromise(message: callMessage)
-                sendPromise.retainUntilComplete()
+                                                                            sdpMid: sdpMid,
+                                                                            sdpMlineIndex: UInt32(iceCandidate.sdpMLineIndex),
+                                                                            sdp: iceCandidate.sdp)
+                iceUpdateProto = try iceUpdateBuilder.build()
             } catch {
                 owsFailDebug("Couldn't build proto")
                 throw CallError.fatalError(description: "Couldn't build proto")
             }
+
+            /**
+             * Sent by both parties out of band of the RTC calling channels, as part of setting up those channels. The messages
+             * include network accessibility information from the perspective of each client. Once compatible ICEUpdates have been
+             * exchanged, the clients can connect.
+             */
+            callData.sendOrEnqueue(outgoingIceUpdate: iceUpdateProto)
         }.catch { error in
             OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalAddedIceCandidate(), file: #file, function: #function, line: #line)
             Logger.error("waitUntilReadyToSendIceUpdates failed with error: \(error)")
@@ -883,26 +988,34 @@ private class SignalCallData: NSObject {
     /**
      * The clients can now communicate via WebRTC.
      *
-     * Called by both caller and callee. Compatible ICE messages have been exchanged between the local and remote 
+     * Called by both caller and callee. Compatible ICE messages have been exchanged between the local and remote
      * client.
      */
     private func handleIceConnected() {
         AssertIsOnMainThread()
 
-        guard let call = self.call else {
+        guard let callData = self.callData else {
             // This will only be called for the current peerConnectionClient, so
             // fail the current call.
             OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
             handleFailedCurrentCall(error: CallError.assertionError(description: "ignoring \(#function) since there is no current call."))
             return
         }
+        let call = callData.call
+        let callId = call.signalingId
 
-        Logger.info("\(call.identifiersForLogs).")
+        Logger.info("\(call.identifiersForLogs)")
 
         switch call.state {
         case .dialing:
+            if call.state != .remoteRinging {
+                BenchEventComplete(eventId: "call-\(callId)")
+            }
             call.state = .remoteRinging
         case .answering:
+            if call.state != .localRinging {
+                BenchEventComplete(eventId: "call-\(callId)")
+            }
             call.state = .localRinging
             self.callUIAdapter.reportIncomingCall(call, thread: call.thread)
         case .remoteRinging:
@@ -1031,14 +1144,14 @@ private class SignalCallData: NSObject {
 
         guard let peerConnectionClient = self.peerConnectionClient else {
             OWSProdError(OWSAnalyticsEvents.callServicePeerConnectionMissing(), file: #file, function: #function, line: #line)
-            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "missing peerconnection client"))
+            handleFailedCall(failedCall: call, error: CallError.assertionError(description: "missing peerConnection client"))
             return
         }
 
         Logger.info("\(call.identifiersForLogs).")
 
         // MJK TODO remove this timestamp param
-        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingIncomplete, in: call.thread)
+        let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .incomingIncomplete, in: call.thread)
         callRecord.save()
         call.callRecord = callRecord
 
@@ -1125,10 +1238,10 @@ private class SignalCallData: NSObject {
 
         if let callRecord = call.callRecord {
             owsFailDebug("Not expecting callrecord to already be set")
-            callRecord.updateCallType(RPRecentCallTypeIncomingDeclined)
+            callRecord.updateCallType(.incomingDeclined)
         } else {
             // MJK TODO remove this timestamp param
-            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: RPRecentCallTypeIncomingDeclined, in: call.thread)
+            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), withCallNumber: call.remotePhoneNumber, callType: .incomingDeclined, in: call.thread)
             callRecord.save()
             call.callRecord = callRecord
         }
@@ -1164,8 +1277,8 @@ private class SignalCallData: NSObject {
         call.state = .localHangup
 
         if let callRecord = call.callRecord {
-            if callRecord.callType == RPRecentCallTypeOutgoingIncomplete {
-                callRecord.updateCallType(RPRecentCallTypeOutgoingMissed)
+            if callRecord.callType == .outgoingIncomplete {
+                callRecord.updateCallType(.outgoingMissed)
             }
         } else {
             owsFailDebug("missing call record")
@@ -1201,9 +1314,9 @@ private class SignalCallData: NSObject {
         do {
             let hangupBuilder = SSKProtoCallMessageHangup.builder(id: call.signalingId)
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: try hangupBuilder.build())
-            firstly {
-                self.messageSender.sendPromise(message: callMessage)
-            }.done {
+
+            self.messageSender.sendPromise(message: callMessage)
+            .done {
                 Logger.debug("successfully sent hangup call message to \(call.thread.contactIdentifier())")
             }.catch { error in
                 OWSProdInfo(OWSAnalyticsEvents.callServiceErrorHandleLocalHungupCall(), file: #file, function: #function, line: #line)
@@ -1292,7 +1405,7 @@ private class SignalCallData: NSObject {
             return
         }
 
-        frontmostViewController.ows_ask(forCameraPermissions: { [weak self] granted in
+        frontmostViewController.ows_askForCameraPermissions { [weak self] granted in
             guard let strongSelf = self else {
                 return
             }
@@ -1309,7 +1422,7 @@ private class SignalCallData: NSObject {
                 OWSAlerts.showAlert(title: NSLocalizedString("MISSING_CAMERA_PERMISSION_TITLE", comment: "Alert title when camera is not authorized"),
                                     message: NSLocalizedString("MISSING_CAMERA_PERMISSION_MESSAGE", comment: "Alert body when camera is not authorized"))
             }
-        })
+        }
     }
 
     private func setHasLocalVideoWithCameraPermissions(hasLocalVideo: Bool) {
@@ -1425,7 +1538,7 @@ private class SignalCallData: NSObject {
         self.handleIceConnected()
     }
 
-    func peerConnectionClientIceDisconnected(_ peerconnectionClient: PeerConnectionClient) {
+    func peerConnectionClientIceDisconnected(_ peerConnectionClient: PeerConnectionClient) {
         AssertIsOnMainThread()
 
         guard peerConnectionClient == self.peerConnectionClient else {
@@ -1468,7 +1581,7 @@ private class SignalCallData: NSObject {
     }
 
     /**
-     * Once the peerconnection is established, we can receive messages via the data channel, and notify the delegate.
+     * Once the peerConnection is established, we can receive messages via the data channel, and notify the delegate.
      */
     internal func peerConnectionClient(_ peerConnectionClient: PeerConnectionClient, received dataChannelMessage: WebRTCProtoData) {
         AssertIsOnMainThread()
@@ -1520,11 +1633,9 @@ private class SignalCallData: NSObject {
      * a list of servers, plus we have fallback servers hardcoded in the app.
      */
     private func getIceServers() -> Promise<[RTCIceServer]> {
-        AssertIsOnMainThread()
 
-        return firstly {
-            accountManager.getTurnServerInfo()
-        }.map { turnServerInfo -> [RTCIceServer] in
+        return self.accountManager.getTurnServerInfo()
+        .map(on: DispatchQueue.global()) { turnServerInfo -> [RTCIceServer] in
             Logger.debug("got turn server urls: \(turnServerInfo.urls)")
 
             return turnServerInfo.urls.map { url in
@@ -1537,7 +1648,7 @@ private class SignalCallData: NSObject {
                     return RTCIceServer(urlStrings: [url])
                 }
             } + [CallService.fallbackIceServer]
-        }.recover { (error: Error) -> Guarantee<[RTCIceServer]> in
+        }.recover(on: DispatchQueue.global()) { (error: Error) -> Guarantee<[RTCIceServer]> in
             Logger.error("fetching ICE servers failed with error: \(error)")
             Logger.warn("using fallback ICE Servers")
 
@@ -1721,7 +1832,7 @@ private class SignalCallData: NSObject {
     func removeObserver(_ observer: CallServiceObserver) {
         AssertIsOnMainThread()
 
-        while let index = observers.index(where: { $0.value === observer }) {
+        while let index = observers.firstIndex(where: { $0.value === observer }) {
             observers.remove(at: index)
         }
     }
@@ -1811,5 +1922,44 @@ private class SignalCallData: NSObject {
 
         self.activeCallTimer?.invalidate()
         self.activeCallTimer = nil
+    }
+
+    // MARK: - SignalCallDataDelegate
+
+    func outgoingIceUpdateDidFail(call: SignalCall, error: Error) {
+        AssertIsOnMainThread()
+
+        guard self.call == call else {
+            Logger.warn("obsolete call")
+            return
+        }
+
+        handleFailedCall(failedCall: call, error: CallError.messageSendFailure(underlyingError: error))
+    }
+}
+
+extension RPRecentCallType: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .incoming:
+            return ".incoming"
+        case .outgoing:
+            return ".outgoing"
+        case .incomingMissed:
+            return ".incomingMissed"
+        case .outgoingIncomplete:
+            return ".outgoingIncomplete"
+        case .incomingIncomplete:
+            return ".incomingIncomplete"
+        case .incomingMissedBecauseOfChangedIdentity:
+            return ".incomingMissedBecauseOfChangedIdentity"
+        case .incomingDeclined:
+            return ".incomingDeclined"
+        case .outgoingMissed:
+            return ".outgoingMissed"
+        default:
+            owsFailDebug("unexpected RPRecentCallType: \(self)")
+            return "RPRecentCallTypeUnknown"
+        }
     }
 }

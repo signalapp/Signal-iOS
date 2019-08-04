@@ -1,14 +1,13 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAddToContactViewController.h"
+#import <ContactsUI/ContactsUI.h>
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
-
-@import ContactsUI;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -166,7 +165,10 @@ NS_ASSUME_NONNULL_BEGIN
             continue;
         }
 
+        // TODO: Confirm with nancy if this will work.
+        NSString *cellName = [NSString stringWithFormat:@"contact.%@", NSUUID.UUID.UUIDString];
         [section addItem:[OWSTableItem disclosureItemWithText:displayName
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName)
                                                   actionBlock:^{
                                                       [weakSelf presentContactViewControllerForContact:contact];
                                                   }]];

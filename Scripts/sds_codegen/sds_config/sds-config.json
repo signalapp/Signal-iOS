@@ -1,0 +1,49 @@
+{
+	"nsnumber_types": {
+		"TSThread.archivedAsOfMessageSortId": "Bool",
+		"TSIncomingMessage.serverTimestamp": "UInt64",
+		"TSOutgoingMessageRecipientState.deliveryTimestamp": "UInt64",
+		"TSOutgoingMessageRecipientState.readTimestamp": "UInt64",
+		"TSAttachmentStream.cachedAudioDurationSeconds": "Double",
+		"TSAttachmentStream.cachedImageWidth": "Double",
+		"TSAttachmentStream.cachedImageHeight": "Double",
+		"TSAttachmentStream.isValidImageCached": "Bool",
+		"TSAttachmentStream.isValidVideoCached": "Bool",
+		"OWSBackupFragment.uncompressedDataLength": "UInt64"
+	},
+	"properties_to_ignore": [
+		"OWSDynamicOutgoingMessage.block",
+		"OWSDisappearingMessagesConfiguration.originalDictionaryValue",
+		"OWSDisappearingMessagesConfiguration.newRecord"
+	],
+	"custom_property_column_sources": {
+		"TSInteraction.sortId": "id",
+		"SSKJobRecord.sortId": "id"
+	},
+	"class_to_skip_serialization": [
+		"OWSOutgoingSyncMessage",
+		"OWSEndSessionMessage",
+		"OWSDynamicOutgoingMessage",
+		"OWSDisappearingMessagesConfigurationMessage",
+		"OWSSyncGroupsRequestMessage",
+		"OWSProfileKeyMessage",
+		"OWSOutgoingNullMessage",
+		"OWSOutgoingCallMessage",
+		"OWSReceiptsForSenderMessage",
+		"OWSUnknownDBObject"
+	],
+	"enum_properties": [
+		"TSThread.conversationColorName"
+	],
+	"custom_accessors": {
+		"TSInfoMessage.read": "wasRead",
+		"TSErrorMessage.read": "wasRead",
+		"TSIncomingMessage.read": "wasRead",
+		"TSCall.read": "wasRead",
+		"OWSDisappearingMessagesConfiguration.enabled": "isEnabled",
+		"OWSDisappearingMessagesConfiguration.newRecord": "isNewRecord"
+	},
+	"custom_column_names": {
+		"TSInteraction.uniqueThreadId": "threadUniqueId"
+	}
+}

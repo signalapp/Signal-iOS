@@ -41,7 +41,7 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
                 }
             }
 
-            guard let legacySorting: YapDatabaseAutoViewTransaction = transaction.extension(TSMessageDatabaseViewExtensionName_Legacy) as? YapDatabaseAutoViewTransaction else {
+            guard let legacySorting = transaction.safeAutoViewTransaction(TSMessageDatabaseViewExtensionName_Legacy) else {
                 owsFailDebug("legacySorting was unexpectedly nil")
                 return
             }
@@ -106,7 +106,7 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
 
             Logger.info("re-archiving \(archivedThreads.count) threads which were previously archived")
             for archivedThread in archivedThreads {
-                archivedThread.archiveThread(with: transaction)
+                archivedThread.archiveThread(with: transaction.asAnyWrite)
             }
 
             self.save(with: transaction)

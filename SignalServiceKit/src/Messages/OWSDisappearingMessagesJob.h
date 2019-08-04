@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -46,6 +46,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Clean up any messages that expired since last launch immediately
 // and continue cleaning in the background.
 - (void)startIfNecessary;
+
+- (void)schedulePass;
 
 - (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 

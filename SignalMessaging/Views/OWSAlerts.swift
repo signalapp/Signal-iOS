@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,14 +11,17 @@ import Foundation
     public class func showNoMicrophonePermissionAlert() {
         let alertTitle = NSLocalizedString("CALL_AUDIO_PERMISSION_TITLE", comment: "Alert title when calling and permissions for microphone are missing")
         let alertMessage = NSLocalizedString("CALL_AUDIO_PERMISSION_MESSAGE", comment: "Alert message when calling and permissions for microphone are missing")
-        let alertController = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
-        let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
+        let alert = UIAlertController(title: alertTitle, message: alertMessage, preferredStyle: .alert)
 
-        alertController.addAction(dismissAction)
+        let dismissAction = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel)
+        dismissAction.accessibilityIdentifier = "OWSAlerts.\("dismiss")"
+        alert.addAction(dismissAction)
+
         if let settingsAction = CurrentAppContext().openSystemSettingsAction {
-            alertController.addAction(settingsAction)
+            settingsAction.accessibilityIdentifier = "OWSAlerts.\("settings")"
+            alert.addAction(settingsAction)
         }
-        CurrentAppContext().frontmostViewController()?.present(alertController, animated: true, completion: nil)
+        CurrentAppContext().frontmostViewController()?.presentAlert(alert)
     }
 
     @objc
@@ -27,7 +30,7 @@ import Foundation
             owsFailDebug("frontmostViewController was unexpectedly nil")
             return
         }
-        frontmostViewController.present(alert, animated: true, completion: nil)
+        frontmostViewController.presentAlert(alert)
     }
 
     @objc
@@ -51,11 +54,14 @@ import Foundation
 
     @objc
     public class func showAlert(title: String?, message: String? = nil, buttonTitle: String? = nil, buttonAction: ((UIAlertAction) -> Void)? = nil, fromViewController: UIViewController?) {
-        let actionTitle = buttonTitle ?? NSLocalizedString("OK", comment: "")
 
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: actionTitle, style: .default, handler: buttonAction))
-        fromViewController?.present(alert, animated: true, completion: nil)
+
+        let actionTitle = buttonTitle ?? NSLocalizedString("OK", comment: "")
+        let okAction = UIAlertAction(title: actionTitle, style: .default, handler: buttonAction)
+        okAction.accessibilityIdentifier = "OWSAlerts.\("ok")"
+        alert.addAction(okAction)
+        fromViewController?.presentAlert(alert)
     }
 
     @objc
@@ -66,9 +72,11 @@ import Foundation
         alert.addAction(self.cancelAction)
 
         let actionTitle = proceedTitle ?? NSLocalizedString("OK", comment: "")
-        alert.addAction(UIAlertAction(title: actionTitle, style: .default, handler: proceedAction))
+        let okAction = UIAlertAction(title: actionTitle, style: .default, handler: proceedAction)
+        okAction.accessibilityIdentifier = "OWSAlerts.\("ok")"
+        alert.addAction(okAction)
 
-        CurrentAppContext().frontmostViewController()?.present(alert, animated: true, completion: nil)
+        CurrentAppContext().frontmostViewController()?.presentAlert(alert)
     }
 
     @objc
@@ -82,15 +90,24 @@ import Foundation
             Logger.debug("Cancel item")
             // Do nothing.
         }
+        action.accessibilityIdentifier = "OWSAlerts.cancel"
+        return action
+    }
+
+    @objc
+    public class var dismissAction: UIAlertAction {
+        let action = UIAlertAction(title: CommonStrings.dismissButton, style: .cancel) { _ in
+            Logger.debug("Dismiss item")
+            // Do nothing.
+        }
+        action.accessibilityIdentifier = "OWSAlerts.dismiss"
         return action
     }
 
     @objc
     public class func showIOSUpgradeNagIfNecessary() {
-        // Only show the nag to iOS 8 users.
-        //
-        // NOTE: Our current minimum iOS version is 9, so this should never show.
-        if #available(iOS 9.0, *) {
+        // Our min SDK is iOS9, so this will only show for iOS9 users
+        if #available(iOS 10.0, *) {
             return
         }
 
@@ -101,7 +118,6 @@ import Foundation
         }
 
         if let iOSUpgradeNagDate = Environment.shared.preferences.iOSUpgradeNagDate() {
-            // Nag no more than once every three days.
             let kNagFrequencySeconds = 3 * kDayInterval
             guard fabs(iOSUpgradeNagDate.timeIntervalSinceNow) > kNagFrequencySeconds else {
                 return

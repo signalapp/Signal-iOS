@@ -8,21 +8,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-BOOL IsLandscapeOrientationEnabled(void)
-{
-    return YES;
-}
-
-UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
-{
-    return (IsLandscapeOrientationEnabled() ? UIInterfaceOrientationMaskAllButUpsideDown
-                                            : UIInterfaceOrientationMaskPortrait);
-}
-
 @interface OWSViewController ()
 
 @property (nonatomic, weak) UIView *bottomLayoutView;
 @property (nonatomic) NSLayoutConstraint *bottomLayoutConstraint;
+@property (nonatomic) BOOL shouldAnimateBottomLayout;
 
 @end
 
@@ -64,6 +54,54 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
     return self;
 }
 
+#pragma mark - View Lifecycle
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
+    self.shouldAnimateBottomLayout = YES;
+
+#ifdef DEBUG
+    [self ensureNavbarAccessibilityIds];
+#endif
+}
+
+#ifdef DEBUG
+- (void)ensureNavbarAccessibilityIds
+{
+    UINavigationBar *_Nullable navigationBar = self.navigationController.navigationBar;
+    if (!navigationBar) {
+        return;
+    }
+    // There isn't a great way to assign accessibilityIdentifiers to default
+    // navbar buttons, e.g. the back button.  As a (DEBUG-only) hack, we
+    // assign accessibilityIds to any navbar controls which don't already have
+    // one.  This should offer a reliable way for automated scripts to find
+    // these controls.
+    //
+    // UINavigationBar often discards and rebuilds new contents, e.g. between
+    // presentations of the view, so we need to do this every time the view
+    // appears.  We don't do any checking for accessibilityIdentifier collisions
+    // so we're counting on the fact that navbar contents are short-lived.
+    __block int accessibilityIdCounter = 0;
+    [navigationBar traverseViewHierarchyWithVisitor:^(UIView *view) {
+        if ([view isKindOfClass:[UIControl class]] && view.accessibilityIdentifier == nil) {
+            // The view should probably be an instance of _UIButtonBarButton or _UIModernBarButton.
+            view.accessibilityIdentifier = [NSString stringWithFormat:@"navbar-%d", accessibilityIdCounter];
+            accessibilityIdCounter++;
+        }
+    }];
+}
+#endif
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+
+    self.shouldAnimateBottomLayout = NO;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -72,6 +110,8 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
         self.view.backgroundColor = Theme.backgroundColor;
     }
 }
+
+#pragma mark -
 
 - (void)autoPinViewToBottomOfViewControllerOrKeyboard:(UIView *)view avoidNotch:(BOOL)avoidNotch
 {
@@ -185,18 +225,34 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
     // bar.
     CGFloat offset = -MAX(0, (self.view.height - self.bottomLayoutGuide.length - keyboardEndFrameConverted.origin.y));
 
-    // There's no need to use: [UIView animateWithDuration:...].
-    // Any layout changes made during these notifications are
-    // automatically animated.
-    self.bottomLayoutConstraint.constant = offset;
-    [self.bottomLayoutView.superview layoutIfNeeded];
+    dispatch_block_t updateLayout = ^{
+        if (self.shouldBottomViewReserveSpaceForKeyboard && offset >= 0) {
+            // To avoid unnecessary animations / layout jitter,
+            // some views never reclaim layout space when the keyboard is dismissed.
+            //
+            // They _do_ need to relayout if the user switches keyboards.
+            return;
+        }
+        self.bottomLayoutConstraint.constant = offset;
+        [self.bottomLayoutView.superview layoutIfNeeded];
+    };
+
+
+    if (self.shouldAnimateBottomLayout && CurrentAppContext().isAppForegroundAndActive) {
+        updateLayout();
+    } else {
+        // UIKit by default animates all changes in response to keyboard events.
+        // We want to suppress those animations if the view isn't visible,
+        // otherwise presentation animations don't work properly.
+        [UIView performWithoutAnimation:updateLayout];
+    }
 }
 
 #pragma mark - Orientation
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return DefaultUIInterfaceOrientationMask();
+    return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 @end

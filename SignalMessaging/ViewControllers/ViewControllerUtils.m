@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ViewControllerUtils.h"
@@ -21,9 +21,8 @@ const NSUInteger kMax2FAPinLength = 16;
 + (void)phoneNumberTextField:(UITextField *)textField
     shouldChangeCharactersInRange:(NSRange)range
                 replacementString:(NSString *)insertionText
-                      countryCode:(NSString *)countryCode
+                      callingCode:(NSString *)callingCode
 {
-
     // Phone numbers takes many forms.
     //
     // * We only want to let the user enter decimal digits.
@@ -40,6 +39,7 @@ const NSUInteger kMax2FAPinLength = 16;
     // * Take partial input if possible.
 
     NSString *oldText = textField.text;
+
     // Construct the new contents of the text field by:
     // 1. Determining the "left" substring: the contents of the old text _before_ the deletion range.
     //    Filtering will remove non-decimal digit characters like hyphen "-".
@@ -76,14 +76,16 @@ const NSUInteger kMax2FAPinLength = 16;
     // 5. Construct the "formatted" new text by inserting a hyphen if necessary.
     // reformat the phone number, trying to keep the cursor beside the inserted or deleted digit
     NSUInteger cursorPositionAfterChange = MIN(left.length + center.length, textAfterChange.length);
-    NSString *textAfterReformat =
-        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textAfterChange
-                                                     withSpecifiedCountryCodeString:countryCode];
+
+    NSString *textToFormat = textAfterChange;
+    NSString *formattedText = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:textToFormat
+                                                                           withSpecifiedCountryCodeString:callingCode];
     NSUInteger cursorPositionAfterReformat = [PhoneNumberUtil translateCursorPosition:cursorPositionAfterChange
-                                                                                 from:textAfterChange
-                                                                                   to:textAfterReformat
+                                                                                 from:textToFormat
+                                                                                   to:formattedText
                                                                     stickingRightward:isJustDeletion];
-    textField.text = textAfterReformat;
+
+    textField.text = formattedText;
     UITextPosition *pos =
         [textField positionFromPosition:textField.beginningOfDocument offset:(NSInteger)cursorPositionAfterReformat];
     [textField setSelectedTextRange:[textField textRangeFromPosition:pos toPosition:pos]];

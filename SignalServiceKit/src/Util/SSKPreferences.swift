@@ -9,21 +9,34 @@ public class SSKPreferences: NSObject {
     // Never instantiate this class.
     private override init() {}
 
-    private static let collection = "SSKPreferences"
+    public static let store = SDSKeyValueStore(collection: "SSKPreferences")
+
+    // MARK: -
+
     private static let areLinkPreviewsEnabledKey = "areLinkPreviewsEnabled"
 
     @objc
-    public class func areLinkPreviewsEnabled() -> Bool {
-        return OWSPrimaryStorage.dbReadConnection().bool(forKey: areLinkPreviewsEnabledKey,
-                                                         inCollection: collection,
-                                                         defaultValue: true)
+    public static func areLinkPreviewsEnabled(transaction: SDSAnyReadTransaction) -> Bool {
+        return store.getBool(areLinkPreviewsEnabledKey, defaultValue: true, transaction: transaction)
     }
 
     @objc
-    public class func setAreLinkPreviewsEnabled(value: Bool) {
-        OWSPrimaryStorage.dbReadWriteConnection().setBool(value,
-                                                          forKey: areLinkPreviewsEnabledKey,
-                                                          inCollection: collection)
+    public static func setAreLinkPreviewsEnabled(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(newValue, key: areLinkPreviewsEnabledKey, transaction: transaction)
         SSKEnvironment.shared.syncManager.sendConfigurationSyncMessage()
+    }
+
+    // MARK: -
+
+    private static let hasSavedThreadKey = "hasSavedThread"
+
+    @objc
+    public static func hasSavedThread(transaction: SDSAnyReadTransaction) -> Bool {
+        return store.getBool(hasSavedThreadKey, defaultValue: false, transaction: transaction)
+    }
+
+    @objc
+    public static func setHasSavedThread(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(newValue, key: hasSavedThreadKey, transaction: transaction)
     }
 }

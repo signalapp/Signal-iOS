@@ -41,23 +41,18 @@ public class OWSLinkPreviewDraft: NSObject {
     public var title: String?
 
     @objc
-    public var imageFilePath: String?
+    public var imageData: Data?
 
-    public init(urlString: String, title: String?, imageFilePath: String? = nil) {
+    @objc
+    public var imageMimeType: String?
+
+    public init(urlString: String, title: String?, imageData: Data? = nil, imageMimeType: String? = nil) {
         self.urlString = urlString
         self.title = title
-        self.imageFilePath = imageFilePath
+        self.imageData = imageData
+        self.imageMimeType = imageMimeType
 
         super.init()
-    }
-
-    deinit {
-        // Eagerly clean up temp files.
-        if let imageFilePath = imageFilePath {
-            DispatchQueue.global().async {
-                OWSFileSystem.deleteFile(imageFilePath)
-            }
-        }
     }
 
     fileprivate func isValid() -> Bool {
@@ -65,13 +60,13 @@ public class OWSLinkPreviewDraft: NSObject {
         if let titleValue = title {
             hasTitle = titleValue.count > 0
         }
-        let hasImage = imageFilePath != nil
+        let hasImage = imageData != nil && imageMimeType != nil
         return hasTitle || hasImage
     }
 
     @objc
     public func displayDomain() -> String? {
-        return OWSLinkPreview.displayDomain(forUrl: urlString)
+        return OWSLinkPreviewManager.displayDomain(forUrl: urlString)
     }
 }
 
@@ -79,8 +74,6 @@ public class OWSLinkPreviewDraft: NSObject {
 
 @objc
 public class OWSLinkPreview: MTLModel {
-    @objc
-    public static let featureEnabled = true
 
     @objc
     public var urlString: String?
@@ -111,7 +104,7 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
-    public required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
         try super.init(dictionary: dictionaryValue)
     }
 
@@ -126,10 +119,7 @@ public class OWSLinkPreview: MTLModel {
     @objc
     public class func buildValidatedLinkPreview(dataMessage: SSKProtoDataMessage,
                                                 body: String?,
-                                                transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
-        guard OWSLinkPreview.featureEnabled else {
-            throw LinkPreviewError.noPreview
-        }
+                                                transaction: SDSAnyWriteTransaction) throws -> OWSLinkPreview {
         guard let previewProto = dataMessage.preview.first else {
             throw LinkPreviewError.noPreview
         }
@@ -139,7 +129,7 @@ public class OWSLinkPreview: MTLModel {
         }
         let urlString = previewProto.url
 
-        guard URL(string: urlString) != nil else {
+        guard let url = URL(string: urlString) else {
             Logger.error("Could not parse preview URL.")
             throw LinkPreviewError.invalidInput
         }
@@ -148,13 +138,13 @@ public class OWSLinkPreview: MTLModel {
             Logger.error("Preview for message without body.")
             throw LinkPreviewError.invalidInput
         }
-        let previewUrls = allPreviewUrls(forMessageBodyText: body)
+        let previewUrls = OWSLinkPreviewManager.allPreviewUrls(forMessageBodyText: body)
         guard previewUrls.contains(urlString) else {
             Logger.error("URL not present in body.")
             throw LinkPreviewError.invalidInput
         }
 
-        guard isValidLinkUrl(urlString) else {
+        guard OWSLinkPreviewManager.isValidLink(url: url) else {
             Logger.verbose("Invalid link URL \(urlString).")
             Logger.error("Invalid link URL.")
             throw LinkPreviewError.invalidInput
@@ -162,7 +152,7 @@ public class OWSLinkPreview: MTLModel {
 
         var title: String?
         if let rawTitle = previewProto.title {
-            let normalizedTitle = OWSLinkPreview.normalizeTitle(title: rawTitle)
+            let normalizedTitle = normalizeTitle(title: rawTitle)
             if normalizedTitle.count > 0 {
                 title = normalizedTitle
             }
@@ -171,7 +161,7 @@ public class OWSLinkPreview: MTLModel {
         var imageAttachmentId: String?
         if let imageProto = previewProto.image {
             if let imageAttachmentPointer = TSAttachmentPointer(fromProto: imageProto, albumMessage: nil) {
-                imageAttachmentPointer.save(with: transaction)
+                imageAttachmentPointer.anyInsert(transaction: transaction)
                 imageAttachmentId = imageAttachmentPointer.uniqueId
             } else {
                 Logger.error("Could not parse image proto.")
@@ -191,14 +181,12 @@ public class OWSLinkPreview: MTLModel {
 
     @objc
     public class func buildValidatedLinkPreview(fromInfo info: OWSLinkPreviewDraft,
-                                                transaction: YapDatabaseReadWriteTransaction) throws -> OWSLinkPreview {
-        guard OWSLinkPreview.featureEnabled else {
+                                                transaction: SDSAnyWriteTransaction) throws -> OWSLinkPreview {
+        guard SSKPreferences.areLinkPreviewsEnabled(transaction: transaction) else {
             throw LinkPreviewError.noPreview
         }
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
-            throw LinkPreviewError.noPreview
-        }
-        let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(inputFilePath: info.imageFilePath,
+        let imageAttachmentId = OWSLinkPreview.saveAttachmentIfPossible(imageData: info.imageData,
+                                                                        imageMimeType: info.imageMimeType,
                                                                         transaction: transaction)
 
         let linkPreview = OWSLinkPreview(urlString: info.urlString, title: info.title, imageAttachmentId: imageAttachmentId)
@@ -211,39 +199,43 @@ public class OWSLinkPreview: MTLModel {
         return linkPreview
     }
 
-    private class func saveAttachmentIfPossible(inputFilePath filePath: String?,
-                                                transaction: YapDatabaseReadWriteTransaction) -> String? {
-        guard let filePath = filePath else {
+    private class func saveAttachmentIfPossible(imageData: Data?,
+                                                imageMimeType: String?,
+                                                transaction: SDSAnyWriteTransaction) -> String? {
+        guard let imageData = imageData else {
             return nil
         }
-        guard let fileSize = OWSFileSystem.fileSize(ofPath: filePath) else {
-            owsFailDebug("Unknown file size for path: \(filePath)")
+        guard let imageMimeType = imageMimeType else {
             return nil
         }
-        guard fileSize.uint32Value > 0 else {
-            owsFailDebug("Invalid file size for path: \(filePath)")
+        guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: imageMimeType) else {
             return nil
         }
-        let filename = (filePath as NSString).lastPathComponent
-        let fileExtension = (filename as NSString).pathExtension
-        guard fileExtension.count > 0 else {
-            owsFailDebug("Invalid file extension for path: \(filePath)")
+        let fileSize = imageData.count
+        guard fileSize > 0 else {
+            owsFailDebug("Invalid file size for image data.")
             return nil
         }
-        guard let contentType = MIMETypeUtil.mimeType(forFileExtension: fileExtension) else {
-            owsFailDebug("Invalid content type for path: \(filePath)")
+        let contentType = imageMimeType
+
+        let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
+        do {
+            try imageData.write(to: NSURL.fileURL(withPath: filePath))
+        } catch let error as NSError {
+            owsFailDebug("file write failed: \(filePath), \(error)")
             return nil
         }
+
         guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true) else {
             owsFailDebug("Could not create data source for path: \(filePath)")
             return nil
         }
-        let attachment = TSAttachmentStream(contentType: contentType, byteCount: fileSize.uint32Value, sourceFilename: nil, caption: nil, albumMessageId: nil)
+        let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: false)
         guard attachment.write(dataSource) else {
             owsFailDebug("Could not write data source for path: \(filePath)")
             return nil
         }
-        attachment.save(with: transaction)
+        attachment.anyInsert(transaction: transaction)
 
         return attachment.uniqueId
     }
@@ -258,33 +250,35 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
-    public func removeAttachment(transaction: YapDatabaseReadWriteTransaction) {
+    public func removeAttachment(transaction: SDSAnyWriteTransaction) {
         guard let imageAttachmentId = imageAttachmentId else {
             owsFailDebug("No attachment id.")
             return
         }
-        guard let attachment = TSAttachment.fetch(uniqueId: imageAttachmentId, transaction: transaction) else {
+        guard let attachment = TSAttachment.anyFetch(uniqueId: imageAttachmentId, transaction: transaction) else {
             owsFailDebug("Could not load attachment.")
             return
         }
-        attachment.remove(with: transaction)
+        attachment.anyRemove(transaction: transaction)
     }
 
-    private class func normalizeTitle(title: String) -> String {
-        var result = title
-        // Truncate title after 2 lines of text.
-        let maxLineCount = 2
-        var components = result.components(separatedBy: .newlines)
-        if components.count > maxLineCount {
-            components = Array(components[0..<maxLineCount])
-            result =  components.joined(separator: "\n")
-        }
-        let maxCharacterCount = 2048
-        if result.count > maxCharacterCount {
-            let endIndex = result.index(result.startIndex, offsetBy: maxCharacterCount)
-            result = String(result[..<endIndex])
-        }
-        return result.filterStringForDisplay()
+    @objc
+    public func displayDomain() -> String? {
+        return OWSLinkPreviewManager.displayDomain(forUrl: urlString)
+    }
+}
+
+@objc
+public class OWSLinkPreviewManager: NSObject {
+
+    // MARK: - Dependencies
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    class var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: - Whitelists
@@ -322,7 +316,12 @@ public class OWSLinkPreview: MTLModel {
         // Instagram
         "instagram.com",
         "www.instagram.com",
-        "m.instagram.com"
+        "m.instagram.com",
+
+        // Pinterest
+        "pinterest.com",
+        "www.pinterest.com",
+        "pin.it"
     ]
 
     // For media domains, we DO NOT require an exact match - subdomains are allowed.
@@ -337,17 +336,16 @@ public class OWSLinkPreview: MTLModel {
         "imgur.com",
 
         // Instagram
-        "cdninstagram.com"
+        "cdninstagram.com",
+        "fbcdn.net",
+
+        // Pinterest
+        "pinimg.com"
     ]
 
     private static let protocolWhitelist = [
         "https"
     ]
-
-    @objc
-    public func displayDomain() -> String? {
-        return OWSLinkPreview.displayDomain(forUrl: urlString)
-    }
 
     @objc
     public class func displayDomain(forUrl urlString: String?) -> String? {
@@ -359,8 +357,11 @@ public class OWSLinkPreview: MTLModel {
             owsFailDebug("Invalid url.")
             return nil
         }
+        if StickerPackInfo.isStickerPackShare(url) {
+            return stickerPackShareDomain(forUrl: url)
+        }
         guard let result = whitelistedDomain(forUrl: url,
-                                             domainWhitelist: OWSLinkPreview.linkDomainWhitelist,
+                                             domainWhitelist: linkDomainWhitelist,
                                              allowSubdomains: false) else {
                                                 Logger.error("Missing domain.")
                                                 return nil
@@ -369,22 +370,19 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
-    public class func isValidLinkUrl(_ urlString: String) -> Bool {
-        guard let url = URL(string: urlString) else {
-            return false
+    public class func isValidLink(url: URL) -> Bool {
+        if StickerPackInfo.isStickerPackShare(url) {
+            return true
         }
         return whitelistedDomain(forUrl: url,
-                                 domainWhitelist: OWSLinkPreview.linkDomainWhitelist,
+                                 domainWhitelist: linkDomainWhitelist,
                                  allowSubdomains: false) != nil
     }
 
     @objc
-    public class func isValidMediaUrl(_ urlString: String) -> Bool {
-        guard let url = URL(string: urlString) else {
-            return false
-        }
+    public class func isValidMedia(url: URL) -> Bool {
         return whitelistedDomain(forUrl: url,
-                                 domainWhitelist: OWSLinkPreview.mediaDomainWhitelist,
+                                 domainWhitelist: mediaDomainWhitelist,
                                  allowSubdomains: true) != nil
     }
 
@@ -415,11 +413,22 @@ public class OWSLinkPreview: MTLModel {
         return nil
     }
 
+    private class func stickerPackShareDomain(forUrl url: URL) -> String? {
+        guard let domain = url.host?.lowercased() else {
+            return nil
+        }
+        guard url.path.count > 1 else {
+            // URL must have non-empty path.
+            return nil
+        }
+        return domain
+    }
+
     // MARK: - Serial Queue
 
-    private static let serialQueue = DispatchQueue(label: "org.signal.linkPreview")
+    private let serialQueue = DispatchQueue(label: "org.signal.linkPreview")
 
-    private class func assertIsOnSerialQueue() {
+    private func assertIsOnSerialQueue() {
         if _isDebugAssertConfiguration(), #available(iOS 10.0, *) {
             assertOnQueue(serialQueue)
         }
@@ -428,47 +437,74 @@ public class OWSLinkPreview: MTLModel {
     // MARK: - Text Parsing
 
     // This cache should only be accessed on main thread.
-    private static var previewUrlCache: NSCache<AnyObject, AnyObject> = NSCache()
+    private var previewUrlCache: NSCache<NSString, NSString> = NSCache()
 
     @objc
-    public class func previewUrl(forMessageBodyText body: String?) -> String? {
+    public func previewUrl(forRawBodyText body: String?, selectedRange: NSRange) -> String? {
+        return previewUrl(forMessageBodyText: body, selectedRange: selectedRange)
+    }
+
+    public func previewUrl(forMessageBodyText body: String?, selectedRange: NSRange?) -> String? {
         AssertIsOnMainThread()
 
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        }
         // Exit early if link previews are not enabled in order to avoid
         // tainting the cache.
-        guard OWSLinkPreview.featureEnabled else {
-            return nil
-        }
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
+        guard areLinkPreviewsEnabled else {
             return nil
         }
 
-        if let cachedUrl = previewUrlCache.object(forKey: body as AnyObject) as? String {
+        guard let body = body else {
+            return nil
+        }
+
+        if let cachedUrl = previewUrlCache.object(forKey: body as NSString) as String? {
             Logger.verbose("URL parsing cache hit.")
             guard cachedUrl.count > 0 else {
                 return nil
             }
             return cachedUrl
         }
-        let previewUrls = allPreviewUrls(forMessageBodyText: body)
-        guard let previewUrl = previewUrls.first else {
+        let previewUrlMatches = OWSLinkPreviewManager.allPreviewUrlMatches(forMessageBodyText: body)
+        guard let urlMatch = previewUrlMatches.first else {
             // Use empty string to indicate "no preview URL" in the cache.
-            previewUrlCache.setObject("" as AnyObject, forKey: body as AnyObject)
+            previewUrlCache.setObject("", forKey: body as NSString)
             return nil
         }
 
-        previewUrlCache.setObject(previewUrl as AnyObject, forKey: body as AnyObject)
-        return previewUrl
+        if let selectedRange = selectedRange {
+            Logger.verbose("match: urlString: \(urlMatch.urlString) range: \(urlMatch.matchRange) selectedRange: \(selectedRange)")
+            let cursorAtEndOfMatch = urlMatch.matchRange.location + urlMatch.matchRange.length == selectedRange.location
+            if selectedRange.location != body.count,
+                (urlMatch.matchRange.intersection(selectedRange) != nil || cursorAtEndOfMatch) {
+                Logger.debug("ignoring URL, since the user is currently editing it.")
+                // we don't want to cache the result here, as we want to fetch the link preview
+                // if the user moves the cursor.
+                return nil
+            }
+            Logger.debug("considering URL, since the user is not currently editing it.")
+        }
+
+        previewUrlCache.setObject(urlMatch.urlString as NSString, forKey: body as NSString)
+        return urlMatch.urlString
     }
 
-    class func allPreviewUrls(forMessageBodyText body: String?) -> [String] {
-        guard OWSLinkPreview.featureEnabled else {
-            return []
+    struct URLMatchResult {
+        let urlString: String
+        let matchRange: NSRange
+    }
+
+    class func allPreviewUrls(forMessageBodyText body: String) -> [String] {
+        return allPreviewUrlMatches(forMessageBodyText: body).map { $0.urlString }
+    }
+
+    class func allPreviewUrlMatches(forMessageBodyText body: String) -> [URLMatchResult] {
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         }
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
-            return []
-        }
-        guard let body = body else {
+        guard areLinkPreviewsEnabled else {
             return []
         }
 
@@ -480,62 +516,68 @@ public class OWSLinkPreview: MTLModel {
             return []
         }
 
-        var previewUrls = [String]()
+        var urlMatches: [URLMatchResult] = []
         let matches = detector.matches(in: body, options: [], range: NSRange(location: 0, length: body.count))
         for match in matches {
             guard let matchURL = match.url else {
                 owsFailDebug("Match missing url")
                 continue
             }
-            let urlString = matchURL.absoluteString
-            if isValidLinkUrl(urlString) {
-                previewUrls.append(urlString)
+            if isValidLink(url: matchURL) {
+                let matchResult = URLMatchResult(urlString: matchURL.absoluteString, matchRange: match.range)
+                urlMatches.append(matchResult)
             }
         }
-        return previewUrls
+        return urlMatches
     }
 
     // MARK: - Preview Construction
 
     // This cache should only be accessed on serialQueue.
-    private static var linkPreviewDraftCache: NSCache<AnyObject, OWSLinkPreviewDraft> = NSCache()
+    //
+    // We should only maintain a "cache" of the last known draft.
+    private var linkPreviewDraftCache: OWSLinkPreviewDraft?
 
-    private class func cachedLinkPreview(forPreviewUrl previewUrl: String) -> OWSLinkPreviewDraft? {
-        var result: OWSLinkPreviewDraft?
-        serialQueue.sync {
-            result = linkPreviewDraftCache.object(forKey: previewUrl as AnyObject)
+    private func cachedLinkPreview(forPreviewUrl previewUrl: String) -> OWSLinkPreviewDraft? {
+        return serialQueue.sync {
+            guard let linkPreviewDraft = linkPreviewDraftCache,
+                linkPreviewDraft.urlString == previewUrl else {
+                    Logger.verbose("----- Cache miss.")
+                return nil
+            }
+            Logger.verbose("----- Cache hit.")
+            return linkPreviewDraft
         }
-        return result
     }
 
-    private class func setCachedLinkPreview(_ linkPreviewDraft: OWSLinkPreviewDraft,
+    private func setCachedLinkPreview(_ linkPreviewDraft: OWSLinkPreviewDraft,
                                             forPreviewUrl previewUrl: String) {
+        assert(previewUrl == linkPreviewDraft.urlString)
 
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
+        }
         // Exit early if link previews are not enabled in order to avoid
         // tainting the cache.
-        guard OWSLinkPreview.featureEnabled else {
-            return
-        }
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
+        guard areLinkPreviewsEnabled else {
             return
         }
 
         serialQueue.sync {
-            previewUrlCache.setObject(linkPreviewDraft, forKey: previewUrl as AnyObject)
+            linkPreviewDraftCache = linkPreviewDraft
         }
     }
 
     @objc
-    public class func tryToBuildPreviewInfoObjc(previewUrl: String?) -> AnyPromise {
+    public func tryToBuildPreviewInfoObjc(previewUrl: String?) -> AnyPromise {
         return AnyPromise(tryToBuildPreviewInfo(previewUrl: previewUrl))
     }
 
-    public class func tryToBuildPreviewInfo(previewUrl: String?) -> Promise<OWSLinkPreviewDraft> {
-
-        guard OWSLinkPreview.featureEnabled else {
-            return Promise(error: LinkPreviewError.featureDisabled)
+    public func tryToBuildPreviewInfo(previewUrl: String?) -> Promise<OWSLinkPreviewDraft> {
+        let areLinkPreviewsEnabled = databaseStorage.readReturningResult { transaction in
+            SSKPreferences.areLinkPreviewsEnabled(transaction: transaction)
         }
-        guard SSKPreferences.areLinkPreviewsEnabled() else {
+        guard areLinkPreviewsEnabled else {
             return Promise(error: LinkPreviewError.featureDisabled)
         }
         guard let previewUrl = previewUrl else {
@@ -545,24 +587,48 @@ public class OWSLinkPreview: MTLModel {
             Logger.verbose("Link preview info cache hit.")
             return Promise.value(cachedInfo)
         }
+        guard let url = URL(string: previewUrl) else {
+            Logger.error("Could not parse URL.")
+            return Promise(error: LinkPreviewError.invalidInput)
+        }
+        if StickerPackInfo.isStickerPackShare(url) {
+            return linkPreviewDraft(forStickerShare: url)
+                .map(on: DispatchQueue.global()) { (linkPreviewDraft) -> OWSLinkPreviewDraft in
+                    guard linkPreviewDraft.isValid() else {
+                        throw LinkPreviewError.noPreview
+                    }
+                    self.setCachedLinkPreview(linkPreviewDraft, forPreviewUrl: previewUrl)
+
+                    return linkPreviewDraft
+            }
+        }
+
         return downloadLink(url: previewUrl)
             .then(on: DispatchQueue.global()) { (data) -> Promise<OWSLinkPreviewDraft> in
-                return parseLinkDataAndBuildDraft(linkData: data, linkUrlString: previewUrl)
-                    .then(on: DispatchQueue.global()) { (linkPreviewDraft) -> Promise<OWSLinkPreviewDraft> in
-                        guard linkPreviewDraft.isValid() else {
-                            return Promise(error: LinkPreviewError.noPreview)
-                        }
-                        setCachedLinkPreview(linkPreviewDraft, forPreviewUrl: previewUrl)
-
-                        return Promise.value(linkPreviewDraft)
+                return self.parseLinkDataAndBuildDraft(linkData: data, linkUrlString: previewUrl)
+            }.map(on: DispatchQueue.global()) { (linkPreviewDraft) -> OWSLinkPreviewDraft in
+                guard linkPreviewDraft.isValid() else {
+                    throw LinkPreviewError.noPreview
                 }
+                self.setCachedLinkPreview(linkPreviewDraft, forPreviewUrl: previewUrl)
+
+                return linkPreviewDraft
         }
     }
 
-    class func downloadLink(url: String,
+    // MARK: - Downloads
+
+    lazy var proxiedContentDownloader: ProxiedContentDownloader = {
+        let proxiedContentDownloader = ProxiedContentDownloader(downloadFolderName: "LinkPreviews")
+        proxiedContentDownloader.delegate = self
+
+        return proxiedContentDownloader
+    }()
+
+    func downloadLink(url urlString: String,
                             remainingRetries: UInt = 3) -> Promise<Data> {
 
-        Logger.verbose("url: \(url)")
+        Logger.verbose("url: \(urlString)")
 
         let sessionConfiguration = ContentProxy.sessionConfiguration()
 
@@ -574,14 +640,29 @@ public class OWSLinkPreview: MTLModel {
                                                   sessionConfiguration: sessionConfiguration)
         sessionManager.requestSerializer = AFHTTPRequestSerializer()
         sessionManager.responseSerializer = AFHTTPResponseSerializer()
+        let redirectionBlock = { (session: URLSession, task: URLSessionTask, response: URLResponse, request: URLRequest) -> URLRequest? in
+            guard let redirectURL = request.url else {
+                owsFailDebug("redirectURL was unexpectedly nil")
+                return nil
+            }
 
-        // Remove all headers from the request.
-        for headerField in sessionManager.requestSerializer.httpRequestHeaders.keys {
-            sessionManager.requestSerializer.setValue(nil, forHTTPHeaderField: headerField)
+            guard OWSLinkPreviewManager.isValidLink(url: redirectURL) else {
+                Logger.debug("Ignoring redirect to non-whitelisted URL: \(redirectURL)")
+                return nil
+            }
+
+            Logger.debug("link preview redirected: \(String(describing: response.url)) -> \(redirectURL)")
+            return request
+        }
+        sessionManager.setTaskWillPerformHTTPRedirectionBlock(redirectionBlock)
+
+        guard ContentProxy.configureSessionManager(sessionManager: sessionManager, forUrl: urlString) else {
+            owsFailDebug("Could not configure url: \(urlString).")
+            return Promise(error: LinkPreviewError.assertionFailure)
         }
 
         let (promise, resolver) = Promise<Data>.pending()
-        sessionManager.get(url,
+        sessionManager.get(urlString,
                            parameters: [String: AnyObject](),
                            progress: nil,
                            success: { task, value in
@@ -613,7 +694,7 @@ public class OWSLinkPreview: MTLModel {
                            failure: { _, error in
                             Logger.verbose("Error: \(error)")
 
-                            guard isRetryable(error: error) else {
+                            guard self.isRetryable(error: error) else {
                                 Logger.warn("Error is not retryable.")
                                 resolver.reject(LinkPreviewError.couldNotDownload)
                                 return
@@ -624,7 +705,7 @@ public class OWSLinkPreview: MTLModel {
                                 resolver.reject(LinkPreviewError.couldNotDownload)
                                 return
                             }
-                            OWSLinkPreview.downloadLink(url: url, remainingRetries: remainingRetries - 1)
+                            self.downloadLink(url: urlString, remainingRetries: remainingRetries - 1)
                             .done(on: DispatchQueue.global()) { (data) in
                                 resolver.fulfill(data)
                             }.catch(on: DispatchQueue.global()) { (error) in
@@ -634,7 +715,7 @@ public class OWSLinkPreview: MTLModel {
         return promise
     }
 
-    private class func downloadImage(url urlString: String, imageMimeType: String) -> Promise<Data> {
+    private func downloadImage(url urlString: String, imageMimeType: String) -> Promise<Data> {
 
         Logger.verbose("url: \(urlString)")
 
@@ -649,13 +730,14 @@ public class OWSLinkPreview: MTLModel {
         }
         let (promise, resolver) = Promise<ProxiedContentAsset>.pending()
         DispatchQueue.main.async {
-            _ = ProxiedContentDownloader.defaultDownloader.requestAsset(assetDescription: assetDescription,
-                                                                        priority: .high,
-                                                                        success: { (_, asset) in
-                                                                            resolver.fulfill(asset)
-            }, failure: { (_) in
-                Logger.warn("Error downloading asset")
-                resolver.reject(LinkPreviewError.couldNotDownload)
+            _ = self.proxiedContentDownloader.requestAsset(assetDescription: assetDescription,
+                                                      priority: .high,
+                                                      success: { (_, asset) in
+                                                        resolver.fulfill(asset)
+            },
+                                                      failure: { (_) in
+                                                        Logger.warn("Error downloading asset")
+                                                        resolver.reject(LinkPreviewError.couldNotDownload)
             })
         }
         return promise.then(on: DispatchQueue.global()) { (asset: ProxiedContentAsset) -> Promise<Data> in
@@ -675,7 +757,7 @@ public class OWSLinkPreview: MTLModel {
                 let maxImageSize: CGFloat = 1024
                 let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
                 guard shouldResize else {
-                    guard let dstData = UIImageJPEGRepresentation(srcImage, 0.8) else {
+                    guard let dstData = srcImage.jpegData(compressionQuality: 0.8) else {
                         Logger.error("Could not write resized image.")
                         return Promise(error: LinkPreviewError.invalidContent)
                     }
@@ -686,7 +768,7 @@ public class OWSLinkPreview: MTLModel {
                     Logger.error("Could not resize image.")
                     return Promise(error: LinkPreviewError.invalidContent)
                 }
-                guard let dstData = UIImageJPEGRepresentation(dstImage, 0.8) else {
+                guard let dstData = dstImage.jpegData(compressionQuality: 0.8) else {
                     Logger.error("Could not write resized image.")
                     return Promise(error: LinkPreviewError.invalidContent)
                 }
@@ -698,7 +780,7 @@ public class OWSLinkPreview: MTLModel {
         }
     }
 
-    private class func isRetryable(error: Error) -> Bool {
+    private func isRetryable(error: Error) -> Bool {
         let nsError = error as NSError
         if nsError.domain == kCFErrorDomainCFNetwork as String {
             // Network failures are retried.
@@ -707,42 +789,40 @@ public class OWSLinkPreview: MTLModel {
         return false
     }
 
-    class func parseLinkDataAndBuildDraft(linkData: Data,
-                                          linkUrlString: String) -> Promise<OWSLinkPreviewDraft> {
+    func parseLinkDataAndBuildDraft(linkData: Data,
+                                    linkUrlString: String) -> Promise<OWSLinkPreviewDraft> {
         do {
             let contents = try parse(linkData: linkData)
 
             let title = contents.title
-            guard let imageUrl = contents.imageUrl else {
+            guard let imageUrlString = contents.imageUrl else {
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
-
-            guard isValidMediaUrl(imageUrl) else {
+            guard let imageUrl = URL(string: imageUrlString) else {
+                Logger.error("Invalid imageUrlString.")
+                return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
+            }
+            guard OWSLinkPreviewManager.isValidMedia(url: imageUrl) else {
                 Logger.error("Invalid image URL.")
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
-            guard let imageFileExtension = fileExtension(forImageUrl: imageUrl) else {
-                Logger.error("Image URL has unknown or invalid file extension: \(imageUrl).")
+            guard let imageFileExtension = type(of: self).fileExtension(forImageUrl: imageUrlString) else {
+                Logger.error("Image URL has unknown or invalid file extension: \(imageUrlString).")
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
-            guard let imageMimeType = mimetype(forImageFileExtension: imageFileExtension) else {
+            guard let imageMimeType = type(of: self).mimetype(forImageFileExtension: imageFileExtension) else {
                 Logger.error("Image URL has unknown or invalid content type: \(imageUrl).")
                 return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
 
-            return downloadImage(url: imageUrl, imageMimeType: imageMimeType)
-                .then(on: DispatchQueue.global()) { (imageData: Data) -> Promise<OWSLinkPreviewDraft> in
+            return downloadImage(url: imageUrlString, imageMimeType: imageMimeType)
+                .map(on: DispatchQueue.global()) { (imageData: Data) -> OWSLinkPreviewDraft in
                     // We always recompress images to Jpeg.
-                    let imageFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: "jpg")
-                    do {
-                        try imageData.write(to: NSURL.fileURL(withPath: imageFilePath), options: .atomicWrite)
-                    } catch let error as NSError {
-                        owsFailDebug("file write failed: \(imageFilePath), \(error)")
-                        return Promise(error: LinkPreviewError.assertionFailure)
-                    }
-
-                    let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString, title: title, imageFilePath: imageFilePath)
-                    return Promise.value(linkPreviewDraft)
+                    let linkPreviewDraft = OWSLinkPreviewDraft(urlString: linkUrlString,
+                                                               title: title,
+                                                               imageData: imageData,
+                                                               imageMimeType: OWSMimeTypeImageJpeg)
+                    return linkPreviewDraft
                 }
                 .recover(on: DispatchQueue.global()) { (_) -> Promise<OWSLinkPreviewDraft> in
                     return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
@@ -757,18 +837,18 @@ public class OWSLinkPreview: MTLModel {
     //
     //    <meta property="og:title" content="Randomness is Random - Numberphile">
     //    <meta property="og:image" content="https://i.ytimg.com/vi/tP-Ipsat90c/maxresdefault.jpg">
-    class func parse(linkData: Data) throws -> OWSLinkPreviewContents {
+    func parse(linkData: Data) throws -> OWSLinkPreviewContents {
         guard let linkText = String(bytes: linkData, encoding: .utf8) else {
             owsFailDebug("Could not parse link text.")
             throw LinkPreviewError.invalidInput
         }
 
         var title: String?
-        if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:title\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>",
+        if let rawTitle = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:title\"\\s+[^>]*content\\s*=\\s*\"(.*?)\"\\s*[^>]*/?>",
                                                               text: linkText,
                                                               options: .dotMatchesLineSeparators) {
             if let decodedTitle = decodeHTMLEntities(inString: rawTitle) {
-                let normalizedTitle = OWSLinkPreview.normalizeTitle(title: decodedTitle)
+                let normalizedTitle = normalizeTitle(title: decodedTitle)
                 if normalizedTitle.count > 0 {
                     title = normalizedTitle
                 }
@@ -777,7 +857,7 @@ public class OWSLinkPreview: MTLModel {
 
         Logger.verbose("title: \(String(describing: title))")
 
-        guard let rawImageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:image\"\\s+content\\s*=\\s*\"(.*?)\"\\s*/?>", text: linkText) else {
+        guard let rawImageUrlString = NSRegularExpression.parseFirstMatch(pattern: "<meta\\s+property\\s*=\\s*\"og:image\"\\s+[^>]*content\\s*=\\s*\"(.*?)\"[^>]*/?>", text: linkText) else {
             return OWSLinkPreviewContents(title: title)
         }
         guard let imageUrlString = decodeHTMLEntities(inString: rawImageUrlString)?.ows_stripped() else {
@@ -819,7 +899,7 @@ public class OWSLinkPreview: MTLModel {
         return imageMimeType
     }
 
-    private class func decodeHTMLEntities(inString value: String) -> String? {
+    private func decodeHTMLEntities(inString value: String) -> String? {
         guard let data = value.data(using: .utf8) else {
             return nil
         }
@@ -835,4 +915,85 @@ public class OWSLinkPreview: MTLModel {
 
         return attributedString.string
     }
+
+    // MARK: - Stickers
+
+    func linkPreviewDraft(forStickerShare url: URL) -> Promise<OWSLinkPreviewDraft> {
+        Logger.verbose("url: \(url)")
+
+        guard let stickerPackInfo = StickerPackInfo.parseStickerPackShare(url) else {
+            Logger.error("Could not parse URL.")
+            return Promise(error: LinkPreviewError.invalidInput)
+        }
+
+        // tryToDownloadStickerPack will use locally saved data if possible.
+        return StickerManager.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
+        .then { (stickerPack) -> Promise<OWSLinkPreviewDraft> in
+            let coverInfo = stickerPack.coverInfo
+            // tryToDownloadSticker will use locally saved data if possible.
+            return StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: coverInfo).map(on: DispatchQueue.global()) { (coverData) -> OWSLinkPreviewDraft in
+                // Try to build thumbnail from cover webp.
+                var pngImageData: Data?
+                if let stillImage = (coverData as NSData).stillForWebpData() {
+                    var stillThumbnail = stillImage
+                    let maxImageSize: CGFloat = 1024
+                    let imageSize = stillImage.size
+                    let shouldResize = imageSize.width > maxImageSize || imageSize.height > maxImageSize
+                    if shouldResize {
+                        if let resizedImage = stillImage.resized(withMaxDimensionPoints: maxImageSize) {
+                            stillThumbnail = resizedImage
+                        } else {
+                            owsFailDebug("Could not resize image.")
+                        }
+                    }
+
+                    if let stillData = stillThumbnail.pngData() {
+                        pngImageData = stillData
+                    } else {
+                        owsFailDebug("Could not encode as JPEG.")
+                    }
+                } else {
+                    owsFailDebug("Could not extract still.")
+                }
+
+                return OWSLinkPreviewDraft(urlString: url.absoluteString,
+                                           title: stickerPack.title?.filterForDisplay,
+                                           imageData: pngImageData,
+                                           imageMimeType: OWSMimeTypeImagePng)
+            }
+        }
+    }
+}
+
+// MARK: -
+
+extension OWSLinkPreviewManager: ProxiedContentDownloaderDelegate {
+    func proxiedContentDownloader(willPerformHTTPRedirection response: HTTPURLResponse, newRequest: URLRequest) -> URLRequest? {
+        guard let url = newRequest.url else {
+            return nil
+        }
+
+        guard OWSLinkPreviewManager.isValidMedia(url: url) else {
+            return nil
+        }
+
+        return newRequest
+    }
+}
+
+private func normalizeTitle(title: String) -> String {
+    var result = title
+    // Truncate title after 2 lines of text.
+    let maxLineCount = 2
+    var components = result.components(separatedBy: .newlines)
+    if components.count > maxLineCount {
+        components = Array(components[0..<maxLineCount])
+        result =  components.joined(separator: "\n")
+    }
+    let maxCharacterCount = 2048
+    if result.count > maxCharacterCount {
+        let endIndex = result.index(result.startIndex, offsetBy: maxCharacterCount)
+        result = String(result[..<endIndex])
+    }
+    return result.filterStringForDisplay()
 }

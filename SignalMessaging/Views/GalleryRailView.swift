@@ -9,8 +9,7 @@ public protocol GalleryRailItemProvider: class {
 }
 
 public protocol GalleryRailItem: class {
-    func getRailImage() -> Promise<UIImage>
-    var aspectRatio: CGFloat { get }
+    func buildRailItemView() -> UIView
 }
 
 protocol GalleryRailCellViewDelegate: class {
@@ -26,8 +25,9 @@ public class GalleryRailCellView: UIView {
 
         layoutMargins = .zero
         clipsToBounds = false
-        addSubview(imageView)
-        imageView.autoPinEdgesToSuperviewMargins()
+        addSubview(contentContainer)
+        contentContainer.autoPinEdgesToSuperviewMargins()
+        contentContainer.layer.cornerRadius = 4.8
 
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTap(sender:)))
         addGestureRecognizer(tapGesture)
@@ -52,40 +52,43 @@ public class GalleryRailCellView: UIView {
         self.item = item
         self.delegate = delegate
 
-        item.getRailImage().done { image in
-            guard self.item === item else { return }
+        for view in contentContainer.subviews {
+            view.removeFromSuperview()
+        }
 
-            self.imageView.image = image
-        }.retainUntilComplete()
+        let itemView = item.buildRailItemView()
+        contentContainer.addSubview(itemView)
+        itemView.autoPinEdgesToSuperviewEdges()
     }
 
     // MARK: Selected
 
     private(set) var isSelected: Bool = false
 
+    public let cellBorderWidth: CGFloat = 3
+
     func setIsSelected(_ isSelected: Bool) {
         self.isSelected = isSelected
+
+        // Reserve space for the selection border whether or not the cell is selected.
+        layoutMargins = UIEdgeInsets(top: 0, left: cellBorderWidth, bottom: 0, right: cellBorderWidth)
+
         if isSelected {
-            layoutMargins = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
-            imageView.layer.borderColor = Theme.galleryHighlightColor.cgColor
-            imageView.layer.borderWidth = 2
-            imageView.layer.cornerRadius = 2
+            contentContainer.layer.borderColor = Theme.galleryHighlightColor.cgColor
+            contentContainer.layer.borderWidth = cellBorderWidth
         } else {
-            layoutMargins = .zero
-            imageView.layer.borderWidth = 0
-            imageView.layer.cornerRadius = 0
+            contentContainer.layer.borderWidth = 0
         }
     }
 
     // MARK: Subview Helpers
 
-    let imageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.autoPinToSquareAspectRatio()
-        imageView.clipsToBounds = true
+    let contentContainer: UIView = {
+        let view = UIView()
+        view.autoPinToSquareAspectRatio()
+        view.clipsToBounds = true
 
-        return imageView
+        return view
     }()
 }
 
@@ -120,13 +123,31 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
     // MARK: Public
 
-    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?, cellViewBuilder: () -> GalleryRailCellView) {
+    typealias AnimationBlock = () -> Void
+    typealias AnimationCompletionBlock = (Bool) -> Void
+
+    // UIView.animate(), takes an "animated" flag which disables animations.
+    private func animate(animationDuration: TimeInterval,
+                         animated: Bool,
+                         animations: @escaping AnimationBlock,
+                         completion: AnimationCompletionBlock? = nil) {
+        guard animated else {
+            animations()
+            completion?(true)
+            return
+        }
+        UIView.animate(withDuration: animationDuration, animations: animations, completion: completion)
+    }
+
+    public func configureCellViews(itemProvider: GalleryRailItemProvider?, focusedItem: GalleryRailItem?, cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView, animated: Bool = true) {
         let animationDuration: TimeInterval = 0.2
 
         guard let itemProvider = itemProvider else {
-            UIView.animate(withDuration: animationDuration) {
+            animate(animationDuration: animationDuration,
+                    animated: animated,
+                    animations: {
                 self.isHidden = true
-            }
+            })
             self.cellViews = []
             return
         }
@@ -144,10 +165,12 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         }
 
         if itemProvider === self.itemProvider, areRailItemsIdentical(itemProvider.railItems, self.cellViewItems) {
-            UIView.animate(withDuration: animationDuration) {
+            animate(animationDuration: animationDuration,
+                    animated: animated,
+                    animations: {
                 self.updateFocusedItem(focusedItem)
                 self.layoutIfNeeded()
-            }
+            })
         }
 
         self.itemProvider = itemProvider
@@ -155,7 +178,7 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         guard itemProvider.railItems.count > 1 else {
             let cellViews = scrollView.subviews
 
-            UIView.animate(withDuration: animationDuration,
+            animate(animationDuration: animationDuration, animated: animated,
                            animations: {
                             cellViews.forEach { $0.isHidden = true }
                             self.isHidden = true
@@ -167,15 +190,17 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
         scrollView.subviews.forEach { $0.removeFromSuperview() }
 
-        UIView.animate(withDuration: animationDuration) {
+        animate(animationDuration: animationDuration,
+                animated: animated,
+                animations: {
             self.isHidden = false
-        }
+        })
 
         let cellViews = buildCellViews(items: itemProvider.railItems, cellViewBuilder: cellViewBuilder)
         self.cellViews = cellViews
         let stackView = UIStackView(arrangedSubviews: cellViews)
         stackView.axis = .horizontal
-        stackView.spacing = 2
+        stackView.spacing = 0
         stackView.clipsToBounds = false
 
         scrollView.addSubview(stackView)
@@ -206,9 +231,9 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
         return scrollView
     }()
 
-    private func buildCellViews(items: [GalleryRailItem], cellViewBuilder: () -> GalleryRailCellView) -> [GalleryRailCellView] {
+    private func buildCellViews(items: [GalleryRailItem], cellViewBuilder: (GalleryRailItem) -> GalleryRailCellView) -> [GalleryRailCellView] {
         return items.map { item in
-            let cellView = cellViewBuilder()
+            let cellView = cellViewBuilder(item)
             cellView.configure(item: item, delegate: self)
             return cellView
         }
@@ -258,15 +283,5 @@ public class GalleryRailView: UIView, GalleryRailCellViewDelegate {
 
             scrollView.scrollRectToVisible(cellFrame, animated: true)
         }
-    }
-}
-
-public extension CGSize {
-    var aspectRatio: CGFloat {
-        guard self.height > 0 else {
-            return 0
-        }
-
-        return self.width / self.height
     }
 }

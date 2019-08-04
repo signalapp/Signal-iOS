@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -44,9 +44,18 @@ public class ParamParser {
 
     // MARK: Errors
 
-    public enum ParseError: Error {
+    public enum ParseError: Error, CustomStringConvertible {
         case missingField(Key)
         case invalidFormat(Key)
+
+        public var description: String {
+            switch self {
+            case .missingField(let key):
+                return "ParseError: missing field for \(key)"
+            case .invalidFormat(let key):
+                return "ParseError: invalid format for \(key)"
+            }
+        }
     }
 
     private func invalid(key: Key) -> ParseError {

@@ -6,11 +6,13 @@
 #import "OWSContactAvatarBuilder.h"
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageHeaderView.h"
+#import "OWSMessageHiddenView.h"
+#import "OWSMessageStickerView.h"
 #import "Signal-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageCell ()
+@interface OWSMessageCell () <UIGestureRecognizerDelegate>
 
 // The nullable properties are created as needed.
 // The non-nullable properties are so frequently used that it's easier
@@ -18,10 +20,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSMessageHeaderView *headerView;
 @property (nonatomic) OWSMessageBubbleView *messageBubbleView;
+@property (nonatomic) OWSMessageStickerView *messageStickerView;
+@property (nonatomic) OWSMessageHiddenView *messageHiddenView;
 @property (nonatomic) AvatarImageView *avatarView;
 @property (nonatomic, nullable) UIImageView *sendFailureBadgeView;
 
 @property (nonatomic, nullable) NSMutableArray<NSLayoutConstraint *> *viewConstraints;
+
+@property (nonatomic) UIPanGestureRecognizer *panGestureRecognizer;
+@property (nonatomic) UIView *swipeableContentView;
+@property (nonatomic) UIImageView *swipeToReplyImageView;
+@property (nonatomic) CGFloat swipeableContentViewInitialX;
+@property (nonatomic) CGFloat messageViewInitialX;
+@property (nonatomic) BOOL isReplyActive;
+
 @property (nonatomic) BOOL isPresentingMenuController;
 
 @end
@@ -51,15 +63,14 @@ NS_ASSUME_NONNULL_BEGIN
     _viewConstraints = [NSMutableArray new];
 
     self.messageBubbleView = [OWSMessageBubbleView new];
-    [self.contentView addSubview:self.messageBubbleView];
+    self.messageStickerView = [OWSMessageStickerView new];
+    self.messageHiddenView = [OWSMessageHiddenView new];
 
     self.headerView = [OWSMessageHeaderView new];
 
     self.avatarView = [[AvatarImageView alloc] init];
     [self.avatarView autoSetDimension:ALDimensionWidth toSize:self.avatarSize];
     [self.avatarView autoSetDimension:ALDimensionHeight toSize:self.avatarSize];
-
-    [self.messageBubbleView autoPinBottomToSuperviewMarginWithInset:0];
 
     self.contentView.userInteractionEnabled = YES;
 
@@ -70,6 +81,14 @@ NS_ASSUME_NONNULL_BEGIN
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
     [self.contentView addGestureRecognizer:longPress];
+
+    self.panGestureRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self
+                                                                          action:@selector(handlePanGesture:)];
+    self.panGestureRecognizer.delegate = self;
+    [self.contentView addGestureRecognizer:self.panGestureRecognizer];
+    [tap requireGestureRecognizerToFail:self.panGestureRecognizer];
+
+    [self setupSwipeContainer];
 }
 
 - (void)dealloc
@@ -82,6 +101,8 @@ NS_ASSUME_NONNULL_BEGIN
     [super setConversationStyle:conversationStyle];
 
     self.messageBubbleView.conversationStyle = conversationStyle;
+    self.messageStickerView.conversationStyle = conversationStyle;
+    self.messageHiddenView.conversationStyle = conversationStyle;
 }
 
 + (NSString *)cellReuseIdentifier
@@ -122,6 +143,17 @@ NS_ASSUME_NONNULL_BEGIN
     return outgoingMessage.messageState == TSOutgoingMessageStateFailed;
 }
 
+- (OWSMessageView *)messageView
+{
+    if (self.cellType == OWSMessageCellType_StickerMessage) {
+        return self.messageStickerView;
+    } else if (self.cellType == OWSMessageCellType_PerMessageExpiration) {
+        return self.messageHiddenView;
+    } else {
+        return self.messageBubbleView;
+    }
+}
+
 #pragma mark - Load
 
 - (void)loadForDisplay
@@ -131,11 +163,16 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.viewItem.interaction);
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
     OWSAssertDebug(self.messageBubbleView);
+    OWSAssertDebug(self.messageStickerView);
+    OWSAssertDebug(self.messageHiddenView);
 
-    self.messageBubbleView.viewItem = self.viewItem;
-    self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
-    [self.messageBubbleView configureViews];
-    [self.messageBubbleView loadContent];
+    OWSMessageView *messageView = self.messageView;
+    messageView.viewItem = self.viewItem;
+    messageView.cellMediaCache = self.delegate.cellMediaCache;
+    [messageView configureViews];
+    [messageView loadContent];
+    [self.contentView addSubview:messageView];
+    [messageView autoPinBottomToSuperviewMarginWithInset:0];
 
     if (self.viewItem.hasCellHeader) {
         CGFloat headerHeight =
@@ -148,21 +185,20 @@ NS_ASSUME_NONNULL_BEGIN
             [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeLeading],
             [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
             [self.headerView autoPinEdgeToSuperviewEdge:ALEdgeTop],
-            [self.messageBubbleView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerView],
+            [messageView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.headerView],
         ]];
     } else {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTop],
+            [messageView autoPinEdgeToSuperviewEdge:ALEdgeTop],
         ]];
     }
 
     if (self.isIncoming) {
         [self.viewConstraints addObjectsFromArray:@[
-            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                                     withInset:self.conversationStyle.gutterLeading],
-            [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                                     withInset:self.conversationStyle.gutterTrailing
-                                                      relation:NSLayoutRelationGreaterThanOrEqual],
+            [messageView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:self.conversationStyle.gutterLeading],
+            [messageView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
+                                          withInset:self.conversationStyle.gutterTrailing
+                                           relation:NSLayoutRelationGreaterThanOrEqual],
         ]];
     } else {
         if (self.shouldHaveSendFailureBadge) {
@@ -175,18 +211,18 @@ NS_ASSUME_NONNULL_BEGIN
             CGFloat sendFailureBadgeBottomMargin
                 = round(self.conversationStyle.lastTextLineAxis - self.sendFailureBadgeSize * 0.5f);
             [self.viewConstraints addObjectsFromArray:@[
-                [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                                         withInset:self.conversationStyle.gutterLeading
-                                                          relation:NSLayoutRelationGreaterThanOrEqual],
-                [self.sendFailureBadgeView autoPinLeadingToTrailingEdgeOfView:self.messageBubbleView
+                [messageView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                              withInset:self.conversationStyle.gutterLeading
+                                               relation:NSLayoutRelationGreaterThanOrEqual],
+                [self.sendFailureBadgeView autoPinLeadingToTrailingEdgeOfView:messageView
                                                                        offset:self.sendFailureBadgeSpacing],
                 // V-align the "send failure" badge with the
                 // last line of the text (if any, or where it
                 // would be).
-                [self.messageBubbleView autoPinEdge:ALEdgeBottom
-                                             toEdge:ALEdgeBottom
-                                             ofView:self.sendFailureBadgeView
-                                         withOffset:sendFailureBadgeBottomMargin],
+                [messageView autoPinEdge:ALEdgeBottom
+                                  toEdge:ALEdgeBottom
+                                  ofView:self.sendFailureBadgeView
+                              withOffset:sendFailureBadgeBottomMargin],
                 [self.sendFailureBadgeView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
                                                             withInset:self.conversationStyle.errorGutterTrailing],
                 [self.sendFailureBadgeView autoSetDimension:ALDimensionWidth toSize:self.sendFailureBadgeSize],
@@ -194,11 +230,10 @@ NS_ASSUME_NONNULL_BEGIN
             ]];
         } else {
             [self.viewConstraints addObjectsFromArray:@[
-                [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeLeading
-                                                         withInset:self.conversationStyle.gutterLeading
-                                                          relation:NSLayoutRelationGreaterThanOrEqual],
-                [self.messageBubbleView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
-                                                         withInset:self.conversationStyle.gutterTrailing],
+                [messageView autoPinEdgeToSuperviewEdge:ALEdgeLeading
+                                              withInset:self.conversationStyle.gutterLeading
+                                               relation:NSLayoutRelationGreaterThanOrEqual],
+                [messageView autoPinEdgeToSuperviewEdge:ALEdgeTrailing withInset:self.conversationStyle.gutterTrailing],
             ]];
         }
     }
@@ -208,10 +243,16 @@ NS_ASSUME_NONNULL_BEGIN
             // V-align the "group sender" avatar with the
             // last line of the text (if any, or where it
             // would be).
-            [self.messageBubbleView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
-            [self.messageBubbleView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView],
+            [messageView autoPinLeadingToTrailingEdgeOfView:self.avatarView offset:8],
+            [messageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.avatarView],
         ]];
     }
+
+    // Swipe-to-reply
+    [self.viewConstraints addObjectsFromArray:@[
+        [self.swipeToReplyImageView autoPinEdge:ALEdgeLeading toEdge:ALEdgeLeading ofView:messageView withOffset:8],
+        [self.swipeToReplyImageView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:messageView],
+    ]];
 }
 
 - (UIImage *)sendFailureBadge
@@ -236,12 +277,12 @@ NS_ASSUME_NONNULL_BEGIN
 // * If cell is not visible, eagerly unload view contents.
 - (void)ensureMediaLoadState
 {
-    OWSAssertDebug(self.messageBubbleView);
+    OWSAssertDebug(self.messageView);
 
     if (!self.isCellVisible) {
-        [self.messageBubbleView unloadContent];
+        [self.messageView unloadContent];
     } else {
-        [self.messageBubbleView loadContent];
+        [self.messageView loadContent];
     }
 }
 
@@ -261,6 +302,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"not an incoming message.");
         return NO;
     }
+    OWSAssertDebug(self.viewItem.authorConversationColorName != nil);
 
     TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.viewItem.interaction;
     UIImage *_Nullable authorAvatarImage =
@@ -268,7 +310,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                  colorName:self.viewItem.authorConversationColorName
                                                   diameter:self.avatarSize] build];
     self.avatarView.image = authorAvatarImage;
-    [self.contentView addSubview:self.avatarView];
+    [self.swipeableContentView addSubview:self.avatarView];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -320,13 +362,13 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.conversationStyle.viewWidth > 0);
     OWSAssertDebug(self.viewItem);
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
-    OWSAssertDebug(self.messageBubbleView);
+    OWSAssertDebug(self.messageView);
 
-    self.messageBubbleView.viewItem = self.viewItem;
-    self.messageBubbleView.cellMediaCache = self.delegate.cellMediaCache;
-    CGSize messageBubbleSize = [self.messageBubbleView measureSize];
+    self.messageView.viewItem = self.viewItem;
+    self.messageView.cellMediaCache = self.delegate.cellMediaCache;
+    CGSize messageSize = [self.messageView measureSize];
 
-    CGSize cellSize = messageBubbleSize;
+    CGSize cellSize = messageSize;
 
     OWSAssertDebug(cellSize.width > 0 && cellSize.height > 0);
 
@@ -356,6 +398,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.messageBubbleView prepareForReuse];
     [self.messageBubbleView unloadContent];
+    [self.messageBubbleView removeFromSuperview];
+    [self.messageStickerView prepareForReuse];
+    [self.messageStickerView unloadContent];
+    [self.messageStickerView removeFromSuperview];
+    [self.messageHiddenView prepareForReuse];
+    [self.messageHiddenView unloadContent];
+    [self.messageHiddenView removeFromSuperview];
 
     [self.headerView removeFromSuperview];
 
@@ -366,6 +415,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.sendFailureBadgeView = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+    [self resetSwipePositionAnimated:NO];
+    self.swipeToReplyImageView.alpha = 0;
 }
 
 #pragma mark - Notifications
@@ -408,7 +460,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    [self.messageBubbleView handleTapGesture:sender];
+    [self.messageView handleTapGesture:sender];
 }
 
 - (void)handleLongPressGesture:(UILongPressGestureRecognizer *)sender
@@ -423,20 +475,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    BOOL shouldAllowReply = YES;
-    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
-        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
-        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
-            // Don't allow "delete" or "reply" on "failed" outgoing messages.
-            shouldAllowReply = NO;
-        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
-            // Don't allow "delete" or "reply" on "sending" outgoing messages.
-            shouldAllowReply = NO;
-        }
-    }
-
-    CGPoint locationInMessageBubble = [sender locationInView:self.messageBubbleView];
-    switch ([self.messageBubbleView gestureLocationForLocation:locationInMessageBubble]) {
+    BOOL shouldAllowReply = [self shouldAllowReply];
+    CGPoint locationInMessageBubble = [sender locationInView:self.messageView];
+    switch ([self.messageView gestureLocationForLocation:locationInMessageBubble]) {
         case OWSMessageGestureLocation_Default:
         case OWSMessageGestureLocation_OversizeText:
         case OWSMessageGestureLocation_LinkPreview: {
@@ -457,7 +498,20 @@ NS_ASSUME_NONNULL_BEGIN
                   didLongpressQuoteViewItem:self.viewItem];
             break;
         }
+        case OWSMessageGestureLocation_Sticker:
+            OWSAssertDebug(self.viewItem.stickerInfo != nil);
+            [self.delegate conversationCell:self didLongpressSticker:self.viewItem];
+            break;
     }
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)sender
+{
+    if ([self.messageView handlePanGesture:sender]) {
+        return;
+    }
+
+    [self handleSwipeToReplyGesture:sender];
 }
 
 - (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
@@ -471,6 +525,193 @@ NS_ASSUME_NONNULL_BEGIN
     CGPoint location = [sender locationInView:self];
     CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
     return location.y <= headerBottom.y;
+}
+
+# pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    if (gestureRecognizer == self.panGestureRecognizer) {
+        // Only allow the pan gesture to recognize horizontal panning,
+        // to avoid conflicts with the conversation view scroll view.
+        CGPoint velocity = [self.panGestureRecognizer velocityInView:self];
+        return fabs(velocity.x) > fabs(velocity.y);
+    }
+
+    return YES;
+}
+
+#pragma mark - Swipe To Reply
+
+- (BOOL)shouldAllowReply
+{
+    if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
+        TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)self.viewItem.interaction;
+        if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
+            // Don't allow "delete" or "reply" on "failed" outgoing messages.
+            return NO;
+        } else if (outgoingMessage.messageState == TSOutgoingMessageStateSending) {
+            // Don't allow "delete" or "reply" on "sending" outgoing messages.
+            return NO;
+        }
+    }
+    return YES;
+}
+
+- (CGFloat)swipeToReplyThreshold
+{
+    return 55.f;
+}
+
+- (BOOL)useSwipeFadeTransition
+{
+    // Right now, only stickers need the reply button to fade in.
+    // If we add other message types that don't have bubbles,
+    // we should add them here.
+    return self.cellType == OWSMessageCellType_StickerMessage;
+}
+
+- (void)setIsReplyActive:(BOOL)isReplyActive
+{
+    if (isReplyActive == _isReplyActive) {
+        return;
+    }
+
+    _isReplyActive = isReplyActive;
+
+    // Update the reply image styling to reflect active state
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    UIColor *tintColor = [UIColor ows_gray45Color];
+
+    if (isReplyActive) {
+        transform = CGAffineTransformMakeScale(1.16, 1.16);
+        tintColor = Theme.isDarkThemeEnabled ? [UIColor ows_gray25Color] : [UIColor ows_gray75Color];
+
+        // If we're transitioning to the active state, play haptic feedback
+        [[ImpactHapticFeedback new] impactOccurred];
+    }
+
+    self.swipeToReplyImageView.tintColor = tintColor;
+
+    [UIView animateWithDuration:0.2
+                          delay:0
+         usingSpringWithDamping:0.06
+          initialSpringVelocity:0.8
+                        options:UIViewAnimationOptionCurveEaseInOut | UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.swipeToReplyImageView.transform = transform;
+                     }
+                     completion:nil];
+}
+
+- (void)setupSwipeContainer
+{
+    self.swipeableContentView = [UIView new];
+    [self.contentView addSubview:self.swipeableContentView];
+    [self.swipeableContentView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+
+    self.swipeToReplyImageView = [UIImageView new];
+    [self.swipeToReplyImageView
+        setTemplateImage:[UIImage imageNamed:@"reply-outline-24"]
+               tintColor:Theme.isDarkThemeEnabled ? [UIColor ows_gray45Color] : [UIColor ows_gray45Color]];
+    self.swipeToReplyImageView.contentMode = UIViewContentModeScaleAspectFit;
+    self.swipeToReplyImageView.alpha = 0;
+    [self.swipeableContentView addSubview:self.swipeToReplyImageView];
+}
+
+- (void)handleSwipeToReplyGesture:(UIPanGestureRecognizer *)sender
+{
+    OWSAssert(self.delegate);
+
+    BOOL hasFailed = NO;
+    BOOL hasFinished = NO;
+
+    switch (sender.state) {
+        case UIGestureRecognizerStateBegan: {
+            self.messageViewInitialX = self.messageView.frame.origin.x;
+            self.swipeableContentViewInitialX = self.swipeableContentView.frame.origin.x;
+
+            // If this message doesn't allow reply, end the gesture
+            if (![self shouldAllowReply]) {
+                sender.enabled = NO;
+                sender.enabled = YES;
+                return;
+            }
+            break;
+        }
+        case UIGestureRecognizerStateEnded:
+            hasFinished = YES;
+            break;
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStateCancelled:
+            hasFailed = YES;
+            break;
+        case UIGestureRecognizerStateChanged:
+        case UIGestureRecognizerStatePossible:
+            break;
+    }
+
+    CGFloat translationX = [sender translationInView:self].x;
+    // Invert positions for RTL logic, since the user is swiping in the opposite direction.
+    if (CurrentAppContext().isRTL) {
+        translationX = -translationX;
+    }
+
+    self.isReplyActive = translationX >= self.swipeToReplyThreshold;
+
+    if (self.isReplyActive && hasFinished) {
+        [self.delegate conversationCell:self didReplyToItem:self.viewItem];
+    }
+
+    if (hasFailed || hasFinished) {
+        [self resetSwipePositionAnimated:YES];
+    } else {
+        [self setSwipePosition:translationX animated:hasFinished];
+    }
+}
+
+- (void)setSwipePosition:(CGFloat)position animated:(BOOL)animated
+{
+    // Scale the translation above or below the desired range,
+    // to produce an elastic feeling when you overscroll.
+    if (position < 0) {
+        position = position / 4;
+    } else if (position > self.swipeToReplyThreshold) {
+        CGFloat overflow = position - self.swipeToReplyThreshold;
+        position = self.swipeToReplyThreshold + overflow / 4;
+    }
+
+    CGRect newMessageViewFrame = self.messageView.frame;
+    newMessageViewFrame.origin.x = self.messageViewInitialX + (CurrentAppContext().isRTL ? -position : position);
+
+    // The swipe content moves at 1/8th the speed of the message bubble,
+    // so that it reveals itself from underneath with an elastic feel.
+    CGRect newSwipeContentFrame = self.swipeableContentView.frame;
+    newSwipeContentFrame.origin.x
+        = self.swipeableContentViewInitialX + (CurrentAppContext().isRTL ? -position : position) / 8;
+
+    CGFloat alpha = 1;
+    if ([self useSwipeFadeTransition]) {
+        alpha = CGFloatClamp01(CGFloatInverseLerp(position, 0, self.swipeToReplyThreshold));
+    }
+
+    void (^viewUpdates)(void) = ^() {
+        self.swipeToReplyImageView.alpha = alpha;
+        self.messageView.frame = newMessageViewFrame;
+        self.swipeableContentView.frame = newSwipeContentFrame;
+    };
+
+    if (animated) {
+        [UIView animateWithDuration:0.1 animations:viewUpdates];
+    } else {
+        viewUpdates();
+    }
+}
+
+- (void)resetSwipePositionAnimated:(BOOL)animated
+{
+    [self setSwipePosition:0 animated:animated];
+    self.isReplyActive = NO;
 }
 
 @end

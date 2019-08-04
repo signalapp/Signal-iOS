@@ -16,7 +16,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSTableViewController.h>
-#import <SignalMessaging/SignalKeyingStorage.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
@@ -44,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 @property (nonatomic, readonly) AvatarImageView *avatarView;
+@property (nonatomic, readonly) UIImageView *cameraImageView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
 @property (nonatomic, readonly) NSData *groupId;
@@ -106,11 +106,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = Theme.backgroundColor;
 
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-        initWithTitle:NSLocalizedString(@"NEW_GROUP_CREATE_BUTTON", @"The title for the 'create group' button.")
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(createGroup)];
+    self.navigationItem.rightBarButtonItem =
+        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"NEW_GROUP_CREATE_BUTTON",
+                                                   @"The title for the 'create group' button.")
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(createGroup)
+                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"create")];
     self.navigationItem.rightBarButtonItem.imageInsets = UIEdgeInsetsMake(0, -10, 0, 10);
     self.navigationItem.rightBarButtonItem.accessibilityLabel
         = NSLocalizedString(@"FINISH_GROUP_CREATION_LABEL", @"Accessibility label for finishing new group");
@@ -156,7 +158,20 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoPinLeadingToSuperviewMargin];
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+
+    UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
+    UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+    [threadInfoView addSubview:cameraImageView];
+    [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
+    [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
+    _cameraImageView = cameraImageView;
+
     [self updateAvatarView];
+
+    [avatarView
+        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];
+    avatarView.userInteractionEnabled = YES;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, avatarView);
 
     UITextField *groupNameTextField = [OWSTextField new];
     _groupNameTextField = groupNameTextField;
@@ -176,10 +191,7 @@ NS_ASSUME_NONNULL_BEGIN
     [groupNameTextField autoVCenterInSuperview];
     [groupNameTextField autoPinTrailingToSuperviewMargin];
     [groupNameTextField autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
-
-    [avatarView
-        addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];
-    avatarView.userInteractionEnabled = YES;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, groupNameTextField);
 
     return firstSectionHeader;
 }
@@ -245,6 +257,11 @@ NS_ASSUME_NONNULL_BEGIN
                                         @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
                                 }
                                 [cell configureWithRecipientId:recipientId];
+
+                                NSString *cellName = [NSString stringWithFormat:@"non_signal_contact.%@", recipientId];
+                                cell.accessibilityIdentifier
+                                    = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewGroupViewController, cellName);
+
                                 return cell;
                             }
                             customRowHeight:UITableViewAutomaticDimension
@@ -333,6 +350,12 @@ NS_ASSUME_NONNULL_BEGIN
                                 }
 
                                 [cell configureWithRecipientId:signalAccount.recipientId];
+
+                                NSString *cellName =
+                                    [NSString stringWithFormat:@"signal_contact.%@", signalAccount.recipientId];
+                                cell.accessibilityIdentifier
+                                    = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewGroupViewController, cellName);
+
                                 return cell;
                             }
                             customRowHeight:UITableViewAutomaticDimension
@@ -392,15 +415,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     __weak NewGroupViewController *weakSelf = self;
     return [OWSTableItem
-        disclosureItemWithText:NSLocalizedString(@"NEW_GROUP_ADD_NON_CONTACT",
-                                   @"A label for the cell that lets you add a new non-contact member to a group.")
-               customRowHeight:UITableViewAutomaticDimension
-                   actionBlock:^{
-                       AddToGroupViewController *viewController = [AddToGroupViewController new];
-                       viewController.addToGroupDelegate = weakSelf;
-                       viewController.hideContacts = YES;
-                       [weakSelf.navigationController pushViewController:viewController animated:YES];
-                   }];
+         disclosureItemWithText:NSLocalizedString(@"NEW_GROUP_ADD_NON_CONTACT",
+                                    @"A label for the cell that lets you add a new non-contact member to a group.")
+        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewGroupViewController, @"add_non_contact")
+                customRowHeight:UITableViewAutomaticDimension
+                    actionBlock:^{
+                        AddToGroupViewController *viewController = [AddToGroupViewController new];
+                        viewController.addToGroupDelegate = weakSelf;
+                        viewController.hideContacts = YES;
+                        [weakSelf.navigationController pushViewController:viewController animated:YES];
+                    }];
 }
 
 - (void)removeRecipientId:(NSString *)recipientId
@@ -437,6 +461,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createGroup
 {
     OWSAssertIsOnMainThread();
+
+    [self.groupNameTextField acceptAutocorrectSuggestion];
 
     TSGroupModel *model = [self makeGroup];
 
@@ -538,12 +564,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateAvatarView
 {
     UIImage *_Nullable groupAvatar = self.groupAvatar;
+    self.cameraImageView.hidden = groupAvatar != nil;
+
     if (!groupAvatar) {
         NSString *conversationColorName = [TSGroupThread defaultConversationColorNameForGroupId:self.groupId];
         groupAvatar = [OWSGroupAvatarBuilder defaultAvatarForGroupId:self.groupId
                                                conversationColorName:conversationColorName
                                                             diameter:kLargeAvatarSize];
     }
+
     self.avatarView.image = groupAvatar;
 }
 
@@ -559,7 +588,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    UIAlertController *controller = [UIAlertController
+    UIAlertController *alert = [UIAlertController
         alertControllerWithTitle:
             NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
                 @"The alert title if user tries to exit the new group view without saving changes.")
@@ -567,15 +596,16 @@ NS_ASSUME_NONNULL_BEGIN
                              NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
                                  @"The alert message if user tries to exit the new group view without saving changes.")
                   preferredStyle:UIAlertControllerStyleAlert];
-    [controller
+    [alert
         addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DISCARD_BUTTON",
                                                      @"The label for the 'discard' button in alerts and action sheets.")
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"discard")
                                            style:UIAlertActionStyleDestructive
                                          handler:^(UIAlertAction *action) {
                                              [self.navigationController popViewControllerAnimated:YES];
                                          }]];
-    [controller addAction:[OWSAlerts cancelAction]];
-    [self presentViewController:controller animated:YES completion:nil];
+    [alert addAction:[OWSAlerts cancelAction]];
+    [self presentAlert:alert];
 }
 
 - (void)groupNameDidChange:(id)sender
@@ -612,7 +642,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - AvatarViewHelperDelegate
 
-- (NSString *)avatarActionSheetTitle
+- (nullable NSString *)avatarActionSheetTitle
 {
     return NSLocalizedString(
         @"NEW_GROUP_ADD_PHOTO_ACTION", @"Action Sheet title prompting the user for a group avatar");

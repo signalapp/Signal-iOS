@@ -1,14 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactOffersCell.h"
 #import "ConversationViewItem.h"
 #import "Signal-Swift.h"
-#import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
+#import <SignalServiceKit/OWSContactOffersInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -57,14 +57,17 @@ NS_ASSUME_NONNULL_BEGIN
             NSLocalizedString(@"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
                 @"Message shown in conversation view that offers to add an unknown user to your phone's contacts.")
                      selector:@selector(addToContacts)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _addToContactsButton);
     self.addToProfileWhitelistButton = [self
         createButtonWithTitle:NSLocalizedString(@"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER",
                                   @"Message shown in conversation view that offers to share your profile with a user.")
                      selector:@selector(addToProfileWhitelist)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _addToProfileWhitelistButton);
     self.blockButton =
         [self createButtonWithTitle:NSLocalizedString(@"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER",
                                         @"Message shown in conversation view that offers to block an unknown user.")
                            selector:@selector(block)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _blockButton);
 
     UIStackView *buttonStackView = [[UIStackView alloc] initWithArrangedSubviews:self.buttons];
     buttonStackView.axis = UILayoutConstraintAxisVertical;

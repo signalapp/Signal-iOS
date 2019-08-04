@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -184,7 +184,7 @@ import SignalMessaging
             path.usesEvenOddFillRule = true
 
             layer.path = path.cgPath
-            layer.fillRule = kCAFillRuleEvenOdd
+            layer.fillRule = .evenOdd
             layer.fillColor = UIColor.black.cgColor
             layer.opacity = 0.7
         }
@@ -341,7 +341,7 @@ import SignalMessaging
     var lastPinchScale: CGFloat = 1.0
 
     @objc func handlePinch(sender: UIPinchGestureRecognizer) {
-        switch (sender.state) {
+        switch sender.state {
         case .possible:
             break
         case .began:
@@ -398,7 +398,7 @@ import SignalMessaging
     var srcTranslationAtPanStart: CGPoint = CGPoint.zero
 
     @objc func handlePan(sender: UIPanGestureRecognizer) {
-        switch (sender.state) {
+        switch sender.state {
         case .possible:
             break
         case .began:
@@ -490,15 +490,18 @@ import SignalMessaging
         let dstScale: CGFloat = 1.0 // The size is specified in pixels, not in points.
         UIGraphicsBeginImageContextWithOptions(dstSizePixels, !hasAlpha, dstScale)
 
-        let context = UIGraphicsGetCurrentContext()
-        context!.interpolationQuality = .high
+        guard let context = UIGraphicsGetCurrentContext() else {
+            owsFailDebug("could not generate dst image.")
+            return nil
+        }
+        context.interpolationQuality = .high
 
         let imageViewFrame = imageRenderRect(forDstSize: dstSizePixels)
         srcImage.draw(in: imageViewFrame)
 
-        let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
-        if scaledImage == nil {
+        guard let scaledImage = UIGraphicsGetImageFromCurrentImageContext() else {
             owsFailDebug("could not generate dst image.")
+            return nil
         }
         UIGraphicsEndImageContext()
         return scaledImage

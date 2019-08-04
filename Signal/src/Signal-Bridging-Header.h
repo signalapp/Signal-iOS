@@ -1,18 +1,21 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
 // Separate iOS Frameworks from other imports.
+#import "AVAudioSession+OWS.h"
 #import "AppSettingsViewController.h"
 #import "AttachmentUploadView.h"
+#import "AvatarViewHelper.h"
 #import "ContactCellView.h"
 #import "ContactTableViewCell.h"
 #import "ConversationViewCell.h"
 #import "ConversationViewItem.h"
 #import "DateUtil.h"
+#import "DebugUIMessages.h"
 #import "DebugUIPage.h"
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
@@ -20,7 +23,6 @@
 #import "HomeViewController.h"
 #import "MediaDetailViewController.h"
 #import "NotificationSettingsViewController.h"
-#import "NotificationsManager.h"
 #import "OWSAddToContactViewController.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioMessageView.h"
@@ -30,20 +32,19 @@
 #import "OWSBezierPathView.h"
 #import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
-#import "OWSCallNotificationsAdaptee.h"
 #import "OWSDatabaseMigration.h"
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageCell.h"
+#import "OWSMessageHiddenView.h"
+#import "OWSMessageStickerView.h"
 #import "OWSNavigationController.h"
 #import "OWSProgressView.h"
 #import "OWSQuotedMessageView.h"
-#import "OWSSessionResetJobRecord.h"
 #import "OWSWindowManager.h"
+#import "Pastelog.h"
 #import "PinEntryView.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
-#import "PushManager.h"
-#import "RegistrationViewController.h"
 #import "RemoteVideoView.h"
 #import "SignalApp.h"
 #import "UIViewController+Permissions.h"
@@ -94,18 +95,17 @@
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSMediaGalleryFinder.h>
 #import <SignalServiceKit/OWSMessageManager.h>
 #import <SignalServiceKit/OWSMessageReceiver.h>
 #import <SignalServiceKit/OWSMessageSender.h>
 #import <SignalServiceKit/OWSOutgoingCallMessage.h>
 #import <SignalServiceKit/OWSPrimaryStorage+Calling.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSRecipientIdentity.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/OWSSignalService.h>
 #import <SignalServiceKit/PhoneNumber.h>
+#import <SignalServiceKit/SSKSessionStore.h>
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/TSAccountManager.h>
@@ -124,6 +124,7 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/UIImage+OWS.h>
+#import <SignalServiceKit/YAPDBMediaGalleryFinder.h>
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraPreviewView.h>
 #import <YYImage/YYImage.h>

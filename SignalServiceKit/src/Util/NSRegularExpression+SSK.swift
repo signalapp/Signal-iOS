@@ -7,13 +7,11 @@ import Foundation
 @objc
 public extension NSRegularExpression {
 
-    @objc
-    public func hasMatch(input: String) -> Bool {
+    func hasMatch(input: String) -> Bool {
         return self.firstMatch(in: input, options: [], range: NSRange(location: 0, length: input.utf16.count)) != nil
     }
 
-    @objc
-    public class func parseFirstMatch(pattern: String,
+    class func parseFirstMatch(pattern: String,
                                       text: String,
                                       options: NSRegularExpression.Options = []) -> String? {
         do {
@@ -34,5 +32,21 @@ public extension NSRegularExpression {
             Logger.error("Error: \(error)")
             return nil
         }
+    }
+
+    func parseFirstMatch(inText text: String,
+                                options: NSRegularExpression.Options = []) -> String? {
+        guard let match = self.firstMatch(in: text,
+                                          options: [],
+                                          range: NSRange(location: 0, length: text.utf16.count)) else {
+                                            return nil
+        }
+        let matchRange = match.range(at: 1)
+        guard let textRange = Range(matchRange, in: text) else {
+            owsFailDebug("Invalid match.")
+            return nil
+        }
+        let substring = String(text[textRange])
+        return substring
     }
 }

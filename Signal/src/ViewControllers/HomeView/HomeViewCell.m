@@ -6,10 +6,10 @@
 #import "OWSAvatarBuilder.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSFormat.h>
-#import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSMath.h>
 #import <SignalServiceKit/OWSMessageManager.h>
+#import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
 
@@ -240,8 +240,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updatePreview];
 
-    self.dateTimeLabel.text
-        = (overrideDate ? [self stringForDate:overrideDate] : [self stringForDate:thread.lastMessageDate]);
+    NSDate *_Nullable labelDate = overrideDate ?: thread.lastMessageDate;
+    if (labelDate != nil) {
+        self.dateTimeLabel.text = [DateUtil formatDateShort:labelDate];
+    } else {
+        self.dateTimeLabel.text = nil;
+    }
 
     UIColor *textColor = [Theme secondaryColor];
     if (hasUnreadMessages && overrideSnippet == nil) {
@@ -404,18 +408,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return snippetText;
-}
-
-#pragma mark - Date formatting
-
-- (NSString *)stringForDate:(nullable NSDate *)date
-{
-    if (date == nil) {
-        OWSFailDebug(@"date was unexpectedly nil");
-        return @"";
-    }
-
-    return [DateUtil formatDateShort:date];
 }
 
 #pragma mark - Constants
