@@ -1316,7 +1316,7 @@ typedef enum : NSUInteger {
     [self markVisibleMessagesAsRead];
     [self cancelVoiceMemo];
     [self.cellMediaCache removeAllObjects];
-    [self.inputToolbar clearStickerKeyboard];
+    [self.inputToolbar clearDesiredKeyboard];
 
     self.isUserScrolling = NO;
 }
@@ -2010,7 +2010,7 @@ typedef enum : NSUInteger {
     [alert addAction:callAction];
     [alert addAction:[OWSAlerts cancelAction]];
 
-    [self.inputToolbar clearStickerKeyboard];
+    [self.inputToolbar clearDesiredKeyboard];
     [self dismissKeyBoard];
     [self presentAlert:alert];
 }
@@ -4281,11 +4281,6 @@ typedef enum : NSUInteger {
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:manageStickersView];
     [self presentViewController:navigationController animated:YES completion:nil];
-}
-
-- (CGSize)rootViewSize
-{
-    return self.view.bounds.size;
 }
 
 - (void)voiceMemoGestureDidStart

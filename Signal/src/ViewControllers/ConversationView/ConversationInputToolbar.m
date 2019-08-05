@@ -27,6 +27,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, VoiceMemoRecordingState){
     VoiceMemoRecordingState_RecordingLocked
 };
 
+typedef NS_CLOSED_ENUM(NSUInteger, KeyboardType) { KeyboardType_System, KeyboardType_Sticker };
+
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 
 const CGFloat kMinTextViewHeight = 36;
@@ -50,26 +52,6 @@ const CGFloat kMaxTextViewHeight = 98;
 
 #pragma mark -
 
-@interface FirstResponderHostView : UIView
-
-// Redeclare this property as writable.
-@property (nonatomic, nullable) UIView *inputView;
-
-@end
-
-#pragma mark -
-
-@implementation FirstResponderHostView
-
-- (BOOL)canBecomeFirstResponder
-{
-    return YES;
-}
-
-@end
-
-#pragma mark -
-
 @interface ConversationInputToolbar () <ConversationTextViewToolbarDelegate,
     QuotedReplyPreviewDelegate,
     LinkPreviewViewDraftDelegate,
@@ -85,8 +67,6 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, readonly) UIButton *stickerButton;
 @property (nonatomic, readonly) UIView *quotedReplyWrapper;
 @property (nonatomic, readonly) UIView *linkPreviewWrapper;
-@property (nonatomic, readonly) StickerKeyboard *stickerKeyboard;
-@property (nonatomic, readonly) FirstResponderHostView *stickerKeyboardResponder;
 @property (nonatomic, readonly) StickerHorizontalListView *suggestedStickerView;
 @property (nonatomic) NSArray<StickerInfo *> *suggestedStickerInfos;
 @property (nonatomic, readonly) UIStackView *outerStack;
@@ -114,8 +94,12 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic, nullable) InputLinkPreview *inputLinkPreview;
 @property (nonatomic) BOOL wasLinkPreviewCancelled;
 @property (nonatomic, nullable, weak) LinkPreviewView *linkPreviewView;
-@property (nonatomic) BOOL isStickerKeyboardActive;
 @property (nonatomic, nullable, weak) UIView *stickerTooltip;
+
+#pragma mark - Keyboards
+
+@property (nonatomic) KeyboardType desiredKeyboardType;
+@property (nonatomic, readonly) StickerKeyboard *stickerKeyboard;
 
 @end
 
@@ -141,6 +125,10 @@ const CGFloat kMaxTextViewHeight = 98;
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(isStickerSendEnabledDidChange:)
                                                  name:StickerManager.isStickerSendEnabledDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardFrameDidChange:)
+                                                 name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
 
     return self;
@@ -376,13 +364,10 @@ const CGFloat kMaxTextViewHeight = 98;
 
     // Sticker Keyboard Responder
 
-    _stickerKeyboardResponder = [FirstResponderHostView new];
     StickerKeyboard *stickerKeyboard = [StickerKeyboard new];
     _stickerKeyboard = stickerKeyboard;
     stickerKeyboard.delegate = self;
-    self.stickerKeyboardResponder.inputView = stickerKeyboard;
-    [self addSubview:self.stickerKeyboardResponder];
-    [self.stickerKeyboardResponder autoSetDimensionsToSize:CGSizeMake(1, 1)];
+    [stickerKeyboard registerWithView:self];
 
     [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 }
@@ -433,7 +418,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self updateInputLinkPreview];
 
     if (value.length > 0) {
-        [self clearStickerKeyboard];
+        [self clearDesiredKeyboard];
     }
 
     [self ensureButtonVisibilityWithIsAnimated:isAnimated doLayout:YES];
@@ -505,7 +490,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     self.linkPreviewView.hasAsymmetricalRounding = !self.quotedReply;
 
-    [self clearStickerKeyboard];
+    [self clearDesiredKeyboard];
 }
 
 - (CGFloat)quotedMessageTopMargin
@@ -526,8 +511,9 @@ const CGFloat kMaxTextViewHeight = 98;
     if (!self.desiredFirstResponder.isFirstResponder) {
         [self.desiredFirstResponder becomeFirstResponder];
 
-        if (self.desiredFirstResponder == self.stickerKeyboardResponder) {
-            [self.stickerKeyboard wasPresented];
+        if ([self.desiredFirstResponder isKindOfClass:[OWSCustomKeyboard class]]) {
+            OWSCustomKeyboard *customKeyboard = (OWSCustomKeyboard *)self.desiredFirstResponder;
+            [customKeyboard wasPresented];
         }
     }
 }
@@ -555,7 +541,7 @@ const CGFloat kMaxTextViewHeight = 98;
         markTooltipAsShown();
         return;
     }
-    if (self.isStickerKeyboardActive) {
+    if (self.desiredKeyboardType == KeyboardType_Sticker) {
         // The intent of this tooltip is to prod users to activate the
         // sticker keyboard.  If it's already active, we can skip the
         // tooltip.
@@ -570,7 +556,7 @@ const CGFloat kMaxTextViewHeight = 98;
                                              stickerPack:stickerPack
                                                        block:^{
                                                            [weakSelf removeStickerTooltip];
-                                                           [weakSelf activateStickerKeyboard];
+                                                           [weakSelf toggleKeyboardType:KeyboardType_Sticker];
                                                        }];
     self.stickerTooltip = tooltip;
 
@@ -592,12 +578,12 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)endEditingMessage
 {
     [self.inputTextView resignFirstResponder];
-    [self.stickerKeyboardResponder resignFirstResponder];
+    [self.stickerKeyboard resignFirstResponder];
 }
 
 - (BOOL)isInputViewFirstResponder
 {
-    return (self.inputTextView.isFirstResponder || self.stickerKeyboardResponder.isFirstResponder);
+    return (self.inputTextView.isFirstResponder || self.stickerKeyboard.isFirstResponder);
 }
 
 - (void)ensureButtonVisibilityWithIsAnimated:(BOOL)isAnimated doLayout:(BOOL)doLayout
@@ -636,12 +622,13 @@ const CGFloat kMaxTextViewHeight = 98;
         ensureViewHiddenState(self.stickerButton, hideStickerButton);
         if (!hideStickerButton) {
             self.stickerButton.imageView.tintColor
-                = (self.isStickerKeyboardActive ? UIColor.ows_signalBlueColor : Theme.navbarIconColor);
+                = (self.desiredKeyboardType == KeyboardType_Sticker ? UIColor.ows_signalBlueColor
+                                                                    : Theme.navbarIconColor);
         }
 
         [self updateSuggestedStickers];
 
-        if (self.stickerButton.hidden || self.isStickerKeyboardActive) {
+        if (self.stickerButton.hidden || self.stickerKeyboard.isFirstResponder) {
             [self removeStickerTooltip];
         }
 
@@ -1130,33 +1117,36 @@ const CGFloat kMaxTextViewHeight = 98;
         return;
     }
 
-    [self activateStickerKeyboard];
+    [self toggleKeyboardType:KeyboardType_Sticker];
 }
 
-- (void)activateStickerKeyboard
+#pragma mark - Keyboards
+
+- (void)toggleKeyboardType:(KeyboardType)keyboardType
 {
     OWSAssertDebug(self.inputToolbarDelegate);
 
-    self.isStickerKeyboardActive = !self.isStickerKeyboardActive;
-    if (self.isStickerKeyboardActive) {
-        [self beginEditingMessage];
+    if (self.desiredKeyboardType == keyboardType) {
+        self.desiredKeyboardType = KeyboardType_System;
+    } else {
+        self.desiredKeyboardType = keyboardType;
     }
+
+    [self beginEditingMessage];
 }
 
-#pragma mark - Sticker Keyboard
-
-- (void)setIsStickerKeyboardActive:(BOOL)isStickerKeyboardActive
+- (void)setDesiredKeyboardType:(KeyboardType)desiredKeyboardType
 {
-    if (_isStickerKeyboardActive == isStickerKeyboardActive) {
+    if (_desiredKeyboardType == desiredKeyboardType) {
         return;
     }
 
-    _isStickerKeyboardActive = isStickerKeyboardActive;
+    _desiredKeyboardType = desiredKeyboardType;
 
     [self ensureButtonVisibilityWithIsAnimated:NO doLayout:YES];
 
     if (self.isInputViewFirstResponder) {
-        // If either keyboard is presented, make sure the correct
+        // If any keyboard is presented, make sure the correct
         // keyboard is presented.
         [self beginEditingMessage];
     } else {
@@ -1165,16 +1155,21 @@ const CGFloat kMaxTextViewHeight = 98;
     }
 }
 
-- (void)clearStickerKeyboard
+- (void)clearDesiredKeyboard
 {
     OWSAssertIsOnMainThread();
 
-    self.isStickerKeyboardActive = NO;
+    self.desiredKeyboardType = KeyboardType_System;
 }
 
 - (UIResponder *)desiredFirstResponder
 {
-    return (self.isStickerKeyboardActive ? self.stickerKeyboardResponder : self.inputTextView);
+    switch (self.desiredKeyboardType) {
+        case KeyboardType_System:
+            return self.inputTextView;
+        case KeyboardType_Sticker:
+            return self.stickerKeyboard;
+    }
 }
 
 #pragma mark - ConversationTextViewToolbarDelegate
@@ -1215,7 +1210,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)textViewDidBecomeFirstResponder:(UITextView *)textView
 {
-    self.isStickerKeyboardActive = NO;
+    self.desiredKeyboardType = KeyboardType_System;
 }
 
 #pragma mark QuotedReplyPreviewViewDelegate
@@ -1381,11 +1376,6 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.inputToolbarDelegate presentManageStickersView];
 }
 
-- (CGSize)rootViewSize
-{
-    return self.inputToolbarDelegate.rootViewSize;
-}
-
 #pragma mark - Suggested Stickers
 
 - (void)updateSuggestedStickers
@@ -1461,13 +1451,33 @@ const CGFloat kMaxTextViewHeight = 98;
 - (void)viewDidAppear
 {
     [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
+    [self cacheKeyboardIfNecessary];
+}
+
+- (void)cacheKeyboardIfNecessary
+{
+    // Preload the keyboard if we're not showing it already, this
+    // allows us to calculate the appropriate initial height for
+    // our custom inputViews and in general to present it faster
+    // We disable animations so this preload is invisible to the
+    // user.
+    if (!self.inputTextView.isFirstResponder) {
+        [UIView setAnimationsEnabled:NO];
+        [self.inputTextView becomeFirstResponder];
+
+        // Next run loop
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.inputTextView resignFirstResponder];
+            [UIView setAnimationsEnabled:YES];
+        });
+    }
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
-    [self restoreStickerKeyboardIfNecessary];
+    [self restoreDesiredKeyboardIfNecessary];
 }
 
 - (void)isStickerSendEnabledDidChange:(NSNotification *)notification
@@ -1479,15 +1489,33 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)ensureFirstResponderState
 {
-    [self restoreStickerKeyboardIfNecessary];
+    [self restoreDesiredKeyboardIfNecessary];
 }
 
-- (void)restoreStickerKeyboardIfNecessary
+- (void)restoreDesiredKeyboardIfNecessary
 {
     OWSAssertIsOnMainThread();
 
-    if (self.isStickerKeyboardActive && !self.desiredFirstResponder.isFirstResponder) {
+    if (self.desiredKeyboardType != KeyboardType_System && !self.desiredFirstResponder.isFirstResponder) {
         [self.desiredFirstResponder becomeFirstResponder];
+    }
+}
+
+- (void)keyboardFrameDidChange:(NSNotification *)notification
+{
+    NSValue *_Nullable keyboardEndFrameValue = notification.userInfo[UIKeyboardFrameEndUserInfoKey];
+    if (!keyboardEndFrameValue) {
+        OWSFailDebug(@"Missing keyboard end frame");
+        return;
+    }
+    CGRect keyboardEndFrame = [keyboardEndFrameValue CGRectValue];
+
+    if (self.inputTextView.isFirstResponder) {
+        // The returned keyboard height includes the input view, so subtract our height.
+        CGFloat newHeight = keyboardEndFrame.size.height - self.frame.size.height;
+        if (newHeight > 0) {
+            [self.stickerKeyboard updateSystemKeyboardHeight:newHeight];
+        }
     }
 }
 
