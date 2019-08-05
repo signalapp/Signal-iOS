@@ -248,14 +248,14 @@ class SendMediaNavigationController: OWSNavigationController {
     }()
 
     private lazy var cameraModeButton: SendMediaBottomButton = {
-        return SendMediaBottomButton(imageName: "camera-filled-28",
+        return SendMediaBottomButton(imageName: "camera-outline-28",
                                      tintColor: .ows_white,
                                      diameter: type(of: self).bottomButtonWidth,
                                      block: { [weak self] in self?.didTapCameraModeButton() })
     }()
 
     private lazy var mediaLibraryModeButton: SendMediaBottomButton = {
-        return SendMediaBottomButton(imageName: "photo-filled-28",
+        return SendMediaBottomButton(imageName: "photo-outline-28",
                                      tintColor: .ows_white,
                                      diameter: type(of: self).bottomButtonWidth,
                                      block: { [weak self] in self?.didTapMediaLibraryModeButton() })
