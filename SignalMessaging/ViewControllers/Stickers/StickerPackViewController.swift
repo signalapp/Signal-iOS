@@ -131,7 +131,6 @@ public class StickerPackViewController: OWSViewController {
         self.view.addSubview(stickerCollectionView)
         stickerCollectionView.autoPinWidthToSuperview()
         stickerCollectionView.autoPinEdge(.top, to: .bottom, of: headerStack)
-        stickerCollectionView.autoPinEdge(toSuperviewMargin: .bottom)
 
         let installButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
                                              font: UIFont.ows_dynamicTypeBody.ows_mediumWeight(),
@@ -151,7 +150,8 @@ public class StickerPackViewController: OWSViewController {
         uninstallButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "uninstallButton")
         for button in [installButton, uninstallButton] {
             view.addSubview(button)
-            button.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+            button.autoPin(toBottomLayoutGuideOf: self)
+            button.autoPinEdge(.top, to: .bottom, of: stickerCollectionView)
             button.autoPinWidthToSuperview(withMargin: hMargin)
             button.autoSetHeightUsingFont()
         }
