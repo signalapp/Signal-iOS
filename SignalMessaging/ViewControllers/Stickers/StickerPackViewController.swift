@@ -150,7 +150,7 @@ public class StickerPackViewController: OWSViewController {
         uninstallButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "uninstallButton")
         for button in [installButton, uninstallButton] {
             view.addSubview(button)
-            button.autoPin(toBottomLayoutGuideOf: self)
+            button.autoPin(toBottomLayoutGuideOf: self, withInset: 10)
             button.autoPinEdge(.top, to: .bottom, of: stickerCollectionView)
             button.autoPinWidthToSuperview(withMargin: hMargin)
             button.autoSetHeightUsingFont()
