@@ -31,8 +31,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, KeyboardType) { KeyboardType_System, Keyboard
 
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 
-const CGFloat kMinTextViewHeight = 36;
-const CGFloat kMinToolbarItemHeight = 40;
+const CGFloat kMinTextViewHeight = 38;
+const CGFloat kMinToolbarItemHeight = 44;
 const CGFloat kMaxTextViewHeight = 98;
 
 #pragma mark -
@@ -176,7 +176,7 @@ const CGFloat kMaxTextViewHeight = 98;
     _inputTextView = [ConversationInputTextView new];
     self.inputTextView.textViewToolbarDelegate = self;
     self.inputTextView.font = [UIFont ows_dynamicTypeBodyFont];
-    self.inputTextView.backgroundColor = Theme.toolbarBackgroundColor;
+    self.inputTextView.backgroundColor = Theme.conversationInputBackgroundColor;
     [self.inputTextView setContentHuggingLow];
     [self.inputTextView setCompressionResistanceLow];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputTextView);
@@ -191,7 +191,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.cameraButton addTarget:self
                           action:@selector(cameraButtonPressed)
                 forControlEvents:UIControlEventTouchUpInside];
-    [self.cameraButton setTemplateImageName:@"camera-filled-24" tintColor:Theme.navbarIconColor];
+    [self.cameraButton setTemplateImageName:@"camera-outline-24" tintColor:Theme.navbarIconColor];
     [self.cameraButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _cameraButton);
 
@@ -203,25 +203,24 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.attachmentButton addTarget:self
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
-    [self.attachmentButton setTemplateImageName:@"ic_circled_plus" tintColor:Theme.navbarIconColor];
-    [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
+    [self.attachmentButton setTemplateImageName:@"plus-24" tintColor:Theme.navbarIconColor];
+    [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(55, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
-    __weak __typeof(self) weakSelf = self;
-    _sendButton = [OWSButton sendButtonWithImageName:@"send-solid-24"
-                                               block:^{
-                                                   [weakSelf sendButtonPressed];
-                                               }];
+    _sendButton = [[UIButton alloc] init];
     self.sendButton.accessibilityLabel = MessageStrings.sendButton;
+    [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    [self.sendButton setTemplateImageName:@"send-solid-24" tintColor:UIColor.ows_signalBlueColor];
+    [self.sendButton autoSetDimensionsToSize:CGSizeMake(50, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
 
     _voiceMemoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.voiceMemoButton setTemplateImageName:@"voice-memo-button" tintColor:Theme.navbarIconColor];
+    [self.voiceMemoButton setTemplateImageName:@"mic-outline-24" tintColor:Theme.navbarIconColor];
     [self.voiceMemoButton autoSetDimensionsToSize:CGSizeMake(40, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _voiceMemoButton);
 
     _stickerButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.stickerButton setTemplateImageName:@"sticker-filled-24" tintColor:Theme.navbarIconColor];
+    [self.stickerButton setTemplateImageName:@"sticker-smiley-outline-24" tintColor:Theme.navbarIconColor];
     [self.stickerButton addTarget:self
                            action:@selector(stickerButtonPressed)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -242,12 +241,14 @@ const CGFloat kMaxTextViewHeight = 98;
     self.quotedReplyWrapper.hidden = YES;
     [self.quotedReplyWrapper setContentHuggingHorizontalLow];
     [self.quotedReplyWrapper setCompressionResistanceHorizontalLow];
+    self.quotedReplyWrapper.backgroundColor = Theme.conversationInputBackgroundColor;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _quotedReplyWrapper);
 
     _linkPreviewWrapper = [UIView containerView];
     self.linkPreviewWrapper.hidden = YES;
     [self.linkPreviewWrapper setContentHuggingHorizontalLow];
     [self.linkPreviewWrapper setCompressionResistanceHorizontalLow];
+    self.linkPreviewWrapper.backgroundColor = Theme.conversationInputBackgroundColor;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _linkPreviewWrapper);
 
     // V Stack
@@ -277,7 +278,7 @@ const CGFloat kMaxTextViewHeight = 98;
     UIView *vStackRoundingOffsetView = [UIView containerView];
     [vStackRoundingOffsetView addSubview:vStackRoundingView];
     CGFloat textViewCenterInset = (kMinToolbarItemHeight - kMinTextViewHeight) / 2;
-    [vStackRoundingView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 0, textViewCenterInset, 0)];
+    [vStackRoundingView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 0, textViewCenterInset, 8)];
 
     // Media Stack
     UIStackView *mediaAndSendStack = [[UIStackView alloc] initWithArrangedSubviews:@[
@@ -298,10 +299,9 @@ const CGFloat kMaxTextViewHeight = 98;
         mediaAndSendStack,
     ]];
     hStack.axis = UILayoutConstraintAxisHorizontal;
+    hStack.alignment = UIStackViewAlignmentBottom;
     hStack.layoutMarginsRelativeArrangement = YES;
     hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
-    hStack.alignment = UIStackViewAlignmentBottom;
-    hStack.spacing = 8;
 
     // Suggested Stickers
     const CGFloat suggestedStickerSize = 48;
@@ -344,23 +344,6 @@ const CGFloat kMaxTextViewHeight = 98;
     [self addSubview:self.stickerButton];
     [self.stickerButton autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.inputTextView];
     [self.stickerButton autoPinEdge:ALEdgeTrailing toEdge:ALEdgeTrailing ofView:vStackRoundingView withOffset:-4];
-
-    // Border
-    //
-    // The border must reside _outside_ of vStackWrapper so
-    // that it doesn't run afoul of its clipping, so we can't
-    // use addBorderViewWithColor.
-    UIView *borderView = [UIView new];
-    borderView.userInteractionEnabled = NO;
-    borderView.backgroundColor = UIColor.clearColor;
-    borderView.opaque = NO;
-    borderView.layer.borderColor = Theme.secondaryColor.CGColor;
-    borderView.layer.borderWidth = CGHairlineWidthFraction(1.4);
-    borderView.layer.cornerRadius = vStackRounding;
-    [self addSubview:borderView];
-    [borderView autoPinToEdgesOfView:vStackRoundingView];
-    [borderView setCompressionResistanceLow];
-    [borderView setContentHuggingLow];
 
     // Sticker Keyboard Responder
 
@@ -820,7 +803,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
     [self updateVoiceMemo];
 
-    UIImage *icon = [UIImage imageNamed:@"voice-memo-button"];
+    UIImage *icon = [UIImage imageNamed:@"mic-outline-24"];
     OWSAssertDebug(icon);
     UIImageView *imageView =
         [[UIImageView alloc] initWithImage:[icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]];
@@ -885,7 +868,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [redCircleView autoAlignAxis:ALAxisHorizontal toSameAxisOfView:self.voiceMemoButton];
     [redCircleView autoAlignAxis:ALAxisVertical toSameAxisOfView:self.voiceMemoButton];
 
-    UIImage *whiteIcon = [UIImage imageNamed:@"voice-message-large-white"];
+    UIImage *whiteIcon = [UIImage imageNamed:@"mic-outline-64"];
     OWSAssertDebug(whiteIcon);
     UIImageView *whiteIconView = [[UIImageView alloc] initWithImage:whiteIcon];
     [redCircleView addSubview:whiteIconView];

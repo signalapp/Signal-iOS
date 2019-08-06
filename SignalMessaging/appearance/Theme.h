@@ -38,6 +38,7 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *navbarTitleColor;
 
 @property (class, readonly, nonatomic) UIColor *toolbarBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *conversationInputBackgroundColor;
 
 @property (class, readonly, nonatomic) UIColor *conversationButtonBackgroundColor;
 

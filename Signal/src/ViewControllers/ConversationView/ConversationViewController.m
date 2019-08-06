@@ -2738,7 +2738,7 @@ typedef enum : NSUInteger {
         [[UIDocumentMenuViewController alloc] initWithDocumentTypes:documentTypes inMode:pickerMode];
     menuController.delegate = self;
 
-    UIImage *takeMediaImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+    UIImage *takeMediaImage = [UIImage imageNamed:@"camera-outline-24"];
     OWSAssertDebug(takeMediaImage);
     [menuController addOptionWithTitle:NSLocalizedString(
                                            @"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
@@ -3257,7 +3257,7 @@ typedef enum : NSUInteger {
                                handler:^(UIAlertAction *action) {
                                    [self takePictureOrVideo];
                                }];
-    UIImage *takeMediaImage = [UIImage imageNamed:@"actionsheet_camera_black"];
+    UIImage *takeMediaImage = [UIImage imageNamed:@"camera-outline-24"];
     OWSAssertDebug(takeMediaImage);
     [takeMediaAction setValue:takeMediaImage forKey:@"image"];
     [actionSheet addAction:takeMediaAction];
@@ -3270,7 +3270,7 @@ typedef enum : NSUInteger {
                                handler:^(UIAlertAction *action) {
                                    [self chooseFromLibraryAsMedia];
                                }];
-    UIImage *chooseMediaImage = [UIImage imageNamed:@"actionsheet_camera_roll_black"];
+    UIImage *chooseMediaImage = [UIImage imageNamed:@"photo-outline-24"];
     OWSAssertDebug(chooseMediaImage);
     [chooseMediaAction setValue:chooseMediaImage forKey:@"image"];
     [actionSheet addAction:chooseMediaAction];
@@ -3283,7 +3283,7 @@ typedef enum : NSUInteger {
                                handler:^(UIAlertAction *action) {
                                    [self showGifPicker];
                                }];
-    UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
+    UIImage *gifImage = [UIImage imageNamed:@"gif-outline-24"];
     OWSAssertDebug(gifImage);
     [gifAction setValue:gifImage forKey:@"image"];
     [actionSheet addAction:gifAction];
@@ -3296,7 +3296,7 @@ typedef enum : NSUInteger {
                                handler:^(UIAlertAction *action) {
                                    [self showAttachmentDocumentPickerMenu];
                                }];
-    UIImage *chooseDocumentImage = [UIImage imageNamed:@"actionsheet_document_black"];
+    UIImage *chooseDocumentImage = [UIImage imageNamed:@"file-outline-24"];
     OWSAssertDebug(chooseDocumentImage);
     [chooseDocumentAction setValue:chooseDocumentImage forKey:@"image"];
     [actionSheet addAction:chooseDocumentAction];
@@ -3310,7 +3310,7 @@ typedef enum : NSUInteger {
                                    handler:^(UIAlertAction *action) {
                                        [self chooseContactForSending];
                                    }];
-        UIImage *chooseContactImage = [UIImage imageNamed:@"actionsheet_contact"];
+        UIImage *chooseContactImage = [UIImage imageNamed:@"contact-circle-outline-24"];
         OWSAssertDebug(takeMediaImage);
         [chooseContactAction setValue:chooseContactImage forKey:@"image"];
         [actionSheet addAction:chooseContactAction];
