@@ -155,12 +155,12 @@ class SendMediaNavigationController: OWSNavigationController {
                 guard let topViewController = viewControllers.last else {
                     return
                 }
-                updateButtons(topViewController: topViewController)
+                updateViewState(topViewController: topViewController)
             }
         }
     }
 
-    func updateButtons(topViewController: UIViewController) {
+    func updateViewState(topViewController: UIViewController) {
         switch topViewController {
         case is AttachmentApprovalViewController:
             isShowingMediaLibrary = false
@@ -168,7 +168,7 @@ class SendMediaNavigationController: OWSNavigationController {
             doneButton.isHidden = true
             cameraModeButton.isHidden = true
             mediaLibraryModeButton.isHidden = true
-        case is ImagePickerGridController:
+        case let mediaLibraryView as ImagePickerGridController:
             isShowingMediaLibrary = true
             let showDoneButton = isInBatchSelectMode && attachmentCount > 0
             doneButton.isHidden = !showDoneButton
@@ -181,6 +181,8 @@ class SendMediaNavigationController: OWSNavigationController {
 
             mediaLibraryModeButton.isHidden = true
             mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
+
+            mediaLibraryView.applyBatchSelectMode()
         case is PhotoCaptureViewController:
             isShowingMediaLibrary = false
             let showDoneButton = isInBatchSelectMode && attachmentCount > 0
@@ -207,10 +209,6 @@ class SendMediaNavigationController: OWSNavigationController {
         }
 
         doneButton.updateCount()
-
-        if let mediaLibraryView = topViewController as? ImagePickerGridController {
-            mediaLibraryView.applyBatchSelectMode()
-        }
     }
 
     func fadeTo(viewControllers: [UIViewController]) {
@@ -369,7 +367,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
             break
         }
 
-        self.updateButtons(topViewController: viewController)
+        self.updateViewState(topViewController: viewController)
     }
 
     // In case back navigation was canceled, we re-apply whatever is showing.
@@ -381,7 +379,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
                 owsFailDebug("unexpected navigationBar: \(navigationBar)")
             }
         }
-        self.updateButtons(topViewController: viewController)
+        self.updateViewState(topViewController: viewController)
     }
 
     // MARK: - Helpers
@@ -427,7 +425,7 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         let cameraCaptureAttachment = CameraCaptureAttachment(signalAttachment: attachment)
         attachmentDraftCollection.append(.camera(attachment: cameraCaptureAttachment))
         if isInBatchSelectMode {
-            updateButtons(topViewController: photoCaptureViewController)
+            updateViewState(topViewController: photoCaptureViewController)
         } else {
             pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem])
         }
@@ -466,7 +464,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         didRequestExit(dontAbandonText: dontAbandonText)
     }
 
-    func imagePickerDidCamera(_ imagePicker: ImagePickerGridController) {
+    func imagePickerDidSelectCamera(_ imagePicker: ImagePickerGridController) {
         didTapCameraModeButton()
     }
 
@@ -502,7 +500,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         let libraryMedia = MediaLibraryAttachment(asset: asset, attachmentApprovalItemPromise: attachmentApprovalItemPromise)
         attachmentDraftCollection.append(.picker(attachment: libraryMedia))
 
-        updateButtons(topViewController: imagePicker)
+        updateViewState(topViewController: imagePicker)
     }
 
     func imagePicker(_ imagePicker: ImagePickerGridController, didDeselectAsset asset: PHAsset) {
@@ -511,7 +509,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
         }
         attachmentDraftCollection.remove(.picker(attachment: draft))
 
-        updateButtons(topViewController: imagePicker)
+        updateViewState(topViewController: imagePicker)
     }
 
     func imagePickerCanSelectMoreItems(_ imagePicker: ImagePickerGridController) -> Bool {
@@ -526,7 +524,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
 extension SendMediaNavigationController: AttachmentApprovalViewControllerDelegate {
 
     func attachmentApprovalDidAppear(_ attachmentApproval: AttachmentApprovalViewController) {
-        updateButtons(topViewController: attachmentApproval)
+        updateViewState(topViewController: attachmentApproval)
     }
 
     func attachmentApproval(_ attachmentApproval: AttachmentApprovalViewController, didChangeMessageText newMessageText: String?) {

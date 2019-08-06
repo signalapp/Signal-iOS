@@ -9,7 +9,7 @@ import PromiseKit
 protocol ImagePickerGridControllerDelegate: AnyObject {
     func imagePickerDidCompleteSelection(_ imagePicker: ImagePickerGridController)
     func imagePickerDidCancel(_ imagePicker: ImagePickerGridController)
-    func imagePickerDidCamera(_ imagePicker: ImagePickerGridController)
+    func imagePickerDidSelectCamera(_ imagePicker: ImagePickerGridController)
 
     func imagePicker(_ imagePicker: ImagePickerGridController, isAssetSelected asset: PHAsset) -> Bool
     func imagePicker(_ imagePicker: ImagePickerGridController, didSelectAsset asset: PHAsset, attachmentPromise: Promise<SignalAttachment>)
@@ -361,7 +361,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     @objc
     func didPressCamera(sender: UIBarButtonItem) {
-        self.delegate?.imagePickerDidCamera(self)
+        self.delegate?.imagePickerDidSelectCamera(self)
     }
 
     // MARK: - Layout

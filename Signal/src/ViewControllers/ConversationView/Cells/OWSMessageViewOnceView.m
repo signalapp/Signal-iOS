@@ -717,6 +717,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.isIncomingFailed) {
         [self.delegate didTapFailedIncomingAttachment:self.viewItem];
     } else if (self.isAvailable) {
+        if (!self.viewItem.attachmentStream) {
+            OWSFailDebug(@"Missing attachment.");
+            return;
+        }
         [self.delegate didTapViewOnceAttachment:self.viewItem attachmentStream:self.viewItem.attachmentStream];
     }
 }
