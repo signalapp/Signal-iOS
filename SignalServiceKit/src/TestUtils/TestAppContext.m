@@ -127,6 +127,11 @@ NS_ASSUME_NONNULL_BEGIN
     return _buildTime;
 }
 
+- (UIInterfaceOrientation)interfaceOrientation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value
 {
 }

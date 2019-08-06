@@ -8,13 +8,12 @@ import Foundation
 public protocol StickerKeyboardDelegate {
     func didSelectSticker(stickerInfo: StickerInfo)
     func presentManageStickersView()
-    func rootViewSize() -> CGSize
 }
 
 // MARK: -
 
 @objc
-public class StickerKeyboard: UIStackView {
+public class StickerKeyboard: CustomKeyboard {
 
     // MARK: - Dependencies
 
@@ -27,6 +26,7 @@ public class StickerKeyboard: UIStackView {
     @objc
     public weak var delegate: StickerKeyboardDelegate?
 
+    private let mainStackView = UIStackView()
     private let headerView = UIStackView()
 
     private var stickerPacks = [StickerPack]()
@@ -38,8 +38,8 @@ public class StickerKeyboard: UIStackView {
     }
 
     @objc
-    public required init() {
-        super.init(frame: .zero)
+    public override init() {
+        super.init()
 
         createSubviews()
 
@@ -52,50 +52,30 @@ public class StickerKeyboard: UIStackView {
                                                selector: #selector(stickersOrPacksDidChange),
                                                name: StickerManager.stickersOrPacksDidChange,
                                                object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(orientationDidChange),
-                                               name: UIDevice.orientationDidChangeNotification,
-                                               object: UIDevice.current)
     }
 
     required public init(coder: NSCoder) {
         notImplemented()
     }
 
-    // TODO: Tune this value.
-    private let kDefaultKeyboardHeight: CGFloat = 300
-
-    @objc
-    public override var intrinsicContentSize: CGSize {
-        // Never take up more than half of the root view's height.
-        let rootViewSize = self.rootViewSize
-        let maxKeyboardHeight = rootViewSize.height / 2
-        return CGSize(width: 0, height: min(kDefaultKeyboardHeight, maxKeyboardHeight))
-    }
-
-    private var rootViewSize: CGSize {
-        guard let delegate = delegate else {
-            return .zero
-        }
-        return delegate.rootViewSize()
-    }
-
     private func createSubviews() {
-        axis = .vertical
-        layoutMargins = .zero
-        autoresizingMask = .flexibleHeight
-        alignment = .fill
+        contentView.addSubview(mainStackView)
+        mainStackView.axis = .vertical
+        mainStackView.alignment = .fill
+        mainStackView.autoPinEdgesToSuperviewEdges()
 
-        addBackgroundView(withBackgroundColor: Theme.keyboardBackgroundColor)
+        mainStackView.addBackgroundView(withBackgroundColor: Theme.keyboardBackgroundColor)
 
-        addArrangedSubview(headerView)
+        mainStackView.addArrangedSubview(headerView)
 
         populateHeaderView()
 
         setupPaging()
     }
 
-    @objc public func wasPresented() {
+    public override func wasPresented() {
+        super.wasPresented()
+
         // If there are no recents, default to showing the first sticker pack.
         if currentPageCollectionView.stickerCount < 1 {
             selectedStickerPack = stickerPacks.first
@@ -193,29 +173,26 @@ public class StickerKeyboard: UIStackView {
         updateHeaderView()
     }
 
-    @objc
-    func orientationDidChange() {
-        AssertIsOnMainThread()
+    public override func invalidateIntrinsicContentSize() {
+        super.invalidateIntrinsicContentSize()
 
-        Logger.verbose("")
-
-        invalidateIntrinsicContentSize()
     }
 
     private var isLayingoutSubviews = false
+    private var previousPageWidth: CGFloat?
     public override func layoutSubviews() {
         isLayingoutSubviews = true
-
-        let previousPageWidth = pageWidth
         super.layoutSubviews()
-
-        // If the page width changed (probably an orientation change),
-        // make sure we stay centered on the current pack.
-        if previousPageWidth != pageWidth {
-            updatePageConstraints(ignoreScrollingState: true)
-        }
-
+        previousPageWidth = pageWidth
         isLayingoutSubviews = false
+    }
+
+    public override func orientationDidChange() {
+        super.orientationDidChange()
+
+        Logger.verbose("")
+
+        updatePageConstraints(ignoreScrollingState: true)
     }
 
     private func searchButtonWasTapped() {
@@ -306,7 +283,7 @@ public class StickerKeyboard: UIStackView {
         stickerPagingScrollView.showsHorizontalScrollIndicator = false
         stickerPagingScrollView.isDirectionalLockEnabled = true
         stickerPagingScrollView.delegate = self
-        addArrangedSubview(stickerPagingScrollView)
+        mainStackView.addArrangedSubview(stickerPagingScrollView)
         stickerPagingScrollView.autoPinEdge(toSuperviewSafeArea: .left)
         stickerPagingScrollView.autoPinEdge(toSuperviewSafeArea: .right)
 
@@ -320,7 +297,14 @@ public class StickerKeyboard: UIStackView {
             collectionView.backgroundColor = Theme.keyboardBackgroundColor
             collectionView.isDirectionalLockEnabled = true
             collectionView.stickerDelegate = self
-            stickerPagesContainer.addSubview(collectionView)
+
+            // We want the current page on top, to prevent weird
+            // animations when we initially calculate our frame.
+            if collectionView == currentPageCollectionView {
+                stickerPagesContainer.addSubview(collectionView)
+            } else {
+                stickerPagesContainer.insertSubview(collectionView, at: 0)
+            }
 
             collectionView.autoMatch(.width, to: .width, of: stickerPagingScrollView)
             collectionView.autoMatch(.height, to: .height, of: stickerPagingScrollView)
@@ -339,7 +323,7 @@ public class StickerKeyboard: UIStackView {
     private func checkForPageChange() {
         // Ignore any page changes while we're laying out, as the content
         // offset will move about as the scrollView potentially resizes.
-        guard !isLayingoutSubviews else { return }
+        guard !isLayingoutSubviews, previousPageWidth == pageWidth else { return }
 
         isScrollingChange = true
 

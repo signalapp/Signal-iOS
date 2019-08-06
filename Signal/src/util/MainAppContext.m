@@ -263,6 +263,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return _buildTime;
 }
 
+- (UIInterfaceOrientation)interfaceOrientation
+{
+    return [UIApplication sharedApplication].statusBarOrientation;
+}
+
 - (void)setNetworkActivityIndicatorVisible:(BOOL)value
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:value];
