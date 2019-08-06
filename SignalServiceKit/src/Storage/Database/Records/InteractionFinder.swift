@@ -746,23 +746,16 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     }
 
     func existsOutgoingMessage(transaction: GRDBReadTransaction) -> Bool {
-        do {
-            guard let count = try UInt.fetchOne(transaction.database,
-                                                sql: """
-                SELECT COUNT(*)
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .recordType) = ?
-                """,
-                arguments: [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]) else {
-                    owsFailDebug("count was unexpectedly nil")
-                    return false
-            }
-            return count > 0
-        } catch {
-            owsFailDebug("error: \(error)")
-            return false
-        }
+        let sql = """
+            SELECT 1
+            FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .threadUniqueId) = ?
+            AND \(interactionColumn: .recordType) = ?
+            LIMIT 1
+        """
+
+        let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
+        return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction) != nil
     }
 }
 
