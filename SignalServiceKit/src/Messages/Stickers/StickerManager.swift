@@ -72,7 +72,7 @@ public class StickerManager: NSObject {
     private static let operationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "org.signal.StickerManager"
-        operationQueue.maxConcurrentOperationCount = 1
+        operationQueue.maxConcurrentOperationCount = 4
         return operationQueue
     }()
 
