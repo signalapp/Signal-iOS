@@ -237,9 +237,10 @@ class PhotoCollection {
         return localizedTitle
     }
 
-    func contents() -> PhotoCollectionContents {
+    func contents(ascending: Bool = true, limit: Int = 0) -> PhotoCollectionContents {
         let options = PHFetchOptions()
-        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: ascending)]
+        options.fetchLimit = limit
         let fetchResult = PHAsset.fetchAssets(in: collection, options: options)
 
         return PhotoCollectionContents(fetchResult: fetchResult, localizedTitle: localizedTitle())

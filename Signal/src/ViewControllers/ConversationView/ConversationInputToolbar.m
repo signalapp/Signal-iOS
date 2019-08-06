@@ -27,7 +27,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, VoiceMemoRecordingState){
     VoiceMemoRecordingState_RecordingLocked
 };
 
-typedef NS_CLOSED_ENUM(NSUInteger, KeyboardType) { KeyboardType_System, KeyboardType_Sticker };
+typedef NS_CLOSED_ENUM(NSUInteger, KeyboardType) { KeyboardType_System, KeyboardType_Sticker, KeyboardType_Attachment };
 
 static void *kConversationInputTextViewObservingContext = &kConversationInputTextViewObservingContext;
 
@@ -55,7 +55,8 @@ const CGFloat kMaxTextViewHeight = 98;
 @interface ConversationInputToolbar () <ConversationTextViewToolbarDelegate,
     QuotedReplyPreviewDelegate,
     LinkPreviewViewDraftDelegate,
-    StickerKeyboardDelegate>
+    StickerKeyboardDelegate,
+    AttachmentKeyboardDelegate>
 
 @property (nonatomic, readonly) ConversationStyle *conversationStyle;
 
@@ -100,6 +101,7 @@ const CGFloat kMaxTextViewHeight = 98;
 
 @property (nonatomic) KeyboardType desiredKeyboardType;
 @property (nonatomic, readonly) StickerKeyboard *stickerKeyboard;
+@property (nonatomic, readonly) AttachmentKeyboard *attachmentKeyboard;
 
 @end
 
@@ -204,6 +206,10 @@ const CGFloat kMaxTextViewHeight = 98;
                               action:@selector(attachmentButtonPressed)
                     forControlEvents:UIControlEventTouchUpInside];
     [self.attachmentButton setTemplateImageName:@"plus-24" tintColor:Theme.navbarIconColor];
+    [self.attachmentButton
+        setImage:[UIImage imageNamed:[@"x-box-filled-28-"
+                                         stringByAppendingString:Theme.isDarkThemeEnabled ? @"dark" : @"light"]]
+        forState:UIControlStateSelected];
     [self.attachmentButton autoSetDimensionsToSize:CGSizeMake(55, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _attachmentButton);
 
@@ -351,6 +357,11 @@ const CGFloat kMaxTextViewHeight = 98;
     _stickerKeyboard = stickerKeyboard;
     stickerKeyboard.delegate = self;
     [stickerKeyboard registerWithView:self];
+
+    AttachmentKeyboard *attachmentKeyboard = [AttachmentKeyboard new];
+    _attachmentKeyboard = attachmentKeyboard;
+    attachmentKeyboard.delegate = self;
+    [attachmentKeyboard registerWithView:self];
 
     [self ensureButtonVisibilityWithIsAnimated:NO doLayout:NO];
 }
@@ -562,11 +573,13 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     [self.inputTextView resignFirstResponder];
     [self.stickerKeyboard resignFirstResponder];
+    [self.attachmentKeyboard resignFirstResponder];
 }
 
 - (BOOL)isInputViewFirstResponder
 {
-    return (self.inputTextView.isFirstResponder || self.stickerKeyboard.isFirstResponder);
+    return (self.inputTextView.isFirstResponder || self.stickerKeyboard.isFirstResponder
+        || self.attachmentKeyboard.isFirstResponder);
 }
 
 - (void)ensureButtonVisibilityWithIsAnimated:(BOOL)isAnimated doLayout:(BOOL)doLayout
@@ -608,6 +621,8 @@ const CGFloat kMaxTextViewHeight = 98;
                 = (self.desiredKeyboardType == KeyboardType_Sticker ? UIColor.ows_signalBlueColor
                                                                     : Theme.navbarIconColor);
         }
+
+        self.attachmentButton.selected = self.desiredKeyboardType == KeyboardType_Attachment;
 
         [self updateSuggestedStickers];
 
@@ -1080,9 +1095,9 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)attachmentButtonPressed
 {
-    OWSAssertDebug(self.inputToolbarDelegate);
+    OWSLogVerbose(@"");
 
-    [self.inputToolbarDelegate attachmentButtonPressed];
+    [self toggleKeyboardType:KeyboardType_Attachment];
 }
 
 - (void)stickerButtonPressed
@@ -1152,6 +1167,8 @@ const CGFloat kMaxTextViewHeight = 98;
             return self.inputTextView;
         case KeyboardType_Sticker:
             return self.stickerKeyboard;
+        case KeyboardType_Attachment:
+            return self.attachmentKeyboard;
     }
 }
 
@@ -1498,8 +1515,21 @@ const CGFloat kMaxTextViewHeight = 98;
         CGFloat newHeight = keyboardEndFrame.size.height - self.frame.size.height;
         if (newHeight > 0) {
             [self.stickerKeyboard updateSystemKeyboardHeight:newHeight];
+            [self.attachmentKeyboard updateSystemKeyboardHeight:newHeight];
         }
     }
+}
+
+#pragma mark - Attachment Keyboard Delegate
+
+- (void)didSelectRecentPhoto:(SignalAttachment *)attachment
+{
+    [self.inputToolbarDelegate didSelectRecentPhoto:attachment];
+}
+
+- (void)didTapGalleryButton
+{
+    [self.inputToolbarDelegate galleryButtonPressed];
 }
 
 @end

@@ -31,6 +31,24 @@ public class OWSFlatButton: UIView {
         }
     }
 
+    public var titleEdgeInsets: UIEdgeInsets {
+        set {
+            button.titleEdgeInsets = newValue
+        }
+        get {
+            return button.titleEdgeInsets
+        }
+    }
+
+    public var contentEdgeInsets: UIEdgeInsets {
+        set {
+            button.contentEdgeInsets = newValue
+        }
+        get {
+            return button.contentEdgeInsets
+        }
+    }
+
     @objc
     public init() {
         AssertIsOnMainThread()

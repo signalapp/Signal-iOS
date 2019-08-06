@@ -3217,107 +3217,41 @@ typedef enum : NSUInteger {
     [self takePictureOrVideo];
 }
 
-- (void)attachmentButtonPressed
+- (void)galleryButtonPressed
 {
-    [self dismissKeyBoard];
+    OWSAssertIsOnMainThread();
 
-    __weak ConversationViewController *weakSelf = self;
-    if ([self isBlockedConversation]) {
-        [self showUnblockConversationUI:^(BOOL isBlocked) {
-            if (!isBlocked) {
-                [weakSelf attachmentButtonPressed];
-            }
-        }];
-        return;
-    }
+    [self chooseFromLibraryAsMedia];
+}
 
-    BOOL didShowSNAlert =
-        [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:
-                  NSLocalizedString(@"CONFIRMATION_TITLE", @"Generic button text to proceed with an action")
-                                                               completion:^(BOOL didConfirmIdentity) {
-                                                                   if (didConfirmIdentity) {
-                                                                       [weakSelf attachmentButtonPressed];
-                                                                   }
-                                                               }];
-    if (didShowSNAlert) {
-        return;
-    }
+- (void)gifButtonPressed
+{
+    OWSAssertIsOnMainThread();
 
+    [self showGifPicker];
+}
 
-    UIAlertController *actionSheet =
-        [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+- (void)fileButtonPressed
+{
+    OWSAssertIsOnMainThread();
 
-    [actionSheet addAction:[OWSAlerts cancelAction]];
+    [self showAttachmentDocumentPickerMenu];
+}
 
-    UIAlertAction *takeMediaAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(
-                                           @"MEDIA_FROM_CAMERA_BUTTON", @"media picker option to take photo or video")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_camera")
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                   [self takePictureOrVideo];
-                               }];
-    UIImage *takeMediaImage = [UIImage imageNamed:@"camera-outline-24"];
-    OWSAssertDebug(takeMediaImage);
-    [takeMediaAction setValue:takeMediaImage forKey:@"image"];
-    [actionSheet addAction:takeMediaAction];
+- (void)contactButtonPressed
+{
+    OWSAssertIsOnMainThread();
 
-    UIAlertAction *chooseMediaAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(
-                                           @"MEDIA_FROM_LIBRARY_BUTTON", @"media picker option to choose from library")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_choose_media")
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                   [self chooseFromLibraryAsMedia];
-                               }];
-    UIImage *chooseMediaImage = [UIImage imageNamed:@"photo-outline-24"];
-    OWSAssertDebug(chooseMediaImage);
-    [chooseMediaAction setValue:chooseMediaImage forKey:@"image"];
-    [actionSheet addAction:chooseMediaAction];
+    [self chooseContactForSending];
+}
 
-    UIAlertAction *gifAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"SELECT_GIF_BUTTON",
-                                           @"Label for 'select GIF to attach' action sheet button")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_gif")
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                   [self showGifPicker];
-                               }];
-    UIImage *gifImage = [UIImage imageNamed:@"gif-outline-24"];
-    OWSAssertDebug(gifImage);
-    [gifAction setValue:gifImage forKey:@"image"];
-    [actionSheet addAction:gifAction];
-
-    UIAlertAction *chooseDocumentAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"MEDIA_FROM_DOCUMENT_PICKER_BUTTON",
-                                           @"action sheet button title when choosing attachment type")
-               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_document")
-                                 style:UIAlertActionStyleDefault
-                               handler:^(UIAlertAction *action) {
-                                   [self showAttachmentDocumentPickerMenu];
-                               }];
-    UIImage *chooseDocumentImage = [UIImage imageNamed:@"file-outline-24"];
-    OWSAssertDebug(chooseDocumentImage);
-    [chooseDocumentAction setValue:chooseDocumentImage forKey:@"image"];
-    [actionSheet addAction:chooseDocumentAction];
-
-    if (kIsSendingContactSharesEnabled) {
-        UIAlertAction *chooseContactAction =
-            [UIAlertAction actionWithTitle:NSLocalizedString(@"ATTACHMENT_MENU_CONTACT_BUTTON",
-                                               @"attachment menu option to send contact")
-                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_contact")
-                                     style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *action) {
-                                       [self chooseContactForSending];
-                                   }];
-        UIImage *chooseContactImage = [UIImage imageNamed:@"contact-circle-outline-24"];
-        OWSAssertDebug(takeMediaImage);
-        [chooseContactAction setValue:chooseContactImage forKey:@"image"];
-        [actionSheet addAction:chooseContactAction];
-    }
+- (void)didSelectRecentPhoto:(SignalAttachment *)attachment
+{
+    OWSAssertIsOnMainThread();
 
     [self dismissKeyBoard];
-    [self presentAlert:actionSheet];
+
+    [self showApprovalDialogForAttachment:attachment];
 }
 
 - (nullable NSIndexPath *)lastVisibleIndexPath
@@ -3479,6 +3413,7 @@ typedef enum : NSUInteger {
 - (void)dismissKeyBoard
 {
     [self.inputToolbar endEditingMessage];
+    [self.inputToolbar clearDesiredKeyboard];
 }
 
 #pragma mark Drafts
