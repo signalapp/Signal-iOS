@@ -10,8 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSessionStoreCollection";
-
 @interface SSKSessionStore ()
 
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
@@ -29,7 +27,7 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
         return self;
     }
 
-    _keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSPrimaryStorageSessionStoreCollection];
+    _keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:@"TSStorageManagerSessionStoreCollection"];
 
     return self;
 }
@@ -331,48 +329,44 @@ NSString *const OWSPrimaryStorageSessionStoreCollection = @"TSStorageManagerSess
     [self.keyValueStore removeAllWithTransaction:transaction];
 }
 
-- (void)printAllSessionsWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (void)printAllSessionsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    if (!transaction.transitional_yapReadTransaction) {
-        OWSFailDebug(@"GRDB TODO");
-        return;
-    }
     NSString *tag = @"[OWSPrimaryStorage (SessionStore)]";
     OWSLogDebug(@"%@ All Sessions:", tag);
-    [transaction.transitional_yapReadTransaction
-        enumerateKeysAndObjectsInCollection:OWSPrimaryStorageSessionStoreCollection
-                                 usingBlock:^(
-                                     NSString *_Nonnull key, id _Nonnull deviceSessionsObject, BOOL *_Nonnull stop) {
-                                     if (![deviceSessionsObject isKindOfClass:[NSDictionary class]]) {
-                                         OWSFailDebug(@"%@ Unexpected type: %@ in collection.",
-                                             tag,
-                                             [deviceSessionsObject class]);
-                                         return;
-                                     }
-                                     NSDictionary *deviceSessions = (NSDictionary *)deviceSessionsObject;
+    [self.keyValueStore
+        enumerateKeysAndObjectsWithTransaction:transaction
+                                         block:^(NSString *key, id value, BOOL *stop) {
+                                             if (![value isKindOfClass:[NSDictionary class]]) {
+                                                 OWSFailDebug(
+                                                     @"%@ Unexpected type: %@ in collection.", tag, [value class]);
+                                                 return;
+                                             }
+                                             NSDictionary *deviceSessions = (NSDictionary *)value;
 
-                                     OWSLogDebug(@"%@     Sessions for recipient: %@", tag, key);
-                                     [deviceSessions enumerateKeysAndObjectsUsingBlock:^(
-                                         id _Nonnull key, id _Nonnull sessionRecordObject, BOOL *_Nonnull stop) {
-                                         if (![sessionRecordObject isKindOfClass:[SessionRecord class]]) {
-                                             OWSFailDebug(@"%@ Unexpected type: %@ in collection.",
-                                                 tag,
-                                                 [sessionRecordObject class]);
-                                             return;
-                                         }
-                                         SessionRecord *sessionRecord = (SessionRecord *)sessionRecordObject;
-                                         SessionState *activeState = [sessionRecord sessionState];
-                                         NSArray<SessionState *> *previousStates =
-                                             [sessionRecord previousSessionStates];
-                                         OWSLogDebug(@"%@         Device: %@ SessionRecord: %@ activeSessionState: "
+                                             OWSLogDebug(@"%@     Sessions for recipient: %@", tag, key);
+                                             [deviceSessions enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key,
+                                                 id _Nonnull sessionRecordObject,
+                                                 BOOL *_Nonnull stop) {
+                                                 if (![sessionRecordObject isKindOfClass:[SessionRecord class]]) {
+                                                     OWSFailDebug(@"%@ Unexpected type: %@ in collection.",
+                                                         tag,
+                                                         [sessionRecordObject class]);
+                                                     return;
+                                                 }
+                                                 SessionRecord *sessionRecord = (SessionRecord *)sessionRecordObject;
+                                                 SessionState *activeState = [sessionRecord sessionState];
+                                                 NSArray<SessionState *> *previousStates =
+                                                     [sessionRecord previousSessionStates];
+                                                 OWSLogDebug(
+                                                     @"%@         Device: %@ SessionRecord: %@ activeSessionState: "
                                                      @"%@ previousSessionStates: %@",
-                                             tag,
-                                             key,
-                                             sessionRecord,
-                                             activeState,
-                                             previousStates);
-                                     }];
-                                 }];
+                                                     tag,
+                                                     key,
+                                                     sessionRecord,
+                                                     activeState,
+                                                     previousStates);
+                                             }];
+                                         }];
 }
 
 @end

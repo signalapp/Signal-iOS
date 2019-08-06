@@ -82,7 +82,7 @@ public class HomeViewDatabaseObserver: NSObject {
         """
 
         let fetchedUniqueIds = try String.fetchAll(db, sql: sql)
-        var result = changes.uniqueIds.union(fetchedUniqueIds)
+        let result = changes.uniqueIds.union(fetchedUniqueIds)
 
         guard result.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
             throw DatabaseObserverError.changeTooLarge

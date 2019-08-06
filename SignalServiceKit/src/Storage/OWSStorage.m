@@ -933,13 +933,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     }
 }
 
-- (void)logFileSizes
-{
-    OWSLogInfo(@"Database file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath]);
-    OWSLogInfo(@"\t SHM file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath_SHM]);
-    OWSLogInfo(@"\t WAL file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath_WAL]);
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

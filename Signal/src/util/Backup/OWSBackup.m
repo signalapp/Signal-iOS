@@ -17,7 +17,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const NSNotificationNameBackupStateDidChange = @"NSNotificationNameBackupStateDidChange";
 
-NSString *const OWSPrimaryStorage_OWSBackupCollection = @"OWSPrimaryStorage_OWSBackupCollection";
 NSString *const OWSBackup_IsBackupEnabledKey = @"OWSBackup_IsBackupEnabledKey";
 NSString *const OWSBackup_LastExportSuccessDateKey = @"OWSBackup_LastExportSuccessDateKey";
 NSString *const OWSBackup_LastExportFailureDateKey = @"OWSBackup_LastExportFailureDateKey";
@@ -114,7 +113,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
     static SDSKeyValueStore *keyValueStore = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSPrimaryStorage_OWSBackupCollection];
+        keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:@"OWSPrimaryStorage_OWSBackupCollection"];
     });
     return keyValueStore;
 }

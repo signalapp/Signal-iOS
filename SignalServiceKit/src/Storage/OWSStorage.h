@@ -109,8 +109,6 @@ typedef void (^OWSStorageMigrationBlock)(void);
 
 + (void)storeDatabaseCipherKeySpec:(NSData *)cipherKeySpecData;
 
-- (void)logFileSizes;
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -10,7 +10,6 @@
 #import "OWSDevice.h"
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import "SSKPreKeyStore.h"
 #import "SSKSessionStore.h"

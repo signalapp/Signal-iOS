@@ -6,7 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
 @class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
 @class SignalServiceAddress;

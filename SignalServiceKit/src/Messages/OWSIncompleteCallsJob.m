@@ -28,11 +28,6 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
     return SDSDatabaseStorage.shared;
 }
 
-- (OWSPrimaryStorage *)primaryStorage
-{
-    return OWSPrimaryStorage.sharedManager;
-}
-
 #pragma mark -
 
 - (NSArray<NSString *> *)fetchIncompleteCallIdsWithTransaction:(SDSAnyWriteTransaction *)transaction

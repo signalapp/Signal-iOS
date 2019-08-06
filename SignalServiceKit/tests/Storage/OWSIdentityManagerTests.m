@@ -4,7 +4,6 @@
 
 #import "MockSSKEnvironment.h"
 #import "OWSIdentityManager.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSRecipientIdentity.h"
 #import "SSKBaseTestObjC.h"
 #import "SSKEnvironment.h"

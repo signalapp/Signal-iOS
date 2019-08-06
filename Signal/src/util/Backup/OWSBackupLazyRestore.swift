@@ -15,10 +15,6 @@ public class BackupLazyRestore: NSObject {
         return AppEnvironment.shared.backup
     }
 
-    private var primaryStorage: OWSPrimaryStorage {
-        return SSKEnvironment.shared.primaryStorage
-    }
-
     private var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
     }
