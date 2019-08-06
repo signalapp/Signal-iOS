@@ -747,7 +747,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
 
     func existsOutgoingMessage(transaction: GRDBReadTransaction) -> Bool {
         let sql = """
-            SELECT 1
+            SELECT *
             FROM \(InteractionRecord.databaseTableName)
             WHERE \(interactionColumn: .threadUniqueId) = ?
             AND \(interactionColumn: .recordType) = ?
