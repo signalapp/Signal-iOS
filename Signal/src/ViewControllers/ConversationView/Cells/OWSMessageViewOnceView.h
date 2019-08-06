@@ -8,10 +8,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class TSAttachmentStream;
 
-@protocol OWSMessageHiddenViewDelegate
+@protocol OWSMessageViewOnceViewDelegate
 
-- (void)didTapAttachmentWithPerMessageExpiration:(id<ConversationViewItem>)viewItem
-                                attachmentStream:(TSAttachmentStream *)attachmentStream;
+- (void)didTapViewOnceAttachment:(id<ConversationViewItem>)viewItem
+                attachmentStream:(TSAttachmentStream *)attachmentStream;
 
 - (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem;
 
@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface OWSMessageHiddenView : OWSMessageView
+@interface OWSMessageViewOnceView : OWSMessageView
 
-@property (nonatomic, weak) id<OWSMessageHiddenViewDelegate> delegate;
+@property (nonatomic, weak) id<OWSMessageViewOnceViewDelegate> delegate;
 
 - (instancetype)init NS_UNAVAILABLE;
 

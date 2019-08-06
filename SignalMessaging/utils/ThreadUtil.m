@@ -176,11 +176,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     BOOL isVoiceMessage = (attachments.count == 1 && attachments.lastObject.isVoiceMessage);
 
-    uint32_t perMessageExpirationDurationSeconds = 0;
+    BOOL isViewOnceMessage = NO;
     for (SignalAttachment *attachment in mediaAttachments) {
-        if (attachment.hasPerMessageExpiration) {
+        if (attachment.isViewOnceAttachment) {
             OWSAssertDebug(mediaAttachments.count == 1);
-            perMessageExpirationDurationSeconds = PerMessageExpiration.kExpirationDurationSeconds;
+            isViewOnceMessage = YES;
             break;
         }
     }
@@ -198,7 +198,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
-                                perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds];
+                                                  isViewOnceMessage:isViewOnceMessage];
 
     [BenchManager
         benchAsyncWithTitle:@"Saving outgoing message"
@@ -257,7 +257,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                        contactShare:contactShare
                                                         linkPreview:nil
                                                      messageSticker:nil
-                                perMessageExpirationDurationSeconds:0];
+                                                  isViewOnceMessage:NO];
 
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [message anyInsertWithTransaction:transaction];
@@ -294,7 +294,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
-                                perMessageExpirationDurationSeconds:0];
+                                                  isViewOnceMessage:NO];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // Load the sticker data async.
@@ -446,7 +446,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                        contactShare:contactShare
                                                         linkPreview:nil
                                                      messageSticker:nil
-                                perMessageExpirationDurationSeconds:0];
+                                                  isViewOnceMessage:NO];
 
     [messageSender sendMessage:message
         success:^{

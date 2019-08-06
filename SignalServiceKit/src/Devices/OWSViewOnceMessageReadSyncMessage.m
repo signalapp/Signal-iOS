@@ -2,12 +2,12 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSPerMessageExpirationReadSyncMessage.h"
+#import "OWSViewOnceMessageReadSyncMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation OWSPerMessageExpirationReadSyncMessage
+@implementation OWSViewOnceMessageReadSyncMessage
 
 - (instancetype)initWithThread:(TSThread *)thread
                  senderAddress:(SignalServiceAddress *)senderAddress
@@ -47,17 +47,17 @@ NS_ASSUME_NONNULL_BEGIN
 {
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
 
-    SSKProtoSyncMessageMessageTimerReadBuilder *readProtoBuilder =
-        [SSKProtoSyncMessageMessageTimerRead builderWithTimestamp:self.messageIdTimestamp];
+    SSKProtoSyncMessageViewOnceOpenBuilder *readProtoBuilder =
+        [SSKProtoSyncMessageViewOnceOpen builderWithTimestamp:self.messageIdTimestamp];
     readProtoBuilder.senderE164 = self.senderAddress.phoneNumber;
     readProtoBuilder.senderUuid = self.senderAddress.uuidString;
     NSError *error;
-    SSKProtoSyncMessageMessageTimerRead *_Nullable readProto = [readProtoBuilder buildAndReturnError:&error];
+    SSKProtoSyncMessageViewOnceOpen *_Nullable readProto = [readProtoBuilder buildAndReturnError:&error];
     if (error || !readProto) {
         OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
     }
-    [syncMessageBuilder setMessageTimerRead:readProto];
+    [syncMessageBuilder setViewOnceOpen:readProto];
 
     return syncMessageBuilder;
 }

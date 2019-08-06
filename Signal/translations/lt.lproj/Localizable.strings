@@ -1332,6 +1332,9 @@
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Pristatyta";
 
+/* message status while message is downloading. */
+"MESSAGE_STATUS_DOWNLOADING" = "Atsisiunčiama";
+
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Siuntimas nepavyko.";
 
@@ -1643,22 +1646,22 @@
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
 
-/* Label that indicates that 'per-message expiration' is active. */
+/* Label that indicates that 'view-once' is active. */
 "PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Išnykstanti nuotrauka";
 
-/* Label for messages with per-message expiration that have invalid content. */
+/* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Klaida, apdorojant gaunamą žinutę";
 
 /* Notification for incoming disappearing photo. */
 "PER_MESSAGE_EXPIRATION_NOTIFICATION" = "Išnykstanti nuotrauka";
 
-/* Label for outgoing messages with per-message expiration. */
+/* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Nuotrauka";
 
-/* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "Žiūrėti nuotrauką";
 
-/* Label for messages with per-message expiration indicating that the local user has viewed the message's contents. */
+/* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Peržiūrėta";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */

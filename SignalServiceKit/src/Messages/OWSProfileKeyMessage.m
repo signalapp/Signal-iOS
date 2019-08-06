@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
                                       contactShare:nil
                                        linkPreview:nil
                                     messageSticker:nil
-               perMessageExpirationDurationSeconds:0];
+                                 isViewOnceMessage:NO];
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder

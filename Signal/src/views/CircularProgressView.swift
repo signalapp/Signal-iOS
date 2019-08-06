@@ -15,6 +15,11 @@ public class CircularProgressView: UIView {
     private let shapeLayer1 = CAShapeLayer()
     private let shapeLayer2 = CAShapeLayer()
 
+    @objc
+    public var trackColor: UIColor = UIColor(white: 1.0, alpha: 0.4)
+    @objc
+    public var progressColor: UIColor = (Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_white)
+
     public var progress: CGFloat? {
         didSet {
             AssertIsOnMainThread()
@@ -92,16 +97,14 @@ public class CircularProgressView: UIView {
                                                        size: CGSize(width: outerRadius * 2,
                                                                     height: outerRadius * 2))))
         shapeLayer1.path = bezierPath1.cgPath
-        let fillColor1: UIColor = UIColor(white: 1.0, alpha: 0.4)
-        shapeLayer1.fillColor = fillColor1.cgColor
+        shapeLayer1.fillColor = trackColor.cgColor
         shapeLayer1.fillRule = .evenOdd
 
         let bezierPath2 = UIBezierPath()
         bezierPath2.addArc(withCenter: center, radius: outerRadius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
         bezierPath2.addArc(withCenter: center, radius: innerRadius, startAngle: endAngle, endAngle: startAngle, clockwise: false)
         shapeLayer2.path = bezierPath2.cgPath
-        let fillColor2: UIColor = (Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_white)
-        shapeLayer2.fillColor = fillColor2.cgColor
+        shapeLayer2.fillColor = progressColor.cgColor
 
         CATransaction.commit()
     }

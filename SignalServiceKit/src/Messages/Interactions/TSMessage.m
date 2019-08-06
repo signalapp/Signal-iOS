@@ -53,9 +53,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @property (nonatomic, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, nullable) MessageSticker *messageSticker;
 
-@property (nonatomic) uint32_t perMessageExpirationDurationSeconds;
-@property (nonatomic) uint64_t perMessageExpireStartedAt;
-@property (nonatomic) BOOL perMessageExpirationHasExpired;
+@property (nonatomic) BOOL isViewOnceMessage;
+@property (nonatomic) BOOL isViewOnceComplete;
 
 @end
 
@@ -73,7 +72,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                             contactShare:(nullable OWSContact *)contactShare
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
                           messageSticker:(nullable MessageSticker *)messageSticker
-     perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
+                       isViewOnceMessage:(BOOL)isViewOnceMessage
 {
     self = [super initInteractionWithTimestamp:timestamp inThread:thread];
 
@@ -92,7 +91,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _contactShare = contactShare;
     _linkPreview = linkPreview;
     _messageSticker = messageSticker;
-    _perMessageExpirationDurationSeconds = perMessageExpirationDurationSeconds;
+    _isViewOnceMessage = isViewOnceMessage;
+    _isViewOnceComplete = NO;
 
     return self;
 }
@@ -114,11 +114,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
 {
@@ -138,11 +137,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     _expireStartedAt = expireStartedAt;
     _expiresAt = expiresAt;
     _expiresInSeconds = expiresInSeconds;
+    _isViewOnceComplete = isViewOnceComplete;
+    _isViewOnceMessage = isViewOnceMessage;
     _linkPreview = linkPreview;
     _messageSticker = messageSticker;
-    _perMessageExpirationDurationSeconds = perMessageExpirationDurationSeconds;
-    _perMessageExpirationHasExpired = perMessageExpirationHasExpired;
-    _perMessageExpireStartedAt = perMessageExpireStartedAt;
     _quotedMessage = quotedMessage;
     _schemaVersion = schemaVersion;
 
@@ -207,6 +205,21 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
     }
 
     _schemaVersion = OWSMessageSchemaVersion;
+
+    // Upgrades legacy messages.
+    //
+    // TODO: We can eventually remove this migration since
+    //       per-message expiration was never released to
+    //       production.
+    NSNumber *_Nullable perMessageExpirationDurationSeconds =
+        [coder decodeObjectForKey:@"perMessageExpirationDurationSeconds"];
+    if (perMessageExpirationDurationSeconds.unsignedIntegerValue > 0) {
+        _isViewOnceMessage = YES;
+    }
+    NSNumber *_Nullable perMessageExpirationHasExpired = [coder decodeObjectForKey:@"perMessageExpirationHasExpired"];
+    if (perMessageExpirationHasExpired.boolValue > 0) {
+        _isViewOnceComplete = YES;
+    }
 
     return self;
 }
@@ -439,7 +452,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         attachmentDescription = mediaAttachment.description;
     }
 
-    if (self.hasPerMessageExpiration) {
+    if (self.isViewOnceMessage) {
         NSString *label = NSLocalizedString(
             @"PER_MESSAGE_EXPIRATION_NOTIFICATION", @"Notification for incoming disappearing photo.");
         if (mediaAttachment != nil) {
@@ -647,50 +660,13 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
         self.body.length > 0 || self.attachmentIds.count > 0 || self.contactShare != nil || self.messageSticker != nil);
 }
 
-#pragma mark - Per-message expiration
+#pragma mark - View Once
 
-- (BOOL)hasPerMessageExpiration
-{
-    return self.perMessageExpirationDurationSeconds > 0;
-}
-
-- (BOOL)hasPerMessageExpirationStarted
-{
-    return self.perMessageExpireStartedAt > 0;
-}
-
-- (uint64_t)perMessageExpiresAt
-{
-    // We should call this method if:
-    //
-    // * This message has a per-message expiration.
-    OWSAssertDebug(self.perMessageExpirationDurationSeconds > 0);
-    // * The per-message expiration has begun.
-    OWSAssertDebug(self.perMessageExpireStartedAt > 0);
-
-    return self.perMessageExpireStartedAt + self.perMessageExpirationDurationSeconds * 1000;
-}
-
-- (void)updateWithPerMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
-                                transaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(self.hasPerMessageExpiration);
-    OWSAssertDebug(!self.perMessageExpirationHasExpired);
-    OWSAssertDebug(perMessageExpireStartedAt > 0);
-    OWSAssertDebug(transaction);
-
-    [self anyUpdateMessageWithTransaction:transaction
-                                    block:^(TSMessage *message) {
-                                        message.perMessageExpireStartedAt = perMessageExpireStartedAt;
-                                    }];
-}
-
-- (void)updateWithHasPerMessageExpiredAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithViewOnceCompleteAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
-    OWSAssertDebug(self.hasPerMessageExpiration);
-    OWSAssertDebug(!self.perMessageExpirationHasExpired);
-    OWSAssertDebug(self.perMessageExpireStartedAt > 0);
+    OWSAssertDebug(self.isViewOnceMessage);
+    OWSAssertDebug(!self.isViewOnceComplete);
 
     // We call removeAllAttachmentsWithTransaction() before
     // anyUpdateWithTransaction, because anyUpdateWithTransaction's
@@ -702,7 +678,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
 
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) {
-                                        message.perMessageExpirationHasExpired = YES;
+                                        message.isViewOnceComplete = YES;
 
                                         // Remove renderable content.
                                         message.body = nil;

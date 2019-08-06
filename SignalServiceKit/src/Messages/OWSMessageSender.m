@@ -1499,7 +1499,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                          expirationStartedAt:[NSDate ows_millisecondTimeStamp]
                                                                  transaction:transaction];
 
-        [PerMessageExpiration expireIfNecessaryWithMessage:message transaction:transaction];
+        [ViewOnceMessages completeIfNecessaryWithMessage:latestMessage transaction:transaction];
     }];
 
     if (!message.shouldSyncTranscript) {

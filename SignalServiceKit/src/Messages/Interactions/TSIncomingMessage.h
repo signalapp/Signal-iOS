@@ -64,8 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   messageSticker:(nullable MessageSticker *)messageSticker
                                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                                  wasReceivedByUD:(BOOL)wasReceivedByUD
-             perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
-    NS_DESIGNATED_INITIALIZER;
+                               isViewOnceMessage:(BOOL)isViewOnceMessage NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -84,11 +83,10 @@ NS_ASSUME_NONNULL_BEGIN
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
@@ -98,7 +96,7 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                  serverTimestamp:(nullable NSNumber *)serverTimestamp
                   sourceDeviceId:(unsigned int)sourceDeviceId
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:linkPreview:messageSticker:perMessageExpirationDurationSeconds:perMessageExpirationHasExpired:perMessageExpireStartedAt:quotedMessage:schemaVersion:authorPhoneNumber:authorUUID:incomingMessageSchemaVersion:read:serverTimestamp:sourceDeviceId:wasReceivedByUD:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:authorPhoneNumber:authorUUID:incomingMessageSchemaVersion:read:serverTimestamp:sourceDeviceId:wasReceivedByUD:));
 
 // clang-format on
 

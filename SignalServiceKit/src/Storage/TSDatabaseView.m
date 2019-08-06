@@ -43,9 +43,9 @@ NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName = @"TSThreadOut
 NSString *const TSUnreadDatabaseViewExtensionName = @"TSUnreadDatabaseViewExtensionName";
 NSString *const TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtensionName";
 NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName = @"TSThreadSpecialMessagesDatabaseViewExtensionName";
-NSString *const TSPerMessageExpirationMessagesDatabaseViewExtensionName
-    = @"TSPerMessageExpirationMessagesDatabaseViewExtensionName";
-NSString *const TSPerMessageExpirationMessagesGroup = @"TSPerMessageExpirationMessagesGroup";
+NSString *const TSIncompleteViewOnceMessagesDatabaseViewExtensionName
+    = @"TSIncompleteViewOnceMessagesDatabaseViewExtensionName";
+NSString *const TSIncompleteViewOnceMessagesGroup = @"TSIncompleteViewOnceMessagesGroup";
 NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName
     = @"TSLazyRestoreAttachmentsDatabaseViewExtensionName";
 NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup";
@@ -167,7 +167,7 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
                                       storage:storage];
 }
 
-+ (void)asyncRegisterPerMessageExpirationMessagesDatabaseView:(OWSStorage *)storage
++ (void)asyncRegisterIncompleteViewOnceMessagesDatabaseView:(OWSStorage *)storage
 {
     YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
         YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
@@ -179,17 +179,16 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             return nil;
         }
         TSMessage *message = (TSMessage *)object;
-        if (message.hasPerMessageExpiration &&
-            !message.perMessageExpirationHasExpired) {
-            return TSPerMessageExpirationMessagesGroup;
+        if (message.isViewOnceMessage && !message.isViewOnceComplete) {
+            return TSIncompleteViewOnceMessagesGroup;
         } else {
             return nil;
         }
     }];
 
-    [self registerMessageDatabaseViewWithName:TSPerMessageExpirationMessagesDatabaseViewExtensionName
+    [self registerMessageDatabaseViewWithName:TSIncompleteViewOnceMessagesDatabaseViewExtensionName
                                  viewGrouping:viewGrouping
-                                      version:@"2"
+                                      version:@"1"
                                       storage:storage];
 }
 
@@ -495,11 +494,11 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
     return result;
 }
 
-+ (id)perMessageExpirationMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction
++ (id)incompleteViewOnceMessagesDatabaseView:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
-    id result = [transaction ext:TSPerMessageExpirationMessagesDatabaseViewExtensionName];
+    id result = [transaction ext:TSIncompleteViewOnceMessagesDatabaseViewExtensionName];
     OWSAssertDebug(result);
     return result;
 }

@@ -42,7 +42,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Profilinizi bu kullanıcı ile paylaşmak ister misiniz?";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "İptal et";
+"ALERT_DISCARD_BUTTON" = "Vazgeç";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Kaydetme";
@@ -1332,6 +1332,9 @@
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "İletildi";
 
+/* message status while message is downloading. */
+"MESSAGE_STATUS_DOWNLOADING" = "İndiriliyor";
+
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Gönderme başarısız oldu.";
 
@@ -1643,22 +1646,22 @@
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
 
-/* Label that indicates that 'per-message expiration' is active. */
+/* Label that indicates that 'view-once' is active. */
 "PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR" = "Kaybolan Fotoğraf";
 
-/* Label for messages with per-message expiration that have invalid content. */
+/* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Gelen ileti işlenirken hata oluştu";
 
 /* Notification for incoming disappearing photo. */
 "PER_MESSAGE_EXPIRATION_NOTIFICATION" = "Kaybolan Fotoğraf";
 
-/* Label for outgoing messages with per-message expiration. */
+/* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Fotoğraf";
 
-/* Label for messages with per-message expiration indicating that user can tap to view the message's contents. */
+/* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "Fotoğrafı Görüntüle";
 
-/* Label for messages with per-message expiration indicating that the local user has viewed the message's contents. */
+/* Label for view-once messages indicating that the local user has viewed the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEWED" = "Görüldü";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */

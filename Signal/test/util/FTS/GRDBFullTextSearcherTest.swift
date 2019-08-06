@@ -517,7 +517,7 @@ class GRDBFullTextSearcherTest: SignalBaseTest {
     private func getResultSet(searchText: String) -> HomeScreenSearchResultSet {
         var results: HomeScreenSearchResultSet!
         self.read { transaction in
-            results = self.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction, contactsManager: SSKEnvironment.shared.contactsManager)
+            results = self.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction)
         }
         return results
     }

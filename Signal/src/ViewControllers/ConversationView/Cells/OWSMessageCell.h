@@ -5,8 +5,8 @@
 #import "ConversationViewCell.h"
 
 @class OWSMessageBubbleView;
-@class OWSMessageHiddenView;
 @class OWSMessageStickerView;
+@class OWSMessageViewOnceView;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic, readonly) OWSMessageStickerView *messageStickerView;
-@property (nonatomic, readonly) OWSMessageHiddenView *messageHiddenView;
+@property (nonatomic, readonly) OWSMessageViewOnceView *messageViewOnceView;
 
 @property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
 

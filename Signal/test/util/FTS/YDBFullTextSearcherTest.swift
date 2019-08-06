@@ -332,7 +332,7 @@ class YDBFullTextSearcherTest: SignalBaseTest {
     private func getResultSet(searchText: String) -> HomeScreenSearchResultSet {
         var results: HomeScreenSearchResultSet!
         self.yapRead { transaction in
-            results = self.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction.asAnyRead, contactsManager: SSKEnvironment.shared.contactsManager)
+            results = self.searcher.searchForHomeScreen(searchText: searchText, transaction: transaction.asAnyRead)
         }
         return results
     }

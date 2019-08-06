@@ -202,8 +202,8 @@ static NSString *const YAPDBMediaGalleryFinderExtensionName = @"YAPDBMediaGaller
                 OWSFailDebug(@"message was unexpectedly nil");
                 return nil;
             }
-            if (message.hasPerMessageExpiration) {
-                // Don't show attachments from "one-off disappearing messages in media gallery."
+            if (message.isViewOnceMessage) {
+                // Don't show attachments from "view-once messages" in media gallery.
                 return nil;
             }
 

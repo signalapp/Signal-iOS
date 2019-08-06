@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) OWSLinkPreview *linkPreview;
 @property (nonatomic, readonly, nullable) MessageSticker *messageSticker;
 @property (nonatomic, readonly) BOOL isRecipientUpdate;
-@property (nonatomic, readonly) uint32_t perMessageExpirationDurationSeconds;
+@property (nonatomic, readonly) BOOL isViewOnceMessage;
 @property (nonatomic, readonly, nullable) NSNumber *requiredProtocolVersion;
 
 // If either nonUdRecipientIds or udRecipientIds is nil,

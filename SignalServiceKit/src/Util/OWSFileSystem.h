@@ -15,6 +15,8 @@ void ClearOldTemporaryDirectories(void);
 
 - (instancetype)init NS_UNAVAILABLE;
 
++ (BOOL)fileOrFolderExistsAtPath:(NSString *)path;
+
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path;
 + (BOOL)protectFileOrFolderAtPath:(NSString *)path fileProtectionType:(NSFileProtectionType)fileProtectionType;
 
@@ -31,6 +33,8 @@ void ClearOldTemporaryDirectories(void);
 + (nullable NSError *)renameFilePathUsingRandomExtension:(NSString *)oldFilePath;
 
 + (nullable NSError *)moveAppFilePath:(NSString *)oldFilePath sharedDataFilePath:(NSString *)newFilePath;
+
++ (BOOL)moveFilePath:(NSString *)oldFilePath toFilePath:(NSString *)newFilePath;
 
 // Returns NO IFF the directory does not exist and could not be created.
 + (BOOL)ensureDirectoryExists:(NSString *)dirPath;

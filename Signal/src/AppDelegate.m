@@ -1413,7 +1413,7 @@ static NSTimeInterval launchStartedAt;
         }
     }
 
-    [PerMessageExpiration appDidBecomeReady];
+    [ViewOnceMessages appDidBecomeReady];
 }
 
 - (void)registrationStateDidChange

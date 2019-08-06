@@ -296,8 +296,8 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             break;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"View-once messages should not be rendered with this view.");
             break;
     }
 
@@ -591,8 +591,8 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             return NO;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"View-once messages should not be rendered with this view.");
             return NO;
     }
 }
@@ -611,8 +611,8 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             return NO;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"View-once messages should not be rendered with this view.");
             return NO;
     }
 }
@@ -1147,8 +1147,8 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             result = CGSizeZero;
             break;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"View-once messages should not be rendered with this view.");
             result = CGSizeZero;
             break;
     }
@@ -1549,8 +1549,8 @@ NS_ASSUME_NONNULL_BEGIN
         case OWSMessageCellType_StickerMessage:
             OWSFailDebug(@"Stickers should not be rendered with this view.");
             break;
-        case OWSMessageCellType_PerMessageExpiration:
-            OWSFailDebug(@"Messages with per-message expiration should not be rendered with this view.");
+        case OWSMessageCellType_ViewOnce:
+            OWSFailDebug(@"View-once messages should not be rendered with this view.");
             break;
     }
 }

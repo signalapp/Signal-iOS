@@ -45,20 +45,20 @@
     }];
 
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc]
-           initIncomingMessageWithTimestamp:10000
-                                   inThread:thread
-                              authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"]
-                             sourceDeviceId:OWSDevicePrimaryDeviceId
-                                messageBody:@"Incoming message body"
-                              attachmentIds:@[]
-                           expiresInSeconds:0
-                              quotedMessage:nil
-                               contactShare:nil
-                                linkPreview:nil
-                             messageSticker:nil
-                            serverTimestamp:nil
-                            wasReceivedByUD:NO
-        perMessageExpirationDurationSeconds:0];
+        initIncomingMessageWithTimestamp:10000
+                                inThread:thread
+                           authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"]
+                          sourceDeviceId:OWSDevicePrimaryDeviceId
+                             messageBody:@"Incoming message body"
+                           attachmentIds:@[]
+                        expiresInSeconds:0
+                           quotedMessage:nil
+                            contactShare:nil
+                             linkPreview:nil
+                          messageSticker:nil
+                         serverTimestamp:nil
+                         wasReceivedByUD:NO
+                       isViewOnceMessage:NO];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [incomingMessage anyInsertWithTransaction:transaction];
     }];
@@ -76,7 +76,7 @@
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
-                                perMessageExpirationDurationSeconds:0];
+                                                  isViewOnceMessage:NO];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [outgoingMessage anyInsertWithTransaction:transaction];
     }];
@@ -120,20 +120,20 @@
     XCTAssert(incomingFileWasCreated);
 
     TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc]
-           initIncomingMessageWithTimestamp:10000
-                                   inThread:thread
-                              authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"]
-                             sourceDeviceId:OWSDevicePrimaryDeviceId
-                                messageBody:@"incoming message body"
-                              attachmentIds:@[ incomingAttachment.uniqueId ]
-                           expiresInSeconds:0
-                              quotedMessage:nil
-                               contactShare:nil
-                                linkPreview:nil
-                             messageSticker:nil
-                            serverTimestamp:nil
-                            wasReceivedByUD:NO
-        perMessageExpirationDurationSeconds:0];
+        initIncomingMessageWithTimestamp:10000
+                                inThread:thread
+                           authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"]
+                          sourceDeviceId:OWSDevicePrimaryDeviceId
+                             messageBody:@"incoming message body"
+                           attachmentIds:@[ incomingAttachment.uniqueId ]
+                        expiresInSeconds:0
+                           quotedMessage:nil
+                            contactShare:nil
+                             linkPreview:nil
+                          messageSticker:nil
+                         serverTimestamp:nil
+                         wasReceivedByUD:NO
+                       isViewOnceMessage:NO];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [incomingMessage anyInsertWithTransaction:transaction];
     }];
@@ -163,7 +163,7 @@
                                                        contactShare:nil
                                                         linkPreview:nil
                                                      messageSticker:nil
-                                perMessageExpirationDurationSeconds:0];
+                                                  isViewOnceMessage:NO];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [outgoingMessage anyInsertWithTransaction:transaction];
     }];

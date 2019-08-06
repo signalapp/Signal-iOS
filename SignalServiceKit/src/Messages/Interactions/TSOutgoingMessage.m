@@ -138,11 +138,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                  expireStartedAt:(uint64_t)expireStartedAt
                        expiresAt:(uint64_t)expiresAt
                 expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                   messageSticker:(nullable MessageSticker *)messageSticker
-perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSeconds
-  perMessageExpirationHasExpired:(BOOL)perMessageExpirationHasExpired
-       perMessageExpireStartedAt:(uint64_t)perMessageExpireStartedAt
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
@@ -170,11 +169,10 @@ perMessageExpirationDurationSeconds:(unsigned int)perMessageExpirationDurationSe
                    expireStartedAt:expireStartedAt
                          expiresAt:expiresAt
                   expiresInSeconds:expiresInSeconds
+                isViewOnceComplete:isViewOnceComplete
+                 isViewOnceMessage:isViewOnceMessage
                        linkPreview:linkPreview
                     messageSticker:messageSticker
-perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
-    perMessageExpirationHasExpired:perMessageExpirationHasExpired
-         perMessageExpireStartedAt:perMessageExpireStartedAt
                      quotedMessage:quotedMessage
                      schemaVersion:schemaVersion];
 
@@ -410,7 +408,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                           contactShare:nil
                                                            linkPreview:linkPreview
                                                         messageSticker:messageSticker
-                                   perMessageExpirationDurationSeconds:0];
+                                                     isViewOnceMessage:NO];
 }
 
 + (instancetype)outgoingMessageInThread:(TSThread *)thread
@@ -430,7 +428,7 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                                           contactShare:nil
                                                            linkPreview:nil
                                                         messageSticker:nil
-                                   perMessageExpirationDurationSeconds:0];
+                                                     isViewOnceMessage:NO];
 }
 
 - (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
@@ -445,19 +443,19 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
                                     contactShare:(nullable OWSContact *)contactShare
                                      linkPreview:(nullable OWSLinkPreview *)linkPreview
                                   messageSticker:(nullable MessageSticker *)messageSticker
-             perMessageExpirationDurationSeconds:(uint32_t)perMessageExpirationDurationSeconds
+                               isViewOnceMessage:(BOOL)isViewOnceMessage
 {
     self = [super initMessageWithTimestamp:timestamp
-                                   inThread:thread
-                                messageBody:body
-                              attachmentIds:attachmentIds
-                           expiresInSeconds:expiresInSeconds
-                            expireStartedAt:expireStartedAt
-                              quotedMessage:quotedMessage
-                               contactShare:contactShare
-                                linkPreview:linkPreview
-                             messageSticker:messageSticker
-        perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds];
+                                  inThread:thread
+                               messageBody:body
+                             attachmentIds:attachmentIds
+                          expiresInSeconds:expiresInSeconds
+                           expireStartedAt:expireStartedAt
+                             quotedMessage:quotedMessage
+                              contactShare:contactShare
+                               linkPreview:linkPreview
+                            messageSticker:messageSticker
+                         isViewOnceMessage:isViewOnceMessage];
     if (!self) {
         return self;
     }
@@ -1068,18 +1066,17 @@ perMessageExpirationDurationSeconds:perMessageExpirationDurationSeconds
     [builder setTimestamp:self.timestamp];
     
     NSUInteger requiredProtocolVersion = SSKProtos.initialProtocolVersion;
-    if (self.hasPerMessageExpiration) {
-        requiredProtocolVersion = SSKProtos.perMessageExpirationProtocolVersion;
-    }
-    [builder setRequiredProtocolVersion:(uint32_t) requiredProtocolVersion];
 
-    if (self.perMessageExpirationDurationSeconds > 0) {
-        if (SSKFeatureFlags.sendPerMessageExpiration) {
-            [builder setMessageTimer:self.perMessageExpirationDurationSeconds];
+    if (self.isViewOnceMessage) {
+        if (SSKFeatureFlags.viewOnceSending) {
+            [builder setIsViewOnce:YES];
+            requiredProtocolVersion = SSKProtos.viewOnceMessagesProtocolVersion;
         } else {
             OWSFailDebug(@"Feature flag not set.");
         }
     }
+
+    [builder setRequiredProtocolVersion:(uint32_t)requiredProtocolVersion];
 
     if ([self.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
         [builder setBody:self.body];

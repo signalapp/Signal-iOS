@@ -19,6 +19,25 @@ public class MediaDownloadView: UIView {
     private let progressView: CircularProgressView
 
     @objc
+    public var progressTrackColor: UIColor {
+        get {
+            return progressView.trackColor
+        }
+        set {
+            progressView.trackColor = newValue
+        }
+    }
+    @objc
+    public var progressColor: UIColor {
+        get {
+            return progressView.progressColor
+        }
+        set {
+            progressView.progressColor = newValue
+        }
+    }
+
+    @objc
     public required init(attachmentId: String, radius: CGFloat) {
         self.attachmentId = attachmentId
         progressView = CircularProgressView(thickness: 0.1)

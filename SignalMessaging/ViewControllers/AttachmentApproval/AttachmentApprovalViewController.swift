@@ -47,7 +47,7 @@ public struct AttachmentApprovalViewControllerOptions: OptionSet {
 
     public static let canAddMore = AttachmentApprovalViewControllerOptions(rawValue: 1 << 0)
     public static let hasCancel = AttachmentApprovalViewControllerOptions(rawValue: 1 << 1)
-    public static let canToggleExpiration = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
+    public static let canToggleViewOnce = AttachmentApprovalViewControllerOptions(rawValue: 1 << 2)
 }
 
 // MARK: -
@@ -68,19 +68,19 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     private var options: AttachmentApprovalViewControllerOptions {
         var options = receivedOptions
 
-        // For now, only still images can have per-message expiration.
-        if FeatureFlags.sendPerMessageExpiration,
+        // For now, only still images can be sent as view-once messages.
+        if FeatureFlags.viewOnceSending,
             attachmentApprovalItemCollection.attachmentApprovalItems.count == 1,
             let firstItem = attachmentApprovalItemCollection.attachmentApprovalItems.first,
             firstItem.attachment.isValidImage {
-            options.insert(.canToggleExpiration)
+            options.insert(.canToggleViewOnce)
         }
 
         return options
     }
 
     var isAddMoreVisible: Bool {
-        return options.contains(.canAddMore) && !preferences.isPerMessageExpirationEnabled()
+        return options.contains(.canAddMore) && !preferences.isViewOnceMessagesEnabled()
     }
 
     public weak var approvalDelegate: AttachmentApprovalViewControllerDelegate?
@@ -763,11 +763,12 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         // make below are reflected afterwards.
         let attachments = self.attachments
 
-        if options.contains(.canToggleExpiration),
-            preferences.isPerMessageExpirationEnabled() {
+        if options.contains(.canToggleViewOnce),
+            preferences.isViewOnceMessagesEnabled() {
             for attachment in attachments {
-                attachment.hasPerMessageExpiration = true
+                attachment.isViewOnceAttachment = true
             }
+            assert(attachments.count <= 1)
         }
 
         approvalDelegate?.attachmentApproval(self, didApproveAttachments: attachments, messageText: attachmentTextToolbar.messageText)
@@ -777,8 +778,8 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
         approvalDelegate?.attachmentApproval(self, didChangeMessageText: attachmentTextToolbar.messageText)
     }
 
-    func attachmentTextToolbarDidTogglePerMessageExpiration(_ attachmentTextToolbar: AttachmentTextToolbar) {
-        updateContents(isApproved: false)
+    func attachmentTextToolbarDidViewOnce(_ attachmentTextToolbar: AttachmentTextToolbar) {
+    updateContents(isApproved: false)
     }
 }
 

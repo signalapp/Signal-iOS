@@ -333,7 +333,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var hasQuotedText: Bool = false
     var hasCellHeader: Bool = false
     var hasPerConversationExpiration: Bool = false
-    var hasPerMessageExpiration: Bool = false
+    var isViewOnceMessage: Bool = false
     var shouldShowDate: Bool = false
     var shouldShowSenderAvatar: Bool = false
     var senderName: String?
@@ -365,7 +365,7 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
     var stickerInfo: StickerInfo?
     var stickerAttachment: TSAttachmentStream?
     var isFailedSticker: Bool = false
-    var perMessageExpirationState: PerMessageExpirationState = .incomingExpired
+    var viewOnceMessageState: ViewOnceMessageState = .incomingExpired
     var mutualGroupNames: [String]?
 
     init(interaction: TSInteraction) {
@@ -484,7 +484,7 @@ private class MockIncomingMessage: TSIncomingMessage {
                    messageSticker: nil,
                    serverTimestamp: nil,
                    wasReceivedByUD: false,
-                   perMessageExpirationDurationSeconds: 0)
+                   isViewOnceMessage: false)
     }
 
     required init(coder: NSCoder) {
@@ -518,7 +518,7 @@ private class MockOutgoingMessage: TSOutgoingMessage {
                    contactShare: nil,
                    linkPreview: nil,
                    messageSticker: nil,
-                   perMessageExpirationDurationSeconds: 0)
+                   isViewOnceMessage: false)
     }
 
     required init?(coder: NSCoder) {

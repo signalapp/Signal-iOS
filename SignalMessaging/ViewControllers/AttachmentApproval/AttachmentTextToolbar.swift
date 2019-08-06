@@ -13,7 +13,7 @@ protocol AttachmentTextToolbarDelegate: class {
     func attachmentTextToolbarDidBeginEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidEndEditing(_ attachmentTextToolbar: AttachmentTextToolbar)
     func attachmentTextToolbarDidChange(_ attachmentTextToolbar: AttachmentTextToolbar)
-    func attachmentTextToolbarDidTogglePerMessageExpiration(_ attachmentTextToolbar: AttachmentTextToolbar)
+    func attachmentTextToolbarDidViewOnce(_ attachmentTextToolbar: AttachmentTextToolbar)
 }
 
 // MARK: -
@@ -36,15 +36,15 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     weak var attachmentTextToolbarDelegate: AttachmentTextToolbarDelegate?
 
-    var hasPerMessageExpiration: Bool {
-        return (options.contains(.canToggleExpiration) &&
-                preferences.isPerMessageExpirationEnabled())
+    var isViewOnceEnabled: Bool {
+        return (options.contains(.canToggleViewOnce) &&
+                preferences.isViewOnceMessagesEnabled())
     }
 
     var messageText: String? {
         get {
-            // Ignore message text if "per-message expiration" is enabled.
-            guard !hasPerMessageExpiration else {
+            // Ignore message text if "view-once" is enabled.
+            guard !isViewOnceEnabled else {
                 return nil
             }
             return textView.text
@@ -56,7 +56,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         }
     }
 
-    private let perMessageExpirationWrapper = UIView()
+    private let viewOnceWrapper = UIView()
 
     // Layout Constants
 
@@ -91,22 +91,22 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         }
         sendButton.accessibilityLabel = NSLocalizedString("ATTACHMENT_APPROVAL_SEND_BUTTON", comment: "Label for 'send' button in the 'attachment approval' dialog.")
 
-        perMessageExpirationButton.block = { [weak self] in
-            self?.didTapPerMessageExpirationButton()
+        viewOnceButton.block = { [weak self] in
+            self?.didTapViewOnceMessagesButton()
         }
         // Vertically center and increase hit area of button, except on right side for symmetrical layout WRT the input text field
-        perMessageExpirationButton.contentEdgeInsets =
+        viewOnceButton.contentEdgeInsets =
             UIEdgeInsets(top: 6,
                          left: 8,
                          bottom: (kMinToolbarItemHeight - timerHeight) / 2,
                          right: 0)
 
         // TODO: Revisit this copy.
-        perMessageExpirationLabel.text = NSLocalizedString("PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR", comment: "Label that indicates that 'per-message expiration' is active.")
-        perMessageExpirationLabel.font = UIFont.ows_dynamicTypeSubheadline
-        perMessageExpirationLabel.textColor = Theme.darkThemePrimaryColor
-        perMessageExpirationLabel.lineBreakMode = .byTruncatingTail
-        perMessageExpirationLabel.textAlignment = .center
+        viewOnceLabel.text = NSLocalizedString("PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR", comment: "Label that indicates that 'view-once' is active.")
+        viewOnceLabel.font = UIFont.ows_dynamicTypeSubheadline
+        viewOnceLabel.textColor = Theme.darkThemePrimaryColor
+        viewOnceLabel.lineBreakMode = .byTruncatingTail
+        viewOnceLabel.textAlignment = .center
 
         // Layout
 
@@ -118,7 +118,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
         let sendWrapper = UIView()
         sendWrapper.addSubview(sendButton)
-        perMessageExpirationWrapper.addSubview(perMessageExpirationButton)
+        viewOnceWrapper.addSubview(viewOnceButton)
 
         let hStackView = UIStackView()
         hStackView.axis = .horizontal
@@ -127,7 +127,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         self.addSubview(hStackView)
         hStackView.autoPinEdgesToSuperviewMargins()
 
-        var views = [ perMessageExpirationWrapper, perMessageExpirationLabel, textContainer, sendWrapper ]
+        var views = [ viewOnceWrapper, viewOnceLabel, textContainer, sendWrapper ]
         // UIStackView's horizontal layout is leading-to-trailing.
         // We want left-to-right ordering, so reverse if RTL.
         if CurrentAppContext().isRTL {
@@ -138,7 +138,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         }
 
         textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
-        perMessageExpirationLabel.autoSetDimension(.height, toSize: kMinTextViewHeight, relation: .greaterThanOrEqual)
+        viewOnceLabel.autoSetDimension(.height, toSize: kMinTextViewHeight, relation: .greaterThanOrEqual)
 
         // We pin edges explicitly rather than doing something like:
         //  textView.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
@@ -160,7 +160,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
             button.setCompressionResistanceHigh()
         }
         layoutButtonWithinWrapper(sendButton)
-        layoutButtonWithinWrapper(perMessageExpirationButton)
+        layoutButtonWithinWrapper(viewOnceButton)
 
         updateContent()
     }
@@ -185,13 +185,13 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     private func updateContent() {
         AssertIsOnMainThread()
 
-        let isPerMessageExpirationEnabled = preferences.isPerMessageExpirationEnabled()
-        let imageName = isPerMessageExpirationEnabled ? "timer-24" : "timer-disabled-24"
-        perMessageExpirationButton.setTemplateImageName(imageName, tintColor: Theme.darkThemePrimaryColor)
+        let isViewOnceMessagesEnabled = preferences.isViewOnceMessagesEnabled()
+        let imageName = isViewOnceMessagesEnabled ? "timer-24" : "timer-disabled-24"
+        viewOnceButton.setTemplateImageName(imageName, tintColor: Theme.darkThemePrimaryColor)
 
-        perMessageExpirationLabel.isHidden = !hasPerMessageExpiration
-        textContainer.isHidden = hasPerMessageExpiration
-        perMessageExpirationWrapper.isHidden = !options.contains(.canToggleExpiration)
+        viewOnceLabel.isHidden = !isViewOnceEnabled
+        textContainer.isHidden = isViewOnceEnabled
+        viewOnceWrapper.isHidden = !options.contains(.canToggleViewOnce)
 
         updateHeight(textView: textView)
     }
@@ -249,9 +249,9 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         return textView
     }
 
-    private let perMessageExpirationButton = OWSButton()
+    private let viewOnceButton = OWSButton()
 
-    private let perMessageExpirationLabel = UILabel()
+    private let viewOnceLabel = UILabel()
 
     // MARK: - Actions
 
@@ -264,14 +264,14 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
     }
 
     @objc
-    func didTapPerMessageExpirationButton() {
+    func didTapViewOnceMessagesButton() {
         AssertIsOnMainThread()
 
         // Toggle value.
-        let isPerMessageExpirationEnabled = !preferences.isPerMessageExpirationEnabled()
-        preferences.setIsPerMessageExpirationEnabled(isPerMessageExpirationEnabled)
+        let isViewOnceMessagesEnabled = !preferences.isViewOnceMessagesEnabled()
+        preferences.setIsViewOnceMessagesEnabled(isViewOnceMessagesEnabled)
 
-        attachmentTextToolbarDelegate?.attachmentTextToolbarDidTogglePerMessageExpiration(self)
+        attachmentTextToolbarDelegate?.attachmentTextToolbarDidViewOnce(self)
 
         updateContent()
     }
@@ -341,7 +341,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
             textViewHeightConstraint.constant = textViewHeight
             invalidateIntrinsicContentSize()
         }
-        textViewHeightConstraint.isActive = !hasPerMessageExpiration
+        textViewHeightConstraint.isActive = !isViewOnceEnabled
     }
 
     private func clampedTextViewHeight(fixedWidth: CGFloat) -> CGFloat {

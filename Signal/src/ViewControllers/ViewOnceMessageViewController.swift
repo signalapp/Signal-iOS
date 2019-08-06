@@ -6,7 +6,33 @@ import Foundation
 import UIKit
 
 @objc
-class PerMessageExpirationViewController: OWSViewController {
+class ViewOnceMessageViewController: OWSViewController {
+
+    class Content {
+        let messageId: String
+        let filePath: String
+        // The content is an animated image (GIF or WEBP)
+        // if true, a still image otherwise.
+        // TODO: We could eventually support video.
+        let isAnimated: Bool
+
+        init(messageId: String,
+             filePath: String,
+             isAnimated: Bool) {
+            self.messageId = messageId
+            self.filePath = filePath
+            self.isAnimated = isAnimated
+        }
+
+        deinit {
+            Logger.verbose("Cleaning up temp file")
+
+            let filePath = self.filePath
+            DispatchQueue.global().async {
+                OWSFileSystem.deleteFile(filePath)
+            }
+        }
+    }
 
     // MARK: - Dependencies
 
@@ -20,14 +46,12 @@ class PerMessageExpirationViewController: OWSViewController {
 
     // MARK: - Properties
 
-    private let message: TSMessage
-    private let attachmentStream: TSAttachmentStream
+    private let content: Content
 
     // MARK: - Initializers
 
-    required init(message: TSMessage, attachmentStream: TSAttachmentStream) {
-        self.message = message
-        self.attachmentStream = attachmentStream
+    required init(content: Content) {
+        self.content = content
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -38,8 +62,6 @@ class PerMessageExpirationViewController: OWSViewController {
 
     // MARK: -
 
-    private typealias Presentation = (message: TSMessage, attachmentStream: TSAttachmentStream)
-
     @objc
     public class func tryToPresent(interaction: TSInteraction,
                                    from fromViewController: UIViewController) {
@@ -48,58 +70,155 @@ class PerMessageExpirationViewController: OWSViewController {
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: false) { (modal) in
                                                         DispatchQueue.main.async {
-                                                            let presentation: Presentation? = loadPresentation(interaction: interaction)
+                                                            let content: Content? = loadContentForPresentation(interaction: interaction)
 
                                                             modal.dismiss(completion: {
-                                                                guard let presentation = presentation else {
+                                                                guard let content = content else {
                                                                     owsFailDebug("Could not present interaction")
                                                                     // TODO: Show an alert.
                                                                     return
                                                                 }
 
-                                                                let view = PerMessageExpirationViewController(message: presentation.message,
-                                                                                                              attachmentStream: presentation.attachmentStream)
+                                                                let view = ViewOnceMessageViewController(content: content)
                                                                 fromViewController.present(view, animated: true)
                                                             })
                                                         }
         }
     }
 
-    private class func loadPresentation(interaction: TSInteraction) -> Presentation? {
-        var presentation: Presentation?
+    private class func loadContentForPresentation(interaction: TSInteraction) -> Content? {
+        var content: Content?
+        // The only way to ensure that the content is never presented
+        // more than once is to do a bunch of work (include file system
+        // activity) inside a write transaction, which normally
+        // wouldn't be desirable.
         databaseStorage.write { transaction in
             let interactionId = interaction.uniqueId
             guard let message = TSInteraction.anyFetch(uniqueId: interactionId, transaction: transaction) as? TSMessage else {
                 return
             }
+            guard message.isViewOnceMessage else {
+                owsFailDebug("Unexpected message.")
+                return
+            }
+            let messageId = message.uniqueId
 
-            PerMessageExpiration.expireIfNecessary(message: message, transaction: transaction)
-            guard !message.perMessageExpirationHasExpired else {
+            // Auto-complete the message before going any further.
+            ViewOnceMessages.completeIfNecessary(message: message, transaction: transaction)
+            guard !message.isViewOnceComplete else {
                 return
             }
 
-            // Kick off expiration now if necessary.
-            if !message.hasPerMessageExpirationStarted {
-                PerMessageExpiration.startPerMessageExpiration(forMessage: message, transaction: transaction)
+            // We should _always_ mark the message as complete,
+            // even if the message is malformed, or if we fail
+            // to do the "file system dance" below, etc.
+            // and we fail to present the message content.
+            defer {
+                // This will eliminate the renderable content of the message.
+                ViewOnceMessages.markAsComplete(message: message, sendSyncMessages: true, transaction: transaction)
             }
 
-            guard !message.perMessageExpirationHasExpired else {
-                return
-            }
             guard let attachmentId = message.attachmentIds.firstObject as? String else {
                 return
             }
             guard let attachmentStream = TSAttachment.anyFetch(uniqueId: attachmentId, transaction: transaction) as? TSAttachmentStream else {
                 return
             }
-            guard attachmentStream.isValidVisualMedia,
-                attachmentStream.isImage || attachmentStream.isAnimated else {
+            guard attachmentStream.isValidVisualMedia else {
+                return
+            }
+            let contentType = attachmentStream.contentType
+            guard contentType.count > 0 else {
+                owsFailDebug("Missing content type.")
                     return
             }
+            let isAnimated: Bool
+            if attachmentStream.isAnimated || contentType == OWSMimeTypeImageWebp {
+                isAnimated = true
+            } else if attachmentStream.isImage {
+                isAnimated = false
+            } else {
+                owsFailDebug("Unexpected content type.")
+                return
+            }
 
-            presentation = (message: message, attachmentStream: attachmentStream)
+            // To ensure that we never show the content more than once,
+            // we mark the "view-once message" as complete _before_
+            // presenting its contents.  A side effect of this is that
+            // its renderable content is deleted.  We need the renderable
+            // content to present it.  Therefore, we do a little dance:
+            //
+            // * Move the attachment file to a temporary file.
+            // * Create an empty placeholder file in the old attachment
+            //   file's location so that TSAttachmentStream's invariant
+            //   of always corresponding to an underlying file on disk
+            //   remains true.
+            // * Delete the temporary file when this view is dismissed.
+            // * If the app terminates at any step during this process,
+            //   either: a) the file wasn't moved, the message wasn't
+            //   marked as complete and the content wasn't displayed
+            //   so the user can try again after relaunch.
+            //   b) the file was moved and will be cleaned up on next
+            //   launch like any other temp file if it hasn't been
+            //   deleted already.
+            guard let originalFilePath = attachmentStream.originalFilePath else {
+                owsFailDebug("Attachment missing file path.")
+                return
+            }
+            guard OWSFileSystem.fileOrFolderExists(atPath: originalFilePath) else {
+                owsFailDebug("Missing temp file.")
+                return
+            }
+            guard let fileExtension = MIMETypeUtil.fileExtension(forMIMEType: contentType) else {
+                owsFailDebug("Couldn't determine file extension.")
+                return
+            }
+            let tempFilePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
+            guard OWSFileSystem.fileOrFolderExists(atPath: originalFilePath) else {
+                owsFailDebug("Missing attachment file.")
+                return
+            }
+            guard !OWSFileSystem.fileOrFolderExists(atPath: tempFilePath) else {
+                owsFailDebug("Temp file unexpectedly already exists.")
+                return
+            }
+            // Move the attachment to the temp file.
+            // A copy would be much more expensive.
+            guard OWSFileSystem.moveFilePath(originalFilePath, toFilePath: tempFilePath) else {
+                owsFailDebug("Couldn't move file.")
+                return
+            }
+            guard OWSFileSystem.fileOrFolderExists(atPath: tempFilePath) else {
+                owsFailDebug("Missing temp file.")
+                return
+            }
+            // This should be redundant since temp files are
+            // created inside the per-launch temp folder
+            // and should inherit protection from it.
+            guard OWSFileSystem.protectFileOrFolder(atPath: tempFilePath) else {
+                owsFailDebug("Couldn't protect temp file.")
+                OWSFileSystem.deleteFile(tempFilePath)
+                return
+            }
+            // Create new empty "placeholder file at the attachment's old
+            //  location, since the attachment model should always correspond
+            // to an underlying file on disk.
+            guard OWSFileSystem.ensureFileExists(originalFilePath) else {
+                owsFailDebug("Couldn't create placeholder file.")
+                OWSFileSystem.deleteFile(tempFilePath)
+                return
+            }
+            guard OWSFileSystem.fileOrFolderExists(atPath: originalFilePath) else {
+                owsFailDebug("Missing placeholder file.")
+                OWSFileSystem.deleteFile(tempFilePath)
+                return
+            }
+
+            content = Content(messageId: messageId,
+                              filePath: tempFilePath,
+                              isAnimated: isAnimated)
         }
-        return presentation
+        return content
     }
 
     // MARK: - View Lifecycle
@@ -151,15 +270,9 @@ class PerMessageExpirationViewController: OWSViewController {
     }
 
     private func buildMediaView() -> UIView? {
-        guard attachmentStream.isValidVisualMedia else {
-            return nil
-        }
-        guard let filePath = attachmentStream.originalFilePath else {
-            owsFailDebug("Attachment missing file path.")
-            return nil
-        }
+        let filePath = content.filePath
 
-        if attachmentStream.isAnimated || attachmentStream.contentType == OWSMimeTypeImageWebp {
+        if content.isAnimated {
             guard let image = YYImage(contentsOfFile: filePath) else {
                 owsFailDebug("Could not load attachment.")
                 return nil
@@ -180,7 +293,7 @@ class PerMessageExpirationViewController: OWSViewController {
             animatedImageView.layer.allowsEdgeAntialiasing = true
             animatedImageView.image = image
             return animatedImageView
-        } else if attachmentStream.isImage {
+        } else {
             guard let image = UIImage(contentsOfFile: filePath) else {
                 owsFailDebug("Could not load attachment.")
                 return nil
@@ -202,9 +315,6 @@ class PerMessageExpirationViewController: OWSViewController {
             imageView.layer.allowsEdgeAntialiasing = true
             imageView.image = image
             return imageView
-        } else {
-            owsFailDebug("Unexpected content type: \(attachmentStream.contentType).")
-            return nil
         }
     }
 
@@ -254,13 +364,12 @@ class PerMessageExpirationViewController: OWSViewController {
     // MARK: - Video
 
     // Once open, this view only dismisses if the message is deleted
-    // (e.g. by per-conversation expiration).  If per-message expiration
-    // occurs, this view remains presented.
-    private func dismissIfExpired() {
+    // (e.g. by per-conversation expiration).
+    private func dismissIfRemoved() {
         AssertIsOnMainThread()
 
         let shouldDismiss: Bool = databaseStorage.uiReadReturningResult { transaction in
-            let uniqueId = self.message.uniqueId
+            let uniqueId = self.content.messageId
             guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil else {
                 return true
             }
@@ -279,7 +388,7 @@ class PerMessageExpirationViewController: OWSViewController {
 
         Logger.debug("")
 
-        dismissIfExpired()
+        dismissIfRemoved()
     }
 
     @objc
@@ -288,7 +397,7 @@ class PerMessageExpirationViewController: OWSViewController {
 
         Logger.debug("")
 
-        dismissIfExpired()
+        dismissIfRemoved()
     }
 
     @objc
@@ -315,20 +424,20 @@ class PerMessageExpirationViewController: OWSViewController {
 
 // MARK: -
 
-extension PerMessageExpirationViewController: ConversationViewDatabaseSnapshotDelegate {
+extension ViewOnceMessageViewController: ConversationViewDatabaseSnapshotDelegate {
     public func conversationViewDatabaseSnapshotWillUpdate() {
-        dismissIfExpired()
+        dismissIfRemoved()
     }
 
     public func conversationViewDatabaseSnapshotDidUpdate(transactionChanges: ConversationViewDatabaseTransactionChanges) {
-        dismissIfExpired()
+        dismissIfRemoved()
     }
 
     public func conversationViewDatabaseSnapshotDidUpdateExternally() {
-        dismissIfExpired()
+        dismissIfRemoved()
     }
 
     public func conversationViewDatabaseSnapshotDidReset() {
-        dismissIfExpired()
+        dismissIfRemoved()
     }
 }

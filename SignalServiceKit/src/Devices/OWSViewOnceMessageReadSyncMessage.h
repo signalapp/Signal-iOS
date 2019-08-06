@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class SignalServiceAddress;
 
-@interface OWSPerMessageExpirationReadSyncMessage : OWSOutgoingSyncMessage
+@interface OWSViewOnceMessageReadSyncMessage : OWSOutgoingSyncMessage
 
 @property (nonatomic, readonly) SignalServiceAddress *senderAddress;
 @property (nonatomic, readonly) uint64_t messageIdTimestamp;
