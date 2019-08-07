@@ -11,6 +11,7 @@
 #import "NotificationsProtocol.h"
 #import "OWSAttachmentDownloads.h"
 #import "OWSBlockingManager.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSCallMessageHandler.h"
 #import "OWSContact.h"
 #import "OWSDevice.h"
