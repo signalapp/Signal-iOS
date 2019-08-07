@@ -46,6 +46,13 @@ class RecentPhotosCollectionView: UICollectionView {
 
     private let collectionViewFlowLayout = UICollectionViewFlowLayout()
 
+    override var bounds: CGRect {
+        didSet {
+            guard oldValue != bounds else { return }
+            updateLayout()
+        }
+    }
+
     init() {
         super.init(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
 
@@ -67,7 +74,7 @@ class RecentPhotosCollectionView: UICollectionView {
         updateLayout()
     }
 
-    func updateLayout() {
+    private func updateLayout() {
         AssertIsOnMainThread()
 
         // We don't want to do anything until media library permission is granted.

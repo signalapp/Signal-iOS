@@ -1532,6 +1532,26 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.inputToolbarDelegate galleryButtonPressed];
 }
 
+- (void)didTapCamera
+{
+    [self.inputToolbarDelegate cameraButtonPressed];
+}
+
+- (void)didTapGif
+{
+    [self.inputToolbarDelegate gifButtonPressed];
+}
+
+- (void)didTapFile
+{
+    [self.inputToolbarDelegate fileButtonPressed];
+}
+
+- (void)didTapContact
+{
+    [self.inputToolbarDelegate contactButtonPressed];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

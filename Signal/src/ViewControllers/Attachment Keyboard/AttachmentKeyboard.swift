@@ -10,6 +10,10 @@ import PromiseKit
 protocol AttachmentKeyboardDelegate {
     func didSelectRecentPhoto(_ attachment: SignalAttachment)
     func didTapGalleryButton()
+    func didTapCamera()
+    func didTapGif()
+    func didTapFile()
+    func didTapContact()
 }
 
 class AttachmentKeyboard: CustomKeyboard {
@@ -22,16 +26,16 @@ class AttachmentKeyboard: CustomKeyboard {
     private let recentPhotosErrorView = RecentPhotosErrorView()
     private let galleryButton = UIButton()
 
-    private let bottomView = UIView()
+    private let attachmentFormatPickerView = AttachmentFormatPickerView()
 
-    private lazy var hasRecentsBottomConstraint = bottomView.autoMatch(
+    private lazy var hasRecentsHeightConstraint = attachmentFormatPickerView.autoMatch(
         .height,
         to: .height,
         of: recentPhotosCollectionView,
         withMultiplier: 1,
         relation: .lessThanOrEqual
     )
-    private lazy var recentPhotosErrorBottomConstraint = bottomView.autoMatch(
+    private lazy var recentPhotosErrorHeightConstraint = attachmentFormatPickerView.autoMatch(
         .height,
         to: .height,
         of: recentPhotosErrorView,
@@ -60,7 +64,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
         setupRecentPhotos()
         setupGalleryButton()
-        setupTypePicker()
+        setupFormatPicker()
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -83,20 +87,18 @@ class AttachmentKeyboard: CustomKeyboard {
         }
 
         galleryButton.isHidden = false
-        recentPhotosErrorBottomConstraint.isActive = false
-        hasRecentsBottomConstraint.isActive = true
+        recentPhotosErrorHeightConstraint.isActive = false
+        hasRecentsHeightConstraint.isActive = true
         recentPhotosErrorView.isHidden = true
         recentPhotosCollectionView.isHidden = false
-
-        recentPhotosCollectionView.updateLayout()
     }
 
     func showRecentPhotosError() {
         recentPhotosErrorView.hasMediaLibraryAccess = isMediaLibraryAccessGranted
 
         galleryButton.isHidden = true
-        hasRecentsBottomConstraint.isActive = false
-        recentPhotosErrorBottomConstraint.isActive = true
+        hasRecentsHeightConstraint.isActive = false
+        recentPhotosErrorHeightConstraint.isActive = true
         recentPhotosCollectionView.isHidden = true
         recentPhotosErrorView.isHidden = false
     }
@@ -122,32 +124,21 @@ class AttachmentKeyboard: CustomKeyboard {
         delegate?.didTapGalleryButton()
     }
 
-    // MARK: Type Picker
+    // MARK: Format Picker
 
-    func setupTypePicker() {
-        // TODO: Actually build this.
+    func setupFormatPicker() {
+        attachmentFormatPickerView.attachmentFormatPickerDelegate = self
 
-        mainStackView.addArrangedSubview(bottomView)
+        mainStackView.addArrangedSubview(attachmentFormatPickerView)
         NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            bottomView.autoSetDimension(.height, toSize: 80)
+            attachmentFormatPickerView.autoSetDimension(.height, toSize: 90)
         }
 
-        bottomView.setCompressionResistanceLow()
-        bottomView.setContentHuggingLow()
-        bottomView.addRedBorder()
+        attachmentFormatPickerView.setCompressionResistanceLow()
+        attachmentFormatPickerView.setContentHuggingLow()
     }
 
     // MARK: -
-
-    override func resizeToSystemKeyboard() {
-        super.resizeToSystemKeyboard()
-
-        // If we're resizing while visible, make sure to update
-        // the collection view to fit.
-        guard isFirstResponder else { return }
-
-        recentPhotosCollectionView.updateLayout()
-    }
 
     override func wasPresented() {
         super.wasPresented()
@@ -179,6 +170,24 @@ extension AttachmentKeyboard: RecentPhotosDelegate {
 
     func didSelectRecentPhoto(_ attachment: SignalAttachment) {
         delegate?.didSelectRecentPhoto(attachment)
+    }
+}
+
+extension AttachmentKeyboard: AttachmentFormatPickerDelegate {
+    func didTapCamera() {
+        delegate?.didTapCamera()
+    }
+
+    func didTapGif() {
+        delegate?.didTapGif()
+    }
+
+    func didTapFile() {
+        delegate?.didTapFile()
+    }
+
+    func didTapContact() {
+        delegate?.didTapContact()
     }
 }
 
