@@ -319,22 +319,8 @@ class ViewOnceMessageViewController: OWSViewController {
     }
 
     func setupDatabaseObservation() {
-        if FeatureFlags.useGRDB {
-            guard let observer = databaseStorage.grdbStorage.conversationViewDatabaseObserver else {
-                owsFailDebug("observer was unexpectedly nil")
-                return
-            }
-            observer.appendSnapshotDelegate(self)
-        } else {
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(uiDatabaseDidUpdate),
-                                                   name: .OWSUIDatabaseConnectionDidUpdateExternally,
-                                                   object: OWSPrimaryStorage.shared().dbNotificationObject)
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(uiDatabaseDidUpdate),
-                                                   name: .OWSUIDatabaseConnectionDidUpdate,
-                                                   object: OWSPrimaryStorage.shared().dbNotificationObject)
-        }
+        databaseStorage.add(databaseStorageObserver: self)
+
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationWillEnterForeground),
                                                name: .OWSApplicationWillEnterForeground,
@@ -383,14 +369,6 @@ class ViewOnceMessageViewController: OWSViewController {
 
     // MARK: - Events
 
-    @objc internal func uiDatabaseDidUpdate(notification: NSNotification) {
-        AssertIsOnMainThread()
-
-        Logger.debug("")
-
-        dismissIfRemoved()
-    }
-
     @objc
     func applicationWillEnterForeground() throws {
         AssertIsOnMainThread()
@@ -424,20 +402,22 @@ class ViewOnceMessageViewController: OWSViewController {
 
 // MARK: -
 
-extension ViewOnceMessageViewController: ConversationViewDatabaseSnapshotDelegate {
-    public func conversationViewDatabaseSnapshotWillUpdate() {
+extension ViewOnceMessageViewController: SDSDatabaseStorageObserver {
+    func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
+        AssertIsOnMainThread()
+
         dismissIfRemoved()
     }
 
-    public func conversationViewDatabaseSnapshotDidUpdate(transactionChanges: ConversationViewDatabaseTransactionChanges) {
+    func databaseStorageDidUpdateExternally() {
+        AssertIsOnMainThread()
+
         dismissIfRemoved()
     }
 
-    public func conversationViewDatabaseSnapshotDidUpdateExternally() {
-        dismissIfRemoved()
-    }
+    func databaseStorageDidReset() {
+        AssertIsOnMainThread()
 
-    public func conversationViewDatabaseSnapshotDidReset() {
         dismissIfRemoved()
     }
 }
