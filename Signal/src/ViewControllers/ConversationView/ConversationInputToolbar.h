@@ -14,10 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)sendButtonPressed;
 
-- (void)attachmentButtonPressed;
-
-- (void)cameraButtonPressed;
-
 - (void)sendSticker:(StickerInfo *)stickerInfo;
 
 - (void)presentManageStickersView;
@@ -33,6 +29,20 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)voiceMemoGestureDidCancel;
 
 - (void)voiceMemoGestureDidUpdateCancelWithRatioComplete:(CGFloat)cancelAlpha;
+
+#pragma mark - Attachments
+
+- (void)cameraButtonPressed;
+
+- (void)galleryButtonPressed;
+
+- (void)gifButtonPressed;
+
+- (void)fileButtonPressed;
+
+- (void)contactButtonPressed;
+
+- (void)didSelectRecentPhoto:(SignalAttachment *)attachment;
 
 @end
 

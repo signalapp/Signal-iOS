@@ -5,7 +5,7 @@
 import Foundation
 
 @objc(OWSCustomKeyboard)
-public class CustomKeyboard: UIInputView {
+open class CustomKeyboard: UIInputView {
     @objc public let contentView = UIView()
 
     @objc
@@ -27,24 +27,24 @@ public class CustomKeyboard: UIInputView {
         resizeToSystemKeyboard()
     }
 
-    required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc public func wasPresented() {}
+    @objc open func wasPresented() {}
 
     @objc public func registerWithView(_ view: UIView) {
         view.addSubview(responder)
     }
 
     private lazy var responder = CustomKeyboardResponder(customKeyboard: self)
-    override public var isFirstResponder: Bool { return responder.isFirstResponder }
+    override open var isFirstResponder: Bool { return responder.isFirstResponder }
 
-    public override func becomeFirstResponder() -> Bool {
+    open override func becomeFirstResponder() -> Bool {
         return responder.becomeFirstResponder()
     }
 
-    public override func resignFirstResponder() -> Bool {
+    open override func resignFirstResponder() -> Bool {
         return responder.resignFirstResponder()
     }
 
@@ -77,7 +77,7 @@ public class CustomKeyboard: UIInputView {
     }
 
     @objc
-    public func resizeToSystemKeyboard() {
+    open func resizeToSystemKeyboard() {
         guard let cachedHeight = cachedSystemKeyboardHeight.current else {
             // We don't have a cached height for this orientation,
             // let the auto sizing do its best guess at what the
@@ -95,13 +95,13 @@ public class CustomKeyboard: UIInputView {
         heightConstraint.constant = cachedHeight
     }
 
-    public override func layoutSubviews() {
+    open override func layoutSubviews() {
         super.layoutSubviews()
         resizeToSystemKeyboard()
     }
 
     @objc
-    public func orientationDidChange() {
+    open func orientationDidChange() {
         resizeToSystemKeyboard()
     }
 }

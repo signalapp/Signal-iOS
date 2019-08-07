@@ -40,6 +40,9 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *toolbarBackgroundColor;
 @property (class, readonly, nonatomic) UIColor *conversationInputBackgroundColor;
 
+@property (class, readonly, nonatomic) UIColor *attachmentKeyboardItemBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *attachmentKeyboardItemImageColor;
+
 @property (class, readonly, nonatomic) UIColor *conversationButtonBackgroundColor;
 
 @property (class, readonly, nonatomic) UIColor *cellSelectedColor;

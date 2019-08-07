@@ -189,6 +189,16 @@ NSString *const ThemeKeyThemeEnabled = @"ThemeKeyThemeEnabled";
     return (Theme.isDarkThemeEnabled ?  UIColor.ows_gray75Color : [UIColor colorWithRGBHex:0xefefef]);
 }
 
++ (UIColor *)attachmentKeyboardItemBackgroundColor
+{
+    return self.conversationInputBackgroundColor;
+}
+
++ (UIColor *)attachmentKeyboardItemImageColor
+{
+    return (Theme.isDarkThemeEnabled ? [UIColor colorWithRGBHex:0xd8d8d9] : [UIColor colorWithRGBHex:0x636467]);
+}
+
 + (UIColor *)cellSelectedColor
 {
     return (Theme.isDarkThemeEnabled ? [UIColor colorWithWhite:0.2 alpha:1] : [UIColor colorWithWhite:0.92 alpha:1]);
