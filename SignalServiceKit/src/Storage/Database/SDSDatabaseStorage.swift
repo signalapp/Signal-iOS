@@ -19,6 +19,8 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     private let crossProcess = SDSCrossProcess()
 
+    let observation = SDSDatabaseStorageObservation()
+
     // MARK: - Initialization / Setup
 
     @objc
@@ -215,31 +217,23 @@ public class SDSDatabaseStorage: SDSTransactable {
             let uniqueId = interaction.uniqueId
             yap.touchObject(forKey: uniqueId, inCollection: TSInteraction.collection())
         case .grdbWrite(let grdb):
-            guard let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver else {
-                if AppReadiness.isAppReady() {
-                    owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
-                }
-                return
+            if let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver {
+                conversationViewDatabaseObserver.touch(interaction: interaction, transaction: grdb)
+            } else if AppReadiness.isAppReady() {
+                owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
             }
-            conversationViewDatabaseObserver.touch(interaction: interaction, transaction: grdb)
+            if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
+                genericDatabaseObserver.touchInteraction(interactionId: interaction.uniqueId,
+                                                         transaction: grdb)
+            } else if AppReadiness.isAppReady() {
+                owsFailDebug("genericDatabaseObserver was unexpectedly nil")
+            }
         }
     }
 
     @objc(touchThread:transaction:)
     public func touch(thread: TSThread, transaction: SDSAnyWriteTransaction) {
-        switch transaction.writeTransaction {
-        case .yapWrite(let yap):
-            let uniqueId = thread.uniqueId
-            yap.touchObject(forKey: uniqueId, inCollection: TSThread.collection())
-        case .grdbWrite(let grdb):
-            guard let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver else {
-                if AppReadiness.isAppReady() {
-                    owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
-                }
-                return
-            }
-            homeViewDatabaseObserver.touch(thread: thread, transaction: grdb)
-        }
+        touch(threadId: thread.uniqueId, transaction: transaction)
     }
 
     @objc(touchThreadId:transaction:)
@@ -248,13 +242,18 @@ public class SDSDatabaseStorage: SDSTransactable {
         case .yapWrite(let yap):
             yap.touchObject(forKey: threadId, inCollection: TSThread.collection())
         case .grdbWrite(let grdb):
-            guard let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver else {
-                if AppReadiness.isAppReady() {
-                    owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
-                }
-                return
+            if let homeViewDatabaseObserver = grdbStorage.homeViewDatabaseObserver {
+                homeViewDatabaseObserver.touch(threadId: threadId, transaction: grdb)
+            } else if AppReadiness.isAppReady() {
+                owsFailDebug("homeViewDatabaseObserver was unexpectedly nil")
             }
-            homeViewDatabaseObserver.touch(threadId: threadId, transaction: grdb)
+            if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
+                genericDatabaseObserver.touchThread(transaction: grdb)
+            } else if AppReadiness.isAppReady() {
+                owsFailDebug("genericDatabaseObserver was unexpectedly nil")
+            }
+
+            // GRDB TODO: I believe we need to update conversation view here as well.
         }
     }
 
@@ -269,7 +268,6 @@ public class SDSDatabaseStorage: SDSTransactable {
             return
         }
 
-        //
         if CurrentAppContext().isMainAppAndActive {
             // If already active, update immediately.
             postCrossProcessNotification()
@@ -316,6 +314,13 @@ public class SDSDatabaseStorage: SDSTransactable {
         Logger.info("Database : \(databaseFileSize)")
         Logger.info("\t WAL file size: \(databaseWALFileSize)")
         Logger.info("\t SHM file size: \(databaseSHMFileSize)")
+    }
+
+    // MARK: - Generic Observation
+
+    @objc(addDatabaseStorageObserver:)
+    public func add(databaseStorageObserver: SDSDatabaseStorageObserver) {
+        observation.add(databaseStorageObserver: databaseStorageObserver)
     }
 }
 
@@ -423,29 +428,39 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         pool.add(function: function)
     }
 
+    static var tables: [SDSTableMetadata] {
+        return [
+            // Key-Value Stores
+            SDSKeyValueStore.table,
+
+            // Models
+            TSThread.table,
+            TSInteraction.table,
+            StickerPack.table,
+            InstalledSticker.table,
+            KnownStickerPack.table,
+            TSAttachment.table,
+            SSKJobRecord.table,
+            OWSMessageContentJob.table,
+            OWSRecipientIdentity.table,
+            ExperienceUpgrade.table,
+            OWSDisappearingMessagesConfiguration.table,
+            SignalRecipient.table,
+            SignalAccount.table,
+            OWSUserProfile.table,
+            TSRecipientReadReceipt.table,
+            OWSLinkedDeviceReadReceipt.table,
+            OWSDevice.table,
+            OWSContactQuery.table
+        ]
+    }
+
     lazy var migrator: DatabaseMigrator = {
         var migrator = DatabaseMigrator()
         migrator.registerMigration("create initial schema") { db in
-            try SDSKeyValueStore.table.createTable(database: db)
-
-            try TSThreadSerializer.table.createTable(database: db)
-            try TSInteractionSerializer.table.createTable(database: db)
-            try StickerPackSerializer.table.createTable(database: db)
-            try InstalledStickerSerializer.table.createTable(database: db)
-            try KnownStickerPackSerializer.table.createTable(database: db)
-            try TSAttachmentSerializer.table.createTable(database: db)
-            try SSKJobRecordSerializer.table.createTable(database: db)
-            try OWSMessageContentJobSerializer.table.createTable(database: db)
-            try OWSRecipientIdentitySerializer.table.createTable(database: db)
-            try ExperienceUpgradeSerializer.table.createTable(database: db)
-            try OWSDisappearingMessagesConfigurationSerializer.table.createTable(database: db)
-            try SignalRecipientSerializer.table.createTable(database: db)
-            try SignalAccountSerializer.table.createTable(database: db)
-            try OWSUserProfileSerializer.table.createTable(database: db)
-            try TSRecipientReadReceiptSerializer.table.createTable(database: db)
-            try OWSLinkedDeviceReadReceiptSerializer.table.createTable(database: db)
-            try OWSDeviceSerializer.table.createTable(database: db)
-            try OWSContactQuerySerializer.table.createTable(database: db)
+            for table in GRDBDatabaseStorageAdapter.tables {
+                try table.createTable(database: db)
+            }
 
             try db.create(index: "index_interactions_on_id_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,
@@ -607,6 +622,9 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     public private(set) var mediaGalleryDatabaseObserver: MediaGalleryDatabaseObserver?
 
     @objc
+    public private(set) var genericDatabaseObserver: GRDBGenericDatabaseObserver?
+
+    @objc
     public func setupUIDatabase() throws {
         // UIDatabaseObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
@@ -635,11 +653,21 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         self.mediaGalleryDatabaseObserver = mediaGalleryDatabaseObserver
         uiDatabaseObserver.appendSnapshotDelegate(mediaGalleryDatabaseObserver)
 
-        return try pool.write { db in
+        // MediaGalleryDatabaseObserver is built on top of UIDatabaseObserver
+        // but includes the details necessary for rendering collection view
+        // batch updates.
+        let genericDatabaseObserver = GRDBGenericDatabaseObserver()
+        self.genericDatabaseObserver = genericDatabaseObserver
+        uiDatabaseObserver.appendSnapshotDelegate(genericDatabaseObserver)
+
+        try pool.write { db in
             db.add(transactionObserver: homeViewDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
             db.add(transactionObserver: conversationViewDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
             db.add(transactionObserver: mediaGalleryDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
+            db.add(transactionObserver: genericDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
         }
+
+        SDSDatabaseStorage.shared.observation.set(grdbStorage: self)
     }
 
     func testing_tearDownUIDatabase() {
@@ -650,6 +678,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         self.homeViewDatabaseObserver = nil
         self.conversationViewDatabaseObserver = nil
         self.mediaGalleryDatabaseObserver = nil
+        self.genericDatabaseObserver = nil
     }
 
     func setup() throws {

@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSLinkedDevicesTableViewController ()
+@interface OWSLinkedDevicesTableViewController () <SDSDatabaseStorageObserver>
 
 @property (nonatomic) NSArray<OWSDevice *> *devices;
 
@@ -62,15 +62,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [self.tableView registerClass:[OWSDeviceTableViewCell class] forCellReuseIdentifier:@"ExistingDevice"];
     [self.tableView applyScrollViewInsetsFix];
 
-    // GRDB TODO: Remove the yap notifications.
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedNotification
-                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModifiedExternally:)
-                                                 name:YapDatabaseModifiedExternallyNotification
-                                               object:nil];
+    [self.databaseStorage addDatabaseStorageObserver:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceListUpdateSucceeded:)
@@ -84,16 +76,44 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                                              selector:@selector(deviceListUpdateModifiedDeviceList:)
                                                  name:NSNotificationName_DeviceListUpdateModifiedDeviceList
                                                object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(deviceDidChange:)
-                                                 name:NSNotificationName_OWSDeviceDidChange
-                                               object:nil];
 
     self.refreshControl = [UIRefreshControl new];
     [self.refreshControl addTarget:self action:@selector(refreshDevices) forControlEvents:UIControlEventValueChanged];
 
     [self updateDeviceList];
 }
+
+#pragma mark - SDSDatabaseStorageObserver
+
+- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    if (![change didUpdateModelWithCollection:OWSDevice.collection]) {
+        return;
+    }
+
+    [self updateDeviceList];
+}
+
+- (void)databaseStorageDidUpdateExternally
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    [self updateDeviceList];
+}
+
+- (void)databaseStorageDidReset
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    [self updateDeviceList];
+}
+
+#pragma mark -
 
 - (void)updateDeviceList
 {
@@ -228,22 +248,6 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 }
 
 #pragma mark - Table view data source
-
-- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    [self updateDeviceList];
-}
-
-- (void)yapDatabaseModified:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-
-    [self updateDeviceList];
-}
 
 - (void)deviceDidChange:(NSNotification *)notification
 {

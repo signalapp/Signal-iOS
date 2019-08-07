@@ -54,6 +54,9 @@ public class SDSColumnMetadata: NSObject {
 public class SDSTableMetadata: NSObject {
 
     @objc
+    public let collection: String
+
+    @objc
     public let tableName: String
 
     @objc
@@ -64,7 +67,8 @@ public class SDSTableMetadata: NSObject {
     public let selectColumnNames: [String]
 
     @objc
-    public init(tableName: String, columns: [SDSColumnMetadata]) {
+    public init(collection: String, tableName: String, columns: [SDSColumnMetadata]) {
+        self.collection = collection
         self.tableName = tableName
         self.columns = columns
 

@@ -991,8 +991,12 @@ extension %s: SDSModel {
     public var sdsTableName: String {
         return %s.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return %sSerializer.table
+    }
 }
-''' % ( str(clazz.name), record_name, )
+''' % ( str(clazz.name), record_name, str(clazz.name), )
 
     
     if not has_sds_superclass:
@@ -1049,8 +1053,10 @@ extension %sSerializer {
         swift_body += '''
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "%s", columns: [
-''' % database_table_name
+    public static let table = SDSTableMetadata(collection: %s.collection(),
+                                               tableName: "%s", 
+                                               columns: [
+''' % ( str(clazz.name), database_table_name, )
 
         for column_property_name in column_property_names:
             swift_body += '''        %sColumn,
