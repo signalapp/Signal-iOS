@@ -4,7 +4,6 @@
 
 #import "OWSDevice.h"
 #import "OWSIncomingMessageFinder.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSIncomingMessage.h"

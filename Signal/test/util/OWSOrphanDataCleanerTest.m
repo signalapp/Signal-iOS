@@ -5,7 +5,6 @@
 #import "OWSOrphanDataCleaner.h"
 #import "SignalBaseTest.h"
 #import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
@@ -32,10 +31,6 @@
 - (void)setUp
 {
     [super setUp];
-
-    // Register views, etc.
-    [OWSPrimaryStorage registerExtensionsWithMigrationBlock:^{
-    }];
 
     // Set up initial conditions & Sanity check
     XCTAssertEqual(0, [self numberOfItemsInAttachmentsFolder]);

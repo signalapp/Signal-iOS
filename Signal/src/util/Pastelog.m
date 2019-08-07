@@ -14,7 +14,6 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/MimeTypeUtil.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
@@ -349,14 +348,6 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                                              handler:^(UIAlertAction *action) {
                                                  [Pastelog.sharedManager sendToSelf:url];
                                              }]];
-        [alert addAction:[UIAlertAction actionWithTitle:
-                                            NSLocalizedString(@"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD",
-                                                @"Label for the 'send to last thread' option of the debug log alert.")
-                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_to_last_thread")
-                                                  style:UIAlertActionStyleDefault
-                                                handler:^(UIAlertAction *action) {
-                                                    [Pastelog.sharedManager sendToMostRecentThread:url];
-                                                }]];
 #endif
         [alert
             addAction:
@@ -608,34 +599,6 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                               linkPreviewDraft:nil
                                    transaction:transaction];
         }];
-    });
-
-    // Also copy to pasteboard.
-    [[UIPasteboard generalPasteboard] setString:url.absoluteString];
-}
-
-- (void)sendToMostRecentThread:(NSURL *)url
-{
-    if (![self.tsAccountManager isRegistered]) {
-        return;
-    }
-
-    __block TSThread *thread = nil;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        thread = [[transaction ext:TSThreadDatabaseViewExtensionName] firstObjectInGroup:TSInboxGroup];
-    }];
-    DispatchMainThreadSafe(^{
-        if (thread) {
-            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-                [ThreadUtil enqueueMessageWithText:url.absoluteString
-                                          inThread:thread
-                                  quotedReplyModel:nil
-                                  linkPreviewDraft:nil
-                                       transaction:transaction];
-            }];
-        } else {
-            [Pastelog showFailureAlertWithMessage:@"Could not find last thread."];
-        }
     });
 
     // Also copy to pasteboard.

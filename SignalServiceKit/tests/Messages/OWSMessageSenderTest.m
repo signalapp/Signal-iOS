@@ -6,7 +6,6 @@
 #import "OWSError.h"
 #import "OWSFakeNetworkManager.h"
 #import "OWSMessageSender.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSUploadOperation.h"
 #import "SSKBaseTestObjC.h"
 #import "TSAccountManager.h"
@@ -247,19 +246,16 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            linkPreview:nil];
     [self.expiringMessage save];
 
-    OWSPrimaryStorage *storageManager = [OWSPrimaryStorage sharedManager];
     OWSFakeContactsManager *contactsManager = [OWSFakeContactsManager new];
 
     // Successful Sending
     TSNetworkManager *successfulNetworkManager = [[OWSMessageSenderFakeNetworkManager alloc] initWithSuccess:YES];
     self.successfulMessageSender = [[OWSMessageSender alloc] initWithNetworkManager:successfulNetworkManager
-                                                                     primaryStorage:primaryStorage
                                                                     contactsManager:contactsManager];
 
     // Unsuccessful Sending
     TSNetworkManager *unsuccessfulNetworkManager = [[OWSMessageSenderFakeNetworkManager alloc] initWithSuccess:NO];
     self.unsuccessfulMessageSender = [[OWSMessageSender alloc] initWithNetworkManager:unsuccessfulNetworkManager
-                                                                       primaryStorage:primaryStorage
                                                                       contactsManager:contactsManager];
 }
 

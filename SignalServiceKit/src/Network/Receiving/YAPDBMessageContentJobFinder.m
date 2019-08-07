@@ -4,7 +4,7 @@
 
 #import "YAPDBMessageContentJobFinder.h"
 #import "OWSBatchMessageProcessor.h"
-#import "OWSPrimaryStorage.h"
+#import "OWSStorage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseTransaction.h>

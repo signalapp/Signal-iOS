@@ -285,6 +285,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    // GRDB TODO: Remove this condition once we migrate interaction writes to use
+    //            any transactions.  We just don't want to do this work twice.
     if (transaction.transitional_yapWriteTransaction != nil) {
         [self ensureIdsWithTransaction:transaction.transitional_yapWriteTransaction];
     }

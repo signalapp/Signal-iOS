@@ -535,9 +535,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(transaction);
 
     // Always re-mark the message as read to ensure any earlier read time is applied to disappearing messages.
-    if (transaction.transitional_yapWriteTransaction) {
-        [message markAsReadAtTimestamp:readTimestamp sendReadReceipt:NO transaction:transaction];
-    }
+    [message markAsReadAtTimestamp:readTimestamp sendReadReceipt:NO transaction:transaction];
 
     // Also mark any unread messages appearing earlier in the thread as read as well.
     [self markAsReadBeforeSortId:message.sortId

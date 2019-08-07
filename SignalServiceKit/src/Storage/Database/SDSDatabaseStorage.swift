@@ -305,6 +305,15 @@ public class SDSDatabaseStorage: SDSTransactable {
         //       skip most of the perf cost.
         NotificationCenter.default.postNotificationNameAsync(SDSDatabaseStorage.didReceiveCrossProcessNotification, object: nil)
     }
+
+    // MARK: - Misc.
+
+    @objc
+    public func logFileSizes() {
+        Logger.info("Database : \(databaseFileSize)")
+        Logger.info("\t WAL file size: \(databaseWALFileSize)")
+        Logger.info("\t SHM file size: \(databaseSHMFileSize)")
+    }
 }
 
 // MARK: -

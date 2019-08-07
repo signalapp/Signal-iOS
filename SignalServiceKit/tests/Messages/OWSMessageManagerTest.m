@@ -11,7 +11,6 @@
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageSender.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSSyncGroupsMessage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSAccountManager.h"

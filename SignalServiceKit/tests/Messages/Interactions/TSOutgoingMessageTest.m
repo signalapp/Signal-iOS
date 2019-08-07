@@ -3,7 +3,6 @@
 //
 
 #import "TSOutgoingMessage.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 

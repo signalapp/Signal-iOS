@@ -5,7 +5,6 @@
 #import "OWSDevice.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSError.h"
-#import "OWSPrimaryStorage.h"
 #import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
@@ -19,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSString *const NSNotificationName_OWSDeviceDidChange = @"NSNotificationName_OWSDeviceDidChange";
 
 uint32_t const OWSDevicePrimaryDeviceId = 1;
-NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_MayHaveLinkedDevices";
+NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevices";
 
 @interface OWSDeviceManager ()
 
@@ -69,9 +68,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 {
     OWSAssertDebug(transaction);
 
-    return [OWSDeviceManager.keyValueStore getBool:kOWSPrimaryStorage_MayHaveLinkedDevices
-                                      defaultValue:YES
-                                       transaction:transaction];
+    return [OWSDeviceManager.keyValueStore getBool:kMayHaveLinkedDevicesKey defaultValue:YES transaction:transaction];
 }
 
 // In order to avoid skipping necessary sync messages, the default value
@@ -85,7 +82,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 {
     // Note that we write async to avoid opening transactions within transactions.
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [OWSDeviceManager.keyValueStore setBool:NO key:kOWSPrimaryStorage_MayHaveLinkedDevices transaction:transaction];
+        [OWSDeviceManager.keyValueStore setBool:NO key:kMayHaveLinkedDevicesKey transaction:transaction];
     }];
 }
 
@@ -93,9 +90,7 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 {
     // Note that we write async to avoid opening transactions within transactions.
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [OWSDeviceManager.keyValueStore setBool:YES
-                                            key:kOWSPrimaryStorage_MayHaveLinkedDevices
-                                    transaction:transaction];
+        [OWSDeviceManager.keyValueStore setBool:YES key:kMayHaveLinkedDevicesKey transaction:transaction];
     }];
 }
 

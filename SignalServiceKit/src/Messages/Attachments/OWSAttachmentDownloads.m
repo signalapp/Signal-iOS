@@ -11,7 +11,6 @@
 #import "OWSDispatch.h"
 #import "OWSError.h"
 #import "OWSFileSystem.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "SSKEnvironment.h"
 #import "TSAttachmentPointer.h"

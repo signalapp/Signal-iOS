@@ -7,9 +7,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// Used for testing
-extern NSString *const OWSPrimaryStorageSignedPreKeyStoreCollection;
-
 @interface SSKSignedPreKeyStore : NSObject <SignedPreKeyStore>
 
 - (SignedPreKeyRecord *)generateRandomSignedRecord;

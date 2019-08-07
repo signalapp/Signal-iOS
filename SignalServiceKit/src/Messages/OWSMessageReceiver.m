@@ -10,7 +10,6 @@
 #import "OWSBackgroundTask.h"
 #import "OWSBatchMessageProcessor.h"
 #import "OWSMessageDecrypter.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSQueues.h"
 #import "OWSStorage.h"
 #import "SSKEnvironment.h"
