@@ -6,6 +6,8 @@ import Foundation
 import GRDBCipher
 
 public protocol SDSModel: TSYapDatabaseObject {
+    var sdsTableName: String { get }
+
     func asRecord() throws -> SDSRecord
 
     var serializer: SDSSerializer { get }
@@ -73,12 +75,14 @@ public extension SDSModel {
         case .yapWrite(let ydbTransaction):
             ydb_remove(with: ydbTransaction)
         case .grdbWrite(let grdbTransaction):
-            do {
-                let record = try asRecord()
-                record.sdsRemove(transaction: grdbTransaction)
-            } catch {
-                owsFail("Remove failed: \(error)")
-            }
+            // Don't use a record to delete the record;
+            // asRecord() is expensive.
+            let sql = """
+                DELETE
+                FROM \(sdsTableName)
+                WHERE uniqueId == ?
+            """
+            grdbTransaction.executeWithCachedStatement(sql: sql, arguments: [uniqueId])
         }
 
         anyDidRemove(with: transaction)

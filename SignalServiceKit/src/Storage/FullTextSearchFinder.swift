@@ -275,7 +275,7 @@ class GRDBFullTextSearchFinder: NSObject {
     static let databaseTableName: String = "signal_grdb_fts"
     static let uniqueIdColumn: String = "uniqueId"
     static let collectionColumn: String = "collection"
-    static let ftsContentColumn: String = "ftsContent"
+    static let ftsContentColumn: String = "ftsIndexableContent"
 
     class func createTables(database: Database) throws {
         try database.create(virtualTable: databaseTableName, using: FTS5()) { table in
@@ -306,18 +306,15 @@ class GRDBFullTextSearchFinder: NSObject {
         let collection = self.collection(forModel: model)
         let ftsContent = AnySearchIndexer.indexContent(object: model, transaction: transaction.asAnyRead) ?? ""
 
-        do {
-            try transaction.database.execute(
-                sql: """
-                INSERT INTO \(databaseTableName)
-                (\(collectionColumn), \(uniqueIdColumn), \(ftsContentColumn))
-                VALUES
-                (?, ?, ?)
-                """,
-                arguments: [collection, uniqueId, ftsContent])
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
+        executeUpdate(
+            sql: """
+            INSERT INTO \(databaseTableName)
+            (\(collectionColumn), \(uniqueIdColumn), \(ftsContentColumn))
+            VALUES
+            (?, ?, ?)
+            """,
+            arguments: [collection, uniqueId, ftsContent],
+            transaction: transaction)
     }
 
     public class func modelWasUpdated(model: SDSModel, transaction: GRDBWriteTransaction) {
@@ -325,48 +322,52 @@ class GRDBFullTextSearchFinder: NSObject {
         let collection = self.collection(forModel: model)
         let ftsContent = AnySearchIndexer.indexContent(object: model, transaction: transaction.asAnyRead) ?? ""
 
-        do {
-            try transaction.database.execute(
-                sql: """
-                UPDATE \(databaseTableName)
-                SET \(ftsContentColumn) = ?
-                WHERE \(collectionColumn) == ?
-                AND \(uniqueIdColumn) == ?
-                """,
-                arguments: [ftsContent, collection, uniqueId])
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
+        executeUpdate(
+            sql: """
+            UPDATE \(databaseTableName)
+            SET \(ftsContentColumn) = ?
+            WHERE \(collectionColumn) == ?
+            AND \(uniqueIdColumn) == ?
+            """,
+            arguments: [ftsContent, collection, uniqueId],
+            transaction: transaction)
     }
 
     public class func modelWasRemoved(model: SDSModel, transaction: GRDBWriteTransaction) {
         let uniqueId = model.uniqueId
         let collection = self.collection(forModel: model)
 
-        do {
-            try transaction.database.execute(
-                sql: """
-                DELETE FROM \(databaseTableName)
-                WHERE \(uniqueIdColumn) == ?
-                AND \(collectionColumn) == ?
-                """,
-                arguments: [uniqueId, collection])
-        } catch {
-            owsFailDebug("Error: \(error)")
-        }
+        executeUpdate(
+            sql: """
+            DELETE FROM \(databaseTableName)
+            WHERE \(uniqueIdColumn) == ?
+            AND \(collectionColumn) == ?
+            """,
+            arguments: [uniqueId, collection],
+            transaction: transaction)
     }
 
     public class func allModelsWereRemoved(collection: String, transaction: GRDBWriteTransaction) {
-        do {
-            try transaction.database.execute(
-                sql: """
-                DELETE FROM \(databaseTableName)
-                WHERE \(collectionColumn) == ?
-                """,
-                arguments: [collection])
-        } catch {
-            owsFailDebug("Error: \(error)")
+        executeUpdate(
+            sql: """
+            DELETE FROM \(databaseTableName)
+            WHERE \(collectionColumn) == ?
+            """,
+            arguments: [collection],
+            transaction: transaction)
+    }
+
+    private static let disableFTS = false
+
+    private class func executeUpdate(sql: String,
+                                     arguments: StatementArguments,
+                                     transaction: GRDBWriteTransaction) {
+        guard !disableFTS else {
+            return
         }
+
+        transaction.executeWithCachedStatement(sql: sql,
+                                               arguments: arguments)
     }
 
     private class func modelForFTSMatch(collection: String,

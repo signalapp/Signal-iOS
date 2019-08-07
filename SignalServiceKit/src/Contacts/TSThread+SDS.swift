@@ -207,6 +207,10 @@ extension TSThread: SDSModel {
     public func asRecord() throws -> SDSRecord {
         return try serializer.asRecord()
     }
+
+    public var sdsTableName: String {
+        return ThreadRecord.databaseTableName
+    }
 }
 
 // MARK: - Table Metadata
@@ -551,7 +555,9 @@ public extension TSThread {
         assert(sql.count > 0)
 
         do {
-            guard let record = try ThreadRecord.fetchOne(transaction.database, sql: sql, arguments: arguments) else {
+            // There are significant perf benefits to using a cached statement.
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            guard let record = try ThreadRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
 

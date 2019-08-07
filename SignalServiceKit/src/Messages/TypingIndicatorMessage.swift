@@ -78,7 +78,7 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
         let typingBuilder = SSKProtoTypingMessage.builder(timestamp: self.timestamp)
         typingBuilder.setAction(protoAction(forAction: action))
 
-        if let groupThread = self.thread as? TSGroupThread {
+        if let groupThread = self.threadWithSneakyTransaction as? TSGroupThread {
             typingBuilder.setGroupID(groupThread.groupModel.groupId)
         }
 

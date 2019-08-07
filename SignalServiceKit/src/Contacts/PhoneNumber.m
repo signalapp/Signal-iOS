@@ -112,13 +112,28 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
 
 + (NSString *)bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:(NSString *)input
                                                      withSpecifiedRegionCode:(NSString *)regionCode {
-    NBAsYouTypeFormatter *formatter = [[NBAsYouTypeFormatter alloc] initWithRegionCode:regionCode];
 
-    NSString *result = input;
-    for (NSUInteger i = 0; i < input.length; i++) {
-        result = [formatter inputDigit:[input substringWithRange:NSMakeRange(i, 1)]];
+    static NSMutableDictionary<NSString *, NSString *> *cache = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        cache = [NSMutableDictionary new];
+    });
+
+    @synchronized(cache) {
+        NSString *cacheKey = [[input stringByAppendingString:@"@"] stringByAppendingString:regionCode];
+        NSString *_Nullable cachedValue = cache[cacheKey];
+        if (cachedValue != nil) {
+            return cachedValue;
+        }
+
+        NBAsYouTypeFormatter *formatter = [[NBAsYouTypeFormatter alloc] initWithRegionCode:regionCode];
+        NSString *result = input;
+        for (NSUInteger i = 0; i < input.length; i++) {
+            result = [formatter inputDigit:[input substringWithRange:NSMakeRange(i, 1)]];
+        }
+        cache[cacheKey] = result;
+        return result;
     }
-    return result;
 }
 
 + (NSString *)formatIntAsEN:(int)value
@@ -226,7 +241,7 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     };
 
 #ifdef DEBUG
-    // For performance, we want to cahce this result, but it breaks tests since local number
+    // For performance, we want to cache this result, but it breaks tests since local number
     // can change.
     if (CurrentAppContext().isRunningTests) {
         updateCachedClientPhoneNumber();
