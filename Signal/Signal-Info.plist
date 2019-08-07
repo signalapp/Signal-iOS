@@ -121,6 +121,8 @@
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Signal's Screen Lock uses Face ID.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Signal needs access to your location in order to share your current location.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Signal needs access to your microphone to make and receive phone calls and record voice messages.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

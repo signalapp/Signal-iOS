@@ -9,6 +9,7 @@ protocol AttachmentFormatPickerDelegate: class {
     func didTapGif()
     func didTapFile()
     func didTapContact()
+    func didTapLocation()
 }
 
 class AttachmentFormatPickerView: UICollectionView {
@@ -67,6 +68,7 @@ enum AttachmentType: CaseIterable {
     case gif
     case file
     case contact
+    case location
 }
 
 // MARK: - UICollectionViewDelegate
@@ -82,6 +84,8 @@ extension AttachmentFormatPickerView: UICollectionViewDelegate {
             attachmentFormatPickerDelegate?.didTapFile()
         case .gif:
             attachmentFormatPickerDelegate?.didTapGif()
+        case .location:
+            attachmentFormatPickerDelegate?.didTapLocation()
         }
     }
 }
@@ -130,10 +134,12 @@ class AttachmentFormatCell: UICollectionViewCell {
         contentView.addSubview(imageView)
         imageView.autoHCenterInSuperview()
         imageView.autoSetDimensions(to: CGSize(width: 32, height: 32))
+        imageView.contentMode = .scaleAspectFit
 
         label.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_semiBold()
         label.textColor = Theme.attachmentKeyboardItemImageColor
         label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
         contentView.addSubview(label)
         label.autoPinEdge(.top, to: .bottom, of: imageView, withOffset: 3)
         label.autoPinWidthToSuperviewMargins()
@@ -177,6 +183,9 @@ class AttachmentFormatCell: UICollectionViewCell {
         case .gif:
             text = NSLocalizedString("ATTACHMENT_KEYBOARD_GIF", comment: "A button to select a GIF from the Attachment Keyboard")
             imageName = "gif-outline-32"
+        case .location:
+            text = NSLocalizedString("ATTACHMENT_KEYBOARD_LOCATION", comment: "A button to select a location from the Attachment Keyboard")
+            imageName = "location-outline-32"
         }
 
         // The light theme images come with a background baked in, so we don't tint them.

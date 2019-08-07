@@ -1552,6 +1552,11 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.inputToolbarDelegate contactButtonPressed];
 }
 
+- (void)didTapLocation
+{
+    [self.inputToolbarDelegate locationButtonPressed];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
