@@ -116,6 +116,10 @@ extension OWSLinkedDeviceReadReceipt: SDSModel {
     public var sdsTableName: String {
         return LinkedDeviceReadReceiptRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return OWSLinkedDeviceReadReceiptSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -136,7 +140,9 @@ extension OWSLinkedDeviceReadReceiptSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_OWSLinkedDeviceReadReceipt", columns: [
+    public static let table = SDSTableMetadata(collection: OWSLinkedDeviceReadReceipt.collection(),
+                                               tableName: "model_OWSLinkedDeviceReadReceipt",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

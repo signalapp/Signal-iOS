@@ -121,6 +121,10 @@ extension SignalAccount: SDSModel {
     public var sdsTableName: String {
         return SignalAccountRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return SignalAccountSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -142,7 +146,9 @@ extension SignalAccountSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_SignalAccount", columns: [
+    public static let table = SDSTableMetadata(collection: SignalAccount.collection(),
+                                               tableName: "model_SignalAccount",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

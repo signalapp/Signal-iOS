@@ -104,6 +104,10 @@ extension OWSDisappearingMessagesConfiguration: SDSModel {
     public var sdsTableName: String {
         return DisappearingMessagesConfigurationRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return OWSDisappearingMessagesConfigurationSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -121,7 +125,9 @@ extension OWSDisappearingMessagesConfigurationSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_OWSDisappearingMessagesConfiguration", columns: [
+    public static let table = SDSTableMetadata(collection: OWSDisappearingMessagesConfiguration.collection(),
+                                               tableName: "model_OWSDisappearingMessagesConfiguration",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

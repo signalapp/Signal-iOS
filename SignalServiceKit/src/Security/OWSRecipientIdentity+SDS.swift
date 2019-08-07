@@ -120,6 +120,10 @@ extension OWSRecipientIdentity: SDSModel {
     public var sdsTableName: String {
         return RecipientIdentityRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return OWSRecipientIdentitySerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -141,7 +145,9 @@ extension OWSRecipientIdentitySerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_OWSRecipientIdentity", columns: [
+    public static let table = SDSTableMetadata(collection: OWSRecipientIdentity.collection(),
+                                               tableName: "model_OWSRecipientIdentity",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

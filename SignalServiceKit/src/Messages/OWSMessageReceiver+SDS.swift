@@ -104,6 +104,10 @@ extension OWSMessageDecryptJob: SDSModel {
     public var sdsTableName: String {
         return MessageDecryptJobRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return OWSMessageDecryptJobSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -121,7 +125,9 @@ extension OWSMessageDecryptJobSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_OWSMessageDecryptJob", columns: [
+    public static let table = SDSTableMetadata(collection: OWSMessageDecryptJob.collection(),
+                                               tableName: "model_OWSMessageDecryptJob",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

@@ -105,6 +105,10 @@ extension InstalledSticker: SDSModel {
     public var sdsTableName: String {
         return InstalledStickerRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return InstalledStickerSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -122,7 +126,9 @@ extension InstalledStickerSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_InstalledSticker", columns: [
+    public static let table = SDSTableMetadata(collection: InstalledSticker.collection(),
+                                               tableName: "model_InstalledSticker",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

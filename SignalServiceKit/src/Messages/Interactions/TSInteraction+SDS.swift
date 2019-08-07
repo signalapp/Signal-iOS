@@ -1126,6 +1126,10 @@ extension TSInteraction: SDSModel {
     public var sdsTableName: String {
         return InteractionRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return TSInteractionSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -1199,7 +1203,9 @@ extension TSInteractionSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_TSInteraction", columns: [
+    public static let table = SDSTableMetadata(collection: TSInteraction.collection(),
+                                               tableName: "model_TSInteraction",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

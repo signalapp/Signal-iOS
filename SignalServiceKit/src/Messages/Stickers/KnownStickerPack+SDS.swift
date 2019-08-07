@@ -109,6 +109,10 @@ extension KnownStickerPack: SDSModel {
     public var sdsTableName: String {
         return KnownStickerPackRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return KnownStickerPackSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -127,7 +131,9 @@ extension KnownStickerPackSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_KnownStickerPack", columns: [
+    public static let table = SDSTableMetadata(collection: KnownStickerPack.collection(),
+                                               tableName: "model_KnownStickerPack",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

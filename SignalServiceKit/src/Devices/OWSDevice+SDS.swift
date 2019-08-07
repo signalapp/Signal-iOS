@@ -112,6 +112,10 @@ extension OWSDevice: SDSModel {
     public var sdsTableName: String {
         return DeviceRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return OWSDeviceSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -131,7 +135,9 @@ extension OWSDeviceSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_OWSDevice", columns: [
+    public static let table = SDSTableMetadata(collection: OWSDevice.collection(),
+                                               tableName: "model_OWSDevice",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

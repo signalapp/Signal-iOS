@@ -188,6 +188,10 @@ extension SSKJobRecord: SDSModel {
     public var sdsTableName: String {
         return JobRecordRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return SSKJobRecordSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -213,7 +217,9 @@ extension SSKJobRecordSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_SSKJobRecord", columns: [
+    public static let table = SDSTableMetadata(collection: SSKJobRecord.collection(),
+                                               tableName: "model_SSKJobRecord",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,
