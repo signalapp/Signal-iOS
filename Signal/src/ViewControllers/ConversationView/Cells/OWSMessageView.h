@@ -40,7 +40,7 @@ typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
 + (NSDictionary *)senderNamePrimaryAttributes;
 + (NSDictionary *)senderNameSecondaryAttributes;
 
-+ (NSString *)accessibilityLabelWithDescription:(NSString *)descriptionParam senderName:(nullable NSString *)senderName;
++ (NSString *)accessibilityLabelWithDescription:(NSString *)descriptionParam authorName:(nullable NSString *)authorName;
 
 #pragma mark - Gestures
 

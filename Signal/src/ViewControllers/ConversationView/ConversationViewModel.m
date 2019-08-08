@@ -1370,7 +1370,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         BOOL isFirstInCluster = YES;
         BOOL isLastInCluster = YES;
         NSString *_Nullable senderName = nil;
-        NSString *_Nullable accessibilitySenderName = nil;
+        NSString *_Nullable accessibilityAuthorName = nil;
 
         OWSInteractionType interactionType = viewItem.interaction.interactionType;
         NSString *timestampText = [DateUtil formatTimestampShort:viewItem.interaction.timestamp];
@@ -1381,7 +1381,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             MessageReceiptStatus receiptStatus =
                 [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
             BOOL isDisappearingMessage = outgoingMessage.hasPerConversationExpiration;
-            accessibilitySenderName = NSLocalizedString(
+            accessibilityAuthorName = NSLocalizedString(
                 @"ACCESSIBILITY_LABEL_SENDER_SELF", @"Accessibility label for messages sent by you.");
 
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
@@ -1423,7 +1423,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             SignalServiceAddress *incomingSenderAddress = incomingMessage.authorAddress;
             OWSAssertDebug(incomingSenderAddress.isValid);
             BOOL isDisappearingMessage = incomingMessage.hasPerConversationExpiration;
-            accessibilitySenderName = [self.contactsManager displayNameForAddress:incomingSenderAddress];
+            accessibilityAuthorName = [self.contactsManager displayNameForAddress:incomingSenderAddress];
 
             SignalServiceAddress *_Nullable nextIncomingSenderAddress = nil;
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
@@ -1482,7 +1482,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                         || viewItem.hasCellHeader);
                 }
                 if (shouldShowSenderName) {
-                    senderName = accessibilitySenderName;
+                    senderName = accessibilityAuthorName;
                 }
 
                 // Show the sender avatar for incoming group messages unless
@@ -1506,7 +1506,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         viewItem.shouldShowSenderAvatar = shouldShowSenderAvatar;
         viewItem.shouldHideFooter = shouldHideFooter;
         viewItem.senderName = senderName;
-        viewItem.accessibilitySenderName = accessibilitySenderName;
+        viewItem.accessibilityAuthorName = accessibilityAuthorName;
     }
 
     self.viewState = [[ConversationViewState alloc] initWithViewItems:viewItems];

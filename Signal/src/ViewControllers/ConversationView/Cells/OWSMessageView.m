@@ -57,13 +57,13 @@ NS_ASSUME_NONNULL_BEGIN
     };
 }
 
-+ (NSString *)accessibilityLabelWithDescription:(NSString *)descriptionParam senderName:(nullable NSString *)senderName
++ (NSString *)accessibilityLabelWithDescription:(NSString *)descriptionParam authorName:(nullable NSString *)authorName
 {
     NSString *description = (descriptionParam.length > 0
             ? descriptionParam
             : NSLocalizedString(@"ACCESSIBILITY_LABEL_MESSAGE", @"Accessibility label for message."));
-    if (senderName.length > 0) {
-        return [@" " join:@[ senderName, description ]];
+    if (authorName.length > 0) {
+        return [@[ authorName, description ] componentsJoinedByString:@" "];
     } else {
         OWSFailDebug(@"Missing sender name.");
         return description;

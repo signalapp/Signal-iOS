@@ -43,11 +43,6 @@ public extension NSString {
     var ensureArabicNumerals: String {
         return (self as String).ensureArabicNumerals
     }
-
-    @objc(join:)
-    func join(components: [String]) -> String {
-        return components.joined(separator: self as String)
-    }
 }
 
 // MARK: - Attributed String Concatentation
