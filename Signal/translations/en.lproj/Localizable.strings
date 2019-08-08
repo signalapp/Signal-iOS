@@ -4,6 +4,27 @@
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Accept New Safety Number";
 
+/* Accessibility label for attachment. */
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "Attachment";
+
+/* Accessibility label for audio. */
+"ACCESSIBILITY_LABEL_AUDIO" = "Audio";
+
+/* Accessibility label for contact. */
+"ACCESSIBILITY_LABEL_CONTACT" = "Contact";
+
+/* Accessibility label for media. */
+"ACCESSIBILITY_LABEL_MEDIA" = "Media";
+
+/* Accessibility label for message. */
+"ACCESSIBILITY_LABEL_MESSAGE" = "Message";
+
+/* Accessibility label for messages sent by you. */
+"ACCESSIBILITY_LABEL_SENDER_SELF" = "You";
+
+/* Accessibility label for stickers. */
+"ACCESSIBILITY_LABEL_STICKER" = "Sticker";
+
 /* Label for 'audio call' button in contact view. */
 "ACTION_AUDIO_CALL" = "Signal Call";
 
@@ -748,9 +769,6 @@
 
 /* Label for the 'email debug log' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Support";
-
-/* Label for the 'send to last thread' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_LAST_THREAD" = "Send to Last Thread";
 
 /* Label for the 'send to self' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Send to Self";

@@ -118,12 +118,14 @@ NS_ASSUME_NONNULL_BEGIN
         self.messageTimerView.hidden = YES;
     }
 
+    NSString *_Nullable accessibilityLabel;
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
 
         UIImage *_Nullable statusIndicatorImage = nil;
         MessageReceiptStatus messageStatus =
             [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
+        accessibilityLabel = [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage];
         switch (messageStatus) {
             case MessageReceiptStatusUploading:
             case MessageReceiptStatusSending:
@@ -153,6 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [self hideStatusIndicator];
     }
+    self.accessibilityLabel = accessibilityLabel;
 }
 
 - (void)showStatusIndicatorWithIcon:(UIImage *)icon textColor:(UIColor *)textColor
@@ -174,6 +177,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.statusIndicatorImageView.image = nil;
     [self.statusIndicatorImageView setContentHuggingLow];
     self.spacing = 0;
+    self.accessibilityLabel = nil;
 }
 
 - (void)animateSpinningIcon

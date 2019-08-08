@@ -245,6 +245,11 @@ NS_ASSUME_NONNULL_BEGIN
     TSAttachmentStream *stickerAttachment = self.viewItem.stickerAttachment;
     YYAnimatedImageView *stickerView = [YYAnimatedImageView new];
 
+    stickerView.accessibilityLabel =
+        [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_STICKER",
+                                                              @"Accessibility label for stickers.")
+                                               authorName:self.viewItem.accessibilityAuthorName];
+
     self.loadCellContentBlock = ^{
         NSString *_Nullable filePath = stickerAttachment.originalFilePath;
         OWSCAssertDebug(filePath);
