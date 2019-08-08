@@ -243,7 +243,7 @@ message DataMessage {
   repeated Preview           preview                 = 10;
   optional Sticker           sticker                 = 11;
   optional uint32            requiredProtocolVersion = 12;
-  optional bool isViewOnce = 14;
+  optional bool              isViewOnce              = 14;
 }
 
 message NullMessage {
@@ -345,12 +345,11 @@ message SyncMessage {
     optional Type  type    = 3;
   }
 
-  message ViewOnceOpen
-  {
+  message ViewOnceOpen {
       optional string senderE164 = 1;
       optional string senderUuid = 3;
       // @required
-      optional uint64 timestamp = 2;
+      optional uint64 timestamp  = 2;
   }
 
   optional Sent                 sent                 =  1;
@@ -363,7 +362,7 @@ message SyncMessage {
   optional Configuration        configuration        =  9;
   optional bytes                padding              =  8;
   repeated StickerPackOperation stickerPackOperation = 10;
-  optional ViewOnceOpen viewOnceOpen = 11;
+  optional ViewOnceOpen         viewOnceOpen         = 11;
 }
 
 message AttachmentPointer {
