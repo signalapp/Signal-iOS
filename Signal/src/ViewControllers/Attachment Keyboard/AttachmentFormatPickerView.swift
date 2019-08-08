@@ -5,7 +5,7 @@
 import Foundation
 
 protocol AttachmentFormatPickerDelegate: class {
-    func didTapCamera()
+    func didTapCamera(withPhotoCapture: PhotoCapture?)
     func didTapGif()
     func didTapFile()
     func didTapContact()
@@ -20,6 +20,7 @@ class AttachmentFormatPickerView: UICollectionView {
     }
 
     private let collectionViewFlowLayout = UICollectionViewFlowLayout()
+    private var photoCapture: PhotoCapture?
 
     override var bounds: CGRect {
         didSet {
@@ -44,6 +45,31 @@ class AttachmentFormatPickerView: UICollectionView {
         collectionViewFlowLayout.scrollDirection = .horizontal
         collectionViewFlowLayout.minimumLineSpacing = 6
 
+        updateLayout()
+    }
+
+    deinit {
+        photoCapture?.stopCapture().retainUntilComplete()
+    }
+
+    func startCameraPreview() {
+        guard photoCapture == nil || photoCapture?.session.isRunning == false else { return }
+
+        let photoCapture = PhotoCapture()
+        self.photoCapture = photoCapture
+
+        photoCapture.startVideoCapture().done { [weak self] in
+            self?.reloadData()
+        }.retainUntilComplete()
+    }
+
+    func stopCameraPreview() {
+        photoCapture?.stopCapture().done { [weak self] in
+            self?.photoCapture = nil
+        }.retainUntilComplete()
+    }
+
+    func orientationDidChange() {
         updateLayout()
     }
 
@@ -77,7 +103,11 @@ extension AttachmentFormatPickerView: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch AttachmentType.allCases[indexPath.row] {
         case .camera:
-            attachmentFormatPickerDelegate?.didTapCamera()
+            // Since we're trying to pass on our prepared capture session to
+            // the camera view, nil it out so we don't try and stop it here.
+            let photoCapture = self.photoCapture
+            self.photoCapture = nil
+            attachmentFormatPickerDelegate?.didTapCamera(withPhotoCapture: photoCapture)
         case .contact:
             attachmentFormatPickerDelegate?.didTapContact()
         case .file:
@@ -108,7 +138,7 @@ extension AttachmentFormatPickerView: UICollectionViewDataSource {
         }
 
         let type = AttachmentType.allCases[indexPath.item]
-        cell.configure(type: type)
+        cell.configure(type: type, cameraPreview: photoCapture?.previewView)
         return cell
     }
 }
@@ -121,6 +151,11 @@ class AttachmentFormatCell: UICollectionViewCell {
     let label = UILabel()
 
     var attachmentType: AttachmentType?
+    weak var cameraPreview: CapturePreviewView?
+
+    private var hasCameraAccess: Bool {
+        return AVCaptureDevice.authorizationStatus(for: .video) == .authorized
+    }
 
     override init(frame: CGRect) {
 
@@ -164,8 +199,9 @@ class AttachmentFormatCell: UICollectionViewCell {
         notImplemented()
     }
 
-    public func configure(type: AttachmentType) {
+    public func configure(type: AttachmentType, cameraPreview: CapturePreviewView?) {
         self.attachmentType = type
+        self.cameraPreview = cameraPreview
 
         let imageName: String
         let text: String
@@ -196,6 +232,25 @@ class AttachmentFormatCell: UICollectionViewCell {
         }
 
         label.text = text
+
+        showLiveCameraIfAvailable()
+    }
+
+    func showLiveCameraIfAvailable() {
+        guard case .camera? = attachmentType, hasCameraAccess else { return }
+
+        // If we have access to the camera, we'll want to show it eventually.
+        // Style this in prepration for that.
+
+        imageView.setTemplateImageName("camera-outline-32", tintColor: .white)
+        label.textColor = .white
+        backgroundColor = UIColor.black.withAlphaComponent(0.4)
+
+        guard let cameraPreview = cameraPreview else { return }
+
+        contentView.insertSubview(cameraPreview, belowSubview: imageView)
+        cameraPreview.autoPinEdgesToSuperviewEdges()
+        cameraPreview.contentMode = .scaleAspectFill
     }
 
     override public func prepareForReuse() {
@@ -203,5 +258,12 @@ class AttachmentFormatCell: UICollectionViewCell {
 
         attachmentType = nil
         imageView.image = nil
+
+        label.textColor = Theme.attachmentKeyboardItemImageColor
+        backgroundColor = Theme.attachmentKeyboardItemBackgroundColor
+
+        if let cameraPreview = cameraPreview, cameraPreview.superview == contentView {
+            cameraPreview.removeFromSuperview()
+        }
     }
 }

@@ -36,15 +36,13 @@ class PhotoCaptureViewController: OWSViewController {
 
     weak var delegate: PhotoCaptureViewControllerDelegate?
 
-    private var photoCapture: PhotoCapture!
+    @objc public lazy var photoCapture = PhotoCapture()
 
     deinit {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
-        if let photoCapture = photoCapture {
-            photoCapture.stopCapture().done {
-                Logger.debug("stopCapture completed")
-            }.retainUntilComplete()
-        }
+        photoCapture.stopCapture().done {
+            Logger.debug("stopCapture completed")
+        }.retainUntilComplete()
     }
 
     // MARK: - Overrides
@@ -136,7 +134,9 @@ class PhotoCaptureViewController: OWSViewController {
     // MARK: - Views
 
     let captureButton = CaptureButton()
-    var previewView: CapturePreviewView!
+    var previewView: CapturePreviewView {
+        return photoCapture.previewView
+    }
 
     class PhotoControl {
         let button: OWSButton
@@ -315,21 +315,26 @@ class PhotoCaptureViewController: OWSViewController {
 
     var hasCaptureStarted = false
     private func setupPhotoCapture() {
-        photoCapture = PhotoCapture()
         photoCapture.delegate = self
         captureButton.delegate = photoCapture
-        previewView = CapturePreviewView(session: photoCapture.session)
+        previewView.contentMode = .scaleAspectFit
 
-        photoCapture.startVideoCapture().done { [weak self] in
+        let captureReady = { [weak self] in
             guard let self = self else { return }
             self.hasCaptureStarted = true
             self.showCaptureUI()
             BenchEventComplete(eventId: "Show-Camera")
-        }.catch { [weak self] error in
-            guard let self = self else { return }
+        }
 
-            self.showFailureUI(error: error)
-        }.retainUntilComplete()
+        // If the session is already running, we're good to go.
+        guard !photoCapture.session.isRunning else { return captureReady() }
+
+        photoCapture.startVideoCapture()
+            .done(captureReady)
+            .catch { [weak self] error in
+                guard let self = self else { return }
+                self.showFailureUI(error: error)
+            }.retainUntilComplete()
     }
 
     private func showCaptureUI() {
@@ -646,10 +651,38 @@ class CapturePreviewView: UIView {
         }
     }
 
+    override var contentMode: UIView.ContentMode {
+        set {
+            switch newValue {
+            case .scaleAspectFill:
+                previewLayer.videoGravity = .resizeAspectFill
+            case .scaleAspectFit:
+                previewLayer.videoGravity = .resizeAspect
+            case .scaleToFill:
+                previewLayer.videoGravity = .resize
+            default:
+                owsFailDebug("Unexpected contentMode")
+            }
+        }
+        get {
+            switch previewLayer.videoGravity {
+            case .resizeAspectFill:
+                return .scaleAspectFill
+            case .resizeAspect:
+                return .scaleAspectFit
+            case .resize:
+                return .scaleToFill
+            default:
+                owsFailDebug("Unexpected contentMode")
+                return .scaleToFill
+            }
+        }
+    }
+
     init(session: AVCaptureSession) {
         previewLayer = AVCaptureVideoPreviewLayer(session: session)
         super.init(frame: .zero)
-        self.contentMode = .scaleAspectFill
+        self.contentMode = .scaleAspectFit
         previewLayer.frame = bounds
         layer.addSublayer(previewLayer)
     }

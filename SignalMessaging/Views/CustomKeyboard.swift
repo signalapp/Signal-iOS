@@ -31,7 +31,8 @@ open class CustomKeyboard: UIInputView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc open func wasPresented() {}
+    open func wasPresented() {}
+    open func wasDismissed() {}
 
     @objc public func registerWithView(_ view: UIView) {
         view.addSubview(responder)
@@ -46,6 +47,14 @@ open class CustomKeyboard: UIInputView {
 
     open override func resignFirstResponder() -> Bool {
         return responder.resignFirstResponder()
+    }
+
+    open override func didMoveToSuperview() {
+        if superview == nil {
+            wasDismissed()
+        } else {
+            wasPresented()
+        }
     }
 
     // MARK: - Height Management
@@ -107,7 +116,7 @@ open class CustomKeyboard: UIInputView {
 }
 
 private class CustomKeyboardResponder: UIView {
-    @objc public let customKeyboard: CustomKeyboard
+    @objc public weak var customKeyboard: CustomKeyboard?
 
     init(customKeyboard: CustomKeyboard) {
         self.customKeyboard = customKeyboard

@@ -88,6 +88,10 @@ class RecentPhotosCollectionView: UICollectionView {
         updateLayout()
     }
 
+    func orientationDidChange() {
+        updateLayout()
+    }
+
     private func updateLayout() {
         AssertIsOnMainThread()
 

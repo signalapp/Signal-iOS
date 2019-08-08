@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ConversationStyle;
 @class OWSLinkPreviewDraft;
 @class OWSQuotedReplyModel;
+@class PhotoCapture;
 @class SignalAttachment;
 @class StickerInfo;
 
@@ -33,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Attachments
 
 - (void)cameraButtonPressed;
+
+- (void)cameraButtonPressedWithPhotoCapture:(nullable PhotoCapture *)photoCapture;
 
 - (void)galleryButtonPressed;
 
