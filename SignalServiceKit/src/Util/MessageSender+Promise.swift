@@ -10,9 +10,9 @@ public extension MessageSender {
     /**
      * Wrap message sending in a Promise for easier callback chaining.
      */
-    func sendPromise(message: OutboundMessage) -> Promise<Void> {
+    func sendMessage(_ namespace: PMKNamespacer, _ message: OutgoingMessagePreparer) -> Promise<Void> {
         let promise: Promise<Void> = Promise { resolver in
-            self.send(message, success: { resolver.fulfill(()) }, failure: resolver.reject)
+            self.sendMessage(message, success: { resolver.fulfill(()) }, failure: resolver.reject)
         }
 
         // Ensure sends complete before they're GC'd.

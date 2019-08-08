@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 @class OWSBlockingManager;
-@class OutboundMessage;
+@class OutgoingMessagePreparer;
 @class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
 @class TSInvalidIdentityKeySendingErrorMessage;
@@ -63,7 +63,7 @@ NS_SWIFT_NAME(MessageSender)
  * Send and resend text messages or resend messages with existing attachments.
  * If you haven't yet created the attachment, see the `sendAttachment:` variants.
  */
-- (void)sendMessage:(OutboundMessage *)message
+- (void)sendMessage:(OutgoingMessagePreparer *)message
             success:(void (^)(void))successHandler
             failure:(void (^)(NSError *error))failureHandler;
 
@@ -93,7 +93,7 @@ NS_SWIFT_NAME(MessageSender)
 
 #pragma mark -
 
-@interface OutgoingMessagePreparer : NSObject
+@interface OutgoingMessagePreparerHelper : NSObject
 
 /// Persists all necessary data to disk before sending, e.g. generate thumbnails
 + (NSArray<NSString *> *)prepareMessageForSending:(TSOutgoingMessage *)message

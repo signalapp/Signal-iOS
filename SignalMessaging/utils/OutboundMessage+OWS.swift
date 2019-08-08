@@ -4,7 +4,7 @@
 
 import Foundation
 
-extension OutboundMessage {
+extension OutgoingMessagePreparer {
     @objc
     public convenience init(fullMessageText: String,
                             mediaAttachments: [SignalAttachment],
@@ -66,7 +66,7 @@ extension OutboundMessage {
                                         contactShare: nil,
                                         linkPreview: nil,
                                         messageSticker: nil,
-                                        isViewOncemessage: isViewOnceMessage)
+                                        isViewOnceMessage: isViewOnceMessage)
 
         let attachmentInfos = attachments.map { $0.buildOutgoingAttachmentInfo(message: message) }
 

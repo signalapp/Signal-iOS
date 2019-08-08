@@ -521,7 +521,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
                                                                                              uuids:blockedUUIDs
                                                                                           groupIds:blockedGroupIds];
 
-    [self.messageSender sendMessage:message.asOutbound
+    [self.messageSender sendMessage:message.asPreparer
         success:^{
             OWSLogInfo(@"Successfully sent blocked phone numbers sync message");
 

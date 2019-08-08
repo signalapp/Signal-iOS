@@ -597,7 +597,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
         [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
 
-    [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage.asOutbound transaction:transaction];
+    [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage.asPreparer transaction:transaction];
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -1221,7 +1221,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   isTemporaryAttachment:YES];
         }
     } else {
-        [self.messageSenderJobQueue addMessage:message.asOutbound transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
     }
 }
 

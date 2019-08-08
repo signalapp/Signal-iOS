@@ -385,7 +385,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 }
 
-- (void)sendMessage:(OutboundMessage *)outboundMessage
+- (void)sendMessage:(OutgoingMessagePreparer *)outgoingMessagePreparer
             success:(void (^)(void))successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
@@ -405,7 +405,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         __block NSError *error;
         __block TSOutgoingMessage *message;
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            message = [outboundMessage prepareMessageWithTransaction:transaction error:&error];
+            message = [outgoingMessagePreparer prepareMessageWithTransaction:transaction error:&error];
             if (error != nil) {
                 return;
             }
@@ -431,8 +431,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                      success:successHandler
                                                      failure:failureHandler];
 
-        OWSAssertDebug(outboundMessage.savedAttachmentIds != nil);
-        for (NSString *attachmentId in outboundMessage.savedAttachmentIds) {
+        OWSAssertDebug(outgoingMessagePreparer.savedAttachmentIds != nil);
+        for (NSString *attachmentId in outgoingMessagePreparer.savedAttachmentIds) {
             OWSUploadOperation *uploadAttachmentOperation =
                 [[OWSUploadOperation alloc] initWithAttachmentId:attachmentId];
             // TODO: put attachment uploads on a (low priority) concurrent queue
@@ -510,8 +510,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                           failure:(void (^)(NSError *error))failure
 {
     OWSAssertDebug(attachmentInfos.count > 0);
-    OutboundMessage *outboundMessage = [[OutboundMessage alloc] init:message unsavedAttachmentInfos:attachmentInfos];
-    [self sendMessage:outboundMessage success:success failure:failure];
+    OutgoingMessagePreparer *outgoingMessagePreparer = [[OutgoingMessagePreparer alloc] init:message
+                                                                      unsavedAttachmentInfos:attachmentInfos];
+    [self sendMessage:outgoingMessagePreparer success:success failure:failure];
 }
 
 - (void)sendMessageToService:(TSOutgoingMessage *)message
@@ -1948,14 +1949,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 @end
 
-@implementation OutgoingMessagePreparer
-
-#pragma mark - Dependencies
-
-- (SDSDatabaseStorage *)databaseStorage
-{
-    return SDSDatabaseStorage.shared;
-}
+@implementation OutgoingMessagePreparerHelper
 
 #pragma mark -
 

@@ -293,7 +293,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                     [[OWSReadReceiptsForLinkedDevicesMessage alloc] initWithThread:thread
                                                                       readReceipts:readReceiptsForLinkedDevices];
 
-                [self.messageSenderJobQueue addMessage:message.asOutbound transaction:transaction];
+                [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
             }];
         }
 

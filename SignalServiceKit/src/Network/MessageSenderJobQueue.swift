@@ -35,19 +35,19 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     // MARK: 
 
     @objc(addMessage:transaction:)
-    public func add(message: OutboundMessage, transaction: SDSAnyWriteTransaction) {
+    public func add(message: OutgoingMessagePreparer, transaction: SDSAnyWriteTransaction) {
         self.add(message: message, removeMessageAfterSending: false, transaction: transaction)
     }
 
     @objc(addMediaMessage:dataSource:contentType:sourceFilename:caption:albumMessageId:isTemporaryAttachment:)
     public func add(mediaMessage: TSOutgoingMessage, dataSource: DataSource, contentType: String, sourceFilename: String?, caption: String?, albumMessageId: String?, isTemporaryAttachment: Bool) {
         let attachmentInfo = OutgoingAttachmentInfo(dataSource: dataSource, contentType: contentType, sourceFilename: sourceFilename, caption: caption, albumMessageId: albumMessageId)
-        let message = OutboundMessage(mediaMessage, unsavedAttachmentInfos: [attachmentInfo])
+        let message = OutgoingMessagePreparer(mediaMessage, unsavedAttachmentInfos: [attachmentInfo])
         add(message: message, isTemporaryAttachment: isTemporaryAttachment)
     }
 
     @objc(addMessage:isTemporaryAttachment:)
-    public func add(message: OutboundMessage, isTemporaryAttachment: Bool) {
+    public func add(message: OutgoingMessagePreparer, isTemporaryAttachment: Bool) {
         databaseStorage.asyncWrite { transaction in
             self.add(message: message,
                      removeMessageAfterSending: isTemporaryAttachment,
@@ -56,7 +56,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         }
     }
 
-    private func add(message: OutboundMessage, removeMessageAfterSending: Bool, transaction: SDSAnyWriteTransaction) {
+    private func add(message: OutgoingMessagePreparer, removeMessageAfterSending: Bool, transaction: SDSAnyWriteTransaction) {
         assert(AppReadiness.isAppReady() || CurrentAppContext().isRunningTests)
         do {
             let messageRecord = try message.prepareMessage(transaction: transaction)
@@ -194,9 +194,9 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     // MARK: OWSOperation
 
     override public func run() {
-        self.messageSender.send(message.asOutbound,
-                                success: reportSuccess,
-                                failure: reportError(withUndefinedRetry:))
+        self.messageSender.sendMessage(message.asPreparer,
+                                       success: reportSuccess,
+                                       failure: reportError(withUndefinedRetry:))
     }
 
     override public func didSucceed() {

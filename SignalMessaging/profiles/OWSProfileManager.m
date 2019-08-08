@@ -1452,7 +1452,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
     [self.databaseQueue writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.messageSenderJobQueue addMessage:message.asOutbound transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
     }];
 }
 

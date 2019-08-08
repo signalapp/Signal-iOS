@@ -119,22 +119,23 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertIsOnMainThread();
     OWSAssertDebug(thread);
 
-    OutboundMessage *outboundMessage = [[OutboundMessage alloc] initWithFullMessageText:fullMessageText
-                                                                       mediaAttachments:mediaAttachments
-                                                                                 thread:thread
-                                                                       quotedReplyModel:quotedReplyModel
-                                                                            transaction:transaction];
+    OutgoingMessagePreparer *outgoingMessagePreparer =
+        [[OutgoingMessagePreparer alloc] initWithFullMessageText:fullMessageText
+                                                mediaAttachments:mediaAttachments
+                                                          thread:thread
+                                                quotedReplyModel:quotedReplyModel
+                                                     transaction:transaction];
 
     [BenchManager benchAsyncWithTitle:@"Saving outgoing message"
                                 block:^(void (^benchmarkCompletion)(void)) {
                                     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
-                                        [outboundMessage insertMessageWithLinkPreviewDraft:linkPreviewDraft transaction:writeTransaction];
-                                        [self.messageSenderJobQueue addMessage:outboundMessage transaction:writeTransaction];
+                                        [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:linkPreviewDraft transaction:writeTransaction];
+                                        [self.messageSenderJobQueue addMessage:outgoingMessagePreparer transaction:writeTransaction];
                                     }
                                                                    completion:benchmarkCompletion];
                                 }];
 
-    return outboundMessage.unpreparedMessage;
+    return outgoingMessagePreparer.unpreparedMessage;
 }
 
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread
@@ -168,7 +169,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [message anyInsertWithTransaction:transaction];
-        [self.messageSenderJobQueue addMessage:message.asOutbound transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
     }];
 
     return message;
@@ -229,7 +230,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
             [message anyInsertWithTransaction:transaction];
             [message updateWithMessageSticker:messageSticker transaction:transaction];
 
-            [self.messageSenderJobQueue addMessage:message.asOutbound transaction:transaction];
+            [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
         }];
     });
 
@@ -244,7 +245,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.messageSenderJobQueue addMessage:message.asOutbound transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
     }];
 }
 
@@ -281,16 +282,17 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertDebug(thread);
     OWSAssertDebug(completion);
 
-    OutboundMessage *outboundMessage = [[OutboundMessage alloc] initWithFullMessageText:fullMessageText
-                                                                       mediaAttachments:mediaAttachments
-                                                                                 thread:thread
-                                                                       quotedReplyModel:quotedReplyModel
-                                                                            transaction:transaction];
+    OutgoingMessagePreparer *outgoingMessagePreparer =
+        [[OutgoingMessagePreparer alloc] initWithFullMessageText:fullMessageText
+                                                mediaAttachments:mediaAttachments
+                                                          thread:thread
+                                                quotedReplyModel:quotedReplyModel
+                                                     transaction:transaction];
 
     [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
-        [outboundMessage insertMessageWithLinkPreviewDraft:nil transaction:writeTransaction];
+        [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:nil transaction:writeTransaction];
 
-        [messageSender sendMessage:outboundMessage
+        [messageSender sendMessage:outgoingMessagePreparer
             success:^{
                 dispatch_async(dispatch_get_main_queue(), ^{
                     completion(nil);
@@ -303,7 +305,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
             }];
     }];
 
-    return outboundMessage.unpreparedMessage;
+    return outgoingMessagePreparer.unpreparedMessage;
 }
 
 + (TSOutgoingMessage *)sendMessageNonDurablyWithContactShare:(OWSContact *)contactShare
@@ -341,7 +343,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                      messageSticker:nil
                                                   isViewOnceMessage:NO];
 
-    [messageSender sendMessage:message.asOutbound
+    [messageSender sendMessage:message.asPreparer
         success:^{
             OWSLogDebug(@"Successfully sent contact share.");
             dispatch_async(dispatch_get_main_queue(), ^(void) {

@@ -1869,7 +1869,7 @@ typedef enum : NSUInteger {
                           style:UIAlertActionStyleDefault
                         handler:^(UIAlertAction *action) {
                             [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                [self.messageSenderJobQueue addMessage:message.asOutbound transaction:transaction];
+                                [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
                             }];
                         }];
 
@@ -3406,7 +3406,7 @@ typedef enum : NSUInteger {
         // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
         // which causes this code to be called. Once we're more aggressive about durable sending retry,
         // we could get rid of this "retryable tappable error message".
-        [self.messageSender sendMessage:message.asOutbound
+        [self.messageSender sendMessage:message.asPreparer
             success:^{
                 OWSLogDebug(@"Successfully sent group update");
                 if (successCompletion) {
@@ -5130,7 +5130,7 @@ typedef enum : NSUInteger {
                                                                        groupMetaMessage:TSGroupMetaMessageQuit
                                                                        expiresInSeconds:0];
 
-                [self.messageSenderJobQueue addMessage:message.asOutbound transaction:transaction];
+                [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
                 [groupThread leaveGroupWithTransaction:transaction];
             }
 

@@ -5,7 +5,7 @@
 import PromiseKit
 
 @objc
-public class OutboundMessage: NSObject {
+public class OutgoingMessagePreparer: NSObject {
     private let message: TSOutgoingMessage
     private let unsavedAttachmentInfos: [OutgoingAttachmentInfo]
     private var didCompletePrep = false
@@ -50,13 +50,13 @@ public class OutboundMessage: NSObject {
         assert(!didCompletePrep)
 
         if unsavedAttachmentInfos.count > 0 {
-            try OutgoingMessagePreparer.insertAttachments(unsavedAttachmentInfos,
-                                                          for: message,
-                                                          transaction: transaction)
+            try OutgoingMessagePreparerHelper.insertAttachments(unsavedAttachmentInfos,
+                                                                for: message,
+                                                                transaction: transaction)
         }
 
-        self.savedAttachmentIds = OutgoingMessagePreparer.prepareMessage(forSending: message,
-                                                                         transaction: transaction)
+        self.savedAttachmentIds = OutgoingMessagePreparerHelper.prepareMessage(forSending: message,
+                                                                               transaction: transaction)
 
         didCompletePrep = true
         return message
@@ -65,7 +65,7 @@ public class OutboundMessage: NSObject {
 
 @objc
 public extension TSOutgoingMessage {
-    var asOutbound: OutboundMessage {
-        return OutboundMessage(self)
+    var asPreparer: OutgoingMessagePreparer {
+        return OutgoingMessagePreparer(self)
     }
 }

@@ -254,7 +254,7 @@ private class SignalCallData: NSObject {
          * exchanged, the clients can connect.
          */
         let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessages: iceUpdateProtos)
-        let sendPromise = self.messageSender.sendPromise(message: callMessage.asOutbound)
+        let sendPromise = self.messageSender.sendMessage(.promise, callMessage.asPreparer)
             .done { [weak self] in
                 AssertIsOnMainThread()
 
@@ -506,7 +506,7 @@ private class SignalCallData: NSObject {
                     let offerBuilder = SSKProtoCallMessageOffer.builder(id: call.signalingId,
                                                                         sessionDescription: sessionDescription.sdp)
                     let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: try offerBuilder.build())
-                    return self.messageSender.sendPromise(message: callMessage.asOutbound)
+                    return self.messageSender.sendMessage(.promise, callMessage.asPreparer)
                 } catch {
                     owsFailDebug("Couldn't build proto")
                     throw CallError.fatalError(description: "Couldn't build proto")
@@ -662,7 +662,7 @@ private class SignalCallData: NSObject {
         do {
             let busyBuilder = SSKProtoCallMessageBusy.builder(id: call.signalingId)
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: try busyBuilder.build())
-            let sendPromise = messageSender.sendPromise(message: callMessage.asOutbound)
+            let sendPromise = messageSender.sendMessage(.promise, callMessage.asPreparer)
             sendPromise.retainUntilComplete()
 
             handleMissedCall(call)
@@ -840,14 +840,14 @@ private class SignalCallData: NSObject {
                                                                                                sessionDescription: negotiatedSessionDescription.sdp)
                 let callAnswerMessage = OWSOutgoingCallMessage(thread: thread, answerMessage: try answerBuilder.build())
 
-                return self.messageSender.sendPromise(message: callAnswerMessage.asOutbound)
+                return self.messageSender.sendMessage(.promise, callAnswerMessage.asPreparer)
             } catch {
                 owsFailDebug("Couldn't build proto")
                 throw CallError.fatalError(description: "Couldn't build proto")
             }
         }.then { () -> Promise<Void> in
             guard self.call == newCall else {
-                throw CallError.obsoleteCall(description: "sendPromise(message: ) response for obsolete call")
+                throw CallError.obsoleteCall(description: "sendMessage response for obsolete call")
             }
             Logger.debug("successfully sent callAnswerMessage for: \(newCall.identifiersForLogs)")
 
@@ -1285,7 +1285,7 @@ private class SignalCallData: NSObject {
             let hangupBuilder = SSKProtoCallMessageHangup.builder(id: call.signalingId)
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: try hangupBuilder.build())
 
-            self.messageSender.sendPromise(message: callMessage.asOutbound)
+            self.messageSender.sendMessage(.promise, callMessage.asPreparer)
             .done {
                 Logger.debug("successfully sent hangup call message to \(call.thread.contactAddress)")
             }.catch { error in

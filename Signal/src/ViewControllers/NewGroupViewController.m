@@ -534,7 +534,7 @@ NS_ASSUME_NONNULL_BEGIN
                           } else {
                               // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
                               // an error in the thread if group creation fails
-                              [self.messageSender sendMessage:message.asOutbound
+                              [self.messageSender sendMessage:message.asPreparer
                                                       success:successHandler
                                                       failure:failureHandler];
                           }
