@@ -163,17 +163,20 @@ public class SDSDatabaseStorage: SDSTransactable {
         if useGRDB {
             do {
                 try grdbStorage.write { transaction in
-                    block(transaction.asAnyWrite)
+                    Bench(title: "Slow Write Transaction", logIfLongerThan: 0.1) {
+                        block(transaction.asAnyWrite)
+                    }
                 }
             } catch {
                 owsFail("error: \(error)")
             }
         } else {
             yapStorage.write { transaction in
-                block(transaction.asAnyWrite)
+                Bench(title: "Slow Write Transaction", logIfLongerThan: 0.1) {
+                    block(transaction.asAnyWrite)
+                }
             }
         }
-
         crossProcess.notifyChangedAsync()
     }
 

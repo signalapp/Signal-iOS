@@ -43,14 +43,17 @@ public func BenchAsync(title: String, block: (@escaping () -> Void) -> Void) {
 ///        }
 ///    }
 ///
-public func Bench<T>(title: String, block: () throws -> T) rethrows -> T {
+public func Bench<T>(title: String, logIfLongerThan intervalLimit: TimeInterval = 0, block: () throws -> T) rethrows -> T {
     let startTime = CACurrentMediaTime()
 
     let value = try block()
 
     let timeElapsed = CACurrentMediaTime() - startTime
-    let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
-    Logger.debug("[Bench] title: \(title), duration: \(formattedTime)")
+
+    if timeElapsed > intervalLimit {
+        let formattedTime = String(format: "%0.2fms", timeElapsed * 1000)
+        Logger.debug("[Bench] title: \(title), duration: \(formattedTime)")
+    }
 
     return value
 }

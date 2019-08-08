@@ -225,7 +225,11 @@ NS_ASSUME_NONNULL_BEGIN
     // We can avoid these crashes by simply copying the Data.
     NSData *dataCopy = (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0) ? self.dataValue : [self.dataValue copy]);
 
-    BOOL success = [dataCopy writeToFile:dstFilePath atomically:YES];
+    __block BOOL success;
+    NSString *benchTitle = [NSString stringWithFormat:@"DataSourceValue writeData of size: %llu", (unsigned long long)dataCopy.length];
+    [BenchManager benchWithTitle:benchTitle block:^{
+        success = [dataCopy writeToFile:dstFilePath atomically:YES];
+    }];
     if (!success) {
         OWSLogDebug(@"Could not write data to disk: %@", dstFilePath);
         OWSFailDebug(@"Could not write data to disk.");
@@ -382,8 +386,16 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(self.filePath);
 
-    NSError *error;
-    BOOL success = [[NSFileManager defaultManager] copyItemAtPath:self.filePath toPath:dstFilePath error:&error];
+    __block NSError *error;
+    __block BOOL success;
+
+    unsigned long long fileSize = [NSFileManager.defaultManager attributesOfItemAtPath:self.filePath
+                                                                                 error:nil].fileSize;
+    NSString *benchTitle = [NSString stringWithFormat:@"DataSourcePath copyItemAtPath with fileSize: %llu", fileSize];
+    [BenchManager benchWithTitle:benchTitle block:^{
+        success = [[NSFileManager defaultManager] copyItemAtPath:self.filePath toPath:dstFilePath error:&error];
+    }];
+
     if (!success || error) {
         OWSLogDebug(@"Could not write data from path: %@, to path: %@, %@", self.filePath, dstFilePath, error);
         OWSFailDebug(@"Could not write data with error: %@", error);
