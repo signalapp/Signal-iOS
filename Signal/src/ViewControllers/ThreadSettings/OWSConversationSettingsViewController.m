@@ -372,7 +372,7 @@ const CGFloat kIconViewLength = 24;
                              itemWithCustomCellBlock:^{
                                  return [weakSelf
                                       disclosureCellWithName:MediaStrings.allMedia
-                                                    iconName:@"actionsheet_camera_roll_black"
+                                                    iconName:@"photo-outline-24"
                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                                  OWSConversationSettingsViewController, @"all_media")];
                              }
