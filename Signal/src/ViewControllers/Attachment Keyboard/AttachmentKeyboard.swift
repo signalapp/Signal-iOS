@@ -155,7 +155,10 @@ class AttachmentKeyboard: CustomKeyboard {
             showRecentPhotosError()
         case .notDetermined:
             PHPhotoLibrary.requestAuthorization { _ in
-                self.checkPermissionsAndLayout()
+                DispatchQueue.main.async {
+                    self.recentPhotosCollectionView.permissionChanged()
+                    self.checkPermissionsAndLayout()
+                }
             }
         @unknown default:
             showRecentPhotosError()
