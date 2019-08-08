@@ -173,20 +173,6 @@ public class StickerKeyboard: CustomKeyboard {
         updateHeaderView()
     }
 
-    public override func invalidateIntrinsicContentSize() {
-        super.invalidateIntrinsicContentSize()
-
-    }
-
-    private var isLayingoutSubviews = false
-    private var previousPageWidth: CGFloat?
-    public override func layoutSubviews() {
-        isLayingoutSubviews = true
-        super.layoutSubviews()
-        previousPageWidth = pageWidth
-        isLayingoutSubviews = false
-    }
-
     public override func orientationDidChange() {
         super.orientationDidChange()
 
@@ -319,34 +305,6 @@ public class StickerKeyboard: CustomKeyboard {
 
     }
 
-    private var isScrollingChange = false
-    private func checkForPageChange() {
-        // Ignore any page changes while we're laying out, as the content
-        // offset will move about as the scrollView potentially resizes.
-        guard !isLayingoutSubviews, previousPageWidth == pageWidth else { return }
-
-        isScrollingChange = true
-
-        let offsetX = stickerPagingScrollView.contentOffset.x
-
-        // Scrolled left a page
-        if offsetX <= previousPageThreshold {
-            selectedStickerPack = previousPageStickerPack
-
-        // Scrolled right a page
-        } else if offsetX >= nextPageThreshold {
-            selectedStickerPack = nextPageStickerPack
-
-        // We're about to cross the threshold into a new page, execute any pending updates.
-        // We wait to execute these until we're sure we're going to cross over as it
-        // can cause some UI jitter that interupts scrolling.
-        } else if offsetX >= pageWidth * 0.95 && offsetX <= pageWidth * 1.05 {
-            applyPendingPageChangeUpdates()
-        }
-
-        isScrollingChange = false
-    }
-
     private var pendingPageChangeUpdates: (() -> Void)?
     private func applyPendingPageChangeUpdates() {
         pendingPageChangeUpdates?()
@@ -417,6 +375,62 @@ public class StickerKeyboard: CustomKeyboard {
             stickerPagingScrollView.contentOffset.x = pageWidth
         }
     }
+
+    // MARK: - Scroll state management
+
+    /// Indicates that the user stopped actively scrolling, but
+    /// we still haven't reached their final destination.
+    private var isWaitingForDeceleration = false
+
+    /// Indicates that the user started scrolling and we've yet
+    /// to reach their final destination.
+    private var isUserScrolling = false
+
+    /// Indicates that we're currently changing pages due to a
+    /// user initiated scroll action.
+    private var isScrollingChange = false
+
+    private func userStartedScrolling() {
+        isWaitingForDeceleration = false
+        isUserScrolling = true
+    }
+
+    private func userStoppedScrolling(waitingForDeceleration: Bool = false) {
+        guard isUserScrolling else { return }
+
+        if waitingForDeceleration {
+            isWaitingForDeceleration = true
+        } else {
+            isWaitingForDeceleration = false
+            isUserScrolling = false
+        }
+    }
+
+    private func checkForPageChange() {
+        // Ignore any page changes unless the user is triggering them.
+        guard isUserScrolling else { return }
+
+        isScrollingChange = true
+
+        let offsetX = stickerPagingScrollView.contentOffset.x
+
+        // Scrolled left a page
+        if offsetX <= previousPageThreshold {
+            selectedStickerPack = previousPageStickerPack
+
+            // Scrolled right a page
+        } else if offsetX >= nextPageThreshold {
+            selectedStickerPack = nextPageStickerPack
+
+            // We're about to cross the threshold into a new page, execute any pending updates.
+            // We wait to execute these until we're sure we're going to cross over as it
+            // can cause some UI jitter that interupts scrolling.
+        } else if offsetX >= pageWidth * 0.95 && offsetX <= pageWidth * 1.05 {
+            applyPendingPageChangeUpdates()
+        }
+
+        isScrollingChange = false
+    }
 }
 
 // MARK: -
@@ -424,6 +438,18 @@ public class StickerKeyboard: CustomKeyboard {
 extension StickerKeyboard: UIScrollViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         checkForPageChange()
+    }
+
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        userStartedScrolling()
+    }
+
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        userStoppedScrolling(waitingForDeceleration: decelerate)
+    }
+
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        userStoppedScrolling()
     }
 }
 

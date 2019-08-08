@@ -37,11 +37,11 @@ public class StickerHorizontalListViewItemSticker: NSObject, StickerHorizontalLi
         self.isSelectedBlock = isSelectedBlock
     }
 
-    public lazy var view: UIView = {
+    public var view: UIView {
         let view = StickerView(stickerInfo: stickerInfo)
         view.layer.minificationFilter = .trilinear
         return view
-    }()
+    }
 
     public var isSelected: Bool {
         return isSelectedBlock()
