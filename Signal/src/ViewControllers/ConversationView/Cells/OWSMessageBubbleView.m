@@ -19,6 +19,7 @@
 #import "UIColor+OWS.h"
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -715,6 +716,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.class loadForTextDisplay:self.bodyTextView
                    displayableText:self.displayableBodyText
                         searchText:self.delegate.lastSearchedText
+                        senderName:self.viewItem.senderName
                          textColor:self.bodyTextColor
                               font:self.textMessageFont
                 shouldIgnoreEvents:shouldIgnoreEvents];
@@ -723,6 +725,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)loadForTextDisplay:(OWSMessageTextView *)textView
            displayableText:(DisplayableText *)displayableText
                 searchText:(nullable NSString *)searchText
+                senderName:(nullable NSString *)senderName
                  textColor:(UIColor *)textColor
                       font:(UIFont *)font
         shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
@@ -774,6 +777,20 @@ NS_ASSUME_NONNULL_BEGIN
     // We use attributedText even when we're not highlighting searched text to esnure any lingering
     // attributes are reset.
     textView.attributedText = attributedText;
+
+    textView.accessibilityLabel = [self accessibilityLabelWithDescription:text senderName:senderName];
+}
+
++ (NSString *)accessibilityLabelWithDescription:(NSString *)descriptionParam senderName:(nullable NSString *)senderName
+{
+    NSString *description = (descriptionParam.length > 0
+            ? descriptionParam
+            : NSLocalizedString(@"ACCESSIBILITY_LABEL_MESSAGE", @"Accessibility label for message."));
+    if (senderName.length > 0) {
+        return [@" " join:@[ senderName, description ]];
+    } else {
+        return description;
+    }
 }
 
 - (BOOL)shouldShowSenderName
@@ -847,6 +864,11 @@ NS_ASSUME_NONNULL_BEGIN
         [self.viewConstraints addObjectsFromArray:[innerShadowView autoPinEdgesToSuperviewEdges]];
     }
 
+    albumView.accessibilityLabel =
+        [OWSMessageBubbleView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_MEDIA",
+                                                                    @"Accessibility label for media.")
+                                                     senderName:self.viewItem.senderName];
+
     return albumView;
 }
 
@@ -871,6 +893,11 @@ NS_ASSUME_NONNULL_BEGIN
         // Do nothing.
     };
 
+    audioMessageView.accessibilityLabel =
+        [OWSMessageBubbleView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_AUDIO",
+                                                                    @"Accessibility label for audio.")
+                                                     senderName:self.viewItem.senderName];
+
     return audioMessageView;
 }
 
@@ -891,6 +918,11 @@ NS_ASSUME_NONNULL_BEGIN
         // Do nothing.
     };
 
+    attachmentView.accessibilityLabel =
+        [OWSMessageBubbleView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_ATTACHMENT",
+                                                                    @"Accessibility label for attachment.")
+                                                     senderName:self.viewItem.senderName];
+
     return attachmentView;
 }
 
@@ -910,6 +942,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.unloadCellContentBlock = ^{
         // Do nothing.
     };
+
+    contactShareView.accessibilityLabel =
+        [OWSMessageBubbleView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_CONTACT",
+                                                                    @"Accessibility label for contact.")
+                                                     senderName:self.viewItem.senderName];
 
     return contactShareView;
 }
@@ -1374,6 +1411,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.bodyTextView removeFromSuperview];
     self.bodyTextView.text = nil;
     self.bodyTextView.attributedText = nil;
+    self.bodyTextView.accessibilityLabel = nil;
     self.bodyTextView.hidden = YES;
 
     self.bubbleView.fillColor = nil;
