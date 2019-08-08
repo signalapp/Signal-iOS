@@ -19,6 +19,9 @@
 /* Accessibility label for message. */
 "ACCESSIBILITY_LABEL_MESSAGE" = "Message";
 
+/* Accessibility label for messages sent by you. */
+"ACCESSIBILITY_LABEL_SENDER_SELF" = "You";
+
 /* Accessibility label for stickers. */
 "ACCESSIBILITY_LABEL_STICKER" = "Sticker";
 

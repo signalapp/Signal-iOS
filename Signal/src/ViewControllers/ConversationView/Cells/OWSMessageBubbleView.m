@@ -716,19 +716,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self.class loadForTextDisplay:self.bodyTextView
                    displayableText:self.displayableBodyText
                         searchText:self.delegate.lastSearchedText
-                        senderName:self.viewItem.senderName
+           accessibilitySenderName:self.viewItem.accessibilitySenderName
                          textColor:self.bodyTextColor
                               font:self.textMessageFont
                 shouldIgnoreEvents:shouldIgnoreEvents];
 }
 
 + (void)loadForTextDisplay:(OWSMessageTextView *)textView
-           displayableText:(DisplayableText *)displayableText
-                searchText:(nullable NSString *)searchText
-                senderName:(nullable NSString *)senderName
-                 textColor:(UIColor *)textColor
-                      font:(UIFont *)font
-        shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
+            displayableText:(DisplayableText *)displayableText
+                 searchText:(nullable NSString *)searchText
+    accessibilitySenderName:(nullable NSString *)accessibilitySenderName
+                  textColor:(UIColor *)textColor
+                       font:(UIFont *)font
+         shouldIgnoreEvents:(BOOL)shouldIgnoreEvents
 {
     textView.hidden = NO;
     textView.textColor = textColor;
@@ -778,19 +778,7 @@ NS_ASSUME_NONNULL_BEGIN
     // attributes are reset.
     textView.attributedText = attributedText;
 
-    textView.accessibilityLabel = [self accessibilityLabelWithDescription:text senderName:senderName];
-}
-
-+ (NSString *)accessibilityLabelWithDescription:(NSString *)descriptionParam senderName:(nullable NSString *)senderName
-{
-    NSString *description = (descriptionParam.length > 0
-            ? descriptionParam
-            : NSLocalizedString(@"ACCESSIBILITY_LABEL_MESSAGE", @"Accessibility label for message."));
-    if (senderName.length > 0) {
-        return [@" " join:@[ senderName, description ]];
-    } else {
-        return description;
-    }
+    textView.accessibilityLabel = [self accessibilityLabelWithDescription:text senderName:accessibilitySenderName];
 }
 
 - (BOOL)shouldShowSenderName
@@ -865,9 +853,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     albumView.accessibilityLabel =
-        [OWSMessageBubbleView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_MEDIA",
-                                                                    @"Accessibility label for media.")
-                                                     senderName:self.viewItem.senderName];
+        [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_MEDIA",
+                                                              @"Accessibility label for media.")
+                                               senderName:self.viewItem.accessibilitySenderName];
 
     return albumView;
 }
@@ -894,9 +882,9 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     audioMessageView.accessibilityLabel =
-        [OWSMessageBubbleView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_AUDIO",
-                                                                    @"Accessibility label for audio.")
-                                                     senderName:self.viewItem.senderName];
+        [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_AUDIO",
+                                                              @"Accessibility label for audio.")
+                                               senderName:self.viewItem.accessibilitySenderName];
 
     return audioMessageView;
 }
@@ -919,9 +907,9 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     attachmentView.accessibilityLabel =
-        [OWSMessageBubbleView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_ATTACHMENT",
-                                                                    @"Accessibility label for attachment.")
-                                                     senderName:self.viewItem.senderName];
+        [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_ATTACHMENT",
+                                                              @"Accessibility label for attachment.")
+                                               senderName:self.viewItem.accessibilitySenderName];
 
     return attachmentView;
 }
@@ -944,9 +932,9 @@ NS_ASSUME_NONNULL_BEGIN
     };
 
     contactShareView.accessibilityLabel =
-        [OWSMessageBubbleView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_CONTACT",
-                                                                    @"Accessibility label for contact.")
-                                                     senderName:self.viewItem.senderName];
+        [OWSMessageView accessibilityLabelWithDescription:NSLocalizedString(@"ACCESSIBILITY_LABEL_CONTACT",
+                                                              @"Accessibility label for contact.")
+                                               senderName:self.viewItem.accessibilitySenderName];
 
     return contactShareView;
 }

@@ -152,6 +152,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @synthesize isLastInCluster = _isLastInCluster;
 @synthesize lastAudioMessageView = _lastAudioMessageView;
 @synthesize senderName = _senderName;
+@synthesize accessibilitySenderName = _accessibilitySenderName;
 @synthesize shouldHideFooter = _shouldHideFooter;
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
@@ -213,6 +214,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     self.authorConversationColorName = nil;
     self.linkPreview = nil;
     self.linkPreviewAttachment = nil;
+    self.senderName = nil;
+    self.accessibilitySenderName = nil;
 
     [self setAuthorConversationColorNameWithTransaction:transaction];
     [self setMutualGroupNamesWithTransaction:transaction];
@@ -365,6 +368,17 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 
     _senderName = senderName;
+
+    [self clearCachedLayoutState];
+}
+
+- (void)setAccessibilitySenderName:(nullable NSString *)accessibilitySenderName
+{
+    if ([NSObject isNullableObject:accessibilitySenderName equalTo:_accessibilitySenderName]) {
+        return;
+    }
+
+    _accessibilitySenderName = accessibilitySenderName;
 
     [self clearCachedLayoutState];
 }
