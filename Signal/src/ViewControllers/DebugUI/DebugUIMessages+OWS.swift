@@ -49,6 +49,7 @@ public extension DebugUIMessages {
         }
     }
 
+    #if DEBUG
     @objc
     class func receiveUUIDEnvelopeInNewThread() {
         assert(FeatureFlags.allowUUIDOnlyContacts)
@@ -69,7 +70,8 @@ public extension DebugUIMessages {
         let envelopeData = try! envelopeBuilder.buildSerializedData()
         messageReceiver.handleReceivedEnvelopeData(envelopeData)
     }
-
+    #endif
+    
     @objc
     class func createUUIDGroup() {
         assert(FeatureFlags.allowUUIDOnlyContacts)

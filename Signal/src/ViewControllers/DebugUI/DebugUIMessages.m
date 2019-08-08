@@ -128,10 +128,12 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendNTextMessagesInThread:thread];
                         }],
+#if DEBUG
         [OWSTableItem itemWithTitle:@"👷 Receive UUID message"
                         actionBlock:^{
                             [DebugUIMessages receiveUUIDEnvelopeInNewThread];
                         }],
+#endif
         [OWSTableItem itemWithTitle:@"Create UUID group"
                         actionBlock:^{
                             [DebugUIMessages createUUIDGroup];
