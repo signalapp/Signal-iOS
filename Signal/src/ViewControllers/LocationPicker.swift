@@ -63,10 +63,13 @@ public class LocationPicker: UIViewController {
         view = mapView
 
         let currentLocationButton = UIButton()
-        currentLocationButton.setTemplateImageName("location-outline-24", tintColor: .white)
-        currentLocationButton.setBackgroundImage(UIImage(color: UIColor.black.withAlphaComponent(0.7)), for: .normal)
+        currentLocationButton.backgroundColor = UIColor.black.withAlphaComponent(0.7)
         currentLocationButton.clipsToBounds = true
         currentLocationButton.layer.cornerRadius = 24
+
+        // This icon doesn't look right when it's actually centered do to its odd shape.
+        currentLocationButton.setTemplateImageName("current-location-outline-24", tintColor: .white)
+        currentLocationButton.contentEdgeInsets = UIEdgeInsets(top: 2, left: 0, bottom: 0, right: 2)
 
         view.addSubview(currentLocationButton)
         currentLocationButton.autoSetDimensions(to: CGSize(width: 48, height: 48))
@@ -81,20 +84,25 @@ public class LocationPicker: UIViewController {
 
         title = NSLocalizedString("LOCATION_PICKER_TITLE", comment: "The title for the location picker view")
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            title: CommonStrings.cancelButton,
-            style: .plain,
-            target: self,
-            action: #selector(didPressCancel)
-        )
+        navigationItem.leftBarButtonItem = createOWSBackButton()
 
         locationManager.delegate = self
         mapView.delegate = self
 
         OWSSearchBar.applyTheme(to: searchBar)
-        searchBar.barTintColor = Theme.navbarBackgroundColor
-        searchBar.tintColor = Theme.primaryColor
+
         searchBar.isTranslucent = false
+
+        // When the search bar isn't translucent, it doesn't allow
+        // setting the textField's backgroundColor. Instead, we need
+        // to use the bacgrkound image.
+        let backgroundImage = UIImage(
+            color: Theme.searchFieldBackgroundColor,
+            size: CGSize(width: 36, height: 36)
+        ).withCornerRadius(10)
+        searchBar.setSearchFieldBackgroundImage(backgroundImage, for: .normal)
+        searchBar.searchTextPositionAdjustment = UIOffset(horizontal: 8.0, vertical: 0.0)
+        searchBar.textField?.backgroundColor = .clear
 
         // Pre iOS 11, use the titleView for the search bar.
         if #available(iOS 11.0, *) {
@@ -129,7 +137,7 @@ public class LocationPicker: UIViewController {
         return true
     }
 
-    @objc func didPressCancel() {
+    @objc func backButtonPressed(_ sender: UIButton) {
         if let navigation = navigationController, navigation.viewControllers.count > 1 {
             navigation.popViewController(animated: true)
         } else {
@@ -410,8 +418,13 @@ public class Location: NSObject {
         return Promise { resolver in
             let options = MKMapSnapshotter.Options()
             options.region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 300, longitudinalMeters: 300)
-            options.size = CGSize(width: 1024, height: 1024)
-            options.scale = 1
+            options.size = CGSize(width: 256, height: 256)
+
+            // Always use 3x scale, the snapshotter uses the scale to determine how much
+            // of the map the size should capture, but we always want to capture a constant
+            // size image since we're sharing this with other phones.
+            options.scale = 3
+
             MKMapSnapshotter(options: options).start(with: .global()) { snapshot, error in
                 guard error == nil else {
                     owsFailDebug("Unexpectedly failed to capture map snapshot \(error!)")
@@ -425,7 +438,7 @@ public class Location: NSObject {
 
                 // Draw our location pin on the snapshot
 
-                UIGraphicsBeginImageContextWithOptions(options.size, true, 0)
+                UIGraphicsBeginImageContextWithOptions(options.size, true, 3)
                 snapshot.image.draw(at: .zero)
 
                 let pinView = MKPinAnnotationView(annotation: nil, reuseIdentifier: nil)

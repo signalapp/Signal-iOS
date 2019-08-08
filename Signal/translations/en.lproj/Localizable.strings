@@ -1270,7 +1270,7 @@
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Send Location";
+"LOCATION_PICKER_TITLE" = "Select Location";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logging";
