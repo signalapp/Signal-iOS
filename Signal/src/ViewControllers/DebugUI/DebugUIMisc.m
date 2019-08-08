@@ -22,6 +22,8 @@
 #import <SignalServiceKit/TSThread.h>
 #import <SignalServiceKit/UIImage+OWS.h>
 
+#ifdef DEBUG
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSStorage (DebugUI)
@@ -126,7 +128,6 @@ NS_ASSUME_NONNULL_BEGIN
                                          [OWS2FAManager.sharedManager setDefaultRepetitionInterval];
                                      }]];
 
-#ifdef DEBUG
     [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"
                                            actionBlock:^(UIViewController *viewController) {
                                                UIImage *image =
@@ -145,7 +146,6 @@ NS_ASSUME_NONNULL_BEGIN
                                            actionBlock:^(UIViewController *viewController) {
                                                [DebugUIMisc sharePDFs:2];
                                            }]];
-#endif
 
     [items
         addObject:[OWSTableItem
@@ -278,8 +278,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self sendAttachment:attachment thread:thread];
 }
 
-#ifdef DEBUG
-
 + (void)shareAssets:(NSUInteger)count
    fromAssetLoaders:(NSArray<DebugUIMessagesAssetLoader *> *)assetLoaders
 {
@@ -336,8 +334,8 @@ NS_ASSUME_NONNULL_BEGIN
                         ]];
 }
 
-#endif
-
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

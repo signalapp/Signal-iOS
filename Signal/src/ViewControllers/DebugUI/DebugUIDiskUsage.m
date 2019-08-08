@@ -10,6 +10,8 @@
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSInteraction.h>
 
+#ifdef DEBUG
+
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIDiskUsage
@@ -113,3 +115,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

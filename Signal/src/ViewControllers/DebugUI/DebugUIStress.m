@@ -17,6 +17,8 @@
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
 
+#ifdef DEBUG
+
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIStress
@@ -55,8 +57,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(thread);
     
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
-
-#ifdef DEBUG
 
     [items addObject:[OWSTableItem itemWithTitle:@"Send empty message"
                                      actionBlock:^{
@@ -462,12 +462,8 @@ NS_ASSUME_NONNULL_BEGIN
                                          [DebugUIStress makeUnregisteredGroup];
                                      }]];
 
-#endif
-
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
-
-#ifdef DEBUG
 
 + (void)ensureGroupOfDataBuilder:(SSKProtoDataMessageBuilder *)dataBuilder thread:(TSThread *)thread
 {
@@ -570,8 +566,8 @@ NS_ASSUME_NONNULL_BEGIN
     [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
 }
 
-#endif
-
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

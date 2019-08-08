@@ -7,6 +7,8 @@ import SignalServiceKit
 import SignalMessaging
 import PromiseKit
 
+#if DEBUG
+
 class DebugUINotifications: DebugUIPage {
 
     // MARK: Dependencies
@@ -224,3 +226,5 @@ class DebugUINotifications: DebugUIPage {
         }
     }
 }
+
+#endif

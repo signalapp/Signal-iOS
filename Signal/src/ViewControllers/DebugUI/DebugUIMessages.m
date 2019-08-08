@@ -26,6 +26,8 @@
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
 
+#ifdef DEBUG
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TSIncomingMessage (DebugUI)
@@ -53,8 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
     return @"Messages";
 }
 
-#ifdef DEBUG
-
 - (NSArray<OWSTableItem *> *)itemsForActions:(NSArray<DebugUIMessagesAction *> *)actions
 {
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
@@ -79,15 +79,11 @@ NS_ASSUME_NONNULL_BEGIN
     return items;
 }
 
-#endif
-
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)thread
 {
     OWSAssertDebug(thread);
 
     NSMutableArray<OWSTableItem *> *items = [NSMutableArray new];
-
-#ifdef DEBUG
 
     [items addObject:[OWSTableItem itemWithTitle:@"Delete all messages in thread"
                                      actionBlock:^{
@@ -128,12 +124,10 @@ NS_ASSUME_NONNULL_BEGIN
                         actionBlock:^{
                             [DebugUIMessages sendNTextMessagesInThread:thread];
                         }],
-#if DEBUG
         [OWSTableItem itemWithTitle:@"👷 Receive UUID message"
                         actionBlock:^{
                             [DebugUIMessages receiveUUIDEnvelopeInNewThread];
                         }],
-#endif
         [OWSTableItem itemWithTitle:@"Create UUID group"
                         actionBlock:^{
                             [DebugUIMessages createUUIDGroup];
@@ -336,12 +330,8 @@ NS_ASSUME_NONNULL_BEGIN
                                          }]];
     }
 
-#endif
-
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
-
-#ifdef DEBUG
 
 #pragma mark - Dependencies
 
@@ -4927,8 +4917,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         }];
 }
 
-#endif
-
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

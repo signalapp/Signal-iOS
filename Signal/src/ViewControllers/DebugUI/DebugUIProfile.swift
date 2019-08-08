@@ -6,6 +6,8 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
+#if DEBUG
+
 class DebugUIProfile: DebugUIPage {
 
     // MARK: - Dependencies
@@ -64,3 +66,5 @@ class DebugUIProfile: DebugUIPage {
     }
 
 }
+
+#endif

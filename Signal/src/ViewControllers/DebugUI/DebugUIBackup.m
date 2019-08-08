@@ -10,6 +10,8 @@
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
 
+#ifdef DEBUG
+
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIBackup
@@ -255,3 +257,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

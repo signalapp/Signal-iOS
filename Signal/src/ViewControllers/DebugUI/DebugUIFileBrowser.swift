@@ -2,6 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#if DEBUG
+
 @objc class DebugUIFileBrowser: OWSTableViewController {
 
     // MARK: Dependencies
@@ -376,3 +378,5 @@
         return contents
     }
 }
+
+#endif

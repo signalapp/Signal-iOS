@@ -5,6 +5,8 @@
 #import "DebugUIMessagesAction.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
+#ifdef DEBUG
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class DebugUIMessagesSingleAction;
@@ -288,3 +290,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif
