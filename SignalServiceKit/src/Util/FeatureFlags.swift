@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .production
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
 
 /// By centralizing feature flags here and documenting their rollout plan, it's easier to review
 /// which feature flags are in play.
@@ -26,9 +26,7 @@ let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .production
 public class FeatureFlags: NSObject {
 
     @objc
-    public static var conversationSearch: Bool {
-        return false
-    }
+    public static let conversationSearch = false
 
     @objc
     public static var useGRDB = build.includes(.dev)
@@ -51,7 +49,7 @@ public class FeatureFlags: NSObject {
     public static let stickerSend = build.includes(.qa)
 
     @objc
-    public static let stickerSharing = false
+    public static let stickerSharing = build.includes(.qa)
 
     @objc
     public static let stickerAutoEnable = true
