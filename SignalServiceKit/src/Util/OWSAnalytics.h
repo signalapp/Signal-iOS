@@ -6,8 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SDSKeyValueStore;
-
 // TODO: We probably don't need all of these levels.
 typedef NS_ENUM(NSUInteger, OWSAnalyticsSeverity) {
     // Info events are routine.

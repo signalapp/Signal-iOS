@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalServiceAddress;
 @class TSGroupModel;
 @class TSThread;
+@class SDSKeyValueStore;
 
 extern NSString *const kNSNotificationName_BlockListDidChange;
 

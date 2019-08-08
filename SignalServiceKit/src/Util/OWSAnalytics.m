@@ -9,8 +9,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSAnalytics
 
-#pragma mark -
-
 + (instancetype)sharedInstance
 {
     static OWSAnalytics *instance = nil;
