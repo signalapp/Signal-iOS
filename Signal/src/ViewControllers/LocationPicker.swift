@@ -22,8 +22,6 @@ public class LocationPicker: UIViewController {
     @objc public weak var delegate: LocationPickerDelegate?
     public var location: Location? { didSet { updateAnnotation() } }
 
-    private let searchDistance: CLLocationDistance = 600
-
     private let locationManager = CLLocationManager()
     private let geocoder = CLGeocoder()
     private var localSearch: MKLocalSearch?
@@ -67,7 +65,7 @@ public class LocationPicker: UIViewController {
         currentLocationButton.clipsToBounds = true
         currentLocationButton.layer.cornerRadius = 24
 
-        // This icon doesn't look right when it's actually centered do to its odd shape.
+        // This icon doesn't look right when it's actually centered due to its odd shape.
         currentLocationButton.setTemplateImageName("current-location-outline-24", tintColor: .white)
         currentLocationButton.contentEdgeInsets = UIEdgeInsets(top: 2, left: 0, bottom: 0, right: 2)
 
@@ -84,7 +82,12 @@ public class LocationPicker: UIViewController {
 
         title = NSLocalizedString("LOCATION_PICKER_TITLE", comment: "The title for the location picker view")
 
-        navigationItem.leftBarButtonItem = createOWSBackButton()
+        navigationItem.leftBarButtonItem = UIBarButtonItem(
+            image: #imageLiteral(imageResource: "x-24").withRenderingMode(.alwaysTemplate),
+            style: .plain,
+            target: self,
+            action: #selector(cancelButtonPressed)
+        )
 
         locationManager.delegate = self
         mapView.delegate = self
@@ -124,7 +127,6 @@ public class LocationPicker: UIViewController {
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        becomeFirstResponder()
         navigationController?.navigationBar.isTranslucent = false
     }
 
@@ -137,7 +139,7 @@ public class LocationPicker: UIViewController {
         return true
     }
 
-    @objc func backButtonPressed(_ sender: UIButton) {
+    @objc func cancelButtonPressed(_ sender: UIButton) {
         if let navigation = navigationController, navigation.viewControllers.count > 1 {
             navigation.popViewController(animated: true)
         } else {
@@ -193,7 +195,9 @@ public class LocationPicker: UIViewController {
     }
 
     func showCoordinates(_ coordinate: CLLocationCoordinate2D, animated: Bool = true) {
-        let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: searchDistance, longitudinalMeters: searchDistance)
+        // The amount of meters +/- the selected coordinate we want to ensure are visible on screen.
+        let metersOffset: CLLocationDistance = 600
+        let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: metersOffset, longitudinalMeters: metersOffset)
         mapView.setRegion(region, animated: animated)
     }
 
@@ -205,7 +209,10 @@ public class LocationPicker: UIViewController {
 
         geocoder.cancelGeocode()
         geocoder.reverseGeocodeLocation(location) { response, error in
-            if let error = error as NSError?, error.code != 10 { // ignore cancelGeocode errors
+            let error = error as NSError?
+            let geocodeCanceled = error?.domain == kCLErrorDomain && error?.code == CLError.Code.geocodeCanceled.rawValue
+
+            if let error = error, !geocodeCanceled {
                 // show error and remove annotation
                 let alert = UIAlertController(title: nil, message: error.localizedDescription, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: NSLocalizedString("BUTTON_OKAY",
@@ -278,8 +285,15 @@ extension LocationPicker: UISearchResultsUpdating {
         request.naturalLanguageQuery = term
 
         if let location = locationManager.location {
-            request.region = MKCoordinateRegion(center: location.coordinate,
-                                                span: MKCoordinateSpan(latitudeDelta: 2, longitudeDelta: 2))
+            // If we have a currently selected location, search relative to that location,
+            // where the +/- degrees of the region we're searching around is reflected
+            // by the latitude and longitude delta below.
+            let latlongDelta: CLLocationDegrees = 2
+
+            request.region = MKCoordinateRegion(
+                center: location.coordinate,
+                span: MKCoordinateSpan(latitudeDelta: latlongDelta, longitudeDelta: latlongDelta)
+            )
         }
 
         localSearch?.cancel()
@@ -417,13 +431,17 @@ public class Location: NSObject {
     public func generateSnapshot() -> Promise<UIImage> {
         return Promise { resolver in
             let options = MKMapSnapshotter.Options()
-            options.region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 300, longitudinalMeters: 300)
-            options.size = CGSize(width: 256, height: 256)
 
-            // Always use 3x scale, the snapshotter uses the scale to determine how much
-            // of the map the size should capture, but we always want to capture a constant
-            // size image since we're sharing this with other phones.
-            options.scale = 3
+            // this is the plus/minus meter range from the given coordinate
+            // that we'd like to capture in our map snapshot.
+            let metersOffset: CLLocationDistance = 300
+
+            options.region = MKCoordinateRegion(center: coordinate, latitudinalMeters: metersOffset, longitudinalMeters: metersOffset)
+
+            // The output size will be 256 * the device's scale. We don't adjust the
+            // scale directly on the options to ensure a consistent size because it
+            // produces poor results on some devices.
+            options.size = CGSize(width: 256, height: 256)
 
             MKMapSnapshotter(options: options).start(with: .global()) { snapshot, error in
                 guard error == nil else {
@@ -438,7 +456,7 @@ public class Location: NSObject {
 
                 // Draw our location pin on the snapshot
 
-                UIGraphicsBeginImageContextWithOptions(options.size, true, 3)
+                UIGraphicsBeginImageContextWithOptions(options.size, true, 0)
                 snapshot.image.draw(at: .zero)
 
                 let pinView = MKPinAnnotationView(annotation: nil, reuseIdentifier: nil)
@@ -512,6 +530,14 @@ extension Location: MKAnnotation {
     }
 
     public var title: String? {
-        return name ?? address ?? "\(coordinate.latitude), \(coordinate.longitude)"
+        if let name = name {
+            return name
+        } else if let addressDictionary = placemark.addressDictionary,
+            let lines = addressDictionary["FormattedAddressLines"] as? [String],
+            let firstLine = lines.first {
+            return firstLine
+        } else {
+            return "\(coordinate.latitude), \(coordinate.longitude)"
+        }
     }
 }

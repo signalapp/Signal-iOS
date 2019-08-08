@@ -5183,10 +5183,10 @@ typedef enum : NSUInteger {
 
         __block TSOutgoingMessage *message;
 
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             message = [ThreadUtil enqueueMessageWithText:location.messageText
                                         mediaAttachments:@[ attachment ]
-                                                inThread:self.thread
+                                                inThread:strongSelf.thread
                                         quotedReplyModel:nil
                                         linkPreviewDraft:nil
                                              transaction:transaction];
