@@ -597,7 +597,7 @@ class NotificationActionHandler {
             throw NotificationError.failDebug("unable to build localCallId. localCallIdString: \(localCallIdString)")
         }
 
-        callUIAdapter.declineCall(localId: localCallId)
+        callUIAdapter.localHangupCall(localId: localCallId)
         return Promise.value(())
     }
 

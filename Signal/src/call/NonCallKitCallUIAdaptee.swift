@@ -97,7 +97,13 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         self.callService.handleAnswerCall(call)
     }
 
-    func declineCall(localId: UUID) {
+    func recipientAcceptedCall(_ call: SignalCall) {
+        AssertIsOnMainThread()
+
+        self.audioSession.isRTCAudioEnabled = true
+    }
+
+    func localHangupCall(localId: UUID) {
         AssertIsOnMainThread()
 
         guard let call = self.callService.call else {
@@ -110,24 +116,7 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
             return
         }
 
-        self.declineCall(call)
-    }
-
-    func declineCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
-        guard call.localId == self.callService.call?.localId else {
-            owsFailDebug("localId does not match current call")
-            return
-        }
-
-        self.callService.handleDeclineCall(call)
-    }
-
-    func recipientAcceptedCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
-        self.audioSession.isRTCAudioEnabled = true
+        self.localHangupCall(call)
     }
 
     func localHangupCall(_ call: SignalCall) {

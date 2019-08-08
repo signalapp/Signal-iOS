@@ -197,19 +197,6 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.answer(call: call)
     }
 
-    func declineCall(localId: UUID) {
-        AssertIsOnMainThread()
-
-        owsFailDebug("CallKit should decline calls via system call screen, not via notifications.")
-    }
-
-    func declineCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-        Logger.info("")
-
-        callManager.localHangup(call: call)
-    }
-
     func recipientAcceptedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
         Logger.info("")
@@ -220,6 +207,12 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         disableUnsupportedFeatures(callUpdate: update)
 
         provider.reportCall(with: call.localId, updated: update)
+    }
+
+    func localHangupCall(localId: UUID) {
+        AssertIsOnMainThread()
+
+        owsFailDebug("CallKit should decline calls via system call screen, not via notifications.")
     }
 
     func localHangupCall(_ call: SignalCall) {

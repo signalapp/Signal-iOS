@@ -19,9 +19,8 @@ protocol CallUIAdaptee {
     func reportMissedCall(_ call: SignalCall, callerName: String)
     func answerCall(localId: UUID)
     func answerCall(_ call: SignalCall)
-    func declineCall(localId: UUID)
-    func declineCall(_ call: SignalCall)
     func recipientAcceptedCall(_ call: SignalCall)
+    func localHangupCall(localId: UUID)
     func localHangupCall(_ call: SignalCall)
     func remoteDidHangupCall(_ call: SignalCall)
     func remoteBusy(_ call: SignalCall)
@@ -197,18 +196,6 @@ extension CallUIAdaptee {
         adaptee.answerCall(call)
     }
 
-    @objc public func declineCall(localId: UUID) {
-        AssertIsOnMainThread()
-
-        adaptee.declineCall(localId: localId)
-    }
-
-    internal func declineCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
-        adaptee.declineCall(call)
-    }
-
     internal func didTerminateCall(_ call: SignalCall?) {
         AssertIsOnMainThread()
 
@@ -239,6 +226,12 @@ extension CallUIAdaptee {
         AssertIsOnMainThread()
 
         adaptee.remoteBusy(call)
+    }
+
+    internal func localHangupCall(localId: UUID) {
+        AssertIsOnMainThread()
+
+        adaptee.localHangupCall(localId: localId)
     }
 
     internal func localHangupCall(_ call: SignalCall) {
