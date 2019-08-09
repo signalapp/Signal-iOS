@@ -541,20 +541,24 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                     addItem:[OWSTableItem
                                 itemWithCustomCellBlock:^{
                                     SelectRecipientViewController *strongSelf = weakSelf;
-                                    OWSCAssertDebug(strongSelf);
-
                                     ContactTableViewCell *cell = [ContactTableViewCell new];
+
+                                    if (strongSelf == nil) {
+                                        OWSCFail(@"strongSelf was unexpectedly nil");
+                                        return cell;
+                                    }
+
                                     BOOL isBlocked =
                                         [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                                     if (isBlocked) {
                                         cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                                     } else {
                                         cell.accessoryMessage =
-                                            [weakSelf.delegate accessoryMessageForSignalAccount:signalAccount];
+                                            [strongSelf.delegate accessoryMessageForSignalAccount:signalAccount];
                                     }
                                     [cell configureWithRecipientAddress:signalAccount.recipientAddress];
 
-                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+                                    if (![strongSelf.delegate canSignalAccountBeSelected:signalAccount]) {
                                         cell.selectionStyle = UITableViewCellSelectionStyleNone;
                                     }
 
@@ -562,10 +566,15 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
                                 }
                                 customRowHeight:UITableViewAutomaticDimension
                                 actionBlock:^{
-                                    if (![weakSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+                                    SelectRecipientViewController *strongSelf = weakSelf;
+                                    if (strongSelf == nil) {
+                                        OWSCFail(@"strongSelf was unexpectedly nil");
                                         return;
                                     }
-                                    [weakSelf.delegate signalAccountWasSelected:signalAccount];
+                                    if (![strongSelf.delegate canSignalAccountBeSelected:signalAccount]) {
+                                        return;
+                                    }
+                                    [strongSelf.delegate signalAccountWasSelected:signalAccount];
                                 }]];
             }
         }

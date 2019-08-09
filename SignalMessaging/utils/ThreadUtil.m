@@ -611,7 +611,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     // the messages view the position of the unread indicator,
     // so that it can widen its "load window" to always show
     // the unread indicator.
-    __block long visibleUnseenMessageCount = 0;
+    __block NSUInteger visibleUnseenMessageCount = 0;
     __block TSInteraction *interactionAfterUnreadIndicator = nil;
     __block BOOL hasMoreUnseenMessages = NO;
     [threadMessagesTransaction

@@ -16,7 +16,7 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
 
 @interface MainAppContext ()
 
-@property (atomic) UIApplicationState reportedApplicationState;
+@property (nonatomic) UIApplicationState reportedApplicationState;
 
 @property (nonatomic, nullable) NSMutableArray<AppActiveBlock> *appActiveBlocks;
 

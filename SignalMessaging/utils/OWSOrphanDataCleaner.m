@@ -710,14 +710,14 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     }];
 
     if (shouldAbort) {
-        return nil;
+        return NO;
     }
 
     NSUInteger filesRemoved = 0;
     NSArray<NSString *> *filePaths = [orphanData.filePaths.allObjects sortedArrayUsingSelector:@selector(compare:)];
     for (NSString *filePath in filePaths) {
         if (!self.isMainAppAndActive) {
-            return nil;
+            return NO;
         }
 
         NSError *error;
