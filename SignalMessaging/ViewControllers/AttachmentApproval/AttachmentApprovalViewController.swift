@@ -779,7 +779,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
     }
 
     func attachmentTextToolbarDidViewOnce(_ attachmentTextToolbar: AttachmentTextToolbar) {
-    updateContents(isApproved: false)
+        updateContents(isApproved: false)
     }
 }
 

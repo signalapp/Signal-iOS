@@ -128,12 +128,6 @@ class SendMediaNavigationController: OWSNavigationController {
         return navController
     }
 
-    // We want to always use batch mode in the media
-    // library views (but not the camera views) unless
-    // the user entered via the "recent photos" UI.
-    //
-    // TODO: Set this to false for users entering via
-    // the "recent photos" UI.
     private var isForcingBatchSelectInMediaLibrary = true
 
     private var isShowingMediaLibrary = false
