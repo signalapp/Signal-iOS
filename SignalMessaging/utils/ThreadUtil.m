@@ -734,15 +734,16 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return @(position);
 }
 
-+ (BOOL)addThreadToProfileWhitelist:(TSThread *)thread
++ (BOOL)addThreadToProfileWhitelistIfEmptyThread:(TSThread *)thread
 {
     OWSAssertDebug(thread);
 
-    if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread]) {
+    if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread] || thread.shouldThreadBeVisible) {
         return NO;
     }
 
     [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+
     return YES;
 }
 
