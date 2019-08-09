@@ -244,6 +244,10 @@ class PhotoCollection {
 
         return PhotoCollectionContents(fetchResult: fetchResult, localizedTitle: localizedTitle())
     }
+    
+    var isEmpty: Bool {
+    	return collection.estimatedAssetCount == 0
+    }
 }
 
 extension PhotoCollection: Equatable {
@@ -307,7 +311,7 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
                 return
             }
             let photoCollection = PhotoCollection(collection: assetCollection)
-            guard !hideIfEmpty || photoCollection.contents().assetCount > 0 else {
+            guard !hideIfEmpty || !photoCollection.isEmpty else {
                 return
             }
 
