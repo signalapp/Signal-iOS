@@ -157,6 +157,11 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
 
         let assetItem = collectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
         cell.configure(item: assetItem, isLoading: fetchingAttachmentIndex == indexPath)
+        #if DEBUG
+        // These accessibilityIdentifiers won't be stable, but they
+        // should work for the purposes of our automated testing.
+        cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "recent-photo-\(indexPath.row)")
+        #endif
         return cell
     }
 }

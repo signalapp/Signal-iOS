@@ -88,7 +88,7 @@ class AttachmentFormatPickerView: UICollectionView {
     }
 }
 
-enum AttachmentType: CaseIterable {
+enum AttachmentType: String, CaseIterable {
     case camera
     case gif
     case file
@@ -231,6 +231,8 @@ class AttachmentFormatCell: UICollectionViewCell {
         }
 
         label.text = text
+
+        self.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "format-\(type.rawValue)")
 
         showLiveCameraIfAvailable()
     }
