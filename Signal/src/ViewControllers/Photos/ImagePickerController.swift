@@ -77,7 +77,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         // The PhotoCaptureVC needs a shadow behind it's camera button, so we use a custom icon.
         // See above.
-        let cameraImage = UIImage(imageLiteralResourceName: "camera-outline-28-shadow")
+        let cameraImage = UIImage(imageLiteralResourceName: "camera-outline-32-shadow")
         let cameraButton = UIBarButtonItem(image: cameraImage, style: .plain, target: self, action: #selector(didPressCamera))
 
         cameraButton.tintColor = .ows_gray05
