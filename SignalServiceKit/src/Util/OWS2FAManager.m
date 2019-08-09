@@ -157,6 +157,10 @@ const NSUInteger kDaySecs = kHourSecs * 24;
     OWSAssertDebug(success);
     OWSAssertDebug(failure);
 
+    // Convert the pin to arabic numerals, we never want to
+    // operate with pins in other numbering systems.
+    pin = pin.ensureArabicNumerals;
+
     if (SSKFeatureFlags.registrationLockV2) {
         [[OWSKeyBackupService generateAndBackupKeysWithPin:pin].then(^{
             NSString *token = [OWSKeyBackupService deriveRegistrationLockToken];

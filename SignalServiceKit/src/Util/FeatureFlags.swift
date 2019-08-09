@@ -78,7 +78,7 @@ public class FeatureFlags: NSObject {
     public static let onlyModernNotificationClearance = build.includes(.beta)
 
     @objc
-    public static let registrationLockV2 = false
+    public static let registrationLockV2 = !IsUsingProductionService() && build.includes(.dev)
 
     @objc
     public static var allowUUIDOnlyContacts: Bool {
@@ -100,7 +100,7 @@ public class FeatureFlags: NSObject {
     public static let phoneNumberPrivacy = false
 
     @objc
-    public static let socialGraphOnServer = registrationLockV2 && pinsForEveryone && !IsUsingProductionService() && build.includes(.dev)
+    public static let socialGraphOnServer = registrationLockV2 && !IsUsingProductionService() && build.includes(.dev)
 
     @objc
     public static let cameraFirstCaptureFlow = build.includes(.qa)
