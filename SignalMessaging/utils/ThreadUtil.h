@@ -118,11 +118,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                       transaction:(SDSAnyReadTransaction *)transaction;
 
 // This method should be called right _before_ we send a message to a thread,
-// since we want to auto-add any threads the local user has interacted with
-// to the profile whitelist.
+// since we want to auto-add any thread to the profile whitelist that was
+// initiated by the local user.
 //
 // Returns YES IFF the thread was just added to the profile whitelist.
-+ (BOOL)addThreadToProfileWhitelist:(TSThread *)thread;
++ (BOOL)addThreadToProfileWhitelistIfEmptyThread:(TSThread *)thread;
 
 #pragma mark - Delete Content
 
