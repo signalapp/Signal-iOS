@@ -151,21 +151,6 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
 
-        [YDBToGRDBMigration addWithKeyStore:OWSDatabaseMigration.keyValueStore label:@"OWSDatabaseMigration"];
-        [YDBToGRDBMigration addWithKeyStore:profileManager.whitelistedPhoneNumbersStore
-                                      label:@"OWSProfileManager.whitelistedPhoneNumbersStore"];
-        [YDBToGRDBMigration addWithKeyStore:profileManager.whitelistedUUIDsStore
-                                      label:@"OWSProfileManager.whitelistedUUIDsStore"];
-        [YDBToGRDBMigration addWithKeyStore:profileManager.whitelistedGroupsStore
-                                      label:@"OWSProfileManager.whitelistedGroupsStore"];
-        [YDBToGRDBMigration addWithKeyStore:OWSSounds.keyValueStore label:@"OWSSounds"];
-        [YDBToGRDBMigration addWithKeyStore:Theme.keyValueStore label:@"Theme"];
-        [YDBToGRDBMigration addWithKeyStore:OWSSyncManager.keyValueStore label:@"OWSSyncManager"];
-        [YDBToGRDBMigration addWithKeyStore:OWSOutgoingReceiptManager.deliveryReceiptStore
-                                      label:@"OWSOutgoingReceiptManager.deliveryReceiptStore"];
-        [YDBToGRDBMigration addWithKeyStore:OWSOutgoingReceiptManager.readReceiptStore
-                                      label:@"OWSOutgoingReceiptManager.readReceiptStore"];
-
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             dispatch_async(dispatch_get_main_queue(), ^{
                 // Don't start database migrations until storage is ready.
