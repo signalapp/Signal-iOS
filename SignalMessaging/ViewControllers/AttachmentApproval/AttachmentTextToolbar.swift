@@ -101,13 +101,6 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
                          bottom: (kMinToolbarItemHeight - timerHeight) / 2,
                          right: 0)
 
-        // TODO: Revisit this copy.
-        viewOnceLabel.text = NSLocalizedString("PER_MESSAGE_EXPIRATION_ACTIVE_INDICATOR", comment: "Label that indicates that 'view-once' is active.")
-        viewOnceLabel.font = UIFont.ows_dynamicTypeSubheadline
-        viewOnceLabel.textColor = Theme.darkThemePrimaryColor
-        viewOnceLabel.lineBreakMode = .byTruncatingTail
-        viewOnceLabel.textAlignment = .center
-
         // Layout
 
         // We have to wrap the toolbar items in a content view because iOS (at least on iOS10.3) assigns the inputAccessoryView.layoutMargins
@@ -127,7 +120,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         self.addSubview(hStackView)
         hStackView.autoPinEdgesToSuperviewMargins()
 
-        var views = [ viewOnceWrapper, viewOnceLabel, textContainer, sendWrapper ]
+        var views = [ viewOnceWrapper, viewOnceSpacer, textContainer, sendWrapper ]
         // UIStackView's horizontal layout is leading-to-trailing.
         // We want left-to-right ordering, so reverse if RTL.
         if CurrentAppContext().isRTL {
@@ -138,7 +131,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         }
 
         textViewHeightConstraint = textView.autoSetDimension(.height, toSize: kMinTextViewHeight)
-        viewOnceLabel.autoSetDimension(.height, toSize: kMinTextViewHeight, relation: .greaterThanOrEqual)
+        viewOnceSpacer.autoSetDimension(.height, toSize: kMinTextViewHeight, relation: .greaterThanOrEqual)
 
         // We pin edges explicitly rather than doing something like:
         //  textView.autoPinEdges(toSuperviewMarginsExcludingEdge: .right)
@@ -149,19 +142,16 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         textContainer.autoPinEdge(toSuperviewMargin: .top)
         textContainer.autoPinEdge(toSuperviewMargin: .bottom)
 
-        let layoutButtonWithinWrapper = { (button: UIView) in
-            button.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
-            button.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
-            NSLayoutConstraint.autoSetPriority(.defaultLow) {
-                button.autoPinEdge(toSuperviewEdge: .top)
-            }
-
-            button.setContentHuggingHigh()
-            button.setCompressionResistanceHigh()
-        }
-        layoutButtonWithinWrapper(sendButton)
-        layoutButtonWithinWrapper(viewOnceButton)
-
+        sendButton.autoPinWidthToSuperview()
+        sendButton.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
+        sendButton.setContentHuggingHigh()
+        sendButton.setCompressionResistanceHigh()
+        
+        viewOnceButton.autoPinWidthToSuperview()
+        viewOnceButton.autoAlignAxis(.horizontal, toSameAxisOf: sendButton)
+        viewOnceButton.setContentHuggingHigh()
+        viewOnceButton.setCompressionResistanceHigh()
+        
         updateContent()
     }
 
@@ -189,7 +179,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         let imageName = isViewOnceMessagesEnabled ? "timer-24" : "timer-disabled-24"
         viewOnceButton.setTemplateImageName(imageName, tintColor: Theme.darkThemePrimaryColor)
 
-        viewOnceLabel.isHidden = !isViewOnceEnabled
+        viewOnceSpacer.isHidden = !isViewOnceEnabled
         textContainer.isHidden = isViewOnceEnabled
         viewOnceWrapper.isHidden = !options.contains(.canToggleViewOnce)
 
@@ -251,7 +241,7 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
 
     private let viewOnceButton = OWSButton()
 
-    private let viewOnceLabel = UILabel()
+    private let viewOnceSpacer = UIView.hStretchingSpacer()
 
     // MARK: - Actions
 
