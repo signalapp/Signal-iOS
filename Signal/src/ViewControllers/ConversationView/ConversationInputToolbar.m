@@ -504,11 +504,6 @@ const CGFloat kMaxTextViewHeight = 98;
 {
     if (!self.desiredFirstResponder.isFirstResponder) {
         [self.desiredFirstResponder becomeFirstResponder];
-
-        if ([self.desiredFirstResponder isKindOfClass:[OWSCustomKeyboard class]]) {
-            OWSCustomKeyboard *customKeyboard = (OWSCustomKeyboard *)self.desiredFirstResponder;
-            [customKeyboard wasPresented];
-        }
     }
 }
 
@@ -1532,9 +1527,9 @@ const CGFloat kMaxTextViewHeight = 98;
     [self.inputToolbarDelegate galleryButtonPressed];
 }
 
-- (void)didTapCamera
+- (void)didTapCameraWithPhotoCapture:(nullable PhotoCapture *)photoCapture
 {
-    [self.inputToolbarDelegate cameraButtonPressed];
+    [self.inputToolbarDelegate cameraButtonPressedWithPhotoCapture:photoCapture];
 }
 
 - (void)didTapGif

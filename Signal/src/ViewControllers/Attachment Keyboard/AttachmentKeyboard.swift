@@ -10,7 +10,7 @@ import PromiseKit
 protocol AttachmentKeyboardDelegate {
     func didSelectRecentPhoto(_ attachment: SignalAttachment)
     func didTapGalleryButton()
-    func didTapCamera()
+    func didTapCamera(withPhotoCapture: PhotoCapture?)
     func didTapGif()
     func didTapFile()
     func didTapContact()
@@ -147,6 +147,19 @@ class AttachmentKeyboard: CustomKeyboard {
         checkPermissionsAndLayout()
     }
 
+    override func wasDismissed() {
+        super.wasDismissed()
+
+        attachmentFormatPickerView.stopCameraPreview()
+    }
+
+    override func orientationDidChange() {
+        super.orientationDidChange()
+
+        recentPhotosCollectionView.orientationDidChange()
+        attachmentFormatPickerView.orientationDidChange()
+    }
+
     func checkPermissionsAndLayout() {
         switch mediaLibraryAuthorizationStatus {
         case .authorized:
@@ -154,14 +167,29 @@ class AttachmentKeyboard: CustomKeyboard {
         case .denied, .restricted:
             showRecentPhotosError()
         case .notDetermined:
-            PHPhotoLibrary.requestAuthorization { _ in
+            PHPhotoLibrary.requestAuthorization { status in
                 DispatchQueue.main.async {
-                    self.recentPhotosCollectionView.permissionChanged()
+                    if status == .authorized { self.recentPhotosCollectionView.permissionChanged() }
                     self.checkPermissionsAndLayout()
                 }
             }
         @unknown default:
             showRecentPhotosError()
+            break
+        }
+
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            attachmentFormatPickerView.startCameraPreview()
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                if granted {
+                    DispatchQueue.main.async { self.attachmentFormatPickerView.startCameraPreview() }
+                }
+            }
+        case .denied, .restricted:
+            break
+        @unknown default:
             break
         }
     }
@@ -178,8 +206,8 @@ extension AttachmentKeyboard: RecentPhotosDelegate {
 }
 
 extension AttachmentKeyboard: AttachmentFormatPickerDelegate {
-    func didTapCamera() {
-        delegate?.didTapCamera()
+    func didTapCamera(withPhotoCapture photoCapture: PhotoCapture?) {
+        delegate?.didTapCamera(withPhotoCapture: photoCapture)
     }
 
     func didTapGif() {

@@ -106,8 +106,11 @@ class SendMediaNavigationController: OWSNavigationController {
     public weak var sendMediaNavDelegate: SendMediaNavDelegate?
 
     @objc
-    public class func showingCameraFirst() -> SendMediaNavigationController {
+    public class func showingCameraFirst(photoCapture: PhotoCapture?) -> SendMediaNavigationController {
         let navController = SendMediaNavigationController()
+        if let photoCapture = photoCapture {
+            navController.captureViewController.photoCapture = photoCapture
+        }
         navController.setViewControllers([navController.captureViewController], animated: false)
         return navController
     }
