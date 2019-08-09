@@ -56,7 +56,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             owsFailDebug("collectionView was unexpectedly nil")
             return
         }
-
+        clearsSelectionOnViewWillAppear = false
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
 
         // ensure images at the end of the list can be scrolled above the bottom buttons
@@ -341,15 +341,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
         collectionView.reloadData()
         collectionView.layoutIfNeeded()
-
-        let count = photoCollectionContents.assetCount
-        for index in 0..<count {
-            let asset = photoCollectionContents.asset(at: index)
-            if delegate.imagePicker(self, isAssetSelected: asset) {
-                collectionView.selectItem(at: IndexPath(row: index, section: 0),
-                                          animated: false, scrollPosition: [])
-            }
-        }
     }
 
     // MARK: - Actions
