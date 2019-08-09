@@ -325,11 +325,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
 
-        guard let delegate = delegate else {
-            owsFailDebug("delegate was unexpectedly nil")
-            return
-        }
-
         collectionView.reloadData()
         collectionView.layoutIfNeeded()
     }
@@ -553,7 +548,13 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
-        photoGridViewCell.isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
+        let isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
+        if isSelected {
+			collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+        } else {
+        	collectionView.deselectItem(at: indexPath, animated: false)
+        }
+        photoGridViewCell.isSelected = isSelected
         photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
     }
 
