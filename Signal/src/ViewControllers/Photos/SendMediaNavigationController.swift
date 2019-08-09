@@ -318,7 +318,7 @@ extension SendMediaNavigationController: UINavigationControllerDelegate {
         case is ImagePickerGridController:
             if attachmentDraftCollection.count == 1 && !isInBatchSelectMode {
                 isInBatchSelectMode = true
-                mediaLibraryViewController.reloadDataAndRestoreSelection()
+                mediaLibraryViewController.reloadData()
             }
         default:
             break

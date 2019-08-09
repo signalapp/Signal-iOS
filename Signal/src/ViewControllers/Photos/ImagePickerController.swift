@@ -225,7 +225,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let cellSize = collectionViewFlowLayout.itemSize
         photoMediaSize.thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
 
-        reloadDataAndRestoreSelection()
+        reloadData()
         if !hasEverAppeared {
             scrollToBottom(animated: false)
         }
@@ -318,7 +318,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
-    public func reloadDataAndRestoreSelection() {
+    public func reloadData() {
         guard let collectionView = collectionView else {
             owsFailDebug("Missing collectionView.")
             return
@@ -409,7 +409,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
         photoCollectionContents = photoCollection.contents()
-        reloadDataAndRestoreSelection()
+        reloadData()
     }
 
     // MARK: - PhotoCollectionPicker Presentation
@@ -476,7 +476,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         photoCollectionContents = photoCollection.contents()
 
         // Any selections are invalid as they refer to indices in a different collection
-        reloadDataAndRestoreSelection()
+        reloadData()
 
         titleView.text = photoCollection.localizedTitle()
 
