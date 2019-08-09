@@ -1212,61 +1212,6 @@ private class SignalCallData: NSObject {
     }
 
     /**
-     * Local user chose to decline the call vs. answering it.
-     *
-     * The call is referred to by call `localId`, which is included in Notification actions.
-     *
-     * Incoming call only.
-     */
-    public func handleDeclineCall(localId: UUID) {
-        AssertIsOnMainThread()
-
-        guard let call = self.call else {
-            // This should never happen; return to a known good state.
-            owsFailDebug("call was unexpectedly nil")
-            OWSProdError(OWSAnalyticsEvents.callServiceCallMissing(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "call was unexpectedly nil"))
-            return
-        }
-
-        guard call.localId == localId else {
-            // This should never happen; return to a known good state.
-            owsFailDebug("callLocalId:\(localId) doesn't match current calls: \(call.localId)")
-            OWSProdError(OWSAnalyticsEvents.callServiceCallIdMismatch(), file: #file, function: #function, line: #line)
-            handleFailedCurrentCall(error: CallError.assertionError(description: "callLocalId:\(localId) doesn't match current calls: \(call.localId)"))
-            return
-        }
-
-        self.handleDeclineCall(call)
-    }
-
-    /**
-     * Local user chose to decline the call vs. answering it.
-     *
-     * Incoming call only.
-     */
-    public func handleDeclineCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
-        Logger.info("\(call.identifiersForLogs).")
-
-        if let callRecord = call.callRecord {
-            owsFailDebug("Not expecting callrecord to already be set")
-            callRecord.updateCallType(.incomingDeclined)
-        } else {
-            // MJK TODO remove this timestamp param
-            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(), callType: .incomingDeclined, in: call.thread)
-            databaseStorage.write { transaction in
-                callRecord.anyInsert(transaction: transaction)
-            }
-            call.callRecord = callRecord
-        }
-
-        // Currently we just handle this as a hangup. But we could offer more descriptive action. e.g. DataChannel message
-        handleLocalHungupCall(call)
-    }
-
-    /**
      * Local user chose to end the call.
      *
      * Can be used for Incoming and Outgoing calls.
@@ -1290,15 +1235,24 @@ private class SignalCallData: NSObject {
 
         Logger.info("\(call.identifiersForLogs).")
 
-        call.state = .localHangup
-
         if let callRecord = call.callRecord {
             if callRecord.callType == .outgoingIncomplete {
                 callRecord.updateCallType(.outgoingMissed)
             }
+        } else if call.state == .localRinging {
+            // MJK TODO remove this timestamp param
+            let callRecord = TSCall(timestamp: NSDate.ows_millisecondTimeStamp(),
+                                    callType: .incomingDeclined,
+                                    in: call.thread)
+            databaseStorage.write { transaction in
+                callRecord.anyInsert(transaction: transaction)
+            }
+            call.callRecord = callRecord
         } else {
             owsFailDebug("missing call record")
         }
+
+        call.state = .localHangup
 
         // TODO something like this lifted from Signal-Android.
         //        this.accountManager.cancelInFlightRequests();

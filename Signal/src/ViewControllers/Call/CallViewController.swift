@@ -948,7 +948,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     @objc func didPressDeclineCall(sender: UIButton) {
         Logger.info("")
 
-        callUIAdapter.declineCall(call)
+        callUIAdapter.localHangupCall(call)
 
         dismissIfPossible(shouldDelay: false)
     }
