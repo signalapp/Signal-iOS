@@ -1122,6 +1122,18 @@ const CGFloat kMaxTextViewHeight = 98;
     if (self.desiredKeyboardType == keyboardType) {
         self.desiredKeyboardType = KeyboardType_System;
     } else {
+        // For switching to anything other than the system keyboard,
+        // make sure this conversation isn't blocked before presenting it.
+        if ([self.inputToolbarDelegate isBlockedConversation]) {
+            __weak ConversationInputToolbar *weakSelf = self;
+            [self.inputToolbarDelegate showUnblockConversationUI:^(BOOL isBlocked) {
+                if (!isBlocked) {
+                    [weakSelf toggleKeyboardType:keyboardType];
+                }
+            }];
+            return;
+        }
+
         self.desiredKeyboardType = keyboardType;
     }
 

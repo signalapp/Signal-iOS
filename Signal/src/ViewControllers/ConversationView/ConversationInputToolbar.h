@@ -2,6 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+#import <SignalMessaging/BlockListUIUtils.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationStyle;
@@ -48,6 +50,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)locationButtonPressed;
 
 - (void)didSelectRecentPhoto:(SignalAttachment *)attachment;
+
+- (void)showUnblockConversationUI:(nullable BlockActionCompletionBlock)completionBlock;
+
+- (BOOL)isBlockedConversation;
 
 @end
 
