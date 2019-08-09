@@ -150,8 +150,14 @@ public class ConversationMessageMapping: NSObject {
             }
         }
 
-        // The items need to be reversed, since we load them in reverse order.
-        self.itemIds = Array(newItemIds.reversed())
+        if canLoadMore {
+            // The items need to be reversed, since we load them in reverse order.
+            self.itemIds = Array(newItemIds.reversed())
+        } else {
+            // We only show the thread details if we're at the start of the conversation
+            self.itemIds = [ThreadDetailsInteraction.ThreadDetailsId] + Array(newItemIds.reversed())
+        }
+
         self.canLoadMore = canLoadMore
 
         // Establish the pivot, if necessary and possible.

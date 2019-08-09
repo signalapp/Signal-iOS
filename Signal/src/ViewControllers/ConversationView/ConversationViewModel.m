@@ -1211,8 +1211,13 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 
     for (NSString *uniqueId in loadedUniqueIds) {
-        TSInteraction *_Nullable interaction =
-            [InteractionFinder fetchSwallowingErrorsWithUniqueId:uniqueId transaction:transaction];
+        TSInteraction *_Nullable interaction;
+        if ([uniqueId isEqualToString:OWSThreadDetailsInteraction.ThreadDetailsId]) {
+            interaction = [self buildThreadDetailsInteractionWithTransaction:transaction];
+        } else {
+            interaction = [InteractionFinder fetchSwallowingErrorsWithUniqueId:uniqueId transaction:transaction];
+        }
+
         if (!interaction) {
             OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
             // TODO: Add analytics.
@@ -1231,16 +1236,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             continue;
         }
         [interactionIds addObject:interaction.uniqueId];
-    }
-
-    OWSThreadDetailsInteraction *_Nullable threadDetailsInteraction =
-        [self buildThreadDetailsInteractionIfRequiredWithTransaction:transaction];
-    if (threadDetailsInteraction) {
-        id<ConversationViewItem> _Nullable threadDetailsItem = tryToAddViewItem(threadDetailsInteraction);
-        if (!threadDetailsItem) {
-            OWSFailDebug(@"thread details should never be filtered out");
-            // Do nothing.
-        }
     }
 
     for (TSInteraction *interaction in interactions) {
@@ -1542,9 +1537,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     }
 
     TSInteraction *_Nullable interaction;
-    if ([viewItem.interaction.uniqueId isEqualToString:self.threadDetailsUniqueId]) {
+    if ([viewItem.interaction isKindOfClass:OWSThreadDetailsInteraction.class]) {
         // Thread details is not a persisted interaction, so we need to rebuild it here to update it.
-        interaction = [self buildThreadDetailsInteractionIfRequiredWithTransaction:transaction];
+        interaction = [self buildThreadDetailsInteractionWithTransaction:transaction];
     } else {
         interaction = [TSInteraction anyFetchWithUniqueId:viewItem.interaction.uniqueId transaction:transaction];
     }
@@ -1709,14 +1704,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     return OWSThreadDetailsInteraction.ThreadDetailsId;
 }
 
-- (nullable OWSThreadDetailsInteraction *)buildThreadDetailsInteractionIfRequiredWithTransaction:
-    (SDSAnyReadTransaction *)transaction
+- (OWSThreadDetailsInteraction *)buildThreadDetailsInteractionWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    // We only show the thread details if we're at the start of the conversation
-    if (self.messageMapping.canLoadMore) {
-        return nil;
-    }
-
     TSInteraction *_Nullable firstCallOrMessage =
         [self firstCallOrMessageForLoadedInteractionsWithTransaction:transaction];
 
@@ -1737,7 +1726,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                                                         transaction:transaction];
 
         if (!interaction) {
-            OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
+            if (![uniqueId isEqualToString:OWSThreadDetailsInteraction.ThreadDetailsId]) {
+                OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
+            }
             continue;
         }
 
