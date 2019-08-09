@@ -5,7 +5,9 @@
 import Foundation
 
 @objc
-public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
+public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding {
+    public static let supportsSecureCoding: Bool = true
+
     private static var cache: SignalServiceAddressCache {
         return SSKEnvironment.shared.signalServiceAddressCache
     }
@@ -113,8 +115,9 @@ public class SignalServiceAddress: NSObject, NSCopying, NSCoding {
     }
 
     public required init?(coder aDecoder: NSCoder) {
-        backingUuid = aDecoder.decodeObject(forKey: "backingUuid") as? UUID
-        backingPhoneNumber = aDecoder.decodeObject(forKey: "backingPhoneNumber") as? String
+        backingUuid = (aDecoder.decodeObject(of: NSUUID.self, forKey: "backingUuid") as UUID?)
+        backingPhoneNumber = (aDecoder.decodeObject(of: NSString.self, forKey: "backingPhoneNumber") as String?)
+
         backingHashValue = SignalServiceAddress.cache.hashAndCache(uuid: backingUuid, phoneNumber: backingPhoneNumber)
     }
 
