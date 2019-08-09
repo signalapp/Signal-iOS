@@ -14,6 +14,7 @@ protocol AttachmentKeyboardDelegate {
     func didTapGif()
     func didTapFile()
     func didTapContact()
+    func didTapLocation()
 }
 
 class AttachmentKeyboard: CustomKeyboard {
@@ -131,7 +132,7 @@ class AttachmentKeyboard: CustomKeyboard {
 
         mainStackView.addArrangedSubview(attachmentFormatPickerView)
         NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            attachmentFormatPickerView.autoSetDimension(.height, toSize: 90)
+            attachmentFormatPickerView.autoSetDimension(.height, toSize: 80)
         }
 
         attachmentFormatPickerView.setCompressionResistanceLow()
@@ -154,7 +155,10 @@ class AttachmentKeyboard: CustomKeyboard {
             showRecentPhotosError()
         case .notDetermined:
             PHPhotoLibrary.requestAuthorization { _ in
-                self.checkPermissionsAndLayout()
+                DispatchQueue.main.async {
+                    self.recentPhotosCollectionView.permissionChanged()
+                    self.checkPermissionsAndLayout()
+                }
             }
         @unknown default:
             showRecentPhotosError()
@@ -188,6 +192,10 @@ extension AttachmentKeyboard: AttachmentFormatPickerDelegate {
 
     func didTapContact() {
         delegate?.didTapContact()
+    }
+
+    func didTapLocation() {
+        delegate?.didTapLocation()
     }
 }
 

@@ -134,7 +134,8 @@ typedef enum : NSUInteger {
     ConversationCollectionViewDelegate,
     ConversationInputToolbarDelegate,
     ConversationViewModelDelegate,
-    MessageRequestDelegate>
+    MessageRequestDelegate,
+    LocationPickerDelegate>
 
 @property (nonatomic) TSThread *thread;
 @property (nonatomic, readonly) ConversationViewModel *conversationViewModel;
@@ -3245,6 +3246,19 @@ typedef enum : NSUInteger {
     [self chooseContactForSending];
 }
 
+- (void)locationButtonPressed
+{
+    OWSAssertIsOnMainThread();
+
+    LocationPicker *locationPicker = [LocationPicker new];
+    locationPicker.delegate = self;
+
+    OWSNavigationController *navigationController =
+        [[OWSNavigationController alloc] initWithRootViewController:locationPicker];
+    [self dismissKeyBoard];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)didSelectRecentPhoto:(SignalAttachment *)attachment
 {
     OWSAssertIsOnMainThread();
@@ -5146,6 +5160,42 @@ typedef enum : NSUInteger {
         initWithURL:[NSURL URLWithString:@"https://support.signal.org/hc/en-us/articles/360007459591"]];
     [self presentViewController:safariVC animated:YES completion:nil];
 }
+
+#pragma mark - LocationPickerDelegate
+
+- (void)didPickLocation:(LocationPicker *)locationPicker location:(Location *)location
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(location);
+
+    OWSLogVerbose(@"Sending location share.");
+
+    __weak ConversationViewController *weakSelf = self;
+
+    [location prepareAttachmentObjc].then(^(SignalAttachment *attachment) {
+        OWSAssertIsOnMainThread();
+        OWSAssertDebug([attachment isKindOfClass:[SignalAttachment class]]);
+
+        __strong typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+
+        __block TSOutgoingMessage *message;
+
+        [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            message = [ThreadUtil enqueueMessageWithText:location.messageText
+                                        mediaAttachments:@[ attachment ]
+                                                inThread:strongSelf.thread
+                                        quotedReplyModel:nil
+                                        linkPreviewDraft:nil
+                                             transaction:transaction];
+        }];
+
+        [strongSelf messageWasSent:message];
+    });
+}
+
 
 @end
 

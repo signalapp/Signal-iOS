@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)contactButtonPressed;
 
+- (void)locationButtonPressed;
+
 - (void)didSelectRecentPhoto:(SignalAttachment *)attachment;
 
 @end

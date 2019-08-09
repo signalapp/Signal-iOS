@@ -179,6 +179,9 @@
 /* A button to select a GIF from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
+/* A button to select a location from the Attachment Keyboard */
+"ATTACHMENT_KEYBOARD_LOCATION" = "Location";
+
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
 
@@ -1263,6 +1266,12 @@
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Group Members";
 
+/* A string indicating that the user can search for a location */
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+
+/* The title for the location picker view */
+"LOCATION_PICKER_TITLE" = "Select Location";
+
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Logging";
 
@@ -1474,6 +1483,12 @@
 /* Alert title
    Alert title when camera is not authorized */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal needs to access your camera.";
+
+/* Alert body indicating the user has denied location permissios */
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+
+/* Alert title indicating the user has denied location permissios */
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";

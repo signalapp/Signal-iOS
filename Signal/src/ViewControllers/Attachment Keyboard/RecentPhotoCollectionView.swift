@@ -12,7 +12,14 @@ protocol RecentPhotosDelegate: class {
 class RecentPhotosCollectionView: UICollectionView {
     let maxRecentPhotos = 48
 
-    var hasPhotos: Bool { return collectionContents.assetCount > 0 }
+    var isReadyForPhotoLibraryAccess: Bool {
+        return recentPhotosDelegate?.isMediaLibraryAccessGranted == true
+    }
+
+    var hasPhotos: Bool {
+        guard isReadyForPhotoLibraryAccess else { return false }
+        return collectionContents.assetCount > 0
+    }
     weak var recentPhotosDelegate: RecentPhotosDelegate?
 
     private var fetchingAttachmentIndex: IndexPath? {
@@ -30,7 +37,11 @@ class RecentPhotosCollectionView: UICollectionView {
         }
     }
 
-    private let photoLibrary = PhotoLibrary()
+    private lazy var photoLibrary: PhotoLibrary = {
+        let library = PhotoLibrary()
+        library.add(delegate: self)
+        return library
+    }()
     private lazy var collection = photoLibrary.defaultPhotoCollection()
     private lazy var collectionContents = collection.contents(ascending: false, limit: maxRecentPhotos)
 
@@ -69,8 +80,11 @@ class RecentPhotosCollectionView: UICollectionView {
         collectionViewFlowLayout.scrollDirection = .horizontal
         collectionViewFlowLayout.minimumLineSpacing = 6
 
-        photoLibrary.add(delegate: self)
+        updateLayout()
+    }
 
+    func permissionChanged() {
+        guard isReadyForPhotoLibraryAccess else { return }
         updateLayout()
     }
 
@@ -78,7 +92,7 @@ class RecentPhotosCollectionView: UICollectionView {
         AssertIsOnMainThread()
 
         // We don't want to do anything until media library permission is granted.
-        guard recentPhotosDelegate?.isMediaLibraryAccessGranted == true else { return }
+        guard isReadyForPhotoLibraryAccess else { return }
         guard frame.height > 0 else { return }
 
         // The items should always expand to fit the height of the collection view.
@@ -128,6 +142,7 @@ extension RecentPhotosCollectionView: UICollectionViewDataSource {
     }
 
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection sectionIdx: Int) -> Int {
+        guard isReadyForPhotoLibraryAccess else { return 0 }
         return collectionContents.assetCount
     }
 
