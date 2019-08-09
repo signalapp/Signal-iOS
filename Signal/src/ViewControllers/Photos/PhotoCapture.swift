@@ -106,7 +106,7 @@ class PhotoCapture: NSObject {
 
     func startVideoCapture() -> Promise<Void> {
         // If the session is already running, no need to do anything.
-        guard !self.session.isRunning else { return Promise { $0.fulfill(()) } }
+        guard !self.session.isRunning else { return Promise.value(()) }
 
         return sessionQueue.async(.promise) { [weak self] in
             guard let self = self else { return }

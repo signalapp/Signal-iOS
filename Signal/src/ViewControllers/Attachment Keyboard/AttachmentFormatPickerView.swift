@@ -49,11 +49,11 @@ class AttachmentFormatPickerView: UICollectionView {
     }
 
     deinit {
-        photoCapture?.stopCapture().retainUntilComplete()
+        stopCameraPreview()
     }
 
     func startCameraPreview() {
-        guard photoCapture == nil || photoCapture?.session.isRunning == false else { return }
+        guard photoCapture == nil else { return }
 
         let photoCapture = PhotoCapture()
         self.photoCapture = photoCapture
@@ -64,9 +64,8 @@ class AttachmentFormatPickerView: UICollectionView {
     }
 
     func stopCameraPreview() {
-        photoCapture?.stopCapture().done { [weak self] in
-            self?.photoCapture = nil
-        }.retainUntilComplete()
+        photoCapture?.stopCapture().retainUntilComplete()
+        photoCapture = nil
     }
 
     func orientationDidChange() {
