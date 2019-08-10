@@ -1338,13 +1338,7 @@ typedef enum : NSUInteger {
 
 - (void)updateHeaderViewFrame
 {
-    // TODO: iOS 13 – The titleView no longer respects the headerView's intrinsicContentSize
-    // and always tries to center the headerView. See if this changes in later betas.
-    BOOL iOS11and12 = NO;
-    if (@available(iOS 13, *)) iOS11and12 = NO;
-    else if (@available(iOS 11, *)) iOS11and12 = YES;
-
-    if (iOS11and12) {
+    if (@available(iOS 11, *)) {
         // Do nothing, we use autolayout/intrinsic content size to grow
     } else {
         // Request "full width" title; the navigation bar will truncate this
