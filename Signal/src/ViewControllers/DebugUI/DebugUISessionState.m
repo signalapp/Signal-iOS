@@ -10,6 +10,8 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
 
+#ifdef DEBUG
+
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUISessionState
@@ -94,18 +96,14 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
     }
 
-#if DEBUG
     [items addObjectsFromArray:@[ [OWSTableItem itemWithTitle:@"Clear Session and Identity Store"
                                                   actionBlock:^{
                                                       [self clearSessionAndIdentityStore];
                                                   }] ]];
-#endif
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
-
-#if DEBUG
 - (void)clearSessionAndIdentityStore
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -113,8 +111,9 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWSIdentityManager sharedManager] clearIdentityState:transaction];
     }];
 }
-#endif
 
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

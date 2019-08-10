@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessagesUtils.h"
+
+#ifdef DEBUG
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -60,3 +62,5 @@ typedef NS_ENUM(NSUInteger, SubactionMode) {
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

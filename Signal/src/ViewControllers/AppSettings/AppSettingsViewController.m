@@ -408,10 +408,12 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 
+#ifdef USE_DEBUG_UI
 - (void)showDebugUI
 {
     [DebugUITableViewController presentDebugUIFromViewController:self];
 }
+#endif
 
 - (void)dismissWasPressed:(id)sender
 {

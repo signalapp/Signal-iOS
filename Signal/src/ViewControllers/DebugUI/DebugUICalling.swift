@@ -6,6 +6,8 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
+#if DEBUG
+
 class DebugUICalling: DebugUIPage {
 
     // MARK: Dependencies
@@ -73,3 +75,5 @@ class DebugUICalling: DebugUIPage {
         return OWSTableSection(title: "Call Debug", items: sectionItems)
     }
 }
+
+#endif
