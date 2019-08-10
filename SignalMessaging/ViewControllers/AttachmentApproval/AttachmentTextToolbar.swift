@@ -142,16 +142,19 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         textContainer.autoPinEdge(toSuperviewMargin: .top)
         textContainer.autoPinEdge(toSuperviewMargin: .bottom)
 
-        sendButton.autoPinWidthToSuperview()
-        sendButton.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
-        sendButton.setContentHuggingHigh()
-        sendButton.setCompressionResistanceHigh()
-        
-        viewOnceButton.autoPinWidthToSuperview()
-        viewOnceButton.autoAlignAxis(.horizontal, toSameAxisOf: sendButton)
-        viewOnceButton.setContentHuggingHigh()
-        viewOnceButton.setCompressionResistanceHigh()
-        
+        let layoutButtonWithinWrapper = { (button: UIView) in
+            button.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+            button.autoPinEdge(toSuperviewEdge: .top, withInset: 0, relation: .greaterThanOrEqual)
+            NSLayoutConstraint.autoSetPriority(.defaultLow) {
+                button.autoPinEdge(toSuperviewEdge: .top)
+            }
+
+            button.setContentHuggingHigh()
+            button.setCompressionResistanceHigh()
+        }
+        layoutButtonWithinWrapper(sendButton)
+        layoutButtonWithinWrapper(viewOnceButton)
+
         updateContent()
     }
 
