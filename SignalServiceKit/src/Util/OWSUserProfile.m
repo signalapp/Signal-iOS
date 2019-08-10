@@ -203,16 +203,18 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 - (void)setAvatarUrlPath:(nullable NSString *)avatarUrlPath
 {
     @synchronized(self) {
-        BOOL didChange = ![NSObject isNullableObject:_avatarUrlPath equalTo:avatarUrlPath];
-
-        _avatarUrlPath = avatarUrlPath;
-
-        if (didChange) {
-            // If the avatarURL changed, the avatarFileName can't be valid.
-            // Clear it.
-
+        if (_avatarUrlPath != nil && ![_avatarUrlPath isEqual:avatarUrlPath]) {
+            // If the avatarURL was previously set and it changed, the old avatarFileName
+            // can't still be valid. Clear it.
+            // NOTE: `_avatarUrlPath` will momentarily be nil during initWithCoder -
+            // which is why we verify it's non-nil before inadvertently "cleaning up" the
+            // avatarFileName during initialization. If it were *actually* nil, as opposed
+            // to just transiently nil during `initWithCoder` , there'd be no avatarFileName
+            // to clean up anyway.
             self.avatarFileName = nil;
         }
+
+        _avatarUrlPath = avatarUrlPath;
     }
 }
 
