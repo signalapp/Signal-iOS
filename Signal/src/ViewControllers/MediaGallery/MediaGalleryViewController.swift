@@ -79,6 +79,10 @@ public class MediaGalleryItem: Equatable, Hashable {
         return attachmentStream.thumbnailImageSmall(success: async, failure: {})
     }
 
+    func thumbnailImageSync() -> UIImage? {
+        return attachmentStream.thumbnailImageSmallSync()
+    }
+
     // MARK: Equatable
 
     public static func == (lhs: MediaGalleryItem, rhs: MediaGalleryItem) -> Bool {
