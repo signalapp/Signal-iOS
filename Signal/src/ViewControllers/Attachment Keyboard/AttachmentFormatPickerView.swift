@@ -15,19 +15,15 @@ protocol AttachmentFormatPickerDelegate: class {
 class AttachmentFormatPickerView: UICollectionView {
     weak var attachmentFormatPickerDelegate: AttachmentFormatPickerDelegate?
 
-    private var itemSize: CGSize {
-        return CGSize(width: frame.height, height: frame.height)
+    var itemSize: CGSize = .zero {
+        didSet {
+            guard oldValue != itemSize else { return }
+            updateLayout()
+        }
     }
 
     private let collectionViewFlowLayout = UICollectionViewFlowLayout()
     private var photoCapture: PhotoCapture?
-
-    override var bounds: CGRect {
-        didSet {
-            guard oldValue != bounds else { return }
-            updateLayout()
-        }
-    }
 
     init() {
         super.init(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
@@ -68,19 +64,15 @@ class AttachmentFormatPickerView: UICollectionView {
         photoCapture = nil
     }
 
-    func orientationDidChange() {
-        updateLayout()
-    }
-
     private func updateLayout() {
         AssertIsOnMainThread()
 
-        guard frame.height > 0 else { return }
+        guard itemSize.height > 0, itemSize.width > 0 else { return }
 
-        // The items should always expand to fit the height of the collection view.
-        // We'll always just have one row of items.
         collectionViewFlowLayout.itemSize = itemSize
         collectionViewFlowLayout.invalidateLayout()
+
+        reloadData()
     }
 
     required init?(coder aDecoder: NSCoder) {

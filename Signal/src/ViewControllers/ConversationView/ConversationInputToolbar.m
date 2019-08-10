@@ -102,6 +102,7 @@ const CGFloat kMaxTextViewHeight = 98;
 @property (nonatomic) KeyboardType desiredKeyboardType;
 @property (nonatomic, readonly) StickerKeyboard *stickerKeyboard;
 @property (nonatomic, readonly) AttachmentKeyboard *attachmentKeyboard;
+@property (nonatomic) BOOL isMeasuringKeyboardHeight;
 
 @end
 
@@ -1469,14 +1470,16 @@ const CGFloat kMaxTextViewHeight = 98;
     // We disable animations so this preload is invisible to the
     // user.
     if (!self.inputTextView.isFirstResponder) {
+
+        // Flag that we're measuring the system keyboard's height, so
+        // even if though it won't be the first responder by the time
+        // the notifications fire, we'll still read its measurement
+        self.isMeasuringKeyboardHeight = YES;
+
         [UIView setAnimationsEnabled:NO];
         [self.inputTextView becomeFirstResponder];
-
-        // Next run loop
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.inputTextView resignFirstResponder];
-            [UIView setAnimationsEnabled:YES];
-        });
+        [self.inputTextView resignFirstResponder];
+        [UIView setAnimationsEnabled:YES];
     }
 }
 
@@ -1517,12 +1520,13 @@ const CGFloat kMaxTextViewHeight = 98;
     }
     CGRect keyboardEndFrame = [keyboardEndFrameValue CGRectValue];
 
-    if (self.inputTextView.isFirstResponder) {
+    if (self.inputTextView.isFirstResponder || self.isMeasuringKeyboardHeight) {
         // The returned keyboard height includes the input view, so subtract our height.
         CGFloat newHeight = keyboardEndFrame.size.height - self.frame.size.height;
         if (newHeight > 0) {
             [self.stickerKeyboard updateSystemKeyboardHeight:newHeight];
             [self.attachmentKeyboard updateSystemKeyboardHeight:newHeight];
+            self.isMeasuringKeyboardHeight = NO;
         }
     }
 }

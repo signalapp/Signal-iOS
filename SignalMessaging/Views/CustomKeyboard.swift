@@ -50,10 +50,15 @@ open class CustomKeyboard: UIInputView {
     }
 
     open override func didMoveToSuperview() {
-        if superview == nil {
-            wasDismissed()
-        } else {
-            wasPresented()
+        // Call wasPresented/wasDismissed on the next run loop,
+        // once this view hierarchy change has finished.
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if self.superview == nil {
+                self.wasDismissed()
+            } else {
+                self.wasPresented()
+            }
         }
     }
 
@@ -81,6 +86,9 @@ open class CustomKeyboard: UIInputView {
 
     @objc
     public func updateSystemKeyboardHeight(_ height: CGFloat) {
+        // Only respect this height if it's reasonable, we don't want
+        // to have a tiny keyboard.
+        guard height > 100 else { return }
         cachedSystemKeyboardHeight.current = height
         resizeToSystemKeyboard()
     }

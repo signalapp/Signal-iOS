@@ -301,6 +301,10 @@ public extension CGSize {
     var ceil: CGSize {
         return CGSizeCeil(self)
     }
+
+    init(square: CGFloat) {
+        self.init(width: square, height: square)
+    }
 }
 
 // MARK: -
