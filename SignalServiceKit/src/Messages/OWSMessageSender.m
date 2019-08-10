@@ -2052,9 +2052,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
         }
 
-        if (![attachmentStream writeDataSource:attachmentInfo.dataSource]) {
-            OWSProdError([OWSAnalyticsEvents messageSenderErrorCouldNotWriteAttachment]);
-            *error = OWSErrorMakeWriteAttachmentDataError();
+        [attachmentStream writeDataSource:attachmentInfo.dataSource error:error];
+        if (*error != nil) {
             return NO;
         }
 

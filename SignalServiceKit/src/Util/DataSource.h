@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)dataLength;
 
 // Returns YES on success.
-- (BOOL)writeToPath:(NSString *)dstFilePath;
+- (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error;
 
 - (BOOL)isValidImage;
 

@@ -90,7 +90,7 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error;
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
-- (BOOL)writeDataSource:(id<DataSource>)dataSource;
+- (BOOL)writeDataSource:(id<DataSource>)dataSource error:(NSError **)error;
 
 + (void)deleteAttachments;
 

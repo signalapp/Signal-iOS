@@ -343,6 +343,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self temporaryFilePathWithFileExtension:nil];
 }
 
++ (NSURL *)temporaryFileURLWithFileExtension:(NSString *_Nullable)fileExtension
+{
+    return [NSURL fileURLWithPath:[self temporaryFilePathWithFileExtension:fileExtension]];
+}
+
 + (NSString *)temporaryFilePathWithFileExtension:(NSString *_Nullable)fileExtension
 {
     NSString *temporaryDirectory = OWSTemporaryDirectory();

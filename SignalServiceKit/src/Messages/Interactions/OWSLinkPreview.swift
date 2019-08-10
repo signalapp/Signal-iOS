@@ -231,8 +231,10 @@ public class OWSLinkPreview: MTLModel {
             return nil
         }
         let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: false)
-        guard attachment.write(dataSource) else {
-            owsFailDebug("Could not write data source for path: \(filePath)")
+        do {
+            try attachment.write(dataSource)
+        } catch {
+            owsFailDebug("Could not write data source for path: \(filePath), error: \(error)")
             return nil
         }
         attachment.anyInsert(transaction: transaction)

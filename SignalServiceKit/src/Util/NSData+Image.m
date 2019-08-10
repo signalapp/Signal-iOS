@@ -25,6 +25,11 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
 
 @implementation NSData (Image)
 
++ (BOOL)ows_isValidImageAtUrl:(NSURL *)fileUrl mimeType:(nullable NSString *)mimeType
+{
+    return [self ows_isValidImageAtPath:fileUrl.path mimeType:mimeType];
+}
+
 + (BOOL)ows_isValidImageAtPath:(NSString *)filePath
 {
     return [self ows_isValidImageAtPath:filePath mimeType:nil];
