@@ -128,7 +128,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data
++ (_Nullable id<DataSource>)dataSourceWithData:(NSData *)data
                               fileExtension:(NSString *)fileExtension
 {
     OWSAssertDebug(data);
@@ -140,18 +140,17 @@ NS_ASSUME_NONNULL_BEGIN
     DataSourceValue *instance = [DataSourceValue new];
     instance.dataValue = data;
     instance.fileExtension = fileExtension;
-    instance.shouldDeleteOnDeallocation = YES;
     return instance;
 }
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data
++ (_Nullable id<DataSource>)dataSourceWithData:(NSData *)data
                                     utiType:(NSString *)utiType
 {
     NSString *fileExtension = [MIMETypeUtil fileExtensionForUTIType:utiType];
     return [self dataSourceWithData:data fileExtension:fileExtension];
 }
 
-+ (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text
++ (_Nullable id<DataSource>)dataSourceWithOversizeText:(NSString *_Nullable)text
 {
     if (!text) {
         return nil;
@@ -161,12 +160,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [self dataSourceWithData:data fileExtension:kOversizeTextAttachmentFileExtension];
 }
 
-+ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data
++ (id<DataSource>)dataSourceWithSyncMessageData:(NSData *)data
 {
     return [self dataSourceWithData:data fileExtension:kSyncMessageFileExtension];
 }
 
-+ (DataSource *)emptyDataSource
++ (id<DataSource>)emptyDataSource
 {
     return [self dataSourceWithData:[NSData new] fileExtension:@"bin"];
 }
@@ -278,7 +277,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-+ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
++ (_Nullable id<DataSource>)dataSourceWithURL:(NSURL *)fileUrl shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     OWSAssertDebug(fileUrl);
 
@@ -291,7 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
     return instance;
 }
 
-+ (nullable DataSource *)dataSourceWithFilePath:(NSString *)filePath
++ (_Nullable id<DataSource>)dataSourceWithFilePath:(NSString *)filePath
                      shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
 {
     OWSAssertDebug(filePath);

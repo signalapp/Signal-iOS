@@ -84,7 +84,7 @@ void AssertIsOnSendingQueue()
 
 @implementation OWSOutgoingAttachmentInfo
 
-- (instancetype)initWithDataSource:(DataSource *)dataSource
+- (instancetype)initWithDataSource:(id<DataSource>)dataSource
                        contentType:(NSString *)contentType
                     sourceFilename:(nullable NSString *)sourceFilename
                            caption:(nullable NSString *)caption
@@ -444,7 +444,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     });
 }
 
-- (void)sendTemporaryAttachment:(DataSource *)dataSource
+- (void)sendTemporaryAttachment:(id<DataSource>)dataSource
                     contentType:(NSString *)contentType
                       inMessage:(TSOutgoingMessage *)message
                         success:(void (^)(void))successHandler
@@ -481,7 +481,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                  failure:failureWithDeleteHandler];
 }
 
-- (void)sendAttachment:(DataSource *)dataSource
+- (void)sendAttachment:(id<DataSource>)dataSource
            contentType:(NSString *)contentType
         sourceFilename:(nullable NSString *)sourceFilename
         albumMessageId:(nullable NSString *)albumMessageId

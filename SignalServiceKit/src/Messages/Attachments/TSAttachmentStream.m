@@ -278,7 +278,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return [data writeToFile:filePath options:0 error:error];
 }
 
-- (BOOL)writeDataSource:(DataSource *)dataSource
+- (BOOL)writeDataSource:(id<DataSource>)dataSource
 {
     OWSAssertDebug(dataSource);
 

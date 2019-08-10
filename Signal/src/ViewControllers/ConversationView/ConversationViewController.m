@@ -2833,7 +2833,7 @@ typedef enum : NSUInteger {
 
     OWSAssertDebug(type);
     OWSAssertDebug(filename);
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithURL:url shouldDeleteOnDeallocation:NO];
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:url shouldDeleteOnDeallocation:NO];
     if (!dataSource) {
         OWSFailDebug(@"attachment data was unexpectedly empty for picked document");
 
@@ -3002,7 +3002,7 @@ typedef enum : NSUInteger {
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      DataSource *dataSource =
+                      id<DataSource>dataSource =
                           [DataSourcePath dataSourceWithURL:movieURL shouldDeleteOnDeallocation:NO];
                       dataSource.sourceFilename = filename;
                       VideoCompressionResult *compressionResult =
@@ -3152,7 +3152,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    DataSource *_Nullable dataSource =
+    _Nullable id<DataSource> dataSource =
         [DataSourcePath dataSourceWithURL:self.audioRecorder.url shouldDeleteOnDeallocation:YES];
     self.audioRecorder = nil;
 
@@ -3386,7 +3386,7 @@ typedef enum : NSUInteger {
 
     if (newGroupModel.groupImage) {
         NSData *data = UIImagePNGRepresentation(newGroupModel.groupImage);
-        DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+        _Nullable id<DataSource> dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
         // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
         // which causes this code to be called. Once we're more aggressive about durable sending retry,
         // we could get rid of this "retryable tappable error message".

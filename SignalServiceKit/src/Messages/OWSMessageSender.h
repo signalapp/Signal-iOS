@@ -36,7 +36,7 @@ typedef void (^RetryableFailureHandler)(NSError *_Nonnull error);
 NS_SWIFT_NAME(OutgoingAttachmentInfo)
 @interface OWSOutgoingAttachmentInfo : NSObject
 
-@property (nonatomic, readonly) DataSource *dataSource;
+@property (nonatomic, readonly) id<DataSource>dataSource;
 @property (nonatomic, readonly) NSString *contentType;
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 @property (nonatomic, readonly, nullable) NSString *caption;
@@ -44,7 +44,7 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithDataSource:(DataSource *)dataSource
+- (instancetype)initWithDataSource:(id<DataSource>)dataSource
                        contentType:(NSString *)contentType
                     sourceFilename:(nullable NSString *)sourceFilename
                            caption:(nullable NSString *)caption
@@ -71,7 +71,7 @@ NS_SWIFT_NAME(MessageSender)
  * Takes care of allocating and uploading the attachment, then sends the message.
  * Only necessary to call once. If sending fails, retry with `sendMessage:`.
  */
-- (void)sendAttachment:(DataSource *)dataSource
+- (void)sendAttachment:(id<DataSource>)dataSource
            contentType:(NSString *)contentType
         sourceFilename:(nullable NSString *)sourceFilename
         albumMessageId:(nullable NSString *)albumMessageId
@@ -83,7 +83,7 @@ NS_SWIFT_NAME(MessageSender)
  * Same as `sendAttachment:`, but deletes the local copy of the attachment after sending.
  * Used for sending sync request data, not for user visible attachments.
  */
-- (void)sendTemporaryAttachment:(DataSource *)dataSource
+- (void)sendTemporaryAttachment:(id<DataSource>)dataSource
                     contentType:(NSString *)contentType
                       inMessage:(TSOutgoingMessage *)outgoingMessage
                         success:(void (^)(void))successHandler
