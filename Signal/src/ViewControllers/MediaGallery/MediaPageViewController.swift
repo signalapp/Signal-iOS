@@ -787,21 +787,7 @@ extension MediaGalleryItem: GalleryRailItem {
     }
 
     public func getRailImage() -> UIImage? {
-        let sema = DispatchSemaphore(value: 0)
-
-        var asyncImage: UIImage?
-        // We need to return images synchronously, otherwise our transition to the Media Details
-        // VC, which uses a snapshot of the MediaRail, will show an empty rail.
-        if let image = self.thumbnailImage(async: { image in
-            asyncImage = image
-            sema.signal()
-        }) {
-            return image
-        }
-        sema.wait()
-
-        assert(asyncImage != nil)
-        return asyncImage
+        return self.thumbnailImageSync()
     }
 }
 
