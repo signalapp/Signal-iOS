@@ -438,7 +438,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
-    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
+    NSError *error;
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
+                                                      shouldDeleteOnDeallocation:NO
+                                                                           error:&error];
+    if (error != nil) {
+        OWSFailDebug(@"error while creating data source: %@", error);
+        failure();
+        return;
+    }
+
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
@@ -1754,7 +1763,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *filename = [filePath lastPathComponent];
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:filename.pathExtension];
-    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
+    NSError *error;
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
+                                                      shouldDeleteOnDeallocation:NO
+                                                                           error:&error];
+    OWSAssertDebug(error == nil);
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
@@ -4791,8 +4804,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     OWSAssertDebug(transaction);
 
     if (isAttachmentDownloaded) {
+        NSError *error;
         id<DataSource>dataSource =
-            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath shouldDeleteOnDeallocation:NO];
+            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath
+                        shouldDeleteOnDeallocation:NO
+                                             error:&error];
+        OWSAssertDebug(error == nil);
         NSString *filename = dataSource.sourceFilename;
         // To support "fake missing" attachments, we sometimes lie about the
         // length of the data.
@@ -4803,9 +4820,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                                        caption:nil
                                                                                 albumMessageId:nil
                                                                              shouldAlwaysPad:NO];
-        NSError *error;
         BOOL success = [attachmentStream writeData:dataSource.data error:&error];
-        OWSAssertDebug(success && !error);
+        OWSAssertDebug(success && error == nil);
         [attachmentStream anyInsertWithTransaction:transaction];
         return attachmentStream;
     } else {
@@ -4870,8 +4886,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         DebugUIMessagesAssetLoader *fakeAssetLoader
             = fakeAssetLoaders[arc4random_uniform((uint32_t)fakeAssetLoaders.count)];
         OWSAssertDebug([NSFileManager.defaultManager fileExistsAtPath:fakeAssetLoader.filePath]);
+        NSError *error;
         id<DataSource>dataSource =
-            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath shouldDeleteOnDeallocation:NO];
+            [DataSourcePath dataSourceWithFilePath:fakeAssetLoader.filePath
+                        shouldDeleteOnDeallocation:NO
+                                             error:&error];
+        OWSAssertDebug(error == nil);
         SignalAttachment *attachment =
             [SignalAttachment attachmentWithDataSource:dataSource
                                                dataUTI:[MIMETypeUtil utiTypeForMIMEType:fakeAssetLoader.mimeType]

@@ -75,7 +75,11 @@
 
     OWSAssertDebug([[NSFileManager defaultManager] fileExistsAtPath:filePath]);
 
-    id<DataSource>dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:NO];
+    NSError *error;
+    id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
+                                            shouldDeleteOnDeallocation:NO
+                                                                 error:&error];
+    OWSAssertDebug(error == nil);
     dataSource.sourceFilename = filename;
 
     __block ConversationInteractionViewItem *viewItem = nil;

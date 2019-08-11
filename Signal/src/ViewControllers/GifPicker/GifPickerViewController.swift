@@ -493,11 +493,9 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             }
 
             let filePath = asset.filePath
-            guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath,
-                shouldDeleteOnDeallocation: false) else {
-                owsFailDebug("couldn't load asset.")
-                return
-            }
+            let dataSource = try DataSourcePath.dataSource(withFilePath: filePath,
+                                                           shouldDeleteOnDeallocation: false)
+
             let attachment = SignalAttachment.attachment(dataSource: dataSource, dataUTI: rendition.utiType, imageQuality: .original)
 
             self.delegate?.gifPickerDidSelect(attachment: attachment)

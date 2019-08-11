@@ -236,7 +236,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
-    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
+    NSError *error;
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
+                                                      shouldDeleteOnDeallocation:YES
+                                                                           error:&error];
+    OWSAssertDebug(error == nil);
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     NSData *databasePassword = [OWSPrimaryStorage.sharedManager databasePassword];
@@ -266,13 +270,20 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *fileName = filePath.lastPathComponent;
 
     NSError *error = [OWSPrimaryStorage.sharedManager.newDatabaseConnection backupToPath:filePath];
-    if (error) {
+    if (error != nil) {
         OWSFailDebug(@"Could not copy database file: %@.", error);
         return;
     }
 
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
-    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
+                                                      shouldDeleteOnDeallocation:YES
+                                                                           error:&error];
+    if (error != nil) {
+        OWSFailDebug(@"Could not create dataSource: %@.", error);
+        return;
+    }
+
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     [self sendAttachment:attachment thread:thread];

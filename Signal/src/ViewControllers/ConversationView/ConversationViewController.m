@@ -2833,9 +2833,12 @@ typedef enum : NSUInteger {
 
     OWSAssertDebug(type);
     OWSAssertDebug(filename);
-    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:url shouldDeleteOnDeallocation:NO];
-    if (!dataSource) {
-        OWSFailDebug(@"attachment data was unexpectedly empty for picked document");
+    NSError *error;
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:url
+                                                 shouldDeleteOnDeallocation:NO
+                                                                      error:&error];
+    if (error != nil) {
+        OWSFailDebug(@"error: %@", error);
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [OWSAlerts showAlertWithTitle:NSLocalizedString(@"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE",
@@ -3007,8 +3010,16 @@ typedef enum : NSUInteger {
         presentFromViewController:self
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
+                      NSError *error;
                       id<DataSource>dataSource =
-                          [DataSourcePath dataSourceWithURL:movieURL shouldDeleteOnDeallocation:NO];
+                          [DataSourcePath dataSourceWithURL:movieURL
+                                 shouldDeleteOnDeallocation:NO
+                                                      error:&error];
+                      if (error != nil) {
+                          [self showErrorAlertForAttachment:nil];
+                          return;
+                      }
+
                       dataSource.sourceFilename = filename;
                       VideoCompressionResult *compressionResult =
                           [SignalAttachment compressVideoAsMp4WithDataSource:dataSource
@@ -3157,12 +3168,15 @@ typedef enum : NSUInteger {
         return;
     }
 
+    NSError *error;
     _Nullable id<DataSource> dataSource =
-        [DataSourcePath dataSourceWithURL:self.audioRecorder.url shouldDeleteOnDeallocation:YES];
+        [DataSourcePath dataSourceWithURL:self.audioRecorder.url
+               shouldDeleteOnDeallocation:YES
+                                    error:&error];
     self.audioRecorder = nil;
 
-    if (!dataSource) {
-        OWSFailDebug(@"Couldn't load audioRecorder data");
+    if (error != nil) {
+        OWSFailDebug(@"Couldn't load audioRecorder data: %@", error);
         self.audioRecorder = nil;
         return;
     }
