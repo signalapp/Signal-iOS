@@ -29,6 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 // Returns YES on success.
 - (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error;
 
+// Faster than `writeToUrl`, but a DataSource can only be moved once,
+// and cannot be used after it's been moved.
+- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error;
+
 - (BOOL)isValidImage;
 
 - (BOOL)isValidVideo;

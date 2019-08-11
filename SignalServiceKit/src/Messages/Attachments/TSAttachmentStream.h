@@ -90,7 +90,16 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 
 - (nullable NSData *)readDataFromFileWithError:(NSError **)error;
 - (BOOL)writeData:(NSData *)data error:(NSError **)error;
-- (BOOL)writeDataSource:(id<DataSource>)dataSource error:(NSError **)error;
+
+/// Copies the contents of the DataSource into the attachment stream's backing file.
+- (BOOL)writeCopyingDataSource:(id<DataSource>)dataSource
+                         error:(NSError **)error NS_SWIFT_NAME(writeCopyingDataSource(_:));
+
+/// This method *moves* the file backing `dataSource`, rather than copying it's content. As such it's faster than
+/// `writeCopyingDataSource`, but it must not be used if the DataSource is backed by a file which must exist *after*
+/// this write.
+- (BOOL)writeConsumingDataSource:(id<DataSource>)dataSource
+                           error:(NSError **)error NS_SWIFT_NAME(writeConsumingDataSource(_:));
 
 + (void)deleteAttachments;
 

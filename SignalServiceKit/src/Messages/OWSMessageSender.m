@@ -2052,7 +2052,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
         }
 
-        [attachmentStream writeDataSource:attachmentInfo.dataSource error:error];
+        [attachmentStream writeConsumingDataSource:attachmentInfo.dataSource error:error];
         if (*error != nil) {
             return NO;
         }

@@ -279,7 +279,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     return [data writeToFile:filePath options:0 error:error];
 }
 
-- (BOOL)writeDataSource:(id<DataSource>)dataSource error:(NSError **)error
+- (BOOL)writeCopyingDataSource:(id<DataSource>)dataSource error:(NSError **)error
 {
     OWSAssertDebug(dataSource);
 
@@ -291,6 +291,19 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
     return [dataSource writeToUrl:originalMediaURL
                             error:error];
+}
+
+- (BOOL)writeConsumingDataSource:(id<DataSource>)dataSource error:(NSError **)error
+{
+    OWSAssertDebug(dataSource);
+
+    NSURL *_Nullable originalMediaURL = self.originalMediaURL;
+    if (originalMediaURL == nil) {
+        *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
+        return NO;
+    }
+    OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
+    return [dataSource moveToUrlAndConsume:originalMediaURL error:error];
 }
 
 + (NSString *)legacyAttachmentsDirPath
