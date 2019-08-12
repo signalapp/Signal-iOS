@@ -25,7 +25,7 @@ public class OWS106EnsureProfileComplete: YDBDatabaseMigration {
             if (didSucceed) {
                 Logger.info("Completed. Saving.")
 
-                self.markAsCompleteWithSneakyTransaction()
+                self.markAsCompleteWithSneakyYDBTransaction()
             } else {
                 Logger.error("Failed.")
             }

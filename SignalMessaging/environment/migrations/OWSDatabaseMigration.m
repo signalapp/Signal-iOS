@@ -52,11 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAbstractMethod();
 }
 
-- (void)markAsCompleteWithSneakyTransaction
-{
-    OWSAbstractMethod();
-}
-
 - (void)markAsCompleteWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!self.shouldBeSaved) {
@@ -139,10 +134,8 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)markAsCompleteWithSneakyTransaction
+- (void)markAsCompleteWithSneakyYDBTransaction
 {
-    // GRDB TODO: Which kind of transaction we should use depends on whether or not
-    //            we are pre- or post- the YDB-to-GRDB migration.
     [self.ydbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self markAsCompleteWithTransaction:transaction.asAnyWrite];
     }];
@@ -150,8 +143,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isCompleteWithSneakyTransaction
 {
-    // GRDB TODO: Which kind of transaction we should use depends on whether or not
-    //            we are pre- or post- the YDB-to-GRDB migration.
     __block BOOL result;
     [self.ydbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         result = [self isCompleteWithTransaction:transaction.asAnyRead];

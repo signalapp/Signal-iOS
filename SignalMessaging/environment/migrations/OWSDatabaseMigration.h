@@ -32,14 +32,7 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 // If you must write a launch-blocking migration, override runUp.
 - (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion;
 
-// NOTE: We'll often want to use markAsCompleteWithSneakyTransaction.
-//       See below.
 - (void)markAsCompleteWithTransaction:(SDSAnyWriteTransaction *)transaction;
-
-// We use a sneaky transaction since which database we should
-// update will depend on whether or not we're pre- or post-
-// the YDB-to-GRDB migration.
-- (void)markAsCompleteWithSneakyTransaction;
 
 + (void)markMigrationIdAsComplete:(NSString *)migrationId transaction:(SDSAnyWriteTransaction *)transaction;
 
@@ -68,6 +61,8 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 #pragma mark - Database Connections
 
 @property (nonatomic, readonly) YapDatabaseConnection *ydbReadWriteConnection;
+
+- (void)markAsCompleteWithSneakyYDBTransaction;
 
 @end
 

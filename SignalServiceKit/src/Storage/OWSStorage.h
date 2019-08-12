@@ -48,8 +48,7 @@ typedef void (^OWSStorageMigrationBlock)(void);
 
 @interface OWSStorage : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 // Returns YES if _ALL_ storage classes have completed both their
 // sync _AND_ async view registrations.

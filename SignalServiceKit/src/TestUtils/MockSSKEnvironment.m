@@ -23,6 +23,7 @@
 #import "SSKPreKeyStore.h"
 #import "SSKSessionStore.h"
 #import "SSKSignedPreKeyStore.h"
+#import "StorageCoordinator.h"
 #import "TSAccountManager.h"
 #import "TSSocketManager.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -53,9 +54,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
-    SDSDatabaseStorage *databaseStorage = [SDSDatabaseStorage new];
+    StorageCoordinator *storageCoordinator = [StorageCoordinator new];
+    SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
     OWSPrimaryStorage *primaryStorage = databaseStorage.yapPrimaryStorage;
-    [OWSPrimaryStorage protectFiles];
 
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
@@ -122,7 +123,8 @@ NS_ASSUME_NONNULL_BEGIN
                           databaseStorage:databaseStorage
                 signalServiceAddressCache:signalServiceAddressCache
                      accountServiceClient:accountServiceClient
-                    storageServiceManager:storageServiceManager];
+                    storageServiceManager:storageServiceManager
+                       storageCoordinator:storageCoordinator];
 
     if (!self) {
         return nil;

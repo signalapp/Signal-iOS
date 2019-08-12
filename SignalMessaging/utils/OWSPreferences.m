@@ -44,7 +44,8 @@ NSString *const OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators
     = @"OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators";
 NSString *const OWSPreferencesKeyShouldNotifyOfNewAccountKey = @"OWSPreferencesKeyShouldNotifyOfNewAccountKey";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
-NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
+NSString *const OWSPreferencesKey_IsYdbReadyForAppExtensions = @"isReadyForAppExtensions_5";
+NSString *const OWSPreferencesKey_IsGrdbReadyForAppExtensions = @"IsGrdbReadyForAppExtensions";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
 NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKeyIsViewOnceMessagesEnabled";
 
@@ -167,7 +168,35 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
 
 + (BOOL)isReadyForAppExtensions
 {
-    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKey_IsReadyForAppExtensions];
+    if (SSKFeatureFlags.storageMode == StorageModeGrdb && !self.isGrdbReadyForAppExtensions) {
+        return NO;
+    }
+    return self.isYdbReadyForAppExtensions;
+}
+
++ (BOOL)isYdbReadyForAppExtensions
+{
+    return [self appUserDefaultsFlagWithKey:OWSPreferencesKey_IsYdbReadyForAppExtensions];
+}
+
++ (void)setIsYdbReadyForAppExtensions
+{
+    [self setAppUserDefaultsFlagWithKey:OWSPreferencesKey_IsYdbReadyForAppExtensions];
+}
+
++ (BOOL)isGrdbReadyForAppExtensions
+{
+    return [self appUserDefaultsFlagWithKey:OWSPreferencesKey_IsGrdbReadyForAppExtensions];
+}
+
++ (void)setIsGrdbReadyForAppExtensions
+{
+    [self setAppUserDefaultsFlagWithKey:OWSPreferencesKey_IsGrdbReadyForAppExtensions];
+}
+
++ (BOOL)appUserDefaultsFlagWithKey:(NSString *)key
+{
+    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:key];
 
     if (preference) {
         return [preference boolValue];
@@ -176,11 +205,11 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
     }
 }
 
-+ (void)setIsReadyForAppExtensions
++ (void)setAppUserDefaultsFlagWithKey:(NSString *)key
 {
     OWSAssertDebug(CurrentAppContext().isMainApp);
 
-    [NSUserDefaults.appUserDefaults setObject:@(YES) forKey:OWSPreferencesKey_IsReadyForAppExtensions];
+    [NSUserDefaults.appUserDefaults setObject:@(YES) forKey:key];
     [NSUserDefaults.appUserDefaults synchronize];
 }
 

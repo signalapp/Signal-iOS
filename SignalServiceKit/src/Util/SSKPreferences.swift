@@ -39,4 +39,24 @@ public class SSKPreferences: NSObject {
     public static func setHasSavedThread(_ newValue: Bool, transaction: SDSAnyWriteTransaction) {
         store.setBool(newValue, key: hasSavedThreadKey, transaction: transaction)
     }
+
+    // MARK: -
+
+    private static let isYdbMigratedKey = "isYdbMigrated1"
+
+    @objc
+    public static func isYdbMigrated() -> Bool {
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+        guard let preference = appUserDefaults.object(forKey: isYdbMigratedKey) as? NSNumber else {
+            return false
+        }
+        return preference.boolValue
+    }
+
+    @objc
+    public static func setIsYdbMigrated() {
+        let appUserDefaults = CurrentAppContext().appUserDefaults()
+        appUserDefaults.set(true, forKey: isYdbMigratedKey)
+        appUserDefaults.synchronize()
+    }
 }

@@ -71,9 +71,9 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
     return SSKEnvironment.shared.primaryStorage;
 }
 
-- (instancetype)initStorage
+- (instancetype)init
 {
-    self = [super initStorage];
+    self = [super init];
 
     if (self) {
         [self loadDatabase];
@@ -94,6 +94,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                                  selector:@selector(yapDatabaseModifiedExternally:)
                                                      name:YapDatabaseModifiedExternallyNotification
                                                    object:nil];
+
+        [OWSPrimaryStorage protectFiles];
 
         OWSSingletonAssert();
     }
@@ -474,9 +476,11 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
     // made in another process (e.g. the SAE) from showing up in other processes.
     // There's a simple workaround: a trivial write to the database flushes changes
     // made from other processes.
-    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
-    }];
+    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+        [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
+        }];
+    }
 }
 
 @end

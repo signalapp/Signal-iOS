@@ -362,7 +362,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         }
     }];
 
-    if (SSKFeatureFlags.useGRDB) {
+    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
         [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
     } else {
         [[NSNotificationCenter defaultCenter] addObserver:self

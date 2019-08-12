@@ -33,7 +33,7 @@ static NSString *const OWS109OutgoingMessageStateMigrationId = @"109";
         }
         dbConnection:dbConnection
         completion:^{
-            [self markAsCompleteWithSneakyTransaction];
+            [self markAsCompleteWithSneakyYDBTransaction];
 
             completion();
         }];

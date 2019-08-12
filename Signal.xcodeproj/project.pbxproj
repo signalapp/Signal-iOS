@@ -27,6 +27,8 @@
 		340872D822397F4600CB25B0 /* AttachmentCaptionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872D722397F4500CB25B0 /* AttachmentCaptionViewController.swift */; };
 		340872DA22397FEB00CB25B0 /* AttachmentTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 340872D922397FEB00CB25B0 /* AttachmentTextView.swift */; };
 		340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */; };
+		340B414222FCB7D200DAD88D /* StorageCoordinator+MainApp.h in Headers */ = {isa = PBXBuildFile; fileRef = 340B413F22FCB7D200DAD88D /* StorageCoordinator+MainApp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		340B414322FCB7D200DAD88D /* StorageCoordinator+MainApp.m in Sources */ = {isa = PBXBuildFile; fileRef = 340B414022FCB7D200DAD88D /* StorageCoordinator+MainApp.m */; };
 		340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */; };
 		340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */; };
 		340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */; };
@@ -708,6 +710,8 @@
 		340872D922397FEB00CB25B0 /* AttachmentTextView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttachmentTextView.swift; sourceTree = "<group>"; };
 		340B02B61F9FD31800F9CFEC /* he */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = he; path = translations/he.lproj/Localizable.strings; sourceTree = "<group>"; };
 		340B02B91FA0D6C700F9CFEC /* ConversationViewItemTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConversationViewItemTest.m; sourceTree = "<group>"; };
+		340B413F22FCB7D200DAD88D /* StorageCoordinator+MainApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "StorageCoordinator+MainApp.h"; sourceTree = "<group>"; };
+		340B414022FCB7D200DAD88D /* StorageCoordinator+MainApp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "StorageCoordinator+MainApp.m"; sourceTree = "<group>"; };
 		340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsOptionsViewController.m; sourceTree = "<group>"; };
 		340FC87C204DAC8C007AEB0F /* NotificationSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationSettingsViewController.m; sourceTree = "<group>"; };
 		340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DomainFrontingCountryViewController.m; sourceTree = "<group>"; };
@@ -1589,6 +1593,15 @@
 			path = AttachmentApproval;
 			sourceTree = "<group>";
 		};
+		340B413822FCB15800DAD88D /* storage */ = {
+			isa = PBXGroup;
+			children = (
+				340B413F22FCB7D200DAD88D /* StorageCoordinator+MainApp.h */,
+				340B414022FCB7D200DAD88D /* StorageCoordinator+MainApp.m */,
+			);
+			path = storage;
+			sourceTree = "<group>";
+		};
 		340FC875204DAC8C007AEB0F /* Registration */ = {
 			isa = PBXGroup;
 			children = (
@@ -2335,6 +2348,7 @@
 				346129B01FD1F7E800532771 /* profiles */,
 				34480B5A1FD0A7E300BC14EF /* SignalMessaging-Prefix.pch */,
 				453518941FC63DBF00210559 /* SignalMessaging.h */,
+				340B413822FCB15800DAD88D /* storage */,
 				88E34F2522F269B600966CC2 /* Storage Service */,
 				34480B471FD0A60200BC14EF /* utils */,
 				451F8A361FD7115D005CB9DA /* ViewControllers */,
@@ -2881,6 +2895,7 @@
 				34AC09DE211B39B100997B47 /* OWSNavigationController.h in Headers */,
 				34612A011FD5F31400532771 /* OWS104CreateRecipientIdentities.h in Headers */,
 				450998691FD8C10200D89EB3 /* AttachmentSharing.h in Headers */,
+				340B414222FCB7D200DAD88D /* StorageCoordinator+MainApp.h in Headers */,
 				34BEDB1621C80BCA007B0EAE /* OWSAnyTouchGestureRecognizer.h in Headers */,
 				34AC09EC211B39B100997B47 /* OWSTableViewController.h in Headers */,
 				451F8A3C1FD71392005CB9DA /* UIUtil.h in Headers */,
@@ -3651,6 +3666,7 @@
 				34080F04222858DC0087E99F /* OWSViewController+ImageEditor.swift in Sources */,
 				346129FE1FD5F31400532771 /* OWS106EnsureProfileComplete.swift in Sources */,
 				34AC0A10211B39EA00997B47 /* TappableView.swift in Sources */,
+				340B414322FCB7D200DAD88D /* StorageCoordinator+MainApp.m in Sources */,
 				346129F91FD5F31400532771 /* OWS104CreateRecipientIdentities.m in Sources */,
 				34C2EEAC2270A69400BCA1D0 /* CircleView.swift in Sources */,
 				346129B61FD1F7E800532771 /* ProfileFetcherJob.swift in Sources */,

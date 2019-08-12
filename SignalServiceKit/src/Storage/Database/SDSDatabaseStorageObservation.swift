@@ -142,6 +142,10 @@ class SDSDatabaseStorageObservation {
     }
 
     private func addYDBObservers() {
+        guard FeatureFlags.storageMode == .ydb else {
+            return
+        }
+
         NotificationCenter.default.addObserver(forName: .OWSUIDatabaseConnectionDidUpdate, object: nil, queue: nil) { [weak self] notification in
             self?.ydbDidUpdate(notification: notification)
         }
@@ -151,6 +155,9 @@ class SDSDatabaseStorageObservation {
     }
 
     func set(grdbStorage: GRDBDatabaseStorageAdapter) {
+        guard [.grdb, .grdbThrowaway].contains(FeatureFlags.storageMode) else {
+            return
+        }
         guard let genericDatabaseObserver = grdbStorage.genericDatabaseObserver else {
             owsFailDebug("Missing genericDatabaseObserver.")
             return

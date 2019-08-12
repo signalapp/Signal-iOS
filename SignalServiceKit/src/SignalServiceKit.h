@@ -37,6 +37,7 @@
 #import <SignalServiceKit/SignalAccount.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/StickerPack.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSAttachment.h>
 #import <SignalServiceKit/TSAttachmentPointer.h>
