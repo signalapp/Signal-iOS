@@ -119,7 +119,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.contactThread)
 
         firstly {
-            return self.messageSender.sendPromise(message: endSessionMessage)
+            return self.messageSender.sendMessage(.promise, endSessionMessage.asPreparer)
         }.done {
             Logger.info("successfully sent EndSessionMessage.")
             self.databaseStorage.write { transaction in

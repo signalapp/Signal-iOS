@@ -1121,7 +1121,7 @@ const CGFloat kIconViewLength = 24;
                 initWithConfiguration:self.disappearingMessagesConfiguration
                                thread:self.thread];
 
-            [self.messageSenderJobQueue addMessage:message transaction:transaction];
+            [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
         }];
     }
 }
@@ -1242,7 +1242,7 @@ const CGFloat kIconViewLength = 24;
         [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
 
         [gThread leaveGroupWithTransaction:transaction];
     }];

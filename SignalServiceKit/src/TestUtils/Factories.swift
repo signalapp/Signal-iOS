@@ -443,7 +443,7 @@ class AttachmentStreamFactory: NSObject, Factory {
         factory.sourceFilenameBuilder = { return dataSource.sourceFilename ?? "fake-filename.dat" }
 
         let attachmentStream = factory.build(transaction: transaction)
-        dataSource.write(toPath: attachmentStream.originalFilePath!)
+        try! dataSource.write(to: attachmentStream.originalMediaURL!)
 
         attachmentStream.anyInsert(transaction: transaction)
 

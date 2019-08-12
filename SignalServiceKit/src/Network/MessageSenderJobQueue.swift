@@ -35,44 +35,38 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     // MARK: 
 
     @objc(addMessage:transaction:)
-    public func add(message: TSOutgoingMessage, transaction: SDSAnyWriteTransaction) {
+    public func add(message: OutgoingMessagePreparer, transaction: SDSAnyWriteTransaction) {
         self.add(message: message, removeMessageAfterSending: false, transaction: transaction)
     }
 
     @objc(addMediaMessage:dataSource:contentType:sourceFilename:caption:albumMessageId:isTemporaryAttachment:)
     public func add(mediaMessage: TSOutgoingMessage, dataSource: DataSource, contentType: String, sourceFilename: String?, caption: String?, albumMessageId: String?, isTemporaryAttachment: Bool) {
         let attachmentInfo = OutgoingAttachmentInfo(dataSource: dataSource, contentType: contentType, sourceFilename: sourceFilename, caption: caption, albumMessageId: albumMessageId)
-        add(mediaMessage: mediaMessage, attachmentInfos: [attachmentInfo], isTemporaryAttachment: isTemporaryAttachment)
+        let message = OutgoingMessagePreparer(mediaMessage, unsavedAttachmentInfos: [attachmentInfo])
+        add(message: message, isTemporaryAttachment: isTemporaryAttachment)
     }
 
-    @objc(addMediaMessage:attachmentInfos:isTemporaryAttachment:)
-    public func add(mediaMessage: TSOutgoingMessage, attachmentInfos: [OutgoingAttachmentInfo], isTemporaryAttachment: Bool) {
-        OutgoingMessagePreparer.prepareAttachments(attachmentInfos,
-                                                  inMessage: mediaMessage,
-                                                  completionHandler: { error in
-                                                    if let error = error {
-                                                        self.databaseStorage.write { transaction in
-                                                            mediaMessage.update(sendingError: error, transaction: transaction)
-                                                        }
-                                                    } else {
-                                                        self.databaseStorage.write { transaction in
-                                                            self.add(message: mediaMessage, removeMessageAfterSending: isTemporaryAttachment, transaction: transaction)
-                                                        }
-                                                    }
-        })
-    }
+    @objc(addMessage:isTemporaryAttachment:)
+    public func add(message: OutgoingMessagePreparer, isTemporaryAttachment: Bool) {
+        databaseStorage.asyncWrite { transaction in
+            self.add(message: message,
+                     removeMessageAfterSending: isTemporaryAttachment,
+                     transaction: transaction)
 
-    private func add(message: TSOutgoingMessage, removeMessageAfterSending: Bool, transaction: SDSAnyWriteTransaction) {
-        assert(AppReadiness.isAppReady() || CurrentAppContext().isRunningTests)
-
-        let jobRecord: SSKMessageSenderJobRecord
-        do {
-            jobRecord = try SSKMessageSenderJobRecord(message: message, removeMessageAfterSending: false, label: self.jobRecordLabel)
-        } catch {
-            owsFailDebug("failed to build job: \(error)")
-            return
         }
-        self.add(jobRecord: jobRecord, transaction: transaction)
+    }
+
+    private func add(message: OutgoingMessagePreparer, removeMessageAfterSending: Bool, transaction: SDSAnyWriteTransaction) {
+        assert(AppReadiness.isAppReady() || CurrentAppContext().isRunningTests)
+        do {
+            let messageRecord = try message.prepareMessage(transaction: transaction)
+            let jobRecord = try SSKMessageSenderJobRecord(message: messageRecord,
+                                                          removeMessageAfterSending: removeMessageAfterSending,
+                                                          label: self.jobRecordLabel)
+            self.add(jobRecord: jobRecord, transaction: transaction)
+        } catch {
+            message.unpreparedMessage.update(sendingError: error, transaction: transaction)
+        }
     }
 
     // MARK: JobQueue
@@ -200,9 +194,9 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     // MARK: OWSOperation
 
     override public func run() {
-        self.messageSender.send(message,
-                                success: reportSuccess,
-                                failure: reportError(withUndefinedRetry:))
+        self.messageSender.sendMessage(message.asPreparer,
+                                       success: reportSuccess,
+                                       failure: reportError(withUndefinedRetry:))
     }
 
     override public func didSucceed() {

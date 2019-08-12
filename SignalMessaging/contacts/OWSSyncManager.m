@@ -191,7 +191,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                            showTypingIndicators:showTypingIndicators
                                                sendLinkPreviews:sendLinkPreviews];
 
-        [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction];
+        [self.messageSenderJobQueue addMessage:syncConfigurationMessage.asPreparer transaction:transaction];
     }];
 }
 
@@ -210,7 +210,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         OWSFailDebug(@"Failed to serialize groups sync message.");
         return;
     }
-    DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
+    id<DataSource>dataSource = [DataSourceValue dataSourceWithSyncMessageData:syncData];
     [self.messageSenderJobQueue addMediaMessage:syncGroupsMessage
                                      dataSource:dataSource
                                     contentType:OWSMimeTypeApplicationOctetStream
@@ -318,7 +318,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                 
                 // DURABLE CLEANUP - we could replace the custom durability logic in this class
                 // with a durable JobQueue.
-                DataSource *dataSource = [DataSourceValue dataSourceWithSyncMessageData:messageData];
+                id<DataSource>dataSource = [DataSourceValue dataSourceWithSyncMessageData:messageData];
                 [self.messageSender sendTemporaryAttachment:dataSource
                                                 contentType:OWSMimeTypeApplicationOctetStream
                                                   inMessage:syncContactsMessage

@@ -144,7 +144,7 @@ public class ViewOnceMessages: NSObject {
                                                             senderAddress: senderAddress,
                                                                  messageIdTimestamp: messageIdTimestamp,
                                                                  readTimestamp: readTimestamp)
-        messageSenderJobQueue.add(message: syncMessage, transaction: transaction)
+        messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
     }
 
     @objc

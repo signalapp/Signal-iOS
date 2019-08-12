@@ -236,7 +236,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     NSData *databasePassword = [OWSPrimaryStorage.sharedManager databasePassword];
@@ -272,7 +272,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSString *utiType = [MIMETypeUtil utiTypeForFileExtension:fileName.pathExtension];
-    DataSource *_Nullable dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath shouldDeleteOnDeallocation:YES];
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     [self sendAttachment:attachment thread:thread];

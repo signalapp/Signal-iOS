@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // * Lazy-load if possible.
 // * Avoid duplicate reads & writes.
-@interface DataSource : NSObject
+@protocol DataSource <NSObject>
 
 @property (nonatomic, nullable) NSString *sourceFilename;
 
@@ -27,7 +27,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSUInteger)dataLength;
 
 // Returns YES on success.
-- (BOOL)writeToPath:(NSString *)dstFilePath;
+- (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error;
+
+// Faster than `writeToUrl`, but a DataSource can only be moved once,
+// and cannot be used after it's been moved.
+- (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error;
 
 - (BOOL)isValidImage;
 
@@ -37,27 +41,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface DataSourceValue : DataSource
+@interface DataSourceValue : NSObject <DataSource>
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data fileExtension:(NSString *)fileExtension;
++ (_Nullable id<DataSource>)dataSourceWithData:(NSData *)data fileExtension:(NSString *)fileExtension;
 
-+ (nullable DataSource *)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType;
++ (_Nullable id<DataSource>)dataSourceWithData:(NSData *)data utiType:(NSString *)utiType;
 
-+ (nullable DataSource *)dataSourceWithOversizeText:(NSString *_Nullable)text;
++ (_Nullable id<DataSource>)dataSourceWithOversizeText:(NSString *_Nullable)text;
 
-+ (DataSource *)dataSourceWithSyncMessageData:(NSData *)data;
++ (id<DataSource>)dataSourceWithSyncMessageData:(NSData *)data;
 
-+ (DataSource *)emptyDataSource;
++ (id<DataSource>)emptyDataSource;
 
 @end
 
 #pragma mark -
 
-@interface DataSourcePath : DataSource
+@interface DataSourcePath : NSObject <DataSource>
 
-+ (nullable DataSource *)dataSourceWithURL:(NSURL *)fileUrl shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
++ (_Nullable id<DataSource>)dataSourceWithURL:(NSURL *)fileUrl shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
 
-+ (nullable DataSource *)dataSourceWithFilePath:(NSString *)filePath
++ (_Nullable id<DataSource>)dataSourceWithFilePath:(NSString *)filePath
                      shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
 
 @end

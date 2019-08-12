@@ -43,7 +43,7 @@ class DebugUICalling: DebugUIPage {
                 }
                 let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
 
-                strongSelf.messageSender.sendPromise(message: callMessage).done {
+                strongSelf.messageSender.sendMessage(.promise, callMessage.asPreparer).done {
                     Logger.debug("Successfully sent hangup call message to \(thread.contactAddress)")
                 }.catch { error in
                     Logger.error("failed to send hangup call message to \(thread.contactAddress) with error: \(error)")
@@ -64,7 +64,7 @@ class DebugUICalling: DebugUIPage {
 
                 let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
 
-                strongSelf.messageSender.sendPromise(message: callMessage).done {
+                strongSelf.messageSender.sendMessage(.promise, callMessage.asPreparer).done {
                     Logger.debug("Successfully sent busy call message to \(thread.contactAddress)")
                 }.catch { error in
                     Logger.error("failed to send busy call message to \(thread.contactAddress) with error: \(error)")

@@ -11,7 +11,6 @@
 #import "NotificationsProtocol.h"
 #import "OWSAttachmentDownloads.h"
 #import "OWSBlockingManager.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSCallMessageHandler.h"
 #import "OWSContact.h"
 #import "OWSDevice.h"
@@ -25,6 +24,7 @@
 #import "OWSMessageSender.h"
 #import "OWSMessageUtils.h"
 #import "OWSOutgoingReceiptManager.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncGroupsRequestMessage.h"
@@ -597,7 +597,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSSyncGroupsRequestMessage *syncGroupsRequestMessage =
         [[OWSSyncGroupsRequestMessage alloc] initWithThread:thread groupId:groupId];
 
-    [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage transaction:transaction];
+    [self.messageSenderJobQueue addMessage:syncGroupsRequestMessage.asPreparer transaction:transaction];
 }
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
@@ -1211,7 +1211,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *_Nullable data = UIImagePNGRepresentation(gThread.groupModel.groupImage);
         OWSAssertDebug(data);
         if (data) {
-            DataSource *_Nullable dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
+            _Nullable id<DataSource> dataSource = [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
             [self.messageSenderJobQueue addMediaMessage:message
                                              dataSource:dataSource
                                             contentType:OWSMimeTypeImagePng
@@ -1221,7 +1221,7 @@ NS_ASSUME_NONNULL_BEGIN
                                   isTemporaryAttachment:YES];
         }
     } else {
-        [self.messageSenderJobQueue addMessage:message transaction:transaction];
+        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
     }
 }
 

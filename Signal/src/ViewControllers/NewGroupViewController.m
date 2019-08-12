@@ -522,7 +522,7 @@ NS_ASSUME_NONNULL_BEGIN
                       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                           if (model.groupImage) {
                               NSData *data = UIImagePNGRepresentation(model.groupImage);
-                              DataSource *_Nullable dataSource =
+                              _Nullable id<DataSource> dataSource =
                                   [DataSourceValue dataSourceWithData:data fileExtension:@"png"];
                               // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
                               // an error in the thread if group creation fails
@@ -534,7 +534,9 @@ NS_ASSUME_NONNULL_BEGIN
                           } else {
                               // CLEANUP DURABLE - Replace with a durable operation e.g. `GroupCreateJob`, which creates
                               // an error in the thread if group creation fails
-                              [self.messageSender sendMessage:message success:successHandler failure:failureHandler];
+                              [self.messageSender sendMessage:message.asPreparer
+                                                      success:successHandler
+                                                      failure:failureHandler];
                           }
                       });
                   }];

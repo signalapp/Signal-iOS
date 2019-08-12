@@ -5,6 +5,7 @@
 #import "TSAttachmentStream.h"
 #import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "OWSError.h"
 #import "OWSFileSystem.h"
 #import "TSAttachmentPointer.h"
 #import <AVFoundation/AVFoundation.h>
@@ -271,24 +272,38 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     *error = nil;
     NSString *_Nullable filePath = self.originalFilePath;
     if (!filePath) {
-        OWSFailDebug(@"Missing path for attachment.");
+        *error = OWSErrorMakeAssertionError(@"Missing path for attachment.");
         return NO;
     }
     OWSLogDebug(@"Writing attachment to file: %@", filePath);
     return [data writeToFile:filePath options:0 error:error];
 }
 
-- (BOOL)writeDataSource:(DataSource *)dataSource
+- (BOOL)writeCopyingDataSource:(id<DataSource>)dataSource error:(NSError **)error
 {
     OWSAssertDebug(dataSource);
 
-    NSString *_Nullable filePath = self.originalFilePath;
-    if (!filePath) {
-        OWSFailDebug(@"Missing path for attachment.");
+    NSURL *_Nullable originalMediaURL = self.originalMediaURL;
+    if (originalMediaURL == nil) {
+        *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
         return NO;
     }
-    OWSLogDebug(@"Writing attachment to file: %@", filePath);
-    return [dataSource writeToPath:filePath];
+    OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
+    return [dataSource writeToUrl:originalMediaURL
+                            error:error];
+}
+
+- (BOOL)writeConsumingDataSource:(id<DataSource>)dataSource error:(NSError **)error
+{
+    OWSAssertDebug(dataSource);
+
+    NSURL *_Nullable originalMediaURL = self.originalMediaURL;
+    if (originalMediaURL == nil) {
+        *error = OWSErrorMakeAssertionError(@"Missing URL for attachment.");
+        return NO;
+    }
+    OWSLogDebug(@"Writing attachment to file: %@", originalMediaURL);
+    return [dataSource moveToUrlAndConsume:originalMediaURL error:error];
 }
 
 + (NSString *)legacyAttachmentsDirPath
