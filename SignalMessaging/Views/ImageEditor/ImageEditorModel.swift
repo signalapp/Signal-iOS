@@ -87,6 +87,10 @@ public class ImageEditorModel: NSObject {
         super.init()
     }
 
+    public func renderOutput() -> UIImage? {
+        return ImageEditorCanvasView.renderForOutput(model: self, transform: currentTransform())
+    }
+
     public func currentTransform() -> ImageEditorTransform {
         return transform
     }

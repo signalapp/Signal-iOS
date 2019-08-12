@@ -102,7 +102,7 @@ public class ImageEditorView: UIView {
         let newTextButton = navigationBarButton(imageName: "image_editor_text",
                                                 selector: #selector(didTapNewText(sender:)))
 
-        var buttons: [UIView]
+        let buttons: [UIView]
         if model.canUndo() {
             buttons = [undoButton, newTextButton, brushButton, cropButton]
         } else {
