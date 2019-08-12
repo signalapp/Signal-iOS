@@ -44,12 +44,11 @@ NEWUTF8=$(iconv -f UTF-16 -t UTF-8 $TMP/Localizable.strings)
 #	3. Read old string definitions as associative array
 #	4. In new file, if possible, insert old definition
 #	5. Add separator and semicolon only for string definition lines
-#	6. Convert output back to UTF-16 to final location
 echo "$OLDUTF8" | grep -Eo '^".*"' | \
-	awk 'BEGIN {FS = "[ ]*=[ ]*"; OFS = ""} \
+	awk 'BEGIN {FS = "\" = \""; OFS = ""} \
 		NR == FNR {a[$1] = $2; next} \
 		{$2 = ($1 in a ? a[$1] : $2); \
-		if($2 ~ /"[;]*$/){$2 = " = "$2}; \
+		if($2 ~ /"[;]*$/){$2 = "\" = \""$2}; \
 		if($2 ~ /"$/){$2 = $2";"}; \
 		print}' - <(echo "$NEWUTF8") > $STRINGFILE
 
