@@ -36,7 +36,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
         Logger.verbose("Downloading: \(stickerPackInfo).")
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
-        let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)/manifest.proto"
+        let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)x/manifest.proto"
 
         firstly {
             try tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDownloadSize)
@@ -65,6 +65,10 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
         }.catch(on: DispatchQueue.global()) { [weak self] error in
             guard let self = self else {
                 return
+            }
+            let nsError = error as NSError
+            if nsError.hasFatalResponseCode() {
+                StickerManager.markStickerPackAsMissing(stickerPackInfo: self.stickerPackInfo)
             }
             return self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
