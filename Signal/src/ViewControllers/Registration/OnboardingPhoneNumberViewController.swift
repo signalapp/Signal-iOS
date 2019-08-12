@@ -253,9 +253,8 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
 
     private func populateDefaults() {
         if let lastRegisteredPhoneNumber = OnboardingController.lastRegisteredPhoneNumber(),
-            lastRegisteredPhoneNumber.count > 0,
-            lastRegisteredPhoneNumber.hasPrefix(callingCode) {
-            phoneNumberTextField.text = lastRegisteredPhoneNumber.substring(from: callingCode.count)
+            lastRegisteredPhoneNumber.count > 0 {
+            phoneNumberTextField.text = lastRegisteredPhoneNumber
         } else if let phoneNumber = onboardingController.phoneNumber {
             phoneNumberTextField.text = phoneNumber.userInput
         }
