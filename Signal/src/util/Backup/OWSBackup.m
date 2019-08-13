@@ -181,13 +181,6 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 
 #pragma mark - Dependencies
 
-- (OWSPrimaryStorage *)primaryStorage
-{
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
-    return SSKEnvironment.shared.primaryStorage;
-}
-
 - (TSAccountManager *)tsAccountManager
 {
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);

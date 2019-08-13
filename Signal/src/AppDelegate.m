@@ -212,7 +212,7 @@ static NSTimeInterval launchStartedAt;
     OWSLogWarn(@"application: didFinishLaunchingWithOptions.");
     [Cryptography seedRandom];
 
-    // XXX - careful when moving this. It must happen before we initialize OWSPrimaryStorage.
+    // XXX - careful when moving this. It must happen before we load YDB and/or GRDB.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
@@ -324,6 +324,8 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
+    // GRDB TODO: We should consult YDB and GRDB.  This should be done via storage coordinator,
+    //            which knows which checks we need to do.
     if (![OWSPrimaryStorage isDatabasePasswordAccessible]) {
         OWSLogInfo(@"exiting because we are in the background and the database password is not accessible.");
 
