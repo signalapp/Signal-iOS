@@ -33,6 +33,7 @@ public struct UserProfileRecord: SDSRecord {
     public let recipientPhoneNumber: String?
     public let recipientUUID: String?
     public let userProfileSchemaVersion: UInt
+    public let username: String?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -45,6 +46,7 @@ public struct UserProfileRecord: SDSRecord {
         case recipientPhoneNumber
         case recipientUUID
         case userProfileSchemaVersion
+        case username
     }
 
     public static func columnName(_ column: UserProfileRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -88,6 +90,7 @@ extension OWSUserProfile {
             let recipientPhoneNumber: String? = record.recipientPhoneNumber
             let recipientUUID: String? = record.recipientUUID
             let userProfileSchemaVersion: UInt = record.userProfileSchemaVersion
+            let username: String? = record.username
 
             return OWSUserProfile(uniqueId: uniqueId,
                                   avatarFileName: avatarFileName,
@@ -96,7 +99,8 @@ extension OWSUserProfile {
                                   profileName: profileName,
                                   recipientPhoneNumber: recipientPhoneNumber,
                                   recipientUUID: recipientUUID,
-                                  userProfileSchemaVersion: userProfileSchemaVersion)
+                                  userProfileSchemaVersion: userProfileSchemaVersion,
+                                  username: username)
 
         default:
             owsFailDebug("Unexpected record type: \(record.recordType)")
@@ -148,6 +152,7 @@ extension OWSUserProfileSerializer {
     static let recipientPhoneNumberColumn = SDSColumnMetadata(columnName: "recipientPhoneNumber", columnType: .unicodeString, isOptional: true, columnIndex: 7)
     static let recipientUUIDColumn = SDSColumnMetadata(columnName: "recipientUUID", columnType: .unicodeString, isOptional: true, columnIndex: 8)
     static let userProfileSchemaVersionColumn = SDSColumnMetadata(columnName: "userProfileSchemaVersion", columnType: .int64, columnIndex: 9)
+    static let usernameColumn = SDSColumnMetadata(columnName: "username", columnType: .unicodeString, isOptional: true, columnIndex: 10)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -163,7 +168,8 @@ extension OWSUserProfileSerializer {
         profileNameColumn,
         recipientPhoneNumberColumn,
         recipientUUIDColumn,
-        userProfileSchemaVersionColumn
+        userProfileSchemaVersionColumn,
+        usernameColumn
         ])
 }
 
@@ -503,7 +509,8 @@ class OWSUserProfileSerializer: SDSSerializer {
         let recipientPhoneNumber: String? = model.recipientPhoneNumber
         let recipientUUID: String? = model.recipientUUID
         let userProfileSchemaVersion: UInt = model.userProfileSchemaVersion
+        let username: String? = model.username
 
-        return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, userProfileSchemaVersion: userProfileSchemaVersion)
+        return UserProfileRecord(id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, userProfileSchemaVersion: userProfileSchemaVersion, username: username)
     }
 }

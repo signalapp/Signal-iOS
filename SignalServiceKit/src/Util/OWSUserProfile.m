@@ -70,6 +70,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
         userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
+                        username:(nullable NSString *)username
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -84,6 +85,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
     _userProfileSchemaVersion = userProfileSchemaVersion;
+    _username = username;
 
     return self;
 }
