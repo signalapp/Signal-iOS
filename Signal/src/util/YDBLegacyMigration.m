@@ -2,7 +2,7 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalMessaging/StorageCoordinator+MainApp.h>
+#import "YDBLegacyMigration.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalServiceKit/AppReadiness.h>
@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@implementation StorageCoordinator (MainApp)
+@implementation YDBLegacyMigration
 
 + (void)appDidBecomeReady
 {

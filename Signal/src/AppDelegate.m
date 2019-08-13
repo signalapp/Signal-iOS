@@ -15,6 +15,7 @@
 #import "SignalApp.h"
 #import "SignalsNavigationController.h"
 #import "ViewControllerUtils.h"
+#import "YDBLegacyMigration.h"
 #import <Intents/Intents.h>
 #import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/iOSVersions.h>
@@ -25,7 +26,6 @@
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging.h>
-#import <SignalMessaging/StorageCoordinator+MainApp.h>
 #import <SignalMessaging/VersionMigrations.h>
 #import <SignalServiceKit/AppReadiness.h>
 #import <SignalServiceKit/CallKitIdStore.h>
@@ -218,7 +218,7 @@ static NSTimeInterval launchStartedAt;
     // We need to do this _after_ we set up logging, when the keychain is unlocked,
     // but before we access YapDatabase, files on disk, or NSUserDefaults
     NSError *error;
-    if (![StorageCoordinator ensureIsYDBReadyForAppExtensions:&error]) {
+    if (![YDBLegacyMigration ensureIsYDBReadyForAppExtensions:&error]) {
         if (error != nil) {
             [self showLaunchFailureUI:error];
         }
