@@ -42,41 +42,12 @@ NS_ASSUME_NONNULL_BEGIN
         [self appDidBecomeReady];
     }];
 
-    // Given how sensitive this migration is, we verbosely
-    // log the contents of all involved paths before and after.
-    //
-    // TODO: Remove this logging once we have high confidence
-    // in our migration logic.
-    NSArray<NSString *> *paths = @[
-        OWSPrimaryStorage.legacyDatabaseFilePath,
-        OWSPrimaryStorage.legacyDatabaseFilePath_SHM,
-        OWSPrimaryStorage.legacyDatabaseFilePath_WAL,
-        OWSPrimaryStorage.sharedDataDatabaseFilePath,
-        OWSPrimaryStorage.sharedDataDatabaseFilePath_SHM,
-        OWSPrimaryStorage.sharedDataDatabaseFilePath_WAL,
-    ];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    for (NSString *path in paths) {
-        if ([fileManager fileExistsAtPath:path]) {
-            OWSLogInfo(@"storage file: %@, %@", path, [OWSFileSystem fileSizeOfPath:path]);
-        }
-    }
-
     if ([OWSPreferences isReadyForAppExtensions]) {
         return YES;
     }
 
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
     SUPPRESS_DEADSTORE_WARNING(backgroundTask);
-
-    if ([NSFileManager.defaultManager fileExistsAtPath:OWSPrimaryStorage.legacyDatabaseFilePath]) {
-        OWSLogInfo(
-            @"Legacy Database file size: %@", [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath]);
-        OWSLogInfo(@"\t Legacy SHM file size: %@",
-            [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath_SHM]);
-        OWSLogInfo(@"\t Legacy WAL file size: %@",
-            [OWSFileSystem fileSizeOfPath:OWSPrimaryStorage.legacyDatabaseFilePath_WAL]);
-    }
 
     NSError *_Nullable error = [self convertDatabaseIfNecessary];
 

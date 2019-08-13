@@ -476,11 +476,12 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
     // made in another process (e.g. the SAE) from showing up in other processes.
     // There's a simple workaround: a trivial write to the database flushes changes
     // made from other processes.
-    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
-        [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
-        }];
+    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
+        OWSFailDebug(@"Unexpected storage mode.");
     }
+    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
+    }];
 }
 
 @end

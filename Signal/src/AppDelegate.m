@@ -1284,7 +1284,9 @@ static NSTimeInterval launchStartedAt;
 
     [self.udManager setup];
 
-    [self.primaryStorage touchDbAsync];
+    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+        [self.primaryStorage touchDbAsync];
+    }
 
     // Every time the user upgrades to a new version:
     //

@@ -40,6 +40,7 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 
 #pragma mark - Misc.
 
+// GRDB TODO: Remove this method.
 - (void)touchDbAsync;
 
 @end

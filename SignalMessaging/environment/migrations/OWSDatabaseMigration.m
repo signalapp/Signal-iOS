@@ -6,6 +6,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -108,6 +109,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.primaryStorage;
 }
 
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
 #pragma mark -
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -143,6 +149,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isCompleteWithSneakyTransaction
 {
+    OWSAssertDebug(self.storageCoordinator.state == StorageCoordinatorStateYDB
+        || self.storageCoordinator.state == StorageCoordinatorStateBeforeYDBToGRDBMigration);
+
     __block BOOL result;
     [self.ydbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         result = [self isCompleteWithTransaction:transaction.asAnyRead];

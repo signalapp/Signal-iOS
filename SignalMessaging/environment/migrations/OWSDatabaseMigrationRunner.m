@@ -75,12 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)runAllOutstandingWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
-    [self runMigrations:[self.allMigrations mutableCopy]
-             completion:^{
-                 [self removeUnknownMigrations];
+    [self removeUnknownMigrations];
 
-                 completion();
-             }];
+    [self runMigrations:[self.allMigrations mutableCopy] completion:completion];
 }
 
 // Some users (especially internal users) will move back and forth between

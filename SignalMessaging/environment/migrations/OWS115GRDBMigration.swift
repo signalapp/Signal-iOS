@@ -27,8 +27,9 @@ public class OWS115GRDBMigration: YDBDatabaseMigration {
         Logger.debug("")
 
         DispatchQueue.global().async {
-            if self.storageCoordinator.state == .beforeYDBToGRDBMigration {
-
+            if self.storageCoordinator.state != .beforeYDBToGRDBMigration {
+                owsFail("unexpected storage coordinator state.")
+            } else {
                 self.storageCoordinator.migrationYDBToGRDBWillBegin()
                 assert(self.storageCoordinator.state == .duringYDBToGRDBMigration)
 
