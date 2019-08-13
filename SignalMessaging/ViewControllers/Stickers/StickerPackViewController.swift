@@ -156,7 +156,31 @@ public class StickerPackViewController: OWSViewController {
             button.autoSetHeightUsingFont()
         }
 
+        view.addSubview(loadingIndicator)
+        loadingIndicator.autoCenterInSuperview()
+
+        loadFailedLabel.text = NSLocalizedString("STICKERS_PACK_VIEW_FAILED_TO_LOAD",
+                                                 comment: "Label indicating that the sticker pack failed to load.")
+        loadFailedLabel.font = UIFont.ows_dynamicTypeBody
+        loadFailedLabel.textColor = Theme.darkThemePrimaryColor
+        loadFailedLabel.textAlignment = .center
+        loadFailedLabel.numberOfLines = 0
+        loadFailedLabel.lineBreakMode = .byWordWrapping
+        view.addSubview(loadFailedLabel)
+        loadFailedLabel.autoPinWidthToSuperview(withMargin: hMargin)
+        loadFailedLabel.autoVCenterInSuperview()
+
         updateContent()
+
+        loadTimer = WeakTimer.scheduledTimer(timeInterval: 1, target: self, userInfo: nil, repeats: false) { [weak self] _ in
+            guard let strongSelf = self else {
+                return
+            }
+            strongSelf.loadTimerHasFired = true
+            strongSelf.loadTimer?.invalidate()
+            strongSelf.loadTimer = nil
+            strongSelf.updateContent()
+        }
     }
 
     private let dismissButton = UIButton()
@@ -167,6 +191,13 @@ public class StickerPackViewController: OWSViewController {
     private let shareButton = UIButton()
     private var installButton: OWSFlatButton?
     private var uninstallButton: OWSFlatButton?
+    private var loadingIndicator = UIActivityIndicatorView(style: .whiteLarge)
+    private var loadFailedLabel = UILabel()
+    // We use this timer to ensure that we don't show the
+    // loading indicator for N seconds, to prevent a "flash"
+    // when presenting the view.
+    private var loadTimer: Timer?
+    private var loadTimerHasFired = false
 
     private func updateContent() {
         updateCover()
@@ -175,6 +206,21 @@ public class StickerPackViewController: OWSViewController {
         guard let stickerPack = dataSource.getStickerPack() else {
             installButton?.isHidden = true
             uninstallButton?.isHidden = true
+            shareButton.isHidden = true
+
+            if StickerManager.isStickerPackMissing(stickerPackInfo: stickerPackInfo) {
+                loadFailedLabel.isHidden = false
+                loadingIndicator.isHidden = true
+                loadingIndicator.stopAnimating()
+            } else if loadTimerHasFired {
+                loadFailedLabel.isHidden = true
+                loadingIndicator.isHidden = false
+                loadingIndicator.startAnimating()
+            } else {
+                loadFailedLabel.isHidden = true
+                loadingIndicator.isHidden = true
+                loadingIndicator.stopAnimating()
+            }
             return
         }
 
@@ -195,6 +241,10 @@ public class StickerPackViewController: OWSViewController {
         let isInstalled = StickerManager.isStickerPackInstalled(stickerPackInfo: stickerPack.info)
         installButton?.isHidden = isInstalled
         uninstallButton?.isHidden = !isInstalled
+        shareButton.isHidden = false
+        loadFailedLabel.isHidden = true
+        loadingIndicator.isHidden = true
+        loadingIndicator.stopAnimating()
     }
 
     private func updateCover() {
