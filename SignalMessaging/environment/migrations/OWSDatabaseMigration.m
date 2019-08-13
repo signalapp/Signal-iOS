@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isCompleteWithSneakyTransaction
 {
-    OWSAssertDebug(self.storageCoordinator.state == StorageCoordinatorStateYDB
+    OWSAssertDebug(SSKFeatureFlags.alwaysLoadYDB || self.storageCoordinator.state == StorageCoordinatorStateYDB
         || self.storageCoordinator.state == StorageCoordinatorStateBeforeYDBToGRDBMigration);
 
     __block BOOL result;

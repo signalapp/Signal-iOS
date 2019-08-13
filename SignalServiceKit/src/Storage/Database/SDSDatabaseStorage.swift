@@ -246,7 +246,9 @@ public class SDSDatabaseStorage: SDSTransactable {
         case .YDB, .beforeYDBToGRDBMigration, .duringYDBToGRDBMigration:
             return true
         case .GRDB:
-            return false
+            // GRDB TODO: Remove this once we stop loading YDB
+            //            unless necessary.
+            return FeatureFlags.alwaysLoadYDB
         case .ydbTests, .grdbTests:
             return true
         @unknown default:
@@ -264,10 +266,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         case .GRDB:
             // GRDB TODO: Remove this once we stop loading YDB
             //            unless necessary.
-            if FeatureFlags.alwaysLoadYDB {
-                return true
-            }
-            return false
+            return FeatureFlags.alwaysLoadYDB
         case .ydbTests, .grdbTests:
             return true
         @unknown default:
