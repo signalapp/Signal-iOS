@@ -70,6 +70,16 @@ public class OWSButton: UIButton {
         return button
     }
 
+    @objc
+    public class func navigationBarButton(imageName: String, block: @escaping () -> Void) -> OWSButton {
+        let button = OWSButton(imageName: imageName, tintColor: .white, block: block)
+        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowRadius = 2
+        button.layer.shadowOpacity = 0.66
+        button.layer.shadowOffset = .zero
+        return button
+    }
+
     // MARK: -
 
     @objc

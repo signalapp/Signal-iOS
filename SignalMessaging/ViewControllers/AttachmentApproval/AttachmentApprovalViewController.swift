@@ -5,6 +5,7 @@
 import Foundation
 import AVFoundation
 import MediaPlayer
+import Photos
 import PromiseKit
 
 @objc
@@ -134,7 +135,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
     public class func wrappedInNavController(attachments: [SignalAttachment],
                                              approvalDelegate: AttachmentApprovalViewControllerDelegate)
         -> OWSNavigationController {
-        let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0) }
+
+        let attachmentApprovalItems = attachments.map { AttachmentApprovalItem(attachment: $0, canSave: false) }
         let vc = AttachmentApprovalViewController(options: [.hasCancel],
                                                   sendButtonImageName: "send-solid-24",
                                                   attachmentApprovalItems: attachmentApprovalItems)
@@ -293,6 +295,12 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
 
     // MARK: - Navigation Bar
 
+    lazy var saveButton: UIView = {
+        return OWSButton.navigationBarButton(imageName: "download-outline-28") { [weak self] in
+            self?.didTapSave()
+        }
+    }()
+
     public func updateNavigationBar() {
         guard !shouldHideControls else {
             self.navigationItem.leftBarButtonItem = nil
@@ -316,7 +324,10 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         if let viewControllers = viewControllers,
             viewControllers.count == 1,
             let firstViewController = viewControllers.first as? AttachmentPrepViewController {
-            navigationBarItems = firstViewController.navigationBarItems()
+            navigationBarItems.append(contentsOf: firstViewController.navigationBarItems())
+            if firstViewController.attachmentApprovalItem.canSave {
+                navigationBarItems.append(saveButton)
+            }
 
             // Show the caption UI if there's more than one attachment
             // OR if the attachment already has a caption.
@@ -643,7 +654,7 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             // Image editor has no changes.
             return attachmentApprovalItem.attachment
         }
-        guard let dstImage = ImageEditorCanvasView.renderForOutput(model: imageEditorModel, transform: imageEditorModel.currentTransform()) else {
+        guard let dstImage = imageEditorModel.renderOutput() else {
             owsFailDebug("Could not render for output.")
             return attachmentApprovalItem.attachment
         }
@@ -738,6 +749,46 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
         Logger.verbose("")
 
         isEditingCaptions = false
+    }
+
+    public func didTapSave() {
+            let errorText = NSLocalizedString("ATTACHMENT_APPROVAL_FAILED_TO_SAVE",
+                                              comment: "alert text when Signal was unable to save a copy of the attachment to the system photo library")
+            do {
+                let saveableAsset: SaveableAsset = try SaveableAsset(attachmentApprovalItem: self.currentItem)
+
+                self.ows_askForMediaLibraryPermissions { isGranted in
+                    guard isGranted else {
+                        return
+                    }
+
+                    PHPhotoLibrary.shared().performChanges({
+                        switch saveableAsset {
+                        case .image(let image):
+                            PHAssetCreationRequest.creationRequestForAsset(from: image)
+                        case .imageUrl(let imageUrl):
+                            PHAssetCreationRequest.creationRequestForAssetFromImage(atFileURL: imageUrl)
+                        case .videoUrl(let videoUrl):
+                            PHAssetCreationRequest.creationRequestForAssetFromVideo(atFileURL: videoUrl)
+                        }
+                    }) { didSucceed, error in
+                        DispatchQueue.main.async {
+                            if didSucceed {
+                                let toastController = ToastController(text: NSLocalizedString("ATTACHMENT_APPROVAL_MEDIA_DID_SAVE",
+                                                                                              comment: "toast alert shown after user taps the 'save' button"))
+                                let inset = self.bottomToolView.height() + 16
+                                toastController.presentToastView(fromBottomOfView: self.view, inset: inset)
+                            } else {
+                                owsFailDebug("error: \(String(describing: error))")
+                                OWSAlerts.showErrorAlert(message: errorText)
+                            }
+                        }
+                    }
+                }
+            } catch {
+                owsFailDebug("error: \(error)")
+                OWSAlerts.showErrorAlert(message: errorText)
+            }
     }
 }
 
@@ -879,5 +930,47 @@ extension AttachmentApprovalViewController: AttachmentApprovalInputAccessoryView
 
     public func attachmentApprovalInputStopEditingCaptions() {
         isEditingCaptions = false
+    }
+}
+
+private enum SaveableAsset {
+    case image(_ image: UIImage)
+    case imageUrl(_ url: URL)
+    case videoUrl(_ url: URL)
+}
+
+private extension SaveableAsset {
+    init(attachmentApprovalItem: AttachmentApprovalItem) throws {
+        if let imageEditorModel = attachmentApprovalItem.imageEditorModel {
+            try self.init(imageEditorModel: imageEditorModel)
+        } else {
+            try self.init(attachment: attachmentApprovalItem.attachment)
+        }
+    }
+
+    init(imageEditorModel: ImageEditorModel) throws {
+        guard let image = imageEditorModel.renderOutput() else {
+            throw OWSAssertionError("failed to render image")
+        }
+
+        self = .image(image)
+    }
+
+    init(attachment: SignalAttachment) throws {
+        if attachment.isValidImage {
+            guard let imageUrl = attachment.dataUrl else {
+                throw OWSAssertionError("imageUrl was unexpetedly nil")
+            }
+
+            self = .imageUrl(imageUrl)
+        } else if attachment.isValidVideo {
+            guard let videoUrl = attachment.dataUrl else {
+                throw OWSAssertionError("videoUrl was unexpetedly nil")
+            }
+
+            self = .videoUrl(videoUrl)
+        } else {
+            throw OWSAssertionError("unsaveable media")
+        }
     }
 }

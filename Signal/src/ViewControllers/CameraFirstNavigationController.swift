@@ -50,6 +50,10 @@ extension CameraFirstCaptureSendFlow: SendMediaNavDelegate {
     var sendMediaNavApprovalButtonImageName: String {
         return "arrow-right-24"
     }
+
+    var sendMediaNavCanSaveAttachments: Bool {
+        return true
+    }
 }
 
 extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {

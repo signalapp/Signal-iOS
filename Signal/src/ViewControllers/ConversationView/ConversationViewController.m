@@ -2964,6 +2964,11 @@ typedef enum : NSUInteger {
     return @"send-solid-24";
 }
 
+- (BOOL)sendMediaNavCanSaveAttachments
+{
+    return YES;
+}
+
 #pragma mark -
 
 - (void)sendContactShare:(ContactShareViewModel *)contactShare

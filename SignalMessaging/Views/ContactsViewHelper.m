@@ -365,7 +365,8 @@ NS_ASSUME_NONNULL_BEGIN
                                               style:UIAlertActionStyleCancel
                                             handler:nil]];
 
-    UIAlertAction *_Nullable openSystemSettingsAction = CurrentAppContext().openSystemSettingsAction;
+    UIAlertAction *_Nullable openSystemSettingsAction =
+        [CurrentAppContext() openSystemSettingsActionWithCompletion:nil];
     if (openSystemSettingsAction) {
         [alert addAction:openSystemSettingsAction];
     }

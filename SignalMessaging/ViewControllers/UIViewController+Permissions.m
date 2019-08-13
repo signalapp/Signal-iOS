@@ -3,10 +3,10 @@
 //
 
 #import "UIViewController+Permissions.h"
-#import "Signal-Swift.h"
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
 #import <SignalCoreKit/Threading.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
         });
     };
 
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+    if (CurrentAppContext().reportedApplicationState == UIApplicationStateBackground) {
         OWSLogError(@"Skipping camera permissions request when app is in background.");
         callback(NO);
         return;
@@ -43,14 +43,12 @@ NS_ASSUME_NONNULL_BEGIN
                              message:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_MESSAGE", @"Alert body")
                       preferredStyle:UIAlertControllerStyleAlert];
 
-        UIAlertAction *openSettingsAction =
-            [UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
-                                     style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *_Nonnull action) {
-                                       [[UIApplication sharedApplication] openSystemSettings];
-                                       callback(NO);
-                                   }];
-        [alert addAction:openSettingsAction];
+        UIAlertAction *_Nullable openSettingsAction = [CurrentAppContext() openSystemSettingsActionWithCompletion:^{
+            callback(NO);
+        }];
+        if (openSettingsAction != nil) {
+            [alert addAction:openSettingsAction];
+        }
 
         UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                                                 style:UIAlertActionStyleCancel
@@ -63,8 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (status == AVAuthorizationStatusAuthorized) {
         callback(YES);
     } else if (status == AVAuthorizationStatusNotDetermined) {
-        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
-                                 completionHandler:callback];
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:callback];
     } else {
         OWSLogError(@"Unknown AVAuthorizationStatus: %ld", (long)status);
         callback(NO);
@@ -91,14 +88,13 @@ NS_ASSUME_NONNULL_BEGIN
                                              @"Alert body when user has previously denied media library access")
                           preferredStyle:UIAlertControllerStyleAlert];
 
-            UIAlertAction *openSettingsAction =
-                [UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
-                                         style:UIAlertActionStyleDefault
-                                       handler:^(UIAlertAction *_Nonnull action) {
-                                           [[UIApplication sharedApplication] openSystemSettings];
-                                           completionCallback(NO);
-                                       }];
-            [alert addAction:openSettingsAction];
+            UIAlertAction *_Nullable openSettingsAction =
+                [CurrentAppContext() openSystemSettingsActionWithCompletion:^() {
+                    completionCallback(NO);
+                }];
+            if (openSettingsAction) {
+                [alert addAction:openSettingsAction];
+            }
 
             UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:CommonStrings.dismissButton
                                                                     style:UIAlertActionStyleCancel
@@ -111,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
         });
     };
 
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+    if (CurrentAppContext().reportedApplicationState == UIApplicationStateBackground) {
         OWSLogError(@"Skipping media library permissions request when app is in background.");
         completionCallback(NO);
         return;
@@ -162,7 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
         });
     };
 
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+    if (CurrentAppContext().reportedApplicationState == UIApplicationStateBackground) {
         OWSLogError(@"Skipping microphone permissions request when app is in background.");
         callback(NO);
         return;
