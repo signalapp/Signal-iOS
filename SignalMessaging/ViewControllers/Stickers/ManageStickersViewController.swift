@@ -186,14 +186,8 @@ public class ManageStickersViewController: OWSTableViewController {
         let installedSection = OWSTableSection()
         installedSection.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE", comment: "Title for the 'installed stickers' section of the 'manage stickers' view.")
         if installedStickerPackSources.count < 1 {
-            installedSection.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    return UITableViewCell()
-                }
-                let text = NSLocalizedString("STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS", comment: "Label indicating that the user has no installed sticker packs.")
-                return self.buildEmptySectionCell(labelText: text)
-                },
-                                              customRowHeight: UITableView.automaticDimension))
+            let text = NSLocalizedString("STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS", comment: "Label indicating that the user has no installed sticker packs.")
+            installedSection.add(buildEmptySectionItem(labelText: text))
         }
         for dataSource in installedStickerPackSources {
             installedSection.add(OWSTableItem(customCellBlock: { [weak self] in
@@ -229,9 +223,6 @@ public class ManageStickersViewController: OWSTableViewController {
                             self?.show(packInfo: packInfo)
             })
         }
-
-        // Hide known sticker packs until their manifest is available.
-        let availableKnownStickerPackSources = knownStickerPackSources.filter { $0.getStickerPack() != nil }
         if availableBuiltInStickerPackSources.count > 0 {
             let section = OWSTableSection()
             section.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE", comment: "Title for the 'available built-in stickers' section of the 'manage stickers' view.")
@@ -241,20 +232,47 @@ public class ManageStickersViewController: OWSTableViewController {
             contents.addSection(section)
         }
 
+        // Sticker packs whose manifest is available.
+        var loadedKnownStickerPackSources = [StickerPackDataSource]()
+        // Sticker packs whose manifest is downloading.
+        var loadingKnownStickerPackSources = [StickerPackDataSource]()
+        // Sticker packs whose manifest download failed permanently.
+        var failedKnownStickerPackSources = [StickerPackDataSource]()
+        for source in knownStickerPackSources {
+            guard source.getStickerPack() == nil else {
+                // Already loaded.
+                loadedKnownStickerPackSources.append(source)
+                return
+            }
+            guard let info = source.info else {
+                owsFailDebug("Known source missing info.")
+                continue
+            }
+            // Hide sticker packs whose download failed permanently.
+            let isFailed = StickerManager.isStickerPackMissing(stickerPackInfo: info)
+            if isFailed {
+                failedKnownStickerPackSources.append(source)
+            } else {
+                loadingKnownStickerPackSources.append(source)
+            }
+        }
         let knownSection = OWSTableSection()
         knownSection.headerTitle = NSLocalizedString("STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE", comment: "Title for the 'available known stickers' section of the 'manage stickers' view.")
-        if availableKnownStickerPackSources.count < 1 {
-            knownSection.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    return UITableViewCell()
-                }
-                let text = NSLocalizedString("STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS", comment: "Label indicating that the user has no known sticker packs.")
-                return self.buildEmptySectionCell(labelText: text)
-                },
-                                          customRowHeight: UITableView.automaticDimension))
+        if knownStickerPackSources.count < 1 {
+            let text = NSLocalizedString("STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS", comment: "Label indicating that the user has no known sticker packs.")
+            knownSection.add(buildEmptySectionItem(labelText: text))
         }
-        for dataSource in availableKnownStickerPackSources {
+        for dataSource in loadedKnownStickerPackSources {
             knownSection.add(itemForAvailablePack(dataSource))
+        }
+        if loadingKnownStickerPackSources.count > 0 {
+            let text = NSLocalizedString("STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS",
+                                         comment: "Label indicating that one or more known sticker packs is loading.")
+            knownSection.add(buildEmptySectionItem(labelText: text))
+        } else if failedKnownStickerPackSources.count > 0 {
+            let text = NSLocalizedString("STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS",
+                                         comment: "Label indicating that one or more known sticker packs failed to load.")
+            knownSection.add(buildEmptySectionItem(labelText: text))
         }
         contents.addSection(knownSection)
 
@@ -409,6 +427,16 @@ public class ManageStickersViewController: OWSTableViewController {
         let stickerView = YYAnimatedImageView()
         stickerView.image = stickerImage
         return stickerView
+    }
+
+    private func buildEmptySectionItem(labelText: String) -> OWSTableItem {
+        return OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                return UITableViewCell()
+            }
+            return self.buildEmptySectionCell(labelText: labelText)
+            },
+                                          customRowHeight: UITableView.automaticDimension)
     }
 
     private func buildEmptySectionCell(labelText: String) -> UITableViewCell {

@@ -2585,8 +2585,14 @@
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Stickers You Received";
 
+/* Label indicating that one or more known sticker packs failed to load. */
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Installed Stickers";
+
+/* Label indicating that one or more known sticker packs is loading. */
+"STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Loading…";
 
 /* Label indicating that the user has no installed sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No stickers installed";
