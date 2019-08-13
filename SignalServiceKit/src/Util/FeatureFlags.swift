@@ -29,7 +29,7 @@ public class FeatureFlags: NSObject {
     public static let conversationSearch = false
 
     @objc
-    public static var useGRDB = build.includes(.dev)
+    public static var useGRDB = false
 
     @objc
     public static let shouldPadAllOutgoingAttachments = false
