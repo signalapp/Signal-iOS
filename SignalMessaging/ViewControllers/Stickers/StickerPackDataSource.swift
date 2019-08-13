@@ -361,7 +361,10 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
                 }
                 assert(self.downloadKeySet.contains(key))
                 self.downloadKeySet.remove(key)
-                // Sticker pack downloads may fail permanently.
+                // Sticker pack downloads may fail permanently,
+                // which affects StickerManager state
+                // so nudge the view to update even though the
+                // the data source change may not have changed.
                 self.fireDidChange()
             }.retainUntilComplete()
     }

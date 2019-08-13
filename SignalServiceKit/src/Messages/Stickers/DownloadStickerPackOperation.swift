@@ -36,7 +36,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
         Logger.verbose("Downloading: \(stickerPackInfo).")
 
         // https://cdn.signal.org/stickers/<pack_id>/manifest.proto
-        let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)x/manifest.proto"
+        let urlPath = "stickers/\(stickerPackInfo.packId.hexadecimalString)/manifest.proto"
 
         firstly {
             try tryToDownload(urlPath: urlPath, maxDownloadSize: kMaxStickerDownloadSize)
