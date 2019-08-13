@@ -65,7 +65,7 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 - (OWSInteractionType)interactionType;
 
-- (TSThread *)threadWithSneakyTransaction;
+@property (nonatomic, readonly) TSThread *threadWithSneakyTransaction;
 
 - (TSThread *)threadWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(thread(transaction:));
 
