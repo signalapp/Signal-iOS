@@ -168,9 +168,20 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
 
-    UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
-    UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+    UIImageView *cameraImageView = [UIImageView new];
+    [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryColor];
     [threadInfoView addSubview:cameraImageView];
+
+    [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
+    cameraImageView.contentMode = UIViewContentModeCenter;
+    cameraImageView.backgroundColor = Theme.backgroundColor;
+    cameraImageView.layer.cornerRadius = 16;
+    cameraImageView.layer.shadowColor =
+        [(Theme.isDarkThemeEnabled ? Theme.darkThemeOffBackgroundColor : Theme.primaryColor) CGColor];
+    cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
+    cameraImageView.layer.shadowOpacity = 0.5;
+    cameraImageView.layer.shadowRadius = 4;
+
     [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
     [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
     _cameraImageView = cameraImageView;
@@ -599,24 +610,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    UIAlertController *alert = [UIAlertController
-        alertControllerWithTitle:
-            NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
-                @"The alert title if user tries to exit the new group view without saving changes.")
-                         message:
-                             NSLocalizedString(@"NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
-                                 @"The alert message if user tries to exit the new group view without saving changes.")
-                  preferredStyle:UIAlertControllerStyleAlert];
-    [alert
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DISCARD_BUTTON",
-                                                     @"The label for the 'discard' button in alerts and action sheets.")
-                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"discard")
-                                           style:UIAlertActionStyleDestructive
-                                         handler:^(UIAlertAction *action) {
-                                             [self.navigationController popViewControllerAnimated:YES];
-                                         }]];
-    [alert addAction:[OWSAlerts cancelAction]];
-    [self presentAlert:alert];
+    __weak NewGroupViewController *weakSelf = self;
+    [OWSAlerts showPendingChangesAlertWithDiscardAction:^{
+        [weakSelf.navigationController popViewControllerAnimated:YES];
+    }];
 }
 
 - (void)groupNameDidChange:(id)sender

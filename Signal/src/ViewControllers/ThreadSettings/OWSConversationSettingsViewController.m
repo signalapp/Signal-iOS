@@ -942,9 +942,20 @@ const CGFloat kIconViewLength = 24;
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
 
     if (self.isGroupThread && !self.hasSavedGroupIcon) {
-        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
-        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+        UIImageView *cameraImageView = [UIImageView new];
+        [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryColor];
         [threadInfoView addSubview:cameraImageView];
+
+        [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
+        cameraImageView.contentMode = UIViewContentModeCenter;
+        cameraImageView.backgroundColor = Theme.backgroundColor;
+        cameraImageView.layer.cornerRadius = 16;
+        cameraImageView.layer.shadowColor =
+            [(Theme.isDarkThemeEnabled ? Theme.darkThemeOffBackgroundColor : Theme.primaryColor) CGColor];
+        cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
+        cameraImageView.layer.shadowOpacity = 0.5;
+        cameraImageView.layer.shadowRadius = 4;
+
         [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
         [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
     }
@@ -996,6 +1007,12 @@ const CGFloat kIconViewLength = 24;
             if (profileName) {
                 addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
             }
+        }
+
+        NSString *_Nullable username = [OWSProfileManager.sharedManager usernameForAddress:recipientAddress];
+        if (username.length > 0) {
+            addSubtitle([[NSAttributedString alloc]
+                initWithString:[CommonStrings.usernamePrefix stringByAppendingString:username]]);
         }
 
 #if DEBUG

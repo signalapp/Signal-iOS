@@ -686,6 +686,29 @@ NS_ASSUME_NONNULL_BEGIN
     request.isUDRequest = YES;
 }
 
+#pragma mark - Usernames
+
++ (TSRequest *)usernameSetRequest:(NSString *)username
+{
+    OWSAssertDebug(username.length > 0);
+
+    NSString *path = [NSString stringWithFormat:textSecureSetUsernameAPIFormat, username];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:@{}];
+}
+
++ (TSRequest *)usernameDeleteRequest
+{
+    return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureUsernameAPI] method:@"DELETE" parameters:@{}];
+}
+
++ (TSRequest *)getProfileRequestWithUsername:(NSString *)username
+{
+    OWSAssertDebug(username.length > 0);
+
+    NSString *path = [NSString stringWithFormat:textSecureProfileByUsernameAPIFormat, username];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

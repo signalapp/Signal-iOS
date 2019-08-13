@@ -170,6 +170,13 @@ public class ThreadDetailsCell: ConversationViewCell {
             if let phoneNumber = contactThread.contactAddress.phoneNumber {
                 details = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
             }
+            if let username = OWSProfileManager.shared().username(for: contactThread.contactAddress) {
+                if let existingDetails = details {
+                    details = existingDetails + "\n" + CommonStrings.usernamePrefix + username
+                } else {
+                    details = CommonStrings.usernamePrefix + username
+                }
+            }
         } else {
             return owsFailDebug("interaction incorrect thread type")
         }

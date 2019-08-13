@@ -191,9 +191,20 @@ NS_ASSUME_NONNULL_BEGIN
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
     _groupAvatar = self.thread.groupModel.groupImage;
 
-    UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
-    UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+    UIImageView *cameraImageView = [UIImageView new];
+    [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryColor];
     [threadInfoView addSubview:cameraImageView];
+
+    [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
+    cameraImageView.contentMode = UIViewContentModeCenter;
+    cameraImageView.backgroundColor = Theme.backgroundColor;
+    cameraImageView.layer.cornerRadius = 16;
+    cameraImageView.layer.shadowColor =
+        [(Theme.isDarkThemeEnabled ? Theme.darkThemeOffBackgroundColor : Theme.primaryColor) CGColor];
+    cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
+    cameraImageView.layer.shadowOpacity = 0.5;
+    cameraImageView.layer.shadowRadius = 4;
+
     [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
     [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
     _cameraImageView = cameraImageView;

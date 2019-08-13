@@ -188,6 +188,7 @@ public class ProfileFetcherJob: NSObject {
 
         profileManager.updateProfile(for: address,
                                      profileNameEncrypted: signalServiceProfile.profileNameEncrypted,
+                                     username: signalServiceProfile.username,
                                      avatarUrlPath: signalServiceProfile.avatarUrlPath)
 
         updateUnidentifiedAccess(address: address,

@@ -42,6 +42,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // hasLocalProfile is true if there is a local profile with a name or avatar.
 - (BOOL)hasLocalProfile;
 - (nullable NSString *)localProfileName;
+- (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
 - (void)ensureLocalProfileCached;
@@ -55,6 +56,8 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
                    avatarImage:(nullable UIImage *)avatarImage
                        success:(void (^)(void))successBlock
                        failure:(void (^)(void))failureBlock;
+
+- (void)updateLocalUsername:(nullable NSString *)username;
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
 
@@ -83,8 +86,11 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address;
 - (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address;
 
+- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address;
+
 - (void)updateProfileForAddress:(SignalServiceAddress *)address
            profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                       username:(nullable NSString *)username
                   avatarUrlPath:(nullable NSString *)avatarUrlPath;
 
 #pragma mark - Clean Up
