@@ -156,6 +156,7 @@ class SDSDatabaseStorageObservation {
 
     func set(grdbStorage: GRDBDatabaseStorageAdapter) {
         guard [.grdb, .grdbThrowaway].contains(FeatureFlags.storageMode) else {
+            assert(FeatureFlags.storageMode != .ydb)
             return
         }
         guard let genericDatabaseObserver = grdbStorage.genericDatabaseObserver else {
