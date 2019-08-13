@@ -135,14 +135,11 @@ class SDSDatabaseStorageObservation {
     // MARK: -
 
     init() {
-        // GRDB TODO: We only need to do this if YDB is active.
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
-            self.addYDBObservers()
-        }
+        self.addYDBObservers()
     }
 
     private func addYDBObservers() {
-        guard FeatureFlags.storageMode == .ydb else {
+        guard ![.grdb, .grdbThrowaway ].contains(FeatureFlags.storageMode) else {
             return
         }
 
@@ -155,8 +152,7 @@ class SDSDatabaseStorageObservation {
     }
 
     func set(grdbStorage: GRDBDatabaseStorageAdapter) {
-        guard [.grdb, .grdbThrowaway].contains(FeatureFlags.storageMode) else {
-            assert(FeatureFlags.storageMode != .ydb)
+        guard ![.ydb ].contains(FeatureFlags.storageMode) else {
             return
         }
         guard let genericDatabaseObserver = grdbStorage.genericDatabaseObserver else {

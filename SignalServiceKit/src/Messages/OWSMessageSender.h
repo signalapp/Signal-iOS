@@ -63,7 +63,7 @@ NS_SWIFT_NAME(MessageSender)
  * Send and resend text messages or resend messages with existing attachments.
  * If you haven't yet created the attachment, see the `sendAttachment:` variants.
  */
-- (void)sendMessage:(OutgoingMessagePreparer *)message
+- (void)sendMessage:(OutgoingMessagePreparer *)outgoingMessagePreparer
             success:(void (^)(void))successHandler
             failure:(void (^)(NSError *error))failureHandler;
 

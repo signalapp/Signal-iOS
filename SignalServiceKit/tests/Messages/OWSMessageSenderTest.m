@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSUploadOperation *uploadingService;
 
-- (void)sendMessageToService:(TSOutgoingMessage *)message
+- (void)sendMessageToService:(OutgoingMessagePreparer *)message
                      success:(void (^)(void))successHandler
                      failure:(RetryableFailureHandler)failureHandler;
 
