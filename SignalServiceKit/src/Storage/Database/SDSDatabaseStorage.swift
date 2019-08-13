@@ -108,9 +108,7 @@ public class SDSDatabaseStorage: SDSTransactable {
     private lazy var baseDir: URL = {
         let containerUrl = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(),
                                isDirectory: true)
-        if FeatureFlags.storageMode == .grdbThrowaway ||
-            FeatureFlags.storageMode == .ydbTests ||
-            FeatureFlags.storageMode == .grdbTests {
+        if [.grdbThrowaway, .ydbTests, .grdbTests ].contains(FeatureFlags.storageMode) {
             return containerUrl.appendingPathComponent(UUID().uuidString, isDirectory: true)
         } else {
             return containerUrl

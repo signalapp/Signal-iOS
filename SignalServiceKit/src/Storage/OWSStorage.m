@@ -43,6 +43,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 #pragma mark -
 
+// This macro is only intended to be used within OWSDatabaseConnection.
 #define OWSAssertCanReadYDB()                                                                                          \
     do {                                                                                                               \
         /* There's no convenient way to enforce until SSKEnvironment is configured. */                                 \
@@ -67,6 +68,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         }                                                                                                              \
     } while (NO)
 
+// This macro is only intended to be used within OWSDatabaseConnection.
 #define OWSAssertCanWriteYDB()                                                                                         \
     do {                                                                                                               \
         /* There's no convenient way to enforce until SSKEnvironment is configured. */                                 \
