@@ -42,26 +42,11 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return The number of keys in the classes collection.
  */
-+ (NSUInteger)numberOfKeysInCollection;
 + (NSUInteger)numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction;
-
-/**
- * Removes all objects in the classes collection.
- */
-+ (void)removeAllObjectsInCollection;
-
-/**
- * A memory intesive method to get all objects in the collection. You should prefer using enumeration over this method
- * whenever feasible. See `enumerateObjectsInCollectionUsingBlock`
- *
- * @return All objects in the classes collection.
- */
-+ (NSArray *)allObjectsInCollection;
 
 /**
  * Enumerates all objects in collection.
  */
-+ (void)enumerateCollectionObjectsUsingBlock:(void (^)(id obj, BOOL *stop))block;
 + (void)enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
                                        usingBlock:(void (^)(id object, BOOL *stop))block;
 
@@ -79,31 +64,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
                                      transaction:(YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(fetch(uniqueId:transaction:));
-+ (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID NS_SWIFT_NAME(fetch(uniqueId:));
-
-/**
- * Saves the object with the shared readWrite connection.
- *
- * This method will block if another readWrite transaction is open.
- */
-- (void)save;
 
 /**
  * Assign the latest persisted values from the database.
  */
-- (void)reload;
 - (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing;
-
-/**
- * Saves the object with the shared readWrite connection - does not block.
- *
- * Be mindful that this method may clobber other changes persisted
- * while waiting to open the readWrite transaction.
- *
- * @param completionBlock is called on the main thread
- */
-- (void)saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock;
 
 /**
  *  Saves the object with the provided transaction
@@ -118,7 +84,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *uniqueId;
 
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)remove;
 
 #pragma mark - Write Hooks
 
@@ -138,25 +103,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 // GRDB TODO: Ensure these ydb_ methods are only be used before
 // and during the ydb-to-grdb migration.
-+ (NSUInteger)ydb_numberOfKeysInCollection;
 + (NSUInteger)ydb_numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction;
-+ (void)ydb_removeAllObjectsInCollection;
-+ (NSArray *)ydb_allObjectsInCollection;
-+ (void)ydb_enumerateCollectionObjectsUsingBlock:(void (^)(id obj, BOOL *stop))block;
 + (void)ydb_enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
                                            usingBlock:(void (^)(id object, BOOL *stop))block;
 + (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID
                                          transaction:(YapDatabaseReadTransaction *)transaction
     NS_SWIFT_NAME(ydb_fetch(uniqueId:transaction:));
-+ (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID NS_SWIFT_NAME(ydb_fetch(uniqueId:));
-- (void)ydb_save;
-- (void)ydb_reload;
 - (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction;
 - (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing;
-- (void)ydb_saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock;
 - (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)ydb_remove;
 
 @end
 

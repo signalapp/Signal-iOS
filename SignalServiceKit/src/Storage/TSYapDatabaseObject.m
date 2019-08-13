@@ -60,31 +60,9 @@ NS_ASSUME_NONNULL_BEGIN
     [transaction setObject:self forKey:self.uniqueId inCollection:[[self class] collection]];
 }
 
-- (void)save
-{
-    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self saveWithTransaction:transaction];
-    }];
-}
-
-- (void)saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock
-{
-    [[self dbReadWriteConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        [self saveWithTransaction:transaction];
-    }
-                                          completionBlock:completionBlock];
-}
-
 - (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [transaction removeObjectForKey:self.uniqueId inCollection:[[self class] collection]];
-}
-
-- (void)remove
-{
-    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self removeWithTransaction:transaction];
-    }];
 }
 
 #pragma mark Class Methods
@@ -104,34 +82,9 @@ NS_ASSUME_NONNULL_BEGIN
     return NSStringFromClass([self class]);
 }
 
-+ (NSUInteger)numberOfKeysInCollection
-{
-    __block NSUInteger count;
-    [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        count = [self numberOfKeysInCollectionWithTransaction:transaction];
-    }];
-    return count;
-}
-
 + (NSUInteger)numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     return [transaction numberOfKeysInCollection:[self collection]];
-}
-
-+ (NSArray *)allObjectsInCollection
-{
-    __block NSMutableArray *all = [[NSMutableArray alloc] initWithCapacity:[self numberOfKeysInCollection]];
-    [self enumerateCollectionObjectsUsingBlock:^(id object, BOOL *stop) {
-        [all addObject:object];
-    }];
-    return [all copy];
-}
-
-+ (void)enumerateCollectionObjectsUsingBlock:(void (^)(id object, BOOL *stop))block
-{
-    [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self enumerateCollectionObjectsWithTransaction:transaction usingBlock:block];
-    }];
 }
 
 + (void)enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -146,36 +99,13 @@ NS_ASSUME_NONNULL_BEGIN
     [transaction enumerateRowsInCollection:[self collection] usingBlock:yapBlock];
 }
 
-+ (void)removeAllObjectsInCollection
-{
-    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction removeAllObjectsInCollection:[self collection]];
-    }];
-}
-
 + (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
                                      transaction:(YapDatabaseReadTransaction *)transaction
 {
     return [transaction objectForKey:uniqueID inCollection:[self collection]];
 }
 
-+ (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
-{
-    __block id _Nullable object = nil;
-    [[self dbReadConnection] readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        object = [transaction objectForKey:uniqueID inCollection:[self collection]];
-    }];
-    return object;
-}
-
 #pragma mark Reload
-
-- (void)reload
-{
-    [self.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-        [self reloadWithTransaction:transaction];
-    }];
-}
 
 - (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
@@ -234,31 +164,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - YDB Deprecation
 
-+ (NSUInteger)ydb_numberOfKeysInCollection
-{
-    return [self numberOfKeysInCollection];
-}
-
 + (NSUInteger)ydb_numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
     return [self numberOfKeysInCollectionWithTransaction:transaction];
-}
-
-+ (void)ydb_removeAllObjectsInCollection
-{
-    [self removeAllObjectsInCollection];
-}
-
-+ (NSArray *)ydb_allObjectsInCollection
-{
-    return [self allObjectsInCollection];
-}
-
-+ (void)ydb_enumerateCollectionObjectsUsingBlock:(void (^)(id obj, BOOL *stop))block
-{
-    return [self enumerateCollectionObjectsUsingBlock:block];
 }
 
 + (void)ydb_enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
@@ -277,21 +187,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [self fetchObjectWithUniqueID:uniqueID transaction:transaction];
 }
 
-+ (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID
-{
-    return [self fetchObjectWithUniqueID:uniqueID];
-}
-
-- (void)ydb_save
-{
-    [self save];
-}
-
-- (void)ydb_reload
-{
-    [self reload];
-}
-
 - (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -306,11 +201,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self reloadWithTransaction:transaction ignoreMissing:ignoreMissing];
 }
 
-- (void)ydb_saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock
-{
-    [self saveAsyncWithCompletionBlock:completionBlock];
-}
-
 - (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -323,11 +213,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(transaction);
 
     [self removeWithTransaction:transaction];
-}
-
-- (void)ydb_remove
-{
-    [self remove];
 }
 
 @end
