@@ -774,6 +774,25 @@ public class StickerManager: NSObject {
         }
     }
 
+    // MARK: - Missing Packs
+
+    // Track which sticker packs downloads have failed permanently.
+    private static var missingStickerPacks = Set<String>()
+
+    @objc
+    public class func markStickerPackAsMissing(stickerPackInfo: StickerPackInfo) {
+        DispatchQueue.main.async {
+            self.missingStickerPacks.insert(stickerPackInfo.asKey())
+        }
+    }
+
+    @objc
+    public class func isStickerPackMissing(stickerPackInfo: StickerPackInfo) -> Bool {
+        AssertIsOnMainThread()
+
+        return missingStickerPacks.contains(stickerPackInfo.asKey())
+    }
+
     // MARK: - Recents
 
     private static let kRecentStickersKey = "recentStickers"
