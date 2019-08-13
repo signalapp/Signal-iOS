@@ -175,15 +175,19 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
                                @synchronized(self) {
-                                   // This method is meant to be fast. If _cachedFileUrl is nil,
-                                   // we'll still lazily generate it and this method will work,
-                                   // but it will be slower than expected.
-                                   OWSAssertDebug(self->_cachedFileUrl != nil);
+                                   if (SSKFeatureFlags.complainAboutSlowDBWrites) {
+                                       // This method is meant to be fast. If _cachedFileUrl is nil,
+                                       // we'll still lazily generate it and this method will work,
+                                       // but it will be slower than expected.
+                                       OWSAssertDebug(self->_cachedFileUrl != nil);
+                                   }
 
+                                   NSURL *srcUrl = self.dataUrl;
                                    self.isConsumed = YES;
-                                   success = [NSFileManager.defaultManager moveItemAtURL:self.cachedFileUrl
+                                   success = [NSFileManager.defaultManager moveItemAtURL:srcUrl
                                                                                    toURL:dstUrl
                                                                                    error:error];
+
                                    self->_cachedFileUrl = nil;
                                }
 #pragma clang diagnostic pop
