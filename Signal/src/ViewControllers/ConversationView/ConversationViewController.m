@@ -2459,11 +2459,11 @@ typedef enum : NSUInteger {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                [message
-                    anyUpdateMessageWithTransaction:transaction
-                                              block:^(TSMessage *message) {
-                                                  [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
-                                              }];
+                [message anyUpdateMessageWithTransaction:transaction
+                                                   block:^(TSMessage *latestInstance) {
+                                                       [latestInstance
+                                                           setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+                                                   }];
             }];
         }
         failure:^(NSError *error) {

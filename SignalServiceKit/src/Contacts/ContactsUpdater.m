@@ -157,7 +157,6 @@ NS_ASSUME_NONNULL_BEGIN
             }
 
             NSSet<NSString *> *registeredPhoneNumbers = operation.registeredPhoneNumbers;
-            NSMutableSet<SignalRecipient *> *recipients = [NSMutableSet new];
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                 for (NSString *phoneNumber in phoneNumbersToLookup) {
                     SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];

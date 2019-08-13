@@ -1287,6 +1287,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         switch (viewItem.interaction.interactionType) {
             case OWSInteractionType_Unknown:
             case OWSInteractionType_TypingIndicator:
+            case OWSInteractionType_ThreadDetails:
                 canShowDate = NO;
                 break;
             case OWSInteractionType_IncomingMessage:
