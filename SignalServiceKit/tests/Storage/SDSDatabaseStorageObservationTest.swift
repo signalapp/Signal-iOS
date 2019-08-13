@@ -92,8 +92,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
     func testYDBSyncWrite() {
 
-        databaseStorage.useGRDB = false
-
         // Make sure there's already at least one thread.
         var someThread: TSThread?
         self.yapWrite { transaction in
@@ -281,8 +279,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
     }
 
     func testYDBAsyncWrite() {
-
-        databaseStorage.useGRDB = false
 
         // Make sure there's already at least one thread.
         var someThread: TSThread?
@@ -474,7 +470,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
     func testGRDBSyncWrite() {
 
-        databaseStorage.useGRDB = true
         try! databaseStorage.grdbStorage.setupUIDatabase()
 
         // Make sure there's already at least one thread.
@@ -667,7 +662,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
     func testGRDBAsyncWrite() {
 
-        databaseStorage.useGRDB = true
         try! databaseStorage.grdbStorage.setupUIDatabase()
 
         // Make sure there's already at least one thread.
