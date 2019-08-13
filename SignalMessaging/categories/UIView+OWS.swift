@@ -131,6 +131,10 @@ public extension UIView {
         return "\(type(of: container)).\(name)"
     }
 
+    class func accessibilityIdentifier(containerName: String, name: String) -> String {
+        return "\(containerName).\(name)"
+    }
+
     func setAccessibilityIdentifier(in container: NSObject, name: String) {
         self.accessibilityIdentifier = UIView.accessibilityIdentifier(in: container, name: name)
     }
@@ -507,6 +511,8 @@ public extension UITextView {
         inputDelegate?.selectionDidChange(self)
     }
 }
+
+// MARK: -
 
 @objc
 public extension UITextField {

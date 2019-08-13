@@ -15,6 +15,7 @@ struct MessageActionBuilder {
         return MenuAction(image: #imageLiteral(resourceName: "ic_reply"),
                           title: NSLocalizedString("MESSAGE_ACTION_REPLY", comment: "Action sheet button title"),
                           subtitle: nil,
+                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "reply"),
                           block: { [weak delegate] (_) in
                             delegate?.messageActionsReplyToItem(conversationViewItem)
 
@@ -25,6 +26,7 @@ struct MessageActionBuilder {
         return MenuAction(image: #imageLiteral(resourceName: "ic_copy"),
                           title: NSLocalizedString("MESSAGE_ACTION_COPY_TEXT", comment: "Action sheet button title"),
                           subtitle: nil,
+                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_text"),
                           block: { (_) in
                             conversationViewItem.copyTextAction()
         })
@@ -34,6 +36,7 @@ struct MessageActionBuilder {
         return MenuAction(image: #imageLiteral(resourceName: "ic_info"),
                           title: NSLocalizedString("MESSAGE_ACTION_DETAILS", comment: "Action sheet button title"),
                           subtitle: nil,
+                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "show_details"),
                           block: { [weak delegate] (_) in
                             delegate?.messageActionsShowDetailsForItem(conversationViewItem)
         })
@@ -43,6 +46,7 @@ struct MessageActionBuilder {
         return MenuAction(image: #imageLiteral(resourceName: "ic_trash"),
                           title: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
                           subtitle: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE", comment: "Action sheet button subtitle"),
+                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"),
                           block: { (_) in
                             conversationViewItem.deleteAction()
         })
@@ -52,6 +56,7 @@ struct MessageActionBuilder {
         return MenuAction(image: #imageLiteral(resourceName: "ic_copy"),
                           title: NSLocalizedString("MESSAGE_ACTION_COPY_MEDIA", comment: "Action sheet button title"),
                           subtitle: nil,
+                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "copy_media"),
                           block: { (_) in
                             conversationViewItem.copyMediaAction()
         })
@@ -61,6 +66,7 @@ struct MessageActionBuilder {
         return MenuAction(image: #imageLiteral(resourceName: "download-filled-24.png"),
                           title: NSLocalizedString("MESSAGE_ACTION_SAVE_MEDIA", comment: "Action sheet button title"),
                           subtitle: nil,
+                          accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "save_media"),
                           block: { (_) in
                             conversationViewItem.saveMediaAction()
         })
