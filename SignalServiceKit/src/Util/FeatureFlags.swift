@@ -20,6 +20,64 @@ extension FeatureBuild {
 
 let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
 
+// MARK: -
+
+@objc
+public enum StorageMode: Int {
+    // Only use YDB.  This should be used in production until we ship
+    // the YDB-to-GRDB migration.
+    case ydb
+    // Use GRDB, migrating if possible on every launch.
+    //
+    // Supercedes grdbMigratesFreshDBEveryLaunch.
+    case grdbThrowaway
+    // Use GRDB, migrating once if necessary.
+    case grdb
+    // These modes can be used while running tests.
+    // They are more permissive than the release modes.
+    //
+    // The build shepherd should be running the test
+    // suites in .ydbTests and .grdbTests modes before each release.
+    case ydbTests
+    case grdbTests
+}
+
+// MARK: -
+
+extension StorageMode: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .ydb:
+            return ".ydb"
+        case .grdbThrowaway:
+            return ".grdbThrowaway"
+        case .grdb:
+            return ".grdb"
+        case .ydbTests:
+            return ".ydbTests"
+        case .grdbTests:
+            return ".grdbTests"
+        default:
+            owsFailDebug("unexpected StorageMode: \(self)")
+            return ".unknown"
+        }
+    }
+}
+
+// MARK: -
+
+@objc
+public enum StorageModeStrictness: Int {
+    // For DEBUG, QA and beta builds only.
+    case fail
+    // For production
+    case failDebug
+    // Temporary value to be used until existing issues are resolved.
+    case log
+}
+
+// MARK: -
+
 /// By centralizing feature flags here and documenting their rollout plan, it's easier to review
 /// which feature flags are in play.
 @objc(SSKFeatureFlags)
@@ -28,16 +86,38 @@ public class FeatureFlags: NSObject {
     @objc
     public static let conversationSearch = false
 
+    // This flag supercedes useGRDB.
     @objc
-    public static var useGRDB = build.includes(.dev)
+    public static var storageMode: StorageMode {
+        if CurrentAppContext().isRunningTests {
+            // We should be running the tests using both .ydbTests or .grdbTests.
+            return .grdbTests
+        } else if build.includes(.dev) {
+            return .grdbThrowaway
+        } else {
+            return .ydb
+        }
+    }
+
+    @objc
+    public static var storageModeStrictness: StorageModeStrictness {
+        return .failDebug
+    }
+
+    // GRDB TODO: For now, we always load YDB, even if we're launching
+    //            after a successful YDB-to-GRDB migration (or for a
+    //            new install that never had a YDB database).
+    //            Soon, we won't.
+    @objc
+    public static let alwaysLoadYDB = true
+
+    @objc
+    public static var storageModeDescription: String {
+        return "\(storageMode)"
+    }
 
     @objc
     public static let shouldPadAllOutgoingAttachments = false
-
-    // Temporary flag helpful for development, where blowing away GRDB and re-running
-    // the migration every launch is helpful.
-    @objc
-    public static let grdbMigratesFreshDBEveryLaunch = true
 
     @objc
     public static let stickerReceive = true

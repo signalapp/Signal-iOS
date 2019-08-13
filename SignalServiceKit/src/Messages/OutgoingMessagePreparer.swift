@@ -6,7 +6,8 @@ import PromiseKit
 
 @objc
 public class OutgoingMessagePreparer: NSObject {
-    private let message: TSOutgoingMessage
+    @objc
+    public let message: TSOutgoingMessage
     private let unsavedAttachmentInfos: [OutgoingAttachmentInfo]
     private var didCompletePrep = false
 

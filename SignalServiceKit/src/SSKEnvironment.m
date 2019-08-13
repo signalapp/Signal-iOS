@@ -38,6 +38,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) OWSAttachmentDownloads *attachmentDownloads;
 @property (nonatomic) StickerManager *stickerManager;
 @property (nonatomic) SDSDatabaseStorage *databaseStorage;
+@property (nonatomic) StorageCoordinator *storageCoordinator;
 
 @end
 
@@ -85,6 +86,7 @@ static SSKEnvironment *sharedSSKEnvironment;
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
                   storageServiceManager:(<StorageServiceManagerProtocol>)storageServiceManager
+                     storageCoordinator:(StorageCoordinator *)storageCoordinator
 {
     self = [super init];
     if (!self) {
@@ -125,6 +127,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(signalServiceAddressCache);
     OWSAssertDebug(accountServiceClient);
     OWSAssertDebug(storageServiceManager);
+    OWSAssertDebug(storageCoordinator);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -160,6 +163,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _signalServiceAddressCache = signalServiceAddressCache;
     _accountServiceClient = accountServiceClient;
     _storageServiceManager = storageServiceManager;
+    _storageCoordinator = storageCoordinator;
 
     return self;
 }
@@ -182,6 +186,11 @@ static SSKEnvironment *sharedSSKEnvironment;
 + (void)clearSharedForTests
 {
     sharedSSKEnvironment = nil;
+}
+
++ (BOOL)hasShared
+{
+    return sharedSSKEnvironment != nil;
 }
 
 #pragma mark - Mutable Accessors

@@ -14,9 +14,7 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 
 @interface OWSPrimaryStorage : OWSStorage
 
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initStorage;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager NS_SWIFT_NAME(shared());
 
@@ -40,10 +38,9 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 + (NSString *)sharedDataDatabaseFilePath_SHM;
 + (NSString *)sharedDataDatabaseFilePath_WAL;
 
-+ (void)protectFiles;
-
 #pragma mark - Misc.
 
+// GRDB TODO: Remove this method.
 - (void)touchDbAsync;
 
 @end

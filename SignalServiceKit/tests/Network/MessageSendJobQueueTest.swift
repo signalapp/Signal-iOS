@@ -31,7 +31,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let jobQueue = MessageSenderJobQueue()
         jobQueue.setup()
         self.write { transaction in
-            jobQueue.add(message: message, transaction: transaction)
+            jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
         self.wait(for: [expectation], timeout: 0.1)
@@ -46,7 +46,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let jobQueue = MessageSenderJobQueue()
 
         self.write { transaction in
-            jobQueue.add(message: message, transaction: transaction)
+            jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
         self.wait(for: [sentBeforeReadyExpectation], timeout: 0.1)
@@ -65,9 +65,9 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let jobQueue = MessageSenderJobQueue()
         self.write { transaction in
-            jobQueue.add(message: message1, transaction: transaction)
-            jobQueue.add(message: message2, transaction: transaction)
-            jobQueue.add(message: message3, transaction: transaction)
+            jobQueue.add(message: message1.asPreparer, transaction: transaction)
+            jobQueue.add(message: message2.asPreparer, transaction: transaction)
+            jobQueue.add(message: message3.asPreparer, transaction: transaction)
         }
 
         let sendGroup = DispatchGroup()
@@ -98,7 +98,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let message = OutgoingMessageFactory().buildDeliveryReceipt()
         let expectation = sentExpectation(message: message)
         self.write { transaction in
-            jobQueue.add(message: message, transaction: transaction)
+            jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
         self.wait(for: [expectation], timeout: 0.1)
@@ -109,7 +109,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let jobQueue = MessageSenderJobQueue()
         self.write { transaction in
-            jobQueue.add(message: message, transaction: transaction)
+            jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
         let finder = AnyJobRecordFinder()
@@ -184,7 +184,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let jobQueue = MessageSenderJobQueue()
         self.write { transaction in
-            jobQueue.add(message: message, transaction: transaction)
+            jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
         let finder = AnyJobRecordFinder()
@@ -221,7 +221,6 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let expectation = self.expectation(description: "sent message")
 
         messageSender.sendMessageWasCalledBlock = { [weak messageSender] sentMessage in
-            XCTAssert(message.uniqueId != nil)
             guard sentMessage.uniqueId == message.uniqueId else {
                 XCTFail("unexpected sentMessage: \(sentMessage)")
                 return

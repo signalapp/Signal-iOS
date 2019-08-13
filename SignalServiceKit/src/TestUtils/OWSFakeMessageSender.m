@@ -3,6 +3,7 @@
 //
 
 #import "OWSFakeMessageSender.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -10,17 +11,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFakeMessageSender
 
-- (void)sendMessage:(TSOutgoingMessage *)message
+- (void)sendMessage:(OutgoingMessagePreparer *)outgoingMessagePreparer
             success:(void (^)(void))successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
+    OWSAssertDebug([outgoingMessagePreparer isKindOfClass:[OutgoingMessagePreparer class]]);
+
     if (self.stubbedFailingError) {
         failureHandler(self.stubbedFailingError);
     } else {
         successHandler();
     }
     if (self.sendMessageWasCalledBlock) {
-        self.sendMessageWasCalledBlock(message);
+        self.sendMessageWasCalledBlock(outgoingMessagePreparer.message);
     }
 }
 

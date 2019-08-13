@@ -49,9 +49,9 @@ NS_ASSUME_NONNULL_BEGIN
         // initializers injected.
         [[OWSBackgroundTaskManager sharedManager] observeNotifications];
 
-        SDSDatabaseStorage *databaseStorage = [SDSDatabaseStorage new];
+        StorageCoordinator *storageCoordinator = [StorageCoordinator new];
+        SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
         OWSPrimaryStorage *primaryStorage = databaseStorage.yapPrimaryStorage;
-        [OWSPrimaryStorage protectFiles];
 
         // AFNetworking (via CFNetworking) spools it's attachments to NSTemporaryDirectory().
         // If you receive a media message while the device is locked, the download will fail if the temporary directory
@@ -141,7 +141,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   databaseStorage:databaseStorage
                                                         signalServiceAddressCache:signalServiceAddressCache
                                                              accountServiceClient:accountServiceClient
-                                                            storageServiceManager:storageServiceManager]];
+                                                            storageServiceManager:storageServiceManager
+                                                               storageCoordinator:storageCoordinator]];
 
         appSpecificSingletonBlock();
 

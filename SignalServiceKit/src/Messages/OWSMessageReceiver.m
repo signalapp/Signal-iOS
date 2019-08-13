@@ -136,7 +136,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (OWSMessageDecryptJob *_Nullable)nextJob
 {
     // GRDB TODO: Remove this queue & finder entirely.
-    if (SSKFeatureFlags.useGRDB) {
+    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
         OWSLogWarn(@"Not processing queue; obsolete.");
         return nil;
     }
@@ -539,7 +539,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Unexpectedly large message.");
     }
 
-    if (SSKFeatureFlags.useGRDB) {
+    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
         // We *could* use this processing Queue for Yap *and* GRDB
         [self.messageDecryptJobQueue enqueueEnvelopeData:envelopeData];
     } else {

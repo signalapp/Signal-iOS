@@ -179,7 +179,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                              selector:@selector(applicationWillResignActive:)
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
-    if (SSKFeatureFlags.useGRDB) {
+    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
         [self.databaseStorage.grdbStorage.homeViewDatabaseObserver appendSnapshotDelegate:self];
     } else {
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -1499,7 +1499,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)homeViewDatabaseSnapshotDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedThreadIds
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(SSKFeatureFlags.useGRDB);
+    OWSAssertDebug(SSKFeatureFlags.storageMode != StorageModeYdb);
 
     if (!self.shouldObserveDBModifications) {
         return;
@@ -1535,7 +1535,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)uiDatabaseDidUpdate:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(!SSKFeatureFlags.useGRDB);
+    OWSAssertDebug(SSKFeatureFlags.storageMode == StorageModeYdb);
 
     if (!self.shouldObserveDBModifications) {
         return;

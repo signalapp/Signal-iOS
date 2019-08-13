@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKSignedPreKeyStore;
 @class SignalServiceAddressCache;
 @class StickerManager;
+@class StorageCoordinator;
 @class TSAccountManager;
 @class TSNetworkManager;
 @class TSSocketManager;
@@ -81,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
                   storageServiceManager:(<StorageServiceManagerProtocol>)storageServiceManager
-    NS_DESIGNATED_INITIALIZER;
+                     storageCoordinator:(StorageCoordinator *)storageCoordinator NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -94,12 +95,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)clearSharedForTests;
 #endif
 
++ (BOOL)hasShared;
+
 @property (nonatomic, readonly) id<ContactsManagerProtocol> contactsManager;
 @property (nonatomic, readonly) OWSLinkPreviewManager *linkPreviewManager;
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) MessageSenderJobQueue *messageSenderJobQueue;
 @property (nonatomic, readonly) id<ProfileManagerProtocol> profileManager;
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 @property (nonatomic, readonly) ContactsUpdater *contactsUpdater;
 @property (nonatomic, readonly) TSNetworkManager *networkManager;
 @property (nonatomic, readonly) OWSMessageManager *messageManager;
@@ -129,6 +131,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
+@property (nonatomic, readonly) StorageCoordinator *storageCoordinator;
+// GRDB TODO: Make this nullable.
+@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;

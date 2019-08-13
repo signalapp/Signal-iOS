@@ -6,6 +6,7 @@
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,11 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)runUpWithCompletion:(OWSDatabaseMigrationCompletion)completion
-{
-    OWSAbstractMethod();
-}
-
-- (void)markAsCompleteWithSneakyTransaction
 {
     OWSAbstractMethod();
 }
@@ -113,6 +109,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.primaryStorage;
 }
 
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
 #pragma mark -
 
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -139,10 +140,8 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)markAsCompleteWithSneakyTransaction
+- (void)markAsCompleteWithSneakyYDBTransaction
 {
-    // GRDB TODO: Which kind of transaction we should use depends on whether or not
-    //            we are pre- or post- the YDB-to-GRDB migration.
     [self.ydbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self markAsCompleteWithTransaction:transaction.asAnyWrite];
     }];
@@ -150,8 +149,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isCompleteWithSneakyTransaction
 {
-    // GRDB TODO: Which kind of transaction we should use depends on whether or not
-    //            we are pre- or post- the YDB-to-GRDB migration.
+    OWSAssertDebug(SSKFeatureFlags.alwaysLoadYDB || self.storageCoordinator.state == StorageCoordinatorStateYDB
+        || self.storageCoordinator.state == StorageCoordinatorStateBeforeYDBToGRDBMigration);
+
     __block BOOL result;
     [self.ydbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         result = [self isCompleteWithTransaction:transaction.asAnyRead];

@@ -389,6 +389,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             success:(void (^)(void))successHandler
             failure:(void (^)(NSError *error))failureHandler
 {
+    OWSAssertDebug([outgoingMessagePreparer isKindOfClass:[OutgoingMessagePreparer class]]);
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         // This method will use a read/write transaction. This transaction
         // will block until any open read/write transactions are complete.
