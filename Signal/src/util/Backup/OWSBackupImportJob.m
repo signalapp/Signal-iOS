@@ -441,15 +441,6 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
     }
 
-    // Order matters here.
-    NSArray<NSString *> *collectionsToRestore = @[
-        [TSThread collection],
-        [TSAttachment collection],
-        // Interactions refer to threads and attachments,
-        // so copy them afterward.
-        [TSInteraction collection],
-        [OWSDatabaseMigration collection],
-    ];
     NSMutableDictionary<NSString *, NSNumber *> *restoredEntityCounts = [NSMutableDictionary new];
     __block unsigned long long copiedEntities = 0;
     __block BOOL aborted = NO;
@@ -457,6 +448,16 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     // GRDB TODO: We need to totally rework this, post GRDB.
 
 #ifdef GRDB_BACKUP
+        // Order matters here.
+        NSArray<NSString *> *collectionsToRestore = @[
+            [TSThread collection],
+            [TSAttachment collection],
+            // Interactions refer to threads and attachments,
+            // so copy them afterward.
+            [TSInteraction collection],
+            [OWSDatabaseMigration collection],
+        ];
+
         for (NSString *collection in collectionsToRestore) {
             if ([collection isEqualToString:[OWSDatabaseMigration collection]]) {
                 // It's okay if there are existing migrations; we'll clear those
