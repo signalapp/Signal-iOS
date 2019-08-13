@@ -136,7 +136,9 @@ class SDSDatabaseStorageObservation {
 
     init() {
         // GRDB TODO: We only need to do this if YDB is active.
-        addYDBObservers()
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.addYDBObservers()
+        }
     }
 
     private func addYDBObservers() {

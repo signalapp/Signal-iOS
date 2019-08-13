@@ -249,15 +249,6 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
 #pragma mark - Table view data source
 
-- (void)deviceDidChange:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-
-    [self updateDeviceList];
-}
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 2;

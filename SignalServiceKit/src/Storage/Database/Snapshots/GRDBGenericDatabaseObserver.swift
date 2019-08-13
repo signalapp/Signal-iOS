@@ -88,11 +88,11 @@ public class GRDBGenericDatabaseObserver: NSObject {
     }()
 
     private func committedChanges(forPendingChanges pendingChanges: PendingChanges, db: Database) throws -> CommittedChanges {
-        return CommittedChanges(collections: try collections(forPendingChanges: pendingChanges, db: db),
+        return CommittedChanges(collections: collections(forPendingChanges: pendingChanges, db: db),
                                 interactionIds: try interactionIds(forPendingChanges: pendingChanges, db: db))
     }
 
-    private func collections(forPendingChanges pendingChanges: PendingChanges, db: Database) throws -> Set<String> {
+    private func collections(forPendingChanges pendingChanges: PendingChanges, db: Database) -> Set<String> {
         guard pendingChanges.tableNames.count > 0 else {
             return pendingChanges.collections
         }

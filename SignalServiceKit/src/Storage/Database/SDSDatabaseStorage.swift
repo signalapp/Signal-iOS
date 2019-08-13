@@ -653,9 +653,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         self.mediaGalleryDatabaseObserver = mediaGalleryDatabaseObserver
         uiDatabaseObserver.appendSnapshotDelegate(mediaGalleryDatabaseObserver)
 
-        // MediaGalleryDatabaseObserver is built on top of UIDatabaseObserver
-        // but includes the details necessary for rendering collection view
-        // batch updates.
         let genericDatabaseObserver = GRDBGenericDatabaseObserver()
         self.genericDatabaseObserver = genericDatabaseObserver
         uiDatabaseObserver.appendSnapshotDelegate(genericDatabaseObserver)
