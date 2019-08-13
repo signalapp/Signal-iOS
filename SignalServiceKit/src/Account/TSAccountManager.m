@@ -250,8 +250,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     @synchronized (self) {
         __block NSString *_Nullable result;
 
-        // GRDB TODO: Until GRDB migration is complete, we need to load this from YDB,
-        //
         // * YAPDBJobRecordFinder uses a secondary index.
         // * Yaps views and indices enumerate all (per whitelist or blacklist) entities when building or updating the
         //   index. Views and indices can be built or re-built on launch.
@@ -261,20 +259,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         // * OWSOutgoingSyncMessage extends TSOutgoingMessage whose deserialization initializer initWithCoder uses
         //   TSAccountManager.localNumber.
         // * TSAccountManager.localNumber is persisted in the database.
-        // * When we load TSAccountManager.localNumber we use the "current" database which might be GRDB. GRDB might not
-        //   be populated because the migration hasn't occurred yet.
-        //
-        // GRDB TODO: GRDB_MIGRATION_COMPLETE might eventually be replaced by a flag set at runtime.
-#ifdef GRDB_MIGRATION_COMPLETE
+        // * When we load TSAccountManager.localNumber we use the "current" database which might be GRDB.
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             result = [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
         }];
-#else
-        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            result =
-                [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction.asAnyRead];
-        }];
-#endif
         return result;
     }
 }
