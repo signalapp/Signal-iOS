@@ -33,8 +33,6 @@ class MessageDetailViewController: OWSViewController {
 
     // MARK: Properties
 
-    let uiDatabaseConnection: YapDatabaseConnection
-
     var bubbleView: UIView?
 
     let mode: MessageMetadataViewMode
@@ -85,7 +83,6 @@ class MessageDetailViewController: OWSViewController {
         self.viewItem = viewItem
         self.message = message
         self.mode = mode
-        self.uiDatabaseConnection = OWSPrimaryStorage.shared().uiDatabaseConnection
         self.conversationStyle = ConversationStyle(thread: thread)
 
         super.init(nibName: nil, bundle: nil)
@@ -204,8 +201,8 @@ class MessageDetailViewController: OWSViewController {
 
     lazy var thread: TSThread = {
         var thread: TSThread?
-        self.uiDatabaseConnection.read { transaction in
-            thread = self.message.thread(transaction: transaction.asAnyRead)
+        databaseStorage.uiRead { transaction in
+            thread = self.message.thread(transaction: transaction)
         }
         return thread!
     }()
