@@ -87,46 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 }
 
-- (YapDatabaseConnection *)dbReadConnection
-{
-    return [[self class] dbReadConnection];
-}
-
-- (YapDatabaseConnection *)dbReadWriteConnection
-{
-    return [[self class] dbReadWriteConnection];
-}
-
-- (OWSPrimaryStorage *)primaryStorage
-{
-    return [[self class] primaryStorage];
-}
-
 #pragma mark Class Methods
-
-+ (YapDatabaseConnection *)dbReadConnection
-{
-    OWSJanksUI();
-
-    // We use TSYapDatabaseObject's dbReadWriteConnection (not OWSPrimaryStorage's
-    // dbReadConnection) for consistency, since we tend to [TSYapDatabaseObject
-    // save] and want to write to the same connection we read from.  To get true
-    // consistency, we'd want to update entities by reading & writing from within
-    // the same transaction, but that'll be a big refactor.
-    return self.dbReadWriteConnection;
-}
-
-+ (YapDatabaseConnection *)dbReadWriteConnection
-{
-    OWSJanksUI();
-
-    return SSKEnvironment.shared.objectReadWriteConnection;
-}
-
-+ (OWSPrimaryStorage *)primaryStorage
-{
-    return [OWSPrimaryStorage sharedManager];
-}
 
 - (SDSDatabaseStorage *)databaseStorage
 {

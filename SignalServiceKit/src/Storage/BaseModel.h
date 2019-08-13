@@ -24,12 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)enumerateCollectionObjectsUsingBlock:(void (^)(id obj, BOOL *stop))block NS_UNAVAILABLE;
 + (void)enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
                                        usingBlock:(void (^)(id object, BOOL *stop))block NS_UNAVAILABLE;
-- (YapDatabaseConnection *)dbReadConnection NS_UNAVAILABLE;
-+ (YapDatabaseConnection *)dbReadConnection NS_UNAVAILABLE;
-- (YapDatabaseConnection *)dbReadWriteConnection NS_UNAVAILABLE;
-+ (YapDatabaseConnection *)dbReadWriteConnection NS_UNAVAILABLE;
-- (OWSPrimaryStorage *)primaryStorage NS_UNAVAILABLE;
-+ (OWSPrimaryStorage *)primaryStorage NS_UNAVAILABLE;
 + (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
                                      transaction:(YapDatabaseReadTransaction *)transaction NS_UNAVAILABLE;
 + (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID NS_UNAVAILABLE;

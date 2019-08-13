@@ -65,17 +65,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
                                        usingBlock:(void (^)(id object, BOOL *stop))block;
 
-/**
- * @return Shared database connections for reading and writing.
- */
-- (YapDatabaseConnection *)dbReadConnection;
-+ (YapDatabaseConnection *)dbReadConnection;
-- (YapDatabaseConnection *)dbReadWriteConnection;
-+ (YapDatabaseConnection *)dbReadWriteConnection;
-
-- (OWSPrimaryStorage *)primaryStorage;
-+ (OWSPrimaryStorage *)primaryStorage;
-
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 @property (class, nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 
