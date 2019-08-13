@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedManager;
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
 - (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope;
 
 - (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)messageAuthorAddress timestamp:(uint64_t)timestamp;
