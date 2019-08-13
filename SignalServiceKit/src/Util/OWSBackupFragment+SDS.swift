@@ -120,6 +120,10 @@ extension OWSBackupFragment: SDSModel {
     public var sdsTableName: String {
         return BackupFragmentRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return OWSBackupFragmentSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -141,7 +145,9 @@ extension OWSBackupFragmentSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_OWSBackupFragment", columns: [
+    public static let table = SDSTableMetadata(collection: OWSBackupFragment.collection(),
+                                               tableName: "model_OWSBackupFragment",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

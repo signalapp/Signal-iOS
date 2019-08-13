@@ -127,6 +127,10 @@ extension StickerPack: SDSModel {
     public var sdsTableName: String {
         return StickerPackRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return StickerPackSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -149,7 +153,9 @@ extension StickerPackSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_StickerPack", columns: [
+    public static let table = SDSTableMetadata(collection: StickerPack.collection(),
+                                               tableName: "model_StickerPack",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

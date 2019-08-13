@@ -104,6 +104,10 @@ extension OWSContactQuery: SDSModel {
     public var sdsTableName: String {
         return ContactQueryRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return OWSContactQuerySerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -121,7 +125,9 @@ extension OWSContactQuerySerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_OWSContactQuery", columns: [
+    public static let table = SDSTableMetadata(collection: OWSContactQuery.collection(),
+                                               tableName: "model_OWSContactQuery",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

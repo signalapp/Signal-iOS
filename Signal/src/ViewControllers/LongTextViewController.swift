@@ -17,6 +17,10 @@ public class LongTextViewController: OWSViewController {
 
     // MARK: - Dependencies
 
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     var uiDatabaseConnection: YapDatabaseConnection {
         return OWSPrimaryStorage.shared().uiDatabaseConnection
     }
@@ -63,29 +67,15 @@ public class LongTextViewController: OWSViewController {
 
         self.messageTextView.contentOffset = CGPoint(x: 0, y: self.messageTextView.contentInset.top)
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(uiDatabaseDidUpdate),
-                                               name: .OWSUIDatabaseConnectionDidUpdate,
-                                               object: OWSPrimaryStorage.shared().dbNotificationObject)
+        databaseStorage.add(databaseStorageObserver: self)
     }
 
-    // MARK: - DB
+    // MARK: -
 
-    @objc internal func uiDatabaseDidUpdate(notification: NSNotification) {
+    private func refreshContent() {
         AssertIsOnMainThread()
 
-        guard let notifications = notification.userInfo?[OWSUIDatabaseConnectionNotificationsKey] as? [Notification] else {
-            owsFailDebug("notifications was unexpectedly nil")
-            return
-        }
-
         let uniqueId = self.viewItem.interaction.uniqueId
-        guard self.uiDatabaseConnection.hasChange(forKey: uniqueId,
-                                                  inCollection: TSInteraction.collection(),
-                                                  in: notifications) else {
-                                                    Logger.debug("No relevant changes.")
-                                                    return
-        }
 
         do {
             try uiDatabaseConnection.read { transaction in
@@ -100,7 +90,6 @@ public class LongTextViewController: OWSViewController {
             }
         } catch {
             owsFailDebug("unexpected error: \(error)")
-
         }
     }
 
@@ -164,5 +153,33 @@ public class LongTextViewController: OWSViewController {
 
     @objc func shareButtonPressed() {
         AttachmentSharing.showShareUI(forText: fullText)
+    }
+}
+
+// MARK: -
+
+extension LongTextViewController: SDSDatabaseStorageObserver {
+    public func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
+        AssertIsOnMainThread()
+
+        let uniqueId = self.viewItem.interaction.uniqueId
+        guard change.didUpdate(interactionId: uniqueId) else {
+            return
+        }
+        assert(change.didUpdateInteractions)
+
+        refreshContent()
+    }
+
+    public func databaseStorageDidUpdateExternally() {
+        AssertIsOnMainThread()
+
+        refreshContent()
+    }
+
+    public func databaseStorageDidReset() {
+        AssertIsOnMainThread()
+
+        refreshContent()
     }
 }

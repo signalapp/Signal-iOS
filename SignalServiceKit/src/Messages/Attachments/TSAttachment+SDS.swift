@@ -262,6 +262,10 @@ extension TSAttachment: SDSModel {
     public var sdsTableName: String {
         return AttachmentRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return TSAttachmentSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -303,7 +307,9 @@ extension TSAttachmentSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_TSAttachment", columns: [
+    public static let table = SDSTableMetadata(collection: TSAttachment.collection(),
+                                               tableName: "model_TSAttachment",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

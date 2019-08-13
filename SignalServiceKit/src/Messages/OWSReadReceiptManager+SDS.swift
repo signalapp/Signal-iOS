@@ -109,6 +109,10 @@ extension TSRecipientReadReceipt: SDSModel {
     public var sdsTableName: String {
         return RecipientReadReceiptRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return TSRecipientReadReceiptSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -127,7 +131,9 @@ extension TSRecipientReadReceiptSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_TSRecipientReadReceipt", columns: [
+    public static let table = SDSTableMetadata(collection: TSRecipientReadReceipt.collection(),
+                                               tableName: "model_TSRecipientReadReceipt",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,

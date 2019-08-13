@@ -189,7 +189,9 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [SSKPreferences setHasSavedThread:YES transaction:transaction];
+    if (![SSKPreferences hasSavedThreadWithTransaction:transaction]) {
+        [SSKPreferences setHasSavedThread:YES transaction:transaction];
+    }
 }
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction

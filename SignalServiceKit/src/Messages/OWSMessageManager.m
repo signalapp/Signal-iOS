@@ -54,6 +54,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface OWSMessageManager () <SDSDatabaseStorageObserver>
+
+@end
+
 #pragma mark -
 
 @implementation OWSMessageManager
@@ -163,28 +167,37 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startObserving
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedNotification
-                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedExternallyNotification
-                                               object:nil];
+    [self.databaseStorage addDatabaseStorageObserver:self];
 }
 
-- (void)yapDatabaseModified:(NSNotification *)notification
+#pragma mark - SDSDatabaseStorageObserver
+
+- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
 {
-    if (AppReadiness.isAppReady) {
-        [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
-    } else {
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-                [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
-            }];
-        });
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    if (!change.didUpdateInteractions) {
+        return;
     }
+
+    [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+}
+
+- (void)databaseStorageDidUpdateExternally
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+}
+
+- (void)databaseStorageDidReset
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
 }
 
 #pragma mark - Blocking

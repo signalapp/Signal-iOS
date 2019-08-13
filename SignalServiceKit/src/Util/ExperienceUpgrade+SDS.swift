@@ -94,6 +94,10 @@ extension ExperienceUpgrade: SDSModel {
     public var sdsTableName: String {
         return ExperienceUpgradeRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return ExperienceUpgradeSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -108,7 +112,9 @@ extension ExperienceUpgradeSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_ExperienceUpgrade", columns: [
+    public static let table = SDSTableMetadata(collection: ExperienceUpgrade.collection(),
+                                               tableName: "model_ExperienceUpgrade",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn

@@ -15,8 +15,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const NSNotificationName_OWSDeviceDidChange = @"NSNotificationName_OWSDeviceDidChange";
-
 uint32_t const OWSDevicePrimaryDeviceId = 1;
 NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevices";
 
@@ -174,36 +172,6 @@ NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevi
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidInsertWithTransaction:transaction];
-
-    [self postDidChangeWithTransaction:transaction];
-}
-
-- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidUpdateWithTransaction:transaction];
-
-    [self postDidChangeWithTransaction:transaction];
-}
-
-- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [super anyDidRemoveWithTransaction:transaction];
-
-    [self postDidChangeWithTransaction:transaction];
-}
-
-- (void)postDidChangeWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    [transaction addCompletionWithBlock:^{
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_OWSDeviceDidChange
-                                                                 object:nil
-                                                               userInfo:nil];
-    }];
-}
 
 + (nullable instancetype)deviceFromJSONDictionary:(NSDictionary *)deviceAttributes error:(NSError **)error
 {

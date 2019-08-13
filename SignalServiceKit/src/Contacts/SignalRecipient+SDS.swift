@@ -113,6 +113,10 @@ extension SignalRecipient: SDSModel {
     public var sdsTableName: String {
         return SignalRecipientRecord.databaseTableName
     }
+
+    public static var table: SDSTableMetadata {
+        return SignalRecipientSerializer.table
+    }
 }
 
 // MARK: - Table Metadata
@@ -132,7 +136,9 @@ extension SignalRecipientSerializer {
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
-    public static let table = SDSTableMetadata(tableName: "model_SignalRecipient", columns: [
+    public static let table = SDSTableMetadata(collection: SignalRecipient.collection(),
+                                               tableName: "model_SignalRecipient",
+                                               columns: [
         recordTypeColumn,
         idColumn,
         uniqueIdColumn,
