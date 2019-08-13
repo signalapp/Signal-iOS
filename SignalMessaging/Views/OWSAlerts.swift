@@ -17,7 +17,7 @@ import Foundation
         dismissAction.accessibilityIdentifier = "OWSAlerts.\("dismiss")"
         alert.addAction(dismissAction)
 
-        if let settingsAction = CurrentAppContext().openSystemSettingsAction {
+        if let settingsAction = CurrentAppContext().openSystemSettingsAction(completion: nil) {
             settingsAction.accessibilityIdentifier = "OWSAlerts.\("settings")"
             alert.addAction(settingsAction)
         }

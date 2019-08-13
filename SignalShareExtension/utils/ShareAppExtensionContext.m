@@ -189,7 +189,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.rootViewController findFrontmostViewController:YES];
 }
 
-- (nullable UIAlertAction *)openSystemSettingsAction
+- (nullable UIAlertAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion
 {
     return nil;
 }

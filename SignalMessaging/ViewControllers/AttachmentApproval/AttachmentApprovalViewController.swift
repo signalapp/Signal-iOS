@@ -757,9 +757,8 @@ public class AttachmentApprovalViewController: UIPageViewController, UIPageViewC
             do {
                 let saveableAsset: SaveableAsset = try SaveableAsset(attachmentApprovalItem: self.currentItem)
 
-                PHPhotoLibrary.requestAuthorization { status in
-                    guard status == .authorized else {
-                        owsFailDebug("unexpected status: \(status)")
+                self.ows_askForMediaLibraryPermissions { isGranted in
+                    guard isGranted else {
                         return
                     }
 

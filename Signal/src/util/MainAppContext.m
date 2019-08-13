@@ -236,13 +236,16 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return UIApplication.sharedApplication.frontmostViewControllerIgnoringAlerts;
 }
 
-- (nullable UIAlertAction *)openSystemSettingsAction
+- (nullable UIAlertAction *)openSystemSettingsActionWithCompletion:(void (^_Nullable)(void))completion
 {
     return [UIAlertAction actionWithTitle:CommonStrings.openSettingsButton
                   accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"system_settings")
                                     style:UIAlertActionStyleDefault
                                   handler:^(UIAlertAction *_Nonnull action) {
                                       [UIApplication.sharedApplication openSystemSettings];
+                                      if (completion != nil) {
+                                          completion();
+                                      }
                                   }];
 }
 
