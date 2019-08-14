@@ -305,7 +305,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSURL *fileUrl = [OWSFileSystem temporaryFileURLWithFileExtension:fileExtension];
     [data writeToURL:fileUrl options:NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication error:error];
 
-    if (error != nil) {
+    if (*error != nil) {
         return nil;
     }
 
