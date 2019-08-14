@@ -568,7 +568,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
             = (missingUnseenSafetyNumberChanges.count + nonBlockingSafetyNumberChanges.count);
     }
 
-    NSInteger unreadIndicatorPosition = visibleUnseenMessageCount;
+    OWSAssert(visibleUnseenMessageCount <= NSIntegerMax);
+    NSInteger unreadIndicatorPosition = (NSInteger)visibleUnseenMessageCount;
 
     dynamicInteractions.unreadIndicator =
         [[OWSUnreadIndicator alloc] initWithFirstUnseenSortId:firstUnseenSortId.unsignedLongLongValue

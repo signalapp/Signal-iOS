@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BaseModel : TSYapDatabaseObject
 
-@property (class, nonatomic) BOOL shouldBeIndexedForFTS;
+@property (class, nonatomic, readonly) BOOL shouldBeIndexedForFTS;
 
 #pragma mark - YDB Deprecation
 

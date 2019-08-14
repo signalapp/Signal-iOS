@@ -85,7 +85,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                         databaseStorage:(SDSDatabaseStorage *)databaseStorage
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
-                  storageServiceManager:(<StorageServiceManagerProtocol>)storageServiceManager
+                  storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator
 {
     self = [super init];

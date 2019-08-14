@@ -61,7 +61,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
     return SSKEnvironment.shared.outgoingReceiptManager;
 }
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)init
 {
     self = [super init];
 

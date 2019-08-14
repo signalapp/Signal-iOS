@@ -81,8 +81,9 @@ NS_ASSUME_NONNULL_BEGIN
                         databaseStorage:(SDSDatabaseStorage *)databaseStorage
               signalServiceAddressCache:(SignalServiceAddressCache *)signalServiceAddressCache
                    accountServiceClient:(AccountServiceClient *)accountServiceClient
-                  storageServiceManager:(<StorageServiceManagerProtocol>)storageServiceManager
+                  storageServiceManager:(id<StorageServiceManagerProtocol>)storageServiceManager
                      storageCoordinator:(StorageCoordinator *)storageCoordinator NS_DESIGNATED_INITIALIZER;
+
 
 - (instancetype)init NS_UNAVAILABLE;
 
