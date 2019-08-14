@@ -360,7 +360,7 @@
 
     NSString *_Nullable username = [OWSProfileManager.sharedManager localUsername];
     if (username.length > 0) {
-        addSubtitle([CommonStrings.usernamePrefix stringByAppendingString:username]);
+        addSubtitle([CommonFormats formatUsername:username]);
     }
 
     [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];

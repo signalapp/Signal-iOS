@@ -692,20 +692,20 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(username.length > 0);
 
-    NSString *path = [NSString stringWithFormat:textSecureSetUsernameAPIFormat, username];
+    NSString *path = [NSString stringWithFormat:@"v1/accounts/username/%@", username];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"PUT" parameters:@{}];
 }
 
 + (TSRequest *)usernameDeleteRequest
 {
-    return [TSRequest requestWithUrl:[NSURL URLWithString:textSecureUsernameAPI] method:@"DELETE" parameters:@{}];
+    return [TSRequest requestWithUrl:[NSURL URLWithString:@"v1/accounts/username"] method:@"DELETE" parameters:@{}];
 }
 
 + (TSRequest *)getProfileRequestWithUsername:(NSString *)username
 {
     OWSAssertDebug(username.length > 0);
 
-    NSString *path = [NSString stringWithFormat:textSecureProfileByUsernameAPIFormat, username];
+    NSString *path = [NSString stringWithFormat:@"v1/profile/username/%@", username];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 

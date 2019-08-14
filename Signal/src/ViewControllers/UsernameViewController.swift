@@ -175,25 +175,21 @@ class UsernameViewController: OWSViewController {
             }
 
             SSKEnvironment.shared.networkManager.makePromise(request: usernameRequest).done { _ in
-                DispatchQueue.main.async {
-                    modalView.dismiss {
-                        OWSProfileManager.shared().updateLocalUsername(usernameToUse)
-                        self.usernameSavedOrCanceled()
-                    }
+                modalView.dismiss {
+                    OWSProfileManager.shared().updateLocalUsername(usernameToUse)
+                    self.usernameSavedOrCanceled()
                 }
             }.catch { error in
                 if case .taskError(let task, _)? = error as? NetworkManagerError, task.statusCode() == 409 {
-                    DispatchQueue.main.async { modalView.dismiss { self.validationState = .inUse } }
+                    modalView.dismiss { self.validationState = .inUse }
                     return
                 }
 
                 owsFailDebug("Unexpected username update error \(error)")
 
-                DispatchQueue.main.async {
-                    modalView.dismiss {
-                        OWSAlerts.showErrorAlert(message: NSLocalizedString("USERNAME_VIEW_ERROR_UPDATE_FAILED",
-                                                                            comment: "Error moessage shown when a username update fails."))
-                    }
+                modalView.dismiss {
+                    OWSAlerts.showErrorAlert(message: NSLocalizedString("USERNAME_VIEW_ERROR_UPDATE_FAILED",
+                                                                        comment: "Error moessage shown when a username update fails."))
                 }
             }
         }

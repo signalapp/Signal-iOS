@@ -118,19 +118,34 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     self.view.backgroundColor = Theme.backgroundColor;
 
-    UIView *contentView = [UIView containerView];
-    contentView.backgroundColor = Theme.backgroundColor;
-    [self.view addSubview:contentView];
-    [contentView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [contentView autoPinWidthToSuperview];
+    UIStackView *stackView = [UIStackView new];
+    stackView.axis = UILayoutConstraintAxisVertical;
+    stackView.spacing = 0;
 
-    NSMutableArray<UIView *> *rows = [NSMutableArray new];
+    [self.view addSubview:stackView];
 
+    [stackView autoPinToTopLayoutGuideOfViewController:self withInset:15.f];
+    [stackView autoPinWidthToSuperview];
+
+    void (^addSeparator)(BOOL) = ^(BOOL withLeadingInset) {
+        UIView *separatorWrapper = [UIView containerView];
+        [stackView addArrangedSubview:separatorWrapper];
+        UIView *separator = [UIView containerView];
+        separator.backgroundColor = Theme.cellSeparatorColor;
+        [separatorWrapper addSubview:separator];
+        [separator autoPinHeightToSuperview];
+        [separator autoPinLeadingToSuperviewMarginWithInset:withLeadingInset ? 18 : 0];
+        [separator autoPinTrailingToSuperviewMargin];
+        [separator autoSetDimension:ALDimensionHeight toSize:CGHairlineWidth()];
+    };
+
+    CGFloat rowSpacing = 10;
+    UIEdgeInsets rowMargins = UIEdgeInsetsMake(10, 18, 10, 18);
 
     // Avatar
 
     UIView *avatarRow = [UIView containerView];
-    [rows addObject:avatarRow];
+    [stackView addArrangedSubview:avatarRow];
 
     self.avatarView = [AvatarImageView new];
     self.avatarView.userInteractionEnabled = YES;
@@ -164,24 +179,26 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     [self updateAvatarView];
 
+    addSeparator(NO);
+
     // Name
 
-    UIView *profileNameRow = [UIView containerView];
-    profileNameRow.userInteractionEnabled = YES;
+    UIStackView *profileNameRow = [UIStackView new];
+    profileNameRow.spacing = rowSpacing;
+    profileNameRow.layoutMarginsRelativeArrangement = YES;
+    profileNameRow.layoutMargins = rowMargins;
     [profileNameRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(profileNameRowTapped:)]];
-    profileNameRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"nameRow");
-    [rows addObject:profileNameRow];
+    profileNameRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"profileNameRow");
+    [stackView addArrangedSubview:profileNameRow];
 
     UILabel *profileNameLabel = [UILabel new];
     profileNameLabel.text = NSLocalizedString(
         @"PROFILE_VIEW_PROFILE_NAME_FIELD", @"Label for the profile name field of the profile view.");
     profileNameLabel.textColor = Theme.primaryColor;
     profileNameLabel.font = [[UIFont ows_dynamicTypeBodyClampedFont] ows_mediumWeight];
-    [profileNameRow addSubview:profileNameLabel];
-    [profileNameLabel autoPinLeadingToSuperviewMargin];
-    [profileNameLabel autoPinHeightToSuperviewWithMargin:5.f];
+    [profileNameRow addArrangedSubview:profileNameLabel];
 
     UITextField *profileNameTextField = [OWSTextField new];
     _profileNameTextField = profileNameTextField;
@@ -197,64 +214,67 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     [profileNameTextField addTarget:self
                              action:@selector(textFieldDidChange:)
                    forControlEvents:UIControlEventEditingChanged];
-    [profileNameRow addSubview:profileNameTextField];
-    [profileNameTextField autoPinLeadingToTrailingEdgeOfView:profileNameLabel offset:10.f];
-    [profileNameTextField autoPinTrailingToSuperviewMargin];
-    [profileNameTextField autoVCenterInSuperview];
+    [profileNameRow addArrangedSubview:profileNameTextField];
 
     // Username
 
     if (SSKFeatureFlags.usernames) {
-        UIView *usernameRow = [UIView containerView];
-        usernameRow.userInteractionEnabled = YES;
+        addSeparator(YES);
+
+        UIStackView *usernameRow = [UIStackView new];
+        usernameRow.spacing = rowSpacing;
+        usernameRow.layoutMarginsRelativeArrangement = YES;
+        usernameRow.layoutMargins = rowMargins;
         [usernameRow
             addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                          action:@selector(usernameRowTapped:)]];
         usernameRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"nameRow");
-        [rows addObject:usernameRow];
+        [stackView addArrangedSubview:usernameRow];
 
         UILabel *usernameTitleLabel = [UILabel new];
         usernameTitleLabel.text
             = NSLocalizedString(@"PROFILE_VIEW_USERNAME_FIELD", @"Label for the username field of the profile view.");
         usernameTitleLabel.textColor = Theme.primaryColor;
         usernameTitleLabel.font = [[UIFont ows_dynamicTypeBodyClampedFont] ows_mediumWeight];
-        [usernameRow addSubview:usernameTitleLabel];
-        [usernameTitleLabel autoPinLeadingToSuperviewMargin];
-        [usernameTitleLabel autoPinHeightToSuperviewWithMargin:5.f];
+        [usernameRow addArrangedSubview:usernameTitleLabel];
+
+        UILabel *usernameLabel = [UILabel new];
+
+        usernameLabel.font = [UIFont ows_dynamicTypeBodyClampedFont];
+        usernameLabel.textAlignment = NSTextAlignmentRight;
+        [usernameRow addArrangedSubview:usernameLabel];
+
+        _usernameLabel = usernameLabel;
+
+        UIView *disclosureImageContainer = [UIView containerView];
+        [usernameRow addArrangedSubview:disclosureImageContainer];
 
         NSString *disclosureImageName
             = CurrentAppContext().isRTL ? @"system_disclosure_indicator_rtl" : @"system_disclosure_indicator";
         UIImageView *disclosureImageView = [UIImageView new];
         [disclosureImageView setTemplateImageName:disclosureImageName tintColor:Theme.cellSeparatorColor];
 
-        [usernameRow addSubview:disclosureImageView];
-        [disclosureImageView autoPinTrailingToSuperviewMargin];
+        [disclosureImageContainer addSubview:disclosureImageView];
+        [disclosureImageView autoPinWidthToSuperview];
         [disclosureImageView autoVCenterInSuperview];
         [disclosureImageView autoSetDimension:ALDimensionHeight toSize:13];
         [disclosureImageView autoSetDimension:ALDimensionWidth toSize:11];
 
-        UILabel *usernameLabel = [UILabel new];
-
-        usernameLabel.font = [UIFont ows_dynamicTypeBodyClampedFont];
-        usernameLabel.textAlignment = NSTextAlignmentRight;
-        [usernameRow addSubview:usernameLabel];
-        [usernameLabel autoPinTrailingToLeadingEdgeOfView:disclosureImageView offset:7.f];
-        [usernameLabel autoPinLeadingToTrailingEdgeOfView:usernameTitleLabel offset:10.f];
-        [usernameLabel autoPinHeightToSuperviewWithMargin:5.f];
-
-        _usernameLabel = usernameLabel;
-
         [self updateUsername];
+
+        addSeparator(NO);
+    } else {
+        addSeparator(NO);
     }
 
     // Information
 
-    UIView *infoRow = [UIView containerView];
-    infoRow.userInteractionEnabled = YES;
+    UIView *infoRow = [UIView new];
+    infoRow.layoutMargins = rowMargins;
     [infoRow
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(infoRowTapped:)]];
     infoRow.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"infoRow");
-    [rows addObject:infoRow];
+    [stackView addArrangedSubview:infoRow];
 
     UILabel *infoLabel = [UILabel new];
     infoLabel.textColor = Theme.secondaryColor;
@@ -276,16 +296,14 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     infoLabel.numberOfLines = 0;
     infoLabel.lineBreakMode = NSLineBreakByWordWrapping;
     [infoRow addSubview:infoLabel];
-    [infoLabel autoPinLeadingToSuperviewMargin];
-    [infoLabel autoPinTrailingToSuperviewMargin];
-    [infoLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:10.f];
-    [infoLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f];
+    [infoLabel autoPinEdgesToSuperviewMargins];
 
     // Big Button
 
     if (self.profileViewMode == ProfileViewMode_Registration) {
-        UIView *buttonRow = [UIView containerView];
-        [rows addObject:buttonRow];
+        UIView *buttonRow = [UIView new];
+        buttonRow.layoutMargins = rowMargins;
+        [stackView addArrangedSubview:buttonRow];
 
         const CGFloat kButtonHeight = 47.f;
         // NOTE: We use ows_signalBrandBlueColor instead of ows_materialBlueColor
@@ -301,43 +319,9 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, saveButton);
         self.saveButton = saveButton;
         [buttonRow addSubview:saveButton];
-        [saveButton autoPinLeadingAndTrailingToSuperviewMargin];
-        [saveButton autoPinHeightToSuperview];
+        [saveButton autoPinEdgesToSuperviewMargins];
         [saveButton autoSetDimension:ALDimensionHeight toSize:47.f];
     }
-
-    // Row Layout
-
-    UIView *_Nullable lastRow = nil;
-    for (UIView *row in rows) {
-        [contentView addSubview:row];
-        if (lastRow) {
-            [row autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastRow withOffset:5.f];
-        } else {
-            [row autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:15.f];
-        }
-        [row autoPinLeadingToSuperviewMarginWithInset:18.f];
-        [row autoPinTrailingToSuperviewMarginWithInset:18.f];
-        lastRow = row;
-
-        if (lastRow != infoRow) {
-            UIView *separator = [UIView containerView];
-            separator.backgroundColor = Theme.cellSeparatorColor;
-            [contentView addSubview:separator];
-            [separator autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastRow withOffset:5.f];
-
-            if (lastRow == profileNameRow && SSKFeatureFlags.usernames) {
-                [separator autoPinLeadingToSuperviewMarginWithInset:18.f];
-                [separator autoPinTrailingToSuperviewMargin];
-            } else {
-                [separator autoPinWidthToSuperview];
-            }
-
-            [separator autoSetDimension:ALDimensionHeight toSize:CGHairlineWidth()];
-            lastRow = separator;
-        }
-    }
-    [lastRow autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:10.f];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -581,7 +565,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     NSString *_Nullable username = [OWSProfileManager.sharedManager localUsername];
     if (username) {
-        self.usernameLabel.text = [CommonStrings.usernamePrefix stringByAppendingString:username];
+        self.usernameLabel.text = [CommonFormats formatUsername:username];
         self.usernameLabel.textColor = Theme.primaryColor;
     } else {
         self.usernameLabel.text = NSLocalizedString(@"PROFILE_VIEW_CREATE_USERNAME",

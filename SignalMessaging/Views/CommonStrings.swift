@@ -32,9 +32,15 @@ import Foundation
 
     @objc
     static public let searchPlaceholder = NSLocalizedString("SEARCH_FIELD_PLACE_HOLDER_TEXT", comment: "placeholder text in an empty search field")
+}
 
+@objc
+public class CommonFormats: NSObject {
     @objc
-    static public let usernamePrefix = NSLocalizedString("USERNAME_PREFIX", comment: "A prefix appeneded to all usernames when displayed")
+    static public func formatUsername(_ username: String) -> String {
+        return NSLocalizedString("USERNAME_PREFIX",
+                                 comment: "A prefix appeneded to all usernames when displayed") + username.filterForDisplay
+    }
 }
 
 @objc

@@ -172,9 +172,9 @@ public class ThreadDetailsCell: ConversationViewCell {
             }
             if let username = OWSProfileManager.shared().username(for: contactThread.contactAddress) {
                 if let existingDetails = details {
-                    details = existingDetails + "\n" + CommonStrings.usernamePrefix + username
+                    details = existingDetails + "\n" + CommonFormats.formatUsername(username)
                 } else {
-                    details = CommonStrings.usernamePrefix + username
+                    details = CommonFormats.formatUsername(username)
                 }
             }
         } else {

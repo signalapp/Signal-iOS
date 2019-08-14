@@ -1011,8 +1011,7 @@ const CGFloat kIconViewLength = 24;
 
         NSString *_Nullable username = [OWSProfileManager.sharedManager usernameForAddress:recipientAddress];
         if (username.length > 0) {
-            addSubtitle([[NSAttributedString alloc]
-                initWithString:[CommonStrings.usernamePrefix stringByAppendingString:username]]);
+            addSubtitle([[NSAttributedString alloc] initWithString:[CommonFormats formatUsername:username]]);
         }
 
 #if DEBUG
