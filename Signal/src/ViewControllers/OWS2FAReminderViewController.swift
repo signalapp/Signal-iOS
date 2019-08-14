@@ -77,11 +77,6 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         ows2FAManager.verifyPin(pinCode) { success in
 
             if success {
-                // If we had a pending migration, mark it done since the user
-                // entered the correct pin and it wasn't too long. This probably
-                // means they actually had a 16 character pin.
-                if self.ows2FAManager.needsLegacyPinMigration() { self.ows2FAManager.markLegacyPinAsMigrated() }
-
                 self.didSubmitCorrectPin()
 
             // We have a legacy pin that may have been truncated to 16 characters.
@@ -89,21 +84,8 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
                 let truncatedPinCode = pinCode.substring(to: Int(kLegacyTruncated2FAv1PinLength))
                 self.ows2FAManager.verifyPin(truncatedPinCode) { success in
                     if success {
-                        // The user entered the right pin, just a longer version than we had stored.
-                        // Update the service to use their full length pin.
-                        self.ows2FAManager.enable2FAPromise(with: pinCode)
-                            .ensure {
-                                // The pin was correct, so regardless of what happens let the user continue.
-                                self.didSubmitCorrectPin()
-                            }.catch { error in
-                                // We don't need to bubble this up to the user, since they
-                                // don't know / care that something is changing in this moment.
-                                // We can try and migrate them again during their next reminder.
-                                owsFailDebug("Unexpected error \(error) while migrating legacy truncated pun.")
-                            }.retainUntilComplete()
+                        self.didSubmitCorrectPin()
                     }
-
-                    // The user's pin is still wrong, can't do anything further right now.
                 }
             }
         }

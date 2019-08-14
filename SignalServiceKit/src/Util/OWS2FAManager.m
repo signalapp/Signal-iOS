@@ -270,12 +270,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         return NO;
     }
 
-    // If we have a legacy pin that might be truncated,
-    // show the reminder right away so we can clean it up.
-    if (self.needsLegacyPinMigration) {
-        return YES;
-    }
-
     return self.nextReminderDate.timeIntervalSinceNow < 0;
 }
 
