@@ -3,6 +3,8 @@
 //
 
 @class OWSAES256Key;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 @class TSThread;
 
@@ -12,12 +14,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (OWSAES256Key *)localProfileKey;
 
-- (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address;
-- (void)setProfileKeyData:(NSData *)profileKeyData forAddress:(SignalServiceAddress *)address;
+- (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction;
+- (void)setProfileKeyData:(NSData *)profileKeyData
+               forAddress:(SignalServiceAddress *)address
+              transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address;
+- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address
+                     transaction:(SDSAnyReadTransaction *)transaction;
 
-- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread;
+- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread
+transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)addUserToProfileWhitelist:(SignalServiceAddress *)address;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
@@ -25,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)fetchLocalUsersProfile;
 
 - (void)fetchProfileForAddress:(SignalServiceAddress *)address;
+
+- (void)warmCaches;
 
 @end
 

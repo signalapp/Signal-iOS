@@ -9,7 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 typedef void (^OWSUserProfileCompletion)(void);
 
 @class OWSAES256Key;
-@class SDSAnyDatabaseQueue;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 
 extern NSString *const kNSNotificationName_LocalProfileDidChange;
@@ -19,10 +20,6 @@ extern NSString *const kNSNotificationName_OtherUsersProfileDidChange;
 extern NSString *const kNSNotificationKey_ProfileAddress;
 extern NSString *const kNSNotificationKey_ProfileGroupId;
 
-// This class should be completely thread-safe.
-//
-// It is critical for coherency that all DB operations for this
-// class should be done on OWSProfileManager's databaseQueue.
 @interface OWSUserProfile : BaseModel
 
 @property (atomic, readonly) SignalServiceAddress *address;
@@ -57,39 +54,42 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
 
 + (SignalServiceAddress *)localProfileAddress;
 
-+ (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)recipientId
-                                      databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue;
++ (OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)address
+                                 transaction:(SDSAnyReadTransaction *)transaction;
 
-+ (BOOL)localUserProfileExists:(SDSAnyDatabaseQueue *)databaseQueue;
++ (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)recipientId
+                                        transaction:(SDSAnyWriteTransaction *)transaction;
+
++ (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - Update With... Methods
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                avatarFileName:(nullable NSString *)avatarFileName
-                databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                  transaction:(SDSAnyWriteTransaction *)transaction
                    completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
-                databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                  transaction:(SDSAnyWriteTransaction *)transaction
                    completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
                  avatarFileName:(nullable NSString *)avatarFileName
-                  databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                    transaction:(SDSAnyWriteTransaction *)transaction
                      completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
-                   databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                     transaction:(SDSAnyWriteTransaction *)transaction
                       completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileKey:(OWSAES256Key *)profileKey
-               databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                 transaction:(SDSAnyWriteTransaction *)transaction
                   completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
-              databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion;
 
 #pragma mark - Profile Avatars Directory
@@ -101,7 +101,7 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
 + (NSString *)profileAvatarsDirPath;
 + (void)resetProfileStorage;
 
-+ (NSSet<NSString *> *)allProfileAvatarFilePathsWithDatabaseQueue:(SDSAnyDatabaseQueue *)databaseQueue;
++ (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

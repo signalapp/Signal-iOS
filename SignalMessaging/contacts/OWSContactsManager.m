@@ -93,7 +93,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     [AppReadiness runNowOrWhenAppWillBecomeReady:^{
         [self setup];
-
+        
         [self startObserving];
     }];
 
@@ -784,11 +784,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         @"UNKNOWN_CONTACT_NAME", @"Displayed if for some reason we can't determine a contacts phone number *or* name");
 }
 
-- (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
-{
-    return [self.profileManager profileNameForAddress:address];
-}
-
 - (nullable NSString *)nameFromSystemContactsForAddress:(SignalServiceAddress *)address
 {
     return [self cachedContactNameForAddress:address];
@@ -809,7 +804,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         phoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
     }
 
-    NSString *_Nullable profileName = [self.profileManager profileNameForAddress:address];
+    NSString *_Nullable profileName = [self.profileManager profileNameForAddress:address transaction:transaction];
 
     if (profileName.length > 0) {
         return profileName;
@@ -921,25 +916,33 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self avatarImageForCNContactId:contact.cnContactId];
 }
 
-- (nullable UIImage *)profileImageForAddress:(nullable SignalServiceAddress *)address
+- (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address
 {
     if (address == nil) {
         return nil;
     }
 
-    return [self.profileManager profileAvatarForAddress:address];
+    __block UIImage *_Nullable image;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        image = [self.profileManager profileAvatarForAddress:address transaction:transaction];
+    }];
+    return image;
 }
 
-- (nullable NSData *)profileImageDataForAddress:(nullable SignalServiceAddress *)address
+- (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address
 {
     if (address == nil) {
         return nil;
     }
 
-    return [self.profileManager profileAvatarDataForAddress:address];
+    __block NSData *_Nullable data;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        data = [self.profileManager profileAvatarDataForAddress:address transaction:transaction];
+    }];
+    return data;
 }
 
-- (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
+- (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address
 {
     if (address == nil) {
         OWSFailDebug(@"address was unexpectedly nil");
@@ -947,14 +950,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     // Prefer the contact image from the local address book if available
-    UIImage *_Nullable image = [self systemContactImageForAddress:address];
+    __block UIImage *_Nullable image = [self systemContactImageForAddress:address];
 
     // Else try to use the image from their profile
-    if (image == nil) {
-        image = [self profileImageForAddress:address];
-    }
-
-    return image;
+    return [self profileImageForAddressWithSneakyTransaction:address];
 }
 
 - (NSComparisonResult)compareSignalAccount:(SignalAccount *)left withSignalAccount:(SignalAccount *)right

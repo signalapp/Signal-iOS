@@ -110,7 +110,7 @@ NS_ASSUME_NONNULL_BEGIN
         return image;
     }
 
-    return [OWSContactAvatarBuilder.contactsManager imageForAddress:self.address];
+    return [OWSContactAvatarBuilder.contactsManager imageForAddressWithSneakyTransaction:self.address];
 }
 
 - (id)cacheKey

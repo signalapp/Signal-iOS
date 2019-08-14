@@ -435,9 +435,14 @@ const CGFloat kIconViewLength = 24;
 
     // Show profile status and allow sharing your profile for threads that are not in the whitelist.
     // This goes away when phoneNumberPrivacy is enabled, since profile sharing become mandatory.
+    __block BOOL isThreadInProfileWhitelist;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        isThreadInProfileWhitelist =
+            [self.profileManager isThreadInProfileWhitelist:self.thread transaction:transaction];
+    }];
     if (SSKFeatureFlags.phoneNumberPrivacy || isNoteToSelf) {
         // Do nothing
-    } else if ([self.profileManager isThreadInProfileWhitelist:self.thread]) {
+    } else if (isThreadInProfileWhitelist) {
         [mainSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
@@ -1024,9 +1029,13 @@ const CGFloat kIconViewLength = 24;
     // TODO Message Request: In order to debug the profile is getting shared in the right moments,
     // display the thread whitelist state in settings. Eventually we can probably delete this.
 #if DEBUG
+    __block BOOL isThreadInProfileWhitelist;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        isThreadInProfileWhitelist =
+            [self.profileManager isThreadInProfileWhitelist:self.thread transaction:transaction];
+    }];
     NSString *hasSharedProfile =
-        [NSString stringWithFormat:@"Whitelisted: %@",
-                  [self.profileManager isThreadInProfileWhitelist:self.thread] ? @"Yes" : @"No"];
+        [NSString stringWithFormat:@"Whitelisted: %@", isThreadInProfileWhitelist ? @"Yes" : @"No"];
     addSubtitle([[NSAttributedString alloc] initWithString:hasSharedProfile]);
 #endif
 

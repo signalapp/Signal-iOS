@@ -107,23 +107,27 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return [[SignalServiceAddress alloc] initWithPhoneNumber:kLocalProfileUniqueId];
 }
 
-+ (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)address
-                                      databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
++ (OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)address
+                                 transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(address.isValid);
 
-    __block OWSUserProfile *userProfile;
-    [databaseQueue readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        userProfile = [self.userProfileFinder userProfileForAddress:address transaction:transaction];
-    }];
+    return [self.userProfileFinder userProfileForAddress:address transaction:transaction];
+}
+
++ (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)address
+                                        transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *_Nullable userProfile =
+        [self.userProfileFinder userProfileForAddress:address transaction:transaction];
 
     if (!userProfile) {
         userProfile = [[OWSUserProfile alloc] initWithAddress:address];
 
         if ([address.phoneNumber isEqualToString:kLocalProfileUniqueId]) {
-            [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
-                                databaseQueue:databaseQueue
-                                   completion:nil];
+            [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey] transaction:transaction completion:nil];
         }
     }
 
@@ -132,14 +136,9 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return userProfile;
 }
 
-+ (BOOL)localUserProfileExists:(SDSAnyDatabaseQueue *)databaseQueue
++ (BOOL)localUserProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    __block BOOL result = NO;
-    [databaseQueue readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [self.userProfileFinder userProfileForAddress:self.localProfileAddress transaction:transaction] != nil;
-    }];
-
-    return result;
+    return [self.userProfileFinder userProfileForAddress:self.localProfileAddress transaction:transaction] != nil;
 }
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
@@ -255,10 +254,10 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 // * We fire "did change" notifications.
 - (void)applyChanges:(void (^)(id))changeBlock
         functionName:(const char *)functionName
-       databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+         transaction:(SDSAnyWriteTransaction *)transaction
           completion:(nullable OWSUserProfileCompletion)completion
 {
-    OWSAssertDebug(databaseQueue);
+    OWSAssertDebug(transaction);
 
     // This should be set to true if:
     //
@@ -267,33 +266,32 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     // * Updating the profile updated the "latest" instance.
     __block BOOL didChange = NO;
 
-    [databaseQueue writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        OWSUserProfile *_Nullable latestInstance =
-            [OWSUserProfile anyFetchWithUniqueId:self.uniqueId transaction:transaction];
-        if (latestInstance != nil) {
-            [self anyUpdateWithTransaction:transaction
-                                     block:^(OWSUserProfile *profile) {
-                                         // self might be the latest instance, so take a "before" snapshot
-                                         // before any changes have been made.
-                                         NSDictionary *beforeSnapshot = [profile.dictionaryValue copy];
+    OWSUserProfile *_Nullable latestInstance =
+        [OWSUserProfile anyFetchWithUniqueId:self.uniqueId transaction:transaction];
+    if (latestInstance != nil) {
+        [self anyUpdateWithTransaction:transaction
+                                 block:^(OWSUserProfile *profile) {
+                                     // self might be the latest instance, so take a "before" snapshot
+                                     // before any changes have been made.
+                                     NSDictionary *beforeSnapshot = [profile.dictionaryValue copy];
 
-                                         changeBlock(profile);
+                                     changeBlock(profile);
 
-                                         NSDictionary *afterSnapshot = [profile.dictionaryValue copy];
+                                     NSDictionary *afterSnapshot = [profile.dictionaryValue copy];
 
-                                         if (![beforeSnapshot isEqual:afterSnapshot]) {
-                                             didChange = YES;
-                                         }
-                                     }];
-        } else {
-            changeBlock(self);
-            [self anyInsertWithTransaction:transaction];
-            didChange = YES;
-        }
-    }];
+                                     if (![beforeSnapshot isEqual:afterSnapshot]) {
+                                         didChange = YES;
+                                     }
+                                 }];
+    } else {
+        changeBlock(self);
+        [self anyInsertWithTransaction:transaction];
+        didChange = YES;
+    }
 
     if (completion) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), completion);
+        [transaction addCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                      block:completion];
     }
 
     if (!didChange) {
@@ -305,130 +303,132 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     BOOL isLocalUserProfile = [self.address.phoneNumber isEqualToString:kLocalProfileUniqueId];
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (isLocalUserProfile) {
-            // We populate an initial (empty) profile on launch of a new install, but until
-            // we have a registered account, syncing will fail (and there could not be any
-            // linked device to sync to at this point anyway).
-            if ([self.tsAccountManager isRegistered] && CurrentAppContext().isMainApp) {
-                [[self.syncManager syncLocalContact] retainUntilComplete];
-            }
+    [transaction addCompletionWithQueue:dispatch_get_main_queue()
+                                  block:^{
+                                      if (isLocalUserProfile) {
+                                          // We populate an initial (empty) profile on launch of a new install, but
+                                          // until we have a registered account, syncing will fail (and there could not
+                                          // be any linked device to sync to at this point anyway).
+                                          if ([self.tsAccountManager isRegistered] && CurrentAppContext().isMainApp) {
+                                              [[self.syncManager syncLocalContact] retainUntilComplete];
+                                          }
 
-            [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
-                                                                     object:nil
-                                                                   userInfo:nil];
-        } else {
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
-                                   object:nil
-                                 userInfo:@ {
-                                     kNSNotificationKey_ProfileAddress : self.address,
-                                 }];
-            [[NSNotificationCenter defaultCenter]
-                postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
-                                   object:nil
-                                 userInfo:@ {
-                                     kNSNotificationKey_ProfileAddress : self.address,
-                                 }];
-        }
-    });
+                                          [[NSNotificationCenter defaultCenter]
+                                              postNotificationNameAsync:kNSNotificationName_LocalProfileDidChange
+                                                                 object:nil
+                                                               userInfo:nil];
+                                      } else {
+                                          [[NSNotificationCenter defaultCenter]
+                                              postNotificationNameAsync:kNSNotificationName_OtherUsersProfileWillChange
+                                                                 object:nil
+                                                               userInfo:@{
+                                                                   kNSNotificationKey_ProfileAddress : self.address,
+                                                               }];
+                                          [[NSNotificationCenter defaultCenter]
+                                              postNotificationNameAsync:kNSNotificationName_OtherUsersProfileDidChange
+                                                                 object:nil
+                                                               userInfo:@{
+                                                                   kNSNotificationKey_ProfileAddress : self.address,
+                                                               }];
+                                      }
+                                  }];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                avatarFileName:(nullable NSString *)avatarFileName
-                databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                  transaction:(SDSAnyWriteTransaction *)transaction
                    completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-         applyChanges:^(OWSUserProfile *userProfile) {
-             [userProfile setProfileName:[profileName ows_stripped]];
-             // Always setAvatarUrlPath: before you setAvatarFileName: since
-             // setAvatarUrlPath: may clear the avatar filename.
-             [userProfile setAvatarUrlPath:avatarUrlPath];
-             [userProfile setAvatarFileName:avatarFileName];
-         }
-         functionName:__PRETTY_FUNCTION__
-        databaseQueue:databaseQueue
-           completion:completion];
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setProfileName:[profileName ows_stripped]];
+            // Always setAvatarUrlPath: before you setAvatarFileName: since
+            // setAvatarUrlPath: may clear the avatar filename.
+            [userProfile setAvatarUrlPath:avatarUrlPath];
+            [userProfile setAvatarFileName:avatarFileName];
+        }
+        functionName:__PRETTY_FUNCTION__
+         transaction:transaction
+          completion:completion];
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
-                databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                  transaction:(SDSAnyWriteTransaction *)transaction
                    completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-         applyChanges:^(OWSUserProfile *userProfile) {
-             [userProfile setProfileName:[profileName ows_stripped]];
-             [userProfile setAvatarUrlPath:avatarUrlPath];
-         }
-         functionName:__PRETTY_FUNCTION__
-        databaseQueue:databaseQueue
-           completion:completion];
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setProfileName:[profileName ows_stripped]];
+            [userProfile setAvatarUrlPath:avatarUrlPath];
+        }
+        functionName:__PRETTY_FUNCTION__
+         transaction:transaction
+          completion:completion];
 }
 
 - (void)updateWithAvatarUrlPath:(nullable NSString *)avatarUrlPath
                  avatarFileName:(nullable NSString *)avatarFileName
-                  databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                    transaction:(SDSAnyWriteTransaction *)transaction
                      completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-         applyChanges:^(OWSUserProfile *userProfile) {
-             // Always setAvatarUrlPath: before you setAvatarFileName: since
-             // setAvatarUrlPath: may clear the avatar filename.
-             [userProfile setAvatarUrlPath:avatarUrlPath];
-             [userProfile setAvatarFileName:avatarFileName];
-         }
-         functionName:__PRETTY_FUNCTION__
-        databaseQueue:databaseQueue
-           completion:completion];
+        applyChanges:^(OWSUserProfile *userProfile) {
+            // Always setAvatarUrlPath: before you setAvatarFileName: since
+            // setAvatarUrlPath: may clear the avatar filename.
+            [userProfile setAvatarUrlPath:avatarUrlPath];
+            [userProfile setAvatarFileName:avatarFileName];
+        }
+        functionName:__PRETTY_FUNCTION__
+         transaction:transaction
+          completion:completion];
 }
 
 - (void)updateWithAvatarFileName:(nullable NSString *)avatarFileName
-                   databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                     transaction:(SDSAnyWriteTransaction *)transaction
                       completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-         applyChanges:^(OWSUserProfile *userProfile) {
-             [userProfile setAvatarFileName:avatarFileName];
-         }
-         functionName:__PRETTY_FUNCTION__
-        databaseQueue:databaseQueue
-           completion:completion];
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setAvatarFileName:avatarFileName];
+        }
+        functionName:__PRETTY_FUNCTION__
+         transaction:transaction
+          completion:completion];
 }
 
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
-              databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion
 {
     [self
-         applyChanges:^(OWSUserProfile *userProfile) {
-             [userProfile setProfileKey:profileKey];
-             [userProfile setProfileName:nil];
-             // Always setAvatarUrlPath: before you setAvatarFileName: since
-             // setAvatarUrlPath: may clear the avatar filename.
-             [userProfile setAvatarUrlPath:nil];
-             [userProfile setAvatarFileName:nil];
-         }
-         functionName:__PRETTY_FUNCTION__
-        databaseQueue:databaseQueue
-           completion:completion];
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setProfileKey:profileKey];
+            [userProfile setProfileName:nil];
+            // Always setAvatarUrlPath: before you setAvatarFileName: since
+            // setAvatarUrlPath: may clear the avatar filename.
+            [userProfile setAvatarUrlPath:nil];
+            [userProfile setAvatarFileName:nil];
+        }
+        functionName:__PRETTY_FUNCTION__
+         transaction:transaction
+          completion:completion];
 }
 
 - (void)updateWithProfileKey:(OWSAES256Key *)profileKey
-               databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+                 transaction:(SDSAnyWriteTransaction *)transaction
                   completion:(nullable OWSUserProfileCompletion)completion
 {
     OWSAssertDebug(profileKey);
 
     [self
-         applyChanges:^(OWSUserProfile *userProfile) {
-             [userProfile setProfileKey:profileKey];
-         }
-         functionName:__PRETTY_FUNCTION__
-        databaseQueue:databaseQueue
-           completion:completion];
+        applyChanges:^(OWSUserProfile *userProfile) {
+            [userProfile setProfileKey:profileKey];
+        }
+        functionName:__PRETTY_FUNCTION__
+         transaction:transaction
+          completion:completion];
 }
 
 // This should only be used in verbose, developer-only logs.
@@ -510,22 +510,19 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     }
 }
 
-+ (NSSet<NSString *> *)allProfileAvatarFilePathsWithDatabaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
++ (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSString *profileAvatarsDirPath = self.profileAvatarsDirPath;
     NSMutableSet<NSString *> *profileAvatarFilePaths = [NSMutableSet new];
-
-    [databaseQueue readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [OWSUserProfile anyEnumerateWithTransaction:transaction
-                                              block:^(OWSUserProfile *userProfile, BOOL *stop) {
-                                                  if (!userProfile.avatarFileName) {
-                                                      return;
-                                                  }
-                                                  NSString *filePath = [profileAvatarsDirPath
-                                                      stringByAppendingPathComponent:userProfile.avatarFileName];
-                                                  [profileAvatarFilePaths addObject:filePath];
-                                              }];
-    }];
+    [OWSUserProfile anyEnumerateWithTransaction:transaction
+                                          block:^(OWSUserProfile *userProfile, BOOL *stop) {
+                                              if (!userProfile.avatarFileName) {
+                                                  return;
+                                              }
+                                              NSString *filePath = [profileAvatarsDirPath
+                                                  stringByAppendingPathComponent:userProfile.avatarFileName];
+                                              [profileAvatarFilePaths addObject:filePath];
+                                          }];
     return [profileAvatarFilePaths copy];
 }
 

@@ -51,11 +51,6 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
 #pragma mark - Dependencies
 
-+ (OWSProfileManager *)profileManager
-{
-    return [OWSProfileManager sharedManager];
-}
-
 + (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
@@ -302,7 +297,11 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     [allOnDiskFilePaths unionSet:allStickerFilePaths];
     [allOnDiskFilePaths addObjectsFromArray:tempFilePaths];
 
-    NSSet<NSString *> *profileAvatarFilePaths = [self.profileManager allProfileAvatarFilePaths];
+    __block NSSet<NSString *> *profileAvatarFilePaths;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSSet<NSString *> *profileAvatarFilePaths =
+            [OWSProfileManager allProfileAvatarFilePathsWithTransaction:transaction];
+    }];
 
     if (!self.isMainAppAndActive) {
         return nil;

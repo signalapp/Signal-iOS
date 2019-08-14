@@ -461,7 +461,9 @@ NS_ASSUME_NONNULL_BEGIN
             newContact.phoneNumbers = @[ labeledPhoneNumber ];
         }
 
-        newContact.givenName = [self.profileManager profileNameForAddress:address];
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            newContact.givenName = [self.profileManager profileNameForAddress:address transaction:transaction];
+        }];
 
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }

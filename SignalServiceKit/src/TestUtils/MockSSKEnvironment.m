@@ -25,6 +25,7 @@
 #import "SSKSignedPreKeyStore.h"
 #import "TSAccountManager.h"
 #import "TSSocketManager.h"
+#import <SignalServiceKit/ProfileManagerProtocol.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -49,6 +50,15 @@ NS_ASSUME_NONNULL_BEGIN
     MockSSKEnvironment *instance = [self new];
     [self setShared:instance];
     [instance configure];
+
+    // Pre-heat caches to avoid sneaky transactions during the migrations.
+    //
+    // NOTE: It's imperative that we only perform read
+    // transactions at this time.
+    // We need to initialize these two managers before the migrations run.
+    [instance.blockingManager warmCaches];
+    [instance.profileManager warmCaches];
+    [instance.tsAccountManager warmCaches];
 }
 
 - (instancetype)init

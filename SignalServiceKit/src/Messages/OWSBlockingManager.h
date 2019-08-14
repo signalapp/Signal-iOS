@@ -4,10 +4,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSKeyValueStore;
 @class SignalServiceAddress;
 @class TSGroupModel;
 @class TSThread;
-@class SDSKeyValueStore;
 
 extern NSString *const kNSNotificationName_BlockListDidChange;
 
@@ -47,6 +47,8 @@ extern NSString *const kNSNotificationName_BlockListDidChange;
 - (BOOL)isGroupIdBlocked:(NSData *)groupId;
 
 - (void)syncBlockList;
+
+- (void)warmCaches;
 
 @end
 

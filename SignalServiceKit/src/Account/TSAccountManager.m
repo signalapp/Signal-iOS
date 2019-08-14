@@ -138,6 +138,12 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 #pragma mark -
 
+- (void)warmCaches
+{
+    [self isRegistered];
+    [self isRegisteredAndReady];
+}
+
 - (void)setPhoneNumberAwaitingVerification:(NSString *_Nullable)phoneNumberAwaitingVerification
 {
     _phoneNumberAwaitingVerification = phoneNumberAwaitingVerification;
