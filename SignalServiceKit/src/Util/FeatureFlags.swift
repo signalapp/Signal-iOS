@@ -186,5 +186,5 @@ public class FeatureFlags: NSObject {
     public static let cameraFirstCaptureFlow = build.includes(.qa)
 
     @objc
-    public static let complainAboutSlowDBWrites = false
+    public static let complainAboutSlowDBWrites = true
 }

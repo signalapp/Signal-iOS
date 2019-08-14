@@ -86,11 +86,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [[self alloc] initWithData:data fileExtension:kOversizeTextAttachmentFileExtension];
 }
 
-+ (id<DataSource>)dataSourceWithSyncMessageData:(NSData *)data
-{
-    return [[self alloc] initWithData:data fileExtension:kSyncMessageFileExtension];
-}
-
 + (id<DataSource>)emptyDataSource
 {
     return [[self alloc] initWithData:[NSData new] fileExtension:@"bin"];
@@ -176,6 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
                                @synchronized(self) {
                                    if (SSKFeatureFlags.complainAboutSlowDBWrites) {
+                                       OWSAssertDebug(!NSThread.isMainThread);
                                        // This method is meant to be fast. If _cachedFileUrl is nil,
                                        // we'll still lazily generate it and this method will work,
                                        // but it will be slower than expected.
@@ -300,6 +296,25 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
     return [[self alloc] initWithFileUrl:fileUrl shouldDeleteOnDeallocation:shouldDeleteOnDeallocation];
+}
+
++ (_Nullable id<DataSource>)dataSourceWritingTempFileData:(NSData *)data
+                                            fileExtension:(NSString *)fileExtension
+                                                    error:(NSError **)error
+{
+    NSURL *fileUrl = [OWSFileSystem temporaryFileURLWithFileExtension:fileExtension];
+    [data writeToURL:fileUrl options:NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication error:error];
+
+    if (error != nil) {
+        return nil;
+    }
+
+    return [[self alloc] initWithFileUrl:fileUrl shouldDeleteOnDeallocation:YES];
+}
+
++ (_Nullable id<DataSource>)dataSourceWritingSyncMessageData:(NSData *)data error:(NSError **)error
+{
+    return [self dataSourceWritingTempFileData:data fileExtension:kSyncMessageFileExtension error:error];
 }
 
 #pragma mark - DataSource

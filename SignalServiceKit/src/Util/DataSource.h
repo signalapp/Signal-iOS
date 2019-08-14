@@ -49,8 +49,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (_Nullable id<DataSource>)dataSourceWithOversizeText:(NSString *_Nullable)text;
 
-+ (id<DataSource>)dataSourceWithSyncMessageData:(NSData *)data;
-
 + (id<DataSource>)emptyDataSource;
 
 @end
@@ -63,6 +61,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (_Nullable id<DataSource>)dataSourceWithFilePath:(NSString *)filePath
                      shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
+
++ (_Nullable id<DataSource>)dataSourceWritingTempFileData:(NSData *)data
+                                            fileExtension:(NSString *)fileExtension
+                                                    error:(NSError **)error;
+
++ (_Nullable id<DataSource>)dataSourceWritingSyncMessageData:(NSData *)data error:(NSError **)error;
 
 @end
 

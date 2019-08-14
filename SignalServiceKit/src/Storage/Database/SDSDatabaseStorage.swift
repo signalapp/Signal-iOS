@@ -461,6 +461,24 @@ public class SDSDatabaseStorage: SDSTransactable {
         return value
     }
 
+    public func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) throws -> T) throws -> T {
+        var value: T!
+        var thrown: Error?
+        read { (transaction) in
+            do {
+                value = try block(transaction)
+            } catch {
+                thrown = error
+            }
+        }
+
+        if let error = thrown {
+            throw error
+        }
+
+        return value
+    }
+
     public func writeReturningResult<T>(block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
         var value: T!
         write { (transaction) in
