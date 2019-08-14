@@ -955,7 +955,7 @@ NS_ASSUME_NONNULL_BEGIN
     __weak __typeof(self) weakSelf = self;
 
     [self.databaseStorage
-        asyncUIReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             self.searchResults = [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
                                                                                  transaction:transaction];
         }

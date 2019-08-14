@@ -713,28 +713,6 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
 // MARK: -
 
-@objc
-public extension SDSDatabaseStorage {
-
-    func asyncUIRead(block: @escaping (SDSAnyReadTransaction) -> Void) {
-        asyncUIRead(block: block, completion: { })
-    }
-
-    func asyncUIRead(block: @escaping (SDSAnyReadTransaction) -> Void, completion: @escaping () -> Void) {
-        asyncUIRead(block: block, completionQueue: .main, completion: completion)
-    }
-
-    func asyncUIRead(block: @escaping (SDSAnyReadTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
-        DispatchQueue.global().async {
-            self.uiRead(block: block)
-
-            completionQueue.async(execute: completion)
-        }
-    }
-}
-
-// MARK: -
-
 private struct GRDBStorage {
 
     let pool: DatabasePool
