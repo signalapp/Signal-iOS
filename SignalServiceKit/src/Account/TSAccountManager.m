@@ -140,7 +140,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)warmCaches
 {
-    [self isRegistered];
     [self isRegisteredAndReady];
 }
 

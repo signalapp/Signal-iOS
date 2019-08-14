@@ -106,9 +106,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     OWSSingletonAssert();
 
-    [AppReadiness runNowOrWhenAppWillBecomeReady:^{
-        [self ensureLocalProfileCached];
-    }];
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [self rotateLocalProfileKeyIfNecessary];
     }];
@@ -898,9 +895,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     // isAddressBlocked can open a sneaky transaction in
     // BlockingManager.ensureLazyInitialization(), but we avoid this
-    // by ensuring that ensureLazyInitializationOnLaunch is always
-    // called first.  I've added asserts within BlockingManager around
-    // this.
+    // by ensuring that BlockingManager.warmCaches() is always
+    // called first, immediately after registering the database views.
     if ([self.blockingManager isAddressBlocked:address]) {
         return NO;
     }
