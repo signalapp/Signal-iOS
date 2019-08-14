@@ -11,7 +11,6 @@
 #import "OWSFileSystem.h"
 #import "OWSMessageSender.h"
 #import "OWSOutgoingNullMessage.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSRecipientIdentity.h"
 #import "OWSVerificationStateChangeMessage.h"
 #import "OWSVerificationStateSyncMessage.h"
@@ -30,7 +29,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // Storing our own identity key
-NSString *const OWSPrimaryStorageIdentityKeyStoreIdentityKey = @"TSStorageManagerIdentityKeyStoreIdentityKey";
+NSString *const kIdentityKeyStore_IdentityKey = @"TSStorageManagerIdentityKeyStoreIdentityKey";
 
 // Don't trust an identity for sending to unless they've been around for at least this long
 const NSTimeInterval kIdentityKeyStoreNonBlockingSecondsThreshold = 5.0;
@@ -128,7 +127,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     [self.databaseQueue writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.ownIdentityKeyValueStore setObject:[Curve25519 generateKeyPair]
-                                             key:OWSPrimaryStorageIdentityKeyStoreIdentityKey
+                                             key:kIdentityKeyStore_IdentityKey
                                      transaction:transaction];
     }];
 }
@@ -185,7 +184,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 {
     OWSAssertDebug(transaction);
     id _Nullable object =
-        [self.ownIdentityKeyValueStore getObject:OWSPrimaryStorageIdentityKeyStoreIdentityKey transaction:transaction];
+        [self.ownIdentityKeyValueStore getObject:kIdentityKeyStore_IdentityKey transaction:transaction];
     if ([object isKindOfClass:[ECKeyPair class]]) {
         return (ECKeyPair *)object;
     } else {
@@ -951,7 +950,7 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
 
     NSMutableArray<NSString *> *identityKeysToRemove = [NSMutableArray new];
     for (NSString *key in [self.ownIdentityKeyValueStore allKeysWithTransaction:transaction]) {
-        if ([key isEqualToString:OWSPrimaryStorageIdentityKeyStoreIdentityKey]) {
+        if ([key isEqualToString:kIdentityKeyStore_IdentityKey]) {
             // Don't delete our own key.
             return;
         }

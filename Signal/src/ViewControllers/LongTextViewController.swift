@@ -21,10 +21,6 @@ public class LongTextViewController: OWSViewController {
         return SDSDatabaseStorage.shared
     }
 
-    var uiDatabaseConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().uiDatabaseConnection
-    }
-
     // MARK: - Properties
 
     @objc
@@ -78,8 +74,8 @@ public class LongTextViewController: OWSViewController {
         let uniqueId = self.viewItem.interaction.uniqueId
 
         do {
-            try uiDatabaseConnection.read { transaction in
-                guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead) != nil else {
+            try databaseStorage.uiReadThrows { transaction in
+                guard TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil else {
                     Logger.error("Message was deleted")
                     throw LongTextViewError.messageWasDeleted
                 }
