@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ConversationStyle;
 @class OWSLinkPreviewDraft;
 @class OWSQuotedReplyModel;
+@class PHAsset;
 @class PhotoCapture;
 @class SignalAttachment;
 @class StickerInfo;
@@ -49,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)locationButtonPressed;
 
-- (void)didSelectRecentPhoto:(SignalAttachment *)attachment;
+- (void)didSelectRecentPhotoWithAsset:(PHAsset *)asset attachment:(SignalAttachment *)attachment;
 
 - (void)showUnblockConversationUI:(nullable BlockActionCompletionBlock)completionBlock;
 

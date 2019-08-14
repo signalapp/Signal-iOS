@@ -3,10 +3,12 @@
 //
 
 import Foundation
+import Photos
+import PromiseKit
 
 protocol RecentPhotosDelegate: class {
     var isMediaLibraryAccessGranted: Bool { get }
-    func didSelectRecentPhoto(_ attachment: SignalAttachment)
+    func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment)
 }
 
 class RecentPhotosCollectionView: UICollectionView {
@@ -111,11 +113,12 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate {
         guard fetchingAttachmentIndex == nil else { return }
         fetchingAttachmentIndex = indexPath
 
+        let asset = collectionContents.asset(at: indexPath.item)
         collectionContents.outgoingAttachment(
-            for: collectionContents.asset(at: indexPath.item),
+            for: asset,
             imageQuality: .medium
         ).done { [weak self] attachment in
-            self?.recentPhotosDelegate?.didSelectRecentPhoto(attachment)
+            self?.recentPhotosDelegate?.didSelectRecentPhoto(asset: asset, attachment: attachment)
         }.ensure { [weak self] in
             self?.fetchingAttachmentIndex = nil
         }.catch { _ in

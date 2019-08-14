@@ -122,6 +122,24 @@ class SendMediaNavigationController: OWSNavigationController {
         return navController
     }
 
+    @objc(showingApprovalWithPickedLibraryMediaAsset:attachment:delegate:)
+    public class func showingApprovalWithPickedLibraryMedia(asset: PHAsset,
+                                                            attachment: SignalAttachment,
+                                                            delegate: SendMediaNavDelegate) -> SendMediaNavigationController {
+        let navController = SendMediaNavigationController()
+        navController.sendMediaNavDelegate = delegate
+
+        let approvalItem = AttachmentApprovalItem(attachment: attachment)
+        let libraryMedia = MediaLibraryAttachment(asset: asset,
+                                                  attachmentApprovalItemPromise: .value(approvalItem))
+        navController.attachmentDraftCollection.append(.picker(attachment: libraryMedia))
+
+        navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
+        navController.pushApprovalViewController(attachmentApprovalItems: [approvalItem], animated: false)
+
+        return navController
+    }
+
     private(set) var isPickingAsDocument = false
     @objc
     public class func asMediaDocumentPicker() -> SendMediaNavigationController {
@@ -297,7 +315,7 @@ class SendMediaNavigationController: OWSNavigationController {
         return vc
     }()
 
-    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem]) {
+    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem], animated: Bool) {
         guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
             owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
             return
@@ -309,7 +327,7 @@ class SendMediaNavigationController: OWSNavigationController {
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
-        pushViewController(approvalViewController, animated: true)
+        pushViewController(approvalViewController, animated: animated)
     }
 
     private func didRequestExit(dontAbandonText: String) {
@@ -424,7 +442,8 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         if isInBatchSelectMode {
             updateViewState(topViewController: photoCaptureViewController)
         } else {
-            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem])
+            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem],
+                                       animated: true)
         }
     }
 
@@ -470,7 +489,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
             when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises).map { attachmentApprovalItems in
                 Logger.debug("built all attachments")
                 modal.dismiss {
-                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems)
+                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems, animated: true)
                 }
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")

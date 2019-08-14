@@ -3261,13 +3261,18 @@ typedef enum : NSUInteger {
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)didSelectRecentPhoto:(SignalAttachment *)attachment
+- (void)didSelectRecentPhotoWithAsset:(PHAsset *)asset attachment:(SignalAttachment *)attachment
 {
     OWSAssertIsOnMainThread();
 
     [self dismissKeyBoard];
 
-    [self showApprovalDialogForAttachment:attachment];
+    SendMediaNavigationController *pickerModal =
+        [SendMediaNavigationController showingApprovalWithPickedLibraryMediaAsset:asset
+                                                                       attachment:attachment
+                                                                         delegate:self];
+
+    [self presentViewController:pickerModal animated:true completion:nil];
 }
 
 - (nullable NSIndexPath *)lastVisibleIndexPath
