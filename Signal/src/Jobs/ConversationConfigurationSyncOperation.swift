@@ -74,21 +74,19 @@ class ConversationConfigurationSyncOperation: OWSOperation {
             return
         }
         let syncMessage = OWSSyncGroupsMessage(thread: thread)
-        var dataSource: DataSource?
-        self.databaseStorage.read { transaction in
-            guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
-                owsFailDebug("could not serialize sync groups data")
-                return
+        do {
+            let attachmentDataSource: DataSource = try self.databaseStorage.readReturningResult { transaction in
+                guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
+                    throw OWSAssertionError("could not serialize sync groups data")
+                }
+                return try DataSourcePath.dataSourceWritingSyncMessageData(messageData)
             }
-            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
-        }
 
-        guard let attachmentDataSource = dataSource else {
-            self.reportAssertionError(description: "unable to build attachment data source")
+            self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
+        } catch {
+            self.reportError(withUndefinedRetry: error)
             return
         }
-
-        self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
     }
 
     private func sendConfiguration(attachmentDataSource: DataSource, syncMessage: OWSOutgoingSyncMessage) {
