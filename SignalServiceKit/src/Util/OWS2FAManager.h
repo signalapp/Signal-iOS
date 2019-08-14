@@ -6,6 +6,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const NSNotificationName_2FAStateDidChange;
 
+extern const NSUInteger kMin2FAPinLength;
+extern const NSUInteger kMax2FAv1PinLength;
+extern const NSUInteger kLegacyTruncated2FAv1PinLength;
+
 typedef void (^OWS2FASuccess)(void);
 typedef void (^OWS2FAFailure)(NSError *error);
 
@@ -31,6 +35,8 @@ typedef NS_ENUM(NSUInteger, OWS2FAMode) {
 
 - (BOOL)is2FAEnabled;
 - (BOOL)isDueForReminder;
+- (BOOL)needsLegacyPinMigration;
+- (void)markLegacyPinAsMigrated;
 - (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result;
 
 // Request with service

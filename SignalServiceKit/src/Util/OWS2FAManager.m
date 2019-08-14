@@ -20,9 +20,14 @@ NSString *const kOWS2FAManager_Collection = @"kOWS2FAManager_Collection";
 NSString *const kOWS2FAManager_LastSuccessfulReminderDateKey = @"kOWS2FAManager_LastSuccessfulReminderDateKey";
 NSString *const kOWS2FAManager_PinCode = @"kOWS2FAManager_PinCode";
 NSString *const kOWS2FAManager_RepetitionInterval = @"kOWS2FAManager_RepetitionInterval";
+NSString *const kOWS2FAManager_HasMigratedTruncatedPinKey = @"kOWS2FAManager_HasMigratedTruncatedPinKey";
 
 const NSUInteger kHourSecs = 60 * 60;
 const NSUInteger kDaySecs = kHourSecs * 24;
+
+const NSUInteger kMin2FAPinLength = 4;
+const NSUInteger kMax2FAv1PinLength = 20; // v2 doesn't have a max length
+const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 @interface OWS2FAManager ()
 
@@ -117,6 +122,9 @@ const NSUInteger kDaySecs = kHourSecs * 24;
         // Remove any old pin when we're migrating
         [self.dbConnection removeObjectForKey:kOWS2FAManager_PinCode inCollection:kOWS2FAManager_Collection];
     }
+
+    // Since we just created this pin, we know it doesn't need migration. Mark it as such.
+    [self markLegacyPinAsMigrated];
 
     // Schedule next reminder relative to now
     self.lastSuccessfulReminderDate = [NSDate new];
@@ -262,7 +270,46 @@ const NSUInteger kDaySecs = kHourSecs * 24;
         return NO;
     }
 
+    // If we have a legacy pin that might be truncated,
+    // show the reminder right away so we can clean it up.
+    if (self.needsLegacyPinMigration) {
+        return YES;
+    }
+
     return self.nextReminderDate.timeIntervalSinceNow < 0;
+}
+
+- (BOOL)needsLegacyPinMigration
+{
+    BOOL hasMigratedTruncatedPin = [self.dbConnection boolForKey:kOWS2FAManager_HasMigratedTruncatedPinKey
+                                                    inCollection:kOWS2FAManager_Collection
+                                                    defaultValue:NO];
+
+    if (hasMigratedTruncatedPin) {
+        return NO;
+    }
+
+    // Older versions of the app truncated newly created pins to 16 characters. We no longer do that.
+    // If we detect that the user's pin is the truncated length and it was created before we stopped
+    // truncating pins, we'll need to ensure we migrate to the user's entire pin next time we prompt
+    // them for it.
+    if (self.mode == OWS2FAMode_V1 && self.pinCode.length >= kLegacyTruncated2FAv1PinLength) {
+        return YES;
+    }
+
+    // We don't need to migrate this pin, either because it's v2 or short enough that
+    // we never truncated it. Mark it as complete so we don't need to check again.
+
+    [self markLegacyPinAsMigrated];
+
+    return NO;
+}
+
+- (void)markLegacyPinAsMigrated
+{
+    [self.dbConnection setBool:YES
+                        forKey:kOWS2FAManager_HasMigratedTruncatedPinKey
+                  inCollection:kOWS2FAManager_Collection];
 }
 
 - (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result
@@ -272,7 +319,7 @@ const NSUInteger kDaySecs = kHourSecs * 24;
         [OWSKeyBackupService verifyPin:pin resultHandler:result];
         break;
     case OWS2FAMode_V1:
-        result(self.pinCode == pin);
+        result([self.pinCode isEqualToString:pin]);
         break;
     case OWS2FAMode_Disabled:
         OWSFailDebug(@"unexpectedly attempting to verify pin when 2fa is disabled");
