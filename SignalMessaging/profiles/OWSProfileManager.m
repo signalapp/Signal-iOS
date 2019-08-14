@@ -969,7 +969,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     // isGroupIdBlocked can open a sneaky transaction in
     // BlockingManager.ensureLazyInitialization(), but we avoid this
-    // by ensuring that ensureLazyInitializationOnLaunch is always
+    // by ensuring that BlockingManager.warmCaches() is always
     // called first.  I've added asserts within BlockingManager around
     // this.
     if ([self.blockingManager isGroupIdBlocked:groupId]) {

@@ -120,11 +120,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSError *error;
     NSArray<NSString *> *fileNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirPath error:&error];
     if (error) {
-        if ([error.domain isEqualToString:NSPOSIXErrorDomain] && error.code == ENOENT) {
-            // Ignore "No such file or directory" races.
-        } else {
-            OWSFailDebug(@"contentsOfDirectoryAtPath error: %@", error);
-        }
+        OWSFailDebug(@"contentsOfDirectoryAtPath error: %@", error);
         return [NSSet new];
     }
     for (NSString *fileName in fileNames) {
