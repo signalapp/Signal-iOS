@@ -18,6 +18,18 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         return TSAccountManager.sharedInstance()
     }
 
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    private var profileManager: OWSProfileManager {
+        return OWSProfileManager.shared()
+    }
+
+    private var syncManager: OWSSyncManagerProtocol {
+        return SSKEnvironment.shared.syncManager
+    }
+
     // MARK: -
 
     enum ShareViewControllerError: Error {
@@ -254,9 +266,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         Logger.debug("")
 
-        // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
-        OWSProfileManager.shared().ensureLocalProfileCached()
-
         // Note that this does much more than set a flag;
         // it will also run all deferred blocks.
         AppReadiness.setAppIsReady()
@@ -278,8 +287,6 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
         // We don't need to use OWSMessageReceiver in the SAE.
         // We don't need to use OWSBatchMessageProcessor in the SAE.
 
-        OWSProfileManager.shared().ensureLocalProfileCached()
-
         // We don't need to use OWSOrphanDataCleaner in the SAE.
 
         // We don't need to fetch the local profile in the SAE
@@ -300,7 +307,8 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             // We don't need to use OWSDisappearingMessagesJob in the SAE.
 
-            OWSProfileManager.shared().ensureLocalProfileCached()
+            // TODO: This is probably superfluous and can be removed.
+            syncManager.syncLocalContact().retainUntilComplete()
         }
     }
 
@@ -335,14 +343,19 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
         if !tsAccountManager.isRegistered {
             showNotRegisteredView()
-        } else if !OWSProfileManager.shared().localProfileExists() {
-            // This is a rare edge case, but we want to ensure that the user
-            // is has already saved their local profile key in the main app.
-            showNotReadyView()
         } else {
-            DispatchQueue.main.async { [weak self] in
-                guard let strongSelf = self else { return }
-                strongSelf.buildAttachmentsAndPresentConversationPicker()
+            let localProfileExists = databaseStorage.readReturningResult { transaction in
+                return self.profileManager.localProfileExists(with: transaction)
+            }
+            if !localProfileExists {
+                // This is a rare edge case, but we want to ensure that the user
+                // has already saved their local profile key in the main app.
+                showNotReadyView()
+            } else {
+                DispatchQueue.main.async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.buildAttachmentsAndPresentConversationPicker()
+                }
             }
         }
 

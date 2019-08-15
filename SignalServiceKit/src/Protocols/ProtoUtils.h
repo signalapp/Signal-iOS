@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyReadTransaction;
 @class SSKProtoCallMessageBuilder;
 @class SSKProtoDataMessageBuilder;
 @class SignalServiceAddress;
@@ -15,13 +16,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
                               address:(SignalServiceAddress *_Nullable)address
-                   dataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder;
+                   dataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder
+                          transaction:(SDSAnyReadTransaction *)transaction;
 
 + (void)addLocalProfileKeyToDataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder;
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
                               address:(SignalServiceAddress *)address
-                   callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder;
+                   callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder
+                          transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

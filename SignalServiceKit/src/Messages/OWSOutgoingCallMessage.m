@@ -13,6 +13,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingCallMessage
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 - (instancetype)initWithThread:(TSThread *)thread
 {
     // MJK TODO - safe to remove senderTimestamp
@@ -151,9 +160,13 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setBusy:self.busyMessage];
     }
 
-    [ProtoUtils addLocalProfileKeyIfNecessary:self.threadWithSneakyTransaction
-                                      address:address
-                           callMessageBuilder:builder];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        TSThread *thread = [self threadWithTransaction:transaction];
+        [ProtoUtils addLocalProfileKeyIfNecessary:thread
+                                          address:address
+                               callMessageBuilder:builder
+                                      transaction:transaction];
+    }];
 
     NSError *error;
     SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];

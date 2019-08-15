@@ -26,19 +26,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-+ (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread address:(SignalServiceAddress *_Nullable)address
++ (BOOL)shouldMessageHaveLocalProfileKey:(TSThread *)thread
+                                 address:(SignalServiceAddress *_Nullable)address
+                             transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
+    OWSAssertDebug(transaction);
 
     // For 1:1 threads, we want to include the profile key IFF the
     // contact is in the whitelist.
     //
     // For Group threads, we want to include the profile key IFF the
     // recipient OR the group is in the whitelist.
-    if (address.isValid &&
-        [self.profileManager isUserInProfileWhitelist:address]) {
+    if (address.isValid && [self.profileManager isUserInProfileWhitelist:address transaction:transaction]) {
         return YES;
-    } else if ([self.profileManager isThreadInProfileWhitelist:thread]) {
+    } else if ([self.profileManager isThreadInProfileWhitelist:thread transaction:transaction]) {
         return YES;
     }
 
@@ -46,13 +48,15 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                          address:(SignalServiceAddress *_Nullable)address
+                              address:(SignalServiceAddress *_Nullable)address
                    dataMessageBuilder:(SSKProtoDataMessageBuilder *)dataMessageBuilder
+                          transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(dataMessageBuilder);
+    OWSAssertDebug(transaction);
 
-    if ([self shouldMessageHaveLocalProfileKey:thread address:address]) {
+    if ([self shouldMessageHaveLocalProfileKey:thread address:address transaction:transaction]) {
         [dataMessageBuilder setProfileKey:self.localProfileKey.keyData];
 
         if (address.isValid) {
@@ -74,14 +78,16 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (void)addLocalProfileKeyIfNecessary:(TSThread *)thread
-                          address:(SignalServiceAddress *)address
+                              address:(SignalServiceAddress *)address
                    callMessageBuilder:(SSKProtoCallMessageBuilder *)callMessageBuilder
+                          transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(callMessageBuilder);
+    OWSAssertDebug(transaction);
 
-    if ([self shouldMessageHaveLocalProfileKey:thread address:address]) {
+    if ([self shouldMessageHaveLocalProfileKey:thread address:address transaction:transaction]) {
         [callMessageBuilder setProfileKey:self.localProfileKey.keyData];
 
         // Once we've shared our profile key with a user (perhaps due to being

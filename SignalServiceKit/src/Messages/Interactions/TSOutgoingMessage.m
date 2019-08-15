@@ -1314,9 +1314,13 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         return nil;
     }
 
-    [ProtoUtils addLocalProfileKeyIfNecessary:self.threadWithSneakyTransaction
-                                      address:address
-                           dataMessageBuilder:builder];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        TSThread *thread = [self threadWithTransaction:transaction];
+        [ProtoUtils addLocalProfileKeyIfNecessary:thread
+                                          address:address
+                               dataMessageBuilder:builder
+                                      transaction:transaction];
+    }];
 
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];

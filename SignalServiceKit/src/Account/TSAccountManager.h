@@ -38,6 +38,8 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 
 + (instancetype)sharedInstance;
 
+- (void)warmCaches;
+
 - (OWSRegistrationState)registrationState;
 
 /**

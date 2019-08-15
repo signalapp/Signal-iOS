@@ -320,9 +320,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSArray<Contact *> *)nonSignalContacts
 {
     OWSAssertIsOnMainThread();
+
     if (!_nonSignalContacts) {
         NSMutableSet<Contact *> *nonSignalContacts = [NSMutableSet new];
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             for (Contact *contact in self.contactsManager.allContactsMap.allValues) {
                 NSArray<SignalRecipient *> *signalRecipients = [contact signalRecipientsWithTransaction:transaction];
                 if (signalRecipients.count < 1) {
@@ -388,6 +389,8 @@ NS_ASSUME_NONNULL_BEGIN
                                editImmediately:(BOOL)shouldEditImmediately
                         addToExistingCnContact:(CNContact *_Nullable)existingContact
 {
+    OWSAssertIsOnMainThread();
+
     SignalAccount *signalAccount = [self fetchSignalAccountForAddress:address];
 
     if (!self.contactsManager.supportsContactEditing) {
@@ -461,7 +464,9 @@ NS_ASSUME_NONNULL_BEGIN
             newContact.phoneNumbers = @[ labeledPhoneNumber ];
         }
 
-        newContact.givenName = [self.profileManager profileNameForAddress:address];
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            newContact.givenName = [self.profileManager profileNameForAddress:address transaction:transaction];
+        }];
 
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }

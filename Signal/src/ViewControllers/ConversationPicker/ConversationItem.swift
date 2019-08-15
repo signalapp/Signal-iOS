@@ -57,6 +57,15 @@ extension RecentConversationItem: ConversationItem {
 }
 
 struct ContactConversationItem {
+
+    // MARK: - Dependencies
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     let address: SignalServiceAddress
     let isBlocked: Bool
     let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
@@ -83,7 +92,10 @@ extension ContactConversationItem: ConversationItem {
 
     var image: UIImage? {
         // TODO initials, etc.
-        return OWSProfileManager.shared().profileAvatar(for: address)
+        return databaseStorage.readReturningResult { transaction in
+            return OWSProfileManager.shared().profileAvatar(for: self.address,
+                                                            transaction: transaction)
+        }
     }
 }
 
