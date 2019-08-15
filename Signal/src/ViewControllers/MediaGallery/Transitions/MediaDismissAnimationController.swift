@@ -21,7 +21,7 @@ class MediaDismissAnimationController: NSObject {
 
 extension MediaDismissAnimationController: UIViewControllerAnimatedTransitioning {
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.3
+        return kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.15
     }
 
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
