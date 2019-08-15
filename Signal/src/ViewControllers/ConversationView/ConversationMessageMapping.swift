@@ -10,6 +10,7 @@ public class ConversationMessageMapping: NSObject {
     // The desired number of the items to load BEFORE the pivot (see below).
     @objc
     public private(set) var desiredLength: UInt
+    private let isNoteToSelf: Bool
 
     private let interactionFinder: InteractionFinder
 
@@ -77,9 +78,10 @@ public class ConversationMessageMapping: NSObject {
     public var canLoadMore = false
 
     @objc
-    public required init(threadUniqueId: String, desiredLength: UInt) {
+    public required init(threadUniqueId: String, desiredLength: UInt, isNoteToSelf: Bool) {
         self.interactionFinder = InteractionFinder(threadUniqueId: threadUniqueId)
         self.desiredLength = desiredLength
+        self.isNoteToSelf = isNoteToSelf
     }
 
     @objc
@@ -150,7 +152,7 @@ public class ConversationMessageMapping: NSObject {
             }
         }
 
-        if canLoadMore {
+        if canLoadMore || isNoteToSelf {
             // The items need to be reversed, since we load them in reverse order.
             self.itemIds = Array(newItemIds.reversed())
         } else {
