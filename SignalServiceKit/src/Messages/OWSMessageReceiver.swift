@@ -9,7 +9,7 @@ import GRDBCipher
 public extension OWSMessageDecryptJobFinder {
 
     @objc
-    func nextJob(transaction: SDSAnyReadTransaction) -> OWSMessageDecryptJob? {
+    public func nextJob(transaction: SDSAnyReadTransaction) -> OWSMessageDecryptJob? {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return nextJob(ydbTransaction: ydbTransaction)
@@ -34,7 +34,9 @@ public extension OWSMessageDecryptJobFinder {
     }
 
     private func nextJob(grdbTransaction transaction: GRDBReadTransaction) -> OWSMessageDecryptJob? {
-        owsFailDebug("We should be using SSKMessageDecryptJobQueue instead of this method.")
+        if !CurrentAppContext().isRunningTests {
+            owsFailDebug("We should be using SSKMessageDecryptJobQueue instead of this method.")
+        }
 
         let sql = """
         SELECT *

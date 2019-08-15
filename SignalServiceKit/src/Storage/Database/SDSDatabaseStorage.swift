@@ -747,7 +747,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             TSRecipientReadReceipt.table,
             OWSLinkedDeviceReadReceipt.table,
             OWSDevice.table,
-            OWSContactQuery.table
+            OWSContactQuery.table,
+            OWSMessageDecryptJob.table
         ]
     }
 
