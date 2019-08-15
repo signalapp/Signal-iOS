@@ -485,8 +485,11 @@
 /* Table section header for group listing when composing a new message */
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Groups";
 
-/* Table section header for invite listing when composing a new message */
-"COMPOSE_MESSAGE_INVITE_SECTION_TITLE" = "Invite";
+/* Table section header for phone number search when composing a new message */
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Phone number search";
+
+/* Table section header for username search when composing a new message */
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Username search";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
@@ -1577,6 +1580,12 @@
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Find Contacts by Phone Number";
 
+/* A string prompting the user to send a new mesaage to a user */
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "New message to:";
+
+/* A string asking the user if they'd like to invite a number to signal via SMS. */
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
+
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Note to Self";
 
@@ -2162,7 +2171,10 @@
 /* Label for button on lock screen that lets users unlock Signal. */
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Unlock Signal";
 
-/* No comment provided by engineer. */
+/* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Name, username, or number";
+
+/* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Search by name or number";
 
 /* placeholder text in an empty search field */
@@ -2200,9 +2212,6 @@
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
-
-/* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
-"SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invite via SMS: %@";
 
 /* alert title when user attempts to leave the send media flow when they have an in-progress album */
 "SEND_MEDIA_ABANDON_TITLE" = "Discard Media?";
@@ -2791,6 +2800,15 @@
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
+
+/* A message indicating that username lookup failed. */
+"USERNAME_LOOKUP_ERROR" = "An error occured while looking up the username. Please try again later.";
+
+/* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
+"USERNAME_NOT_FOUND_FORMAT" = "%@ is not a Signal user. Make sure you’ve entered the complete username.";
+
+/* A message indicating that the given username was not registered with signal. */
+"USERNAME_NOT_FOUND_TITLE" = "User Not Found";
 
 /* The placeholder for the username text entry in the username view. */
 "USERNAME_PLACEHOLDER" = "Enter a username";

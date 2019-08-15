@@ -18,6 +18,7 @@
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/PhoneNumberUtil.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -124,7 +125,13 @@ NS_ASSUME_NONNULL_BEGIN
     UISearchBar *searchBar = [OWSSearchBar new];
     _searchBar = searchBar;
     searchBar.delegate = self;
-    searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT", @"");
+    if (SSKFeatureFlags.usernames) {
+        searchBar.placeholder = NSLocalizedString(@"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
+            @"Placeholder text indicating the user can search for contacts by name, username, or phone number.");
+    } else {
+        searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
+            @"Placeholder text indicating the user can search for contacts by name or phone number.");
+    }
     [searchBar sizeToFit];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
     searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");
@@ -190,15 +197,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
         [refreshControl endRefreshing];
     }];
-}
-
-- (void)showSearchBar:(BOOL)isVisible
-{
-    if (isVisible) {
-        self.tableViewController.tableView.tableHeaderView = self.searchBar;
-    } else {
-        self.tableViewController.tableView.tableHeaderView = nil;
-    }
 }
 
 - (UIView *)createNoSignalContactsView
@@ -289,6 +287,8 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
 
     [self.contactsViewHelper warmNonSignalContactsCacheAsync];
+
+    self.tableViewController.tableView.tableHeaderView = self.searchBar;
 
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 }
@@ -547,60 +547,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     ContactsViewHelper *helper = self.contactsViewHelper;
 
-    OWSTableSection *phoneNumbersSection = [OWSTableSection new];
-    // FIXME we should make sure "invite via SMS" cells appear *below* any matching signal-account cells.
-    //
-    // If the search string looks like a phone number, show either "new conversation..." cells and/or
-    // "invite via SMS..." cells.
-    NSArray<NSString *> *searchPhoneNumbers = [self parsePossibleSearchPhoneNumbers];
-    for (NSString *phoneNumber in searchPhoneNumbers) {
-        OWSAssertDebug(phoneNumber.length > 0);
-
-        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
-
-        if ([self.nonContactAccountSet containsObject:address]) {
-            [phoneNumbersSection
-                addItem:[OWSTableItem
-                            itemWithCustomCellBlock:^{
-                                ContactTableViewCell *cell = [ContactTableViewCell new];
-                                BOOL isBlocked = [helper isSignalServiceAddressBlocked:address];
-                                if (isBlocked) {
-                                    cell.accessoryMessage = MessageStrings.conversationIsBlocked;
-                                }
-                                [cell configureWithRecipientAddress:address];
-
-                                NSString *cellName =
-                                    [NSString stringWithFormat:@"non_signal_contact.%@", address.stringForDisplay];
-                                cell.accessibilityIdentifier
-                                    = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewContactThreadViewController, cellName);
-
-                                return cell;
-                            }
-                            customRowHeight:UITableViewAutomaticDimension
-                            actionBlock:^{
-                                [weakSelf newConversationWithAddress:address];
-                            }]];
-        } else {
-            NSString *text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
-                                                            @"Text for button to send a Signal invite via SMS. %@ is "
-                                                            @"placeholder for the recipient's phone number."),
-                                       phoneNumber];
-            [phoneNumbersSection
-                addItem:[OWSTableItem disclosureItemWithText:text
-                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"invite_via_sms")
-                                             customRowHeight:UITableViewAutomaticDimension
-                                                 actionBlock:^{
-                                                     [weakSelf sendTextToPhoneNumber:phoneNumber];
-                                                 }]];
-        }
-    }
-    if (searchPhoneNumbers.count > 0) {
-        [sections addObject:phoneNumbersSection];
-    }
-
     // Contacts, filtered with the search text.
     NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccounts];
     BOOL hasSearchResults = NO;
+
+    NSMutableSet<NSString *> *matchedAccountPhoneNumbers = [NSMutableSet new];
+    NSMutableSet<NSString *> *matchedAccountUsernames = [NSMutableSet new];
 
     OWSTableSection *contactsSection = [OWSTableSection new];
     contactsSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
@@ -609,12 +561,15 @@ NS_ASSUME_NONNULL_BEGIN
         hasSearchResults = YES;
 
         NSString *_Nullable phoneNumber = signalAccount.recipientAddress.phoneNumber;
-
-        if (phoneNumber && [searchPhoneNumbers containsObject:phoneNumber]) {
-            // Don't show a contact if they already appear in the "search phone numbers"
-            // results.
-            continue;
+        if (phoneNumber) {
+            [matchedAccountPhoneNumbers addObject:phoneNumber];
         }
+
+        NSString *_Nullable username = [helper.profileManager usernameForAddress:signalAccount.recipientAddress];
+        if (username) {
+            [matchedAccountUsernames addObject:username];
+        }
+
         [contactsSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
@@ -673,38 +628,82 @@ NS_ASSUME_NONNULL_BEGIN
         [sections addObject:groupSection];
     }
 
-    // Invitation offers for non-signal contacts
-    OWSTableSection *inviteeSection = [OWSTableSection new];
-    inviteeSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_INVITE_SECTION_TITLE",
-        @"Table section header for invite listing when composing a new message");
-    NSArray<Contact *> *invitees = [helper nonSignalContactsMatchingSearchString:[self.searchBar text]];
-    for (Contact *contact in invitees) {
-        hasSearchResults = YES;
+    OWSTableSection *phoneNumbersSection = [OWSTableSection new];
+    phoneNumbersSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE",
+        @"Table section header for phone number search when composing a new message");
 
-        OWSAssertDebug(contact.parsedPhoneNumbers.count > 0);
-        // TODO: Should we invite all of their phone numbers?
-        PhoneNumber *phoneNumber = contact.parsedPhoneNumbers[0];
-        NSString *displayName = contact.fullName;
-        if (displayName.length < 1) {
-            displayName = phoneNumber.toE164;
+    NSArray<NSString *> *searchPhoneNumbers = [self parsePossibleSearchPhoneNumbers];
+    for (NSString *phoneNumber in searchPhoneNumbers) {
+        OWSAssertDebug(phoneNumber.length > 0);
+
+        // We're already showing this user, skip it.
+        if ([matchedAccountPhoneNumbers containsObject:phoneNumber]) {
+            continue;
         }
 
-        NSString *text = [NSString stringWithFormat:NSLocalizedString(@"SEND_INVITE_VIA_SMS_BUTTON_FORMAT",
-                                                        @"Text for button to send a Signal invite via SMS. %@ is "
-                                                        @"placeholder for the recipient's phone number."),
-                                   displayName];
-        NSString *accessibilityIdentifier = [NSString stringWithFormat:@"invite_via_sms.%@", phoneNumber.toE164];
-        [inviteeSection addItem:[OWSTableItem disclosureItemWithText:text
-                                             accessibilityIdentifier:accessibilityIdentifier
-                                                     customRowHeight:UITableViewAutomaticDimension
-                                                         actionBlock:^{
-                                                             [weakSelf sendTextToPhoneNumber:phoneNumber.toE164];
-                                                         }]];
-    }
-    if (invitees.count > 0) {
-        [sections addObject:inviteeSection];
+        SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+
+        BOOL isRegistered = [self.nonContactAccountSet containsObject:address];
+
+        [phoneNumbersSection addItem:[OWSTableItem
+                                         itemWithCustomCellBlock:^{
+                                             NonContactTableViewCell *cell = [NonContactTableViewCell new];
+                                             [cell configureWithPhoneNumber:phoneNumber isRegistered:isRegistered];
+
+                                             NSString *cellName =
+                                                 [NSString stringWithFormat:@"phone_number.%@", phoneNumber];
+                                             cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                 NewContactThreadViewController, cellName);
+
+                                             return cell;
+                                         }
+                                         customRowHeight:UITableViewAutomaticDimension
+                                         actionBlock:^{
+                                             if (isRegistered) {
+                                                 [weakSelf newConversationWithAddress:address];
+                                             } else {
+                                                 [weakSelf sendTextToPhoneNumber:phoneNumber];
+                                             }
+                                         }]];
     }
 
+    if (phoneNumbersSection.itemCount > 0) {
+        [sections addObject:phoneNumbersSection];
+    }
+
+    // Username lookup
+    if (SSKFeatureFlags.usernames) {
+        NSString *usernameMatch = self.searchText;
+        NSString *_Nullable localUsername = helper.profileManager.localUsername;
+
+        if (usernameMatch.length > 0 && ![NSObject isNullableObject:usernameMatch equalTo:localUsername]
+            && ![matchedAccountUsernames containsObject:usernameMatch]) {
+            hasSearchResults = YES;
+
+            OWSTableSection *usernameSection = [OWSTableSection new];
+            usernameSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE",
+                @"Table section header for username search when composing a new message");
+
+            [usernameSection addItem:[OWSTableItem
+                                         itemWithCustomCellBlock:^{
+                                             NonContactTableViewCell *cell = [NonContactTableViewCell new];
+                                             [cell configureWithUsername:usernameMatch];
+
+                                             NSString *cellName =
+                                                 [NSString stringWithFormat:@"username.%@", usernameMatch];
+                                             cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                 NewContactThreadViewController, cellName);
+
+                                             return cell;
+                                         }
+                                         customRowHeight:UITableViewAutomaticDimension
+                                         actionBlock:^{
+                                             [weakSelf newConversationWithUsername:usernameMatch];
+                                         }]];
+
+            [sections addObject:usernameSection];
+        }
+    }
 
     if (!hasSearchResults) {
         // No Search Results
@@ -756,12 +755,9 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             self.isNoContactsModeActive = NO;
         }
-
-        [self showSearchBar:YES];
     } else {
         // don't show "no signal contacts", show "no contact access"
         self.isNoContactsModeActive = NO;
-        [self showSearchBar:NO];
     }
 }
 
@@ -882,6 +878,65 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(thread != nil);
     [SignalApp.sharedApp presentConversationForThread:thread action:ConversationViewActionCompose animated:NO];
     [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)newConversationWithUsername:(NSString *)username
+{
+    OWSAssertDebug(username.length > 0);
+
+    __weak __typeof(self) weakSelf = self;
+
+    [ModalActivityIndicatorViewController
+        presentFromViewController:self
+                        canCancel:YES
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modal) {
+                      [self.contactsViewHelper.profileManager fetchProfileForUsername:username
+                          success:^(SignalServiceAddress *address) {
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  if (modal.wasCancelled) {
+                                      return;
+                                  }
+
+                                  [modal dismissWithCompletion:^{
+                                      [weakSelf newConversationWithAddress:address];
+                                  }];
+                              });
+                          }
+                          notFound:^{
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  if (modal.wasCancelled) {
+                                      return;
+                                  }
+
+                                  [modal dismissWithCompletion:^{
+                                      NSString *usernameNotFoundFormat = NSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
+                                          @"A message indicating that the given username is not a registered signal "
+                                          @"account. Embeds "
+                                          @"{{username}}");
+                                      [OWSAlerts showAlertWithTitle:
+                                                     NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
+                                                         @"A message indicating that the given username was not "
+                                                         @"registered with signal.")
+                                                            message:[[NSString alloc]
+                                                                        initWithFormat:usernameNotFoundFormat,
+                                                                        [CommonFormats formatUsername:username]]];
+                                  }];
+                              });
+                          }
+                          failure:^(NSError *error) {
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  if (modal.wasCancelled) {
+                                      return;
+                                  }
+
+                                  [modal dismissWithCompletion:^{
+                                      [OWSAlerts showErrorAlertWithMessage:
+                                                     NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
+                                                         @"A message indicating that username lookup failed.")];
+                                  }];
+                              });
+                          }];
+                  }];
 }
 
 - (void)showNewGroupView:(id)sender

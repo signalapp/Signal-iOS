@@ -35,6 +35,15 @@ public class ProfileFetcherJob: NSObject {
         ProfileFetcherJob(ignoreThrottling: ignoreThrottling).run(addresses: [address])
     }
 
+    @objc
+    public class func run(username: String, completion: @escaping (_ address: SignalServiceAddress?, _ notFound: Bool, _ error: Error?) -> Void) {
+        guard CurrentAppContext().isMainApp else {
+            return
+        }
+
+        ProfileFetcherJob(ignoreThrottling: true).run(username: username, completion: completion)
+    }
+
     public init(ignoreThrottling: Bool = false) {
         self.ignoreThrottling = ignoreThrottling
     }
@@ -83,6 +92,33 @@ public class ProfileFetcherJob: NSObject {
     public func run(addresses: [SignalServiceAddress]) {
         AssertIsOnMainThread()
 
+        run {
+            for address in addresses {
+                self.getAndUpdateProfile(address: address)
+            }
+        }
+    }
+
+    public func run(username: String, completion: @escaping (_ address: SignalServiceAddress?, _ notFound: Bool, _ error: Error?) -> Void) {
+        run {
+            let request = OWSRequestFactory.getProfileRequest(withUsername: username)
+            self.networkManager.makePromise(request: request)
+                .map(on: DispatchQueue.global()) { try SignalServiceProfile(address: nil, responseObject: $1) }
+                .done(on: DispatchQueue.global()) { serviceProfile in
+                    self.updateProfile(signalServiceProfile: serviceProfile)
+                    completion(serviceProfile.address, false, nil)
+                }.catch(on: DispatchQueue.global()) { error in
+                    if case .taskError(let task, _)? = error as? NetworkManagerError, task.statusCode() == 404 {
+                        completion(nil, true, nil)
+                        return
+                    }
+
+                    completion(nil, false, error)
+                }.retainUntilComplete()
+        }
+    }
+
+    public func run(runBlock: @escaping () -> Void) {
         guard CurrentAppContext().isMainApp else {
             // Only refresh profiles in the MainApp to decrease the chance of missed SN notifications
             // in the AppExtension for our users who choose not to verify contacts.
@@ -102,11 +138,7 @@ public class ProfileFetcherJob: NSObject {
             Logger.error("background task time ran out before profile fetch completed.")
         })
 
-        DispatchQueue.global().async {
-            for address in addresses {
-                self.getAndUpdateProfile(address: address)
-            }
-        }
+        DispatchQueue.global().async(execute: runBlock)
     }
 
     enum ProfileFetcherJobError: Error {

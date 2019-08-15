@@ -705,7 +705,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(username.length > 0);
 
-    NSString *path = [NSString stringWithFormat:@"v1/profile/username/%@", username];
+    NSString *urlEncodedUsername =
+        [username stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLUserAllowedCharacterSet]];
+
+    OWSAssertDebug(urlEncodedUsername.length > 0);
+
+    NSString *path = [NSString stringWithFormat:@"v1/profile/username/%@", urlEncodedUsername];
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 

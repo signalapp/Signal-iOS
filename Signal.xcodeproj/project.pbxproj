@@ -547,6 +547,7 @@
 		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
 		881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */; };
 		881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */; };
+		8821334E2304E72700353626 /* NonContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8821334D2304E72700353626 /* NonContactTableViewCell.swift */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
@@ -1347,6 +1348,7 @@
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
 		881677C422DD2B21007BAF49 /* OWSPinReminderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinReminderViewController.swift; sourceTree = "<group>"; };
 		881D85B722D92C2B00E118DF /* OWSPinSetupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinSetupViewController.swift; sourceTree = "<group>"; };
+		8821334D2304E72700353626 /* NonContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NonContactTableViewCell.swift; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
@@ -1911,6 +1913,7 @@
 				34AC0A02211B39E700997B47 /* ContactsViewHelper.m */,
 				34AC09FC211B39E700997B47 /* ContactTableViewCell.h */,
 				34AC09FF211B39E700997B47 /* ContactTableViewCell.m */,
+				8821334D2304E72700353626 /* NonContactTableViewCell.swift */,
 				8809CE8022F534B200D38867 /* CustomKeyboard.swift */,
 				4523149F1F7E9E18003A428C /* DirectionalPanGestureRecognizer.swift */,
 				34AC0A00211B39E700997B47 /* DisappearingTimerConfigurationView.swift */,
@@ -3731,6 +3734,7 @@
 				34641E182088D7E900E2EDE5 /* OWSScreenLock.swift in Sources */,
 				344DC9AF226E483D004E7322 /* ManageStickersViewController.swift in Sources */,
 				349EA07C2162AEA800F7B17F /* OWS111UDAttributesMigration.swift in Sources */,
+				8821334E2304E72700353626 /* NonContactTableViewCell.swift in Sources */,
 				34480B561FD0A7A400BC14EF /* DebugLogger.m in Sources */,
 				459B775C207BA46C0071D0AB /* OWSQuotedReplyModel.m in Sources */,
 				340872D622397E6800CB25B0 /* AttachmentCaptionToolbar.swift in Sources */,
