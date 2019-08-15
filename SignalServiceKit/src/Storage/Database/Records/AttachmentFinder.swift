@@ -75,7 +75,7 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
         SELECT \(attachmentColumn: .uniqueId)
         FROM \(AttachmentRecord.databaseTableName)
         WHERE \(attachmentColumn: .recordType) = \(SDSRecordType.attachmentPointer.rawValue)
-        AND \(attachmentColumn: .state) = ?
+        AND \(attachmentColumn: .state) != ?
         """
         var result = [String]()
         do {
