@@ -135,6 +135,20 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return userProfile;
 }
 
++ (nullable OWSUserProfile *)userProfileForUsername:(NSString *)username
+                                      databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+{
+    OWSAssertDebug(username.length > 0);
+
+    __block OWSUserProfile *_Nullable userProfile;
+
+    [databaseQueue readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        userProfile = [self.userProfileFinder userProfileForUsername:username transaction:transaction];
+    }];
+
+    return userProfile;
+}
+
 + (BOOL)localUserProfileExists:(SDSAnyDatabaseQueue *)databaseQueue
 {
     __block BOOL result = NO;

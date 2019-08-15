@@ -494,6 +494,39 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     [ProfileFetcherJob runWithAddress:address ignoreThrottling:YES];
 }
 
+- (void)fetchProfileForUsername:(NSString *)username
+                        success:(void (^)(SignalServiceAddress *))successHandler
+                       notFound:(void (^)(void))notFoundHandler
+                        failure:(void (^)(NSError *))failureHandler
+{
+    OWSAssertDebug(username.length > 0);
+
+    // Check if we have a cached profile for this username, if so avoid fetching it from the service
+    // since we are limited to 100 username lookups per day.
+
+    OWSUserProfile *_Nullable userProfile = [OWSUserProfile userProfileForUsername:username
+                                                                     databaseQueue:self.databaseQueue];
+
+    if (userProfile) {
+        successHandler(userProfile.address);
+        return;
+    }
+
+    [ProfileFetcherJob runWithUsername:username
+                            completion:^(SignalServiceAddress *address, BOOL notFound, NSError *error) {
+                                if (error) {
+                                    failureHandler(error);
+                                } else if (notFound) {
+                                    notFoundHandler();
+                                } else if (address) {
+                                    successHandler(address);
+                                } else {
+                                    OWSFailDebug(@"Unexpected username lookup response.");
+                                    failureHandler(OWSErrorMakeAssertionError(@"unexpected username lookup response"));
+                                }
+                            }];
+}
+
 #pragma mark - Profile Key Rotation
 
 - (nullable NSString *)groupKeyForGroupId:(NSData *)groupId {

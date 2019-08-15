@@ -61,6 +61,8 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
 
 + (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)recipientId
                                       databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue;
++ (nullable OWSUserProfile *)userProfileForUsername:(NSString *)username
+                                      databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue;
 
 + (BOOL)localUserProfileExists:(SDSAnyDatabaseQueue *)databaseQueue;
 

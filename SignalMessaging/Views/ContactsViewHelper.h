@@ -32,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CNContact;
 @class OWSBlockingManager;
 @class OWSContactsManager;
+@class OWSProfileManager;
 @class SignalServiceAddress;
 
 @interface ContactsViewHelper : NSObject
@@ -40,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) OWSBlockingManager *blockingManager;
+@property (nonatomic, readonly) OWSProfileManager *profileManager;
 
 @property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 

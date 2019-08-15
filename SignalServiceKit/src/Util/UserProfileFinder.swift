@@ -8,6 +8,7 @@ import Foundation
 class AnyUserProfileFinder: NSObject {
     let grdbAdapter = GRDBUserProfileFinder()
     let yapdbAdapter = YAPDBSignalServiceAddressIndex()
+    let yapdbUsernameAdapter = YAPDBUserProfileFinder()
 }
 
 extension AnyUserProfileFinder {
@@ -18,6 +19,16 @@ extension AnyUserProfileFinder {
             return grdbAdapter.userProfile(for: address, transaction: transaction)
         case .yapRead(let transaction):
             return yapdbAdapter.fetchOne(for: address, transaction: transaction)
+        }
+    }
+
+    @objc
+    func userProfile(forUsername username: String, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+        switch transaction.readTransaction {
+        case .grdbRead(let transaction):
+            return grdbAdapter.userProfile(forUsername: username, transaction: transaction)
+        case .yapRead(let transaction):
+            return yapdbUsernameAdapter.userProfile(forUsername: username, transaction: transaction)
         }
     }
 }
@@ -44,5 +55,56 @@ class GRDBUserProfileFinder: NSObject {
         guard let phoneNumber = phoneNumber else { return nil }
         let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(userProfileColumn: .recipientPhoneNumber) = ?"
         return OWSUserProfile.grdbFetchOne(sql: sql, arguments: [phoneNumber], transaction: transaction)
+    }
+
+    func userProfile(forUsername username: String, transaction: GRDBReadTransaction) -> OWSUserProfile? {
+        let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(userProfileColumn: .username) = ?"
+        return OWSUserProfile.grdbFetchOne(sql: sql, arguments: [username], transaction: transaction)
+    }
+}
+
+@objc
+public class YAPDBUserProfileFinder: NSObject {
+    public static let extensionName = "index_on_username"
+    private static let usernameKey = "usernameKey"
+
+    @objc
+    public static func asyncRegisterDatabaseExtensions(_ storage: OWSStorage) {
+        storage.asyncRegister(extensionConfig(), withName: extensionName)
+    }
+
+    static func extensionConfig() -> YapDatabaseSecondaryIndex {
+        let setup = YapDatabaseSecondaryIndexSetup()
+        setup.addColumn(usernameKey, with: .text)
+
+        let handler = YapDatabaseSecondaryIndexHandler.withObjectBlock { _, dict, _, _, object in
+            guard let userProfile = object as? OWSUserProfile else { return }
+            dict[usernameKey] = userProfile.username
+        }
+
+        return YapDatabaseSecondaryIndex.init(setup: setup, handler: handler, versionTag: "1")
+    }
+
+    func userProfile(forUsername username: String, transaction: YapDatabaseReadTransaction) -> OWSUserProfile? {
+        guard let ext = transaction.safeSecondaryIndexTransaction(YAPDBUserProfileFinder.extensionName) else {
+            owsFailDebug("missing extension")
+            return nil
+        }
+
+        let queryFormat = String(format: "WHERE %@ = \"%@\"", YAPDBUserProfileFinder.usernameKey, username)
+        let query = YapDatabaseQuery(string: queryFormat, parameters: [])
+
+        var matchedProfile: OWSUserProfile?
+
+        ext.enumerateKeysAndObjects(matching: query) { _, _, object, stop in
+            guard let userProfile = object as? OWSUserProfile else {
+                owsFailDebug("Unexpected object type")
+                return
+            }
+            matchedProfile = userProfile
+            stop.pointee = true
+        }
+
+        return matchedProfile
     }
 }

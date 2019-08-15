@@ -63,6 +63,11 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 - (void)fetchLocalUsersProfile;
 
+- (void)fetchProfileForUsername:(NSString *)username
+                        success:(void (^)(SignalServiceAddress *))successHandler
+                       notFound:(void (^)(void))notFoundHandler
+                        failure:(void (^)(NSError *))failureHandler;
+
 #pragma mark - Profile Whitelist
 
 // These methods are for debugging.

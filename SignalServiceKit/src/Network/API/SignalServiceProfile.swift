@@ -21,11 +21,17 @@ public class SignalServiceProfile: NSObject {
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
 
-    public init(address: SignalServiceAddress, responseObject: Any?) throws {
-        self.address = address
-
+    public init(address: SignalServiceAddress?, responseObject: Any?) throws {
         guard let params = ParamParser(responseObject: responseObject) else {
             throw ValidationError.invalid(description: "invalid response: \(String(describing: responseObject))")
+        }
+
+        if let address = address {
+            self.address = address
+        } else if let uuidString: String = try params.required(key: "uuid") {
+            self.address = SignalServiceAddress(uuidString: uuidString)
+        } else {
+            throw ValidationError.invalid(description: "response or input missing address")
         }
 
         let identityKeyWithType = try params.requiredBase64EncodedData(key: "identityKey")

@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
 @property (nonatomic) BOOL hasUpdatedContactsAtLeastOnce;
-@property (nonatomic) OWSProfileManager *profileManager;
 @property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 
 @end

@@ -851,6 +851,12 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 columns: [UserProfileRecord.columnName(.recipientUUID)]
             )
 
+            try db.create(
+                index: "index_user_profiles_on_username",
+                on: UserProfileRecord.databaseTableName,
+                columns: [UserProfileRecord.columnName(.username)]
+            )
+
             // Linked Device Read Receipts
             try db.create(
                 index: "index_linkedDeviceReadReceipt_on_senderPhoneNumberAndTimestamp",
