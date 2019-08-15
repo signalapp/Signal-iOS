@@ -26,9 +26,9 @@ extension AnyUserProfileFinder {
     func userProfile(forUsername username: String, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
-            return grdbAdapter.userProfile(forUsername: username, transaction: transaction)
+            return grdbAdapter.userProfile(forUsername: username.lowercased(), transaction: transaction)
         case .yapRead(let transaction):
-            return yapdbUsernameAdapter.userProfile(forUsername: username, transaction: transaction)
+            return yapdbUsernameAdapter.userProfile(forUsername: username.lowercased(), transaction: transaction)
         }
     }
 }
@@ -58,7 +58,7 @@ class GRDBUserProfileFinder: NSObject {
     }
 
     func userProfile(forUsername username: String, transaction: GRDBReadTransaction) -> OWSUserProfile? {
-        let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(userProfileColumn: .username) = ?"
+        let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(userProfileColumn: .username) = ? LIMIT 1"
         return OWSUserProfile.grdbFetchOne(sql: sql, arguments: [username], transaction: transaction)
     }
 }

@@ -90,6 +90,8 @@ public class ProfileFetcherJob: NSObject {
     // MARK: -
 
     public func run(addresses: [SignalServiceAddress]) {
+        AssertIsOnMainThread()
+
         run {
             for address in addresses {
                 self.getAndUpdateProfile(address: address)
@@ -101,11 +103,11 @@ public class ProfileFetcherJob: NSObject {
         run {
             let request = OWSRequestFactory.getProfileRequest(withUsername: username)
             self.networkManager.makePromise(request: request)
-                .map { try SignalServiceProfile(address: nil, responseObject: $1) }
-                .done { serviceProfile in
+                .map(on: DispatchQueue.global()) { try SignalServiceProfile(address: nil, responseObject: $1) }
+                .done(on: DispatchQueue.global()) { serviceProfile in
                     self.updateProfile(signalServiceProfile: serviceProfile)
                     completion(serviceProfile.address, false, nil)
-                }.catch { error in
+                }.catch(on: DispatchQueue.global()) { error in
                     if case .taskError(let task, _)? = error as? NetworkManagerError, task.statusCode() == 404 {
                         completion(nil, true, nil)
                         return
@@ -117,8 +119,6 @@ public class ProfileFetcherJob: NSObject {
     }
 
     public func run(runBlock: @escaping () -> Void) {
-        AssertIsOnMainThread()
-
         guard CurrentAppContext().isMainApp else {
             // Only refresh profiles in the MainApp to decrease the chance of missed SN notifications
             // in the AppExtension for our users who choose not to verify contacts.

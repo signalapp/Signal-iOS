@@ -872,30 +872,57 @@ NS_ASSUME_NONNULL_BEGIN
 
     __weak __typeof(self) weakSelf = self;
 
-    [self.contactsViewHelper.profileManager fetchProfileForUsername:username
-        success:^(SignalServiceAddress *address) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf newConversationWithAddress:address];
-            });
-        }
-        notFound:^{
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *usernameNotFoundFormat = NSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
-                    @"A message indicating that the given username is not a registered signal account. Embeds "
-                    @"{{username}}");
-                [OWSAlerts showAlertWithTitle:
-                               NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
-                                   @"A message indicating that the given username was not registered with signal.")
-                                      message:[[NSString alloc] initWithFormat:usernameNotFoundFormat,
-                                                                [CommonFormats formatUsername:username]]];
-            });
-        }
-        failure:^(NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [OWSAlerts showErrorAlertWithMessage:NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
+    [ModalActivityIndicatorViewController
+        presentFromViewController:self
+                        canCancel:YES
+                  backgroundBlock:^(ModalActivityIndicatorViewController *modal) {
+                      [self.contactsViewHelper.profileManager fetchProfileForUsername:username
+                          success:^(SignalServiceAddress *address) {
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  if (modal.wasCancelled) {
+                                      return;
+                                  }
+
+                                  [modal dismissWithCompletion:^{
+                                      [weakSelf newConversationWithAddress:address];
+                                  }];
+                              });
+                          }
+                          notFound:^{
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  if (modal.wasCancelled) {
+                                      return;
+                                  }
+
+                                  [modal dismissWithCompletion:^{
+                                      NSString *usernameNotFoundFormat = NSLocalizedString(@"USERNAME_NOT_FOUND_FORMAT",
+                                          @"A message indicating that the given username is not a registered signal "
+                                          @"account. Embeds "
+                                          @"{{username}}");
+                                      [OWSAlerts showAlertWithTitle:
+                                                     NSLocalizedString(@"USERNAME_NOT_FOUND_TITLE",
+                                                         @"A message indicating that the given username was not "
+                                                         @"registered with signal.")
+                                                            message:[[NSString alloc]
+                                                                        initWithFormat:usernameNotFoundFormat,
+                                                                        [CommonFormats formatUsername:username]]];
+                                  }];
+                              });
+                          }
+                          failure:^(NSError *error) {
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  if (modal.wasCancelled) {
+                                      return;
+                                  }
+
+                                  [modal dismissWithCompletion:^{
+                                      [OWSAlerts showErrorAlertWithMessage:
+                                                     NSLocalizedString(@"USERNAME_LOOKUP_ERROR",
                                                          @"A message indicating that username lookup failed.")];
-            });
-        }];
+                                  }];
+                              });
+                          }];
+                  }];
 }
 
 - (void)showNewGroupView:(id)sender

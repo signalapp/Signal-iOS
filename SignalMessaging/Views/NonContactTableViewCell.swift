@@ -13,7 +13,7 @@ class NonContactTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        backgroundColor = Theme.backgroundColor
+        OWSTableItem.configureCell(self)
 
         let stackView = UIStackView()
         stackView.isLayoutMarginsRelativeArrangement = true
@@ -25,6 +25,8 @@ class NonContactTableViewCell: UITableViewCell {
         stackView.autoPinEdgesToSuperviewEdges()
 
         iconView.autoSetDimensions(to: CGSize(square: 48))
+        iconView.layer.cornerRadius = 24
+        iconView.clipsToBounds = true
 
         let labelStack = UIStackView()
         labelStack.axis = .vertical
@@ -61,7 +63,14 @@ class NonContactTableViewCell: UITableViewCell {
         identifierLabel.text = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
 
         if isRegistered {
-            iconView.setTemplateImageName("username-search-48-black", tintColor: Theme.isDarkThemeEnabled ? .ows_gray15 : .ows_gray75)
+            let address = SignalServiceAddress(phoneNumber: phoneNumber)
+            let avatarBuilder = OWSContactAvatarBuilder(
+                address: address,
+                colorName: TSThread.stableColorNameForNewConversation(with: address.stringForDisplay),
+                diameter: 48
+            )
+
+            iconView.image = avatarBuilder.build()
             headerLabel.text = NSLocalizedString("NON_CONTACT_TABLE_CELL_NEW_MESSAGE",
                                                  comment: "A string prompting the user to send a new mesaage to a user")
         } else {
