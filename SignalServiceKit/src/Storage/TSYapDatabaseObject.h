@@ -20,10 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, readonly) NSString *uniqueId;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 @property (class, nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 /**
  *  Initializes a new database object with a unique identifier
