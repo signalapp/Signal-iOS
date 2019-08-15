@@ -31,6 +31,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 @property (atomic, nullable) OWSAES256Key *profileKey;
 @property (atomic, nullable) NSString *profileName;
+@property (atomic, nullable) NSString *username;
 @property (atomic, nullable) NSString *avatarUrlPath;
 @property (atomic, nullable) NSString *avatarFileName;
 
@@ -69,6 +70,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
         userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
+                        username:(nullable NSString *)username
 {
     self = [super initWithUniqueId:uniqueId];
 
@@ -83,6 +85,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     _recipientPhoneNumber = recipientPhoneNumber;
     _recipientUUID = recipientUUID;
     _userProfileSchemaVersion = userProfileSchemaVersion;
+    _username = username;
 
     return self;
 }
@@ -354,6 +357,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 }
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
+                     username:(nullable NSString *)username
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                 databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                    completion:(nullable OWSUserProfileCompletion)completion
@@ -361,6 +365,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     [self
          applyChanges:^(OWSUserProfile *userProfile) {
              [userProfile setProfileName:[profileName ows_stripped]];
+             [userProfile setUsername:username];
              [userProfile setAvatarUrlPath:avatarUrlPath];
          }
          functionName:__PRETTY_FUNCTION__
@@ -429,6 +434,19 @@ NSUInteger const kUserProfileSchemaVersion = 1;
          functionName:__PRETTY_FUNCTION__
         databaseQueue:databaseQueue
            completion:completion];
+}
+
+- (void)updateWithUsername:(nullable NSString *)username databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
+{
+    OWSAssertDebug(username == nil || username.length > 0);
+
+    [self
+         applyChanges:^(OWSUserProfile *userProfile) {
+             [userProfile setUsername:username];
+         }
+         functionName:__PRETTY_FUNCTION__
+        databaseQueue:databaseQueue
+           completion:nil];
 }
 
 // This should only be used in verbose, developer-only logs.

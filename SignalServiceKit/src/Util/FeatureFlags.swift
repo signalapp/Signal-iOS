@@ -187,4 +187,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let complainAboutSlowDBWrites = true
+
+    @objc
+    public static let usernames = !IsUsingProductionService() && build.includes(.dev)
 }

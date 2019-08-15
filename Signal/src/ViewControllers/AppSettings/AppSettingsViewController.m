@@ -301,9 +301,20 @@
     [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
 
     if (!localProfileAvatarImage) {
-        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
-        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+        UIImageView *cameraImageView = [UIImageView new];
+        [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryColor];
         [cell.contentView addSubview:cameraImageView];
+
+        [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
+        cameraImageView.contentMode = UIViewContentModeCenter;
+        cameraImageView.backgroundColor = Theme.backgroundColor;
+        cameraImageView.layer.cornerRadius = 16;
+        cameraImageView.layer.shadowColor =
+            [(Theme.isDarkThemeEnabled ? Theme.darkThemeOffBackgroundColor : Theme.primaryColor) CGColor];
+        cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
+        cameraImageView.layer.shadowOpacity = 0.5;
+        cameraImageView.layer.shadowRadius = 4;
+
         [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
         [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
     }
@@ -330,18 +341,29 @@
     [titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [titleLabel autoPinWidthToSuperview];
 
+    __block UIView *lastTitleView = titleLabel;
     const CGFloat kSubtitlePointSize = 12.f;
-    UILabel *subtitleLabel = [UILabel new];
-    subtitleLabel.textColor = [Theme secondaryColor];
-    subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-    subtitleLabel.attributedText = [[NSAttributedString alloc]
-        initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager
-                                                                                                       localNumber]]];
-    subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [nameView addSubview:subtitleLabel];
-    [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
-    [subtitleLabel autoPinLeadingToSuperviewMargin];
-    [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    void (^addSubtitle)(NSString *) = ^(NSString *subtitle) {
+        UILabel *subtitleLabel = [UILabel new];
+        subtitleLabel.textColor = Theme.secondaryColor;
+        subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+        subtitleLabel.text = subtitle;
+        subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [nameView addSubview:subtitleLabel];
+        [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
+        [subtitleLabel autoPinLeadingToSuperviewMargin];
+        lastTitleView = subtitleLabel;
+    };
+
+    addSubtitle(
+        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]]);
+
+    NSString *_Nullable username = [OWSProfileManager.sharedManager localUsername];
+    if (username.length > 0) {
+        addSubtitle([CommonFormats formatUsername:username]);
+    }
+
+    [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
     OWSAssertDebug(disclosureImage);

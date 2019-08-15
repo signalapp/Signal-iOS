@@ -233,6 +233,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return [self loadProfileDataWithFilename:filename];
 }
 
+- (nullable NSString *)localUsername
+{
+    return self.localUserProfile.username;
+}
+
 - (void)updateLocalProfileName:(nullable NSString *)profileName
                    avatarImage:(nullable UIImage *)avatarImage
                        success:(void (^)(void))successBlockParameter
@@ -345,6 +350,16 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         OWSLogVerbose(@"Updating local profile on service with no avatar.");
         tryToUpdateService(nil, nil);
     }
+}
+
+- (void)updateLocalUsername:(nullable NSString *)username
+{
+    OWSAssertDebug(username == nil || username.length > 0);
+
+    OWSUserProfile *userProfile = self.localUserProfile;
+    OWSAssertDebug(self.localUserProfile);
+
+    [userProfile updateWithUsername:username databaseQueue:self.databaseQueue];
 }
 
 - (void)writeAvatarToDisk:(UIImage *)avatar
@@ -967,12 +982,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         [OWSUserProfile anyEnumerateWithTransaction:transaction
                                               block:^(OWSUserProfile *userProfile, BOOL *stop) {
                                                   OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
-                                                              @"avatar file: %d, name: %@",
+                                                              @"avatar file: %d, name: %@, username: %@",
                                                       userProfile.address,
                                                       userProfile.profileKey != nil,
                                                       userProfile.avatarUrlPath != nil,
                                                       userProfile.avatarFileName != nil,
-                                                      userProfile.profileName);
+                                                      userProfile.profileName,
+                                                      userProfile.username);
                                               }];
     }];
 }
@@ -1068,6 +1084,22 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
     if (userProfile.avatarFileName.length > 0) {
         return [self loadProfileDataWithFilename:userProfile.avatarFileName];
+    }
+
+    return nil;
+}
+
+- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
+{
+    OWSAssertDebug(address.isValid);
+
+    // For "local reads", use the local user profile.
+    OWSUserProfile *userProfile = (address.isLocalAddress
+            ? self.localUserProfile
+            : [OWSUserProfile getOrBuildUserProfileForAddress:address databaseQueue:self.databaseQueue]);
+
+    if (userProfile.username.length > 0) {
+        return userProfile.username;
     }
 
     return nil;
@@ -1202,6 +1234,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (void)updateProfileForAddress:(SignalServiceAddress *)address
            profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                       username:(nullable NSString *)username
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
 {
     OWSAssertDebug(address.isValid);
@@ -1222,6 +1255,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         }
 
         if (!userProfile.profileKey) {
+            [userProfile updateWithUsername:username databaseQueue:self.databaseQueue];
             return;
         }
 
@@ -1229,6 +1263,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             [self decryptProfileNameData:profileNameEncrypted profileKey:userProfile.profileKey];
 
         [userProfile updateWithProfileName:profileName
+                                  username:username
                              avatarUrlPath:avatarUrlPath
                              databaseQueue:self.databaseQueue
                                 completion:nil];
@@ -1240,6 +1275,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             OWSAssertDebug(localUserProfile);
 
             [localUserProfile updateWithProfileName:profileName
+                                           username:username
                                       avatarUrlPath:avatarUrlPath
                                       databaseQueue:self.databaseQueue
                                          completion:nil];

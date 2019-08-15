@@ -28,6 +28,7 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
 @property (atomic, readonly) SignalServiceAddress *address;
 @property (atomic, readonly, nullable) OWSAES256Key *profileKey;
 @property (atomic, readonly, nullable) NSString *profileName;
+@property (atomic, readonly, nullable) NSString *username;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (atomic, readonly, nullable) NSString *avatarFileName;
@@ -49,7 +50,8 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
         userProfileSchemaVersion:(NSUInteger)userProfileSchemaVersion
-NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:recipientPhoneNumber:recipientUUID:userProfileSchemaVersion:));
+                        username:(nullable NSString *)username
+NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:recipientPhoneNumber:recipientUUID:userProfileSchemaVersion:username:));
 
 // clang-format on
 
@@ -71,6 +73,7 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
                    completion:(nullable OWSUserProfileCompletion)completion;
 
 - (void)updateWithProfileName:(nullable NSString *)profileName
+                     username:(nullable NSString *)username
                 avatarUrlPath:(nullable NSString *)avatarUrlPath
                 databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                    completion:(nullable OWSUserProfileCompletion)completion;
@@ -91,6 +94,8 @@ NS_SWIFT_NAME(init(uniqueId:avatarFileName:avatarUrlPath:profileKey:profileName:
 - (void)clearWithProfileKey:(OWSAES256Key *)profileKey
               databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue
                  completion:(nullable OWSUserProfileCompletion)completion;
+
+- (void)updateWithUsername:(nullable NSString *)username databaseQueue:(SDSAnyDatabaseQueue *)databaseQueue;
 
 #pragma mark - Profile Avatars Directory
 

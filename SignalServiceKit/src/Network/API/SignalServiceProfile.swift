@@ -16,6 +16,7 @@ public class SignalServiceProfile: NSObject {
     public let address: SignalServiceAddress
     public let identityKey: Data
     public let profileNameEncrypted: Data?
+    public let username: String?
     public let avatarUrlPath: String?
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
@@ -43,6 +44,8 @@ public class SignalServiceProfile: NSObject {
         }
 
         self.profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")
+
+        self.username = try params.optional(key: "username")
 
         let avatarUrlPath: String? = try params.optional(key: "avatar")
         self.avatarUrlPath = avatarUrlPath
