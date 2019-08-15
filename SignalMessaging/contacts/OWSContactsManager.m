@@ -6,7 +6,6 @@
 #import "Environment.h"
 #import "OWSFormat.h"
 #import "OWSProfileManager.h"
-#import "OWSUserProfile.h"
 #import "ViewControllerUtils.h"
 #import <Contacts/Contacts.h>
 #import <SignalCoreKit/NSDate+OWS.h>
