@@ -2077,7 +2077,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [outgoingMessage
         anyUpdateOutgoingMessageWithTransaction:transaction
                                           block:^(TSOutgoingMessage *outgoingMessage) {
-                                              NSMutableArray *attachmentIds =
+                                              NSMutableArray<NSString *> *attachmentIds =
                                                   [outgoingMessage.attachmentIds mutableCopy];
                                               for (TSAttachmentStream *attachmentStream in attachmentStreams) {
                                                   [attachmentIds addObject:attachmentStream.uniqueId];

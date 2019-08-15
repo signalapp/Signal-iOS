@@ -1517,7 +1517,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:incomingMessage];
 
-    NSMutableArray *attachmentIds = [incomingMessage.attachmentIds mutableCopy];
+    NSMutableArray<NSString *> *attachmentIds = [incomingMessage.attachmentIds mutableCopy];
     for (TSAttachmentPointer *pointer in attachmentPointers) {
         [pointer anyInsertWithTransaction:transaction];
         [attachmentIds addObject:pointer.uniqueId];
