@@ -435,6 +435,37 @@ private class LegacyJobRecordFinder {
 
 // MARK: -
 
+private class LegacyDecryptJobFinder {
+
+    let ydbTransaction: YapDatabaseReadTransaction
+
+    init(transaction: YapDatabaseReadTransaction) {
+        ydbTransaction = transaction
+    }
+
+    func enumerateJobRecords(block: @escaping (OWSMessageDecryptJob) throws -> Void) throws {
+        try autoreleasepool {
+            var errorToRaise: Error?
+            let legacyFinder = OWSMessageDecryptJobFinder()
+            try legacyFinder.enumerateJobs(transaction: ydbTransaction.asAnyRead) { (job, stop) in
+                do {
+                    try block(job)
+                } catch {
+                    owsFailDebug("error: \(error)")
+                    errorToRaise = error
+                    stop.pointee = true
+                }
+            }
+
+            if let errorToRaise = errorToRaise {
+                throw errorToRaise
+            }
+        }
+    }
+}
+
+// MARK: -
+
 @objc
 public protocol GRDBMigrator {
     func migrate(grdbTransaction: GRDBWriteTransaction) throws
@@ -546,35 +577,25 @@ public class GRDBInteractionMigrator: GRDBMigrator {
 // MARK: -
 
 public class GRDBDecryptJobMigrator: GRDBMigrator {
-    private let finder: LegacyUnorderedFinder<OWSMessageDecryptJob>
+    private let finder: LegacyDecryptJobFinder
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
-        self.finder = LegacyUnorderedFinder(transaction: ydbTransaction)
+        self.finder = LegacyDecryptJobFinder(transaction: ydbTransaction)
     }
 
     public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
-        try! self.migrateMappedCollectionObjects(label: "DecryptJobs", finder: finder, memorySamplerRatio: 0.1, transaction: grdbTransaction) { (legacyJob: OWSMessageDecryptJob) -> SSKMessageDecryptJobRecord in
-
-            // migrate any job records from the one-off decrypt job queue to a record for the new generic durable job queue
-            return SSKMessageDecryptJobRecord(envelopeData: legacyJob.envelopeData, label: SSKMessageDecryptJobQueue.jobRecordLabel)
-        }
-    }
-
-    private func migrateMappedCollectionObjects<SourceType, DestinationType>(label: String,
-                                                                             finder: LegacyObjectFinder<SourceType>,
-                                                                             memorySamplerRatio: Float,
-                                                                             transaction: GRDBWriteTransaction,
-                                                                             migrateObject: @escaping (SourceType) -> DestinationType) throws where DestinationType: SDSModel {
-
-        try Bench(title: "Migrate \(SourceType.self)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
+        try Bench(title: "Migrate decrypt jobs", memorySamplerRatio: 0.001) { memorySampler in
             var recordCount = 0
-            try finder.enumerateLegacyObjects { legacyObject in
+            try finder.enumerateJobRecords { legacyJob in
+                let newJob = SSKMessageDecryptJobRecord(envelopeData: legacyJob.envelopeData, label: SSKMessageDecryptJobQueue.jobRecordLabel)
+                newJob.anyInsert(transaction: grdbTransaction.asAnyWrite)
                 recordCount += 1
-                let newObject = migrateObject(legacyObject)
-                newObject.anyInsert(transaction: transaction.asAnyWrite)
+                if (recordCount % 500 == 0) {
+                    Logger.debug("saved \(recordCount) decrypt jobs")
+                }
                 memorySampler.sample()
             }
-            Logger.info("Migrate \(SourceType.self) completed with recordCount: \(recordCount)")
+            Logger.info("completed with recordCount: \(recordCount)")
         }
     }
 }

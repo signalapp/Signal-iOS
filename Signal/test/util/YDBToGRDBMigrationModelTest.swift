@@ -413,4 +413,97 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             XCTAssertEqual(0, messageDecryptJobFinder2.queuedJobCount(with: transaction))
         }
     }
+
+    func testInteractions() {
+        // Threads
+        let contactThread1 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334444"))
+        let contactThread2 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334445"))
+        // Attachments
+        let attachmentData1 = Randomness.generateRandomBytes(1024)
+        let attachment1 = TSAttachmentStream(attachmentWithContentType: OWSMimeTypeImageGif,
+                                             byteCount: UInt32(attachmentData1.count),
+                                             sourceFilename: "some.gif", caption: nil, albumMessageId: nil)
+        let attachmentData2 = Randomness.generateRandomBytes(2048)
+        let attachment2 = TSAttachmentStream(attachmentWithContentType: OWSMimeTypeImagePdf,
+                                             byteCount: UInt32(attachmentData2.count),
+                                             sourceFilename: "some.df", caption: nil, albumMessageId: nil)
+        // Messages
+        let outgoingMessage1 = TSOutgoingMessage(in: contactThread1, messageBody: "good heavens", attachmentId: attachment1.uniqueId)
+        let outgoingMessage2 = TSOutgoingMessage(in: contactThread2, messageBody: "land's sakes", attachmentId: attachment2.uniqueId)
+        let outgoingMessage3 = TSOutgoingMessage(in: contactThread2, messageBody: "oh my word", attachmentId: nil)
+
+        self.yapRead { transaction in
+            XCTAssertEqual(0, TSThread.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual(0, TSInteraction.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual(0, TSAttachment.anyCount(transaction: transaction.asAnyRead))
+        }
+        self.read { transaction in
+            XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
+            XCTAssertEqual(0, TSInteraction.anyCount(transaction: transaction))
+            XCTAssertEqual(0, TSAttachment.anyCount(transaction: transaction))
+        }
+
+        self.yapWrite { transaction in
+            // Threads
+            contactThread1.anyInsert(transaction: transaction.asAnyWrite)
+            contactThread2.anyInsert(transaction: transaction.asAnyWrite)
+            // Attachments
+            attachment1.anyInsert(transaction: transaction.asAnyWrite)
+            attachment2.anyInsert(transaction: transaction.asAnyWrite)
+            // Messages
+            outgoingMessage1.anyInsert(transaction: transaction.asAnyWrite)
+            outgoingMessage2.anyInsert(transaction: transaction.asAnyWrite)
+            outgoingMessage3.anyInsert(transaction: transaction.asAnyWrite)
+        }
+
+        self.yapRead { transaction in
+            XCTAssertEqual(2, TSThread.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual([contactThread1.uniqueId, contactThread2.uniqueId].sorted(), TSThread.anyAllUniqueIds(transaction: transaction.asAnyRead).sorted())
+            XCTAssertEqual(3, TSInteraction.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual([outgoingMessage1.uniqueId, outgoingMessage2.uniqueId, outgoingMessage3.uniqueId].sorted(), TSInteraction.anyAllUniqueIds(transaction: transaction.asAnyRead).sorted())
+            XCTAssertEqual([outgoingMessage1, outgoingMessage2, outgoingMessage3].compactMap { $0.body }.sorted(), TSInteraction.anyFetchAll(transaction: transaction.asAnyRead).compactMap { ($0 as! TSMessage).body }.sorted())
+            XCTAssertEqual(2, TSAttachment.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual([attachment1.uniqueId, attachment2.uniqueId].sorted(), TSAttachment.anyAllUniqueIds(transaction: transaction.asAnyRead).sorted())
+        }
+        self.read { transaction in
+            XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
+            XCTAssertEqual(0, TSInteraction.anyCount(transaction: transaction))
+            XCTAssertEqual(0, TSAttachment.anyCount(transaction: transaction))
+        }
+
+        let migratorGroups = [
+            GRDBMigratorGroup { ydbTransaction in
+                return [
+                    GRDBUnorderedRecordMigrator<TSAttachment>(label: "attachments", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.003),
+                    GRDBUnorderedRecordMigrator<TSThread>(label: "threads", ydbTransaction: ydbTransaction, memorySamplerRatio: 0.2)
+                ]
+            },
+            GRDBMigratorGroup { ydbTransaction in
+                return [
+                    GRDBInteractionMigrator(ydbTransaction: ydbTransaction)
+                ]
+            }
+        ]
+
+        try! YDBToGRDBMigration().migrate(migratorGroups: migratorGroups)
+
+        self.yapRead { transaction in
+            XCTAssertEqual(2, TSThread.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual([contactThread1.uniqueId, contactThread2.uniqueId].sorted(), TSThread.anyAllUniqueIds(transaction: transaction.asAnyRead).sorted())
+            XCTAssertEqual(3, TSInteraction.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual([outgoingMessage1.uniqueId, outgoingMessage2.uniqueId, outgoingMessage3.uniqueId].sorted(), TSInteraction.anyAllUniqueIds(transaction: transaction.asAnyRead).sorted())
+            XCTAssertEqual([outgoingMessage1, outgoingMessage2, outgoingMessage3].compactMap { $0.body }.sorted(), TSInteraction.anyFetchAll(transaction: transaction.asAnyRead).compactMap { ($0 as! TSMessage).body }.sorted())
+            XCTAssertEqual(2, TSAttachment.anyCount(transaction: transaction.asAnyRead))
+            XCTAssertEqual([attachment1.uniqueId, attachment2.uniqueId].sorted(), TSAttachment.anyAllUniqueIds(transaction: transaction.asAnyRead).sorted())
+        }
+        self.read { transaction in
+            XCTAssertEqual(2, TSThread.anyCount(transaction: transaction))
+            XCTAssertEqual([contactThread1.uniqueId, contactThread2.uniqueId].sorted(), TSThread.anyAllUniqueIds(transaction: transaction).sorted())
+            XCTAssertEqual(3, TSInteraction.anyCount(transaction: transaction))
+            XCTAssertEqual([outgoingMessage1.uniqueId, outgoingMessage2.uniqueId, outgoingMessage3.uniqueId].sorted(), TSInteraction.anyAllUniqueIds(transaction: transaction).sorted())
+            XCTAssertEqual([outgoingMessage1, outgoingMessage2, outgoingMessage3].compactMap { $0.body }.sorted(), TSInteraction.anyFetchAll(transaction: transaction).compactMap { ($0 as! TSMessage).body }.sorted())
+            XCTAssertEqual(2, TSAttachment.anyCount(transaction: transaction))
+            XCTAssertEqual([attachment1.uniqueId, attachment2.uniqueId].sorted(), TSAttachment.anyAllUniqueIds(transaction: transaction).sorted())
+        }
+    }
 }
