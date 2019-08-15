@@ -815,8 +815,13 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return profileName;
     }
 
+    NSString *_Nullable username = [self.profileManager usernameForAddress:address];
+    if (username) {
+        username = [CommonFormats formatUsername:username];
+    }
+
     // else fall back to phone number or UUID
-    return phoneNumber ?: address.stringForDisplay;
+    return phoneNumber ?: username ?: address.stringForDisplay;
 }
 
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address

@@ -992,26 +992,26 @@ const CGFloat kIconViewLength = 24;
 
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)self.thread;
+        NSString *threadName = contactThread.name;
 
         SignalServiceAddress *recipientAddress = contactThread.contactAddress;
         NSString *_Nullable phoneNumber = recipientAddress.phoneNumber;
+        if (phoneNumber.length > 0) {
+            NSString *formattedPhoneNumber =
+                [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
 
-        BOOL hasNameAndPhoneNumber = phoneNumber && ![contactThread.name isEqualToString:phoneNumber];
-        if (hasNameAndPhoneNumber) {
-            NSAttributedString *subtitle = [[NSAttributedString alloc]
-                initWithString:[PhoneNumber
-                                   bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber]];
-            addSubtitle(subtitle);
-        } else {
-            NSString *_Nullable profileName = [self.contactsManager displayNameForAddress:recipientAddress];
-            if (profileName) {
-                addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
+            if (![threadName isEqualToString:formattedPhoneNumber]) {
+                NSAttributedString *subtitle = [[NSAttributedString alloc] initWithString:formattedPhoneNumber];
+                addSubtitle(subtitle);
             }
         }
 
         NSString *_Nullable username = [OWSProfileManager.sharedManager usernameForAddress:recipientAddress];
         if (username.length > 0) {
-            addSubtitle([[NSAttributedString alloc] initWithString:[CommonFormats formatUsername:username]]);
+            NSString *formattedUsername = [CommonFormats formatUsername:username];
+            if (![threadName isEqualToString:formattedUsername]) {
+                addSubtitle([[NSAttributedString alloc] initWithString:formattedUsername]);
+            }
         }
 
 #if DEBUG

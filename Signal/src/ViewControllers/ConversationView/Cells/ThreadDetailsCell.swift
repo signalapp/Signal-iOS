@@ -167,15 +167,20 @@ public class ThreadDetailsCell: ConversationViewCell {
                                                  comment: "The number of members in a group. Embeds {{member count}}")
             details = String(format: formatString, groupThread.groupModel.groupMembers.count)
         } else if let contactThread = threadDetails.thread as? TSContactThread {
+            let threadName = contactThread.name()
             if let phoneNumber = contactThread.contactAddress.phoneNumber {
-                details = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
+                let formattedNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
+                if threadName != formattedNumber {
+                    details = formattedNumber
+                }
             }
-            if let username = OWSProfileManager.shared().username(for: contactThread.contactAddress),
-                let formattedUsername = CommonFormats.formatUsername(username) {
-                if let existingDetails = details {
-                    details = existingDetails + "\n" + formattedUsername
-                } else {
-                    details = formattedUsername
+            if let username = OWSProfileManager.shared().username(for: contactThread.contactAddress) {
+                if let formattedUsername = CommonFormats.formatUsername(username), threadName != formattedUsername {
+                    if let existingDetails = details {
+                        details = existingDetails + "\n" + formattedUsername
+                    } else {
+                        details = formattedUsername
+                    }
                 }
             }
         } else {
