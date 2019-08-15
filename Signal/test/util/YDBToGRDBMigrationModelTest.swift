@@ -98,6 +98,10 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
         // OWSSessionResetJobRecord
         let contactThread1 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334444"))
         let contactThread2 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334445"))
+        // SSKMessageSenderJobRecord
+        let outgoingMessage1 = TSOutgoingMessage(in: contactThread1, messageBody: "good heavens", attachmentId: nil)
+        let outgoingMessage2 = TSOutgoingMessage(in: contactThread1, messageBody: "land's sakes", attachmentId: nil)
+        let outgoingMessage3 = TSOutgoingMessage(in: contactThread2, messageBody: "oh my word", attachmentId: nil)
 
         // SSKMessageDecryptJobRecord
         let messageDecryptJobFinder = AnyJobRecordFinder<SSKMessageDecryptJobRecord>()
@@ -105,6 +109,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
         // OWSSessionResetJobRecord
         let sessionResetJobFinder = AnyJobRecordFinder<OWSSessionResetJobRecord>()
         let sessionResetJobQueue = SessionResetJobQueue()
+        // SSKMessageSenderJobRecord
+        let messageSenderJobFinder = AnyJobRecordFinder<SSKMessageSenderJobRecord>()
+        let messageSenderJobQueue = MessageSenderJobQueue()
 
         self.yapRead { transaction in
             // SSKMessageDecryptJobRecord
@@ -113,6 +120,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             // OWSSessionResetJobRecord
             XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
             XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            // SSKMessageSenderJobRecord
+            XCTAssertNil(messageSenderJobFinder.getNextReady(label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(0, messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
         }
         self.read { transaction in
             // SSKMessageDecryptJobRecord
@@ -121,6 +131,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             // OWSSessionResetJobRecord
             XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+            // SSKMessageSenderJobRecord
+            XCTAssertNil(messageSenderJobFinder.getNextReady(label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction))
+            XCTAssertEqual(0, messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
         }
 
         self.yapWrite { transaction in
@@ -130,6 +143,15 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             // OWSSessionResetJobRecord
             sessionResetJobQueue.add(contactThread: contactThread1, transaction: transaction.asAnyWrite)
             sessionResetJobQueue.add(contactThread: contactThread2, transaction: transaction.asAnyWrite)
+            // SSKMessageSenderJobRecord
+            contactThread1.anyInsert(transaction: transaction.asAnyWrite)
+            contactThread2.anyInsert(transaction: transaction.asAnyWrite)
+            outgoingMessage1.anyInsert(transaction: transaction.asAnyWrite)
+            outgoingMessage2.anyInsert(transaction: transaction.asAnyWrite)
+            outgoingMessage3.anyInsert(transaction: transaction.asAnyWrite)
+            messageSenderJobQueue.add(message: outgoingMessage1.asPreparer, transaction: transaction.asAnyWrite)
+            messageSenderJobQueue.add(message: outgoingMessage2.asPreparer, transaction: transaction.asAnyWrite)
+            messageSenderJobQueue.add(message: outgoingMessage3.asPreparer, transaction: transaction.asAnyWrite)
         }
 
         self.yapRead { transaction in
@@ -141,6 +163,10 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             XCTAssertNotNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
             XCTAssertEqual(2, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
             XCTAssertEqual([contactThread1.uniqueId, contactThread2.uniqueId ], sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.contactThreadId })
+            // SSKMessageSenderJobRecord
+            XCTAssertNotNil(messageSenderJobFinder.getNextReady(label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(3, messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertEqual([outgoingMessage1.uniqueId, outgoingMessage2.uniqueId, outgoingMessage3.uniqueId ], messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.messageId })
         }
         self.read { transaction in
             // SSKMessageDecryptJobRecord
@@ -149,6 +175,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             // OWSSessionResetJobRecord
             XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+            // SSKMessageSenderJobRecord
+            XCTAssertNil(messageSenderJobFinder.getNextReady(label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction))
+            XCTAssertEqual(0, messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
         }
 
         let migratorGroups = [
@@ -170,6 +199,10 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             XCTAssertNotNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
             XCTAssertEqual(2, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
             XCTAssertEqual([contactThread1.uniqueId, contactThread2.uniqueId ], sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.contactThreadId })
+            // SSKMessageSenderJobRecord
+            XCTAssertNotNil(messageSenderJobFinder.getNextReady(label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(3, messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertEqual([outgoingMessage1.uniqueId, outgoingMessage2.uniqueId, outgoingMessage3.uniqueId ], messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.messageId })
         }
         self.read { transaction in
             // SSKMessageDecryptJobRecord
@@ -180,6 +213,10 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             XCTAssertNotNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(2, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
             XCTAssertEqual([contactThread1.uniqueId, contactThread2.uniqueId ], sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).compactMap { $0.contactThreadId })
+            // SSKMessageSenderJobRecord
+            XCTAssertNotNil(messageSenderJobFinder.getNextReady(label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction))
+            XCTAssertEqual(3, messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+            XCTAssertEqual([outgoingMessage1.uniqueId, outgoingMessage2.uniqueId, outgoingMessage3.uniqueId ], messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction).compactMap { $0.messageId })
         }
     }
 }

@@ -134,11 +134,6 @@ extension YDBToGRDBMigration {
         ]
 
         try self.migrate(migratorGroups: migratorGroups)
-
-        // GRDB TODO: OWSMessageDecryptJob
-        // GRDB TODO: SSKMessageDecryptJobRecord
-        // GRDB TODO: SSKMessageSenderJobRecord
-        // GRDB TODO: OWSSessionResetJobRecord
     }
 
     func migrate(migratorGroups: [GRDBMigratorGroup]) throws {
