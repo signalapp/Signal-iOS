@@ -264,19 +264,19 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 }
 
 // GRDB TODO: Remove.
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     [self ensureIdsWithTransaction:transaction];
 
-    [super saveWithTransaction:transaction];
+    [super ydb_saveWithTransaction:transaction];
 
     [self updateLastMessageWithTransaction:transaction.asAnyWrite];
 }
 
 // GRDB TODO: Remove.
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [super removeWithTransaction:transaction];
+    [super ydb_removeWithTransaction:transaction];
 
     [self touchThreadWithTransaction:transaction.asAnyWrite];
 }

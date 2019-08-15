@@ -156,9 +156,9 @@ NS_ASSUME_NONNULL_BEGIN
     return ![self.originalDictionaryValue isEqual:[self dictionaryValue]];
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    [super saveWithTransaction:transaction];
+    [super ydb_saveWithTransaction:transaction];
 
     self.originalDictionaryValue = [self dictionaryValue];
     self.newRecord = NO;

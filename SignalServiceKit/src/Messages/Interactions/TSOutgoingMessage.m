@@ -604,11 +604,11 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 }
 
 // GRDB TODO: Remove this override.
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     _storedMessageState = self.messageState;
 
-    [super saveWithTransaction:transaction];
+    [super ydb_saveWithTransaction:transaction];
 }
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction

@@ -485,7 +485,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 }
 
 // GRDB TODO: Convert to Any.
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // StickerManager does reference counting of "known" sticker packs.
     if (self.messageSticker != nil) {
@@ -497,11 +497,11 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    [super saveWithTransaction:transaction];
+    [super ydb_saveWithTransaction:transaction];
 }
 
 // GRDB TODO: Convert to Any.
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // StickerManager does reference counting of "known" sticker packs.
     if (self.messageSticker != nil) {
@@ -514,7 +514,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    [super removeWithTransaction:transaction];
+    [super ydb_removeWithTransaction:transaction];
 
     [self removeAllAttachmentsWithTransaction:transaction.asAnyWrite];
 }

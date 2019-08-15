@@ -10,6 +10,50 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// This macro is only intended to be used within TSYapDatabaseObject.
+#define OWSAssertCanReadYDB()                                                                                          \
+    do {                                                                                                               \
+        if (!self.databaseStorage.canReadFromYdb) {                                                                    \
+            OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
+            OWSLogError(                                                                                               \
+                @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
+                case StorageModeStrictnessFail:                                                                        \
+                    OWSFail(@"Unexpected YDB read.");                                                                  \
+                    break;                                                                                             \
+                case StorageModeStrictnessFailDebug:                                                                   \
+                    OWSFailDebug(@"Unexpected YDB read.");                                                             \
+                    break;                                                                                             \
+                case StorageModeStrictnessLog:                                                                         \
+                    OWSLogError(@"Unexpected YDB read.");                                                              \
+                    break;                                                                                             \
+            }                                                                                                          \
+        }                                                                                                              \
+    } while (NO)
+
+// This macro is only intended to be used within TSYapDatabaseObject.
+#define OWSAssertCanWriteYDB()                                                                                         \
+    do {                                                                                                               \
+        if (!self.databaseStorage.canWriteToYdb) {                                                                     \
+            OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
+            OWSLogError(                                                                                               \
+                @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
+                case StorageModeStrictnessFail:                                                                        \
+                    OWSFail(@"Unexpected YDB write.");                                                                 \
+                    break;                                                                                             \
+                case StorageModeStrictnessFailDebug:                                                                   \
+                    OWSFailDebug(@"Unexpected YDB write.");                                                            \
+                    break;                                                                                             \
+                case StorageModeStrictnessLog:                                                                         \
+                    OWSLogError(@"Unexpected YDB write.");                                                             \
+                    break;                                                                                             \
+            }                                                                                                          \
+        }                                                                                                              \
+    } while (NO)
+
+#pragma mark -
+
 @implementation TSYapDatabaseObject
 
 - (instancetype)init
@@ -49,24 +93,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    if (!self.shouldBeSaved) {
-        OWSLogDebug(@"Skipping save for %@.", [self class]);
-
-        return;
-    }
-
-    [transaction setObject:self forKey:self.uniqueId inCollection:[[self class] collection]];
-}
-
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    [transaction removeObjectForKey:self.uniqueId inCollection:[[self class] collection]];
-}
-
-#pragma mark Class Methods
-
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
@@ -77,19 +103,48 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
++ (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
 + (NSString *)collection
 {
     return NSStringFromClass([self class]);
 }
 
-+ (NSUInteger)numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction
+#pragma mark -
+
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    return [transaction numberOfKeysInCollection:[self collection]];
+    OWSAssertCanWriteYDB();
+
+    if (!self.shouldBeSaved) {
+        OWSLogDebug(@"Skipping save for %@.", [self class]);
+
+        return;
+    }
+
+    [transaction setObject:self forKey:self.uniqueId inCollection:[[self class] collection]];
 }
 
-+ (void)enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
-                                       usingBlock:(void (^)(id object, BOOL *stop))block
+- (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
+    OWSAssertCanWriteYDB();
+
+    [transaction removeObjectForKey:self.uniqueId inCollection:[[self class] collection]];
+}
+
++ (void)ydb_enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
+                                           usingBlock:(void (^)(id object, BOOL *stop))block
+{
+    OWSAssertCanReadYDB();
+
     // Ignoring most of the YapDB parameters, and just passing through the ones we usually use.
     void (^yapBlock)(NSString *key, id object, id metadata, BOOL *stop)
         = ^void(NSString *key, id object, id metadata, BOOL *stop) {
@@ -99,22 +154,28 @@ NS_ASSUME_NONNULL_BEGIN
     [transaction enumerateRowsInCollection:[self collection] usingBlock:yapBlock];
 }
 
-+ (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
-                                     transaction:(YapDatabaseReadTransaction *)transaction
++ (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID
+                                         transaction:(YapDatabaseReadTransaction *)transaction
 {
+    OWSAssertCanReadYDB();
+
     return [transaction objectForKey:uniqueID inCollection:[self collection]];
 }
 
 #pragma mark Reload
 
-- (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
-    [self reloadWithTransaction:transaction ignoreMissing:NO];
+    OWSAssertCanReadYDB();
+
+    [self ydb_reloadWithTransaction:transaction ignoreMissing:NO];
 }
 
-- (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing
+- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing
 {
-    TSYapDatabaseObject *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
+    OWSAssertCanReadYDB();
+
+    TSYapDatabaseObject *latest = [[self class] ydb_fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
     if (!latest) {
         if (!ignoreMissing) {
             OWSFailDebug(@"`latest` was unexpectedly nil");
@@ -160,59 +221,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     // Do nothing.
-}
-
-#pragma mark - YDB Deprecation
-
-+ (NSUInteger)ydb_numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    return [self numberOfKeysInCollectionWithTransaction:transaction];
-}
-
-+ (void)ydb_enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
-                                           usingBlock:(void (^)(id object, BOOL *stop))block
-{
-    OWSAssertDebug(transaction);
-
-    return [self enumerateCollectionObjectsWithTransaction:transaction usingBlock:block];
-}
-
-+ (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID
-                                         transaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    return [self fetchObjectWithUniqueID:uniqueID transaction:transaction];
-}
-
-- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    [self reloadWithTransaction:transaction];
-}
-
-- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing
-{
-    OWSAssertDebug(transaction);
-
-    [self reloadWithTransaction:transaction ignoreMissing:ignoreMissing];
-}
-
-- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    [self saveWithTransaction:transaction];
-}
-
-- (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    [self removeWithTransaction:transaction];
 }
 
 @end
