@@ -488,7 +488,7 @@ public class GRDBUnorderedRecordMigrator<T> : GRDBMigrator where T: SDSModel {
         self.memorySamplerRatio = memorySamplerRatio
     }
 
-    public     func migrate(grdbTransaction: GRDBWriteTransaction) throws {
+    public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyObjects { legacyRecord in
@@ -510,7 +510,7 @@ public class GRDBJobRecordMigrator: GRDBMigrator {
         self.finder = LegacyJobRecordFinder(transaction: ydbTransaction)
     }
 
-    public   func migrate(grdbTransaction: GRDBWriteTransaction) throws {
+    public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         try Bench(title: "Migrate SSKJobRecord", memorySamplerRatio: 0.02) { memorySampler in
             var recordCount = 0
             try finder.enumerateJobRecords { legacyRecord in
@@ -532,7 +532,7 @@ public class GRDBInteractionMigrator: GRDBMigrator {
         self.finder = LegacyInteractionFinder(transaction: ydbTransaction)
     }
 
-    public   func migrate(grdbTransaction: GRDBWriteTransaction) throws {
+    public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         try Bench(title: "Migrate Interactions", memorySamplerRatio: 0.001) { memorySampler in
             var recordCount = 0
             try finder.enumerateInteractions { legacyInteraction in

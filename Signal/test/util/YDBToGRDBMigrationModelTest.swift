@@ -4,6 +4,7 @@
 
 import XCTest
 import SignalServiceKit
+@testable import Signal
 @testable import SignalMessaging
 
 class YDBToGRDBMigrationModelTest: SignalBaseTest {
@@ -87,6 +88,98 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             XCTAssertNotNil(KnownStickerPack.anyFetch(uniqueId: KnownStickerPack.uniqueId(for: model2.info), transaction: transaction))
             XCTAssertNil(KnownStickerPack.anyFetch(uniqueId: KnownStickerPack.uniqueId(for: model3.info), transaction: transaction))
             XCTAssertEqual(2, KnownStickerPack.anyCount(transaction: transaction))
+        }
+    }
+
+    func testJobs() {
+        // SSKMessageDecryptJobRecord
+        let messageDecryptData1 = Randomness.generateRandomBytes(1024)
+        let messageDecryptData2 = Randomness.generateRandomBytes(1024)
+        // OWSSessionResetJobRecord
+        let contactThread1 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334444"))
+        let contactThread2 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334445"))
+
+        // SSKMessageDecryptJobRecord
+        let messageDecryptJobFinder = AnyJobRecordFinder<SSKMessageDecryptJobRecord>()
+        let messageDecryptJobQueue = SSKMessageDecryptJobQueue()
+        // OWSSessionResetJobRecord
+        let sessionResetJobFinder = AnyJobRecordFinder<OWSSessionResetJobRecord>()
+        let sessionResetJobQueue = SessionResetJobQueue()
+
+        self.yapRead { transaction in
+            // SSKMessageDecryptJobRecord
+            XCTAssertNil(messageDecryptJobFinder.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(0, messageDecryptJobFinder.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            // OWSSessionResetJobRecord
+            XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
+        }
+        self.read { transaction in
+            // SSKMessageDecryptJobRecord
+            XCTAssertNil(messageDecryptJobFinder.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction))
+            XCTAssertEqual(0, messageDecryptJobFinder.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+            // OWSSessionResetJobRecord
+            XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction))
+            XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+        }
+
+        self.yapWrite { transaction in
+            // SSKMessageDecryptJobRecord
+            messageDecryptJobQueue.add(envelopeData: messageDecryptData1, transaction: transaction.asAnyWrite)
+            messageDecryptJobQueue.add(envelopeData: messageDecryptData2, transaction: transaction.asAnyWrite)
+            // OWSSessionResetJobRecord
+            sessionResetJobQueue.add(contactThread: contactThread1, transaction: transaction.asAnyWrite)
+            sessionResetJobQueue.add(contactThread: contactThread2, transaction: transaction.asAnyWrite)
+        }
+
+        self.yapRead { transaction in
+            // SSKMessageDecryptJobRecord
+            XCTAssertNotNil(messageDecryptJobFinder.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, messageDecryptJobFinder.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.envelopeData })
+            // OWSSessionResetJobRecord
+            XCTAssertNotNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertEqual([contactThread1.uniqueId, contactThread2.uniqueId ], sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.contactThreadId })
+        }
+        self.read { transaction in
+            // SSKMessageDecryptJobRecord
+            XCTAssertNil(messageDecryptJobFinder.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction))
+            XCTAssertEqual(0, messageDecryptJobFinder.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+            // OWSSessionResetJobRecord
+            XCTAssertNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction))
+            XCTAssertEqual(0, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+        }
+
+        let migratorGroups = [
+            GRDBMigratorGroup { ydbTransaction in
+                return [
+                GRDBJobRecordMigrator(ydbTransaction: ydbTransaction)
+                ]
+            }
+        ]
+
+        try! YDBToGRDBMigration().migrate(migratorGroups: migratorGroups)
+
+        self.yapRead { transaction in
+            // SSKMessageDecryptJobRecord
+            XCTAssertNotNil(messageDecryptJobFinder.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, messageDecryptJobFinder.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.envelopeData })
+            // OWSSessionResetJobRecord
+            XCTAssertNotNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction.asAnyRead))
+            XCTAssertEqual(2, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).count)
+            XCTAssertEqual([contactThread1.uniqueId, contactThread2.uniqueId ], sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction.asAnyRead).compactMap { $0.contactThreadId })
+        }
+        self.read { transaction in
+            // SSKMessageDecryptJobRecord
+            XCTAssertNotNil(messageDecryptJobFinder.getNextReady(label: SSKMessageDecryptJobQueue.jobRecordLabel, transaction: transaction))
+            XCTAssertEqual(2, messageDecryptJobFinder.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+            XCTAssertEqual([messageDecryptData1, messageDecryptData2 ], messageDecryptJobFinder.allRecords(label: SSKMessageDecryptJobQueue.jobRecordLabel, status: .ready, transaction: transaction).compactMap { $0.envelopeData })
+            // OWSSessionResetJobRecord
+            XCTAssertNotNil(sessionResetJobFinder.getNextReady(label: sessionResetJobQueue.jobRecordLabel, transaction: transaction))
+            XCTAssertEqual(2, sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
+            XCTAssertEqual([contactThread1.uniqueId, contactThread2.uniqueId ], sessionResetJobFinder.allRecords(label: sessionResetJobQueue.jobRecordLabel, status: .ready, transaction: transaction).compactMap { $0.contactThreadId })
         }
     }
 }
