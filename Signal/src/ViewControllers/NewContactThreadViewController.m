@@ -354,10 +354,25 @@ NS_ASSUME_NONNULL_BEGIN
         [contents addSection:reminderSection];
     }
 
-    // Invite Contacts
-    if (self.contactsManager.isSystemContactsAuthorized) {
-        OWSTableSection *staticSection = [OWSTableSection new];
+    OWSTableSection *staticSection = [OWSTableSection new];
 
+    // Find Non-Contacts by Phone Number
+    [staticSection
+        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
+                                                         @"A label the cell that lets you add a new member to a group.")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
+                                                         NewContactThreadViewController, @"find_by_phone")
+                                     customRowHeight:UITableViewAutomaticDimension
+                                         actionBlock:^{
+                                             NewNonContactConversationViewController *viewController =
+                                                 [NewNonContactConversationViewController new];
+                                             viewController.nonContactConversationDelegate = weakSelf;
+                                             [weakSelf.navigationController pushViewController:viewController
+                                                                                      animated:YES];
+                                         }]];
+
+    if (self.contactsManager.isSystemContactsAuthorized) {
+        // Invite Contacts
         [staticSection
             addItem:[OWSTableItem
                          disclosureItemWithText:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
@@ -368,9 +383,8 @@ NS_ASSUME_NONNULL_BEGIN
                                     actionBlock:^{
                                         [weakSelf presentInviteFlow];
                                     }]];
-
-        [contents addSection:staticSection];
     }
+    [contents addSection:staticSection];
 
     BOOL hasSearchText = self.searchText.length > 0;
 
