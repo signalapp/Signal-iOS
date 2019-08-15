@@ -16,7 +16,7 @@ public class YDBToGRDBMigration: NSObject {
     //
     // However it doesn't know about any key-value stores defined in the
     // Signal (or hypothetically the SignalShareExtension) target(s).
-    // So the migration logic needs to be informed of those stores.    
+    // So the migration logic needs to be informed of those stores.
     private static var otherKeyStores = [String: SDSKeyValueStore]()
 
     @objc
@@ -477,7 +477,7 @@ public class GRDBKeyValueStoreMigrator<T> : GRDBMigrator {
 
 // MARK: -
 
-private class GRDBUnorderedRecordMigrator<T> : GRDBMigrator where T: SDSModel {
+public class GRDBUnorderedRecordMigrator<T> : GRDBMigrator where T: SDSModel {
     private let label: String
     private let finder: LegacyUnorderedFinder<T>
     private let memorySamplerRatio: Float
@@ -488,7 +488,7 @@ private class GRDBUnorderedRecordMigrator<T> : GRDBMigrator where T: SDSModel {
         self.memorySamplerRatio = memorySamplerRatio
     }
 
-    func migrate(grdbTransaction: GRDBWriteTransaction) throws {
+    public     func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         try Bench(title: "Migrate \(label)", memorySamplerRatio: memorySamplerRatio) { memorySampler in
             var recordCount = 0
             try finder.enumerateLegacyObjects { legacyRecord in
@@ -503,14 +503,14 @@ private class GRDBUnorderedRecordMigrator<T> : GRDBMigrator where T: SDSModel {
 
 // MARK: -
 
-private class GRDBJobRecordMigrator: GRDBMigrator {
+public class GRDBJobRecordMigrator: GRDBMigrator {
     private let finder: LegacyJobRecordFinder
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
         self.finder = LegacyJobRecordFinder(transaction: ydbTransaction)
     }
 
-    func migrate(grdbTransaction: GRDBWriteTransaction) throws {
+    public   func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         try Bench(title: "Migrate SSKJobRecord", memorySamplerRatio: 0.02) { memorySampler in
             var recordCount = 0
             try finder.enumerateJobRecords { legacyRecord in
@@ -525,14 +525,14 @@ private class GRDBJobRecordMigrator: GRDBMigrator {
 
 // MARK: -
 
-private class GRDBInteractionMigrator: GRDBMigrator {
+public class GRDBInteractionMigrator: GRDBMigrator {
     private let finder: LegacyInteractionFinder
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
         self.finder = LegacyInteractionFinder(transaction: ydbTransaction)
     }
 
-    func migrate(grdbTransaction: GRDBWriteTransaction) throws {
+    public   func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         try Bench(title: "Migrate Interactions", memorySamplerRatio: 0.001) { memorySampler in
             var recordCount = 0
             try finder.enumerateInteractions { legacyInteraction in
@@ -550,14 +550,14 @@ private class GRDBInteractionMigrator: GRDBMigrator {
 
 // MARK: -
 
-private class GRDBDecryptJobMigrator: GRDBMigrator {
+public class GRDBDecryptJobMigrator: GRDBMigrator {
     private let finder: LegacyUnorderedFinder<OWSMessageDecryptJob>
 
     init(ydbTransaction: YapDatabaseReadTransaction) {
         self.finder = LegacyUnorderedFinder(transaction: ydbTransaction)
     }
 
-    func migrate(grdbTransaction: GRDBWriteTransaction) throws {
+    public func migrate(grdbTransaction: GRDBWriteTransaction) throws {
         try! self.migrateMappedCollectionObjects(label: "DecryptJobs", finder: finder, memorySamplerRatio: 0.1, transaction: grdbTransaction) { (legacyJob: OWSMessageDecryptJob) -> SSKMessageDecryptJobRecord in
 
             // migrate any job records from the one-off decrypt job queue to a record for the new generic durable job queue

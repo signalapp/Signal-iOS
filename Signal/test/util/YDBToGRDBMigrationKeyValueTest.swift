@@ -6,7 +6,7 @@ import XCTest
 import SignalServiceKit
 @testable import SignalMessaging
 
-class YDBToGRDBMigrationTest: SignalBaseTest {
+class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
 
     override func setUp() {
         super.setUp()
