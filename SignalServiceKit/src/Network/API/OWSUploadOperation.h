@@ -15,6 +15,7 @@ extern NSString *const kAttachmentUploadAttachmentIDKey;
 @interface OWSUploadOperation : OWSOperation
 
 @property (readonly, nonatomic, nullable) TSAttachmentStream *completedUpload;
+@property (nonatomic, readonly, class) NSOperationQueue *uploadQueue;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId NS_DESIGNATED_INITIALIZER;

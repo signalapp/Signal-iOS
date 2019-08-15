@@ -46,6 +46,21 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     return SDSDatabaseStorage.shared;
 }
 
++ (NSOperationQueue *)uploadQueue
+{
+    static NSOperationQueue *operationQueue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        operationQueue = [NSOperationQueue new];
+        operationQueue.name = @"Uploads";
+
+        // TODO - stream uploads from file and raise this limit.
+        operationQueue.maxConcurrentOperationCount = 1;
+    });
+
+    return operationQueue;
+}
+
 #pragma mark -
 
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId

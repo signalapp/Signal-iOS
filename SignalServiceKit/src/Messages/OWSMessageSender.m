@@ -459,9 +459,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         for (NSString *attachmentId in outgoingMessagePreparer.savedAttachmentIds) {
             OWSUploadOperation *uploadAttachmentOperation =
                 [[OWSUploadOperation alloc] initWithAttachmentId:attachmentId];
-            // TODO: put attachment uploads on a (low priority) concurrent queue
             [sendMessageOperation addDependency:uploadAttachmentOperation];
-            [sendingQueue addOperation:uploadAttachmentOperation];
+            [OWSUploadOperation.uploadQueue addOperation:uploadAttachmentOperation];
         }
 
         [sendingQueue addOperation:sendMessageOperation];

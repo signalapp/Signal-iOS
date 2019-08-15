@@ -81,20 +81,12 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
 
     // MARK: -
 
-    let uploadQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "BroadcastMediaMessageUploads"
-        // TODO - stream uploads from file and raise this limit.
-        operationQueue.maxConcurrentOperationCount = 1
-        return operationQueue
-    }()
-
     public override func run() {
         let uploadOperations = jobRecord.attachmentIdMap.keys.map { attachmentId in
             return OWSUploadOperation(attachmentId: attachmentId)
         }
 
-        uploadQueue.addOperations(uploadOperations, waitUntilFinished: true)
+        OWSUploadOperation.uploadQueue.addOperations(uploadOperations, waitUntilFinished: true)
         if let error = (uploadOperations.compactMap { $0.failingError }).first {
             reportError(withUndefinedRetry: error)
             return
