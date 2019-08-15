@@ -54,7 +54,7 @@ public class MediaGalleryItem: Equatable, Hashable {
         self.attachmentStream = attachmentStream
         self.captionForDisplay = attachmentStream.caption?.filterForDisplay
         self.galleryDate = GalleryDate(message: message)
-        self.albumIndex = message.attachmentIds.index(of: attachmentStream.uniqueId)
+        self.albumIndex = message.attachmentIds.firstIndex(of: attachmentStream.uniqueId) ?? 0
         self.orderingKey = MediaGalleryItemOrderingKey(messageSortKey: message.sortId, attachmentSortKey: albumIndex)
     }
 

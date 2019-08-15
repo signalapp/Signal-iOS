@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface TSMessage : TSInteraction <OWSPreviewText>
 
 // NOTE: These correspond to just the "body" attachments.
-@property (nonatomic, readonly) NSMutableArray<NSString *> *attachmentIds;
+@property (nonatomic) NSArray<NSString *> *attachmentIds;
 @property (nonatomic, readonly, nullable) NSString *body;
 
 // Per-conversation expiration.

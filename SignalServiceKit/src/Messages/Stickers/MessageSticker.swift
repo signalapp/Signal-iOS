@@ -158,20 +158,17 @@ public class MessageSticker: MTLModel {
             owsFailDebug("Could not determine file size for installed sticker.")
             return nil
         }
-        guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: false) else {
-            owsFailDebug("Could not create data source for installed sticker.")
-            return nil
-        }
-        let contentType = dataProto.contentType ?? OWSMimeTypeImageWebp
-        let attachment = TSAttachmentStream(contentType: contentType, byteCount: fileSize.uint32Value, sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: false)
         do {
+            let dataSource = try DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: false)
+            let contentType = dataProto.contentType ?? OWSMimeTypeImageWebp
+            let attachment = TSAttachmentStream(contentType: contentType, byteCount: fileSize.uint32Value, sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: false)
             try attachment.writeCopyingDataSource(dataSource)
+            attachment.anyInsert(transaction: transaction)
+            return attachment
         } catch {
             owsFailDebug("Could not write data source for path: \(filePath), error: \(error)")
             return nil
         }
-        attachment.anyInsert(transaction: transaction)
-        return attachment
     }
 
     @objc
@@ -197,18 +194,9 @@ public class MessageSticker: MTLModel {
         let fileExtension = "webp"
         let contentType = OWSMimeTypeImageWebp
 
-        let filePath = OWSFileSystem.temporaryFilePath(withFileExtension: fileExtension)
-        do {
-            try stickerData.write(to: NSURL.fileURL(withPath: filePath))
-        } catch let error as NSError {
-            owsFailDebug("file write failed: \(filePath), \(error)")
-            throw StickerError.assertionFailure
-        }
-
-        guard let dataSource = DataSourcePath.dataSource(withFilePath: filePath, shouldDeleteOnDeallocation: true) else {
-            owsFailDebug("Could not create data source for path: \(filePath)")
-            throw StickerError.assertionFailure
-        }
+        let fileUrl = OWSFileSystem.temporaryFileUrl(fileExtension: fileExtension)
+        try stickerData.write(to: fileUrl)
+        let dataSource = try DataSourcePath.dataSource(with: fileUrl, shouldDeleteOnDeallocation: true)
         let attachment = TSAttachmentStream(contentType: contentType, byteCount: UInt32(fileSize), sourceFilename: nil, caption: nil, albumMessageId: nil, shouldAlwaysPad: true)
         try attachment.writeConsumingDataSource(dataSource)
 

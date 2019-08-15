@@ -248,6 +248,21 @@ public class SignalAttachment: NSObject {
         return errorDescription
     }
 
+    public func cloneAttachment() throws -> SignalAttachment {
+        let sourceUrl = dataUrl!
+        let newUrl = OWSFileSystem.temporaryFileUrl(fileExtension: sourceUrl.pathExtension)
+        try FileManager.default.copyItem(at: sourceUrl, to: newUrl)
+
+        let clonedDataSource = try DataSourcePath.dataSource(with: newUrl,
+                                                             shouldDeleteOnDeallocation: true)
+        clonedDataSource.sourceFilename = sourceFilename
+
+        let attachment = SignalAttachment(dataSource: clonedDataSource, dataUTI: self.dataUTI)
+        attachment.captionText = self.captionText
+
+        return attachment
+    }
+
     @objc
     public func buildOutgoingAttachmentInfo(message: TSMessage) -> OutgoingAttachmentInfo {
         return OutgoingAttachmentInfo(dataSource: dataSource,
@@ -1024,19 +1039,20 @@ public class SignalAttachment: NSObject {
             let baseFilename = dataSource.sourceFilename
             let mp4Filename = baseFilename?.filenameWithoutExtension.appendingFileExtension("mp4")
 
-            guard let dataSource = DataSourcePath.dataSource(with: exportURL,
-                                                             shouldDeleteOnDeallocation: true) else {
+            do {
+                let dataSource = try DataSourcePath.dataSource(with: exportURL,
+                                                               shouldDeleteOnDeallocation: true)
+                dataSource.sourceFilename = mp4Filename
+
+                let attachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
+                resolver.fulfill(attachment)
+            } catch {
                 owsFailDebug("Failed to build data source for exported video URL")
                 let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
                 attachment.error = .couldNotConvertToMpeg4
                 resolver.fulfill(attachment)
                 return
             }
-
-            dataSource.sourceFilename = mp4Filename
-
-            let attachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeMPEG4 as String)
-            resolver.fulfill(attachment)
         }
 
         return (promise, exportSession)

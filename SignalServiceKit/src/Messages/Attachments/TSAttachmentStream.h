@@ -147,7 +147,7 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 - (void)updateAsUploadedWithEncryptionKey:(NSData *)encryptionKey
                                    digest:(NSData *)digest
                                  serverId:(UInt64)serverId
-                               completion:(dispatch_block_t)completion;
+                              transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (nullable TSAttachmentStream *)cloneAsThumbnail;
 

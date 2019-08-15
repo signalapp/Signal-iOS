@@ -104,6 +104,28 @@ void AssertIsOnSendingQueue()
     return self;
 }
 
+- (nullable TSAttachmentStream *)asStreamConsumingDataSourceWithIsVoiceMessage:(BOOL)isVoiceMessage
+                                                                         error:(NSError **)error
+{
+    TSAttachmentStream *attachmentStream =
+        [[TSAttachmentStream alloc] initWithContentType:self.contentType
+                                              byteCount:(UInt32)self.dataSource.dataLength
+                                         sourceFilename:self.sourceFilename
+                                                caption:self.caption
+                                         albumMessageId:self.albumMessageId
+                                        shouldAlwaysPad:NO];
+
+    if (isVoiceMessage) {
+        attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
+    }
+
+    [attachmentStream writeConsumingDataSource:self.dataSource error:error];
+    if (*error != nil) {
+        return nil;
+    }
+
+    return attachmentStream;
+}
 @end
 
 #pragma mark -
@@ -437,9 +459,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         for (NSString *attachmentId in outgoingMessagePreparer.savedAttachmentIds) {
             OWSUploadOperation *uploadAttachmentOperation =
                 [[OWSUploadOperation alloc] initWithAttachmentId:attachmentId];
-            // TODO: put attachment uploads on a (low priority) concurrent queue
             [sendMessageOperation addDependency:uploadAttachmentOperation];
-            [sendingQueue addOperation:uploadAttachmentOperation];
+            [OWSUploadOperation.uploadQueue addOperation:uploadAttachmentOperation];
         }
 
         [sendingQueue addOperation:sendMessageOperation];
@@ -2044,35 +2065,27 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
     for (OWSOutgoingAttachmentInfo *attachmentInfo in attachmentInfos) {
         TSAttachmentStream *attachmentStream =
-            [[TSAttachmentStream alloc] initWithContentType:attachmentInfo.contentType
-                                                  byteCount:(UInt32)attachmentInfo.dataSource.dataLength
-                                             sourceFilename:attachmentInfo.sourceFilename
-                                                    caption:attachmentInfo.caption
-                                             albumMessageId:attachmentInfo.albumMessageId
-                                            shouldAlwaysPad:NO];
-        if (outgoingMessage.isVoiceMessage) {
-            attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
-        }
-
-        [attachmentStream writeConsumingDataSource:attachmentInfo.dataSource error:error];
+            [attachmentInfo asStreamConsumingDataSourceWithIsVoiceMessage:outgoingMessage.isVoiceMessage error:error];
         if (*error != nil) {
             return NO;
         }
-
+        OWSAssert(attachmentStream != nil);
         [attachmentStreams addObject:attachmentStream];
     }
 
     [outgoingMessage
         anyUpdateOutgoingMessageWithTransaction:transaction
                                           block:^(TSOutgoingMessage *outgoingMessage) {
+                                              NSMutableArray<NSString *> *attachmentIds =
+                                                  [outgoingMessage.attachmentIds mutableCopy];
                                               for (TSAttachmentStream *attachmentStream in attachmentStreams) {
-                                                  [outgoingMessage.attachmentIds addObject:attachmentStream.uniqueId];
-
+                                                  [attachmentIds addObject:attachmentStream.uniqueId];
                                                   if (attachmentStream.sourceFilename) {
                                                       outgoingMessage.attachmentFilenameMap[attachmentStream.uniqueId]
                                                           = attachmentStream.sourceFilename;
                                                   }
                                               }
+                                              outgoingMessage.attachmentIds = [attachmentIds copy];
                                           }];
 
     for (TSAttachmentStream *attachmentStream in attachmentStreams) {

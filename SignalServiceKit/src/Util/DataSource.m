@@ -5,6 +5,7 @@
 #import "DataSource.h"
 #import "MIMETypeUtil.h"
 #import "NSData+Image.h"
+#import "OWSError.h"
 #import "OWSFileSystem.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/iOSVersions.h>
@@ -260,9 +261,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (instancetype)initWithFileUrl:(NSURL *)fileUrl
-     shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
+- (nullable instancetype)initWithFileUrl:(NSURL *)fileUrl
+              shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
+                                   error:(NSError **)error
 {
+    if (!fileUrl || ![fileUrl isFileURL]) {
+        NSString *errorMsg = [NSString stringWithFormat:@"unexpected fileUrl: %@", fileUrl];
+        *error = OWSErrorMakeAssertionError(errorMsg);
+        return nil;
+    }
+
     self = [super init];
     if (!self) {
         return self;
@@ -275,27 +283,31 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-+ (_Nullable id<DataSource>)dataSourceWithURL:(NSURL *)fileUrl shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
++ (_Nullable id<DataSource>)dataSourceWithURL:(NSURL *)fileUrl
+                   shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
+                                        error:(NSError **)error
 {
-    if (!fileUrl || ![fileUrl isFileURL]) {
-        OWSFailDebug(@"unexpected fileURL: %@", fileUrl);
-        return nil;
-    }
-
-    return [[self alloc] initWithFileUrl:fileUrl shouldDeleteOnDeallocation:shouldDeleteOnDeallocation];
+    return [[self alloc] initWithFileUrl:fileUrl
+              shouldDeleteOnDeallocation:shouldDeleteOnDeallocation
+                                   error:error];
 }
 
 + (_Nullable id<DataSource>)dataSourceWithFilePath:(NSString *)filePath
                         shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
+                                             error:(NSError **)error
 {
     OWSAssertDebug(filePath);
 
     if (!filePath) {
+        NSString *errorMsg = [NSString stringWithFormat:@"unexpected filePath: %@", filePath];
+        *error = OWSErrorMakeAssertionError(errorMsg);
         return nil;
     }
 
     NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
-    return [[self alloc] initWithFileUrl:fileUrl shouldDeleteOnDeallocation:shouldDeleteOnDeallocation];
+    return [[self alloc] initWithFileUrl:fileUrl
+              shouldDeleteOnDeallocation:shouldDeleteOnDeallocation
+                                   error:error];
 }
 
 + (_Nullable id<DataSource>)dataSourceWritingTempFileData:(NSData *)data
@@ -309,7 +321,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    return [[self alloc] initWithFileUrl:fileUrl shouldDeleteOnDeallocation:YES];
+    return [[self alloc] initWithFileUrl:fileUrl shouldDeleteOnDeallocation:YES error:error];
 }
 
 + (_Nullable id<DataSource>)dataSourceWritingSyncMessageData:(NSData *)data error:(NSError **)error

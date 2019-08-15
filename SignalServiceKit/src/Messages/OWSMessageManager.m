@@ -1516,10 +1516,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =
         [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:incomingMessage];
+
+    NSMutableArray<NSString *> *attachmentIds = [incomingMessage.attachmentIds mutableCopy];
     for (TSAttachmentPointer *pointer in attachmentPointers) {
         [pointer anyInsertWithTransaction:transaction];
-        [incomingMessage.attachmentIds addObject:pointer.uniqueId];
+        [attachmentIds addObject:pointer.uniqueId];
     }
+    incomingMessage.attachmentIds = [attachmentIds copy];
 
     if (!incomingMessage.hasRenderableContent) {
         OWSLogWarn(@"Ignoring empty: %@", messageDescription);

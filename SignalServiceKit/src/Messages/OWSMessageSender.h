@@ -50,6 +50,9 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
                            caption:(nullable NSString *)caption
                     albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
 
+- (nullable TSAttachmentStream *)asStreamConsumingDataSourceWithIsVoiceMessage:(BOOL)isVoiceMessage
+                                                                         error:(NSError **)error;
+
 @end
 
 #pragma mark -

@@ -138,6 +138,28 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return outgoingMessagePreparer.unpreparedMessage;
 }
 
++ (nullable TSOutgoingMessage *)createUnsentMessageWithText:(nullable NSString *)fullMessageText
+                                           mediaAttachments:(NSArray<SignalAttachment *> *)mediaAttachments
+                                                   inThread:(TSThread *)thread
+                                           quotedReplyModel:(nullable OWSQuotedReplyModel *)quotedReplyModel
+                                           linkPreviewDraft:(nullable nullable OWSLinkPreviewDraft *)linkPreviewDraft
+                                                transaction:(SDSAnyWriteTransaction *)transaction
+                                                      error:(NSError **)error
+{
+    OWSAssertDebug(thread);
+
+    OutgoingMessagePreparer *outgoingMessagePreparer =
+        [[OutgoingMessagePreparer alloc] initWithFullMessageText:fullMessageText
+                                                mediaAttachments:mediaAttachments
+                                                          thread:thread
+                                                quotedReplyModel:quotedReplyModel
+                                                     transaction:transaction];
+
+    [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:linkPreviewDraft transaction:transaction];
+
+    return [outgoingMessagePreparer prepareMessageWithTransaction:transaction error:error];
+}
+
 + (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare inThread:(TSThread *)thread
 {
     OWSAssertIsOnMainThread();

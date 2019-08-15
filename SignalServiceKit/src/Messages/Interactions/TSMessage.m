@@ -23,8 +23,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @interface TSMessage ()
 
-@property (nonatomic) NSMutableArray<NSString *> *attachmentIds;
-
 @property (nonatomic, nullable) NSString *body;
 @property (nonatomic) uint32_t expiresInSeconds;
 @property (nonatomic) uint64_t expireStartedAt;
@@ -354,7 +352,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) {
-                                        [message.attachmentIds removeObject:attachment.uniqueId];
+                                        NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
+                                        [attachmentIds removeObject:attachment.uniqueId];
+                                        message.attachmentIds = attachmentIds;
                                     }];
 }
 

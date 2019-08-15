@@ -12,17 +12,17 @@ import SignalCoreKit
 // MARK: - Typed Convenience Methods
 
 @objc
-public extension SSKMessageDecryptJobRecord {
+public extension OWSBroadcastMediaMessageJobRecord {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchMessageDecryptJobRecord(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> SSKMessageDecryptJobRecord? {
+    class func anyFetchBroadcastMediaMessageJobRecord(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> OWSBroadcastMediaMessageJobRecord? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {
                                         return nil
         }
-        guard let instance = object as? SSKMessageDecryptJobRecord else {
+        guard let instance = object as? OWSBroadcastMediaMessageJobRecord else {
             owsFailDebug("Object has unexpected type: \(type(of: object))")
             return nil
         }
@@ -30,9 +30,9 @@ public extension SSKMessageDecryptJobRecord {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateMessageDecryptJobRecord(transaction: SDSAnyWriteTransaction, block: (SSKMessageDecryptJobRecord) -> Void) {
+    func anyUpdateBroadcastMediaMessageJobRecord(transaction: SDSAnyWriteTransaction, block: (OWSBroadcastMediaMessageJobRecord) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
-            guard let instance = object as? SSKMessageDecryptJobRecord else {
+            guard let instance = object as? OWSBroadcastMediaMessageJobRecord else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")
                 return
             }
@@ -45,10 +45,10 @@ public extension SSKMessageDecryptJobRecord {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class SSKMessageDecryptJobRecordSerializer: SDSSerializer {
+class OWSBroadcastMediaMessageJobRecordSerializer: SDSSerializer {
 
-    private let model: SSKMessageDecryptJobRecord
-    public required init(model: SSKMessageDecryptJobRecord) {
+    private let model: OWSBroadcastMediaMessageJobRecord
+    public required init(model: OWSBroadcastMediaMessageJobRecord) {
         self.model = model
     }
 
@@ -57,7 +57,7 @@ class SSKMessageDecryptJobRecordSerializer: SDSSerializer {
     func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
-        let recordType: SDSRecordType = .messageDecryptJobRecord
+        let recordType: SDSRecordType = .broadcastMediaMessageJobRecord
         let uniqueId: String = model.uniqueId
 
         // Base class properties
@@ -66,9 +66,9 @@ class SSKMessageDecryptJobRecordSerializer: SDSSerializer {
         let status: SSKJobRecordStatus = model.status
 
         // Subclass properties
-        let attachmentIdMap: Data? = nil
+        let attachmentIdMap: Data? = optionalArchive(model.attachmentIdMap)
         let contactThreadId: String? = nil
-        let envelopeData: Data? = model.envelopeData
+        let envelopeData: Data? = nil
         let invisibleMessage: Data? = nil
         let messageId: String? = nil
         let removeMessageAfterSending: Bool? = nil

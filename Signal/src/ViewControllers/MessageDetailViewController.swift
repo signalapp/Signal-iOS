@@ -428,7 +428,7 @@ class MessageDetailViewController: OWSViewController {
 
     private func fetchAttachment(transaction: SDSAnyReadTransaction) -> TSAttachment? {
         // TODO: Support multi-image messages.
-        guard let attachmentId = message.attachmentIds.firstObject as? String else {
+        guard let attachmentId = message.attachmentIds.first else {
             return nil
         }
 

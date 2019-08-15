@@ -57,10 +57,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DataSourcePath : NSObject <DataSource>
 
-+ (_Nullable id<DataSource>)dataSourceWithURL:(NSURL *)fileUrl shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
++ (_Nullable id<DataSource>)dataSourceWithURL:(NSURL *)fileUrl
+                   shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
+                                        error:(NSError **)error;
 
 + (_Nullable id<DataSource>)dataSourceWithFilePath:(NSString *)filePath
-                     shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation;
+                        shouldDeleteOnDeallocation:(BOOL)shouldDeleteOnDeallocation
+                                             error:(NSError **)error;
 
 + (_Nullable id<DataSource>)dataSourceWritingTempFileData:(NSData *)data
                                             fileExtension:(NSString *)fileExtension

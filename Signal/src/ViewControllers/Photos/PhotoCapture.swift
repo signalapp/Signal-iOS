@@ -504,7 +504,7 @@ extension PhotoCapture: CaptureOutputDelegate {
             Logger.info("Ignoring error, since capture succeeded.")
         }
 
-        guard let dataSource = DataSourcePath.dataSource(with: outputFileURL, shouldDeleteOnDeallocation: true) else {
+        guard let dataSource = try? DataSourcePath.dataSource(with: outputFileURL, shouldDeleteOnDeallocation: true) else {
             delegate?.photoCapture(self, processingDidError: PhotoCaptureError.captureFailed)
             return
         }
