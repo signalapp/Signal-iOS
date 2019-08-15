@@ -170,11 +170,12 @@ public class ThreadDetailsCell: ConversationViewCell {
             if let phoneNumber = contactThread.contactAddress.phoneNumber {
                 details = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
             }
-            if let username = OWSProfileManager.shared().username(for: contactThread.contactAddress) {
+            if let username = OWSProfileManager.shared().username(for: contactThread.contactAddress),
+                let formattedUsername = CommonFormats.formatUsername(username) {
                 if let existingDetails = details {
-                    details = existingDetails + "\n" + CommonFormats.formatUsername(username)
+                    details = existingDetails + "\n" + formattedUsername
                 } else {
-                    details = CommonFormats.formatUsername(username)
+                    details = formattedUsername
                 }
             }
         } else {
