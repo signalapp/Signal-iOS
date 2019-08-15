@@ -63,6 +63,10 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     // MARK: - Tests
 
     func test_contactMessage_e164Envelope() {
+        // GRDB TODO: This test can be fixed using SDSDatabaseStorageObservation
+        //            in master.
+        XCTAssert(FeatureFlags.useGRDB)
+
         write { transaction in
             try! self.runner.initialize(senderClient: self.bobClient,
                                         recipientClient: self.localClient,
@@ -94,9 +98,10 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                     }
                     XCTAssertEqual(thread.contactAddress, self.bobClient.address)
                     XCTAssertNotEqual(thread.contactAddress, self.aliceClient.address)
-
-                    expectMessageProcessed.fulfill()
+                } else {
+                    XCTFail("Missing message")
                 }
+                expectMessageProcessed.fulfill()
             }
         }
         guard let observer = databaseStorage.grdbStorage.uiDatabaseObserver else {
