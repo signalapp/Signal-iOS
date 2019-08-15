@@ -307,6 +307,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             // We don't need to use OWSDisappearingMessagesJob in the SAE.
 
+            // TODO: This is probably superfluous and can be removed.
             syncManager.syncLocalContact().retainUntilComplete()
         }
     }

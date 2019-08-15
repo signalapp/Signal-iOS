@@ -1436,8 +1436,10 @@ static NSTimeInterval launchStartedAt;
         }];
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
+
         [self.disappearingMessagesJob startIfNecessary];
 
+        // TODO: This is probably superfluous and can be removed.
         [[self.syncManager syncLocalContact] retainUntilComplete];
 
         // For non-legacy users, read receipts are on by default.
