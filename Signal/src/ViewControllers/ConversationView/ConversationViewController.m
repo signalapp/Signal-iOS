@@ -2837,7 +2837,7 @@ typedef enum : NSUInteger {
     _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:url
                                                  shouldDeleteOnDeallocation:NO
                                                                       error:&error];
-    if (error != nil) {
+    if (dataSource == nil) {
         OWSFailDebug(@"error: %@", error);
 
         dispatch_async(dispatch_get_main_queue(), ^{

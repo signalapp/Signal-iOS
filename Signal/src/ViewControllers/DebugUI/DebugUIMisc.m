@@ -240,7 +240,7 @@ NS_ASSUME_NONNULL_BEGIN
     _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
                                                       shouldDeleteOnDeallocation:YES
                                                                            error:&error];
-    OWSAssertDebug(error == nil);
+    OWSAssertDebug(dataSource != nil);
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
     NSData *databasePassword = [OWSPrimaryStorage.sharedManager databasePassword];
@@ -279,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
     _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
                                                       shouldDeleteOnDeallocation:YES
                                                                            error:&error];
-    if (error != nil) {
+    if (dataSource == nil) {
         OWSFailDebug(@"Could not create dataSource: %@.", error);
         return;
     }

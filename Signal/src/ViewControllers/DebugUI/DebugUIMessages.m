@@ -442,7 +442,7 @@ NS_ASSUME_NONNULL_BEGIN
     _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
                                                       shouldDeleteOnDeallocation:NO
                                                                            error:&error];
-    if (error != nil) {
+    if (dataSource == nil) {
         OWSFailDebug(@"error while creating data source: %@", error);
         failure();
         return;
@@ -1767,7 +1767,7 @@ NS_ASSUME_NONNULL_BEGIN
     _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithFilePath:filePath
                                                       shouldDeleteOnDeallocation:NO
                                                                            error:&error];
-    OWSAssertDebug(error == nil);
+    OWSAssertDebug(dataSource != nil);
     [dataSource setSourceFilename:filename];
     SignalAttachment *attachment =
         [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType imageQuality:TSImageQualityOriginal];
