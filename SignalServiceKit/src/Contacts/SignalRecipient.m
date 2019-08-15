@@ -16,7 +16,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
 @interface SignalRecipient ()
 
-@property (nonatomic) NSOrderedSet *devices;
+@property (nonatomic) NSOrderedSet<NSNumber *> *devices;
 @property (nonatomic) NSUInteger recipientSchemaVersion;
 
 @end
@@ -132,7 +132,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                         devices:(NSOrderedSet *)devices
+                         devices:(NSOrderedSet<NSNumber *> *)devices
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
           recipientSchemaVersion:(NSUInteger)recipientSchemaVersion
                    recipientUUID:(nullable NSString *)recipientUUID
@@ -177,26 +177,26 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
 #pragma mark -
 
-- (void)addDevices:(NSSet *)devices
+- (void)addDevices:(NSSet<NSNumber *> *)devices
 {
     OWSAssertDebug(devices.count > 0);
 
-    NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
+    NSMutableOrderedSet<NSNumber *> *updatedDevices = [self.devices mutableCopy];
     [updatedDevices unionSet:devices];
     self.devices = [updatedDevices copy];
 }
 
-- (void)removeDevices:(NSSet *)devices
+- (void)removeDevices:(NSSet<NSNumber *> *)devices
 {
     OWSAssertDebug(devices.count > 0);
 
-    NSMutableOrderedSet *updatedDevices = [self.devices mutableCopy];
+    NSMutableOrderedSet<NSNumber *> *updatedDevices = [self.devices mutableCopy];
     [updatedDevices minusSet:devices];
     self.devices = [updatedDevices copy];
 }
 
-- (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray *)devicesToAdd
-                                  devicesToRemove:(nullable NSArray *)devicesToRemove
+- (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
+                                  devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
                                       transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
@@ -224,7 +224,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     });
 }
 
-- (void)addDevicesToRegisteredRecipient:(NSSet *)devices transaction:(SDSAnyWriteTransaction *)transaction
+- (void)addDevicesToRegisteredRecipient:(NSSet<NSNumber *> *)devices transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(devices.count > 0);
@@ -237,7 +237,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
                              }];
 }
 
-- (void)removeDevicesFromRecipient:(NSSet *)devices transaction:(SDSAnyWriteTransaction *)transaction
+- (void)removeDevicesFromRecipient:(NSSet<NSNumber *> *)devices transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(devices.count > 0);
@@ -366,7 +366,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
         } else {
             [recipient anyUpdateWithTransaction:transaction
                                           block:^(SignalRecipient *signalRecipient) {
-                                              [signalRecipient removeDevices:recipient.devices.set];
+                                              signalRecipient.devices = [NSOrderedSet new];
                                           }];
         }
 

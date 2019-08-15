@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// b) We hang the "known device list" for known signal accounts on this entity.
 @interface SignalRecipient : BaseModel
 
-@property (nonatomic, readonly) NSOrderedSet *devices;
+@property (nonatomic, readonly) NSOrderedSet<NSNumber *> *devices;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                         devices:(NSOrderedSet *)devices
+                         devices:(NSOrderedSet<NSNumber *> *)devices
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
           recipientSchemaVersion:(NSUInteger)recipientSchemaVersion
                    recipientUUID:(nullable NSString *)recipientUUID
@@ -52,8 +52,8 @@ NS_SWIFT_NAME(init(uniqueId:devices:recipientPhoneNumber:recipientSchemaVersion:
 + (instancetype)getOrBuildUnsavedRecipientForAddress:(SignalServiceAddress *)address
                                          transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray *)devicesToAdd
-                                  devicesToRemove:(nullable NSArray *)devicesToRemove
+- (void)updateRegisteredRecipientWithDevicesToAdd:(nullable NSArray<NSNumber *> *)devicesToAdd
+                                  devicesToRemove:(nullable NSArray<NSNumber *> *)devicesToRemove
                                       transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (nonatomic, nullable) NSString *recipientPhoneNumber;
