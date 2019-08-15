@@ -154,8 +154,9 @@ NS_ASSUME_NONNULL_BEGIN
         [OWSStorage registerExtensionsWithMigrationBlock:^() {
             // Pre-heat caches to avoid sneaky transactions during the migrations.
             //
-            // NOTE: It's imperative that we only perform read
-            // transactions at this time.
+            // We need to do as few writes as possible here, to avoid conflicts
+            // with the migrations which haven't run yet.
+            //
             // We need to initialize these two managers before the migrations run.
             [blockingManager warmCaches];
             [profileManager warmCaches];

@@ -899,6 +899,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (nullable UIImage *)systemContactImageForAddress:(nullable SignalServiceAddress *)address
 {
     if (address == nil) {
+        OWSFailDebug(@"address was unexpectedly nil");
         return nil;
     }
 
@@ -918,6 +919,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address
 {
     if (address == nil) {
+        OWSFailDebug(@"address was unexpectedly nil");
         return nil;
     }
 
@@ -931,6 +933,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address
 {
     if (address == nil) {
+        OWSFailDebug(@"address was unexpectedly nil");
         return nil;
     }
 
@@ -950,6 +953,9 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     // Prefer the contact image from the local address book if available
     __block UIImage *_Nullable image = [self systemContactImageForAddress:address];
+    if (image != nil) {
+        return image;
+    }
 
     // Else try to use the image from their profile
     return [self profileImageForAddressWithSneakyTransaction:address];
