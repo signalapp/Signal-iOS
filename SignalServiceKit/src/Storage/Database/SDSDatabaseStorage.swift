@@ -20,7 +20,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         return SSKEnvironment.shared.databaseStorage
     }
 
-    private weak var delegate: SDSDatabaseStorageDelegate?
+    weak var delegate: SDSDatabaseStorageDelegate?
 
     static public var shouldLogDBQueries: Bool = true
 
