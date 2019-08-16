@@ -27,7 +27,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     public override init() {
         super.init()
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
             self.setup()
         }
     }
