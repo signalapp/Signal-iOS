@@ -135,7 +135,14 @@ class SendMediaNavigationController: OWSNavigationController {
         navController.attachmentDraftCollection.append(.picker(attachment: libraryMedia))
 
         navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
-        navController.pushApprovalViewController(attachmentApprovalItems: [approvalItem], animated: false)
+
+        // Since we're starting on the approval view, include cancel to allow the user to immediately dismiss.
+        // If they choose to add more, `hasCancel` will go away and they'll enter the normal gallery flow.
+        navController.pushApprovalViewController(
+            attachmentApprovalItems: [approvalItem],
+            options: [.canAddMore, .hasCancel],
+            animated: false
+        )
 
         return navController
     }
@@ -315,13 +322,17 @@ class SendMediaNavigationController: OWSNavigationController {
         return vc
     }()
 
-    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem], animated: Bool) {
+    private func pushApprovalViewController(
+        attachmentApprovalItems: [AttachmentApprovalItem],
+        options: AttachmentApprovalViewControllerOptions = .canAddMore,
+        animated: Bool
+    ) {
         guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
             owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(options: [.canAddMore],
+        let approvalViewController = AttachmentApprovalViewController(options: options,
                                                                       sendButtonImageName: sendMediaNavDelegate.sendMediaNavApprovalButtonImageName,
                                                                       attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
