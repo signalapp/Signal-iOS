@@ -1074,7 +1074,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     }
 
     self.messageMapping = [[ConversationMessageMapping alloc] initWithThreadUniqueId:self.thread.uniqueId
-                                                                       desiredLength:self.initialMessageMappingLength];
+                                                                       desiredLength:self.initialMessageMappingLength
+                                                                        isNoteToSelf:self.thread.isNoteToSelf];
 
     NSError *error;
     [self.messageMapping updateWithTransaction:transaction error:&error];
