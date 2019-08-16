@@ -31,6 +31,7 @@ public class PinSetupViewController: OWSViewController {
     enum ValidationState {
         case valid
         case tooShort
+        case tooLong
         case mismatch
 
         var isInvalid: Bool {
@@ -315,8 +316,13 @@ public class PinSetupViewController: OWSViewController {
     private func tryToContinue() {
         Logger.info("")
 
-        guard let pin = pinTextField.text?.ows_stripped(), pin.count > 3 else {
+        guard let pin = pinTextField.text?.ows_stripped(), pin.count >= kMin2FAPinLength else {
             validationState = .tooShort
+            return
+        }
+
+        guard FeatureFlags.registrationLockV2 || pin.count <= kMax2FAv1PinLength else {
+            validationState = .tooLong
             return
         }
 
@@ -349,6 +355,9 @@ public class PinSetupViewController: OWSViewController {
         case .tooShort:
             validationWarningLabel.text = NSLocalizedString("PIN_CREATION_TOO_SHORT_ERROR",
                                                             comment: "Label indicating that the attempted PIN is too short")
+        case .tooLong:
+            validationWarningLabel.text = NSLocalizedString("PIN_CREATION_TOO_LONG_ERROR",
+                                                            comment: "Label indicating that the attempted PIN is too long")
         case .mismatch:
             validationWarningLabel.text = NSLocalizedString("PIN_CREATION_MISMATCH_ERROR",
                                                             comment: "Label indicating that the attempted PIN does not match the first PIN")
@@ -391,14 +400,7 @@ public class PinSetupViewController: OWSViewController {
 
 extension PinSetupViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let newString = string.digitsOnly
-        var oldText = ""
-        if let textFieldText = textField.text {
-            oldText = textFieldText
-        }
-        let left = oldText.substring(to: range.location)
-        let right = oldText.substring(from: range.location + range.length)
-        textField.text = left + newString + right
+        ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
 
         // Reset the validation state to clear errors, since the user is trying again
         validationState = .valid
