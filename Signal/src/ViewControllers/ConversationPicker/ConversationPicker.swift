@@ -26,6 +26,14 @@ class ConversationPickerViewController: OWSViewController {
         return SSKEnvironment.shared.databaseStorage
     }
 
+    var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
+    var profileManager: OWSProfileManager {
+        return OWSProfileManager.shared()
+    }
+
     // MARK: -
 
     weak var delegate: ConversationPickerDelegate?
@@ -145,9 +153,17 @@ class ConversationPickerViewController: OWSViewController {
         let isBlocked = self.blockListCache.isBlocked(address: address)
         let dmConfig = TSContactThread.getWithContactAddress(address, transaction: transaction)?.disappearingMessagesConfiguration(with: transaction)
 
+        let contactName = contactsManager.displayName(for: address,
+                                                      transaction: transaction)
+
+        let contactImage = contactsManager.image(for: address,
+                                                 transaction: transaction)
+
         return ContactConversationItem(address: address,
                                        isBlocked: isBlocked,
-                                       disappearingMessagesConfig: dmConfig)
+                                       disappearingMessagesConfig: dmConfig,
+                                       contactName: contactName,
+                                       contactImage: contactImage)
     }
 
     func buildConversationCollection() -> ConversationCollection {

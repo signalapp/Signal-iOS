@@ -57,24 +57,11 @@ extension RecentConversationItem: ConversationItem {
 }
 
 struct ContactConversationItem {
-
-    // MARK: - Dependencies
-
-    var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     let address: SignalServiceAddress
     let isBlocked: Bool
     let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
-
-    // MARK: - Dependencies
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
+    let contactName: String
+    let contactImage: UIImage?
 }
 
 extension ContactConversationItem: ConversationItem {
@@ -87,15 +74,11 @@ extension ContactConversationItem: ConversationItem {
             return MessageStrings.noteToSelf
         }
 
-        return self.contactsManager.displayName(for: address)
+        return contactName
     }
 
     var image: UIImage? {
-        // TODO initials, etc.
-        return databaseStorage.readReturningResult { transaction in
-            return OWSProfileManager.shared().profileAvatar(for: self.address,
-                                                            transaction: transaction)
-        }
+        return contactImage
     }
 }
 

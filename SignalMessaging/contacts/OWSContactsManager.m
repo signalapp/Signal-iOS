@@ -977,6 +977,24 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self profileImageForAddressWithSneakyTransaction:address];
 }
 
+- (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
+                          transaction:(SDSAnyReadTransaction *)transaction
+{
+    if (address == nil) {
+        OWSFailDebug(@"address was unexpectedly nil");
+        return nil;
+    }
+
+    // Prefer the contact image from the local address book if available
+    __block UIImage *_Nullable image = [self systemContactImageForAddress:address];
+    if (image != nil) {
+        return image;
+    }
+
+    // Else try to use the image from their profile
+    return [self.profileManager profileAvatarForAddress:address transaction:transaction];
+}
+
 - (NSComparisonResult)compareSignalAccount:(SignalAccount *)left withSignalAccount:(SignalAccount *)right
 {
     return self.signalAccountComparator(left, right);
