@@ -152,28 +152,29 @@ NS_ASSUME_NONNULL_BEGIN
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
 
-        [OWSStorage registerExtensionsWithMigrationBlock:^() {
-            // Pre-heat caches to avoid sneaky transactions during the migrations.
-            // We need to warm these caches _before_ the migrations run.
-            //
-            // We need to do as few writes as possible here, to avoid conflicts
-            // with the migrations which haven't run yet.
-            [blockingManager warmCaches];
-            [profileManager warmCaches];
-            [tsAccountManager warmCaches];
+        dispatch_block_t warmCachesRunMigrationsAndComplete = ^{
+            [SSKEnvironment.shared warmCaches];
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 // Don't start database migrations until storage is ready.
                 [VersionMigrations performUpdateCheckWithCompletion:^() {
                     OWSAssertIsOnMainThread();
-
+                    
                     migrationCompletion();
-
+                    
                     OWSAssertDebug(backgroundTask);
                     backgroundTask = nil;
                 }];
             });
-        }];
+        };
+
+        if (databaseStorage.canLoadYdb) {
+            [OWSStorage registerExtensionsWithMigrationBlock:^() {
+                warmCachesRunMigrationsAndComplete();
+            }];
+        } else {
+            warmCachesRunMigrationsAndComplete();
+        }
     });
 }
 

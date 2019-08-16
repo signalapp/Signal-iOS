@@ -63,11 +63,6 @@ public class SDSDatabaseStorage: SDSTransactable {
     }
 
     @objc
-    internal func clearGRDBStorageForTests() {
-        _grdbStorage = nil
-    }
-
-    @objc
     required init(delegate: SDSDatabaseStorageDelegate) {
         self.delegate = delegate
 
