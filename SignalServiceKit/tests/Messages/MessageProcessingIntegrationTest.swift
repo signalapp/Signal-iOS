@@ -98,10 +98,8 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
                     }
                     XCTAssertEqual(thread.contactAddress, self.bobClient.address)
                     XCTAssertNotEqual(thread.contactAddress, self.aliceClient.address)
-                } else {
-                    XCTFail("Missing message")
+                    expectMessageProcessed.fulfill()
                 }
-                expectMessageProcessed.fulfill()
             }
         }
         guard let observer = databaseStorage.grdbStorage.uiDatabaseObserver else {

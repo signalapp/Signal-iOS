@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (message.shouldBeSaved) {
         _messageId = message.uniqueId;
         OWSAssertDebug(_messageId.length > 0);
-        BOOL isSaved = [TSInteraction anyFetchWithUniqueId:_messageId transaction:transaction] != nil;
+        BOOL isSaved = [TSInteraction anyExistsWithUniqueId:_messageId transaction:transaction];
         if (!isSaved) {
             *outError = [NSError errorWithDomain:SSKJobRecordErrorDomain
                                             code:JobRecordError_AssertionError
