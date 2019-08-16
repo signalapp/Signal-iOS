@@ -549,7 +549,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Contacts, filtered with the search text.
     NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccounts];
-    BOOL hasSearchResults = NO;
+    __block BOOL hasSearchResults = NO;
 
     NSMutableSet<NSString *> *matchedAccountPhoneNumbers = [NSMutableSet new];
     NSMutableSet<NSString *> *matchedAccountUsernames = [NSMutableSet new];
@@ -558,55 +558,46 @@ NS_ASSUME_NONNULL_BEGIN
     contactsSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
         @"Table section header for contact listing when composing a new message");
 
-    // Load all usernames in a single transaction.
-    NSMutableDictionary<NSString *, NSString *> *signalAccountIdToUsernameMap = [NSMutableDictionary new];
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+    OWSAssertIsOnMainThread();
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         for (SignalAccount *signalAccount in filteredSignalAccounts) {
-            NSString *_Nullable username =
-                [helper.profileManager usernameForAddress:signalAccount.recipientAddress transaction:transaction];
-            if (username) {
-                signalAccountIdToUsernameMap[signalAccount.uniqueId] = username;
+            hasSearchResults = YES;
+
+            NSString *_Nullable phoneNumber = signalAccount.recipientAddress.phoneNumber;
+            if (phoneNumber) {
+                [matchedAccountPhoneNumbers addObject:phoneNumber];
             }
+
+            NSString *_Nullable username = [helper.profileManager usernameForAddress:signalAccount.recipientAddress
+                                                                         transaction:transaction];
+            if (username) {
+                [matchedAccountUsernames addObject:username];
+            }
+
+            [contactsSection
+                addItem:[OWSTableItem
+                            itemWithCustomCellBlock:^{
+                                ContactTableViewCell *cell = [ContactTableViewCell new];
+                                BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
+                                if (isBlocked) {
+                                    cell.accessoryMessage = MessageStrings.conversationIsBlocked;
+                                }
+
+                                [cell configureWithRecipientAddress:signalAccount.recipientAddress];
+
+                                NSString *cellName = [NSString stringWithFormat:@"signal_contact.%@",
+                                                               signalAccount.recipientAddress.stringForDisplay];
+                                cell.accessibilityIdentifier
+                                    = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewContactThreadViewController, cellName);
+
+                                return cell;
+                            }
+                            customRowHeight:UITableViewAutomaticDimension
+                            actionBlock:^{
+                                [weakSelf newConversationWithAddress:signalAccount.recipientAddress];
+                            }]];
         }
     }];
-
-    for (SignalAccount *signalAccount in filteredSignalAccounts) {
-        hasSearchResults = YES;
-
-        NSString *_Nullable phoneNumber = signalAccount.recipientAddress.phoneNumber;
-        if (phoneNumber) {
-            [matchedAccountPhoneNumbers addObject:phoneNumber];
-        }
-
-        NSString *_Nullable username = signalAccountIdToUsernameMap[signalAccount.uniqueId];
-        if (username) {
-            [matchedAccountUsernames addObject:username];
-        }
-
-        [contactsSection
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            ContactTableViewCell *cell = [ContactTableViewCell new];
-                            BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
-                            if (isBlocked) {
-                                cell.accessoryMessage = MessageStrings.conversationIsBlocked;
-                            }
-
-                            [cell configureWithRecipientAddress:signalAccount.recipientAddress];
-
-                            NSString *cellName = [NSString
-                                stringWithFormat:@"signal_contact.%@", signalAccount.recipientAddress.stringForDisplay];
-                            cell.accessibilityIdentifier
-                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NewContactThreadViewController, cellName);
-
-                            return cell;
-                        }
-                        customRowHeight:UITableViewAutomaticDimension
-                        actionBlock:^{
-                            [weakSelf
-                                newConversationWithAddress:signalAccount.recipientAddress];
-                        }]];
-    }
     if (filteredSignalAccounts.count > 0) {
         [sections addObject:contactsSection];
     }

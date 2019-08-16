@@ -711,6 +711,17 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return signalAccount.recipientPhoneNumber;
 }
 
+- (nullable NSString *)phoneNumberForAddress:(SignalServiceAddress *)address
+                                 transaction:(SDSAnyReadTransaction *)transaction
+{
+    if (address.phoneNumber != nil) {
+        return address.phoneNumber;
+    }
+
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
+    return signalAccount.recipientPhoneNumber;
+}
+
 #pragma mark - View Helpers
 
 // TODO move into Contact class.
@@ -798,7 +809,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return savedContactName;
     }
 
-    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
+    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address transaction:transaction];
     if (phoneNumber) {
         phoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
     }
@@ -964,6 +975,24 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     // Else try to use the image from their profile
     return [self profileImageForAddressWithSneakyTransaction:address];
+}
+
+- (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
+                          transaction:(SDSAnyReadTransaction *)transaction
+{
+    if (address == nil) {
+        OWSFailDebug(@"address was unexpectedly nil");
+        return nil;
+    }
+
+    // Prefer the contact image from the local address book if available
+    __block UIImage *_Nullable image = [self systemContactImageForAddress:address];
+    if (image != nil) {
+        return image;
+    }
+
+    // Else try to use the image from their profile
+    return [self.profileManager profileAvatarForAddress:address transaction:transaction];
 }
 
 - (NSComparisonResult)compareSignalAccount:(SignalAccount *)left withSignalAccount:(SignalAccount *)right

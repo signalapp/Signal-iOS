@@ -57,8 +57,19 @@ extension RecentConversationItem: ConversationItem {
 }
 
 struct ContactConversationItem {
+    let address: SignalServiceAddress
+    let isBlocked: Bool
+    let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
+    let contactName: String
+}
+
+extension ContactConversationItem: ConversationItem {
 
     // MARK: - Dependencies
+
+    var contactManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
 
     var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
@@ -66,18 +77,6 @@ struct ContactConversationItem {
 
     // MARK: -
 
-    let address: SignalServiceAddress
-    let isBlocked: Bool
-    let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
-
-    // MARK: - Dependencies
-
-    var contactsManager: OWSContactsManager {
-        return Environment.shared.contactsManager
-    }
-}
-
-extension ContactConversationItem: ConversationItem {
     var messageRecipient: MessageRecipient {
         return .contact(address)
     }
@@ -87,14 +86,12 @@ extension ContactConversationItem: ConversationItem {
             return MessageStrings.noteToSelf
         }
 
-        return self.contactsManager.displayName(for: address)
+        return contactName
     }
 
     var image: UIImage? {
-        // TODO initials, etc.
-        return databaseStorage.readReturningResult { transaction in
-            return OWSProfileManager.shared().profileAvatar(for: self.address,
-                                                            transaction: transaction)
+        return databaseStorage.uiReadReturningResult { transaction in
+            return self.contactManager.image(for: self.address, transaction: transaction)
         }
     }
 }
