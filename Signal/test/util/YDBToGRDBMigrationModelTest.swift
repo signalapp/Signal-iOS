@@ -143,8 +143,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             XCTAssertNil(messageSenderJobFinder.getNextReady(label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(0, messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
             // OWSMessageDecryptJob
-            XCTAssertNil(messageDecryptJobFinder2.nextJob(transaction: transaction))
-            XCTAssertEqual(0, messageDecryptJobFinder2.queuedJobCount(with: transaction))
+            //
+            // NOTE: We don't need to verify that GRDB contains no
+            //       OWSMessageDecryptJobs; the table doesn't even exist.
         }
 
         self.yapWrite { transaction in
@@ -197,8 +198,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             XCTAssertNil(messageSenderJobFinder.getNextReady(label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(0, messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
             // OWSMessageDecryptJob
-            XCTAssertNil(messageDecryptJobFinder2.nextJob(transaction: transaction))
-            XCTAssertEqual(0, messageDecryptJobFinder2.queuedJobCount(with: transaction))
+            //
+            // NOTE: We don't need to verify that GRDB contains no
+            //       OWSMessageDecryptJobs; the table doesn't even exist.
         }
 
         let migratorGroups = [
@@ -246,8 +248,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             //
             // NOTE: These jobs are _NOT_ migrated.
             //       See testDecryptJobs() which uses GRDBDecryptJobMigrator.
-            XCTAssertNil(messageDecryptJobFinder2.nextJob(transaction: transaction))
-            XCTAssertEqual(0, messageDecryptJobFinder2.queuedJobCount(with: transaction))
+            //
+            // NOTE: We don't need to verify that GRDB contains no
+            //       OWSMessageDecryptJobs; the table doesn't even exist.
         }
     }
 
@@ -303,8 +306,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             XCTAssertNil(messageSenderJobFinder.getNextReady(label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(0, messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
             // OWSMessageDecryptJob
-            XCTAssertNil(messageDecryptJobFinder2.nextJob(transaction: transaction))
-            XCTAssertEqual(0, messageDecryptJobFinder2.queuedJobCount(with: transaction))
+            //
+            // NOTE: We don't need to verify that GRDB contains no
+            //       OWSMessageDecryptJobs; the table doesn't even exist.
         }
 
         self.yapWrite { transaction in
@@ -357,8 +361,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             XCTAssertNil(messageSenderJobFinder.getNextReady(label: MessageSenderJobQueue.jobRecordLabel, transaction: transaction))
             XCTAssertEqual(0, messageSenderJobFinder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction).count)
             // OWSMessageDecryptJob
-            XCTAssertNil(messageDecryptJobFinder2.nextJob(transaction: transaction))
-            XCTAssertEqual(0, messageDecryptJobFinder2.queuedJobCount(with: transaction))
+            //
+            // NOTE: We don't need to verify that GRDB contains no
+            //       OWSMessageDecryptJobs; the table doesn't even exist.
         }
 
         let migratorGroups = [
@@ -409,8 +414,9 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
             // OWSMessageDecryptJob
             //
             // NOTE: These jobs are migrated to SSKMessageDecryptJobRecord.
-            XCTAssertNil(messageDecryptJobFinder2.nextJob(transaction: transaction))
-            XCTAssertEqual(0, messageDecryptJobFinder2.queuedJobCount(with: transaction))
+            //
+            // NOTE: We don't need to verify that GRDB contains no
+            //       OWSMessageDecryptJobs; the table doesn't even exist.
         }
     }
 

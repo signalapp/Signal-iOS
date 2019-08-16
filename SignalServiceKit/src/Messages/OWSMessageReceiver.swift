@@ -34,9 +34,7 @@ public extension OWSMessageDecryptJobFinder {
     }
 
     private func nextJob(grdbTransaction transaction: GRDBReadTransaction) -> OWSMessageDecryptJob? {
-        if !CurrentAppContext().isRunningTests {
-            owsFailDebug("We should be using SSKMessageDecryptJobQueue instead of this method.")
-        }
+        owsFailDebug("We should be using SSKMessageDecryptJobQueue instead of this method.")
 
         let sql = """
         SELECT *
@@ -74,9 +72,7 @@ public extension OWSMessageDecryptJobFinder {
     }
 
     private func enumerateJobs(grdbTransaction transaction: GRDBReadTransaction, block: @escaping (OWSMessageDecryptJob, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
-        if !CurrentAppContext().isRunningTests {
-            owsFailDebug("We should be using SSKMessageDecryptJobQueue instead of this method.")
-        }
+        owsFailDebug("We should be using SSKMessageDecryptJobQueue instead of this method.")
 
         let sql = """
         SELECT *
