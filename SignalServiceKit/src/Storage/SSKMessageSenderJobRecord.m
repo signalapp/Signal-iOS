@@ -4,6 +4,7 @@
 
 #import "SSKMessageSenderJobRecord.h"
 #import "TSOutgoingMessage.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithMessage:(TSOutgoingMessage *)message
                removeMessageAfterSending:(BOOL)removeMessageAfterSending
                                    label:(NSString *)label
+                             transaction:(SDSAnyReadTransaction *)transaction
                                    error:(NSError **)outError
 {
     self = [super initWithLabel:label];
@@ -28,10 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (message.shouldBeSaved) {
         _messageId = message.uniqueId;
-        if (_messageId == nil) {
+        OWSAssertDebug(_messageId.length > 0);
+        BOOL isSaved = [TSInteraction anyFetchWithUniqueId:_messageId transaction:transaction] != nil;
+        if (!isSaved) {
             *outError = [NSError errorWithDomain:SSKJobRecordErrorDomain
                                             code:JobRecordError_AssertionError
-                                        userInfo:@{ NSDebugDescriptionErrorKey : @"messageId wasn't set" }];
+                                        userInfo:@{ NSDebugDescriptionErrorKey : @"message wasn't saved" }];
             return nil;
         }
         _invisibleMessage = nil;

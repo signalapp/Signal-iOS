@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyReadTransaction;
 @class TSOutgoingMessage;
 
 @interface SSKMessageSenderJobRecord : SSKJobRecord
@@ -18,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable instancetype)initWithMessage:(TSOutgoingMessage *)message
                removeMessageAfterSending:(BOOL)removeMessageAfterSending
                                    label:(NSString *)label
+                             transaction:(SDSAnyReadTransaction *)transaction
                                    error:(NSError **)outError NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;

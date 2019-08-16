@@ -50,7 +50,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         // Configure UDManager
         self.write { transaction in
-            profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, for: aliceAddress, transaction: transaction)
+            self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, for: self.aliceAddress, transaction: transaction)
         }
 
         udManager.certificateValidator = MockCertificateValidator()
@@ -159,7 +159,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         let bobRecipientAddress = SignalServiceAddress(phoneNumber: "+13213214322")
         XCTAssertFalse(bobRecipientAddress.isLocalAddress)
         self.write { transaction in
-            profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, for: bobRecipientAddress, transaction: transaction)
+            self.profileManager.setProfileKeyData(OWSAES256Key.generateRandom().keyData, for: bobRecipientAddress, transaction: transaction)
         }
 
         var udAccess: OWSUDAccess!
