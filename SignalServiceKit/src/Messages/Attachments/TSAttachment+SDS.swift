@@ -588,7 +588,14 @@ public extension TSAttachment {
     }
 
     class func anyRemoveAllWithInstantation(transaction: SDSAnyWriteTransaction) {
-        anyEnumerate(transaction: transaction) { (instance, _) in
+        // To avoid mutationDuringEnumerationException, we need
+        // to remove the instances outside the enumeration.
+        let uniqueIds = anyAllUniqueIds(transaction: transaction)
+        for uniqueId in uniqueIds {
+            guard let instance = anyFetch(uniqueId: uniqueId, transaction: transaction) else {
+                owsFailDebug("Missing instance.")
+                continue
+            }
             instance.anyRemove(transaction: transaction)
         }
 
