@@ -226,6 +226,9 @@ class PhotoCapture: NSObject {
             case .off:
                 Logger.debug("new flashMode: auto")
                 self.captureOutput.flashMode = .auto
+            @unknown default:
+                owsFailDebug("unknown flashMode: \(self.captureOutput.flashMode)")
+                self.captureOutput.flashMode = .auto
             }
         }
     }

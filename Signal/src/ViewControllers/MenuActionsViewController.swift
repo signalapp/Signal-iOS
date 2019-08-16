@@ -311,6 +311,9 @@ class MenuActionSheetView: UIView, MenuActionViewDelegate {
         case .failed:
             Logger.debug("failed")
             unhighlightAllActionViews()
+        @unknown default:
+            owsFailDebug("unknown gesture state: \(gesture.state)")
+            break
         }
     }
 
