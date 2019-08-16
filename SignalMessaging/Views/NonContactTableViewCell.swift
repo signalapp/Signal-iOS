@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-class NonContactTableViewCell: UITableViewCell {
+public class NonContactTableViewCell: UITableViewCell {
     private let iconView = UIImageView()
     private let identifierLabel = UILabel()
     private let headerLabel = UILabel()
