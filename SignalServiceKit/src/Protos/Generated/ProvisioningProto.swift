@@ -143,13 +143,19 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 
     // MARK: - ProvisioningProtoProvisionMessageBuilder
 
-    @objc public class func builder(identityKeyPublic: Data, identityKeyPrivate: Data, number: String, provisioningCode: String, userAgent: String, profileKey: Data, readReceipts: Bool) -> ProvisioningProtoProvisionMessageBuilder {
-        return ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, number: number, provisioningCode: provisioningCode, userAgent: userAgent, profileKey: profileKey, readReceipts: readReceipts)
+    @objc public class func builder(identityKeyPublic: Data, identityKeyPrivate: Data, provisioningCode: String, userAgent: String, profileKey: Data, readReceipts: Bool) -> ProvisioningProtoProvisionMessageBuilder {
+        return ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, provisioningCode: provisioningCode, userAgent: userAgent, profileKey: profileKey, readReceipts: readReceipts)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> ProvisioningProtoProvisionMessageBuilder {
-        let builder = ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, number: number, provisioningCode: provisioningCode, userAgent: userAgent, profileKey: profileKey, readReceipts: readReceipts)
+        let builder = ProvisioningProtoProvisionMessageBuilder(identityKeyPublic: identityKeyPublic, identityKeyPrivate: identityKeyPrivate, provisioningCode: provisioningCode, userAgent: userAgent, profileKey: profileKey, readReceipts: readReceipts)
+        if let _value = number {
+            builder.setNumber(_value)
+        }
+        if let _value = uuid {
+            builder.setUuid(_value)
+        }
         return builder
     }
 
@@ -159,12 +165,11 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(identityKeyPublic: Data, identityKeyPrivate: Data, number: String, provisioningCode: String, userAgent: String, profileKey: Data, readReceipts: Bool) {
+        @objc fileprivate init(identityKeyPublic: Data, identityKeyPrivate: Data, provisioningCode: String, userAgent: String, profileKey: Data, readReceipts: Bool) {
             super.init()
 
             setIdentityKeyPublic(identityKeyPublic)
             setIdentityKeyPrivate(identityKeyPrivate)
-            setNumber(number)
             setProvisioningCode(provisioningCode)
             setUserAgent(userAgent)
             setProfileKey(profileKey)
@@ -202,6 +207,17 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 
         public func setNumber(_ valueParam: String) {
             proto.number = valueParam
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setUuid(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.uuid = valueParam
+        }
+
+        public func setUuid(_ valueParam: String) {
+            proto.uuid = valueParam
         }
 
         @objc
@@ -257,8 +273,6 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 
     @objc public let identityKeyPrivate: Data
 
-    @objc public let number: String
-
     @objc public let provisioningCode: String
 
     @objc public let userAgent: String
@@ -267,10 +281,29 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
 
     @objc public let readReceipts: Bool
 
+    @objc public var number: String? {
+        guard proto.hasNumber else {
+            return nil
+        }
+        return proto.number
+    }
+    @objc public var hasNumber: Bool {
+        return proto.hasNumber
+    }
+
+    @objc public var uuid: String? {
+        guard proto.hasUuid else {
+            return nil
+        }
+        return proto.uuid
+    }
+    @objc public var hasUuid: Bool {
+        return proto.hasUuid
+    }
+
     private init(proto: ProvisioningProtos_ProvisionMessage,
                  identityKeyPublic: Data,
                  identityKeyPrivate: Data,
-                 number: String,
                  provisioningCode: String,
                  userAgent: String,
                  profileKey: Data,
@@ -278,7 +311,6 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
         self.proto = proto
         self.identityKeyPublic = identityKeyPublic
         self.identityKeyPrivate = identityKeyPrivate
-        self.number = number
         self.provisioningCode = provisioningCode
         self.userAgent = userAgent
         self.profileKey = profileKey
@@ -305,11 +337,6 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
             throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: identityKeyPrivate")
         }
         let identityKeyPrivate = proto.identityKeyPrivate
-
-        guard proto.hasNumber else {
-            throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: number")
-        }
-        let number = proto.number
 
         guard proto.hasProvisioningCode else {
             throw ProvisioningProtoError.invalidProtobuf(description: "\(logTag) missing required field: provisioningCode")
@@ -338,7 +365,6 @@ extension ProvisioningProtoProvisionEnvelope.ProvisioningProtoProvisionEnvelopeB
         let result = ProvisioningProtoProvisionMessage(proto: proto,
                                                        identityKeyPublic: identityKeyPublic,
                                                        identityKeyPrivate: identityKeyPrivate,
-                                                       number: number,
                                                        provisioningCode: provisioningCode,
                                                        userAgent: userAgent,
                                                        profileKey: profileKey,
