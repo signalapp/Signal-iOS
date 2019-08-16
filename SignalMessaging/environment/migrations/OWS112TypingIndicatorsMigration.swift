@@ -39,7 +39,7 @@ public class OWS112TypingIndicatorsMigration: YDBDatabaseMigration {
             self.typingIndicators.setTypingIndicatorsEnabled(value: false)
 
             DispatchQueue.global().async {
-                self.markAsCompleteWithSneakyYDBTransaction()
+                self.markAsCompleteWithSneakyTransaction()
 
                 completion()
             }

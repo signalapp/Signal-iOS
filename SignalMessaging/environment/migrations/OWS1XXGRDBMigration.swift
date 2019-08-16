@@ -6,16 +6,14 @@ import Foundation
 import GRDBCipher
 import SignalServiceKit
 
+extension StorageCoordinatorState: CustomStringConvertible {
+    public var description: String {
+        return NSStringFromStorageCoordinatorState(self)
+    }
+}
+
 @objc
 public class OWS1XXGRDBMigration: YDBDatabaseMigration {
-
-    // MARK: - Dependencies
-
-    var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
-    }
-
-    // MARK: -
 
     // Increment a similar constant for each migration.
     @objc
@@ -28,7 +26,7 @@ public class OWS1XXGRDBMigration: YDBDatabaseMigration {
 
         DispatchQueue.global().async {
             if self.storageCoordinator.state != .beforeYDBToGRDBMigration {
-                owsFail("unexpected storage coordinator state.")
+                owsFail("unexpected storage coordinator state: \(self.storageCoordinator.state)")
             } else {
                 self.storageCoordinator.migrationYDBToGRDBWillBegin()
                 assert(self.storageCoordinator.state == .duringYDBToGRDBMigration)
@@ -40,6 +38,16 @@ public class OWS1XXGRDBMigration: YDBDatabaseMigration {
                 self.storageCoordinator.migrationYDBToGRDBDidComplete()
                 assert(self.storageCoordinator.state == .GRDB)
             }
+
+            self.databaseStorage.write { transaction in
+                switch transaction.writeTransaction {
+                case .grdbWrite:
+                    self.markAsComplete(with: transaction)
+                case .yapWrite:
+                    owsFail("wrong transaction type")
+                }
+            }
+
             completion()
         }
     }

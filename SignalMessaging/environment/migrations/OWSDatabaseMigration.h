@@ -12,6 +12,7 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
+@class StorageCoordinator;
 @class YapDatabaseConnection;
 @class YapDatabaseReadWriteTransaction;
 
@@ -24,6 +25,7 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 
 + (SDSKeyValueStore *)keyValueStore;
 
+@property (nonatomic, readonly) StorageCoordinator *storageCoordinator;
 @property (class, nonatomic, readonly) NSString *migrationId;
 @property (nonatomic, readonly) NSString *migrationId;
 
@@ -38,6 +40,8 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 + (void)markMigrationIdAsComplete:(NSString *)migrationId transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (void)markMigrationIdAsIncomplete:(NSString *)migrationId transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)markAsCompleteWithSneakyTransaction;
 
 // We use a sneaky transaction since YDBDatabaseMigration will
 // want to consult YDB and GRDBDatabaseMigration will want to
@@ -63,13 +67,14 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 
 @property (nonatomic, readonly) YapDatabaseConnection *ydbReadWriteConnection;
 
-- (void)markAsCompleteWithSneakyYDBTransaction;
-
 @end
 
 #pragma mark -
 
-// GRDB TODO: Add GRDBDatabaseMigration, a base class for migrations run after
-// the YDB-to-GRDB migration. These migrations are run against the GRDB store.
+@class GRDBWriteTransaction;
+
+@interface GRDBDatabaseMigration : OWSDatabaseMigration
+
+@end
 
 NS_ASSUME_NONNULL_END
