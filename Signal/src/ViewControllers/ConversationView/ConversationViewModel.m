@@ -27,22 +27,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ConversationProfileState : NSObject
-
-@property (nonatomic) BOOL hasLocalProfile;
-@property (nonatomic) BOOL isThreadInProfileWhitelist;
-@property (nonatomic) BOOL hasUnwhitelistedMember;
-
-@end
-
-#pragma mark -
-
-@implementation ConversationProfileState
-
-@end
-
-#pragma mark -
-
 @implementation ConversationViewState
 
 - (instancetype)initWithViewItems:(NSArray<id<ConversationViewItem>> *)viewItems
@@ -201,7 +185,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 @property (nonatomic, nullable) NSDate *collapseCutoffDate;
 @property (nonatomic, nullable) SignalServiceAddress *typingIndicatorsSender;
 
-@property (nonatomic, nullable) ConversationProfileState *conversationProfileState;
 @property (nonatomic) BOOL hasTooManyOutgoingMessagesToBlockCached;
 
 @property (nonatomic) NSArray<id<ConversationViewItem>> *persistedViewItems;
@@ -324,7 +307,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 {
     OWSAssertIsOnMainThread();
 
-    self.conversationProfileState = nil;
     [self updateForTransientItems];
 }
 
@@ -332,7 +314,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 {
     OWSAssertIsOnMainThread();
 
-    self.conversationProfileState = nil;
     [self updateForTransientItems];
 }
 
@@ -1132,34 +1113,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 #pragma mark - View Items
 
-- (void)ensureConversationProfileStateWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    if (self.conversationProfileState) {
-        return;
-    }
-
-    // Many OWSProfileManager methods aren't safe to call from inside a database
-    // transaction, so do this work now.
-    //
-    // TODO: It'd be nice if these methods took a transaction.
-    BOOL hasLocalProfile = [self.profileManager hasLocalProfile];
-    BOOL isThreadInProfileWhitelist =
-        [self.profileManager isThreadInProfileWhitelist:self.thread transaction:transaction];
-    BOOL hasUnwhitelistedMember = NO;
-    for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        if (![self.profileManager isUserInProfileWhitelist:address transaction:transaction]) {
-            hasUnwhitelistedMember = YES;
-            break;
-        }
-    }
-
-    ConversationProfileState *conversationProfileState = [ConversationProfileState new];
-    conversationProfileState.hasLocalProfile = hasLocalProfile;
-    conversationProfileState.isThreadInProfileWhitelist = isThreadInProfileWhitelist;
-    conversationProfileState.hasUnwhitelistedMember = hasUnwhitelistedMember;
-    self.conversationProfileState = conversationProfileState;
-}
-
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
 //
@@ -1183,8 +1136,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSArray<NSString *> *loadedUniqueIds = [self.messageMapping loadedUniqueIds];
     BOOL isGroupThread = self.thread.isGroupThread;
     ConversationStyle *conversationStyle = self.delegate.conversationStyle;
-
-    [self ensureConversationProfileStateWithTransaction:transaction];
 
     __block BOOL hasError = NO;
     _Nullable id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *)
