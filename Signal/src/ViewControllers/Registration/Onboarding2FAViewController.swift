@@ -66,6 +66,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         explanationLabel.accessibilityIdentifier = "onboarding.2fa." + "explanationLabel"
 
         pinTextField.delegate = self
+        pinTextField.isSecureTextEntry = true
         pinTextField.keyboardType = .numberPad
         pinTextField.textColor = Theme.primaryColor
         pinTextField.font = .ows_dynamicTypeBodyClamped
@@ -162,21 +163,42 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         tryToVerify()
     }
 
-    private func tryToVerify() {
+    private func tryToVerify(testTruncatedPin: Bool = false) {
         Logger.info("")
 
-        guard let pin = pinTextField.text?.ows_stripped(), pin.count > 0 else {
+        var pinToUse = pinTextField.text
+
+        // If true, we're doing a fallback verification to test if this is a
+        // legacy pin that was created with >16 characters and then truncated.
+        if testTruncatedPin {
+            assert((pinToUse?.count ?? 0) > kLegacyTruncated2FAv1PinLength)
+            pinToUse = pinToUse?.substring(to: Int(kLegacyTruncated2FAv1PinLength))
+        }
+
+        guard let pin = pinToUse?.ows_stripped(), pin.count >= kMin2FAPinLength else {
             // Check if we're already in an invalid state, if so we can do nothing
             guard !attemptState.isInvalid else { return }
             attemptState = .invalid(remainingAttempts: nil)
             return
         }
 
+        // v1 pins also have a max length, but we'll rely on the server to verify that
+        // since we do not know if this is a v1 or a v2 pin at registration time.
+
         onboardingController.update(twoFAPin: pin)
 
         onboardingController.submitVerification(fromViewController: self, completion: { (outcome) in
             switch outcome {
             case .invalid2FAPin:
+                // In the past, we used to truncate pins. To support legacy users,
+                // also attempt the truncated version of the pin if the original
+                // did not match. This error only occurs for v1 registration locks,
+                // the variant that includes remaining attempts is used for v2 locks
+                // which should not have this problem.
+                guard pin.count <= kLegacyTruncated2FAv1PinLength || testTruncatedPin else {
+                    return self.tryToVerify(testTruncatedPin: true)
+                }
+
                 self.attemptState = .invalid(remainingAttempts: nil)
             case .invalidV2RegistrationLockPin(let remainingAttempts):
                 self.attemptState = .invalid(remainingAttempts: remainingAttempts)
@@ -258,19 +280,11 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
 extension Onboarding2FAViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let newString = string.digitsOnly
-        var oldText = ""
-        if let textFieldText = textField.text {
-            oldText = textFieldText
-        }
-        let left = oldText.substring(to: range.location)
-        let right = oldText.substring(from: range.location + range.length)
-        textField.text = left + newString + right
+        ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
 
         // Reset the attempt state to clear errors, since the user is trying again
         attemptState = .unattempted
 
-        // Inform our caller that we took care of performing the change.
         return false
     }
 

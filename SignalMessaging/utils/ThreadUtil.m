@@ -634,11 +634,20 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return @(position);
 }
 
-+ (BOOL)addThreadToProfileWhitelistIfEmptyThread:(TSThread *)thread
++ (BOOL)addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:(TSThread *)thread
 {
     OWSAssertDebug(thread);
 
-    if ([OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread] || thread.shouldThreadBeVisible) {
+    if (thread.shouldThreadBeVisible) {
+        return NO;
+    }
+
+    __block BOOL isThreadInProfileWhitelist;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        isThreadInProfileWhitelist =
+            [OWSProfileManager.sharedManager isThreadInProfileWhitelist:thread transaction:transaction];
+    }];
+    if (isThreadInProfileWhitelist) {
         return NO;
     }
 
@@ -729,7 +738,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     // If the thread is already whitelisted, do nothing. The user has already
     // accepted the request for this thread.
-    if ([self.profileManager isThreadInProfileWhitelist:thread]) {
+    if ([self.profileManager isThreadInProfileWhitelist:thread transaction:transaction]) {
         return NO;
     }
 

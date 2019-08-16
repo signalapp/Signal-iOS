@@ -6,6 +6,15 @@ import Foundation
 
 @objc
 class UsernameViewController: OWSViewController {
+
+    // MARK: - Dependencies
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SSKEnvironment.shared.databaseStorage
+    }
+
+    // MARK: -
+
     private static let minimumUsernameLength = 4
     private static let maximumUsernameLength: UInt = 26
 
@@ -175,8 +184,10 @@ class UsernameViewController: OWSViewController {
             }
 
             SSKEnvironment.shared.networkManager.makePromise(request: usernameRequest).done { _ in
+                self.databaseStorage.write { transaction in
+                    OWSProfileManager.shared().updateLocalUsername(usernameToUse, transaction: transaction)
+                }
                 modalView.dismiss {
-                    OWSProfileManager.shared().updateLocalUsername(usernameToUse)
                     self.usernameSavedOrCanceled()
                 }
             }.catch { error in

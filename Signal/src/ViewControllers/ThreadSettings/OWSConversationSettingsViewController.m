@@ -28,7 +28,6 @@
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -435,9 +434,14 @@ const CGFloat kIconViewLength = 24;
 
     // Show profile status and allow sharing your profile for threads that are not in the whitelist.
     // This goes away when phoneNumberPrivacy is enabled, since profile sharing become mandatory.
+    __block BOOL isThreadInProfileWhitelist;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        isThreadInProfileWhitelist =
+            [self.profileManager isThreadInProfileWhitelist:self.thread transaction:transaction];
+    }];
     if (SSKFeatureFlags.phoneNumberPrivacy || isNoteToSelf) {
         // Do nothing
-    } else if ([self.profileManager isThreadInProfileWhitelist:self.thread]) {
+    } else if (isThreadInProfileWhitelist) {
         [mainSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
@@ -1006,7 +1010,10 @@ const CGFloat kIconViewLength = 24;
             }
         }
 
-        NSString *_Nullable username = [OWSProfileManager.sharedManager usernameForAddress:recipientAddress];
+        __block NSString *_Nullable username;
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+            username = [self.profileManager usernameForAddress:recipientAddress transaction:transaction];
+        }];
         if (username.length > 0) {
             NSString *formattedUsername = [CommonFormats formatUsername:username];
             if (![threadName isEqualToString:formattedUsername]) {
@@ -1040,9 +1047,13 @@ const CGFloat kIconViewLength = 24;
     // TODO Message Request: In order to debug the profile is getting shared in the right moments,
     // display the thread whitelist state in settings. Eventually we can probably delete this.
 #if DEBUG
+    __block BOOL isThreadInProfileWhitelist;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        isThreadInProfileWhitelist =
+            [self.profileManager isThreadInProfileWhitelist:self.thread transaction:transaction];
+    }];
     NSString *hasSharedProfile =
-        [NSString stringWithFormat:@"Whitelisted: %@",
-                  [self.profileManager isThreadInProfileWhitelist:self.thread] ? @"Yes" : @"No"];
+        [NSString stringWithFormat:@"Whitelisted: %@", isThreadInProfileWhitelist ? @"Yes" : @"No"];
     addSubtitle([[NSAttributedString alloc] initWithString:hasSharedProfile]);
 #endif
 

@@ -88,10 +88,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount;
 
 - (nullable UIImage *)systemContactImageForAddress:(nullable SignalServiceAddress *)address;
-- (nullable UIImage *)profileImageForAddress:(nullable SignalServiceAddress *)address;
-- (nullable NSData *)profileImageDataForAddress:(nullable SignalServiceAddress *)address;
+- (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
+- (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
+- (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 
-- (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address;
 @end
 
 NS_ASSUME_NONNULL_END

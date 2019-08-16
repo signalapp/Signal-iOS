@@ -104,6 +104,10 @@ extension YDBToGRDBMigration {
         return OWSProfileManager.shared()
     }
 
+    var blockingManager: OWSBlockingManager {
+        return .shared()
+    }
+
     // MARK: -
 
     func run() throws {
@@ -140,14 +144,6 @@ extension YDBToGRDBMigration {
         assert(OWSStorage.isStorageReady())
 
         Logger.info("")
-
-        // Pre-heat caches to avoid sneaky transactions
-        // during the migration.
-        //
-        // NOTE: It's imperative that we only perform read
-        // transactions at this time.
-        profileManager.ensureLocalProfileCached()
-        _ = tsAccountManager.isRegistered
 
         // We can't nest ydbTransactions in GRDB and vice-versa
         // each has their own serial-queue based concurrency model, which wants to be on

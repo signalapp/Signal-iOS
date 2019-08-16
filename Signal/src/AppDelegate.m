@@ -163,6 +163,13 @@ static NSTimeInterval launchStartedAt;
     return SDSDatabaseStorage.shared;
 }
 
+- (id<OWSSyncManagerProtocol>)syncManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.syncManager);
+
+    return SSKEnvironment.shared.syncManager;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -1219,9 +1226,6 @@ static NSTimeInterval launchStartedAt;
 
     OWSLogInfo(@"checkIfAppIsReady");
 
-    // TODO: Once "app ready" logic is moved into AppSetup, move this line there.
-    [self.profileManager ensureLocalProfileCached];
-
     // Note that this does much more than set a flag;
     // it will also run all deferred blocks.
     [AppReadiness setAppIsReady];
@@ -1300,7 +1304,7 @@ static NSTimeInterval launchStartedAt;
             && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]) {
             [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
 
-            [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+            [self.syncManager sendConfigurationSyncMessage];
         }
     }
 
@@ -1323,8 +1327,11 @@ static NSTimeInterval launchStartedAt;
         }];
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
+
         [self.disappearingMessagesJob startIfNecessary];
-        [self.profileManager ensureLocalProfileCached];
+
+        // TODO: This is probably superfluous and can be removed.
+        [[self.syncManager syncLocalContact] retainUntilComplete];
 
         // For non-legacy users, read receipts are on by default.
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];

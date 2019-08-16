@@ -301,7 +301,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                     lastMessageHash =
                     [OWSSyncManager.keyValueStore getData:kSyncManagerLastContactSyncKey transaction:transaction];
                 }];
-                
+
                 if (!messageData) {
                     OWSFailDebug(@"Failed to serialize contacts sync message.");
                     NSError *error

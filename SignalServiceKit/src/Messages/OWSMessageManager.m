@@ -24,6 +24,7 @@
 #import "OWSMessageSender.h"
 #import "OWSMessageUtils.h"
 #import "OWSOutgoingReceiptManager.h"
+#import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncGroupsRequestMessage.h"
@@ -442,7 +443,7 @@ NS_ASSUME_NONNULL_BEGIN
                          wasReceivedByUD:wasReceivedByUD
                              transaction:transaction];
         } else if (contentProto.callMessage) {
-            [self handleIncomingEnvelope:envelope withCallMessage:contentProto.callMessage];
+            [self handleIncomingEnvelope:envelope withCallMessage:contentProto.callMessage transaction:transaction];
         } else if (contentProto.typingMessage) {
             [self handleIncomingEnvelope:envelope withTypingMessage:contentProto.typingMessage transaction:transaction];
         } else if (contentProto.nullMessage) {
@@ -518,7 +519,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSData *profileKey = [dataMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
         if (profileKey.length == kAES256_KeyByteLength) {
-            [self.profileManager setProfileKeyData:profileKey forAddress:address];
+            [self.profileManager setProfileKeyData:profileKey forAddress:address transaction:transaction];
         } else {
             OWSFailDebug(
                 @"Unexpected profile key length:%lu on message from:%@", (unsigned long)profileKey.length, address);
@@ -559,7 +560,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsExpirationTimerUpdate) != 0) {
         [self handleExpirationTimerUpdateMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsProfileKeyUpdate) != 0) {
-        [self handleProfileKeyMessageWithEnvelope:envelope dataMessage:dataMessage];
+        [self handleProfileKeyMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if (dataMessage.attachments.count > 0) {
         [self handleReceivedMediaWithEnvelope:envelope
                                   dataMessage:dataMessage
@@ -657,6 +658,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                withCallMessage:(SSKProtoCallMessage *)callMessage
+                   transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -675,7 +677,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([callMessage hasProfileKey]) {
         NSData *profileKey = [callMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
-        [self.profileManager setProfileKeyData:profileKey forAddress:address];
+        [self.profileManager setProfileKeyData:profileKey forAddress:address transaction:transaction];
     }
 
     // By dispatching async, we introduce the possibility that these messages might be lost
@@ -1103,6 +1105,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleProfileKeyMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                 dataMessage:(SSKProtoDataMessage *)dataMessage
+                                transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
         OWSFailDebug(@"Missing envelope.");
@@ -1127,7 +1130,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-    [profileManager setProfileKeyData:profileKey forAddress:address];
+    [profileManager setProfileKeyData:profileKey forAddress:address transaction:transaction];
 }
 
 - (void)handleReceivedTextMessageWithEnvelope:(SSKProtoEnvelope *)envelope

@@ -43,7 +43,7 @@ class DebugUIProfile: DebugUIPage {
                 profileManager.logUserProfiles()
             },
             OWSTableItem(title: "Regenerate Profile/ProfileKey") {
-                profileManager.regenerateLocalProfile()
+                profileManager.regenerateLocalProfileWithSneakyTransaction()
             },
             OWSTableItem(title: "Send Profile Key Message") { [weak self] in
                 guard let strongSelf = self else { return }

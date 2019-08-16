@@ -108,6 +108,10 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     return SSKEnvironment.shared.messageSender;
 }
 
+- (void)warmCaches
+{
+    [self ensureLazyInitializationOnLaunch];
+}
 
 - (void)ensureLazyInitializationOnLaunch
 {
@@ -248,6 +252,8 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 - (BOOL)isAddressBlocked:(SignalServiceAddress *)address
 {
+    OWSAssertDebug(self.isInitialized);
+
     return [self.blockedPhoneNumbers containsObject:address.phoneNumber] ||
         [self.blockedUUIDs containsObject:address.uuidString];
 }
@@ -272,6 +278,8 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 - (BOOL)isGroupIdBlocked:(NSData *)groupId
 {
+    OWSAssertDebug(self.isInitialized);
+
     return self.blockedGroupMap[groupId] != nil;
 }
 
@@ -412,11 +420,19 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 }
 
 // This method should only be called from within a synchronized block.
+- (BOOL)isInitialized
+{
+    @synchronized(self) {
+        return _blockedPhoneNumberSet != nil;
+    }
+}
+
+// This method should only be called from within a synchronized block.
 - (void)ensureLazyInitialization
 {
     OWSLogVerbose(@"");
-    
-    if (_blockedPhoneNumberSet) {
+
+    if (_blockedPhoneNumberSet != nil) {
         OWSAssertDebug(_blockedGroupMap);
         OWSAssertDebug(_blockedUUIDSet);
 

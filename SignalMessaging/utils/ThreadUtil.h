@@ -130,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
 // initiated by the local user.
 //
 // Returns YES IFF the thread was just added to the profile whitelist.
-+ (BOOL)addThreadToProfileWhitelistIfEmptyThread:(TSThread *)thread;
++ (BOOL)addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:(TSThread *)thread;
 
 #pragma mark - Delete Content
 

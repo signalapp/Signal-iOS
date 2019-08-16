@@ -34,6 +34,10 @@ extension StorageServiceProtoContactRecord {
         return .shared()
     }
 
+    static var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
     // MARK: -
 
     static func build(
@@ -55,8 +59,23 @@ extension StorageServiceProtoContactRecord {
             builder.setServiceUuid(uuidString)
         }
 
+        var isInWhitelist: Bool = false
+        var profileKey: Data?
+        var profileName: String?
+        var profileAvatarData: Data?
+        databaseStorage.read { transaction in
+            isInWhitelist = profileManager.isUser(inProfileWhitelist: address,
+                                                transaction: transaction)
+            profileKey = profileManager.profileKeyData(for: address,
+                                                       transaction: transaction)
+            profileName = profileManager.profileName(for: address,
+                                                     transaction: transaction)
+            profileAvatarData = profileManager.profileAvatarData(for: address,
+                                                                 transaction: transaction)
+        }
+
         builder.setBlocked(blockingManager.isAddressBlocked(address))
-        builder.setWhitelisted(profileManager.isUser(inProfileWhitelist: address))
+        builder.setWhitelisted(isInWhitelist)
 
         // Identity
         let identityBuilder = StorageServiceProtoContactRecordIdentity.builder()
@@ -74,15 +93,15 @@ extension StorageServiceProtoContactRecord {
 
         let profileBuilder = StorageServiceProtoContactRecordProfile.builder()
 
-        if let profileKey = profileManager.profileKeyData(for: address) {
+        if let profileKey = profileKey {
             profileBuilder.setKey(profileKey)
         }
 
-        if let profileName = profileManager.profileName(for: address) {
+        if let profileName = profileName {
             profileBuilder.setName(profileName)
         }
 
-        if let profileAvatarData = profileManager.profileAvatarData(for: address) {
+        if let profileAvatarData = profileAvatarData {
             profileBuilder.setAvatar(profileAvatarData)
         }
 
@@ -110,9 +129,9 @@ extension StorageServiceProtoContactRecord {
 
         // If we don't yet have a profile for this user, restore the profile information.
         // Otherwise, assume ours is the defacto version and mark this user as pending update.
-        if let profile = profile, profileManager.profileKey(for: address) == nil {
+        if let profile = profile, profileManager.profileKey(for: address, transaction: transaction) == nil {
             if let key = profile.key {
-                profileManager.setProfileKeyData(key, for: address)
+                profileManager.setProfileKeyData(key, for: address, transaction: transaction)
             }
 
             // TODO: Maybe restore the name and avatar? For now we'll refetch them once we set the key.
@@ -149,7 +168,7 @@ extension StorageServiceProtoContactRecord {
 
         // If our whitelist state doesn't match the conflicted version, default to
         // being whitelisted. There's currently no way to unwhitelist a contact.
-        if hasWhitelisted, whitelisted != profileManager.isUser(inProfileWhitelist: address) {
+        if hasWhitelisted, whitelisted != profileManager.isUser(inProfileWhitelist: address, transaction: transaction) {
             if whitelisted {
                 profileManager.addUser(toProfileWhitelist: address)
             } else {

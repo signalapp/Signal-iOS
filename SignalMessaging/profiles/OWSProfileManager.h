@@ -14,6 +14,8 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 @class OWSAES256Key;
 @class OWSMessageSender;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class SDSDatabaseStorage;
 @class SDSKeyValueStore;
 @class SignalServiceAddress;
@@ -38,14 +40,13 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // These two methods should only be called from the main thread.
 - (OWSAES256Key *)localProfileKey;
 // localUserProfileExists is true if there is _ANY_ local profile.
-- (BOOL)localProfileExists;
+- (BOOL)localProfileExistsWithTransaction:(SDSAnyReadTransaction *)transaction;
 // hasLocalProfile is true if there is a local profile with a name or avatar.
 - (BOOL)hasLocalProfile;
 - (nullable NSString *)localProfileName;
 - (nullable NSString *)localUsername;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
-- (void)ensureLocalProfileCached;
 
 // This method is used to update the "local profile" state on the client
 // and the service.  Client state is only updated if service state is
@@ -57,7 +58,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
                        success:(void (^)(void))successBlock
                        failure:(void (^)(void))failureBlock;
 
-- (void)updateLocalUsername:(nullable NSString *)username;
+- (void)updateLocalUsername:(nullable NSString *)username transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (BOOL)isProfileNameTooLong:(nullable NSString *)profileName;
 
@@ -73,7 +74,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // These methods are for debugging.
 - (void)clearProfileWhitelist;
 - (void)logProfileWhitelist;
-- (void)regenerateLocalProfile;
+- (void)regenerateLocalProfileWithSneakyTransaction;
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread;
 
@@ -84,14 +85,19 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 // This method is for debugging.
 - (void)logUserProfiles;
 
-- (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address;
+- (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address
+                                    transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address;
+- (nullable NSString *)profileNameForAddress:(SignalServiceAddress *)address
+                                 transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address;
-- (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address;
+- (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address
+                                     transaction:(SDSAnyReadTransaction *)transaction;
 
-- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address;
+- (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)updateProfileForAddress:(SignalServiceAddress *)address
            profileNameEncrypted:(nullable NSData *)profileNameEncrypted
@@ -100,7 +106,7 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 
 #pragma mark - Clean Up
 
-- (NSSet<NSString *> *)allProfileAvatarFilePaths;
++ (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - User Interface
 

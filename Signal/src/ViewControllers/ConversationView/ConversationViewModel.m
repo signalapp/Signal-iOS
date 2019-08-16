@@ -1076,7 +1076,8 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     }
 
     self.messageMapping = [[ConversationMessageMapping alloc] initWithThreadUniqueId:self.thread.uniqueId
-                                                                       desiredLength:self.initialMessageMappingLength];
+                                                                       desiredLength:self.initialMessageMappingLength
+                                                                        isNoteToSelf:self.thread.isNoteToSelf];
 
     NSError *error;
     [self.messageMapping updateWithTransaction:transaction error:&error];
@@ -1131,7 +1132,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 #pragma mark - View Items
 
-- (void)ensureConversationProfileState
+- (void)ensureConversationProfileStateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (self.conversationProfileState) {
         return;
@@ -1142,10 +1143,11 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     //
     // TODO: It'd be nice if these methods took a transaction.
     BOOL hasLocalProfile = [self.profileManager hasLocalProfile];
-    BOOL isThreadInProfileWhitelist = [self.profileManager isThreadInProfileWhitelist:self.thread];
+    BOOL isThreadInProfileWhitelist =
+        [self.profileManager isThreadInProfileWhitelist:self.thread transaction:transaction];
     BOOL hasUnwhitelistedMember = NO;
     for (SignalServiceAddress *address in self.thread.recipientAddresses) {
-        if (![self.profileManager isUserInProfileWhitelist:address]) {
+        if (![self.profileManager isUserInProfileWhitelist:address transaction:transaction]) {
             hasUnwhitelistedMember = YES;
             break;
         }
@@ -1182,7 +1184,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     BOOL isGroupThread = self.thread.isGroupThread;
     ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
-    [self ensureConversationProfileState];
+    [self ensureConversationProfileStateWithTransaction:transaction];
 
     __block BOOL hasError = NO;
     _Nullable id<ConversationViewItem> (^tryToAddViewItem)(TSInteraction *)

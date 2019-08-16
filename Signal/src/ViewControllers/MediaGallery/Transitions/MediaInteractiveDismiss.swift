@@ -4,8 +4,6 @@
 
 import Foundation
 
-let animationDuration = kIsDebuggingMediaPresentationAnimations ? 1.5 : 0.3
-
 protocol InteractiveDismissDelegate: AnyObject {
     func interactiveDismiss(_ interactiveDismiss: MediaInteractiveDismiss, didChangeTouchOffset offset: CGPoint)
     func interactiveDismissDidFinish(_ interactiveDismiss: MediaInteractiveDismiss)

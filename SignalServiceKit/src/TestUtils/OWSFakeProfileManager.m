@@ -49,7 +49,9 @@ NS_ASSUME_NONNULL_BEGIN
     return _localProfileKey;
 }
 
-- (void)setProfileKeyData:(NSData *)profileKey forAddress:(SignalServiceAddress *)address
+- (void)setProfileKeyData:(NSData *)profileKey
+               forAddress:(SignalServiceAddress *)address
+              transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKey];
     OWSAssert(key);
@@ -57,16 +59,17 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     return self.profileKeys[address].keyData;
 }
 
-- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address
+- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.recipientWhitelist containsObject:address];
 }
 
-- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread
+- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.threadWhitelist containsObject:thread.uniqueId];
 }
@@ -91,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
-- (void)ensureLocalProfileCached
+- (void)warmCaches
 {
     // Do nothing.
 }

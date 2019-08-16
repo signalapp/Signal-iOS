@@ -201,35 +201,33 @@ public class PinReminderViewController: OWSViewController {
     }
 
     @objc func submitPressed() {
+        verifyAndDismissOnSuccess(pinTextField.text)
+    }
+
+    private func verifySilently() {
+        verifyAndDismissOnSuccess(pinTextField.text, silent: true)
+    }
+
+    private func verifyAndDismissOnSuccess(_ pin: String?, silent: Bool = false) {
         Logger.info("")
 
         // We only check > 0 here rather than > 3 because legacy pins may be less than 4 characters
-        guard let pin = pinTextField.text?.ows_stripped(), pin.count > 0 else {
-            validationState = .tooShort
+        guard let pin = pin?.ows_stripped(), pin.count > 0 else {
+            if !silent { validationState = .tooShort }
             return
         }
 
         OWS2FAManager.shared().verifyPin(pin) { success in
             guard success else {
-                self.validationState = .mismatch
+                guard OWS2FAManager.shared().needsLegacyPinMigration(), pin.count > kLegacyTruncated2FAv1PinLength else {
+                    if !silent { self.validationState = .mismatch }
+                    return
+                }
+                // We have a legacy pin that may have been truncated to 16 characters.
+                let truncatedPinCode = pin.substring(to: Int(kLegacyTruncated2FAv1PinLength))
+                self.verifyAndDismissOnSuccess(truncatedPinCode, silent: silent)
                 return
             }
-
-            self.dismissAndUpdateRepetitionInterval()
-        }
-    }
-
-    private func verifySilently() {
-        Logger.info("")
-
-        // We only check > 0 here rather than > 3 because legacy pins may be less than 4 characters
-        guard let pin = pinTextField.text?.ows_stripped(), pin.count > 0 else {
-            return
-        }
-
-        OWS2FAManager.shared().verifyPin(pin) { success in
-            // Don't display validation warnings, we just want to dismiss if the pin is valid
-            guard success else { return }
 
             self.dismissAndUpdateRepetitionInterval()
         }
@@ -317,14 +315,7 @@ extension PinReminderViewController: UIViewControllerTransitioningDelegate {
 
 extension PinReminderViewController: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let newString = string.digitsOnly
-        var oldText = ""
-        if let textFieldText = textField.text {
-            oldText = textFieldText
-        }
-        let left = oldText.substring(to: range.location)
-        let right = oldText.substring(from: range.location + range.length)
-        textField.text = left + newString + right
+        ViewControllerUtils.ows2FAPINTextField(textField, shouldChangeCharactersIn: range, replacementString: string)
 
         validationState = .valid
 

@@ -13,9 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 NSString *const TappedStatusBarNotification = @"TappedStatusBarNotification";
 
-const NSUInteger kMin2FAPinLength = 4;
-const NSUInteger kMax2FAPinLength = 16;
-
 @implementation ViewControllerUtils
 
 + (void)phoneNumberTextField:(UITextField *)textField
@@ -118,9 +115,8 @@ const NSUInteger kMax2FAPinLength = 16;
     // 4. Construct the "raw" new text by concatenating left, center and right.
     NSString *textAfterChange = [[left stringByAppendingString:center] stringByAppendingString:right];
     // 5. Ensure we don't exceed the maximum length for a PIN.
-    if (textAfterChange.length > kMax2FAPinLength) {
-        textAfterChange = [textAfterChange substringToIndex:kMax2FAPinLength];
-    }
+    // We explicitly no longer do this here. We don't want to truncate passwords.
+    // Instead, we rely on the view to notify when the user's pin is too long.
     // 6. Construct the final text.
     textField.text = textAfterChange;
     NSUInteger cursorPositionAfterChange = MIN(left.length + center.length, textAfterChange.length);

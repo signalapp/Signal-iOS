@@ -230,7 +230,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         if (avatarImageData) {
             break;
         }
-        avatarImageData = [self.contactsManager profileImageDataForAddress:address];
+        avatarImageData = [self.contactsManager profileImageDataForAddressWithSneakyTransaction:address];
         if (avatarImageData) {
             isProfileAvatar = YES;
         }
@@ -276,7 +276,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
      didApproveAttachments:(NSArray<SignalAttachment *> *_Nonnull)attachments
                messageText:(NSString *_Nullable)messageText
 {
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyThread:self.thread];
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
     [self
         tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
             OWSAssertIsOnMainThread();
@@ -323,7 +323,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     OWSAssertDebug(messageText.length > 0);
 
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyThread:self.thread];
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
         OWSAssertIsOnMainThread();
 
@@ -363,7 +363,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 {
     OWSLogInfo(@"");
 
-    [ThreadUtil addThreadToProfileWhitelistIfEmptyThread:self.thread];
+    [ThreadUtil addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:self.thread];
     [self tryToSendMessageWithBlock:^(SendCompletionBlock sendCompletion) {
         OWSAssertIsOnMainThread();
         // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending

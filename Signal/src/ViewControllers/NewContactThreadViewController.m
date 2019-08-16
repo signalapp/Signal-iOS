@@ -557,6 +557,19 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *contactsSection = [OWSTableSection new];
     contactsSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
         @"Table section header for contact listing when composing a new message");
+
+    // Load all usernames in a single transaction.
+    NSMutableDictionary<NSString *, NSString *> *signalAccountIdToUsernameMap = [NSMutableDictionary new];
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        for (SignalAccount *signalAccount in filteredSignalAccounts) {
+            NSString *_Nullable username =
+                [helper.profileManager usernameForAddress:signalAccount.recipientAddress transaction:transaction];
+            if (username) {
+                signalAccountIdToUsernameMap[signalAccount.uniqueId] = username;
+            }
+        }
+    }];
+
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
         hasSearchResults = YES;
 
@@ -565,7 +578,7 @@ NS_ASSUME_NONNULL_BEGIN
             [matchedAccountPhoneNumbers addObject:phoneNumber];
         }
 
-        NSString *_Nullable username = [helper.profileManager usernameForAddress:signalAccount.recipientAddress];
+        NSString *_Nullable username = signalAccountIdToUsernameMap[signalAccount.uniqueId];
         if (username) {
             [matchedAccountUsernames addObject:username];
         }
@@ -1010,7 +1023,7 @@ NS_ASSUME_NONNULL_BEGIN
     __weak __typeof(self) weakSelf = self;
 
     [self.databaseStorage
-        asyncUIReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        asyncReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             self.searchResults = [self.fullTextSearcher searchForComposeScreenWithSearchText:searchText
                                                                                  transaction:transaction];
         }

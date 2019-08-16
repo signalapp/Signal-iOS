@@ -113,14 +113,6 @@ public class OWSUDAccess: NSObject {
 @objc
 public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
-    // MARK: -
-
     @objc
     public let keyValueStore = SDSKeyValueStore(collection: "kUDCollection")
     @objc
@@ -208,6 +200,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
 
     private var tsAccountManager: TSAccountManager {
         return TSAccountManager.sharedInstance()
+    }
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: - Recipient state
@@ -316,7 +312,11 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     // if we have a valid profile key for them.
     @objc
     public func udAccessKey(forAddress address: SignalServiceAddress) -> SMKUDAccessKey? {
-        guard let profileKey = profileManager.profileKeyData(for: address) else {
+        let profileKeyData = databaseStorage.readReturningResult { transaction in
+            return self.profileManager.profileKeyData(for: address,
+                                                      transaction: transaction)
+        }
+        guard let profileKey = profileKeyData else {
             // Mark as "not a UD recipient".
             return nil
         }
