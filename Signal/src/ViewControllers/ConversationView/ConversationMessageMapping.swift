@@ -14,11 +14,6 @@ public class ConversationMessageMapping: NSObject {
 
     private let interactionFinder: InteractionFinder
 
-    typealias ItemId = String
-
-    // The list of currently loaded items.
-    private var itemIds = [ItemId]()
-
     // When we enter a conversation, we want to load up to N interactions. This
     // is the "initial load window".
     //
@@ -77,21 +72,30 @@ public class ConversationMessageMapping: NSObject {
     @objc
     public var canLoadMore = false
 
+    let thread: TSThread
+
     @objc
-    public required init(threadUniqueId: String, desiredLength: UInt, isNoteToSelf: Bool) {
-        self.interactionFinder = InteractionFinder(threadUniqueId: threadUniqueId)
+    public required init(thread: TSThread, desiredLength: UInt, isNoteToSelf: Bool) {
+        self.thread = thread
+        self.interactionFinder = InteractionFinder(threadUniqueId: thread.uniqueId)
         self.desiredLength = desiredLength
         self.isNoteToSelf = isNoteToSelf
     }
 
     @objc
-    public func loadedUniqueIds() -> [String] {
-        return itemIds
+    private(set) var loadedInteractions: [TSInteraction] = [] {
+        didSet {
+            AssertIsOnMainThread()
+            loadedUniqueIds = loadedInteractions.map { $0.uniqueId }
+        }
     }
 
     @objc
+    private(set) var loadedUniqueIds: [String] = []
+
+    @objc
     public func contains(uniqueId: String) -> Bool {
-        return loadedUniqueIds().contains(uniqueId)
+        return loadedUniqueIds.contains(uniqueId)
     }
 
     // This method can be used to extend the desired length
@@ -113,7 +117,7 @@ public class ConversationMessageMapping: NSObject {
 
         // If we have a "pivot", load all items AFTER the pivot and up to minDesiredLength items BEFORE the pivot.
         // If we do not have a "pivot", load up to minDesiredLength BEFORE the pivot.
-        var newItemIds = [ItemId]()
+        var newInteractions: [TSInteraction] = []
         var canLoadMore = false
         let desiredLength = self.desiredLength
         // Not all items "count" towards the desired length. On an initial load, all items count.  Subsequently,
@@ -121,7 +125,7 @@ public class ConversationMessageMapping: NSObject {
         var afterPivotCount: UInt = 0
         var beforePivotCount: UInt = 0
         // (void (^)(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop))block;
-        try interactionFinder.enumerateInteractionIds(transaction: transaction) { itemId, stopPtr in
+        try interactionFinder.enumerateInteractions(transaction: transaction) { interaction, stopPtr in
             // Load "uncounted" items after the pivot if possible.
             //
             // As an optimization, we can skip this check (which requires
@@ -129,16 +133,13 @@ public class ConversationMessageMapping: NSObject {
             // e.g. after we "pass" the pivot.
             if beforePivotCount == 0,
                 let pivotSortId = self.pivotSortId {
-                if let sortId = try self.interactionFinder.sortIndex(interactionUniqueId: itemId, transaction: transaction) {
+                let sortId = interaction.sortId
                     let isAfterPivot = sortId > pivotSortId
                     if isAfterPivot {
-                        newItemIds.append(itemId)
+                        newInteractions.append(interaction)
                         afterPivotCount += 1
                         return
                     }
-                } else {
-                    owsFailDebug("Could not determine sort id for interaction: \(itemId)")
-                }
             }
 
             // Load "counted" items unless the load window overflows.
@@ -147,17 +148,20 @@ public class ConversationMessageMapping: NSObject {
                 canLoadMore = true
                 stopPtr.pointee = true
             } else {
-                newItemIds.append(itemId)
+                newInteractions.append(interaction)
                 beforePivotCount += 1
             }
         }
 
         if canLoadMore || isNoteToSelf {
             // The items need to be reversed, since we load them in reverse order.
-            self.itemIds = Array(newItemIds.reversed())
+            self.loadedInteractions = Array(newInteractions.reversed())
         } else {
             // We only show the thread details if we're at the start of the conversation
-            self.itemIds = [ThreadDetailsInteraction.ThreadDetailsId] + Array(newItemIds.reversed())
+            let details = ThreadDetailsInteraction(thread: self.thread,
+                                                   timestamp: NSDate.ows_millisecondTimeStamp())
+
+            self.loadedInteractions = [details] + Array(newInteractions.reversed())
         }
 
         self.canLoadMore = canLoadMore
@@ -178,19 +182,15 @@ public class ConversationMessageMapping: NSObject {
         let kMaxItemCountAfterPivot = 32
         let shouldSetPivot = (self.pivotSortId == nil ||
             afterPivotCount > kMaxItemCountAfterPivot)
-        if shouldSetPivot {
-            if let newLastItemId = newItemIds.first {
-                // newItemIds is in reverse order, so its "first" element is actually last.
-                if let sortId = try interactionFinder.sortIndex(interactionUniqueId: newLastItemId, transaction: transaction) {
-                    // Update the pivot.
-                    if self.pivotSortId != nil {
-                        self.desiredLength += afterPivotCount
-                    }
-                    self.pivotSortId = UInt64(sortId)
-                } else {
-                    owsFailDebug("Could not determine sort id for interaction: \(newLastItemId)")
-                }
+
+        if shouldSetPivot, let newOldestInteraction = newInteractions.first {
+            let sortId = newOldestInteraction.sortId
+
+            // Update the pivot.
+            if self.pivotSortId != nil {
+                self.desiredLength += afterPivotCount
             }
+            self.pivotSortId = UInt64(sortId)
         }
     }
 
@@ -200,7 +200,7 @@ public class ConversationMessageMapping: NSObject {
     @objc(ensureLoadWindowContainsUniqueId:transaction:error:)
     public func ensureLoadWindowContains(uniqueId: String,
                                          transaction: SDSAnyReadTransaction) throws -> IndexPath {
-        if let oldIndex = loadedUniqueIds().firstIndex(of: uniqueId) {
+        if let oldIndex = loadedUniqueIds.firstIndex(of: uniqueId) {
             return IndexPath(row: oldIndex, section: 0)
         }
 
@@ -217,7 +217,7 @@ public class ConversationMessageMapping: NSObject {
         let desiredWindowSize: UInt = threadInteractionCount - index
         try self.update(withDesiredLength: desiredWindowSize, transaction: transaction)
 
-        guard let newIndex = loadedUniqueIds().firstIndex(of: uniqueId) else {
+        guard let newIndex = loadedUniqueIds.firstIndex(of: uniqueId) else {
             throw assertionError("couldn't find new index")
         }
         return IndexPath(row: newIndex, section: 0)
@@ -243,9 +243,9 @@ public class ConversationMessageMapping: NSObject {
     @objc
     public func updateAndCalculateDiff(transaction: SDSAnyReadTransaction,
                                        updatedInteractionIds: Set<String>) throws -> ConversationMessageMappingDiff {
-        let oldItemIds = Set(self.itemIds)
+        let oldItemIds = Set(self.loadedUniqueIds)
         try self.update(transaction: transaction)
-        let newItemIds = Set(self.itemIds)
+        let newItemIds = Set(self.loadedUniqueIds)
 
         let removedItemIds = oldItemIds.subtracting(newItemIds)
         let addedItemIds = newItemIds.subtracting(oldItemIds)

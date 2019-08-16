@@ -591,13 +591,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                                                         error:&updateError];
                                                      }];
 
-    // If we have a thread details item, insert it into the updated items. We assume
-    // it always needs to update, because it's rarely actually loaded and can be changed
-    // by a large number of thread updates.
-    if (self.hasThreadDetailsViewItem) {
-        updatedInteractionIds = [updatedInteractionIds setByAddingObject:self.threadDetailsUniqueId];
-    }
-
     if (dbError || updateError || !updatedInteractionIds) {
         OWSFailDebug(@"failure: %@, %@", dbError, updateError);
         [self resetMappingWithSneakyTransaction];
@@ -636,20 +629,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     YapDatabaseAutoViewConnection *messageDatabaseView =
         [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
     OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
-    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]
-        && !self.hasThreadDetailsViewItem) {
+    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]) {
         [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.minorUpdate];
         return;
     }
 
     NSSet<NSString *> *updatedInteractionIds = [self.messageMapping updatedItemIdsFor:notifications];
-
-    // If we have a thread details item, insert it into the updated items. We assume
-    // it always needs to update, because it's rarely actually loaded and can be changed
-    // by a large number of thread updates.
-    if (self.hasThreadDetailsViewItem) {
-        updatedInteractionIds = [updatedInteractionIds setByAddingObject:self.threadDetailsUniqueId];
-    }
 
     [self anyDBDidUpdateWithUpdatedInteractionIds:updatedInteractionIds];
 }
@@ -674,13 +659,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableSet<NSString *> *diffAddedItemIds = [diff.addedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffRemovedItemIds = [diff.removedItemIds mutableCopy];
     NSMutableSet<NSString *> *diffUpdatedItemIds = [diff.updatedItemIds mutableCopy];
-
-    // If we have a thread details item, insert it into the updated items. We assume
-    // it always needs to update, because it's rarely actually loaded and can be changed
-    // by a large number of thread updates.
-    if (self.hasThreadDetailsViewItem) {
-        [diffUpdatedItemIds addObject:self.threadDetailsUniqueId];
-    }
 
     if (diffAddedItemIds.count < 1 && diffRemovedItemIds.count < 1 && diffUpdatedItemIds.count < 1) {
         // This probably isn't an error; presumably the modifications
@@ -1056,9 +1034,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         OWSFailDebug(@"uniqueId unexpectedly empty for thread: %@", self.thread);
     }
 
-    self.messageMapping = [[ConversationMessageMapping alloc] initWithThreadUniqueId:self.thread.uniqueId
-                                                                       desiredLength:self.initialMessageMappingLength
-                                                                        isNoteToSelf:self.thread.isNoteToSelf];
+    self.messageMapping = [[ConversationMessageMapping alloc] initWithThread:self.thread
+                                                               desiredLength:self.initialMessageMappingLength
+                                                                isNoteToSelf:self.thread.isNoteToSelf];
 
     NSError *error;
     [self.messageMapping updateWithTransaction:transaction error:&error];
@@ -1133,7 +1111,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableArray<id<ConversationViewItem>> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, id<ConversationViewItem>> *viewItemCache = [NSMutableDictionary new];
 
-    NSArray<NSString *> *loadedUniqueIds = [self.messageMapping loadedUniqueIds];
     BOOL isGroupThread = self.thread.isGroupThread;
     ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
@@ -1165,20 +1142,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableSet<NSString *> *interactionIds = [NSMutableSet new];
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 
-    for (NSString *uniqueId in loadedUniqueIds) {
-        TSInteraction *_Nullable interaction;
-        if ([uniqueId isEqualToString:OWSThreadDetailsInteraction.ThreadDetailsId]) {
-            interaction = [self buildThreadDetailsInteractionWithTransaction:transaction];
-        } else {
-            interaction = [InteractionFinder fetchSwallowingErrorsWithUniqueId:uniqueId transaction:transaction];
-        }
-
-        if (!interaction) {
-            OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
-            // TODO: Add analytics.
-            hasError = YES;
-            continue;
-        }
+    for (TSInteraction *interaction in self.messageMapping.loadedInteractions) {
         if (!interaction.uniqueId) {
             OWSFailDebug(@"invalid interaction in message mapping: %@.", interaction);
             // TODO: Add analytics.
@@ -1499,8 +1463,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     TSInteraction *_Nullable interaction;
     if ([viewItem.interaction isKindOfClass:OWSThreadDetailsInteraction.class]) {
-        // Thread details is not a persisted interaction, so we need to rebuild it here to update it.
-        interaction = [self buildThreadDetailsInteractionWithTransaction:transaction];
+        // Thread details is not a persisted interaction.
+        // It carries no mutable state, so there's no reason to reload it here.
+        interaction = interaction;
     } else {
         interaction = [TSInteraction anyFetchWithUniqueId:viewItem.interaction.uniqueId transaction:transaction];
     }
@@ -1648,65 +1613,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             [weakSelf updateForTransientItems];
         });
     }
-}
-
-#pragma mark - Thread Details
-
-- (BOOL)hasThreadDetailsViewItem
-{
-    return self.viewItemCache[self.threadDetailsUniqueId] != nil;
-}
-
-- (NSString *)threadDetailsUniqueId
-{
-    return OWSThreadDetailsInteraction.ThreadDetailsId;
-}
-
-- (OWSThreadDetailsInteraction *)buildThreadDetailsInteractionWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    TSInteraction *_Nullable firstCallOrMessage =
-        [self firstCallOrMessageForLoadedInteractionsWithTransaction:transaction];
-
-    uint64_t threadDetailsTimestamp;
-    if (firstCallOrMessage) {
-        threadDetailsTimestamp = firstCallOrMessage.timestamp - 1;
-    } else {
-        threadDetailsTimestamp = 1;
-    }
-
-    return [[OWSThreadDetailsInteraction alloc] initWithThread:self.thread timestamp:threadDetailsTimestamp];
-}
-
-- (nullable TSInteraction *)firstCallOrMessageForLoadedInteractionsWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    for (NSString *uniqueId in self.messageMapping.loadedUniqueIds) {
-        TSInteraction *_Nullable interaction = [InteractionFinder fetchSwallowingErrorsWithUniqueId:uniqueId
-                                                                                        transaction:transaction];
-
-        if (!interaction) {
-            if (![uniqueId isEqualToString:OWSThreadDetailsInteraction.ThreadDetailsId]) {
-                OWSFailDebug(@"missing interaction in message mapping: %@.", uniqueId);
-            }
-            continue;
-        }
-
-        switch (interaction.interactionType) {
-            case OWSInteractionType_Unknown:
-                OWSFailDebug(@"Unknown interaction type.");
-                break;
-            case OWSInteractionType_Call:
-            case OWSInteractionType_IncomingMessage:
-            case OWSInteractionType_OutgoingMessage:
-                return interaction;
-            case OWSInteractionType_Error:
-            case OWSInteractionType_Info:
-                break;
-            case OWSInteractionType_ThreadDetails:
-            case OWSInteractionType_TypingIndicator:
-                break;
-        }
-    }
-    return nil;
 }
 
 @end

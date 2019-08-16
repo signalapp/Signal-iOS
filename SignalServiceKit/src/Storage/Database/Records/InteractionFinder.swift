@@ -723,12 +723,23 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
     }
 
     func enumerateInteractions(transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
-        try enumerateInteractionIds(transaction: transaction) { (uniqueId, stop) in
-            guard let interaction = TSInteraction.anyFetch(uniqueId: uniqueId, transaction: transaction.asAnyRead) else {
-                owsFailDebug("Couldn't load interaction.")
+
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        ORDER BY \(interactionColumn: .id) DESC
+        """
+
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql,
+                                                   arguments: [],
+                                                   transaction: transaction)
+
+        while let interaction = try cursor.next() {
+            var stop: ObjCBool = false
+            block(interaction, &stop)
+            if stop.boolValue {
                 return
             }
-            block(interaction, stop)
         }
     }
 
