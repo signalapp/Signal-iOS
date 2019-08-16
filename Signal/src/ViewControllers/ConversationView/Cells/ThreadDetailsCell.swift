@@ -7,12 +7,6 @@ import Foundation
 @objc(OWSThreadDetailsCell)
 public class ThreadDetailsCell: ConversationViewCell {
 
-    // MARK: - Dependencies
-
-    private var databaseStorage: SDSDatabaseStorage {
-        return SDSDatabaseStorage.shared
-    }
-
     // MARK: -
 
     @objc
@@ -182,10 +176,7 @@ public class ThreadDetailsCell: ConversationViewCell {
                     details = formattedNumber
                 }
             }
-            let contactUser = databaseStorage.uiReadReturningResult { transaction in
-                return OWSProfileManager.shared().username(for: contactThread.contactAddress, transaction: transaction)
-            }
-            if let username = contactUser {
+            if let username = viewItem.senderUsername {
                 if let formattedUsername = CommonFormats.formatUsername(username), threadName != formattedUsername {
                     if let existingDetails = details {
                         details = existingDetails + "\n" + formattedUsername

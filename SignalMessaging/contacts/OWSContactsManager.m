@@ -711,6 +711,17 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return signalAccount.recipientPhoneNumber;
 }
 
+- (nullable NSString *)phoneNumberForAddress:(SignalServiceAddress *)address
+                                 transaction:(SDSAnyReadTransaction *)transaction
+{
+    if (address.phoneNumber != nil) {
+        return address.phoneNumber;
+    }
+
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
+    return signalAccount.recipientPhoneNumber;
+}
+
 #pragma mark - View Helpers
 
 // TODO move into Contact class.
@@ -798,7 +809,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return savedContactName;
     }
 
-    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address];
+    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address transaction:transaction];
     if (phoneNumber) {
         phoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
     }

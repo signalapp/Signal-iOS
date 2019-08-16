@@ -1423,7 +1423,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             SignalServiceAddress *incomingSenderAddress = incomingMessage.authorAddress;
             OWSAssertDebug(incomingSenderAddress.isValid);
             BOOL isDisappearingMessage = incomingMessage.hasPerConversationExpiration;
-            accessibilityAuthorName = [self.contactsManager displayNameForAddress:incomingSenderAddress];
+            accessibilityAuthorName = [self.contactsManager displayNameForAddress:incomingSenderAddress
+                                                                      transaction:transaction];
+            if (viewItem.interaction.interactionType == OWSInteractionType_ThreadDetails) {
+                viewItem.senderUsername = [self.profileManager usernameForAddress:incomingSenderAddress
+                                                                      transaction:transaction];
+            }
 
             SignalServiceAddress *_Nullable nextIncomingSenderAddress = nil;
             if (nextViewItem && nextViewItem.interaction.interactionType == interactionType) {
