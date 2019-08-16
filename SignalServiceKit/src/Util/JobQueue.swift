@@ -324,6 +324,8 @@ extension JobRecordFinder {
 public class AnyJobRecordFinder<JobRecordType> where JobRecordType: SSKJobRecord {
     lazy var grdbAdapter = GRDBJobRecordFinder<JobRecordType>()
     lazy var yapAdapter = YAPDBJobRecordFinder<JobRecordType>()
+
+    public init() {}
 }
 
 extension AnyJobRecordFinder: JobRecordFinder {

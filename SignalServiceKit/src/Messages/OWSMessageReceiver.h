@@ -7,6 +7,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSStorage;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class SSKProtoEnvelope;
 
 @interface OWSMessageDecryptJob : BaseModel
@@ -42,6 +44,11 @@ NS_SWIFT_NAME(init(uniqueId:createdAt:envelopeData:));
 
 - (NSString *)databaseExtensionName;
 - (NSString *)databaseExtensionGroup;
+
+#ifdef DEBUG
+- (NSUInteger)queuedJobCountWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (void)addJobForEnvelopeData:(NSData *)envelopeData transaction:(SDSAnyWriteTransaction *)transaction;
+#endif
 
 @end
 

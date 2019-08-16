@@ -151,9 +151,14 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (void)addJobForEnvelopeData:(NSData *)envelopeData
 {
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelopeData:envelopeData];
-        [job anyInsertWithTransaction:transaction];
+        [self addJobForEnvelopeData:envelopeData transaction:transaction];
     }];
+}
+
+- (void)addJobForEnvelopeData:(NSData *)envelopeData transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelopeData:envelopeData];
+    [job anyInsertWithTransaction:transaction];
 }
 
 - (void)removeJobWithId:(NSString *)uniqueId
@@ -171,9 +176,14 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 {
     __block NSUInteger result;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        result = [OWSMessageDecryptJob anyCountWithTransaction:transaction];
+        result = [self queuedJobCountWithTransaction:transaction];
     }];
     return result;
+}
+
+- (NSUInteger)queuedJobCountWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [OWSMessageDecryptJob anyCountWithTransaction:transaction];
 }
 
 + (YapDatabaseView *)databaseExtension
