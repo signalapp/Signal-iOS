@@ -162,8 +162,7 @@ class ConversationPickerViewController: OWSViewController {
         return ContactConversationItem(address: address,
                                        isBlocked: isBlocked,
                                        disappearingMessagesConfig: dmConfig,
-                                       contactName: contactName,
-                                       contactImage: contactImage)
+                                       contactName: contactName)
     }
 
     func buildConversationCollection() -> ConversationCollection {

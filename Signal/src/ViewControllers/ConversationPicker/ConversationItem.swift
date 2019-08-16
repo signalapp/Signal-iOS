@@ -61,10 +61,22 @@ struct ContactConversationItem {
     let isBlocked: Bool
     let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
     let contactName: String
-    let contactImage: UIImage?
 }
 
 extension ContactConversationItem: ConversationItem {
+
+    // MARK: - Dependencies
+
+    var contactManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     var messageRecipient: MessageRecipient {
         return .contact(address)
     }
@@ -78,7 +90,9 @@ extension ContactConversationItem: ConversationItem {
     }
 
     var image: UIImage? {
-        return contactImage
+        return databaseStorage.uiReadReturningResult { transaction in
+            return self.contactManager.image(for: self.address, transaction: transaction)
+        }
     }
 }
 
