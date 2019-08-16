@@ -99,7 +99,6 @@ NS_ASSUME_NONNULL_BEGIN
                                 target:weakSelf
                                 selector:@selector(didToggleEnableLogSwitch:)]];
 
-
     if ([OWSPreferences isLoggingEnabled]) {
         [loggingSection
             addItem:[OWSTableItem actionItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG", @"")
@@ -108,6 +107,16 @@ NS_ASSUME_NONNULL_BEGIN
                                              OWSLogInfo(@"Submitting debug logs");
                                              [DDLog flushLog];
                                              [Pastelog submitLogs];
+                                         }]];
+    }
+
+    if (SSKFeatureFlags.audibleErrorLogging) {
+        [loggingSection
+            addItem:[OWSTableItem actionItemWithText:NSLocalizedString(
+                                                         @"SETTINGS_ADVANCED_VIEW_ERROR_LOG", @"table cell label")
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"view_error_log")
+                                         actionBlock:^{
+                                             [weakSelf didPressViewErrorLog];
                                          }]];
     }
 
@@ -305,6 +314,17 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [self updateTableContents];
+}
+
+- (void)didPressViewErrorLog
+{
+    OWSAssert(SSKFeatureFlags.audibleErrorLogging);
+
+    [DDLog flushLog];
+    NSURL *errorLogsDir = DebugLogger.sharedLogger.errorLogsDir;
+    LogPickerViewController *logPicker = [[LogPickerViewController alloc] initWithLogDirUrl:errorLogsDir];
+    OWSNavigationController *modal = [[OWSNavigationController alloc] initWithRootViewController:logPicker];
+    [self presentViewController:modal animated:YES completion:nil];
 }
 
 @end

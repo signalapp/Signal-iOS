@@ -2285,6 +2285,9 @@
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_TITLE" = "Advanced";
 
+/* table cell label */
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "View Error Logs";
+
 /* Format string for the default 'Note' sound. Embeds the system {{sound name}}. */
 "SETTINGS_AUDIO_DEFAULT_TONE_LABEL_FORMAT" = "%@ (default)";
 

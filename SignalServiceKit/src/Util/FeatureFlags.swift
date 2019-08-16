@@ -106,6 +106,9 @@ public class FeatureFlags: NSObject {
         return .failDebug
     }
 
+    @objc
+    public static var audibleErrorLogging = build.includes(.qa)
+
     // GRDB TODO: For now, we always load YDB, even if we're launching
     //            after a successful YDB-to-GRDB migration (or for a
     //            new install that never had a YDB database).

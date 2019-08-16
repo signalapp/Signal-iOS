@@ -220,6 +220,9 @@ static NSTimeInterval launchStartedAt;
     if (isLoggingEnabled) {
         [DebugLogger.sharedLogger enableFileLogging];
     }
+    if (SSKFeatureFlags.audibleErrorLogging) {
+        [DebugLogger.sharedLogger enableErrorReporting];
+    }
 
     OWSLogWarn(@"application: didFinishLaunchingWithOptions.");
     [Cryptography seedRandom];
