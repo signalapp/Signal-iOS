@@ -26,6 +26,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
 
 @property (nonnull, readonly) ImageCache *avatarCache;
+@property (nonnull, readonly) NSCache<SignalServiceAddress *, NSString *> *colorNameCache;
 
 @property (atomic, readonly) NSArray<Contact *> *allContacts;
 

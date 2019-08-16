@@ -73,6 +73,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     // TODO: We need to configure the limits of this cache.
     _avatarCache = [ImageCache new];
+    _colorNameCache = [NSCache new];
 
     _accountFinder = [AnySignalAccountFinder new];
 
