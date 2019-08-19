@@ -160,6 +160,13 @@ const CGFloat kMaxTextViewHeight = 98;
 
 - (void)createContents
 {
+    // The input toolbar should *always* be layed out left-to-right, even when using
+    // a right-to-left language. The convention for messaging apps is for the send
+    // button to always be to the right of the input field, even in RTL layouts.
+    // This means, in most places you'll want to pin deliberately to left/right
+    // instead of leading/trailing. You'll also want to the semanticContentAttribute
+    // to ensure horizontal stack views layout left-to-right.
+
     self.layoutMargins = UIEdgeInsetsZero;
 
     if (UIAccessibilityIsReduceTransparencyEnabled()) {
@@ -313,10 +320,6 @@ const CGFloat kMaxTextViewHeight = 98;
     hStack.alignment = UIStackViewAlignmentBottom;
     hStack.layoutMarginsRelativeArrangement = YES;
     hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
-
-    // The input toolbar should *always* be layed out left-to-right, even when using
-    // a right-to-left language. The convention for messaging apps is for the send
-    // button to always be to the right of the input field, even in RTL layouts.
     hStack.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
 
     // Suggested Stickers
