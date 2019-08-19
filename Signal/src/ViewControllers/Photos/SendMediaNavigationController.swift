@@ -122,6 +122,31 @@ class SendMediaNavigationController: OWSNavigationController {
         return navController
     }
 
+    @objc(showingApprovalWithPickedLibraryMediaAsset:attachment:delegate:)
+    public class func showingApprovalWithPickedLibraryMedia(asset: PHAsset,
+                                                            attachment: SignalAttachment,
+                                                            delegate: SendMediaNavDelegate) -> SendMediaNavigationController {
+        let navController = SendMediaNavigationController()
+        navController.sendMediaNavDelegate = delegate
+
+        let approvalItem = AttachmentApprovalItem(attachment: attachment)
+        let libraryMedia = MediaLibraryAttachment(asset: asset,
+                                                  attachmentApprovalItemPromise: .value(approvalItem))
+        navController.attachmentDraftCollection.append(.picker(attachment: libraryMedia))
+
+        navController.setViewControllers([navController.mediaLibraryViewController], animated: false)
+
+        // Since we're starting on the approval view, include cancel to allow the user to immediately dismiss.
+        // If they choose to add more, `hasCancel` will go away and they'll enter the normal gallery flow.
+        navController.pushApprovalViewController(
+            attachmentApprovalItems: [approvalItem],
+            options: [.canAddMore, .hasCancel],
+            animated: false
+        )
+
+        return navController
+    }
+
     private(set) var isPickingAsDocument = false
     @objc
     public class func asMediaDocumentPicker() -> SendMediaNavigationController {
@@ -297,19 +322,23 @@ class SendMediaNavigationController: OWSNavigationController {
         return vc
     }()
 
-    private func pushApprovalViewController(attachmentApprovalItems: [AttachmentApprovalItem]) {
+    private func pushApprovalViewController(
+        attachmentApprovalItems: [AttachmentApprovalItem],
+        options: AttachmentApprovalViewControllerOptions = .canAddMore,
+        animated: Bool
+    ) {
         guard let sendMediaNavDelegate = self.sendMediaNavDelegate else {
             owsFailDebug("sendMediaNavDelegate was unexpectedly nil")
             return
         }
 
-        let approvalViewController = AttachmentApprovalViewController(options: [.canAddMore],
+        let approvalViewController = AttachmentApprovalViewController(options: options,
                                                                       sendButtonImageName: sendMediaNavDelegate.sendMediaNavApprovalButtonImageName,
                                                                       attachmentApprovalItems: attachmentApprovalItems)
         approvalViewController.approvalDelegate = self
         approvalViewController.messageText = sendMediaNavDelegate.sendMediaNavInitialMessageText(self)
 
-        pushViewController(approvalViewController, animated: true)
+        pushViewController(approvalViewController, animated: animated)
     }
 
     private func didRequestExit(dontAbandonText: String) {
@@ -424,7 +453,8 @@ extension SendMediaNavigationController: PhotoCaptureViewControllerDelegate {
         if isInBatchSelectMode {
             updateViewState(topViewController: photoCaptureViewController)
         } else {
-            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem])
+            pushApprovalViewController(attachmentApprovalItems: [cameraCaptureAttachment.attachmentApprovalItem],
+                                       animated: true)
         }
     }
 
@@ -470,7 +500,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
             when(fulfilled: self.attachmentDraftCollection.attachmentApprovalItemPromises).map { attachmentApprovalItems in
                 Logger.debug("built all attachments")
                 modal.dismiss {
-                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems)
+                    self.pushApprovalViewController(attachmentApprovalItems: attachmentApprovalItems, animated: true)
                 }
             }.catch { error in
                 Logger.error("failed to prepare attachments. error: \(error)")

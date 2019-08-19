@@ -1533,9 +1533,9 @@ const CGFloat kMaxTextViewHeight = 98;
 
 #pragma mark - Attachment Keyboard Delegate
 
-- (void)didSelectRecentPhoto:(SignalAttachment *)attachment
+- (void)didSelectRecentPhotoWithAsset:(PHAsset *)asset attachment:(SignalAttachment *)attachment
 {
-    [self.inputToolbarDelegate didSelectRecentPhoto:attachment];
+    [self.inputToolbarDelegate didSelectRecentPhotoWithAsset:asset attachment:attachment];
 }
 
 - (void)didTapGalleryButton

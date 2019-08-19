@@ -8,7 +8,7 @@ import PromiseKit
 
 @objc
 protocol AttachmentKeyboardDelegate {
-    func didSelectRecentPhoto(_ attachment: SignalAttachment)
+    func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment)
     func didTapGalleryButton()
     func didTapCamera(withPhotoCapture: PhotoCapture?)
     func didTapGif()
@@ -204,8 +204,8 @@ extension AttachmentKeyboard: RecentPhotosDelegate {
         return mediaLibraryAuthorizationStatus == .authorized
     }
 
-    func didSelectRecentPhoto(_ attachment: SignalAttachment) {
-        delegate?.didSelectRecentPhoto(attachment)
+    func didSelectRecentPhoto(asset: PHAsset, attachment: SignalAttachment) {
+        delegate?.didSelectRecentPhoto(asset: asset, attachment: attachment)
     }
 }
 
