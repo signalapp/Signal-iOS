@@ -215,6 +215,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     self.linkPreview = nil;
     self.linkPreviewAttachment = nil;
     self.senderName = nil;
+    self.senderUsername = nil;
     self.accessibilityAuthorName = nil;
 
     [self setAuthorConversationColorNameWithTransaction:transaction];
