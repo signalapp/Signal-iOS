@@ -285,7 +285,10 @@ const CGFloat kMaxTextViewHeight = 98;
     UIView *vStackRoundingOffsetView = [UIView containerView];
     [vStackRoundingOffsetView addSubview:vStackRoundingView];
     CGFloat textViewCenterInset = (kMinToolbarItemHeight - kMinTextViewHeight) / 2;
-    [vStackRoundingView autoPinEdgesToSuperviewEdgesWithInsets:UIEdgeInsetsMake(0, 0, textViewCenterInset, 8)];
+    [vStackRoundingView autoPinEdgeToSuperviewEdge:ALEdgeBottom withInset:textViewCenterInset];
+    [vStackRoundingView autoPinEdgeToSuperviewEdge:ALEdgeTop];
+    [vStackRoundingView autoPinEdgeToSuperviewEdge:ALEdgeLeft];
+    [vStackRoundingView autoPinEdgeToSuperviewEdge:ALEdgeRight withInset:8];
 
     // Media Stack
     UIStackView *mediaAndSendStack = [[UIStackView alloc] initWithArrangedSubviews:@[
@@ -296,6 +299,7 @@ const CGFloat kMaxTextViewHeight = 98;
     _mediaAndSendStack = mediaAndSendStack;
     mediaAndSendStack.axis = UILayoutConstraintAxisHorizontal;
     mediaAndSendStack.alignment = UIStackViewAlignmentCenter;
+    mediaAndSendStack.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
     [mediaAndSendStack setContentHuggingHorizontalHigh];
     [mediaAndSendStack setCompressionResistanceHorizontalHigh];
 
@@ -309,6 +313,11 @@ const CGFloat kMaxTextViewHeight = 98;
     hStack.alignment = UIStackViewAlignmentBottom;
     hStack.layoutMarginsRelativeArrangement = YES;
     hStack.layoutMargins = UIEdgeInsetsMake(6, 6, 6, 6);
+
+    // The input toolbar should *always* be layed out left-to-right, even when using
+    // a right-to-left language. The convention for messaging apps is for the send
+    // button to always be to the right of the input field, even in RTL layouts.
+    hStack.semanticContentAttribute = UISemanticContentAttributeForceLeftToRight;
 
     // Suggested Stickers
     const CGFloat suggestedStickerSize = 48;
@@ -808,7 +817,7 @@ const CGFloat kMaxTextViewHeight = 98;
     VoiceMemoLockView *voiceMemoLockView = [VoiceMemoLockView new];
     self.voiceMemoLockView = voiceMemoLockView;
     [self addSubview:voiceMemoLockView];
-    [voiceMemoLockView autoPinTrailingToSuperviewMargin];
+    [voiceMemoLockView autoPinEdgeToSuperviewMargin:ALEdgeRight];
     [voiceMemoLockView autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:self.voiceMemoContentView];
     [voiceMemoLockView setCompressionResistanceHigh];
 
@@ -825,7 +834,7 @@ const CGFloat kMaxTextViewHeight = 98;
     NSMutableAttributedString *cancelString = [NSMutableAttributedString new];
     const CGFloat cancelArrowFontSize = ScaleFromIPhone5To7Plus(18.4, 20.f);
     const CGFloat cancelFontSize = ScaleFromIPhone5To7Plus(14.f, 16.f);
-    NSString *arrowHead = (CurrentAppContext().isRTL ? @"\uf105" : @"\uf104");
+    NSString *arrowHead = @"\uf104";
     [cancelString
         appendAttributedString:[[NSAttributedString alloc]
                                    initWithString:arrowHead
@@ -886,9 +895,9 @@ const CGFloat kMaxTextViewHeight = 98;
     [whiteIconView autoCenterInSuperview];
 
     [imageView autoVCenterInSuperview];
-    [imageView autoPinLeadingToSuperviewMarginWithInset:10.f];
+    [imageView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:10.f];
     [self.recordingLabel autoVCenterInSuperview];
-    [self.recordingLabel autoPinLeadingToTrailingEdgeOfView:imageView offset:5.f];
+    [self.recordingLabel autoPinEdge:ALEdgeLeft toEdge:ALEdgeRight ofView:imageView withOffset:5.f];
     [cancelLabel autoVCenterInSuperview];
     [cancelLabel autoHCenterInSuperview];
     [self.voiceMemoUI layoutIfNeeded];
@@ -896,8 +905,7 @@ const CGFloat kMaxTextViewHeight = 98;
     // Slide in the "slide to cancel" label.
     CGRect cancelLabelStartFrame = cancelLabel.frame;
     CGRect cancelLabelEndFrame = cancelLabel.frame;
-    cancelLabelStartFrame.origin.x
-        = (CurrentAppContext().isRTL ? -self.voiceMemoUI.bounds.size.width : self.voiceMemoUI.bounds.size.width);
+    cancelLabelStartFrame.origin.x = self.voiceMemoUI.bounds.size.width;
     cancelLabel.frame = cancelLabelStartFrame;
 
     voiceMemoLockView.transform = CGAffineTransformMakeScale(0.0, 0.0);
@@ -997,7 +1005,7 @@ const CGFloat kMaxTextViewHeight = 98;
     [sendVoiceMemoButton setTitleColor:UIColor.ows_signalBlueColor forState:UIControlStateNormal];
     sendVoiceMemoButton.alpha = 0;
     [self.voiceMemoContentView addSubview:sendVoiceMemoButton];
-    [sendVoiceMemoButton autoPinEdgeToSuperviewMargin:ALEdgeTrailing withInset:10.f];
+    [sendVoiceMemoButton autoPinEdgeToSuperviewMargin:ALEdgeRight withInset:10.f];
     [sendVoiceMemoButton autoVCenterInSuperview];
     [sendVoiceMemoButton setCompressionResistanceHigh];
     [sendVoiceMemoButton setContentHuggingHigh];
@@ -1020,13 +1028,13 @@ const CGFloat kMaxTextViewHeight = 98;
                          forConstraints:^{
                              [cancelButton autoHCenterInSuperview];
                          }];
-    [cancelButton autoPinEdge:ALEdgeLeading
-                       toEdge:ALEdgeTrailing
+    [cancelButton autoPinEdge:ALEdgeLeft
+                       toEdge:ALEdgeRight
                        ofView:self.recordingLabel
                    withOffset:4
                      relation:NSLayoutRelationGreaterThanOrEqual];
-    [cancelButton autoPinEdge:ALEdgeTrailing
-                       toEdge:ALEdgeLeading
+    [cancelButton autoPinEdge:ALEdgeLeft
+                       toEdge:ALEdgeRight
                        ofView:sendVoiceMemoButton
                    withOffset:-4
                      relation:NSLayoutRelationLessThanOrEqual];
