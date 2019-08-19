@@ -11,6 +11,22 @@ public class AudioActivity: NSObject {
 
     let behavior: OWSAudioBehavior
 
+    @objc public var supportsBackgroundPlayback: Bool {
+        // Currently, only audio messages support background playback
+        return behavior == .audioMessagePlayback
+    }
+
+    @objc public var backgroundPlaybackName: String {
+        switch behavior {
+        case .audioMessagePlayback:
+            return NSLocalizedString("AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE",
+                                     comment: "A string indicating that an audio message is playing.")
+        default:
+            owsFailDebug("unexpectedly fetched background name for type that doesn't support background playback")
+            return ""
+        }
+    }
+
     @objc
     public init(audioDescription: String, behavior: OWSAudioBehavior) {
         self.audioDescription = audioDescription
@@ -57,6 +73,11 @@ public class OWSAudioSession: NSObject {
     public private(set) var currentActivities: [Weak<AudioActivity>] = []
     var aggregateBehaviors: Set<OWSAudioBehavior> {
         return Set(self.currentActivities.compactMap { $0.value?.behavior })
+    }
+
+    @objc
+    public var wantsBackgroundPlayback: Bool {
+        return currentActivities.lazy.compactMap { $0.value?.supportsBackgroundPlayback }.contains(true)
     }
 
     @objc
