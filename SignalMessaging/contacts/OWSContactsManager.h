@@ -67,7 +67,8 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 #pragma mark - Util
 
-- (BOOL)isSystemContact:(NSString *)phoneNumber;
+- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber;
+- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address;
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
 
