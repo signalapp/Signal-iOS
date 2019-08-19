@@ -56,7 +56,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             owsFailDebug("collectionView was unexpectedly nil")
             return
         }
-
         collectionView.register(PhotoGridViewCell.self, forCellWithReuseIdentifier: PhotoGridViewCell.reuseIdentifier)
 
         // ensure images at the end of the list can be scrolled above the bottom buttons
@@ -235,7 +234,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         let cellSize = collectionViewFlowLayout.itemSize
         photoMediaSize.thumbnailSize = CGSize(width: cellSize.width * scale, height: cellSize.height * scale)
 
-        reloadDataAndRestoreSelection()
+        reloadData()
         if !hasEverAppeared {
             scrollToBottom(animated: false)
         }
@@ -328,28 +327,14 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }
     }
 
-    public func reloadDataAndRestoreSelection() {
+    public func reloadData() {
         guard let collectionView = collectionView else {
             owsFailDebug("Missing collectionView.")
             return
         }
 
-        guard let delegate = delegate else {
-            owsFailDebug("delegate was unexpectedly nil")
-            return
-        }
-
         collectionView.reloadData()
         collectionView.layoutIfNeeded()
-
-        let count = photoCollectionContents.assetCount
-        for index in 0..<count {
-            let asset = photoCollectionContents.asset(at: index)
-            if delegate.imagePicker(self, isAssetSelected: asset) {
-                collectionView.selectItem(at: IndexPath(row: index, section: 0),
-                                          animated: false, scrollPosition: [])
-            }
-        }
     }
 
     // MARK: - Actions
@@ -442,7 +427,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
 
     func photoLibraryDidChange(_ photoLibrary: PhotoLibrary) {
         photoCollectionContents = photoCollection.contents()
-        reloadDataAndRestoreSelection()
+        reloadData()
     }
 
     // MARK: - PhotoCollectionPicker Presentation
@@ -509,7 +494,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         photoCollectionContents = photoCollection.contents()
 
         // Any selections are invalid as they refer to indices in a different collection
-        reloadDataAndRestoreSelection()
+        reloadData()
 
         titleView.text = photoCollection.localizedTitle()
 
@@ -580,7 +565,13 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
             return
         }
         let assetItem = photoCollectionContents.assetItem(at: indexPath.item, photoMediaSize: photoMediaSize)
-        photoGridViewCell.isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
+        let isSelected = delegate.imagePicker(self, isAssetSelected: assetItem.asset)
+        if isSelected {
+            collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+        } else {
+            collectionView.deselectItem(at: indexPath, animated: false)
+        }
+        photoGridViewCell.isSelected = isSelected
         photoGridViewCell.allowsMultipleSelection = collectionView.allowsMultipleSelection
     }
 
