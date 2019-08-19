@@ -12,8 +12,8 @@ public final class LokiGroupChatAPI : NSObject {
     internal static var userHexEncodedPublicKey: String { return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey }
     
     @objc public static let serverURL = "https://chat.lokinet.org"
-    public static let publicChatMessageType = "network.loki.messenger.publicChat"
-    public static let publicChatID = 1
+    @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
+    @objc public static let publicChatID = 1
     
     private static let batchCount = 8
     

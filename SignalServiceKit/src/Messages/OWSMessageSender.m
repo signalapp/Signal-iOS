@@ -1103,39 +1103,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [error setIsRetryable:NO];
         return messageSend.failure(error);
     }
-
-    // Gather the message info
-    NSDictionary *signalMessageInfo = deviceMessages.firstObject;
-    SSKProtoEnvelopeType type = ((NSNumber *)signalMessageInfo[@"type"]).integerValue;
-    uint64_t timestamp = message.timestamp;
-    NSString *senderID = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    uint32_t senderDeviceID = OWSDevicePrimaryDeviceId;
-    NSString *content = signalMessageInfo[@"content"];
-    NSString *recipientID = signalMessageInfo[@"destination"];
-    uint64_t ttl = ((NSNumber *)signalMessageInfo[@"ttl"]).unsignedIntegerValue;
-    BOOL isPing = ((NSNumber *)signalMessageInfo[@"isPing"]).boolValue;
-    LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing];
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        // Update the PoW calculation status
-        [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
-        // Update the message and thread if needed
-        if (signalMessage.type == TSFriendRequestMessageType) {
-            [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSending withTransaction:transaction];
-            [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
-        }
-    }];
-    // Convenience
-    void (^onP2PSuccess)() = ^() { message.isP2P = YES; };
-    void (^handleError)(NSError *error) = ^(NSError *error) {
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            // Update the message and thread if needed
-            if (signalMessage.type == TSFriendRequestMessageType) {
-                [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:transaction];
-                [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
-            }
-            // Update the PoW calculation status
-            [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
-        }];
+    
+    void (^failedMessageSend)(NSError *error) = ^(NSError *error) {
         // Handle the error
         NSUInteger statusCode = 0;
         NSData *_Nullable responseData = nil;
@@ -1152,16 +1121,67 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
     };
-    // Send the message using the Loki API
-    [[LKAPI sendSignalMessage:signalMessage onP2PSuccess:onP2PSuccess]
-        .thenOn(OWSDispatch.sendingQueue, ^(id result) {
+    
+    // Check to see if we're sending to a public channel
+    if ([recipient.recipientId isEqualToString:LKGroupChatAPI.serverURL]) {
+        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *displayName = [SSKEnvironment.shared.contactsManager displayNameForPhoneIdentifier:userHexEncodedPublicKey];
+        if (displayName == nil) displayName = @"Anonymous";
+        
+        LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKGroupChatAPI.publicChatMessageType timestamp:message.timestamp];
+        [[LKGroupChatAPI sendMessage:groupMessage groupID:LKGroupChatAPI.publicChatID]
+         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
+            [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
+        })
+         .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable
+            failedMessageSend(error);
+        }) retainUntilComplete];
+    } else {
+        // Gather the message info
+        NSDictionary *signalMessageInfo = deviceMessages.firstObject;
+        SSKProtoEnvelopeType type = ((NSNumber *)signalMessageInfo[@"type"]).integerValue;
+        uint64_t timestamp = message.timestamp;
+        NSString *senderID = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        uint32_t senderDeviceID = OWSDevicePrimaryDeviceId;
+        NSString *content = signalMessageInfo[@"content"];
+        NSString *recipientID = signalMessageInfo[@"destination"];
+        uint64_t ttl = ((NSNumber *)signalMessageInfo[@"ttl"]).unsignedIntegerValue;
+        BOOL isPing = ((NSNumber *)signalMessageInfo[@"isPing"]).boolValue;
+        LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing];
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            // Update the PoW calculation status
+            [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
+            // Update the message and thread if needed
+            if (signalMessage.type == TSFriendRequestMessageType) {
+                [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSending withTransaction:transaction];
+                [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
+            }
+        }];
+        // Convenience
+        void (^onP2PSuccess)() = ^() { message.isP2P = YES; };
+        void (^handleError)(NSError *error) = ^(NSError *error) {
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                // Update the message and thread if needed
+                if (signalMessage.type == TSFriendRequestMessageType) {
+                    [message.thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:transaction];
+                    [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
+                }
+                // Update the PoW calculation status
+                [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
+            }];
+            // Handle the error
+            failedMessageSend(error);
+        };
+        // Send the message using the Loki API
+        [[LKAPI sendSignalMessage:signalMessage onP2PSuccess:onP2PSuccess]
+         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             NSSet<AnyPromise *> *promises = (NSSet<AnyPromise *> *)result;
             __block BOOL isSuccess = NO;
             NSUInteger promiseCount = promises.count;
             __block NSUInteger errorCount = 0;
             for (AnyPromise *promise in promises) {
                 [promise
-                .thenOn(OWSDispatch.sendingQueue, ^(id result) {
+                 .thenOn(OWSDispatch.sendingQueue, ^(id result) {
                     if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
                     isSuccess = YES;
                     if (signalMessage.type == TSFriendRequestMessageType) {
@@ -1179,17 +1199,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     // Invoke the completion handler
                     [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
                 })
-                .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
+                 .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
                     errorCount += 1;
                     if (errorCount != promiseCount) { return; } // Only error out if all promises failed
                     handleError(error);
                 }) retainUntilComplete];
             }
         })
-        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable
+         .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable
             handleError(error);
         }) retainUntilComplete];
-    
+    }
+
     // Loki: Original code
     /*
     OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Message Send"
