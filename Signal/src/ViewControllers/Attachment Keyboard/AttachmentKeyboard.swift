@@ -141,8 +141,8 @@ class AttachmentKeyboard: CustomKeyboard {
 
     // MARK: -
 
-    override func wasPresented() {
-        super.wasPresented()
+    override func willPresent() {
+        super.willPresent()
 
         checkPermissions()
         updateItemSizes()
