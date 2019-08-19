@@ -111,8 +111,6 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (instancetype)init
 {
-    OWSSingletonAssert();
-
     self = [super init];
     if (!self) {
         return self;
