@@ -901,10 +901,10 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Los PINs no coinciden.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "El PIN no puede tener más de 20 dígitos.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "El PIN debe contener por lo menos 4 dígitos.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "El PIN debe contener al menos 4 dígitos.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Introduce un número PIN para activar el bloqueo de registro de tu número de teléfono. Solicitaremos este PIN la próxima vez que alguien registre el mismo número de teléfono con Signal.";
@@ -1851,7 +1851,7 @@
 "PIN_CREATION_TITLE" = "Crea tu PIN";
 
 /* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
+"PIN_CREATION_TOO_LONG_ERROR" = "El PIN no debe tener más de 20 dígitos.";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_CREATION_TOO_SHORT_ERROR" = "El PIN debe contener por lo menos 4 dígitos.";
@@ -2595,13 +2595,13 @@
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Fallo al cargar algunos paquetes de cromos";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Cromos instalados (stickers)";
+"STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Cromos instalados";
 
 /* Label indicating that one or more known sticker packs is loading. */
 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Cargando ...";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No hay ningún paquete de cromos (stickers) instalado ";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "No hay ningún paquete de cromos instalado ";
 
 /* Label indicating that the user has no known sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Los cromos recibidos en mensajes aparecerán aquí";
@@ -2622,7 +2622,7 @@
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Paquete de cromos";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Fallo al cargar el paquete de cromos";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Desinstalar";
@@ -2781,16 +2781,16 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Añade más seguridad a tu cuenta y llévate tus contactos contigo al cambiar de teléfono.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Presentamos el PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "¡El PIN ha llegado!";
 
 /* Button to open a help document explaining more about why a PIN is required */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "¿Tengo que crear un PIN?";
 
 /* Body text for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "¿Por qué usar palabras si puedes usar cromos (stickers)? Toca este icono en tu teclado:";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "¿Por qué usar palabras si puedes usar cromos? Toca este icono en tu teclado:";
 
 /* Header for stickers splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "Presentamos los cromos (stickers)";
+"UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_TITLE" = "¡Los cromos (stickers) han llegado!";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal próximamente solo funcionará en iOS 10 o versiones posteriores. Actualiza en Ajustes >> General >> Actualización de software.";

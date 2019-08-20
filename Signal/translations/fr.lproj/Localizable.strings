@@ -183,10 +183,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Position";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Autoriser l’accès à vos photos dans les réglages pour les envoyer d’ici.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Une fois vos clichés pris, vous pourrez envoyer les plus récents ici.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Fichier joint";
@@ -618,7 +618,7 @@
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "Choix des destinataires";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Aucune correspondance";
@@ -901,7 +901,7 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Le NIP ne correspond pas.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "Le NIP ne peut contenir plus de 20 chiffres.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "Le NIP doit faire au moins 4 chiffres.";
@@ -1147,7 +1147,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Lancez votre première conversation ici.";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Demande de contact";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Aucun résultat n’a été trouvé pour « %@ ».";
@@ -1494,7 +1494,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Vous pouvez accorder cette autorisation dans l’appli Réglages d’iOS.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal a besoin de connaître votre position pour cette fonction.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Vous pouvez accorder cette autorisation dans l’appli Réglages d’iOS.";
@@ -1626,19 +1626,19 @@
 "ONBOARDING_2FA_INVALID_PIN" = "NIP erroné";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "NIP erroné. Il vous reste %lu tentatives.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "NIP erroné. Il vous reste 1 tentative.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Blocage de l’inscription";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Pour protéger vos données personnelles et la sécurité de votre compte, nous avons bloqué ce dernier pour 7 jours.\n\nAprès 7 jours d’inactivité, vous pourrez à nouveau enregistrer ce numéro de téléphone sans avoir besoin de NIP. Tout le contenu sera effacé.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "En savoir plus sur les comptes verrouillés";
 
 /* Title of the 'onboarding account locked' view. */
 "ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Compte verrouillé";
@@ -1851,7 +1851,7 @@
 "PIN_CREATION_TITLE" = "Créer votre NIP";
 
 /* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
+"PIN_CREATION_TOO_LONG_ERROR" = "Le NIP ne peut contenir plus de 20 chiffres.";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_CREATION_TOO_SHORT_ERROR" = "Le NIP doit faire au moins 4 chiffres.";
@@ -2643,13 +2643,13 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Membre de %@";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Membre de %@, %@ et %@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Membre de %@ et %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ jours";
@@ -2784,7 +2784,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Présentations des NIP";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Dois-je créer un NIP ?";
 
 /* Body text for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Pourquoi utiliser des mots quand vous pouvez utiliser des autocollants ? Touchez cette icône sur votre clavier :";

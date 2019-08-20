@@ -1761,10 +1761,10 @@
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "صورة";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "View Photo";
+"PER_MESSAGE_EXPIRATION_TAP_TO_VIEW" = "مشاهدة الصورة";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "Viewed";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "تمت المشاهدة";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "مثال: %@";

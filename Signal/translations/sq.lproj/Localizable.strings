@@ -901,7 +901,7 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN-i nuk përputhet.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN-i s’mund të jetë më i gjatë se 20 shifra.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN-i duhet të jetë të paktën 4 shifra.";
@@ -1851,7 +1851,7 @@
 "PIN_CREATION_TITLE" = "Krijoni PIN-in tuaj";
 
 /* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN-i s’duhet të jetë më tepër se 20 shifra.";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_CREATION_TOO_SHORT_ERROR" = "PIN-i duhet të jetë të paktën 4 shifra.";
@@ -2622,7 +2622,7 @@
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Paketë Ngjitësish";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "S’u arrit të ngarkohej Paketë Ngjitësish";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Çinstaloje";

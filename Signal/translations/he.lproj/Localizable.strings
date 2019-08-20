@@ -901,7 +901,7 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN אינו תואם.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN יכול להיות לא יותר ארוך מן 20 ספרות.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN חייב להיות לפחות 4 ספרות.";
@@ -1851,7 +1851,7 @@
 "PIN_CREATION_TITLE" = "צור את ה־PIN שלך";
 
 /* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN חייב להיות לא יותר מן 20 ספרות.";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_CREATION_TOO_SHORT_ERROR" = "PIN חייב להיות לפחות 4 ספרות.";
@@ -2622,7 +2622,7 @@
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "חבילת מדבקות";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "חבילת מדבקות נכשלה להיטען";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "הסר";
