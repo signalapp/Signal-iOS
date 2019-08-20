@@ -33,7 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
     return @[];
 }
 
-- (BOOL)isSystemContact:(NSString *)phoneNumber
+- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber
+{
+    return YES;
+}
+
+- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address
 {
     return YES;
 }

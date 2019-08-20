@@ -9,11 +9,11 @@ import XCTest
 // TODO: We might be able to merge this with OWSFakeContactsManager.
 @objc
 class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
-    func displayName(for address: SignalServiceAddress?, transaction: SDSAnyReadTransaction) -> String {
+    func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         return self.displayName(for: address)
     }
 
-    func displayName(for address: SignalServiceAddress?) -> String {
+    func displayName(for address: SignalServiceAddress) -> String {
         if address == aliceRecipient {
             return "Alice"
         } else if address == bobRecipient {
@@ -27,7 +27,11 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         return []
     }
 
-    func isSystemContact(_ recipientId: String) -> Bool {
+    func isSystemContact(phoneNumber: String) -> Bool {
+        return true
+    }
+
+    func isSystemContact(address: SignalServiceAddress) -> Bool {
         return true
     }
 
