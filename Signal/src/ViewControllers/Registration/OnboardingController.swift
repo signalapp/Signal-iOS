@@ -119,14 +119,14 @@ public class OnboardingController: NSObject {
 
     private func pushAccountDetailsViewController(from viewController: UIViewController) {
         AssertIsOnMainThread()
-        let accountDetailsVC = OnboardingAccountDetailsViewController(onboardingController: self)
+        let accountDetailsVC = AccountDetailsViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(accountDetailsVC, animated: true)
     }
     
     func pushKeyPairViewController(from viewController: UIViewController, userName: String?) {
         AssertIsOnMainThread()
-        let keyPairVC = OnboardingKeyPairViewController(onboardingController: self, userName: userName)
-        viewController.navigationController?.pushViewController(keyPairVC, animated: true)
+        let seedVC = SeedViewController(onboardingController: self, userName: userName)
+        viewController.navigationController?.pushViewController(seedVC, animated: true)
     }
 
     public func onboardingRegistrationSucceeded(viewController: UIViewController) {

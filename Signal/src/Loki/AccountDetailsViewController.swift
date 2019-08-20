@@ -1,5 +1,5 @@
 
-final class OnboardingAccountDetailsViewController : OnboardingBaseViewController {
+final class AccountDetailsViewController : OnboardingBaseViewController {
     
     private lazy var userNameTextField: UITextField = {
         let result = UITextField()
