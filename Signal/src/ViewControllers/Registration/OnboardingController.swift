@@ -152,7 +152,7 @@ public class OnboardingController: NSObject {
         // from the "code verification" view.  The "Captcha" view should always appear
         // immediately after the "phone number" view.
         while navigationController.viewControllers.count > 1 &&
-            !(navigationController.topViewController is OnboardingAccountDetailsViewController) {
+            !(navigationController.topViewController is AccountDetailsViewController) {
                 navigationController.popViewController(animated: false)
         }
 

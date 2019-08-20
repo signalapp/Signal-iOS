@@ -18,7 +18,18 @@ public final class LokiGroupChatAPI : NSObject {
     }
     
     public enum Error : Swift.Error {
-        case messageParsingFailed
+        case tokenParsingFailed, messageParsingFailed
+    }
+    
+    public static func getEncryptedToken() -> Promise<String> {
+        print("[Loki] Getting group chat auth token.")
+        let url = URL(string: "\(serverURL)/loki/v1/getToken")!
+        let parameters = [ "pubKey" : userHexEncodedPublicKey ]
+        let request = TSRequest(url: url, method: "POST", parameters: parameters)
+        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+            guard let json = rawResponse as? JSON, let encryptedToken = json["cipherText64"] as? String else { throw Error.tokenParsingFailed }
+            return encryptedToken
+        }
     }
     
     public static func getMessages(for group: UInt) -> Promise<[LokiGroupMessage]> {
