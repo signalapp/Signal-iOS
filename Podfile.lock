@@ -47,7 +47,7 @@ PODS:
   - HKDFKit/Tests (0.0.4):
     - CocoaLumberjack
     - SignalCoreKit
-  - libPhoneNumber-iOS (0.9.13)
+  - libPhoneNumber-iOS (0.9.15)
   - libwebp (1.0.2):
     - libwebp/core (= 1.0.2)
     - libwebp/dec (= 1.0.2)
@@ -328,7 +328,7 @@ SPEC CHECKSUMS:
   GRDBCipher: 5d4d6f4c8397e632a35c1a6427003704556ccad4
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
   HKDFKit: 3b6dbbb9d59c221cc6c52c3aa915700cbf24e376
-  libPhoneNumber-iOS: e444379ac18bbfbdefad571da735b2cd7e096caa
+  libPhoneNumber-iOS: 0a32a9525cf8744fe02c5206eb30d571e38f7d75
   libwebp: b068a3bd7c45f7460f6715be7bed1a18fd5d6b48
   Mantle: 2fa750afa478cd625a94230fbf1c13462f29395b
   PromiseKit: c609029bdd801f792551a504c695c7d3098b42cd
