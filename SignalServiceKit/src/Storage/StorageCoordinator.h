@@ -28,6 +28,8 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 - (void)migrationYDBToGRDBWillBegin;
 - (void)migrationYDBToGRDBDidComplete;
 
+- (BOOL)isDatabasePasswordAccessible;
+
 @end
 
 NS_ASSUME_NONNULL_END

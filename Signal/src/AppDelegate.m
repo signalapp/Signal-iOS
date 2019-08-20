@@ -170,6 +170,11 @@ static NSTimeInterval launchStartedAt;
     return SSKEnvironment.shared.syncManager;
 }
 
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
 #pragma mark -
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -333,7 +338,7 @@ static NSTimeInterval launchStartedAt;
 
     // GRDB TODO: We should consult YDB and GRDB.  This should be done via storage coordinator,
     //            which knows which checks we need to do.
-    if (![OWSPrimaryStorage isDatabasePasswordAccessible]) {
+    if (![self.storageCoordinator isDatabasePasswordAccessible]) {
         OWSLogInfo(@"exiting because we are in the background and the database password is not accessible.");
 
         UILocalNotification *notification = [UILocalNotification new];

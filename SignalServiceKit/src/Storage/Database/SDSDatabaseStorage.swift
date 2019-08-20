@@ -149,6 +149,7 @@ public class SDSDatabaseStorage: SDSTransactable {
             Logger.error("storageMode: \(FeatureFlags.storageMode).")
             Logger.error(
                 "StorageCoordinatorState: \(storageCoordinatorStateDescription).")
+
             switch FeatureFlags.storageModeStrictness {
             case .fail:
                 owsFail("Unexpected YDB load.")
@@ -679,8 +680,20 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     private let databaseUrl: URL
 
-    private let keyServiceName: String = "TSKeyChainService"
-    private let keyName: String = "OWSDatabaseCipherKeySpec"
+    private static let keyServiceName: String = "TSKeyChainService"
+    private static let keyName: String = "OWSDatabaseCipherKeySpec"
+    private static var keyspec: GRDBKeySpecSource {
+        return GRDBKeySpecSource(keyServiceName: keyServiceName, keyName: keyName)
+    }
+    @objc
+    public static var isKeyAccessible: Bool {
+        do {
+            return try keyspec.fetchString().count > 0
+        } catch {
+            owsFailDebug("Key not accessible: \(error)")
+            return false
+        }
+    }
 
     private let storage: GRDBStorage
 
@@ -691,7 +704,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     init(baseDir: URL) throws {
         databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
 
-        storage = try GRDBStorage(dbURL: databaseUrl, keyServiceName: keyServiceName, keyName: keyName)
+        storage = try GRDBStorage(dbURL: databaseUrl, keyspec: GRDBDatabaseStorageAdapter.keyspec)
 
         super.init()
 
@@ -1083,9 +1096,8 @@ private struct GRDBStorage {
     private let dbURL: URL
     private let configuration: Configuration
 
-    init(dbURL: URL, keyServiceName: String, keyName: String) throws {
+    init(dbURL: URL, keyspec: GRDBKeySpecSource) throws {
         self.dbURL = dbURL
-        let keyspec = GRDBKeySpecSource(keyServiceName: keyServiceName, keyName: keyName)
 
         var configuration = Configuration()
         configuration.readonly = false
