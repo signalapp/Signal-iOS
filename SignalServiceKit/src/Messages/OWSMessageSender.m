@@ -1122,22 +1122,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
     };
     
-    // Check to see if we're sending to a public channel
     if ([recipient.recipientId isEqualToString:LKGroupChatAPI.serverURL]) {
         NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
         NSString *displayName = [SSKEnvironment.shared.contactsManager displayNameForPhoneIdentifier:userHexEncodedPublicKey];
-        if (displayName == nil) displayName = @"Anonymous";
-        
+        if (displayName == nil) { displayName = @"Anonymous"; }
         LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKGroupChatAPI.publicChatMessageType timestamp:message.timestamp];
-        [[LKGroupChatAPI sendMessage:groupMessage groupID:LKGroupChatAPI.publicChatID]
-         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
+        [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatID]
+        .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
         })
-         .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable
+        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable
             failedMessageSend(error);
         }) retainUntilComplete];
     } else {
-        // Gather the message info
         NSDictionary *signalMessageInfo = deviceMessages.firstObject;
         SSKProtoEnvelopeType type = ((NSNumber *)signalMessageInfo[@"type"]).integerValue;
         uint64_t timestamp = message.timestamp;
@@ -1181,7 +1178,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             __block NSUInteger errorCount = 0;
             for (AnyPromise *promise in promises) {
                 [promise
-                 .thenOn(OWSDispatch.sendingQueue, ^(id result) {
+                .thenOn(OWSDispatch.sendingQueue, ^(id result) {
                     if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
                     isSuccess = YES;
                     if (signalMessage.type == TSFriendRequestMessageType) {
@@ -1199,79 +1196,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     // Invoke the completion handler
                     [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
                 })
-                 .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
+                .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
                     errorCount += 1;
                     if (errorCount != promiseCount) { return; } // Only error out if all promises failed
                     handleError(error);
                 }) retainUntilComplete];
             }
         })
-         .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable
+        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable
             handleError(error);
         }) retainUntilComplete];
     }
-
-    // Loki: Original code
-    /*
-    OWSRequestMaker *requestMaker = [[OWSRequestMaker alloc] initWithLabel:@"Message Send"
-        requestFactoryBlock:^(SMKUDAccessKey *_Nullable udAccessKey) {
-            return [OWSRequestFactory submitMessageRequestWithRecipient:recipient.recipientId
-                                                               messages:deviceMessages
-                                                              timeStamp:message.timestamp
-                                                            udAccessKey:udAccessKey];
-        }
-        udAuthFailureBlock:^{
-            // Note the UD auth failure so subsequent retries
-            // to this recipient also use basic auth.
-            [messageSend setHasUDAuthFailed];
-        }
-        websocketFailureBlock:^{
-            // Note the websocket failure so subsequent retries
-            // to this recipient also use REST.
-            messageSend.hasWebsocketSendFailed = YES;
-        }
-        recipientId:recipient.recipientId
-        udAccess:messageSend.udAccess
-        canFailoverUDAuth:NO];
-    [[requestMaker makeRequestObjc]
-            .then(^(OWSRequestMakerResult *result) {
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    [self messageSendDidSucceed:messageSend
-                                 deviceMessages:deviceMessages
-                                    wasSentByUD:result.wasSentByUD
-                             wasSentByWebsocket:result.wasSentByWebsocket];
-                });
-            })
-            .catch(^(NSError *error) {
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    NSUInteger statusCode = 0;
-                    NSData *_Nullable responseData = nil;
-                    if ([error.domain isEqualToString:@"SignalServiceKit.RequestMakerUDAuthError"]) {
-                        // Try again.
-                        OWSLogInfo(@"UD request auth failed; failing over to non-UD request.");
-                        [error setIsRetryable:YES];
-                    } else if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
-                        statusCode = error.code;
-
-                        NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
-                        if (underlyingError) {
-                            responseData
-                                = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-                        } else {
-                            OWSFailDebug(@"Missing underlying error: %@", error);
-                        }
-                    } else {
-                        OWSFailDebug(@"Unexpected error: %@", error);
-                    }
-
-                    [self messageSendDidFail:messageSend
-                              deviceMessages:deviceMessages
-                                  statusCode:statusCode
-                                       error:error
-                                responseData:responseData];
-                });
-            }) retainUntilComplete];
-     */
 }
 
 - (void)messageSendDidSucceed:(OWSMessageSend *)messageSend
