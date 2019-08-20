@@ -326,7 +326,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
         guard let phoneNumberText = phoneNumberTextField.text?.ows_stripped(),
             phoneNumberText.count > 0 else {
 
-                isPhoneNumberInvalid = false
+                isPhoneNumberInvalid = true
                 updateValidationWarnings()
 
                 OWSAlerts.showAlert(title:
@@ -343,7 +343,7 @@ public class OnboardingPhoneNumberViewController: OnboardingBaseViewController {
             localNumber.toE164().count > 0,
             PhoneNumberValidator().isValidForRegistration(phoneNumber: localNumber) else {
 
-                isPhoneNumberInvalid = false
+                isPhoneNumberInvalid = true
                 updateValidationWarnings()
 
                 OWSAlerts.showAlert(title:
