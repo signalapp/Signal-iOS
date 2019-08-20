@@ -119,7 +119,7 @@ public class OnboardingController: NSObject {
 
     private func pushAccountDetailsViewController(from viewController: UIViewController) {
         AssertIsOnMainThread()
-        let accountDetailsVC = OnboardingAccountDetailsViewController(onboardingController: self)
+        let accountDetailsVC = AccountDetailsViewController(onboardingController: self)
         viewController.navigationController?.pushViewController(accountDetailsVC, animated: true)
     }
     
