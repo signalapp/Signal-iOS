@@ -24,7 +24,7 @@ public class CreatePreKeysOperation: OWSOperation {
         Logger.debug("")
 
         if identityKeyManager.identityKeyPair() == nil {
-            identityKeyManager.generateNewIdentityKey()
+            identityKeyManager.generateNewIdentityKeyPair()
         }
         
         // Loki: We don't generate PreKeyRecords here.
