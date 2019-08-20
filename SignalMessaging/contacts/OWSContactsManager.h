@@ -96,6 +96,9 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
                           transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 
+- (NSString *)conversationColorNameForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

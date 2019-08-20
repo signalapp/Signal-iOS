@@ -763,6 +763,23 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return addressLabel.filterStringForDisplay;
 }
 
+- (ConversationColorName)conversationColorNameForAddress:(SignalServiceAddress *)address
+                                             transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertIsOnMainThread();
+
+    _Nullable ConversationColorName cachedColorName = [self.colorNameCache objectForKey:address];
+    if (cachedColorName != nil) {
+        return cachedColorName;
+    }
+
+    ConversationColorName colorName = [TSContactThread conversationColorNameForContactAddress:address
+                                                                                  transaction:transaction];
+    [self.colorNameCache setObject:colorName forKey:address];
+
+    return colorName;
+}
+
 - (BOOL)phoneNumber:(PhoneNumber *)phoneNumber1 matchesNumber:(PhoneNumber *)phoneNumber2
 {
     return [phoneNumber1.toE164 isEqualToString:phoneNumber2.toE164];

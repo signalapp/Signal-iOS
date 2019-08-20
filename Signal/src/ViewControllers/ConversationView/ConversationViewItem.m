@@ -263,26 +263,9 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 
     if (address != nil) {
-        self.authorConversationColorName = [self conversationColorNameForAddress:address
-                                                                     transaction:transaction];
+        self.authorConversationColorName = [self.contactsManager conversationColorNameForAddress:address
+                                                                                     transaction:transaction];
     }
-}
-
-- (ConversationColorName)conversationColorNameForAddress:(SignalServiceAddress *)address
-                                             transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertIsOnMainThread();
-    NSCache<SignalServiceAddress *, ConversationColorName> *cache = self.contactsManager.colorNameCache;
-    _Nullable ConversationColorName cachedColorName = [cache objectForKey:address];
-    if (cachedColorName != nil) {
-        return cachedColorName;
-    }
-
-    ConversationColorName colorName = [TSContactThread conversationColorNameForContactAddress:address
-                                                                                  transaction:transaction];
-    [cache setObject:colorName forKey:address];
-
-    return colorName;
 }
 
 - (void)setMutualGroupNamesWithTransaction:(SDSAnyReadTransaction *)transaction
