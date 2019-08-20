@@ -183,10 +183,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Localização";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Conceda acesso nas definições às suas fotografias e envie-as aqui.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Após ter tirado fotografias, ser-lhe-á possível enviá-las a partir daqui.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Anexo";
@@ -333,7 +333,7 @@
 "BUTTON_NEXT" = "Seguinte";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
+"BUTTON_OKAY" = "Ok";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Selecionar";
@@ -606,7 +606,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Eliminar conversa?";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Não pode selecionar mais do que %@ conversas.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grupos";
@@ -615,10 +615,10 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "Conversas recentes";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Pessoas";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "Escolher destinatários";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Sem resultados";
@@ -690,7 +690,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Remover do silêncio";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Este utilizador encontra-se nos seus contactos";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Este grupo pode ver o seu perfil.";
@@ -899,6 +899,12 @@
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "O PIN não corresponde.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too long. */
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too short. */
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "O PIN deverá ter pelo menos 4 dígitos.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Introduza um PIN para bloqueio de registo. Este PIN ser-lhe-á pedido da próxima vez que registe este número de telefone com o Signal.";
@@ -1141,7 +1147,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Inicie aqui a sua primeira conversa.";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Pedido de mensagem";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Não se encontraram resultados para '%@'";
@@ -1267,10 +1273,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Membros do grupo";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Procurar por nome ou endereço";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "Selecionar localização";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Relatórios";
@@ -1390,10 +1396,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Eliminar";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Deverá partilhar o seu perfil para poder continuar a sua conversa com %@.";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Deverá partilhar o seu perfil para poder continuar a sua conversa em %@.";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Saber mais";
@@ -1605,7 +1611,7 @@
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN incorreto. Tentativas esgotadas.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Este número de telefone tem o bloqueio de registo ativo. Por favor, introduza o PIN de bloqueio do registo.";
@@ -1614,16 +1620,16 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "O seu PIN de bloqueio é separado do código de verificação automático que foi enviado para o seu telefone no último passo.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Esqueceu-se do seu PIN?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "PIN incorreto";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "PIN incorreto. Restam %lu tentativas.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN incorreto. Resta 1 tentativa.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Bloqueio de registo";
@@ -1635,7 +1641,7 @@
 "ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Conta bloqueada";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Adicione um toque de humanidade às suas mensagens";
@@ -1662,7 +1668,7 @@
 "ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Enter your PIN";
+"ONBOARDING_PIN_TITLE" = "Introduza o seu PIN";
 
 /* Explanation in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_EXPLANATION" = "Os perfis do Signal são encriptados de extremo-a-extremo e o serviço do Signal nunca tem acesso a esta informação.";
@@ -1812,13 +1818,13 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Álbum sem nome";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
+"PIN_CREATION_BOLD_EXPLANATION" = "Não existe forma de recuperar o seu PIN, como tal, não se esqueça dele.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "Alterar o seu PIN";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirme o seu novo PIN";
 
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
@@ -1844,23 +1850,26 @@
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Create your PIN";
 
+/* Label indicating that the attempted PIN is too long */
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
+
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "O PIN deverá ter pelo menos 4 dígitos.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "Esqueceu-se do seu PIN?";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+"PIN_REMINDER_TITLE" = "Introduza o seu PIN do Signal";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "O PIN deverá ter pelo menos 4 dígitos.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Reproduzir";
@@ -2004,7 +2013,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Esqueceu-se do seu PIN?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
@@ -2409,7 +2418,7 @@
 "SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
 /* Label for the 'pins' item of the privacy settings. */
-"SETTINGS_PINS_ITEM" = "Change your PIN";
+"SETTINGS_PINS_ITEM" = "Alterar o seu PIN";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -2611,6 +2620,9 @@
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Pacote de autocolantes";
+
+/* Label indicating that the sticker pack failed to load. */
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Desinstalar";

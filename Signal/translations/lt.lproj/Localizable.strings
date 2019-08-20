@@ -183,10 +183,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Vieta";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Norėdami čia siųsti nuotraukas, suteikite nustatymuose prieigą prie jų. ";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Padarę nuotraukas, galėsite jas čia siųsti.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Priedas";
@@ -333,7 +333,7 @@
 "BUTTON_NEXT" = "Kitas";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
+"BUTTON_OKAY" = "Gerai";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Pasirinkti";
@@ -606,7 +606,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Ištrinti pokalbį?";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Negalite pasirinkti daugiau kaip %@ pokalbių.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grupės";
@@ -615,10 +615,10 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "Paskiausi pokalbiai";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Žmonės";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "Pasirinkti gavėjus";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Nėra atitikmenų";
@@ -690,7 +690,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Įjungti pranešimus";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Šis naudotojas yra jūsų adresatų sąraše";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Ši grupė gali matyti jūsų profilį.";
@@ -899,6 +899,12 @@
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN nesutampa.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too long. */
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too short. */
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN kode privalo būti bent 4 skaitmenys.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Įveskite Registracijos užrakto PIN. Kita kartą jums registruojant šį telefono numerį su Signal, jūsų bus prašoma įvesti šį PIN.";
@@ -1267,10 +1273,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Grupės dalyviai";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Ieškoti pagal vardą ar adresą";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "Pasirinkti vietą";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Registravimas";
@@ -1390,10 +1396,10 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Ištrinti";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Norėdami tęsti pokalbį su %@, privalote bendrinti savo profilį.";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Norėdami tęsti pokalbį grupėje %@, privalote bendrinti savo profilį.";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Sužinoti daugiau";
@@ -1488,7 +1494,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Šį leidimą galite įjungti iOS nustatymų programėlėje.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Norint naudoti šią ypatybę, Signal reikia prieigos prie jūsų buvimo vietos.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Šį leidimą galite įjungti iOS nustatymų programėlėje.";
@@ -1605,7 +1611,7 @@
 "OK" = "Gerai";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Neteisingas PIN. Visi bandymai išnaudoti.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Šiam telefono numeriui yra įjungtas Registracijos užraktas. Įveskite Registracijos užrakto PIN.";
@@ -1614,28 +1620,28 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "Jūsų registracijos užrakto PIN yra atskirai nuo automatizuoto patvirtinimo kodo, kuris paskutinio žingsnio metu buvo išsiųstas į jūsų telefoną.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Pamiršote savo PIN?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Neteisingas PIN";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Neteisingas PIN. Liko %lu bandymai.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Neteisingas PIN. Liko 1 bandymas.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Registracijos užraktas";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Norėdami apsaugoti jūsų paskyros privatumą ir saugumą, užrakinome ją 7 dienoms.\n\nPo 7 dienų neveiklumo, galėsite iš naujo registruoti šį telefono numerį be būtinybės įvesti PIN. Visas turinys bus ištrintas.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Sužinokite daugiau apie užrakintas paskyras";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Paskyra užrakinta";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Pridėkite į savo žinutes lašelį žmogiškumo";
@@ -1659,10 +1665,10 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Neteisingas numeris";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+"ONBOARDING_PIN_EXPLANATION" = "Įveskite savo paskyrai sukurtą PIN kodą. Tai yra kas kita, nei jūsų SMS patvirtinimo kodas.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Enter your PIN";
+"ONBOARDING_PIN_TITLE" = "Įveskite savo PIN kodą";
 
 /* Explanation in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_EXPLANATION" = "Signal profiliai yra užšifruoti ištisiniu būdu, o Signal paslauga niekada neturi prieigos prie šios informacijos.";
@@ -1812,55 +1818,58 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Albumas be pavadinimo";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
+"PIN_CREATION_BOLD_EXPLANATION" = "Nėra jokio būdo atkurti savo PIN kodą, todėl įsiminkite jį.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "Keisti PIN kodą";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Pakartokite naująjį PIN kodą.";
 
 /* The explanation in the 'pin creation' view. */
 "PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
+"PIN_CREATION_MISMATCH_ERROR" = "PIN kodai nesutampa. Bandykite dar kartą.";
 
 /* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Re-enter PIN";
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Pakartokite PIN";
 
 /* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN must be 4+ digits";
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN kodas privalo būti daugiau kaip 4 skaitmenų";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
+"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Jums atsijungus, nėra jokio būdo atkurti savo PIN kodą.";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Kadangi vis dar esate prisijungę, galite susikurti naują PIN kodą.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Create a new PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Sukurti naują PIN kodą";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Create your PIN";
+"PIN_CREATION_TITLE" = "Susikurti PIN kodą";
+
+/* Label indicating that the attempted PIN is too long */
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN kode privalo būti bent 4 skaitmenys.";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+"PIN_REMINDER_EXPLANATION" = "Tam, kad įsimintumėte savo PIN kodą, mes periodiškai prašysime jį įvesti. Bėgant laikui, mes tai darysime rečiau.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "Pamiršote savo PIN?";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
+"PIN_REMINDER_MISMATCH_ERROR" = "Neteisingas PIN, bandykite dar kartą.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+"PIN_REMINDER_TITLE" = "Įveskite savo Signal PIN";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN kode privalo būti bent 4 skaitmenys.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Atkurti mediją";
@@ -2001,16 +2010,16 @@
 "REGISTER_2FA_FORGOT_PIN" = "Aš pamiršau savo PIN.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Dėl jūsų privatumo ir saugumo, nėra jokio būdo atkurti savo PIN kodą. Jei negalėsite prisiminti savo PIN kodą, po 7 dienų neveiklumo galėsite iš naujo jį patvirtinti naudodami SMS žinutę. Šiuo atveju jūsų paskyra bus išvalyta, o visas turinys ištrintas.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Pamiršote savo PIN?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Jums liko bandymų: %lu. Jei išnaudosite visus bandymus, jūsų paskyra bus užrakinta. Po 7 dienų neveiklumo galėsite iš naujo registruotis be savo PIN kodo. Jūsų paskyra bus išvalyta, o visas turinys ištrintas.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Jums liko 1 bandymas. Jei išnaudosite visus bandymus, jūsų paskyra bus užrakinta. Po 7 dienų neveiklumo galėsite iš naujo registruotis be savo PIN kodo. Jūsų paskyra bus išvalyta, o visas turinys ištrintas.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Neteisingas PIN";
@@ -2409,7 +2418,7 @@
 "SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
 /* Label for the 'pins' item of the privacy settings. */
-"SETTINGS_PINS_ITEM" = "Change your PIN";
+"SETTINGS_PINS_ITEM" = "Keisti PIN kodą";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -2583,7 +2592,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Jūsų gauti lipdukai";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Kai kurių lipdukų paketų nepavyko įkelti";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Įdiegti lipdukai";
@@ -2612,6 +2621,9 @@
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Lipdukų paketas";
 
+/* Label indicating that the sticker pack failed to load. */
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Pašalinti";
 
@@ -2625,19 +2637,19 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Patvirtinti saugumo numerį";
 
 /* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu members";
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "Dalyvių: %lu";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ ir dar %lu grupių dalyvis";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ grupės dalyvis";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@, %@ ir %@ grupių dalyvis";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ ir %@ grupių dalyvis";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dienas(-ų)";
@@ -2754,25 +2766,25 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Nepalaikoma";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Create your PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Susikurkite PIN kodą";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Sužinokite daugiau apie PIN kodus";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock now does more. With PINs you can take your contacts with you when you switch devices.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Jūsų registracijos užraktas dabar atlieka daugiau. Naudodami PIN kodus, galite pasiimti savo adresatus kartu su savimi, kai keičiate įrenginį.";
 
 /* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registration Lock = PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registracijos užraktas = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Add even more security to your account and take your contacts with you when you switch phones.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Keisdami telefonus, pridėkite savo paskyrai dar daugiau saugumo ir pasiimkite savo adresatus kartu su savimi.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Pristatome PIN kodus";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Ar turiu susikurti PIN?";
 
 /* Body text for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Kam naudoti žodžius, kai galima naudoti lipdukus? Bakstelėkite savo klaviatūroje šią piktogramą:";

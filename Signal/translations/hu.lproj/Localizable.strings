@@ -900,6 +900,12 @@
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN does not match.";
 
+/* Error indicating that the entered 'two-factor auth PIN' is too long. */
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too short. */
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN must be at least 4 digits.";
+
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Enter a Registration Lock PIN. You will be asked to enter this PIN the next time you register this phone number with Signal.";
 
@@ -1207,7 +1213,7 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Kontaktokhoz való hozzáférés megadása";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
-"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Invite Friends to Signal";
+"INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Barátok meghívása";
 
 /* Search */
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Keresés";
@@ -1309,19 +1315,19 @@
 "MESSAGE_ACTION_COPY_MEDIA" = "Copy Media";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "Szöveg másolása";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
 
 /* Action sheet button subtitle */
-"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "It will only be deleted on this device.";
+"MESSAGE_ACTION_DELETE_MESSAGE_SUBTITLE" = "Csak ezen az eszközön törlődik az üzenet.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "Részletek";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to This Message";
+"MESSAGE_ACTION_REPLY" = "Válasz";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SAVE_MEDIA" = "Save Media";
@@ -1462,7 +1468,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Tap here for settings";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Beállításokhoz koppints ide";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Új üzenetek";
@@ -1530,7 +1536,7 @@
 "NETWORK_STATUS_OFFLINE" = "Offline";
 
 /* A label the cell that lets you add a new member to a group. */
-"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Find by Phone Number";
+"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Keresés telefonszám alapján";
 
 /* A label for the cell that lets you add a new non-contact member to a group. */
 "NEW_GROUP_ADD_NON_CONTACT" = "Hozzáadás telefonszám alapján";
@@ -1569,7 +1575,7 @@
 "NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Keresés";
 
 /* Title for the 'new non-contact conversation' view. */
-"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Find User";
+"NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Keresés";
 
 /* Label for a button that lets users search for contacts by phone number */
 "NO_CONTACTS_SEARCH_BY_PHONE_NUMBER" = "Kontaktok keresése telefonszám alapján";
@@ -1843,6 +1849,9 @@
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Create your PIN";
+
+/* Label indicating that the attempted PIN is too long */
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
@@ -2202,7 +2211,7 @@
 "SEND_INVITE_FAILURE" = "Sending invite failed, please try again later.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "Sikeres meghívás!";
 
 /* Text for button to send a Signal invite via SMS. %@ is placeholder for the recipient's phone number. */
 "SEND_INVITE_VIA_SMS_BUTTON_FORMAT" = "Invite via SMS: %@";
@@ -2238,16 +2247,16 @@
 "SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Letiltás";
 
 /* Label for the  'manual censorship circumvention' switch. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censorship Circumvention";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Cenzúra megkerülése";
 
 /* Label for the 'manual censorship circumvention' country. Embeds {{the manual censorship circumvention country}}. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Location: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Ha engedélyezed, a Signal megpróbálja megkerülni a cenzúrát. Ne engedélyezd ezt a funkciót, ha a tartózkodási helyeden a Signal nincs cenzúrázva.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censorship circumvention has been activated based on your account's phone number.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "A cenzúra megkerülése aktiválva lett a telefonszámod alapján.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "You have manually disabled censorship circumvention.";
@@ -2256,10 +2265,10 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censorship circumvention can only be activated when connected to the internet.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censorship circumvention is not necessary; you are already connected to the Signal service.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Cenzúra megkerülése nem szükséges; csatlakozva vagy a Signalhoz.";
 
 /* Table header for the 'censorship circumvention' section. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censorship Circumvention";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Cenzúra megkerülése";
 
 /* No comment provided by engineer. */
 "SETTINGS_ADVANCED_DEBUGLOG" = "Debug Log engedélyezés";
@@ -2367,7 +2376,7 @@
 "SETTINGS_INFORMATION_HEADER" = "Információ";
 
 /* Settings table view cell label */
-"SETTINGS_INVITE_TITLE" = "Invite Your Friends";
+"SETTINGS_INVITE_TITLE" = "Hívd meg barátaidat";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
 "SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
@@ -2418,10 +2427,10 @@
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Show Caller's Name & Number";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Show calls in the \"Recents\" list in the iOS Phone app.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "A Signal hívások meg fognak jelenni az iOS hívás Előzményekben.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Show Calls in Recents";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Hívások mutatása az Előzményekben";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS hívás integráció";
@@ -2454,7 +2463,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Biztonságos képernyő engedélyezése";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Nem jelenik meg a Signal képernyőjének tartalma az appok közötti váltáskor.";
 
 /* Settings table section footer. */
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Az iOS hívás integráció bekapcsolás esetén a Signal hívások a záróképernyőn illetve a híváslista előzményeiben is látszanak. Opcionálisan a kontaktod neve is kijelezhető. Ha az iCloud engedélyezve van, a híváselőzmények az Apple-lel is megosztásra kerülnek.";
@@ -2487,10 +2496,10 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Regisztrációs zár";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "Gépelés mutatása";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Ezzel az opcióval láthatja, ha a másik fél éppen gépel. A funkció bekapcsolásával az Ön gépelése is láthatóvá válik a másik fél számára. Opcionális funkció, és az összes beszélgetésre érvényes lesz.";
 
 /* Label for a link to more info about unidentified delivery. */
 "SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Tudj meg többet";
@@ -2611,6 +2620,9 @@
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Matricsacsomag";
+
+/* Label indicating that the sticker pack failed to load. */
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "ltávolítás";

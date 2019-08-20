@@ -183,10 +183,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Konum";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Fotoğraflarınızı gönderebilmek için ayarlardan erişim izni verin.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Fotoğraf çektikten sonra buradan son görüşmelerinize gönderebileceksiniz.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Eklenti";
@@ -333,7 +333,7 @@
 "BUTTON_NEXT" = "İleri";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
+"BUTTON_OKAY" = "Tamam";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Seç";
@@ -606,19 +606,19 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Sohbeti Sil?";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "En fazla %@ sohbet seçebilirsiniz.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Gruplar";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Son İletiler";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Son Sohbetler";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Kişiler";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "Alıcıları Seçin";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Eşleşme yok";
@@ -690,7 +690,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Sessizden çıkart";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Bu kullanıcı kişileriniz arasında";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Bu grup profilinizi görebilir.";
@@ -899,6 +899,12 @@
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN kodu eşleşmiyor.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too long. */
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too short. */
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN en az 4 haneli olmalı";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Bir Kayıt Kilidi PIN'i giriniz. Bu telefon numarasıyla Signal'e tekrar kaydolduğunuzda bu PIN kodunu girmeniz istenecektir.";
@@ -1141,7 +1147,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "İlk sohbetinizi buradan başlatın.";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "İleti İsteği";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "'%@' ile eşleşen sonuç bulunamadı";
@@ -1267,10 +1273,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Grup Üyeleri";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "İsim veya adres ile ara";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "Konum Seçin";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Günlük";
@@ -1390,19 +1396,19 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Sil";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%@ ile konuşmaya devam edebilmek için profilinizi paylaşmalısınız.";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "%@ grubu içerisinde konuşmaya devam edebilmek için profilinizi paylaşmalısınız.";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Dahasını Öğrenin";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ kişisinin size mesaj atabilmesine izin vermek istiyor musunuz? Kabul edene kadar mesajlarını gördüğünüzü bilmeyecekler.";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "%@ grubuna katılmak istiyor musunuz? Kabul edene kadar mesajlarını gördüğünüzü bilmeyecekler.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Profil Paylaş";
@@ -1488,7 +1494,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Bu izni Ayarlar uygulamasından etkinleştirebilirsiniz.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal bu özellik için konumunuza erişim gerektirir.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Bu izni Ayarlar uygulamasından etkinleştirebilirsiniz.";
@@ -1605,7 +1611,7 @@
 "OK" = "Tamam";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Geçersiz PIN. Deneme hakkı kalmadı.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Bu telefon numarası Kayıt Kilidini etkinleştirmiş. Lütfen Kaydolma Kilidi PIN'ini giriniz.";
@@ -1614,28 +1620,28 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "Kayıt Kilidi PIN'iniz son adımda size gönderilen doğrulama kodundan farklıdır.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "PIN'inizi mi unuttunuz?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "Yanlış PIN";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Geçersiz PIN. %lu deneme hakkı kaldı.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Geçersiz PIN. 1 deneme hakkı kaldı.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Kayıt Kilidi";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Gizliliğinizi korumak ve hesabınızın güvenliğini sağlamak için 7 günlüğüne kilitledik.\n\n7 gün eylemsizlikten sonra bu telefon numarasını PIN kodu olmadan tekrar kaydedebileceksiniz. Tüm içerik silinecektir.";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Kilitli hesaplar hakkında fazlasını öğrenin";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Hesap Kilitlendi";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "İnsan olduğunuzu doğrulayın";
@@ -1659,10 +1665,10 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Geçersiz numara";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+"ONBOARDING_PIN_EXPLANATION" = "Bu hesap için oluşturduğunuz PIN kodunu girin. Bu SMS doğrulama kodunuzdan farklıdır.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Enter your PIN";
+"ONBOARDING_PIN_TITLE" = "PIN'inizi girin";
 
 /* Explanation in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_EXPLANATION" = "Signal profilleri uçtan uca şifrelidir ve Signal hizmeti asla bu bilgiye erişime sahip olmaz.";
@@ -1812,55 +1818,58 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "İsimsiz Albüm";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
+"PIN_CREATION_BOLD_EXPLANATION" = "PIN'inizi kurtarmanın bir yolu yoktur, bu yüzden unutmayın.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "PIN'inizi değiştirin";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Yeni PIN'inizi doğrulayın.";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
+"PIN_CREATION_EXPLANATION" = "PIN'iniz güvenliğinize bir katman daha ekler ve hesabınızı korur.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
+"PIN_CREATION_MISMATCH_ERROR" = "PIN'ler eşleşmiyor. Tekrar deneyin.";
 
 /* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Re-enter PIN";
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "PIN'i tekrar girin";
 
 /* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN must be 4+ digits";
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN 4 veya daha fazla haneli olmalı";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
+"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Çıkış yaptığınızda, PIN'inizi kurtarmanın bir yolu yoktur.";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Hesabınız halen açık olduğu için yeni bir PIN oluşturabilirsiniz.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Create a new PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Yeni PIN oluştur";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Create your PIN";
+"PIN_CREATION_TITLE" = "PIN'inizi oluşturun";
+
+/* Label indicating that the attempted PIN is too long */
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN en az 4 haneli olmalı";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+"PIN_REMINDER_EXPLANATION" = "PIN'inizi hatırlamanıza yardımcı olmak için, arada sırada girmenizi isteyeceğiz. Zaman geçtikçe daha az soracağız.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "PIN'inizi mi unuttunuz?";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
+"PIN_REMINDER_MISMATCH_ERROR" = "Geçersiz PIN, tekrar deneyin.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+"PIN_REMINDER_TITLE" = "Signal PIN'inizi girin";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN en az 4 haneli olmalı";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Medyayı Oynat";
@@ -2001,16 +2010,16 @@
 "REGISTER_2FA_FORGOT_PIN" = "PIN'imi unuttum.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Gizlilik ve güvenliğiniz için PIN'inizi kurtarmanın yolu yoktur. Eğer PIN'inizi hatırlayamıyorsanız, 7 gün eylemsizlik sonrasında SMS ile tekrar doğrulayabilirsiniz. Bu durumda hesabınız ve tüm içeriğiniz silinecektir.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "PIN'inizi mi unuttunuz?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "%lu deneme hakkınız kaldı. Hakkınız biterse hesabınız kilitlenecektir. 7 gün eylemsizlikten sonra, PIN'iniz olmadan tekrar kaydedebileceksiniz. Hesabınız ve tüm içeriğiniz silinecektir.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "1 deneme hakkınız kaldı. Hakkınız biterse hesabınız kilitlenecektir. 7 gün eylemsizlikten sonra, PIN'iniz olmadan tekrar kaydedebileceksiniz. Hesabınız ve tüm içeriğiniz silinecektir.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Yanlış PIN";
@@ -2409,7 +2418,7 @@
 "SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
 
 /* Label for the 'pins' item of the privacy settings. */
-"SETTINGS_PINS_ITEM" = "Change your PIN";
+"SETTINGS_PINS_ITEM" = "PIN'inizi değiştirin";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN";
@@ -2583,7 +2592,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Aldığınız Çıkartmalar";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Bazı çıkartma paketleri yüklenemedi";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Yüklü Çıkartmalar";
@@ -2612,6 +2621,9 @@
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Çıkartma Paketi";
 
+/* Label indicating that the sticker pack failed to load. */
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Kaldır";
 
@@ -2625,19 +2637,19 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Güvenlik Numarasını Doğrula";
 
 /* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu members";
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu üye";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@, ve %lu diğer gruba üye";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ grubuna üye";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@, %@, ve %@ grubuna üye";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ ve %@ grubuna üye";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ gün";
@@ -2754,25 +2766,25 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Desteklenmiyor";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Create your PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "PIN'inizi oluşturun";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "PINler hakkında dahasını öğrenin";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock now does more. With PINs you can take your contacts with you when you switch devices.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Kayıt Kilidiniz artık daha fazlasını yapıyor. PINler sayesinde cihaz değiştirdiğinizde kişilerinizi kolayca aktarabilirsiniz.";
 
 /* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registration Lock = PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Kayıt Kilidi = PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Add even more security to your account and take your contacts with you when you switch phones.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Hesabınızı daha da güvenli hale getirip telefon değiştirdiğinizde kişilerinizi kolayca aktarın.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Karşınızda PINler";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "PIN oluşturmam gerekiyor mu?";
 
 /* Body text for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Çıkartma kullanabilecek iken neden kelimeler kullanasınız? Klavyenizdeki bu simgeye dokunun:";

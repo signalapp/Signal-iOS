@@ -183,10 +183,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "位置";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "授權設定中照片的存取權限，以便將其在此處傳送。";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "拍完照片後，你可以在這裡傳送你的最近的照片。";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "附件";
@@ -606,7 +606,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "刪除對話？";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "你不能選擇超過%@的對話。";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "群組";
@@ -615,10 +615,10 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "最近的對話";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "人們";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "選擇收件者";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "不相符";
@@ -690,7 +690,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "解除靜音";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "此使用者在你的聯絡人中";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "此群組可看見你的資訊";
@@ -899,6 +899,12 @@
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN 碼不匹配。";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too long. */
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too short. */
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN 碼必需至少 4 個數字。";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "輸入一個註冊鎖定 PIN 碼。未來若你用此電話號碼註冊於 Signal ，你將被要求輸入這個 PIN 碼。";
@@ -1141,7 +1147,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "從這裡開始使用你的第一個對話。";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "訊息要求";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "找不到有關 '%@' 的結果";
@@ -1267,10 +1273,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "群組組員";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "以名字或地址來搜尋";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "選擇位置";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "紀錄中";
@@ -1390,19 +1396,19 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "刪除";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "你必須與%@分享你的個人資料以繼續你的對話。";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "你必須與%@分享你的個人資料以繼續你的對話。";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "了解更多";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "你願意讓%@傳給你訊息嗎？他們不知道你已經讀過他們的訊息直到你接受。";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "你要加入這個%@群組嗎？他們不知道你已經讀過他們的訊息直到你接受。";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "分享資訊";
@@ -1488,7 +1494,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "你可以在 iOS 設定中允許此權限。";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal 在此功能上要求存取你的位置。";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "你可以在 iOS 設定中允許此權限。";
@@ -1605,7 +1611,7 @@
 "OK" = "OK";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "PIN 碼錯誤。你嘗試次數已用盡。";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "此電話號碼已啟用註冊鎖定。請輸入註冊鎖定 PIN 碼。";
@@ -1614,28 +1620,28 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "你的註冊鎖定PIN碼與你上一步驟傳到你手機的驗證碼是不同的。";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "忘記你的 PIN 碼？";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "錯誤的 PIN 碼";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "PIN 碼錯誤。剩下 %lu 次嘗試次數。";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN 碼錯誤。剩下 1 次嘗試次數。";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "註冊鎖定";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "為了保護你的隱私和帳戶的安全，我們將其鎖定了7天。\n\n閒置7天後，你無須輸入 PIN 碼即可重新註冊此電話號碼。 所有內容都將被刪除。";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "了解更多有關已鎖定的帳號";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "帳號已被鎖定";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "為你的訊息增加一點人性。";
@@ -1659,10 +1665,10 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "無效號碼";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+"ONBOARDING_PIN_EXPLANATION" = "輸入你為帳戶建立的 PIN 碼。 這與你的簡訊驗證碼不同。";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Enter your PIN";
+"ONBOARDING_PIN_TITLE" = "輸入你的 PIN 碼";
 
 /* Explanation in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_EXPLANATION" = "Signal 資訊是點對點加密，及Signal 的服務絕不會觸及到這些資訊。";
@@ -1812,55 +1818,58 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "未命名的相簿";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
+"PIN_CREATION_BOLD_EXPLANATION" = "你無法回復你的 PIN 碼，所以要牢記它。";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "變更你的 PIN 碼";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "確認你的新 PIN 碼。";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
+"PIN_CREATION_EXPLANATION" = "你的 PIN 碼會增加額外的安全保護並備份你的帳戶。";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
+"PIN_CREATION_MISMATCH_ERROR" = "PIN 碼不符，請再試一次。";
 
 /* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Re-enter PIN";
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "重新輸入 PIN 碼";
 
 /* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN must be 4+ digits";
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN 碼必需是 4+ 數字";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
+"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "當你登出，你無法回復你的 PIN 碼。";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "因為你仍然在登入的狀態，你可以建立新的 PIN 碼。";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Create a new PIN";
+"PIN_CREATION_RECREATION_TITLE" = "建立一個新 PIN 碼";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Create your PIN";
+"PIN_CREATION_TITLE" = "建立你的 PIN 碼";
+
+/* Label indicating that the attempted PIN is too long */
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "PIN 碼必需至少 4 個數字。";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+"PIN_REMINDER_EXPLANATION" = "要幫助你記住你的 PIN碼，我們將定期要求你輸入 PIN 碼。我們只會偶爾詢問你。";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "忘記你的 PIN 碼？";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
+"PIN_REMINDER_MISMATCH_ERROR" = "無效的 PIN 碼，請再嘗試一次。";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+"PIN_REMINDER_TITLE" = "輸入你的 Signal PIN 碼";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN 碼必需至少 4 個數字。";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "播放媒體";
@@ -2001,16 +2010,16 @@
 "REGISTER_2FA_FORGOT_PIN" = "我忘了 PIN 碼。";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "為了你的隱私和安全，無法回復你的 PIN 碼。 如果你忘記了自己的 PIN 碼，可以在閒置7天後重新透過簡訊重新認證。 在這種情況下，你的帳戶將被刪除並刪除所有內容。";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "忘記你的 PIN 碼？";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "你剩下 %lu 嘗試次數。 如果你的嘗試次數用完，你的帳戶將被鎖定。 閒置7天後，你可以在沒有PIN的情況下重新註冊。 你的帳戶將被刪除，所有內容也都將被刪除。";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "你剩下1次嘗試。 如果你的嘗試次數用完，你的帳戶將被鎖定。 閒置7天後，你可以在沒有PIN的情況下重新註冊。 你的帳戶將被刪除，所有內容也都將被刪除。";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "錯誤的 PIN 碼";
@@ -2406,13 +2415,13 @@
 "SETTINGS_NOTIFICATIONS" = "通知";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "你的 PIN 碼會增加額外的安全保障並備份你的帳戶。 當你使用電話號碼註冊 Signal 時，系統會要求你建立 PIN 碼。 如果你忘記了自己的 PIN 碼，你的帳戶將會被鎖定7天。";
 
 /* Label for the 'pins' item of the privacy settings. */
-"SETTINGS_PINS_ITEM" = "Change your PIN";
+"SETTINGS_PINS_ITEM" = "變更你的 PIN 碼";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "PIN";
+"SETTINGS_PINS_TITLE" = "PIN 碼";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "顯示來電者的名字與號碼";
@@ -2583,7 +2592,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "你收到的貼圖";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "有些圖示表情包無法被讀取";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "已裝的貼圖";
@@ -2612,6 +2621,9 @@
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "貼圖包";
 
+/* Label indicating that the sticker pack failed to load. */
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "移除";
 
@@ -2625,19 +2637,19 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "驗證安全碼";
 
 /* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu members";
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu 組員";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@、%@的組員及 %lu 其他群組";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@的組員";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@、%@及%@的組員";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@及%@的組員";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@天";
@@ -2754,25 +2766,25 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "不支援";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Create your PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "建立你的 PIN 碼";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "了解更多有關 PIN 碼";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock now does more. With PINs you can take your contacts with you when you switch devices.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "你的註冊鎖現在可以做更多。 透過輸入 PIN 碼，你可以在更換裝置時將聯絡人也跟著帶走。";
 
 /* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registration Lock = PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "註冊鎖 = PIN 碼";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Add even more security to your account and take your contacts with you when you switch phones.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "為你的帳戶增加更高的安全性，並在更換手機時將聯絡人跟著帶走。";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "介紹 PIN 碼";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "我必須建立 PIN 碼嗎？";
 
 /* Body text for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "當你可以使用貼圖的時候，為什麼要用文字呢？點擊你鍵盤上的這個圖示：";

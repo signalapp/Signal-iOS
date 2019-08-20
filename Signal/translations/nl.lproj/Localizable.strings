@@ -183,10 +183,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Locatie";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Geef toegang tot je foto's via de instellingen om ze van hieruit te kunnen verzenden.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Zodra je foto's hebt genomen, kun je van hieruit je recente foto's verzenden.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Bijlage";
@@ -333,7 +333,7 @@
 "BUTTON_NEXT" = "Volgende";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
+"BUTTON_OKAY" = "Oké";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Selecteren";
@@ -606,7 +606,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Gesprek wissen?";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Je kunt niet meer dan %@ gesprekken selecteren.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Groepen";
@@ -615,10 +615,10 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "Recente gesprekken";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Contactpersonen";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "Kies ontvangers";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "Geen overeenkomsten";
@@ -690,7 +690,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Niet meer dempen";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Deze contactpersoon staat ook in je contactenlijst";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Deze groep kan je profiel zien.";
@@ -899,6 +899,12 @@
 
 /* Error indicating that the entered 'two-factor auth PINs' do not match. */
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Pincode komt niet overeen.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too long. */
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+
+/* Error indicating that the entered 'two-factor auth PIN' is too short. */
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "Je pincode moet ten minste 4 getallen lang zijn.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Voer een pincode in voor de registratievergrendeling. De volgende keer dat je dit telefoonnummer probeert te registreren bij Signal, zal je gevraagd worden deze pincode in te voeren.";
@@ -1141,7 +1147,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Begin je eerste gesprek hier.";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Gespreksverzoeken";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Geen resultaten voor ‘%@’ gevonden";
@@ -1267,10 +1273,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Groepsleden";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Zoek op naam of adres";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "Selecteer een locatie";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Log bijhouden";
@@ -1390,19 +1396,19 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Wis";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Je moet je profiel zichtbaar maken voor je je gesprek met %@ kunt voortzetten.";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Je moet je profiel zichtbaar maken voor je je gesprek in de groep %@ kunt voortzetten.";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Lees meer";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Wil je %@ toestaan om een gesprek met je te beginnen? Hij/Zij zal niet kunnen zien dat je zijn/haar berichten gelezen hebt zolang je nog geen gesprek hebt toegestaan. ";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Wil je lid worden van de groep %@? Ze zullen niet kunnen zien dat je hun berichten hebt gelezen zolang je nog geen lid bent van de groep.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Profiel zichtbaar maken";
@@ -1488,7 +1494,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Je kunt deze toestemming verlenen in de iOS-instellingenapp.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal heeft voor deze functionaliteit toestemming nodig om je locatie te zien.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Je kunt deze toestemming verlenen in de iOS-instellingenapp.";
@@ -1605,7 +1611,7 @@
 "OK" = "Begrepen";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrecte pincode. Geen pogingen resterend.";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "Registratievergrendeling is ingeschakeld voor dit telefoonnummer. Voer de pincode voor registratievergrendeling in.";
@@ -1614,28 +1620,28 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "Je registratievergrendelingspincode is iets anders dan de automatische verificatiecode die in de vorige stap naar je telefoon is gestuurd.";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Pincode vergeten?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "Incorrecte PIN";
+"ONBOARDING_2FA_INVALID_PIN" = "Incorrecte pincode";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrecte pincode. %lu pogingen resterend.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrecte pincode. 1 poging resterend.";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "Registratievergrendeling";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "Om de privacy en beveiliging van je account te beschermen hebben we je account voor 7 dagen vergrendeld.\n\nJe kunt dit telefoonnummer opnieuw registreren na 7 dagen inactiviteit zonder je PIN nodig te hebben. Als je zonder PIN opnieuw registreert word alle inhoud gewist";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Lees meer over vergrendelde accounts";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account vergrendeld";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Voeg iets menselijks toe aan je berichten";
@@ -1659,10 +1665,10 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ongeldig nummer";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+"ONBOARDING_PIN_EXPLANATION" = "Voer de pincode in welke je voor jou account hebt aangemaakt. Dit is niet de zelfde code als je Sms-verificatiecode.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Enter your PIN";
+"ONBOARDING_PIN_TITLE" = "Voer je pincode in";
 
 /* Explanation in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_EXPLANATION" = "Signal-profielen zijn eind-tot-eind-versleuteld dus zelfs de Signal-dienst heeft nooit toegang tot je profielinformatie.";
@@ -1812,55 +1818,58 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Naamloos album";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
+"PIN_CREATION_BOLD_EXPLANATION" = "Er is geen manier om je pincode later terug te zien, dus onthoud deze!";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "Wijzig je pincode";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Bevestig je nieuwe pincode";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
+"PIN_CREATION_EXPLANATION" = "Je pincode voegt een extra beveiliging toe en geeft je een manier om je account te herstellen.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
+"PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
 
 /* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Re-enter PIN";
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Voer pincode opnieuw in";
 
 /* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN must be 4+ digits";
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "Pincode moet 4 of meer getallen lang zijn";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
+"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "Als je bent uitgelogd is er geen manier om je pincode terug te zien of wijzigen.";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Omdat je nog bent ingelogd, kun je een nieuwe pincode aanmaken.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Create a new PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Nieuwe pincode aanmaken";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Create your PIN";
+"PIN_CREATION_TITLE" = "Maak pincode aan";
+
+/* Label indicating that the attempted PIN is too long */
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "Je pincode moet ten minste 4 getallen lang zijn.";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+"PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden, vragen we je periodiek om je pincode in te voeren. Na verloop van tijd zullen we je minder vaak vragen om dat te doen.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "Pincode vergeten?";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
+"PIN_REMINDER_MISMATCH_ERROR" = "Ongeldige pincode, probeer het opnieuw.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+"PIN_REMINDER_TITLE" = "Voer je Signal-pincode in";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "Je pincode moet ten minste 4 getallen lang zijn.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Media afspelen";
@@ -2001,19 +2010,19 @@
 "REGISTER_2FA_FORGOT_PIN" = "Ik ben mijn pincode vergeten.";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Uit privacy- en beveiligingsoverweging is er geen manier om je pincode te herstellen. Als je je pincode niet kunt herinneren, dan kun je na ten minste 7 dagen inactiviteit je telefoonnummer opnieuw verifiëren met een sms-bericht. In dat geval word je account gereset en wordt alle inhoud gewist.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Pincode vergeten?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Je hebt nog %lu resterend(e) poging(en). Als je geen pogingen meer over hebt wordt je account vergrendeld. Na ten minste 7 dagen inactiviteit kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt in dat geval gereset en alle inhoud wordt gewist.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Je hebt nog 1 poging resterend. Als je geen pogingen meer over hebt wordt je account vergrendeld. Na ten minste 7 dagen inactiviteit kun je je telefoonnummer opnieuw registreren zonder je pincode. Je account wordt in dat geval gereset en alle inhoud wordt gewist.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Incorrecte PIN";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Incorrecte pincode";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Indienen";
@@ -2406,13 +2415,13 @@
 "SETTINGS_NOTIFICATIONS" = "Meldingen";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "Je pincode voegt extra beveiliging toe en geeft je een manier om je account te herstellen. Je zult om deze pincode gevraagd worden wanneer je je telefoonnummer opnieuw registreert bij Signal. Als je de pincode vergeet zul je 7 dagen geen toegang hebben tot je account.";
 
 /* Label for the 'pins' item of the privacy settings. */
-"SETTINGS_PINS_ITEM" = "Change your PIN";
+"SETTINGS_PINS_ITEM" = "Wijzig je pincode";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "PIN";
+"SETTINGS_PINS_TITLE" = "Pincode";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Laat naam & nummer van beller zien";
@@ -2583,7 +2592,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Door jou ontvangen stickers";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Het laden van sommige stickerpakketten is mislukt";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Geïnstalleerde stickers";
@@ -2612,6 +2621,9 @@
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Stickerpakket";
 
+/* Label indicating that the sticker pack failed to load. */
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Deïnstalleer";
 
@@ -2625,19 +2637,19 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Veiligheidsnummer verifiëren";
 
 /* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu members";
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu leden";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Lid van %@, %@ en nog %lu andere groepen";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Lid van %@";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Lid van %@, %@ en %@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Lid van %@ en %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dagen";
@@ -2754,25 +2766,25 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Niet ondersteund";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Create your PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Pincode aanmaken";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Lees meer over pincodes";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock now does more. With PINs you can take your contacts with you when you switch devices.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Vanaf nu kun je meer doen met je registratievergrendeling: Met pincodes kun je je contactenlijst meenemen als je van apparaat wisselt.";
 
 /* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registration Lock = PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registratievergrendeling = Pincode";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Add even more security to your account and take your contacts with you when you switch phones.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Voeg nog meer beveiliging toe aan je account en neem je contactenlijst met je mee wanneer je van telefoon wisselt.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "We introduceren pincodes";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Moet ik een pincode aanmaken?";
 
 /* Body text for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "Waarom woorden gebruiken als je stickers kunt gebruiken? Tik op dit pictogram op je toetsenbord:";
