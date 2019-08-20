@@ -125,8 +125,8 @@ public class OnboardingController: NSObject {
     
     func pushKeyPairViewController(from viewController: UIViewController, userName: String?) {
         AssertIsOnMainThread()
-        let keyPairVC = OnboardingKeyPairViewController(onboardingController: self, userName: userName)
-        viewController.navigationController?.pushViewController(keyPairVC, animated: true)
+        let seedVC = SeedViewController(onboardingController: self, userName: userName)
+        viewController.navigationController?.pushViewController(seedVC, animated: true)
     }
 
     public func onboardingRegistrationSucceeded(viewController: UIViewController) {

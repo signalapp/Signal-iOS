@@ -1,5 +1,5 @@
 
-final class OnboardingKeyPairViewController : OnboardingBaseViewController {
+final class SeedViewController : OnboardingBaseViewController {
     private var mode: Mode = .register { didSet { if mode != oldValue { handleModeChanged() } } }
     private var seed: Data! { didSet { updateMnemonic() } }
     private var mnemonic: String! { didSet { handleMnemonicChanged() } }
