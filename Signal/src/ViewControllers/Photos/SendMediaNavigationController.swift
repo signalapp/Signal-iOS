@@ -130,7 +130,7 @@ class SendMediaNavigationController: OWSNavigationController {
         let navController = SendMediaNavigationController()
         navController.sendMediaNavDelegate = delegate
 
-        let approvalItem = AttachmentApprovalItem(attachment: attachment)
+        let approvalItem = AttachmentApprovalItem(attachment: attachment, canSave: false)
         let libraryMedia = MediaLibraryAttachment(asset: asset,
                                                   attachmentApprovalItemPromise: .value(approvalItem))
         navController.attachmentDraftCollection.append(.picker(attachment: libraryMedia))
