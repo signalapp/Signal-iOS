@@ -769,11 +769,20 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 #pragma mark - Whisper User Management
 
-- (BOOL)isSystemContact:(NSString *)phoneNumber
+- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber
 {
     OWSAssertDebug(phoneNumber.length > 0);
 
     return self.allContactsMap[phoneNumber] != nil;
+}
+
+- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address
+{
+    NSString *phoneNumber = address.phoneNumber;
+    if (phoneNumber.length == 0) {
+        return NO;
+    }
+    return [self isSystemContactWithPhoneNumber:phoneNumber];
 }
 
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber

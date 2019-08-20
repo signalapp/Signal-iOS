@@ -16,7 +16,11 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return []
     }
 
-    public func isSystemContact(_ phoneNumber: String) -> Bool {
+    public func isSystemContact(phoneNumber: String) -> Bool {
+        return true
+    }
+
+    public func isSystemContact(address: SignalServiceAddress) -> Bool {
         return true
     }
 

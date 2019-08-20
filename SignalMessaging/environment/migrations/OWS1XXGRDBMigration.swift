@@ -7,7 +7,7 @@ import GRDBCipher
 import SignalServiceKit
 
 @objc
-public class OWS115GRDBMigration: YDBDatabaseMigration {
+public class OWS1XXGRDBMigration: YDBDatabaseMigration {
 
     // MARK: - Dependencies
 
@@ -20,7 +20,7 @@ public class OWS115GRDBMigration: YDBDatabaseMigration {
     // Increment a similar constant for each migration.
     @objc
     public override class var migrationId: String {
-        return "115"
+        return "1XX"
     }
 
     override public func runUp(completion: @escaping OWSDatabaseMigrationCompletion) {

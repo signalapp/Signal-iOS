@@ -52,11 +52,12 @@ NS_ASSUME_NONNULL_BEGIN
         [[OWS111UDAttributesMigration alloc] init],
         [[OWS112TypingIndicatorsMigration alloc] init],
         [[OWS113MultiAttachmentMediaMessages alloc] init],
-        [[OWS114RemoveDynamicInteractions alloc] init]
+        [[OWS114RemoveDynamicInteractions alloc] init],
+        [OWS115EnsureProfileAvatars new]
     ];
 
     if (SSKFeatureFlags.storageMode != StorageModeYdb) {
-        return [prodMigrations arrayByAddingObjectsFromArray:@ [[OWS115GRDBMigration new]]];
+        return [prodMigrations arrayByAddingObjectsFromArray:@ [[OWS1XXGRDBMigration new]]];
     } else {
         return prodMigrations;
     }

@@ -281,13 +281,30 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
     }
 
     func defaultPhotoCollection() -> PhotoCollection {
-        guard let photoCollection = allPhotoCollections().first else {
+        var fetchedCollection: PhotoCollection?
+        PHAssetCollection.fetchAssetCollections(
+            with: .smartAlbum,
+            subtype: .smartAlbumUserLibrary,
+            options: fetchOptions
+        ).enumerateObjects { collection, _, stop in
+            fetchedCollection = PhotoCollection(collection: collection)
+            stop.pointee = true
+        }
+
+        guard let photoCollection = fetchedCollection else {
             Logger.info("Using empty photo collection.")
             assert(PHPhotoLibrary.authorizationStatus() == .denied)
             return PhotoCollection.empty
         }
+
         return photoCollection
     }
+
+    private lazy var fetchOptions: PHFetchOptions = {
+        let fetchOptions = PHFetchOptions()
+        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "endDate", ascending: true)]
+        return fetchOptions
+    }()
 
     func allPhotoCollections() -> [PhotoCollection] {
         var collections = [PhotoCollection]()
@@ -304,6 +321,8 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
             collectionIds.insert(collectionId)
 
             guard let assetCollection = collection as? PHAssetCollection else {
+                // TODO: Add support for albmus nested in folders.
+                if collection is PHCollectionList { return }
                 owsFailDebug("Asset collection has unexpected type: \(type(of: collection))")
                 return
             }
@@ -339,8 +358,6 @@ class PhotoLibrary: NSObject, PHPhotoLibraryChangeObserver {
                 processPHCollection((collection: fetchResult.object(at: index), hideIfEmpty: hideIfEmpty))
             }
         }
-        let fetchOptions = PHFetchOptions()
-        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "endDate", ascending: true)]
 
         // Try to add "Camera Roll" first.
         processPHAssetCollections((fetchResult: PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .smartAlbumUserLibrary, options: fetchOptions),

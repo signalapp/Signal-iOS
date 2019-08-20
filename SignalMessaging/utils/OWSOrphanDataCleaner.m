@@ -296,8 +296,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
 
     __block NSSet<NSString *> *profileAvatarFilePaths;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        NSSet<NSString *> *profileAvatarFilePaths =
-            [OWSProfileManager allProfileAvatarFilePathsWithTransaction:transaction];
+        profileAvatarFilePaths = [OWSProfileManager allProfileAvatarFilePathsWithTransaction:transaction];
     }];
 
     if (!self.isMainAppAndActive) {

@@ -31,6 +31,7 @@ open class CustomKeyboard: UIInputView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    open func willPresent() {}
     open func wasPresented() {}
     open func wasDismissed() {}
 
@@ -42,7 +43,9 @@ open class CustomKeyboard: UIInputView {
     override open var isFirstResponder: Bool { return responder.isFirstResponder }
 
     open override func becomeFirstResponder() -> Bool {
-        return responder.becomeFirstResponder()
+        let result = responder.becomeFirstResponder()
+        if result { willPresent() }
+        return result
     }
 
     open override func resignFirstResponder() -> Bool {

@@ -751,7 +751,9 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     BOOL isThreadSystemContact = NO;
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
-        isThreadSystemContact = [self.contactsManager hasSignalAccountForAddress:contactThread.contactAddress];
+        // we want to check if the thread belongs to a system contact whether or not the thread's
+        // user is still active signal account.
+        isThreadSystemContact = [self.contactsManager isSystemContactWithAddress:contactThread.contactAddress];
     }
 
     // If this thread is a conversation with a system contact, add them to the profile

@@ -51,14 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
 
         // We need to do these steps _after_ placeholderView is configured.
         self.font = [UIFont ows_dynamicTypeBodyFont];
-        CGFloat hMarginLeading = 12.f;
-        CGFloat hMarginTrailing = 24.f;
-        self.textContainerInset = UIEdgeInsetsMake(7.f,
-            CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
-            7.f,
-            CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing);
         self.textContainer.lineFragmentPadding = 0;
         self.contentInset = UIEdgeInsetsZero;
+
+        [self updateTextContainerInset];
 
         [self ensurePlaceholderConstraints];
         [self updatePlaceholderVisibility];
@@ -107,23 +103,16 @@ NS_ASSUME_NONNULL_BEGIN
         [NSLayoutConstraint deactivateConstraints:self.placeholderConstraints];
     }
 
-    // We align the location of our placeholder with the text content of
-    // this view.  The only safe way to do that is by measuring the
-    // beginning position.
-    UITextRange *beginningTextRange =
-        [self textRangeFromPosition:self.beginningOfDocument toPosition:self.beginningOfDocument];
-    CGRect beginningTextRect = [self firstRectForRange:beginningTextRange];
-
-    CGFloat topInset = beginningTextRect.origin.y;
-    CGFloat leadingInset = beginningTextRect.origin.x;
+    CGFloat topInset = self.textContainerInset.top;
+    CGFloat leftInset = self.textContainerInset.left;
+    CGFloat rightInset = self.textContainerInset.right;
 
     self.placeholderConstraints = @[
         [self.placeholderView autoMatchDimension:ALDimensionWidth
                                      toDimension:ALDimensionWidth
                                           ofView:self
-                                      withOffset:-leadingInset],
-        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTrailing],
-        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeLeading withInset:leadingInset],
+                                      withOffset:-(leftInset + rightInset)],
+        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:leftInset],
         [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:topInset],
     ];
 }
@@ -133,11 +122,35 @@ NS_ASSUME_NONNULL_BEGIN
     self.placeholderView.hidden = self.text.length > 0;
 }
 
+- (void)updateTextContainerInset
+{
+    if (!self.placeholderView) {
+        return;
+    }
+
+    CGFloat stickerButtonOffset = 30.f;
+    CGFloat leftInset = 12.f;
+    CGFloat rightInset = leftInset;
+
+    // If the placeholder view is visible, we need to offset
+    // the input container to accomodate for the sticker button.
+    if (!self.placeholderView.isHidden) {
+        if (CurrentAppContext().isRTL) {
+            leftInset += stickerButtonOffset;
+        } else {
+            rightInset += stickerButtonOffset;
+        }
+    }
+
+    self.textContainerInset = UIEdgeInsetsMake(7.f, leftInset, 7.f, rightInset);
+}
+
 - (void)setText:(NSString *_Nullable)text
 {
     [super setText:text];
 
     [self updatePlaceholderVisibility];
+    [self updateTextContainerInset];
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -198,6 +211,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.textViewToolbarDelegate);
 
     [self updatePlaceholderVisibility];
+    [self updateTextContainerInset];
 
     [self.inputTextViewDelegate textViewDidChange:self];
     [self.textViewToolbarDelegate textViewDidChange:self];
