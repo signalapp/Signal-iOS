@@ -1,7 +1,7 @@
 
 final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     private var mode: Mode = .register { didSet { if mode != oldValue { handleModeChanged() } } }
-    private var keyPair: ECKeyPair! { didSet { updateMnemonic() } }
+    private var seed: Data! { didSet { updateMnemonic() } }
     private var mnemonic: String! { didSet { handleMnemonicChanged() } }
     private var userName: String?
     
@@ -104,7 +104,7 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
         super.loadView()
         setUpViewHierarchy()
         handleModeChanged() // Perform initial update
-        updateKeyPair()
+        updateSeed()
     }
     
     private func setUpViewHierarchy() {
@@ -159,14 +159,13 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
         if mode == .register { mnemonicTextField.resignFirstResponder() }
     }
     
-    private func updateKeyPair() {
-        let identityManager = OWSIdentityManager.shared()
-        identityManager.generateNewIdentityKey() // Generate and store a new identity key pair
-        keyPair = identityManager.identityKeyPair()!
+    private func updateSeed() {
+        seed = Randomness.generateRandomBytes(16)
     }
     
     private func updateMnemonic() {
-        mnemonic = Mnemonic.encode(hexEncodedString: keyPair.hexEncodedPrivateKey)
+        let hexEncodedSeed = seed!.toHexString()
+        mnemonic = Mnemonic.encode(hexEncodedString: hexEncodedSeed)
     }
     
     private func handleMnemonicChanged() {
@@ -191,25 +190,27 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     }
 
     @objc private func registerOrRestore() {
-        let hexEncodedPublicKey: String
+        var seed: Data
         switch mode {
-        case .register: hexEncodedPublicKey = keyPair.hexEncodedPublicKey
+        case .register: seed = self.seed
         case .restore:
             let mnemonic = mnemonicTextField.text!
             do {
-                let hexEncodedPrivateKey = try Mnemonic.decode(mnemonic: mnemonic)
-                let keyPair = ECKeyPair.generate(withHexEncodedPrivateKey: hexEncodedPrivateKey)
-                // Use KVC to access dbConnection even though it's private
-                let databaseConnection = OWSIdentityManager.shared().value(forKey: "dbConnection") as! YapDatabaseConnection
-                // OWSPrimaryStorageIdentityKeyStoreIdentityKey is private so just use its value directly
-                databaseConnection.setObject(keyPair, forKey: "TSStorageManagerIdentityKeyStoreIdentityKey", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
-                hexEncodedPublicKey = keyPair.hexEncodedPublicKey
+                let hexEncodedSeed = try Mnemonic.decode(mnemonic: mnemonic)
+                seed = Data(hex: hexEncodedSeed)
             } catch let error {
                 let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
-                errorLabel.text = error.errorDescription
-                return
+                return errorLabel.text = error.errorDescription
             }
         }
+        // Use KVC to access dbConnection even though it's private
+        let databaseConnection = OWSIdentityManager.shared().value(forKey: "dbConnection") as! YapDatabaseConnection
+        databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
+        if seed.count == 16 { seed = seed + seed }
+        let identityManager = OWSIdentityManager.shared()
+        identityManager.generateNewIdentityKeyPair(fromSeed: seed) // This also stores it
+        let keyPair = identityManager.identityKeyPair()!
+        let hexEncodedPublicKey = keyPair.hexEncodedPublicKey
         let accountManager = TSAccountManager.sharedInstance()
         accountManager.phoneNumberAwaitingVerification = hexEncodedPublicKey
         accountManager.didRegister()

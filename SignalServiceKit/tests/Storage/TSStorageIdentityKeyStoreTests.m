@@ -107,7 +107,7 @@ extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
 
 - (void)testIdentityKey
 {
-    [[OWSIdentityManager sharedManager] generateNewIdentityKey];
+    [[OWSIdentityManager sharedManager] generateNewIdentityKeyPair];
 
     XCTAssert([[[OWSIdentityManager sharedManager] identityKeyPair].publicKey length] == 32);
 }

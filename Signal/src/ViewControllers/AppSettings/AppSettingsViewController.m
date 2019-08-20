@@ -520,8 +520,11 @@
 - (void)showSeed
 {
     NSString *title = NSLocalizedString(@"Your Seed", @"");
-    ECKeyPair *keyPair = OWSIdentityManager.sharedManager.identityKeyPair;
-    NSString *mnemonic = [LKMnemonic encodeHexEncodedString:keyPair.hexEncodedPrivateKey];
+    OWSIdentityManager *identityManager = OWSIdentityManager.sharedManager;
+    YapDatabaseConnection *databaseConnection = (YapDatabaseConnection *)[identityManager valueForKey:@"dbConnection"];
+    NSString *hexEncodedSeed = [databaseConnection objectForKey:@"LKLokiSeed" inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
+    if (hexEncodedSeed == nil) { hexEncodedSeed = identityManager.identityKeyPair.hexEncodedPrivateKey; } // Legacy account
+    NSString *mnemonic = [LKMnemonic encodeHexEncodedString:hexEncodedSeed];
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:mnemonic preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Copy", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { UIPasteboard.generalPasteboard.string = mnemonic; }]];
