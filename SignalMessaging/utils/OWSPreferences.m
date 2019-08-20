@@ -31,7 +31,6 @@ NSString *const OWSPreferencesCallLoggingDidChangeNotification = @"OWSPreference
 NSString *const OWSPreferencesKeyScreenSecurity = @"Screen Security Key";
 NSString *const OWSPreferencesKeyEnableDebugLog = @"Debugging Log Enabled Key";
 NSString *const OWSPreferencesKeyNotificationPreviewType = @"Notification Preview Type Key";
-NSString *const OWSPreferencesKeyHasSentAMessage = @"User has sent a message";
 NSString *const OWSPreferencesKeyPlaySoundInForeground = @"NotificationSoundInForeground";
 NSString *const OWSPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
 NSString *const OWSPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
@@ -221,16 +220,6 @@ NSString *const OWSPreferencesKeyIsViewOnceMessagesEnabled = @"OWSPreferencesKey
 - (void)setScreenSecurity:(BOOL)value
 {
     [self setBool:value forKey:OWSPreferencesKeyScreenSecurity];
-}
-
-- (BOOL)hasSentAMessage
-{
-    return [self boolForKey:OWSPreferencesKeyHasSentAMessage defaultValue:NO];
-}
-
-- (void)setHasSentAMessage:(BOOL)value
-{
-    [self setBool:value forKey:OWSPreferencesKeyHasSentAMessage];
 }
 
 + (BOOL)isLoggingEnabled
