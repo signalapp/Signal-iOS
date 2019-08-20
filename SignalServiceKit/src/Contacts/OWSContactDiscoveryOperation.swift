@@ -90,6 +90,11 @@ public class LegacyContactDiscoveryOperation: OWSOperation {
 
     // Called at most one time.
     override public func didSucceed() {
+        guard !IsUsingProductionService() else {
+            // comparison disabled in prod for now
+            return
+        }
+
         // Compare against new CDS service
         let modernContactDiscoveryOperation = ContactDiscoveryOperation(contactsToLookup: self.contactsToLookup)
 
