@@ -238,23 +238,9 @@
     // ========
 #endif
 
-    [section
-     addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"Share Public Key", @"")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share_public_key")
-                                         selector:@selector(sharePublicKey)
-                                            color:[UIColor ows_materialBlueColor]]];
-    
-    [section
-     addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"Show Seed", @"")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_seed")
-                                         selector:@selector(showSeed)
-                                            color:[UIColor ows_materialBlueColor]]];
-
-    [section
-     addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"Clear All Data", @"")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"clear_all_data")
-                                         selector:@selector(clearAllData)
-                                            color:[UIColor ows_destructiveRedColor]]];
+    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Share Public Key", @"") actionBlock:^{ [weakSelf sharePublicKey]; }]];
+    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show Seed", @"") actionBlock:^{ [weakSelf showSeed]; }]];
+    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Clear All Data", @"") actionBlock:^{ [weakSelf clearAllData]; }]];
     
     if (TSAccountManager.sharedInstance.isDeregistered) {
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
