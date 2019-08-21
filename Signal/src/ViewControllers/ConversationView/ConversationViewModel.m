@@ -1127,7 +1127,6 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     NSMutableArray<id<ConversationViewItem>> *viewItems = [NSMutableArray new];
     NSMutableDictionary<NSString *, id<ConversationViewItem>> *viewItemCache = [NSMutableDictionary new];
 
-    BOOL isGroupThread = self.thread.isGroupThread;
     ConversationStyle *conversationStyle = self.delegate.conversationStyle;
 
     __block BOOL hasError = NO;
@@ -1138,7 +1137,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
               id<ConversationViewItem> _Nullable viewItem = self.viewItemCache[interaction.uniqueId];
               if (!viewItem) {
                   viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:interaction
-                                                                            isGroupThread:isGroupThread
+                                                                                   thread:self.thread
                                                                               transaction:transaction
                                                                         conversationStyle:conversationStyle];
               }

@@ -83,6 +83,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 @property (nonatomic, readonly) TSInteraction *interaction;
 
+@property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly) BOOL isGroupThread;
 
 @property (nonatomic, readonly) BOOL hasBodyText;
@@ -190,10 +191,9 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
-                      isGroupThread:(BOOL)isGroupThread
+                             thread:(TSThread *)thread
                         transaction:(SDSAnyReadTransaction *)transaction
                   conversationStyle:(ConversationStyle *)conversationStyle;
-
 @end
 
 NS_ASSUME_NONNULL_END

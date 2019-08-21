@@ -148,7 +148,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @synthesize didCellMediaFailToLoad = _didCellMediaFailToLoad;
 @synthesize interaction = _interaction;
 @synthesize isFirstInCluster = _isFirstInCluster;
-@synthesize isGroupThread = _isGroupThread;
+@synthesize thread = _thread;
 @synthesize isLastInCluster = _isLastInCluster;
 @synthesize lastAudioMessageView = _lastAudioMessageView;
 @synthesize senderName = _senderName;
@@ -157,7 +157,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 @synthesize shouldHideFooter = _shouldHideFooter;
 
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
-                      isGroupThread:(BOOL)isGroupThread
+                             thread:(TSThread *)thread
                         transaction:(SDSAnyReadTransaction *)transaction
                   conversationStyle:(ConversationStyle *)conversationStyle
 {
@@ -172,7 +172,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     }
 
     _interaction = interaction;
-    _isGroupThread = isGroupThread;
+    _thread = thread;
     _conversationStyle = conversationStyle;
 
     [self setAuthorConversationColorNameWithTransaction:transaction];
@@ -239,9 +239,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     SignalServiceAddress *address;
     switch (self.interaction.interactionType) {
         case OWSInteractionType_ThreadDetails: {
-            OWSThreadDetailsInteraction *threadDetails = (OWSThreadDetailsInteraction *)self.interaction;
-            if ([threadDetails.thread isKindOfClass:[TSContactThread class]]) {
-                address = ((TSContactThread *)threadDetails.thread).contactAddress;
+            if ([self.thread isKindOfClass:[TSContactThread class]]) {
+                address = ((TSContactThread *)self.thread).contactAddress;
             } else {
                 address = nil;
             }
@@ -278,9 +277,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         return;
     }
 
-    OWSThreadDetailsInteraction *threadDetails = (OWSThreadDetailsInteraction *)self.interaction;
-    if ([threadDetails.thread isKindOfClass:[TSContactThread class]]) {
-        TSContactThread *contactThread = (TSContactThread *)threadDetails.thread;
+    if ([self.thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)self.thread;
         _mutualGroupNames = [[TSGroupThread groupThreadsWithAddress:contactThread.contactAddress
                                                         transaction:transaction] map:^(TSGroupThread *thread) {
             return thread.groupNameOrDefault;
@@ -291,6 +289,11 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 - (NSString *)itemId
 {
     return self.interaction.uniqueId;
+}
+
+- (BOOL)isGroupThread
+{
+    return self.thread.isGroupThread;
 }
 
 - (BOOL)hasBodyText
