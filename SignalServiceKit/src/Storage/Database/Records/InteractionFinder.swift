@@ -727,11 +727,12 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         let sql = """
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .threadUniqueId) = ?
         ORDER BY \(interactionColumn: .id) DESC
         """
-
+        let arguments: [DatabaseValueConvertible] = [threadUniqueId]
         let cursor = TSInteraction.grdbFetchCursor(sql: sql,
-                                                   arguments: [],
+                                                   arguments: arguments,
                                                    transaction: transaction)
 
         while let interaction = try cursor.next() {
