@@ -1693,10 +1693,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 // We want to delay asking for a review until an opportune time.
 // If the user has *just* launched Signal they intend to do something, we don't want to interrupt them.
-// If the user hasn't sent a message, we don't want to ask them for a review yet.
 - (void)requestReviewIfAppropriate
 {
-    if (self.hasEverAppeared && Environment.shared.preferences.hasSentAMessage) {
+    static NSUInteger callCount = 0;
+    callCount++;
+    if (self.hasEverAppeared && callCount > 25) {
         OWSLogDebug(@"requesting review");
         if (@available(iOS 10, *)) {
             // In Debug this pops up *every* time, which is helpful, but annoying.
