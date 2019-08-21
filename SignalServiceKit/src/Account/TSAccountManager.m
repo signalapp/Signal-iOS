@@ -21,7 +21,6 @@
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -44,7 +43,7 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_ManualMessageFetchKey";
 NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountManager_NeedsAccountAttributesUpdateKey";
 
-@interface TSAccountManager ()
+@interface TSAccountManager () <SDSDatabaseStorageObserver>
 
 @property (nonatomic, nullable) NSString *cachedLocalNumber;
 @property (nonatomic, nullable) NSUUID *cachedUuid;
@@ -74,10 +73,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     OWSSingletonAssert();
 
     if (!CurrentAppContext().isMainApp) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModifiedExternally:)
-                                                     name:YapDatabaseModifiedExternallyNotification
-                                                   object:nil];
+        [self.databaseStorage addDatabaseStorageObserver:self];
     }
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
@@ -255,16 +251,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     @synchronized (self) {
         __block NSString *_Nullable result;
 
-        // * YAPDBJobRecordFinder uses a secondary index.
-        // * Yaps views and indices enumerate all (per whitelist or blacklist) entities when building or updating the
-        //   index. Views and indices can be built or re-built on launch.
-        // * These views and indices are built before migrations are run and "database is ready".
-        // * MessageSenderJobQueue uses SSKMessageSenderJobRecord whose invisibleMessage is an TSOutgoingMessage.
-        //   Therefore (re-)building YAPDBJobRecordFinder's index can deserialize outgoing sync messages.
-        // * OWSOutgoingSyncMessage extends TSOutgoingMessage whose deserialization initializer initWithCoder uses
-        //   TSAccountManager.localNumber.
-        // * TSAccountManager.localNumber is persisted in the database.
-        // * When we load TSAccountManager.localNumber we use the "current" database which might be GRDB.
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             result = [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
         }];
@@ -622,21 +608,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }];
 }
 
-- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-
-    // Any database write by the main app might reflect a deregistration,
-    // so clear the cached "is registered" state.  This will significantly
-    // erode the value of this cache in the SAE.
-    @synchronized(self)
-    {
-        _isRegistered = NO;
-    }
-}
-
 #pragma mark - De-Registration
 
 - (BOOL)isDeregistered
@@ -774,21 +745,15 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid
 {
+    OWSAssertDebug(
+        SSKFeatureFlags.storageMode == StorageModeYdbTests || SSKFeatureFlags.storageMode == StorageModeGrdbTests);
     OWSAssertDebug(localNumber.length > 0);
     OWSAssertDebug(uuid != nil);
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self storeLocalNumber:localNumber uuid:uuid transaction:transaction];
     }];
-    OWSAssertDebug(
-        SSKFeatureFlags.storageMode == StorageModeYdbTests || SSKFeatureFlags.storageMode == StorageModeGrdbTests);
-    // Redundantly store in yap db as well - this works around another work around, which
-    // insists on reading account registration state from YapDB.
-    [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self storeLocalNumber:localNumber uuid:uuid transaction:transaction.asAnyWrite];
-    }];
 }
-
 
 #pragma mark - Account Attributes
 
@@ -866,6 +831,39 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:RegistrationStateDidChangeNotification
                                                              object:nil
                                                            userInfo:nil];
+}
+
+#pragma mark - SDSDatabaseStorageObserver
+
+- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    // Do nothing.
+}
+
+- (void)databaseStorageDidUpdateExternally
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    OWSLogVerbose(@"");
+
+    // Any database write by the main app might reflect a deregistration,
+    // so clear the cached "is registered" state.  This will significantly
+    // erode the value of this cache in the SAE.
+    @synchronized(self) {
+        _isRegistered = NO;
+    }
+}
+
+- (void)databaseStorageDidReset
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    // Do nothing.
 }
 
 @end
