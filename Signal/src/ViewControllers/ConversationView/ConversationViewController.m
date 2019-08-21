@@ -3321,10 +3321,6 @@ typedef enum : NSUInteger {
 
 - (void)updateLastVisibleSortIdWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    if (!transaction.transitional_yapReadTransaction) {
-        return;
-    }
-
     NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
     id<ConversationViewItem> _Nullable lastVisibleViewItem;
     if (lastVisibleIndexPath) {
@@ -3344,10 +3340,10 @@ typedef enum : NSUInteger {
 
     [self ensureScrollDownButton];
 
-    __block NSUInteger numberOfUnreadMessages;
-    numberOfUnreadMessages = [[transaction.transitional_yapReadTransaction ext:TSUnreadDatabaseViewExtensionName]
-        numberOfItemsInGroup:self.thread.uniqueId];
-    [self setHasUnreadMessages:numberOfUnreadMessages > 0 transaction:transaction];
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.thread.uniqueId];
+    NSUInteger unreadCount = [interactionFinder unreadCountWithTransaction:transaction];
+
+    [self setHasUnreadMessages:unreadCount > 0 transaction:transaction];
 }
 
 - (void)markVisibleMessagesAsRead
