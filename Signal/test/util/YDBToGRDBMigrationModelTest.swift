@@ -9,6 +9,14 @@ import SignalServiceKit
 
 class YDBToGRDBMigrationModelTest: SignalBaseTest {
 
+    // MARK: - Dependencies
+
+    var storageCoordinator: StorageCoordinator {
+        return SSKEnvironment.shared.storageCoordinator
+    }
+
+    // MARK: -
+
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -31,6 +39,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
     }
 
     func testKnownStickerPack() {
+        storageCoordinator.useGRDBForTests()
+
         let model1 = randomKnownStickerPack()
         let model2 = randomKnownStickerPack()
         let model3 = randomKnownStickerPack()
@@ -92,6 +102,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
     }
 
     func testJobs() {
+        storageCoordinator.useGRDBForTests()
+
         // SSKMessageDecryptJobRecord
         let messageDecryptData1 = Randomness.generateRandomBytes(1024)
         let messageDecryptData2 = Randomness.generateRandomBytes(1024)
@@ -255,6 +267,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
     }
 
     func testDecryptJobs() {
+        storageCoordinator.useGRDBForTests()
+
         // SSKMessageDecryptJobRecord
         let messageDecryptData1 = Randomness.generateRandomBytes(1024)
         let messageDecryptData2 = Randomness.generateRandomBytes(1024)
@@ -421,6 +435,8 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
     }
 
     func testInteractions() {
+        storageCoordinator.useGRDBForTests()
+
         // Threads
         let contactThread1 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334444"))
         let contactThread2 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334445"))

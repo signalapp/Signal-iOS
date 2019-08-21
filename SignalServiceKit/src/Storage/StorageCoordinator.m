@@ -147,6 +147,18 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     return YES;
 }
 
+#ifdef DEBUG
+- (void)useGRDBForTests
+{
+    self.state = StorageCoordinatorStateGRDBTests;
+}
+
+- (void)useYDBForTests
+{
+    self.state = StorageCoordinatorStateYDBTests;
+}
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END
