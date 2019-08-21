@@ -619,8 +619,18 @@ class ParsedProperty:
 
     def is_enum(self):
         return self.type_info().is_enum
+    
+    def swift_identifier(self):
+        return to_swift_identifier_name(self.name)
+
+    def column_name(self):
+        custom_column_name = custom_column_name_for_property(self)
+        if custom_column_name is not None:
+            return custom_column_name
+        else:
+            return self.swift_identifier()
         
- 
+
 def ows_getoutput(cmd):
     proc = subprocess.Popen(cmd,
         stdout = subprocess.PIPE,
@@ -711,7 +721,7 @@ public struct %s: SDSRecord {
 ''' % ( record_name, str(clazz.name), str(clazz.name), )
 
         def write_record_property(property, force_optional=False):
-            column_name = to_swift_identifier_name(property.name)
+            column_name = property.swift_identifier()
             
             # print 'property', property.swift_type_safe()
             record_field_type = property.record_field_type()
@@ -738,21 +748,25 @@ public struct %s: SDSRecord {
                 # print 'subclass_properties:', property.name
                 swift_body += write_record_property(property, force_optional=True)
 
+        sds_properties = [
+            ParsedProperty({"name": "id", "is_optional": False, "objc_type": "NSInteger", "class_name": clazz.name}),
+            ParsedProperty({"name": "recordType", "is_optional": False, "objc_type": "NSUInteger", "class_name": clazz.name}),
+            ParsedProperty({"name": "uniqueId", "is_optional": False, "objc_type": "NSString *", "class_name": clazz.name})
+        ]
+        persisted_properties = sds_properties + base_properties + subclass_properties
+
         swift_body += '''
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
-        case id
-        case recordType
-        case uniqueId
 '''
 
-        for property in (base_properties + subclass_properties):
+        for property in persisted_properties:
             custom_column_name = custom_column_name_for_property(property)
             if custom_column_name is not None:
                 swift_body += '''        case %s = "%s"
-''' % ( custom_column_name, to_swift_identifier_name(property.name), )
+''' % ( custom_column_name, property.swift_identifier(), )
             else:
                 swift_body += '''        case %s
-''' % ( to_swift_identifier_name(property.name), )
+''' % ( property.swift_identifier(), )
 
 
         swift_body += '''    }
@@ -761,10 +775,29 @@ public struct %s: SDSRecord {
     public static func columnName(_ column: %s.CodingKeys, fullyQualified: Bool = false) -> String {
         return fullyQualified ? "\(databaseTableName).\(column.rawValue)" : column.rawValue
     }
+}
 ''' % ( record_name, )
 
-        swift_body += '''}
+        swift_body += '''
+// MARK: - Row Initializer
 
+public extension %s {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {''' % (record_name)
+
+        for index, property in enumerate(persisted_properties):
+            swift_body += '''
+        %s = row[%s]''' % (property.column_name(), index)
+            
+        swift_body += '''
+    }
+}
+'''
+
+        swift_body += '''
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -1012,22 +1045,15 @@ extension %sSerializer {
 
     // This defines all of the columns used in the table 
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
 ''' % str(clazz.name)
 
         # Eventually we need a (persistent?) mechanism for guaranteeing
         # consistency of column ordering, that is robust to schema 
         # changes, class hierarchy changes, etc. 
         column_property_names = []
-        column_property_names.append('recordType')
-        column_property_names.append('id')
-        column_property_names.append('uniqueId')
-
         def write_column_metadata(property, force_optional=False):
             column_index = len(column_property_names)
-            column_name = to_swift_identifier_name(property.name)
+            column_name = property.swift_identifier()
             column_property_names.append(column_name)
             
             is_optional = property.is_optional or force_optional
@@ -1035,11 +1061,16 @@ extension %sSerializer {
             
             # print 'property', property.swift_type_safe()
             database_column_type = property.database_column_type()
+            if property.name == 'id':
+                database_column_type = '.primaryKey'
             
             # TODO: Use skipSelect.
             return '''    static let %sColumn = SDSColumnMetadata(columnName: "%s", columnType: %s%s, columnIndex: %s)
 ''' % ( str(column_name), str(column_name), database_column_type, optional_split, str(column_index) )
-        
+       
+        for property in sds_properties:
+            swift_body += write_column_metadata(property)
+ 
         # If a property has a custom column source, we don't redundantly create a column for that column 
         base_properties = [property for property in clazz.properties() if not property.has_custom_column_source()]
         if len(base_properties) > 0:
@@ -1537,10 +1568,8 @@ class %sSerializer: SDSSerializer {
     # print 'initializer_value_names', initializer_value_names
 
     def write_record_property(property, force_optional=False):
-        column_name = to_swift_identifier_name(property.name)
-
         optional_value = ''
-        if column_name in initializer_value_names:
+        if property.swift_identifier() in initializer_value_names:
             did_force_optional = (property.name not in root_base_property_names) and (not property.is_optional)
             model_accessor = accessor_name_for_property(property)
             value_expr = property.serialize_record_invocation('model.%s' % ( model_accessor, ), did_force_optional)
@@ -1553,15 +1582,11 @@ class %sSerializer: SDSSerializer {
 
         is_optional = property.is_optional or force_optional
         optional_split = '?' if is_optional else ''
-
-        custom_column_name = custom_column_name_for_property(property)
-        if custom_column_name is not None:
-            column_name = custom_column_name
         
-        initializer_args.append(str(column_name))
+        initializer_args.append(property.column_name())
     
         return '''        let %s: %s%s%s
-''' % ( str(column_name), record_field_type, optional_split, optional_value, )
+''' % ( str(property.column_name()), record_field_type, optional_split, optional_value, )
 
     if len(root_base_properties) > 0:
         swift_body += '\n        // Base class properties \n'
