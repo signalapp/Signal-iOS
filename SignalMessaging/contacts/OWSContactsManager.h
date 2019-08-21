@@ -27,6 +27,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @property (nonnull, readonly) ImageCache *avatarCache;
 
+
 @property (atomic, readonly) NSArray<Contact *> *allContacts;
 
 @property (atomic, readonly) NSDictionary<NSString *, Contact *> *allContactsMap;
@@ -94,6 +95,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
                           transaction:(SDSAnyReadTransaction *)transaction;
 - (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
+
+- (void)clearColorNameCache;
+- (NSString *)conversationColorNameForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

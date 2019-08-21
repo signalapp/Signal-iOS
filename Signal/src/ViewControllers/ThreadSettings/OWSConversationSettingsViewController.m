@@ -1563,6 +1563,7 @@ const CGFloat kIconViewLength = 24;
     }];
 
     [self.contactsManager.avatarCache removeAllImages];
+    [self.contactsManager clearColorNameCache];
     [self updateTableContents];
     [self.conversationSettingsViewDelegate conversationColorWasUpdated];
 

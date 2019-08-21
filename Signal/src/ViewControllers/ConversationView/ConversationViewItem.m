@@ -190,6 +190,11 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     return SDSDatabaseStorage.shared;
 }
 
+- (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
 #pragma mark -
 
 - (void)replaceInteraction:(TSInteraction *)interaction transaction:(SDSAnyReadTransaction *)transaction
@@ -231,36 +236,35 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 {
     OWSAssertDebug(transaction);
 
+    SignalServiceAddress *address;
     switch (self.interaction.interactionType) {
         case OWSInteractionType_ThreadDetails: {
             OWSThreadDetailsInteraction *threadDetails = (OWSThreadDetailsInteraction *)self.interaction;
             if ([threadDetails.thread isKindOfClass:[TSContactThread class]]) {
-                TSContactThread *contactThread = (TSContactThread *)threadDetails.thread;
-                _authorConversationColorName =
-                    [TSContactThread conversationColorNameForContactAddress:contactThread.contactAddress
-                                                                transaction:transaction];
+                address = ((TSContactThread *)threadDetails.thread).contactAddress;
             } else {
-                _authorConversationColorName = nil;
+                address = nil;
             }
             break;
         }
         case OWSInteractionType_TypingIndicator: {
             OWSTypingIndicatorInteraction *typingIndicator = (OWSTypingIndicatorInteraction *)self.interaction;
-            _authorConversationColorName =
-                [TSContactThread conversationColorNameForContactAddress:typingIndicator.address
-                                                            transaction:transaction];
+            address = typingIndicator.address;
             break;
         }
         case OWSInteractionType_IncomingMessage: {
             TSIncomingMessage *incomingMessage = (TSIncomingMessage *)self.interaction;
-            _authorConversationColorName =
-                [TSContactThread conversationColorNameForContactAddress:incomingMessage.authorAddress
-                                                            transaction:transaction];
+            address = incomingMessage.authorAddress;
             break;
         }
         default:
-            _authorConversationColorName = nil;
+            address = nil;
             break;
+    }
+
+    if (address != nil) {
+        self.authorConversationColorName = [self.contactsManager conversationColorNameForAddress:address
+                                                                                     transaction:transaction];
     }
 }
 
@@ -1060,7 +1064,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
                     = (OWSVerificationStateChangeMessage *)infoMessage;
                 BOOL isVerified = verificationMessage.verificationState == OWSVerificationStateVerified;
                 NSString *displayName =
-                    [Environment.shared.contactsManager displayNameForAddress:verificationMessage.recipientAddress];
+                    [self.contactsManager displayNameForAddress:verificationMessage.recipientAddress];
                 NSString *titleFormat = (isVerified
                         ? (verificationMessage.isLocalChange
                                   ? NSLocalizedString(@"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL",
