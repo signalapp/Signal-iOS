@@ -141,7 +141,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
                                                  authorAddress:(SignalServiceAddress *)authorAddress
                                                 threadUniqueId:(NSString *)threadUniqueId
-                                                   transaction:(YapDatabaseReadTransaction *)transaction;
+                                                   transaction:(SDSAnyReadTransaction *)transaction;
 
 #pragma mark - Message Request
 

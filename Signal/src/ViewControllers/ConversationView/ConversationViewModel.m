@@ -1524,13 +1524,10 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         return nil;
     }
 
-    TSInteraction *_Nullable quotedInteraction;
-    if (transaction.transitional_yapReadTransaction != nil) {
-        quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedReply.timestamp
-                                                             authorAddress:quotedReply.authorAddress
-                                                            threadUniqueId:self.thread.uniqueId
-                                                               transaction:transaction.transitional_yapReadTransaction];
-    }
+    TSInteraction *quotedInteraction = [ThreadUtil findInteractionInThreadByTimestamp:quotedReply.timestamp
+                                                                        authorAddress:quotedReply.authorAddress
+                                                                       threadUniqueId:self.thread.uniqueId
+                                                                          transaction:transaction];
 
     if (!quotedInteraction) {
         return nil;
