@@ -19,6 +19,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
     }
 
     func testKeyValueInt() {
+        // GRDB TODO: This test can be fixed using the storage coordinator in master.
+        XCTAssert(FeatureFlags.useGRDB)
+
         let store1 = SDSKeyValueStore(collection: "store1")
         let store2 = SDSKeyValueStore(collection: "store2")
         let store3 = SDSKeyValueStore(collection: "store3")
@@ -95,6 +98,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
     }
 
     func testKeyValueUInt() {
+        // GRDB TODO: This test can be fixed using the storage coordinator in master.
+        XCTAssert(FeatureFlags.useGRDB)
+
         let store1 = SDSKeyValueStore(collection: "store1")
         let store2 = SDSKeyValueStore(collection: "store2")
         let store3 = SDSKeyValueStore(collection: "store3")
@@ -171,6 +177,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
     }
 
     func testKeyValueDouble() {
+        // GRDB TODO: This test can be fixed using the storage coordinator in master.
+        XCTAssert(FeatureFlags.useGRDB)
+
         let store1 = SDSKeyValueStore(collection: "store1")
         let store2 = SDSKeyValueStore(collection: "store2")
         let store3 = SDSKeyValueStore(collection: "store3")
@@ -247,6 +256,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
     }
 
     func testKeyValueData() {
+        // GRDB TODO: This test can be fixed using the storage coordinator in master.
+        XCTAssert(FeatureFlags.useGRDB)
+
         let store1 = SDSKeyValueStore(collection: "store1")
         let store2 = SDSKeyValueStore(collection: "store2")
         let store3 = SDSKeyValueStore(collection: "store3")
@@ -315,6 +327,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
     }
 
     func testKeyValueString() {
+        // GRDB TODO: This test can be fixed using the storage coordinator in master.
+        XCTAssert(FeatureFlags.useGRDB)
+
         let store1 = SDSKeyValueStore(collection: "store1")
         let store2 = SDSKeyValueStore(collection: "store2")
         let store3 = SDSKeyValueStore(collection: "store3")
@@ -383,6 +398,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
     }
 
     func testKeyValueDate() {
+        // GRDB TODO: This test can be fixed using the storage coordinator in master.
+        XCTAssert(FeatureFlags.useGRDB)
+
         let store1 = SDSKeyValueStore(collection: "store1")
         let store2 = SDSKeyValueStore(collection: "store2")
         let store3 = SDSKeyValueStore(collection: "store3")
@@ -470,6 +488,9 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
     }
 
     func testKeyValueObject() {
+        // GRDB TODO: This test can be fixed using the storage coordinator in master.
+        XCTAssert(FeatureFlags.useGRDB)
+
         let store1 = SDSKeyValueStore(collection: "store1")
         let store2 = SDSKeyValueStore(collection: "store2")
         let store3 = SDSKeyValueStore(collection: "store3")

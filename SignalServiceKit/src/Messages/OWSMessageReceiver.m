@@ -360,7 +360,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)drainQueue
 {
-    OWSAssertDebug(AppReadiness.isAppReady);
+    OWSAssertDebug(AppReadiness.isAppReady || CurrentAppContext().isRunningTests);
 
     // Don't decrypt messages in app extensions.
     if (!CurrentAppContext().isMainApp) {

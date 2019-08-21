@@ -183,10 +183,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "ទីតាំង";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "ផ្តល់ការអនុញ្ញាតចូលប្រើប្រាស់រូបថតរបស់អ្នក ក្នុងការកំណត់កម្មវិធី ដើម្បីផ្ញើវានៅទីនេះ។";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "ពេលអ្នកបានថតរូប អ្នកនឹងអាចផ្ញើទៅកាន់អ្នកទទួលនៅទីនេះ។";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "ឯកសារភ្ជាប់";
@@ -333,7 +333,7 @@
 "BUTTON_NEXT" = "បន្ទាប់";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
+"BUTTON_OKAY" = "យល់ព្រម";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "ជ្រើសរើស";
@@ -606,7 +606,7 @@
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "លុបការសន្ទនា?";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "អ្នកមិនអាចជ្រើសរើសសារសន្ទនាលើសពី %@ ។";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "ក្រុម";
@@ -615,10 +615,10 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "ការជជែកថ្មីៗ";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "មនុស្ស";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "ជ្រើសរើសអ្នកទទួល";
 
 /* keyboard toolbar label when no messages match the search string */
 "CONVERSATION_SEARCH_NO_RESULTS" = "មិនត្រូវគ្នា";
@@ -690,7 +690,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "មិនបិទសំឡេង";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "អ្នកប្រើប្រាស់នេះនៅក្នុងបញ្ជីទំនាក់ទំនងរបស់អ្នក";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "ក្រុមនេះអាចមើលឃើញប្រវត្តិរូបរបស់អ្នក។";
@@ -901,10 +901,10 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "លេខPIN  មិនត្រូវគ្នា។";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "លេខ PIN មិនអាចវែងជាង 20 ខ្ទង់។";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN must be at least 4 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "លេខ PIN ត្រូវមានយ៉ាងហោច 4 ខ្ទង់។";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "បញ្ចូលលេខកូដ PIN សម្រាប់ចាក់សោរការចុះឈ្មោះ។ អ្នកនឹងត្រូវបញ្ចូលលេខកូដ PINនេះ ពេលអ្នកចុះឈ្មោះលេខទូរសព្ទនេះជាមួយSignalនៅពេលក្រោយ។";
@@ -1147,7 +1147,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "ចាប់ផ្តើមការសន្ទនាលើកដំបូងនៅទីនេះ។";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "សារស្នើសុំ";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "គ្មានលទ្ធផលក្នងការស្វែងរកសំរាប់ %@";
@@ -1273,10 +1273,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "សមាជិកក្រុម";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "ស្វែងរកតាមឈ្មោះ ឬ អសយដ្ឋាន";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "ជ្រើសរើស ទីតាំង";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "កំពុងចូល";
@@ -1396,19 +1396,19 @@
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "លុប";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "អ្នកត្រូវចែករំលែកប្រវត្តិរូបរបស់អ្នក ដើម្បីបន្តការសន្ទនាជាមួយ %@។";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "អ្នកត្រូវចែករំលែកប្រវត្តិរូបរបស់អ្នក ដើម្បីបន្តការសន្ទនាក្នុង %@។";
 
 /* A button used to learn more about why you must share your profile. */
 "MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "ស្វែងយល់បន្ថែម";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "តើអ្នកអនុញ្ញាត %@ ផ្ញើសារមកអ្នក? គេនឹងមិនដឹងថាអ្នកបានឃើញសាររបស់គេទេ លុះត្រាតែអ្នកយល់ព្រម។";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "តើអ្នកចង់ចូលក្រុម %@ ? គេនឹងមិនដឹងថាអ្នកបានឃើញសាររបស់គេទេ លុះត្រាតែអ្នកយល់ព្រម។";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "ចែករំលែកប្រវត្តិរូប";
@@ -1494,7 +1494,7 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "អ្នកអាចបើកការអនុញ្ញាតនេះ ក្នុងកម្មវិធី ការកំណត់ iOS។";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = " Signal ត្រូវការចូលប្រើប្រាស់ទីតាំងរបស់អ្នក សម្រាប់មុខងារនេះ។ ";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "អ្នកអាចបើកការអនុញ្ញាតនេះ ក្នុងកម្មវិធី ការកំណត់ iOS។";
@@ -1611,7 +1611,7 @@
 "OK" = "យល់ព្រម";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "លេខ PIN មិនត្រឹមត្រូវ។ ការសាកល្បងហួសកំណត់។";
 
 /* The first explanation in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_EXPLANATION_1" = "លេខទូរស័ព្ទនេះ បានបើកការចាក់សោរចុះឈ្មោះ។ សូមមេត្តាបញ្ចូលលេខPIN សម្រាប់ចាក់សោរការចុះឈ្មោះ។";
@@ -1620,28 +1620,28 @@
 "ONBOARDING_2FA_EXPLANATION_2" = "លេខPIN ចាក់សោរចុះឈ្មោះរបស់អ្នក គឺផ្សេងពីកូដផ្ទៀងផ្ទាត់ស្វ័យប្រវត្តិ ដែលត្រូវបានផ្ញើទៅលេខទូរស័ព្ទរបស់អ្នក ក្នុងដំណាក់កាលចុងក្រោយ។";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Forgot your PIN?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "ភ្លេចលេខ PIN របស់អ្នក?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "លេខកូដ PIN មិនត្រឹមត្រូវ";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "លេខ PIN មិនត្រឹមត្រូវ។ ការព្យាយាមនៅសល់ %lu ដង។";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "លេខ PIN មិនត្រឹមត្រូវ។ ការព្យាយាមនៅសល់ 1 ដង។";
 
 /* Title of the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_TITLE" = "ចាក់សោរការចុះឈ្មោះ";
 
 /* Explanation of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_ACCOUNT_LOCKED_EXPLANATION" = "ដើម្បីការពារឯកជនភាព និងសុវត្ថិភាពគណនីរបស់អ្នក យើងបានចាក់សោរវារយៈពេល 7 ថ្ងៃ។\n\nបន្ទាប់ពី 7 ថ្ងៃនៃភាពអសកម្ម អ្នកនឹងអាចចុះឈ្មោះលេខទូរស័ព្ទនេះម្តងទៀត ដោយមិនទាមទារលេខ PIN របស់អ្នកទេ។​ ទិន្នន័យទាំងអស់នឹងត្រូវលុបចោល។";
 
 /* Label for the 'learn more' link in the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_ACCOUNT_LOCKED_LEARN_MORE" = "ស្វែងយល់បន្ថែមពី ការចាក់សោរគណនី";
 
 /* Title of the 'onboarding account locked' view. */
-"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "Account Locked";
+"ONBOARDING_ACCOUNT_LOCKED_TITLE" = "គណនីជាប់សោរ";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "បន្ថែមការប៉ះមនុស្សជាតិទៅសាររបស់អ្នក";
@@ -1665,10 +1665,10 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "លេខទូរសព្ទមិនត្រឹមត្រូវ";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+"ONBOARDING_PIN_EXPLANATION" = "បញ្ចូលលេខ PIN ដែលអ្នកបានបង្កើតសម្រាប់ គណនីរបស់អ្នក។ នេះខុសពីលេខកូដផ្ទៀងផ្ទាត់ពីសារ SMS ។";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Enter your PIN";
+"ONBOARDING_PIN_TITLE" = "បញ្ចូលលេខ PIN របស់អ្នក";
 
 /* Explanation in the 'onboarding profile' view. */
 "ONBOARDING_PROFILE_EXPLANATION" = "ប្រវត្តិរូប Signal ត្រូវបានអ៊ិនគ្រីបទាំងសងខាង និងសេវាកម្ម Signal មិនអាចចូលប្រើប្រាស់ព័ត៌មាននេះបានទេ។ ";
@@ -1818,58 +1818,58 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "អាល់បុមគ្មានឈ្មោះ";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
+"PIN_CREATION_BOLD_EXPLANATION" = "មិនមានវិធីស្តារលេខ PIN របស់អ្នកវិញទេ ដូចនេះសូមចងចាំវា។";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "ផ្លាស់ប្តូរលេខ PIN របស់អ្នក";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "ផ្ទៀងផ្ទាត់លេខ PIN ថ្មីរបស់អ្នក។";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Your PIN adds and extra layer of security and backs up your account.";
+"PIN_CREATION_EXPLANATION" = "លេខ PIN បន្ថែមស្រទាប់សុវត្ថិភាព និងបម្រុងទុកគណនីរបស់អ្នក។";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
+"PIN_CREATION_MISMATCH_ERROR" = "លេខPIN  មិនត្រូវគ្នា។ ព្យាយាមម្តងទៀត។";
 
 /* The placeholder when confirming a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "Re-enter PIN";
+"PIN_CREATION_PIN_CONFIRMATION_PLACEHOLDER" = "បញ្ចូលលេខ PIN ម្តងទៀត";
 
 /* The placeholder when creating a pin in the 'pin creation' view. */
-"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "PIN must be 4+ digits";
+"PIN_CREATION_PIN_CREATION_PLACEHOLDER" = "លេខ PIN ត្រូវមានចាប់ពី 4 ខ្ទង់";
 
 /* The bold portion of the re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "When you’re logged out, there is no way to recover your PIN.";
+"PIN_CREATION_RECREATION_BOLD_EXPLANATION" = "ពេលអ្នកចាកចេញពីគណនី មិនមានវិធីណាស្តារលេខ PIN របស់អ្នកទេ។";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Because you’re still logged in, you can create a new PIN.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "ដោយសារអ្នកកំពុងចូលប្រើប្រាស់គណនី អ្នកអាចបង្កើតលេខ PIN ថ្មីបាន។";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Create a new PIN";
+"PIN_CREATION_RECREATION_TITLE" = "បង្កើតលេខ PIN ថ្មី";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Create your PIN";
+"PIN_CREATION_TITLE" = "បង្កើតលេខ PIN របស់អ្នក";
 
 /* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
+"PIN_CREATION_TOO_LONG_ERROR" = "លេខ PIN មិនត្រូវច្រើនជាង 20 ខ្ទង់។";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_CREATION_TOO_SHORT_ERROR" = "លេខ PIN ត្រូវមានយ៉ាងហោច 4 ខ្ទង់។";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+"PIN_REMINDER_EXPLANATION" = "ដើម្បីជួយការចង់ចាំលេខ PIN របស់អ្នក យើងនឹងសួរអ្នក ឲ្យបញ្ចូលវាជាប្រចាំ។យើងនឹងសួរតិចជាងមុនលើកក្រោយ។";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "ភ្លេចលេខ PIN របស់អ្នក?";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
+"PIN_REMINDER_MISMATCH_ERROR" = "លេខ PIN មិនត្រឹមត្រូវ សូមព្យាយាមម្តងទៀត។";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+"PIN_REMINDER_TITLE" = "បញ្ចូលលេខ Signal PIN របស់អ្នក";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "លេខ PIN ត្រូវមានយ៉ាងហោច 20 ខ្ទង់។";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "ចាក់មេឌា";
@@ -2010,16 +2010,16 @@
 "REGISTER_2FA_FORGOT_PIN" = "ខ្ញុំបានភ្លេចលេខPIN ។";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "For your privacy and security, there is no way to recover your PIN. If you can’t remember your PIN, you may re-verify with SMS after 7 days of inactivity. In this case, your account will be wiped and all content deleted.";
+"REGISTER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "ដើម្បីឯកជនភាព និងសុវត្ថិភាពរបស់អ្នក មិនមានវិធីស្តារលេខ PIN ឡើងវិញទេ។ បើអ្នកមិនអាចចងចាំលេខ PIN អ្នកអាចផ្ទៀងផ្ទាត់ម្តងទៀតតាមសារ SMS បន្ទាប់ពី 7 ថ្ងៃនៃភាពអសកម្ម។ ក្នុងករណីនេះ គណនីរបស់អ្នក នឹងត្រូវលុបចោលទិន្នន័យទាំងអស់។";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Forgot your PIN?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "ភ្លេចលេខ PIN របស់អ្នក?";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "អ្នកនៅមានការព្យាយាម %lu ដង។ បើការព្យាយាមអស់ គណនីអ្នកនឹងត្រូវចាក់សោរ។ បន្ទាប់ពី 7 ថ្ងៃនៃភាពអសកម្ម អ្នកអាចចុះឈ្មោះម្តងទៀត ដោយមិនត្រូវការលេខ PIN។ គណនីរបស់អ្នក នឹងត្រូវលុបចោលទិន្នន័យទាំងអស់។";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "អ្នកនៅមានការព្យាយាម 1 ដង។ បើការព្យាយាមអស់ គណនីអ្នកនឹងត្រូវចាក់សោរ។ បន្ទាប់ពី 7 ថ្ងៃនៃភាពអសកម្ម អ្នកអាចចុះឈ្មោះម្តងទៀត ដោយមិនត្រូវការលេខ PIN។ គណនីរបស់អ្នក នឹងត្រូវលុបចោលទិន្នន័យទាំងអស់។";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "លេខកូដ PIN មិនត្រឹមត្រូវ";
@@ -2415,13 +2415,13 @@
 "SETTINGS_NOTIFICATIONS" = "ការជូនដំណឹង";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN adds an extra layer of security and backs up your account. You’ll be asked for it when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
+"SETTINGS_PINS_FOOTER" = "លេខ PIN បន្ថែមស្រទាប់សុវត្ថិភាព និងបម្រុងទុកគណនីរបស់អ្នក។ អ្នកនឹងអាចត្រូវបានសួរ នៅពេលអ្នកចុះឈ្មោះលេខទូរស័ព្ទរបស់អ្នកជាមួយ Signal។ បើអ្នកភ្លេចលេខ PIN អ្នកនឹងត្រូវចាក់សោរពីគណនីរបស់អ្នករយៈពេល 7 ថ្ងៃ។";
 
 /* Label for the 'pins' item of the privacy settings. */
-"SETTINGS_PINS_ITEM" = "Change your PIN";
+"SETTINGS_PINS_ITEM" = "ផ្លាស់ប្តូរលេខ PIN របស់អ្នក";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "PIN";
+"SETTINGS_PINS_TITLE" = "លេខ PIN";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "បង្ហាញឈ្មោះ និងលេខទំនាក់ទំនងរបស់អ្នកហៅ";
@@ -2592,7 +2592,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "ស្ទីកគ័រដែលអ្នកបានទទួល";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "កញ្ចប់រូបតំណាងមួយចំនួន មិនអាចផ្ទុកបាន";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "ស្ទីកគ័របានដំឡើង";
@@ -2622,7 +2622,7 @@
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "កញ្ចប់ស្ទីកគ័រ";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "កញ្ចប់រូបតំណាងមិនអាចផ្ទុកបាន";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "លុបចេញ";
@@ -2637,19 +2637,19 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "ផ្ទៀងផ្ទាត់លេខសុវត្ថិភាព";
 
 /* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu members";
+"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "សមាជិក %lu ";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "សមាជិកនៃ %@, %@, និង %lu ក្រុមផ្សេងទៀត";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "សមាជិកនៃ %@";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "សមាជិកនៃ %@, %@, និង %@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "សមាជិកនៃ %@ និង %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ ថ្ងៃ";
@@ -2766,25 +2766,25 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "មិនគាំទ្រ";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Create your PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "បង្កើតលេខ PIN របស់អ្នក";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "ស្វែងយល់បន្ថែមពី លេខ PINs";
 
 /* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Your Registration Lock now does more. With PINs you can take your contacts with you when you switch devices.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "ការចាក់សោរចុះឈ្មោះ ធ្វើបានច្រើនជាងមុន។ ជាមួយលេខ PINs អ្នកអាចយកបញ្ជីទំនាក់ទំនងទៅជាមួយអ្នកនៅពេលអ្នកផ្លាស់ប្តូរទូរស័ព្ទ។";
 
 /* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registration Lock = PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "ចាក់សោរការចុះឈ្មោះ = លេខ PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Add even more security to your account and take your contacts with you when you switch phones.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "បន្ថែមសុវត្ថិភាពលើគណនីរបស់អ្នក និងយកបញ្ជីទំនាក់ទំនងទៅជាមួយនៅពេលអ្នកផ្លាស់ប្តូរទូរស័ព្ទ។";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "ការណែនាំ លេខPINs";
 
 /* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "តើខ្ញុំចាំបាច់ត្រូវបង្កើតលេខ PIN?";
 
 /* Body text for stickers splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_STICKERS_DESCRIPTION" = "ហេតុអ្វីបានជាប្រើប្រាស់ពាក្យ នៅពេលអ្នកអាចប្រើប្រាស់ស្ទីកគ័រ? ចុច រូបតំណាងនេះនៅលើក្តារចុចរបស់អ្នក៖";
