@@ -154,6 +154,77 @@ public struct InteractionRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension InteractionRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        receivedAtTimestamp = row[3]
+        timestamp = row[4]
+        threadUniqueId = row[5]
+        attachmentFilenameMap = row[6]
+        attachmentIds = row[7]
+        authorId = row[8]
+        authorPhoneNumber = row[9]
+        authorUUID = row[10]
+        body = row[11]
+        callSchemaVersion = row[12]
+        callType = row[13]
+        configurationDurationSeconds = row[14]
+        configurationIsEnabled = row[15]
+        contactId = row[16]
+        contactShare = row[17]
+        createdByRemoteName = row[18]
+        createdInExistingGroup = row[19]
+        customMessage = row[20]
+        envelopeData = row[21]
+        errorMessageSchemaVersion = row[22]
+        errorType = row[23]
+        expireStartedAt = row[24]
+        expiresAt = row[25]
+        expiresInSeconds = row[26]
+        groupMetaMessage = row[27]
+        hasLegacyMessageState = row[28]
+        hasSyncedTranscript = row[29]
+        incomingMessageSchemaVersion = row[30]
+        infoMessageSchemaVersion = row[31]
+        isFromLinkedDevice = row[32]
+        isLocalChange = row[33]
+        isViewOnceComplete = row[34]
+        isViewOnceMessage = row[35]
+        isVoiceMessage = row[36]
+        legacyMessageState = row[37]
+        legacyWasDelivered = row[38]
+        linkPreview = row[39]
+        messageId = row[40]
+        messageSticker = row[41]
+        messageType = row[42]
+        mostRecentFailureText = row[43]
+        outgoingMessageSchemaVersion = row[44]
+        preKeyBundle = row[45]
+        protocolVersion = row[46]
+        quotedMessage = row[47]
+        read = row[48]
+        recipientAddress = row[49]
+        recipientAddressStates = row[50]
+        schemaVersion = row[51]
+        sender = row[52]
+        serverTimestamp = row[53]
+        sourceDeviceId = row[54]
+        storedMessageState = row[55]
+        unknownProtocolVersionMessageSchemaVersion = row[56]
+        unregisteredAddress = row[57]
+        verificationState = row[58]
+        wasReceivedByUD = row[59]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -1138,8 +1209,8 @@ extension TSInteractionSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let receivedAtTimestampColumn = SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64, columnIndex: 3)
@@ -1206,8 +1277,8 @@ extension TSInteractionSerializer {
     public static let table = SDSTableMetadata(collection: TSInteraction.collection(),
                                                tableName: "model_TSInteraction",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         receivedAtTimestampColumn,
         timestampColumn,

@@ -66,6 +66,33 @@ public struct ThreadRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension ThreadRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        archivalDate = row[3]
+        archivedAsOfMessageSortId = row[4]
+        conversationColorName = row[5]
+        creationDate = row[6]
+        isArchivedByLegacyTimestampForSorting = row[7]
+        lastMessageDate = row[8]
+        messageDraft = row[9]
+        mutedUntilDate = row[10]
+        shouldThreadBeVisible = row[11]
+        contactPhoneNumber = row[12]
+        contactThreadSchemaVersion = row[13]
+        contactUUID = row[14]
+        groupModel = row[15]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -223,8 +250,8 @@ extension TSThreadSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let archivalDateColumn = SDSColumnMetadata(columnName: "archivalDate", columnType: .int64, isOptional: true, columnIndex: 3)
@@ -247,8 +274,8 @@ extension TSThreadSerializer {
     public static let table = SDSTableMetadata(collection: TSThread.collection(),
                                                tableName: "model_TSThread",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         archivalDateColumn,
         archivedAsOfMessageSortIdColumn,

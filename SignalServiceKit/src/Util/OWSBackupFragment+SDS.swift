@@ -50,6 +50,26 @@ public struct BackupFragmentRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension BackupFragmentRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        attachmentId = row[3]
+        downloadFilePath = row[4]
+        encryptionKey = row[5]
+        recordName = row[6]
+        relativeFilePath = row[7]
+        uncompressedDataLength = row[8]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -132,8 +152,8 @@ extension OWSBackupFragmentSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let attachmentIdColumn = SDSColumnMetadata(columnName: "attachmentId", columnType: .unicodeString, isOptional: true, columnIndex: 3)
@@ -148,8 +168,8 @@ extension OWSBackupFragmentSerializer {
     public static let table = SDSTableMetadata(collection: OWSBackupFragment.collection(),
                                                tableName: "model_OWSBackupFragment",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         attachmentIdColumn,
         downloadFilePathColumn,

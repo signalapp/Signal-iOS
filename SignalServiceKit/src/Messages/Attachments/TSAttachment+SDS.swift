@@ -90,6 +90,45 @@ public struct AttachmentRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension AttachmentRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        albumMessageId = row[3]
+        attachmentSchemaVersion = row[4]
+        attachmentType = row[5]
+        byteCount = row[6]
+        caption = row[7]
+        contentType = row[8]
+        encryptionKey = row[9]
+        isDownloaded = row[10]
+        serverId = row[11]
+        sourceFilename = row[12]
+        cachedAudioDurationSeconds = row[13]
+        cachedImageHeight = row[14]
+        cachedImageWidth = row[15]
+        creationTimestamp = row[16]
+        digest = row[17]
+        isUploaded = row[18]
+        isValidImageCached = row[19]
+        isValidVideoCached = row[20]
+        lazyRestoreFragmentId = row[21]
+        localRelativeFilePath = row[22]
+        mediaSize = row[23]
+        mostRecentFailureLocalizedText = row[24]
+        pointerType = row[25]
+        shouldAlwaysPad = row[26]
+        state = row[27]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -274,8 +313,8 @@ extension TSAttachmentSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let albumMessageIdColumn = SDSColumnMetadata(columnName: "albumMessageId", columnType: .unicodeString, isOptional: true, columnIndex: 3)
@@ -310,8 +349,8 @@ extension TSAttachmentSerializer {
     public static let table = SDSTableMetadata(collection: TSAttachment.collection(),
                                                tableName: "model_TSAttachment",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         albumMessageIdColumn,
         attachmentSchemaVersionColumn,

@@ -46,6 +46,24 @@ public struct MessageContentJobRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension MessageContentJobRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        createdAt = row[3]
+        envelopeData = row[4]
+        plaintextData = row[5]
+        wasReceivedByUD = row[6]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -124,8 +142,8 @@ extension OWSMessageContentJobSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let createdAtColumn = SDSColumnMetadata(columnName: "createdAt", columnType: .int64, columnIndex: 3)
@@ -138,8 +156,8 @@ extension OWSMessageContentJobSerializer {
     public static let table = SDSTableMetadata(collection: OWSMessageContentJob.collection(),
                                                tableName: "model_OWSMessageContentJob",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         createdAtColumn,
         envelopeDataColumn,

@@ -44,6 +44,23 @@ public struct KnownStickerPackRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension KnownStickerPackRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        dateCreated = row[3]
+        info = row[4]
+        referenceCount = row[5]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -121,8 +138,8 @@ extension KnownStickerPackSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let dateCreatedColumn = SDSColumnMetadata(columnName: "dateCreated", columnType: .int64, columnIndex: 3)
@@ -134,8 +151,8 @@ extension KnownStickerPackSerializer {
     public static let table = SDSTableMetadata(collection: KnownStickerPack.collection(),
                                                tableName: "model_KnownStickerPack",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         dateCreatedColumn,
         infoColumn,

@@ -42,6 +42,22 @@ public struct ContactQueryRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension ContactQueryRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        lastQueried = row[3]
+        nonce = row[4]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -116,8 +132,8 @@ extension OWSContactQuerySerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let lastQueriedColumn = SDSColumnMetadata(columnName: "lastQueried", columnType: .int64, columnIndex: 3)
@@ -128,8 +144,8 @@ extension OWSContactQuerySerializer {
     public static let table = SDSTableMetadata(collection: OWSContactQuery.collection(),
                                                tableName: "model_OWSContactQuery",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         lastQueriedColumn,
         nonceColumn

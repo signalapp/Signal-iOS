@@ -60,6 +60,30 @@ public struct JobRecordRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension JobRecordRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        failureCount = row[3]
+        label = row[4]
+        status = row[5]
+        attachmentIdMap = row[6]
+        contactThreadId = row[7]
+        envelopeData = row[8]
+        invisibleMessage = row[9]
+        messageId = row[10]
+        removeMessageAfterSending = row[11]
+        threadId = row[12]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -222,8 +246,8 @@ extension SSKJobRecordSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let failureCountColumn = SDSColumnMetadata(columnName: "failureCount", columnType: .int64, columnIndex: 3)
@@ -243,8 +267,8 @@ extension SSKJobRecordSerializer {
     public static let table = SDSTableMetadata(collection: SSKJobRecord.collection(),
                                                tableName: "model_SSKJobRecord",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         failureCountColumn,
         labelColumn,
