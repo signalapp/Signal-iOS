@@ -76,7 +76,7 @@ public class SDSDatabaseStorage: SDSTransactable {
     }
 
     func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
-        assert(self.useGRDB)
+        assert(self.useGRDB || CurrentAppContext().isRunningTests)
 
         let baseDir: URL
 

@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber NS_SWIFT_NAME(isSystemContact(phoneNumber:));
 - (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(isSystemContact(address:));
-;
+
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
 
 - (NSComparisonResult)compareSignalAccount:(SignalAccount *)left

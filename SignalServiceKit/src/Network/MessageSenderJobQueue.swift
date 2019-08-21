@@ -67,7 +67,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
         let jobRecord: SSKMessageSenderJobRecord
         do {
-            jobRecord = try SSKMessageSenderJobRecord(message: message, removeMessageAfterSending: false, label: self.jobRecordLabel)
+            jobRecord = try SSKMessageSenderJobRecord(message: message, removeMessageAfterSending: false, label: self.jobRecordLabel, transaction: transaction)
         } catch {
             owsFailDebug("failed to build job: \(error)")
             return
