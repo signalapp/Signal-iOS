@@ -7,29 +7,32 @@ import XCTest
 @testable import SignalServiceKit
 
 class SDSPerformanceTests: SSKBaseTestSwift {
+
+    // MARK: - Dependencies
+
+    var storageCoordinator: StorageCoordinator {
+        return SSKEnvironment.shared.storageCoordinator
+    }
+
+    // MARK: -
+
     override func setUp() {
         super.setUp()
         // Logging queries is expensive and affects the results of this test.
         // This is restored in tearDown().
         SDSDatabaseStorage.shouldLogDBQueries = false
-        databaseStorage.delegate = self.storageDelegate
+        storageCoordinator.useGRDBForTests()
     }
-
-    class MockStorageDelegate: SDSDatabaseStorageDelegate {
-        var storageCoordinatorState: StorageCoordinatorState = .grdbTests
-    }
-
-    var storageDelegate = MockStorageDelegate()
 
     // MARK: - Insert Messages
 
     func testYDBPerf_insertMessages() {
-        storageDelegate.storageCoordinatorState = .ydbTests
+        storageCoordinator.useYDBForTests()
         insertMessages()
     }
 
     func testGRDBPerf_insertMessages() {
-        storageDelegate.storageCoordinatorState = .grdbTests
+        storageCoordinator.useGRDBForTests()
         insertMessages()
     }
 
@@ -73,12 +76,12 @@ class SDSPerformanceTests: SSKBaseTestSwift {
     // MARK: - Fetch Messages
 
     func testYDBPerf_fetchMessages() {
-        storageDelegate.storageCoordinatorState = .ydbTests
+        storageCoordinator.useYDBForTests()
         fetchMessages()
     }
 
     func testGRDBPerf_fetchMessages() {
-        storageDelegate.storageCoordinatorState = .grdbTests
+        storageCoordinator.useGRDBForTests()
         fetchMessages()
     }
 
@@ -121,12 +124,12 @@ class SDSPerformanceTests: SSKBaseTestSwift {
     // MARK: - Enumerate Messages
 
     func testYDBPerf_enumerateMessages() {
-        storageDelegate.storageCoordinatorState = .ydbTests
+        storageCoordinator.useYDBForTests()
         enumerateMessages()
     }
 
     func testGRDBPerf_enumerateMessages() {
-        storageDelegate.storageCoordinatorState = .grdbTests
+        storageCoordinator.useGRDBForTests()
         enumerateMessages()
     }
 

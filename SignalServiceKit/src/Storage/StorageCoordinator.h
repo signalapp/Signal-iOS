@@ -30,6 +30,11 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 
 - (BOOL)isDatabasePasswordAccessible;
 
+#ifdef DEBUG
+- (void)useGRDBForTests;
+- (void)useYDBForTests;
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END
