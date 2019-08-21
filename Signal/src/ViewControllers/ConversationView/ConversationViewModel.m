@@ -591,6 +591,14 @@ static const int kYapDatabaseRangeMaxLength = 25000;
                                                                                         error:&updateError];
                                                      }];
 
+    // If we have a thread details item, insert it into the updated items. We assume
+    // it always needs to update, because it's rarely actually loaded and can be changed
+    // by a large number of thread updates.
+    if (self.messageMapping.shouldShowThreadDetails) {
+        updatedInteractionIds = [updatedInteractionIds setByAddingObject:OWSThreadDetailsInteraction.ThreadDetailsId];
+    }
+
+
     if (dbError || updateError || !updatedInteractionIds) {
         OWSFailDebug(@"failure: %@, %@", dbError, updateError);
         [self resetMappingWithSneakyTransaction];
@@ -629,12 +637,20 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     YapDatabaseAutoViewConnection *messageDatabaseView =
         [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
     OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
-    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]) {
+    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]
+        && !self.messageMapping.shouldShowThreadDetails) {
         [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.minorUpdate];
         return;
     }
 
     NSSet<NSString *> *updatedInteractionIds = [self.messageMapping updatedItemIdsFor:notifications];
+
+    // If we have a thread details item, insert it into the updated items. We assume
+    // it always needs to update, because it's rarely actually loaded and can be changed
+    // by a large number of thread updates.
+    if (self.messageMapping.shouldShowThreadDetails) {
+        updatedInteractionIds = [updatedInteractionIds setByAddingObject:OWSThreadDetailsInteraction.ThreadDetailsId];
+    }
 
     [self anyDBDidUpdateWithUpdatedInteractionIds:updatedInteractionIds];
 }
@@ -1465,7 +1481,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     if ([viewItem.interaction isKindOfClass:OWSThreadDetailsInteraction.class]) {
         // Thread details is not a persisted interaction.
         // It carries no mutable state, so there's no reason to reload it here.
-        interaction = interaction;
+        interaction = viewItem.interaction;
     } else {
         interaction = [TSInteraction anyFetchWithUniqueId:viewItem.interaction.uniqueId transaction:transaction];
     }

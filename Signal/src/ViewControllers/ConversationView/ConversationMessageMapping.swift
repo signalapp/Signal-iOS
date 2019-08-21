@@ -109,6 +109,11 @@ public class ConversationMessageMapping: NSObject {
         try update(transaction: transaction)
     }
 
+    @objc
+    var shouldShowThreadDetails: Bool {
+        return !canLoadMore && !isNoteToSelf
+    }
+
     // This is the core method of the class. It updates the state to
     // reflect the latest database state & the current desired length.
     @objc
@@ -152,19 +157,18 @@ public class ConversationMessageMapping: NSObject {
                 beforePivotCount += 1
             }
         }
+        self.canLoadMore = canLoadMore
 
-        if canLoadMore || isNoteToSelf {
-            // The items need to be reversed, since we load them in reverse order.
-            self.loadedInteractions = Array(newInteractions.reversed())
-        } else {
+        if self.shouldShowThreadDetails {
             // We only show the thread details if we're at the start of the conversation
             let details = ThreadDetailsInteraction(thread: self.thread,
                                                    timestamp: NSDate.ows_millisecondTimeStamp())
 
             self.loadedInteractions = [details] + Array(newInteractions.reversed())
+        } else {
+            // The items need to be reversed, since we load them in reverse order.
+            self.loadedInteractions = Array(newInteractions.reversed())
         }
-
-        self.canLoadMore = canLoadMore
 
         // Establish the pivot, if necessary and possible.
         //
