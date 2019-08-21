@@ -28,12 +28,23 @@ NS_ASSUME_NONNULL_BEGIN
     return address.stringForDisplay;
 }
 
+- (nonnull NSString *)displayNameForAddress:(SignalServiceAddress *)address
+                                transaction:(nonnull YapDatabaseReadTransaction *)transaction
+{
+    return nil;
+}
+
 - (NSArray<SignalAccount *> *)signalAccounts
 {
     return @[];
 }
 
-- (BOOL)isSystemContact:(NSString *)phoneNumber
+- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber
+{
+    return YES;
+}
+
+- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address
 {
     return YES;
 }
@@ -59,12 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable UIImage *)avatarImageForCNContactId:(nullable NSString *)contactId
-{
-    return nil;
-}
-
-- (nonnull NSString *)displayNameForAddress:(SignalServiceAddress *)address
-                                transaction:(nonnull YapDatabaseReadTransaction *)transaction
 {
     return nil;
 }
