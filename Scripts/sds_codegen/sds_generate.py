@@ -485,7 +485,12 @@ class ParsedProperty:
             split1 = dict_match.group(2).strip()
             split2 = dict_match.group(3).strip()
             return '[' + self.convert_objc_class_to_swift(split1, unpack_nsnumber=False) + ': ' + self.convert_objc_class_to_swift(split2, unpack_nsnumber=False) + ']'
-        
+       
+        ordered_set_match = re.search(r'^NSOrderedSet<(.+)> \*$', objc_type)
+        if ordered_set_match is not None:
+            # swift has no primitive for ordered set, so we lose the element type  
+            return 'NSOrderedSet'
+
         swift_type = objc_type[:-len(' *')]
         
         if '<' in swift_type or '{' in swift_type or '*' in swift_type:
