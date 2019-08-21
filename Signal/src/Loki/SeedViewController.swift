@@ -7,15 +7,15 @@ final class SeedViewController : OnboardingBaseViewController {
     
     // MARK: Components
     private lazy var registerStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ explanationLabel, UIView.spacer(withHeight: 32), mnemonicLabel, UIView.spacer(withHeight: 24), copyButton, UIView.spacer(withHeight: 8), restoreButton ])
+        let result = UIStackView(arrangedSubviews: [ explanationLabel1, UIView.spacer(withHeight: 32), mnemonicLabel, UIView.spacer(withHeight: 24), copyButton, UIView.spacer(withHeight: 8), restoreButton ])
         result.accessibilityIdentifier = "onboarding.keyPairStep.registerStackView"
         result.axis = .vertical
         return result
     }()
     
-    private lazy var explanationLabel: UILabel = {
+    private lazy var explanationLabel1: UILabel = {
         let result = createExplanationLabel(text: NSLocalizedString("Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.", comment: ""))
-        result.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel"
+        result.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel1"
         result.textColor = Theme.primaryColor
         var fontTraits = result.font.fontDescriptor.symbolicTraits
         fontTraits.insert(.traitBold)
@@ -41,16 +41,32 @@ final class SeedViewController : OnboardingBaseViewController {
     }()
     
     private lazy var restoreButton: OWSFlatButton = {
-        let result = createLinkButton(title: NSLocalizedString("Restore Using Mnemonic", comment: ""), selector: #selector(switchMode))
+        let result = createLinkButton(title: NSLocalizedString("Restore Using Seed", comment: ""), selector: #selector(switchMode))
         result.accessibilityIdentifier = "onboarding.keyPairStep.restoreButton"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
     
+    private lazy var errorLabelSpacer: UIView = {
+        let result = UIView.spacer(withHeight: 32)
+        result.isHidden = true
+        return result
+    }()
+    
     private lazy var restoreStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ errorLabel, UIView.spacer(withHeight: 32), mnemonicTextField, UIView.spacer(withHeight: 24), registerButton ])
+        let result = UIStackView(arrangedSubviews: [ explanationLabel2, UIView.spacer(withHeight: 32), errorLabel, errorLabelSpacer, mnemonicTextField, UIView.spacer(withHeight: 24), registerButton ])
         result.accessibilityIdentifier = "onboarding.keyPairStep.restoreStackView"
         result.axis = .vertical
+        return result
+    }()
+    
+    private lazy var explanationLabel2: UILabel = {
+        let result = createExplanationLabel(text: NSLocalizedString("Restore your account by entering your seed below.", comment: ""))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel2"
+        result.textColor = Theme.primaryColor
+        var fontTraits = result.font.fontDescriptor.symbolicTraits
+        fontTraits.insert(.traitBold)
+        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: result.font.pointSize)
         return result
     }()
     
@@ -60,7 +76,7 @@ final class SeedViewController : OnboardingBaseViewController {
         result.textColor = UIColor.red
         var fontTraits = result.font.fontDescriptor.symbolicTraits
         fontTraits.insert(.traitBold)
-        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: result.font.pointSize)
+        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: 12)
         return result
     }()
     
@@ -69,7 +85,7 @@ final class SeedViewController : OnboardingBaseViewController {
         result.textColor = Theme.primaryColor
         result.font = UIFont.ows_dynamicTypeBodyClamped
         result.textAlignment = .center
-        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter Your Mnemonic", comment: ""))
+        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter Your Seed", comment: ""))
         placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
         result.attributedPlaceholder = placeholder
         result.tintColor = UIColor.lokiGreen()
@@ -200,6 +216,7 @@ final class SeedViewController : OnboardingBaseViewController {
                 seed = Data(hex: hexEncodedSeed)
             } catch let error {
                 let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
+                errorLabelSpacer.isHidden = false
                 return errorLabel.text = error.errorDescription
             }
         }
