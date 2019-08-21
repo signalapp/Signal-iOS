@@ -63,7 +63,8 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
-@property (nonatomic) LKP2PServer *lokiP2PServer; // Loki
+@property (nonatomic) LKP2PServer *lokiP2PServer;
+@property (nonatomic) LKGroupChatPoller *lokiPublicChatPoller;
 
 @end
 
@@ -758,7 +759,7 @@ static NSTimeInterval launchStartedAt;
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             
             // Loki: Start long polling
-            [LKAPI startLongPollingIfNecessary];
+            [LKAPI startLongPollingIfNeeded];
            
             // Loki: Tell our friends that we are online
             [LKP2PAPI broadcastOnlineStatus];
@@ -1357,7 +1358,7 @@ static NSTimeInterval launchStartedAt;
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];
         
         // Start long polling
-        [LKAPI startLongPollingIfNecessary];
+        [LKAPI startLongPollingIfNeeded];
     }
 }
 
@@ -1480,6 +1481,31 @@ static NSTimeInterval launchStartedAt;
                                     __OSX_AVAILABLE(10.14)__WATCHOS_PROHIBITED __TVOS_PROHIBITED
 {
     OWSLogInfo(@"");
+}
+
+#pragma mark - Loki
+
+- (void)setUpPublicChatIfNeeded
+{
+    if (self.lokiPublicChatPoller != nil) { return; }
+    self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initWithGroup:(NSUInteger)LKGroupChatAPI.publicChatID];
+    BOOL isPublicChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:@"isPublicChatSetUp"];
+    if (isPublicChatSetUp) { return; }
+    NSString *title = NSLocalizedString(@"Loki Public Chat", @"");
+    NSData *groupID = [[[LKGroupChatAPI.serverURL stringByAppendingString:@"."] stringByAppendingString:@(LKGroupChatAPI.publicChatID).stringValue] dataUsingEncoding:NSUTF8StringEncoding];
+    TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:title memberIds:@[ OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey ] image:nil groupId:groupID];
+    __block TSGroupThread *thread;
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
+    }];
+    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+    [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"isPublicChatSetUp"];
+}
+
+- (void)startPublicChatPollingIfNeeded
+{
+    [self setUpPublicChatIfNeeded];
+    [self.lokiPublicChatPoller startIfNeeded];
 }
 
 @end

@@ -500,26 +500,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
         [recipientIds addObject:self.tsAccountManager.localNumber];
     } else if (thread.isGroupThread) {
-        TSGroupThread *groupThread = (TSGroupThread *)thread;
-
-        // Send to the intersection of:
-        //
-        // * "sending" recipients of the message.
-        // * members of the group.
-        //
-        // I.e. try to send a message IFF:
-        //
-        // * The recipient was in the group when the message was first tried to be sent.
-        // * The recipient is still in the group.
-        // * The recipient is in the "sending" state.
-
-        [recipientIds addObjectsFromArray:message.sendingRecipientIds];
-        // Only send to members in the latest known group member list.
-        [recipientIds intersectSet:[NSSet setWithArray:groupThread.groupModel.groupMemberIds]];
-
-        if ([recipientIds containsObject:self.tsAccountManager.localNumber]) {
-            OWSFailDebug(@"Message send recipients should not include self.");
-        }
+        [recipientIds addObject:LKGroupChatAPI.serverURL];
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
         NSString *recipientContactId = ((TSContactThread *)thread).contactIdentifier;
 
@@ -974,8 +955,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     NSError *deviceMessagesError;
-    NSArray<NSDictionary *> *_Nullable deviceMessages =
-        [self deviceMessagesForMessageSend:messageSend error:&deviceMessagesError];
+    NSArray<NSDictionary *> *_Nullable deviceMessages;
+    if (!message.thread.isGroupThread) {
+        deviceMessages = [self deviceMessagesForMessageSend:messageSend error:&deviceMessagesError];
+    } else {
+        deviceMessages = @{};
+    }
     if (deviceMessagesError || !deviceMessages) {
         OWSAssertDebug(deviceMessagesError);
         return messageSend.failure(deviceMessagesError);
@@ -1081,7 +1066,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
-    if (deviceMessages.count == 0) {
+    if (deviceMessages.count == 0 && !message.thread.isGroupThread) {
         // This might happen:
         //
         // * The first (after upgrading?) time we send a sync message to our linked devices.
@@ -1117,14 +1102,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 OWSFailDebug(@"Missing underlying error: %@.", error);
             }
         } else {
-            OWSFailDebug(@"Unexpected error: %@.", error);
+            //OWSFailDebug(@"Unexpected error: %@.", error);
         }
         [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
     };
     
     if ([recipient.recipientId isEqualToString:LKGroupChatAPI.serverURL]) {
         NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-        NSString *displayName = [SSKEnvironment.shared.contactsManager displayNameForPhoneIdentifier:userHexEncodedPublicKey];
+        NSString *displayName = @"Anonymous";
         if (displayName == nil) { displayName = @"Anonymous"; }
         LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKGroupChatAPI.publicChatMessageType timestamp:message.timestamp];
         [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatID]

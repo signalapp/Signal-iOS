@@ -221,10 +221,10 @@ final class SeedViewController : OnboardingBaseViewController {
             }
         }
         // Use KVC to access dbConnection even though it's private
-        let databaseConnection = OWSIdentityManager.shared().value(forKey: "dbConnection") as! YapDatabaseConnection
+        let identityManager = OWSIdentityManager.shared()
+        let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
         databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
         if seed.count == 16 { seed = seed + seed }
-        let identityManager = OWSIdentityManager.shared()
         identityManager.generateNewIdentityKeyPair(fromSeed: seed) // This also stores it
         let keyPair = identityManager.identityKeyPair()!
         let hexEncodedPublicKey = keyPair.hexEncodedPublicKey

@@ -48,6 +48,7 @@ public final class LokiGroupChatAPI : NSObject {
                         print("[Loki] Couldn't parse message for group chat with ID: \(group) from: \(message).")
                         return nil
                 }
+                guard hexEncodedPublicKey != userHexEncodedPublicKey else { return nil }
                 return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp)
             }
         }

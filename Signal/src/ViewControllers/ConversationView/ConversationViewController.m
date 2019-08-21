@@ -1601,7 +1601,9 @@ typedef enum : NSUInteger {
                                        }]];
 
 
-    self.headerView.attributedSubtitle = subtitleText;
+    if (!self.thread.isGroupThread) {
+        self.headerView.attributedSubtitle = subtitleText;
+    }
 }
 
 #pragma mark - Updating

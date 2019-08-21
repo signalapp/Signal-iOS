@@ -74,7 +74,9 @@ class ConversationViewItemActions: NSObject {
     class func textActions(conversationViewItem: ConversationViewItem, shouldAllowReply: Bool, delegate: MessageActionsDelegate) -> [MenuAction] {
         var actions: [MenuAction] = []
 
-        if shouldAllowReply {
+        let isGroup = conversationViewItem.isGroupThread
+        
+        if shouldAllowReply && !isGroup {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
         }
@@ -84,8 +86,10 @@ class ConversationViewItemActions: NSObject {
             actions.append(copyTextAction)
         }
 
-        let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
-        actions.append(deleteAction)
+        if !isGroup {
+            let deleteAction = MessageActionBuilder.deleteMessage(conversationViewItem: conversationViewItem, delegate: delegate)
+            actions.append(deleteAction)
+        }
 
         let showDetailsAction = MessageActionBuilder.showDetails(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(showDetailsAction)
