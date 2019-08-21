@@ -45,6 +45,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 @property (nonatomic, readonly) AnySignalAccountFinder *accountFinder;
 @property (nonatomic, readonly) NSCache<NSString *, CNContact *> *cnContactCache;
 @property (nonatomic, readonly) NSCache<NSString *, UIImage *> *cnContactAvatarCache;
+@property (nonatomic, readonly) NSCache<SignalServiceAddress *, NSString *> *colorNameCache;
 @property (atomic) BOOL isSetup;
 
 @end
@@ -761,6 +762,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     return addressLabel.filterStringForDisplay;
+}
+
+- (void)clearColorNameCache
+{
+    [self.colorNameCache removeAllObjects];
 }
 
 - (ConversationColorName)conversationColorNameForAddress:(SignalServiceAddress *)address
