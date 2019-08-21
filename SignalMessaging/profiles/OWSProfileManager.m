@@ -1330,8 +1330,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
         __block OWSUserProfile *userProfile;
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            OWSUserProfile *userProfile =
-                [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
+            userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
 
             // If we're updating the profile that corresponds to our local number,
             // make sure we're using the latest key.
