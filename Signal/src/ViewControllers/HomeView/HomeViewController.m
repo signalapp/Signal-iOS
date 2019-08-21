@@ -827,7 +827,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     OWSLogInfo(@"");
 
-    NewContactThreadViewController *viewController = [NewContactThreadViewController new];
+    ComposeViewController *viewController = [ComposeViewController new];
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {

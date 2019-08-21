@@ -18,6 +18,9 @@ import SignalServiceKit
     private let avatarView = AvatarImageView()
     private let nameLabel = UILabel()
     private let subtitleLabel = UILabel()
+    private let accessoryLabel = UILabel()
+
+    @objc var accessoryMessage: String?
 
     init() {
         super.init(style: .default, reuseIdentifier: GroupTableViewCell.logTag())
@@ -37,13 +40,19 @@ import SignalServiceKit
         textRows.axis = .vertical
         textRows.alignment = .leading
 
-        let columns = UIStackView(arrangedSubviews: [avatarView, textRows])
+        let columns = UIStackView(arrangedSubviews: [avatarView, textRows, accessoryLabel])
         columns.axis = .horizontal
         columns.alignment = .center
         columns.spacing = kContactCellAvatarTextMargin
 
         self.contentView.addSubview(columns)
         columns.autoPinEdgesToSuperviewMargins()
+
+        // Accessory Label
+        accessoryLabel.font = .ows_mediumFont(withSize: 13)
+        accessoryLabel.textColor = Theme.middleGrayColor
+        accessoryLabel.textAlignment = .right
+        accessoryLabel.isHidden = true
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -65,6 +74,13 @@ import SignalServiceKit
         self.subtitleLabel.text = groupMemberNames
 
         self.avatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: kStandardAvatarSize)
+
+        if let accessoryMessage = accessoryMessage, !accessoryMessage.isEmpty {
+            accessoryLabel.text = accessoryMessage
+            accessoryLabel.isHidden = false
+        } else {
+            accessoryLabel.isHidden = true
+        }
     }
 
 }
