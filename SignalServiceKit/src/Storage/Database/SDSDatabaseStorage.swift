@@ -903,6 +903,32 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             InteractionRecord.columnName(.read)
                 ])
 
+            // Disappearing Messages
+            try db.create(index: "index_interactions_on_expiresInSeconds_and_expiresAt",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.expiresInSeconds),
+                            InteractionRecord.columnName(.expiresAt)
+                ])
+            try db.create(index: "index_interactions_on_expiresAt",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.expiresAt)
+                ])
+            try db.create(index: "index_interactions_on_storedShouldStartExpireTimer_and_expiresAt",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.storedShouldStartExpireTimer),
+                            InteractionRecord.columnName(.expiresAt)
+                ])
+            try db.create(index: "index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.threadUniqueId),
+                            InteractionRecord.columnName(.storedShouldStartExpireTimer),
+                            InteractionRecord.columnName(.expiresAt)
+                ])
+
             // ContactQuery
             try db.create(index: "index_contact_queries_on_lastQueried",
                           on: ContactQueryRecord.databaseTableName,

@@ -396,7 +396,7 @@ void AssertIsOnDisappearingMessagesQueue()
 - (void)cleanupMessagesWhichFailedToStartExpiringWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [self.disappearingMessagesFinder
-        enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *_Nonnull message) {
+        enumerateMessagesWhichFailedToStartExpiringWithBlock:^(TSMessage *message, BOOL *stop) {
             OWSFailDebug(@"starting old timer for message timestamp: %lu", (unsigned long)message.timestamp);
 
             // We don't know when it was actually read, so assume it was read as soon as it was received.
