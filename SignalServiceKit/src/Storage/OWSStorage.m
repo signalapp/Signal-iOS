@@ -373,6 +373,15 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 @implementation OWSStorage
 
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SSKEnvironment.shared.databaseStorage;
+}
+
+#pragma mark -
+
 - (instancetype)init
 {
     self = [super init];
@@ -462,6 +471,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock
 {
+    OWSAssertDebug(self.databaseStorage.canLoadYdb);
     OWSAssertDebug(migrationBlock);
 
     __block OWSBackgroundTask *_Nullable backgroundTask =

@@ -99,6 +99,8 @@ public class FeatureFlags: NSObject {
         }
     }
 
+    // This value should eventually be .fail except for production builds
+    // where it should be .failDebug.
     @objc
     public static var storageModeStrictness: StorageModeStrictness {
         return .failDebug

@@ -48,6 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SSKEnvironment : NSObject
 
+- (instancetype)init NS_UNAVAILABLE;
+
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager
                      linkPreviewManager:(OWSLinkPreviewManager *)linkPreviewManager
                           messageSender:(OWSMessageSender *)messageSender
@@ -146,6 +148,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, readonly) YapDatabaseConnection *analyticsDBConnection;
 
 - (BOOL)isComplete;
+
+- (void)warmCaches;
 
 @end
 
