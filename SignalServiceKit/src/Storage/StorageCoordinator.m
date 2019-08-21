@@ -132,6 +132,21 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     }
 }
 
+- (BOOL)isDatabasePasswordAccessible
+{
+    if (self.databaseStorage.canLoadYdb) {
+        if (![OWSPrimaryStorage isDatabasePasswordAccessible]) {
+            return NO;
+        }
+    }
+    if (self.databaseStorage.canLoadGrdb) {
+        if (![GRDBDatabaseStorageAdapter isKeyAccessible]) {
+            return NO;
+        }
+    }
+    return YES;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
