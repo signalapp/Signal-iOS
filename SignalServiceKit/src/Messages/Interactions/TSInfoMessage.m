@@ -129,6 +129,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
                    customMessage:(nullable NSString *)customMessage
         infoMessageSchemaVersion:(NSUInteger)infoMessageSchemaVersion
                      messageType:(TSInfoMessageType)messageType
@@ -151,7 +152,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-                     schemaVersion:schemaVersion];
+                     schemaVersion:schemaVersion
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer];
 
     if (!self) {
         return self;

@@ -24,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSUInteger schemaVersion;
 
+// This property is only intended to be used by GRDB queries.
+@property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
+
 @end
 
 #pragma mark -
@@ -68,7 +71,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) NSString *createdByRemoteName;
 @property (nonatomic, readonly) BOOL createdInExistingGroup;
-//@property (nonatomic, readonly) uint32_t configurationDurationSeconds;
 
 @end
 
