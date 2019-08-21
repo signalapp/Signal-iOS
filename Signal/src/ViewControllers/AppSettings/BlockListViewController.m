@@ -3,7 +3,6 @@
 //
 
 #import "BlockListViewController.h"
-#import "AddToBlockListViewController.h"
 #import "BlockListUIUtils.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
@@ -76,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                 @"A label for the 'add phone number' button in the block list table.")
                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"add")
                                 actionBlock:^{
-                                    AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
+                                    AddToBlockListViewController *vc = [AddToBlockListViewController new];
                                     [weakSelf.navigationController pushViewController:vc animated:YES];
                                 }]];
     [contents addSection:addSection];

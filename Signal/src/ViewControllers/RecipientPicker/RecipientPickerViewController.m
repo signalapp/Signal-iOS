@@ -6,7 +6,6 @@
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "NewGroupViewController.h"
-#import "NewNonContactConversationViewController.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -42,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RecipientPickerViewController () <UISearchBarDelegate,
     ContactsViewHelperDelegate,
     OWSTableViewControllerDelegate,
-    NewNonContactConversationViewControllerDelegate,
+    FindByPhoneNumberDelegate,
     MFMessageComposeViewControllerDelegate>
 
 @property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
@@ -368,9 +367,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                     RecipientPickerViewController, @"find_by_phone")
                                 customRowHeight:UITableViewAutomaticDimension
                                     actionBlock:^{
-                                        NewNonContactConversationViewController *viewController =
-                                            [NewNonContactConversationViewController new];
-                                        viewController.nonContactConversationDelegate = weakSelf;
+                                        FindByPhoneNumberViewController *viewController =
+                                            [[FindByPhoneNumberViewController alloc]
+                                                        initWithDelegate:self
+                                                              buttonText:self.findByPhoneNumberButtonTitle
+                                                requiresRegisteredNumber:!self.allowsSelectingUnregisteredPhoneNumbers];
                                         [weakSelf.navigationController pushViewController:viewController animated:YES];
                                     }]];
     }
@@ -393,24 +394,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     BOOL hasSearchText = self.searchText.length > 0;
-
     if (hasSearchText) {
         for (OWSTableSection *section in [self contactsSectionsForSearch]) {
             [contents addSection:section];
         }
     } else {
-        // Selected recipients
-        if (self.delegate.selectedRecipients.count > 0) {
-            OWSTableSection *selectedSection = [OWSTableSection new];
-            selectedSection.headerTitle = @"Selected";
-
-            for (PickedRecipient *recipient in self.delegate.selectedRecipients) {
-                [selectedSection addItem:[self itemForRecipient:recipient]];
-            }
-
-            [contents addSection:selectedSection];
-        }
-
         // Count the none collated sections, before we add our collated sections.
         // Later we'll need to offset which sections our collation indexes reference
         // by this amount. e.g. otherwise the "B" index will reference names starting with "A"
@@ -521,7 +509,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSArray<SignalAccount *> *signalAccounts = collatedSignalAccounts[i];
         NSMutableArray<OWSTableItem *> *contactItems = [NSMutableArray new];
         for (SignalAccount *signalAccount in signalAccounts) {
-            PickedRecipient *recipient = [PickedRecipient forRegisteredAddress:signalAccount.recipientAddress];
+            PickedRecipient *recipient = [PickedRecipient forAddress:signalAccount.recipientAddress];
             [contactItems addObject:[self itemForRecipient:recipient]];
         }
 
@@ -570,7 +558,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [matchedAccountUsernames addObject:username];
             }
 
-            PickedRecipient *recipient = [PickedRecipient forRegisteredAddress:signalAccount.recipientAddress];
+            PickedRecipient *recipient = [PickedRecipient forAddress:signalAccount.recipientAddress];
             [contactsSection addItem:[self itemForRecipient:recipient]];
         }
     }];
@@ -610,13 +598,7 @@ NS_ASSUME_NONNULL_BEGIN
         SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
 
         BOOL isRegistered = [self.nonContactAccountSet containsObject:address];
-
-        PickedRecipient *recipient;
-        if (isRegistered) {
-            recipient = [PickedRecipient forRegisteredAddress:address];
-        } else {
-            recipient = [PickedRecipient forUnregisteredAddress:address];
-        }
+        PickedRecipient *recipient = [PickedRecipient forAddress:address];
 
         if (self.shouldShowInvites) {
             [phoneNumbersSection
@@ -636,7 +618,9 @@ NS_ASSUME_NONNULL_BEGIN
                                 cell.accessoryMessage = [strongSelf.delegate recipientPicker:strongSelf
                                                                 accessoryMessageForRecipient:recipient];
 
-                                [cell configureWithPhoneNumber:phoneNumber isRegistered:isRegistered hideHeaderLabel:!strongSelf.shouldShowInvites];
+                                [cell configureWithPhoneNumber:phoneNumber
+                                                  isRegistered:isRegistered
+                                               hideHeaderLabel:!strongSelf.shouldShowInvites];
 
                                 NSString *cellName = [NSString stringWithFormat:@"phone_number.%@", phoneNumber];
                                 cell.accessibilityIdentifier
@@ -655,11 +639,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     return;
                                 }
 
-                                if ([strongSelf.delegate.selectedRecipients containsObject:recipient]) {
-                                    [strongSelf.delegate recipientPicker:strongSelf didDeselectRecipient:recipient];
-                                } else {
-                                    [strongSelf.delegate recipientPicker:strongSelf didSelectRecipient:recipient];
-                                }
+                                [strongSelf.delegate recipientPicker:strongSelf didSelectRecipient:recipient];
                             }]];
         } else if (isRegistered || self.allowsSelectingUnregisteredPhoneNumbers) {
             [phoneNumbersSection addItem:[self itemForRecipient:recipient]];
@@ -692,7 +672,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                  return cell;
                                              }
 
-                                             [cell configureWithUsername:usernameMatch hideHeaderLabel:!strongSelf.shouldShowInvites];
+                                             [cell configureWithUsername:usernameMatch
+                                                         hideHeaderLabel:!strongSelf.shouldShowInvites];
 
                                              NSString *cellName =
                                                  [NSString stringWithFormat:@"username.%@", usernameMatch];
@@ -900,9 +881,8 @@ NS_ASSUME_NONNULL_BEGIN
                                           return;
                                       }
 
-                                      [strongSelf.delegate
-                                             recipientPicker:strongSelf
-                                          didSelectRecipient:[PickedRecipient forRegisteredAddress:address]];
+                                      [strongSelf.delegate recipientPicker:strongSelf
+                                                        didSelectRecipient:[PickedRecipient forAddress:address]];
                                   }];
                               });
                           }
@@ -964,14 +944,13 @@ NS_ASSUME_NONNULL_BEGIN
     return self.shouldHideLocalRecipient;
 }
 
-#pragma mark - NewNonContactConversationViewControllerDelegate
+#pragma mark - FindByPhoneNumberDelegate
 
-- (void)recipientAddressWasSelected:(SignalServiceAddress *)address
+- (void)findByPhoneNumber:(FindByPhoneNumberViewController *)findByPhoneNumber
+         didSelectAddress:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
-
-    // TODO: non-registered numbers
-    [self.delegate recipientPicker:self didSelectRecipient:[PickedRecipient forRegisteredAddress:address]];
+    [self.delegate recipientPicker:self didSelectRecipient:[PickedRecipient forAddress:address]];
 }
 
 #pragma mark - UISearchBarDelegate

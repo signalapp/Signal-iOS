@@ -25,9 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Defaults to `NO`
 @property (nonatomic) BOOL shouldShowInvites;
 
-@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
+@property (nonatomic, nullable) NSString *findByPhoneNumberButtonTitle;
 
-- (void)reloadSelectedSection;
+@property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @end
 

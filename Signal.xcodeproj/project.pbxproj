@@ -37,7 +37,6 @@
 		340FC8AD204DAC8D007AEB0F /* OWSLinkedDevicesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC882204DAC8C007AEB0F /* OWSLinkedDevicesTableViewController.m */; };
 		340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC883204DAC8C007AEB0F /* OWSSoundSettingsViewController.m */; };
 		340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */; };
-		340FC8B0204DAC8D007AEB0F /* AddToBlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC886204DAC8C007AEB0F /* AddToBlockListViewController.m */; };
 		340FC8B1204DAC8D007AEB0F /* BlockListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC887204DAC8C007AEB0F /* BlockListViewController.m */; };
 		340FC8B2204DAC8D007AEB0F /* AdvancedSettingsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */; };
 		340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 340FC88D204DAC8C007AEB0F /* AppSettingsViewController.m */; };
@@ -208,7 +207,6 @@
 		34AC09E5211B39B100997B47 /* ScreenLockViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09C7211B39AF00997B47 /* ScreenLockViewController.m */; };
 		34AC09E6211B39B100997B47 /* SelectRecipientViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09C8211B39AF00997B47 /* SelectRecipientViewController.m */; };
 		34AC09E7211B39B100997B47 /* MessageApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09C9211B39AF00997B47 /* MessageApprovalViewController.swift */; };
-		34AC09E8211B39B100997B47 /* NewNonContactConversationViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09CA211B39AF00997B47 /* NewNonContactConversationViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34AC09E9211B39B100997B47 /* OWSTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09CB211B39AF00997B47 /* OWSTableViewController.m */; };
 		34AC09EA211B39B100997B47 /* ModalActivityIndicatorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09CC211B39B000997B47 /* ModalActivityIndicatorViewController.swift */; };
 		34AC09EB211B39B100997B47 /* ContactShareApprovalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09CD211B39B000997B47 /* ContactShareApprovalViewController.swift */; };
@@ -217,7 +215,6 @@
 		34AC09EE211B39B100997B47 /* EditContactShareNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D0211B39B000997B47 /* EditContactShareNameViewController.swift */; };
 		34AC09EF211B39B100997B47 /* ViewControllerUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D1211B39B000997B47 /* ViewControllerUtils.m */; };
 		34AC09F2211B39B100997B47 /* OWSViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09D4211B39B000997B47 /* OWSViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		34AC09F3211B39B100997B47 /* NewNonContactConversationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D5211B39B100997B47 /* NewNonContactConversationViewController.m */; };
 		34AC09F4211B39B100997B47 /* SelectThreadViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09D6211B39B100997B47 /* SelectThreadViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34AC09F5211B39B100997B47 /* SharingThreadPickerViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 34AC09D7211B39B100997B47 /* SharingThreadPickerViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34AC09F7211B39B100997B47 /* MediaMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AC09D9211B39B100997B47 /* MediaMessageView.swift */; };
@@ -249,7 +246,6 @@
 		34B3F8771E8DF1700035BE1A /* ContactsPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F83E1E8DF1700035BE1A /* ContactsPicker.swift */; };
 		34B3F87B1E8DF1700035BE1A /* ExperienceUpgradeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8441E8DF1700035BE1A /* ExperienceUpgradeViewController.swift */; };
 		34B3F8801E8DF1700035BE1A /* InviteFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F84C1E8DF1700035BE1A /* InviteFlow.swift */; };
-		34B3F8821E8DF1700035BE1A /* NewContactThreadViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8501E8DF1700035BE1A /* NewContactThreadViewController.m */; };
 		34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F8551E8DF1700035BE1A /* NewGroupViewController.m */; };
 		34B3F8931E8DF1710035BE1A /* SignalsNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34B3F86E1E8DF1700035BE1A /* SignalsNavigationController.m */; };
 		34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34B6A902218B3F62007C4606 /* TypingIndicatorView.swift */; };
@@ -554,6 +550,8 @@
 		8835DDF9230CEDC300DC6B66 /* RecipientPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */; };
 		8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */; };
 		8835DE01230DBF7E00DC6B66 /* ComposeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE00230DBF7E00DC6B66 /* ComposeViewController.swift */; };
+		8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */; };
+		8835DE08230E092F00DC6B66 /* FindByPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
@@ -733,7 +731,6 @@
 		340FC883204DAC8C007AEB0F /* OWSSoundSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSSoundSettingsViewController.m; sourceTree = "<group>"; };
 		340FC884204DAC8C007AEB0F /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
 		340FC885204DAC8C007AEB0F /* OWSLinkDeviceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSLinkDeviceViewController.m; sourceTree = "<group>"; };
-		340FC886204DAC8C007AEB0F /* AddToBlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddToBlockListViewController.m; sourceTree = "<group>"; };
 		340FC887204DAC8C007AEB0F /* BlockListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlockListViewController.m; sourceTree = "<group>"; };
 		340FC888204DAC8C007AEB0F /* OWSQRCodeScanningViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSQRCodeScanningViewController.h; sourceTree = "<group>"; };
 		340FC889204DAC8C007AEB0F /* DomainFrontingCountryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DomainFrontingCountryViewController.h; sourceTree = "<group>"; };
@@ -745,7 +742,6 @@
 		340FC88F204DAC8C007AEB0F /* PrivacySettingsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrivacySettingsTableViewController.h; sourceTree = "<group>"; };
 		340FC890204DAC8C007AEB0F /* BlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlockListViewController.h; sourceTree = "<group>"; };
 		340FC891204DAC8C007AEB0F /* OWSLinkDeviceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkDeviceViewController.h; sourceTree = "<group>"; };
-		340FC892204DAC8C007AEB0F /* AddToBlockListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddToBlockListViewController.h; sourceTree = "<group>"; };
 		340FC893204DAC8C007AEB0F /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutTableViewController.m; sourceTree = "<group>"; };
 		340FC894204DAC8C007AEB0F /* OWSSoundSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSSoundSettingsViewController.h; sourceTree = "<group>"; };
 		340FC895204DAC8C007AEB0F /* OWSLinkedDevicesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSLinkedDevicesTableViewController.h; sourceTree = "<group>"; };
@@ -956,7 +952,6 @@
 		34AC09C7211B39AF00997B47 /* ScreenLockViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenLockViewController.m; sourceTree = "<group>"; };
 		34AC09C8211B39AF00997B47 /* SelectRecipientViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectRecipientViewController.m; sourceTree = "<group>"; };
 		34AC09C9211B39AF00997B47 /* MessageApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageApprovalViewController.swift; sourceTree = "<group>"; };
-		34AC09CA211B39AF00997B47 /* NewNonContactConversationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewNonContactConversationViewController.h; sourceTree = "<group>"; };
 		34AC09CB211B39AF00997B47 /* OWSTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSTableViewController.m; sourceTree = "<group>"; };
 		34AC09CC211B39B000997B47 /* ModalActivityIndicatorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModalActivityIndicatorViewController.swift; sourceTree = "<group>"; };
 		34AC09CD211B39B000997B47 /* ContactShareApprovalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareApprovalViewController.swift; sourceTree = "<group>"; };
@@ -965,7 +960,6 @@
 		34AC09D0211B39B000997B47 /* EditContactShareNameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditContactShareNameViewController.swift; sourceTree = "<group>"; };
 		34AC09D1211B39B000997B47 /* ViewControllerUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewControllerUtils.m; sourceTree = "<group>"; };
 		34AC09D4211B39B000997B47 /* OWSViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSViewController.h; sourceTree = "<group>"; };
-		34AC09D5211B39B100997B47 /* NewNonContactConversationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewNonContactConversationViewController.m; sourceTree = "<group>"; };
 		34AC09D6211B39B100997B47 /* SelectThreadViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectThreadViewController.h; sourceTree = "<group>"; };
 		34AC09D7211B39B100997B47 /* SharingThreadPickerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SharingThreadPickerViewController.h; sourceTree = "<group>"; };
 		34AC09D9211B39B100997B47 /* MediaMessageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaMessageView.swift; sourceTree = "<group>"; };
@@ -1360,6 +1354,8 @@
 		8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RecipientPickerViewController.m; sourceTree = "<group>"; };
 		8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerDelegate.swift; sourceTree = "<group>"; };
 		8835DE00230DBF7E00DC6B66 /* ComposeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComposeViewController.swift; sourceTree = "<group>"; };
+		8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToBlockListViewController.swift; sourceTree = "<group>"; };
+		8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
@@ -1631,8 +1627,6 @@
 			children = (
 				340FC884204DAC8C007AEB0F /* AboutTableViewController.h */,
 				340FC893204DAC8C007AEB0F /* AboutTableViewController.m */,
-				340FC892204DAC8C007AEB0F /* AddToBlockListViewController.h */,
-				340FC886204DAC8C007AEB0F /* AddToBlockListViewController.m */,
 				340FC881204DAC8C007AEB0F /* AdvancedSettingsTableViewController.h */,
 				340FC88C204DAC8C007AEB0F /* AdvancedSettingsTableViewController.m */,
 				340FC880204DAC8C007AEB0F /* AppSettingsViewController.h */,
@@ -2298,12 +2292,11 @@
 				34AC09DB211B39B100997B47 /* CountryCodeViewController.h */,
 				34AC09DA211B39B100997B47 /* CountryCodeViewController.m */,
 				34AC09D0211B39B000997B47 /* EditContactShareNameViewController.swift */,
+				8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */,
 				34AC09D9211B39B100997B47 /* MediaMessageView.swift */,
 				344DC9AD226E483C004E7322 /* Stickers */,
 				34AC09C9211B39AF00997B47 /* MessageApprovalViewController.swift */,
 				34AC09CC211B39B000997B47 /* ModalActivityIndicatorViewController.swift */,
-				34AC09CA211B39AF00997B47 /* NewNonContactConversationViewController.h */,
-				34AC09D5211B39B100997B47 /* NewNonContactConversationViewController.m */,
 				34AC09C0211B39AE00997B47 /* OWSNavigationController.h */,
 				34AC09C1211B39AF00997B47 /* OWSNavigationController.m */,
 				34AC09CE211B39B000997B47 /* OWSTableViewController.h */,
@@ -2646,6 +2639,7 @@
 				8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */,
 				8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */,
 				8835DE00230DBF7E00DC6B66 /* ComposeViewController.swift */,
+				8835DE02230DEC6A00DC6B66 /* AddToBlockListViewController.swift */,
 			);
 			path = RecipientPicker;
 			sourceTree = "<group>";
@@ -2935,7 +2929,6 @@
 				346941A1215D2EE400B5BFAD /* Theme.h in Headers */,
 				346129FA1FD5F31400532771 /* OWS100RemoveTSRecipientsMigration.h in Headers */,
 				346129E21FD5C0BE00532771 /* VersionMigrations.h in Headers */,
-				34AC09E8211B39B100997B47 /* NewNonContactConversationViewController.h in Headers */,
 				34480B611FD0A98800BC14EF /* UIColor+OWS.h in Headers */,
 				453518961FC63DBF00210559 /* SignalMessaging.h in Headers */,
 				346941A4215D2EE400B5BFAD /* OWSConversationColor.h in Headers */,
@@ -3633,6 +3626,7 @@
 				34B6A909218B8824007C4606 /* OWS112TypingIndicatorsMigration.swift in Sources */,
 				4C6E446922AEDDEE007982E6 /* NewAccountDiscovery.swift in Sources */,
 				4C3E245D21F2B395000AE092 /* DirectionalPanGestureRecognizer.swift in Sources */,
+				8835DE08230E092F00DC6B66 /* FindByPhoneNumberViewController.swift in Sources */,
 				346129B51FD1F7E800532771 /* OWSProfileManager.m in Sources */,
 				4CBBCA6321714B4500EEB37D /* OWS110SortIdMigration.swift in Sources */,
 				342950832124C9750000B063 /* OWSTextView.m in Sources */,
@@ -3739,7 +3733,6 @@
 				4541B71D209D3B7A0008608F /* ContactShareViewModel.swift in Sources */,
 				4C618199219DF03A009BD6B5 /* OWSButton.swift in Sources */,
 				4598198F204E2F28009414F2 /* OWS108CallLoggingPreference.m in Sources */,
-				34AC09F3211B39B100997B47 /* NewNonContactConversationViewController.m in Sources */,
 				4C3E245C21F29FCE000AE092 /* Toast.swift in Sources */,
 				34BBC84B220B2CB200857249 /* ImageEditorTextViewController.swift in Sources */,
 				34AC09FA211B39B100997B47 /* SharingThreadPickerViewController.m in Sources */,
@@ -3781,6 +3774,7 @@
 			files = (
 				4CC0B59C20EC5F2E00CF6EE0 /* ConversationConfigurationSyncOperation.swift in Sources */,
 				3434AE1C22AEDE7D002EE04E /* ViewOnceMessageViewController.swift in Sources */,
+				8835DE03230DEC6A00DC6B66 /* AddToBlockListViewController.swift in Sources */,
 				34C4E2582118957600BEA353 /* WebRTCProto.swift in Sources */,
 				34D1F0BD1F8D108C0066283D /* AttachmentUploadView.m in Sources */,
 				4C8A6DFE22E54AFA00469AE7 /* MediaInteractiveDismiss.swift in Sources */,
@@ -3992,7 +3986,6 @@
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
-				340FC8B0204DAC8D007AEB0F /* AddToBlockListViewController.m in Sources */,
 				3496957321A301A100DCFE74 /* OWSBackupJob.m in Sources */,
 				340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */,
 				34C4E2572118957600BEA353 /* OWSWebRTCDataProtos.pb.swift in Sources */,

@@ -6,7 +6,6 @@
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
 #import "HomeViewCell.h"
-#import "NewContactThreadViewController.h"
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"

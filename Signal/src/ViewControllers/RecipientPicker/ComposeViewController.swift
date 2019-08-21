@@ -45,9 +45,6 @@ class ComposeViewController: OWSViewController {
 }
 
 extension ComposeViewController: RecipientPickerDelegate {
-    var selectedRecipients: [PickedRecipient] { return [] }
-    var selectedSectionName: String? { return nil }
-
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         canSelectRecipient recipient: PickedRecipient
@@ -60,12 +57,10 @@ extension ComposeViewController: RecipientPickerDelegate {
         didSelectRecipient recipient: PickedRecipient
     ) {
         switch recipient.identifier {
-        case .registered(let address):
+        case .address(let address):
             newConversation(address: address)
         case .group(let groupThread):
             newConversation(thread: groupThread)
-        case .unregistered:
-            owsFailDebug("Unexpectedly selected unregistered recipient")
         }
     }
 
@@ -79,14 +74,12 @@ extension ComposeViewController: RecipientPickerDelegate {
         accessoryMessageForRecipient recipient: PickedRecipient
     ) -> String? {
         switch recipient.identifier {
-        case .registered(let address):
+        case .address(let address):
             guard recipientPicker.contactsViewHelper.isSignalServiceAddressBlocked(address) else { return nil }
             return MessageStrings.conversationIsBlocked
         case .group(let thread):
             guard recipientPicker.contactsViewHelper.isThreadBlocked(thread) else { return nil }
             return MessageStrings.conversationIsBlocked
-        case .unregistered:
-            return nil
         }
     }
 }
