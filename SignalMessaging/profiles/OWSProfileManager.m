@@ -605,12 +605,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         uint8_t byte = (uint8_t)(0xff & byteValue);
         [groupId appendBytes:&byte length:1];
     }
-    if (groupId.length != (NSUInteger)kGroupIdLength) {
-        OWSFailDebug(@"Parsed group id has unexpected length: %@ (%lu)",
-            groupId.hexadecimalString,
-            (unsigned long)groupId.length);
-        return nil;
-    }
     return [groupId copy];
 }
 

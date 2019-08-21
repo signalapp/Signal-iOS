@@ -27,7 +27,6 @@ const int32_t kGroupIdLength = 16;
                       groupId:(NSData *)groupId
 {
     OWSAssertDebug(memberIds);
-    OWSAssertDebug(groupId.length == kGroupIdLength);
 
     _groupName              = title;
     _groupMemberIds         = [memberIds copy];
@@ -49,7 +48,6 @@ const int32_t kGroupIdLength = 16;
     if (_groupMemberIds == nil) {
         _groupMemberIds = [NSArray new];
     }
-    OWSAssertDebug(self.groupId.length == kGroupIdLength);
 
     return self;
 }

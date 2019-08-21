@@ -2,13 +2,13 @@ import PromiseKit
 
 @objc(LKGroupMessage)
 public final class LokiGroupMessage : NSObject {
-    let serverID: UInt?
-    let hexEncodedPublicKey: String
-    let displayName: String
-    let body: String
+    public let serverID: UInt?
+    public let hexEncodedPublicKey: String
+    public let displayName: String
+    public let body: String
     /// - Note: Expressed as milliseconds since 00:00:00 UTC on 1 January 1970.
-    let timestamp: UInt64
-    let type: String
+    public let timestamp: UInt64
+    public let type: String
     
     public init(serverID: UInt?, hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64) {
         self.serverID = serverID
@@ -24,7 +24,7 @@ public final class LokiGroupMessage : NSObject {
         self.init(serverID: nil, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: type, timestamp: timestamp)
     }
     
-    public func toJSON() -> JSON {
+    internal func toJSON() -> JSON {
         let value: JSON = [ "timestamp" : timestamp, "from" : displayName, "source" : hexEncodedPublicKey ]
         return [ "text" : body, "annotations": [ [ "type" : type, "value" : value ] ] ]
     }
