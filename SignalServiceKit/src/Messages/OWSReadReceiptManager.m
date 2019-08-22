@@ -598,9 +598,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         OWSLogError(@"Marking %lu messages as read by linked device.", (unsigned long)newlyReadList.count);
     }
     for (id<OWSReadTracking> readItem in newlyReadList) {
-        if (transaction.transitional_yapWriteTransaction) {
-            [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];
-        }
+        [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];
     }
 }
 
