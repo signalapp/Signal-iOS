@@ -399,6 +399,11 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.pickedRecipients.count > 0 && !hasSearchText) {
         BOOL hadNonContactRecipient = NO;
         for (PickedRecipient *recipient in self.pickedRecipients) {
+            if (self.shouldHideLocalRecipient &&
+                [recipient.address isEqualToAddress:self.contactsViewHelper.localAddress]) {
+                continue;
+            }
+
             if (![self.contactsViewHelper fetchSignalAccountForAddress:recipient.address]) {
                 hadNonContactRecipient = YES;
                 [staticSection addItem:[self itemForRecipient:recipient]];

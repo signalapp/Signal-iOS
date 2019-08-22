@@ -3,7 +3,6 @@
 //
 
 #import "NewGroupViewController.h"
-#import "AddToGroupViewController.h"
 #import "AvatarViewHelper.h"
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"

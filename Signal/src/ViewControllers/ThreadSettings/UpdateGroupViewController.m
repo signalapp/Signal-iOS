@@ -3,7 +3,6 @@
 //
 
 #import "UpdateGroupViewController.h"
-#import "AddToGroupViewController.h"
 #import "AvatarViewHelper.h"
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
@@ -29,10 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UpdateGroupViewController () <UIImagePickerControllerDelegate,
     UITextFieldDelegate,
-    ContactsViewHelperDelegate,
     AvatarViewHelperDelegate,
-    AddToGroupViewControllerDelegate,
-    OWSTableViewControllerDelegate,
+    RecipientPickerDelegate,
     UINavigationControllerDelegate,
     OWSNavigationView>
 
@@ -40,14 +37,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) AvatarViewHelper *avatarViewHelper;
 
-@property (nonatomic, readonly) OWSTableViewController *tableViewController;
+@property (nonatomic, readonly) RecipientPickerViewController *recipientPicker;
 @property (nonatomic, readonly) AvatarImageView *avatarView;
 @property (nonatomic, readonly) UIImageView *cameraImageView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
 @property (nonatomic, nullable) UIImage *groupAvatar;
-@property (nonatomic, nullable) NSSet<SignalServiceAddress *> *previousMemberAddresses;
-@property (nonatomic) NSMutableSet<SignalServiceAddress *> *memberAddresses;
+@property (nonatomic, nullable) NSSet<PickedRecipient *> *previousMemberRecipients;
+@property (nonatomic) NSMutableSet<PickedRecipient *> *memberRecipients;
 
 @property (nonatomic) BOOL hasUnsavedChanges;
 
@@ -84,11 +81,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)commonInit
 {
     _messageSender = SSKEnvironment.shared.messageSender;
-    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _avatarViewHelper = [AvatarViewHelper new];
     _avatarViewHelper.delegate = self;
 
-    self.memberAddresses = [NSMutableSet new];
+    self.memberRecipients = [NSMutableSet new];
 }
 
 #pragma mark - View Lifecycle
@@ -103,8 +99,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = Theme.backgroundColor;
 
-    [self.memberAddresses addObjectsFromArray:self.thread.groupModel.groupMembers];
-    self.previousMemberAddresses = [NSSet setWithArray:self.thread.groupModel.groupMembers];
+    [self.memberRecipients
+        addObjectsFromArray:[self.thread.groupModel.groupMembers map:^(SignalServiceAddress *address) {
+            return [PickedRecipient forAddress:address];
+        }]];
+    self.previousMemberRecipients = [self.memberRecipients copy];
 
     self.title = NSLocalizedString(@"EDIT_GROUP_DEFAULT_TITLE", @"The navbar title for the 'update group' view.");
 
@@ -116,17 +115,19 @@ NS_ASSUME_NONNULL_BEGIN
     [firstSection autoPinWidthToSuperview];
     [firstSection autoPinToTopLayoutGuideOfViewController:self withInset:0];
 
-    _tableViewController = [OWSTableViewController new];
-    _tableViewController.delegate = self;
-    [self.view addSubview:self.tableViewController.view];
-    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
-    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
-    [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:firstSection];
-    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view avoidNotch:NO];
-    self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableViewController.tableView.estimatedRowHeight = 60;
+    _recipientPicker = [RecipientPickerViewController new];
+    self.recipientPicker.delegate = self;
+    self.recipientPicker.shouldShowGroups = NO;
+    self.recipientPicker.allowsSelectingUnregisteredPhoneNumbers = NO;
+    self.recipientPicker.shouldShowAlphabetSlider = NO;
+    self.recipientPicker.pickedRecipients = self.memberRecipients.allObjects;
 
-    [self updateTableContents];
+    [self addChildViewController:self.recipientPicker];
+    [self.view addSubview:self.recipientPicker.view];
+    [self.recipientPicker.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.recipientPicker.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
+    [self.recipientPicker.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:firstSection];
+    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.recipientPicker.view avoidNotch:NO];
 }
 
 - (void)setHasUnsavedChanges:(BOOL)hasUnsavedChanges
@@ -250,144 +251,21 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - Table Contents
-
-- (void)updateTableContents
+- (void)addRecipient:(PickedRecipient *)recipient
 {
-    OWSAssertDebug(self.thread);
+    OWSAssertDebug(recipient.address.isValid);
 
-    OWSTableContents *contents = [OWSTableContents new];
-
-    __weak UpdateGroupViewController *weakSelf = self;
-    ContactsViewHelper *contactsViewHelper = self.contactsViewHelper;
-
-    // Group Members
-
-    OWSTableSection *section = [OWSTableSection new];
-    section.headerTitle = NSLocalizedString(
-        @"EDIT_GROUP_MEMBERS_SECTION_TITLE", @"a title for the members section of the 'new/update group' view.");
-
-    [section
-        addItem:[OWSTableItem
-                     disclosureItemWithText:NSLocalizedString(@"EDIT_GROUP_MEMBERS_ADD_MEMBER",
-                                                @"Label for the cell that lets you add a new member to a group.")
-                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(UpdateGroupViewController, @"add_member")
-                            customRowHeight:UITableViewAutomaticDimension
-                                actionBlock:^{
-                                    AddToGroupViewController *viewController = [AddToGroupViewController new];
-                                    viewController.addToGroupDelegate = weakSelf;
-                                    [weakSelf.navigationController pushViewController:viewController animated:YES];
-                                }]];
-
-    NSMutableSet *memberAddresses = [self.memberAddresses mutableCopy];
-    [memberAddresses removeObject:[contactsViewHelper localAddress]];
-
-    for (SignalServiceAddress *address in [memberAddresses.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
-        [section
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            UpdateGroupViewController *strongSelf = weakSelf;
-                            OWSCAssertDebug(strongSelf);
-
-                            ContactTableViewCell *cell = [ContactTableViewCell new];
-                            BOOL isPreviousMember = [strongSelf.previousMemberAddresses containsObject:address];
-                            BOOL isBlocked = [contactsViewHelper isSignalServiceAddressBlocked:address];
-                            if (isPreviousMember) {
-                                if (isBlocked) {
-                                    cell.accessoryMessage = MessageStrings.conversationIsBlocked;
-                                } else {
-                                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                                }
-                            } else {
-                                // In the "members" section, we label "new" members as such when editing an existing
-                                // group.
-                                //
-                                // The only way a "new" member could be blocked is if we blocked them on a linked device
-                                // while in this dialog.  We don't need to worry about that edge case.
-                                cell.accessoryMessage = NSLocalizedString(@"EDIT_GROUP_NEW_MEMBER_LABEL",
-                                    @"An indicator that a user is a new member of the group.");
-                            }
-
-                            [cell configureWithRecipientAddress:address];
-
-                            // TODO: Confirm with nancy if this will work.
-                            NSString *cellName = [NSString stringWithFormat:@"member.%@", address.stringForDisplay];
-                            cell.accessibilityIdentifier
-                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(UpdateGroupViewController, cellName);
-
-                            return cell;
-                        }
-                        customRowHeight:UITableViewAutomaticDimension
-                        actionBlock:^{
-                            SignalAccount *_Nullable signalAccount =
-                                [contactsViewHelper fetchSignalAccountForAddress:address];
-                            BOOL isPreviousMember = [weakSelf.previousMemberAddresses containsObject:address];
-                            BOOL isBlocked = [contactsViewHelper isSignalServiceAddressBlocked:address];
-                            if (isPreviousMember) {
-                                if (isBlocked) {
-                                    if (signalAccount) {
-                                        [weakSelf showUnblockAlertForSignalAccount:signalAccount];
-                                    } else {
-                                        [weakSelf showUnblockAlertForRecipientAddress:address];
-                                    }
-                                } else {
-                                    [OWSAlerts
-                                        showAlertWithTitle:
-                                            NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
-                                                @"Title for alert indicating that group members can't be removed.")
-                                                   message:NSLocalizedString(
-                                                               @"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE",
-                                                               @"Title for alert indicating that group members can't "
-                                                               @"be removed.")];
-                                }
-                            } else {
-                                [weakSelf removeRecipientAddress:address];
-                            }
-                        }]];
-    }
-    [contents addSection:section];
-
-    self.tableViewController.contents = contents;
+    self.hasUnsavedChanges = YES;
+    [self.memberRecipients addObject:recipient];
+    self.recipientPicker.pickedRecipients = self.memberRecipients.allObjects;
 }
 
-- (void)showUnblockAlertForSignalAccount:(SignalAccount *)signalAccount
+- (void)removeRecipient:(PickedRecipient *)recipient
 {
-    OWSAssertDebug(signalAccount);
+    OWSAssertDebug(recipient.address.isValid);
 
-    __weak UpdateGroupViewController *weakSelf = self;
-    [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
-                                       fromViewController:self
-                                          blockingManager:self.contactsViewHelper.blockingManager
-                                          contactsManager:self.contactsViewHelper.contactsManager
-                                          completionBlock:^(BOOL isBlocked) {
-                                              if (!isBlocked) {
-                                                  [weakSelf updateTableContents];
-                                              }
-                                          }];
-}
-
-- (void)showUnblockAlertForRecipientAddress:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address.isValid);
-
-    __weak UpdateGroupViewController *weakSelf = self;
-    [BlockListUIUtils showUnblockAddressActionSheet:address
-                                 fromViewController:self
-                                    blockingManager:self.contactsViewHelper.blockingManager
-                                    contactsManager:self.contactsViewHelper.contactsManager
-                                    completionBlock:^(BOOL isBlocked) {
-                                        if (!isBlocked) {
-                                            [weakSelf updateTableContents];
-                                        }
-                                    }];
-}
-
-- (void)removeRecipientAddress:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address.isValid);
-
-    [self.memberAddresses removeObject:address];
-    [self updateTableContents];
+    [self.memberRecipients removeObject:recipient];
+    self.recipientPicker.pickedRecipients = self.memberRecipients.allObjects;
 }
 
 #pragma mark - Methods
@@ -398,9 +276,14 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.groupNameTextField acceptAutocorrectSuggestion];
 
+    NSArray *newMembersList = [self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
+        OWSAssertDebug(recipient.address.isValid);
+        return recipient.address;
+    }];
+
     NSString *groupName = [self.groupNameTextField.text ows_stripped];
     TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
-                                                           members:self.memberAddresses.allObjects
+                                                           members:newMembersList
                                                              image:self.groupAvatar
                                                            groupId:self.thread.groupModel.groupId];
     [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
@@ -501,25 +384,6 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-#pragma mark - OWSTableViewControllerDelegate
-
-- (void)tableViewWillBeginDragging
-{
-    [self.groupNameTextField resignFirstResponder];
-}
-
-#pragma mark - ContactsViewHelperDelegate
-
-- (void)contactsViewHelperDidUpdateContacts
-{
-    [self updateTableContents];
-}
-
-- (BOOL)shouldHideLocalNumber
-{
-    return YES;
-}
-
 #pragma mark - AvatarViewHelperDelegate
 
 - (nullable NSString *)avatarActionSheetTitle
@@ -546,21 +410,89 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-#pragma mark - AddToGroupViewControllerDelegate
+#pragma mark - RecipientPickerDelegate
 
-- (void)recipientAddressWasAdded:(SignalServiceAddress *)address
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+     didSelectRecipient:(PickedRecipient *)recipient
 {
-    OWSAssertDebug(address.isValid);
-    [self.memberAddresses addObject:address];
-    self.hasUnsavedChanges = YES;
-    [self updateTableContents];
+    OWSAssertDebug(recipient.address.isValid);
+
+    __weak __typeof(self) weakSelf;
+    BOOL isPreviousMember = [self.previousMemberRecipients containsObject:recipient];
+    BOOL isCurrentMember = [self.memberRecipients containsObject:recipient];
+    BOOL isBlocked = [self.recipientPicker.contactsViewHelper isSignalServiceAddressBlocked:recipient.address];
+    if (isPreviousMember) {
+        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
+                                          @"Title for alert indicating that group members can't be removed.")
+                              message:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE",
+                                          @"Title for alert indicating that group members can't "
+                                          @"be removed.")];
+    } else if (isCurrentMember) {
+        [self removeRecipient:recipient];
+    } else if (isBlocked) {
+        [BlockListUIUtils showUnblockAddressActionSheet:recipient.address
+                                     fromViewController:self
+                                        blockingManager:self.recipientPicker.contactsViewHelper.blockingManager
+                                        contactsManager:self.recipientPicker.contactsViewHelper.contactsManager
+                                        completionBlock:^(BOOL isStillBlocked) {
+                                            if (!isStillBlocked) {
+                                                [weakSelf addRecipient:recipient];
+                                                [weakSelf.navigationController popToViewController:self animated:YES];
+                                            }
+                                        }];
+    } else {
+        BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
+            presentAlertIfNecessaryWithAddress:recipient.address
+                              confirmationText:NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_"
+                                                                 @"ADD_TO_GROUP_ACTION",
+                                                   @"button title to confirm adding "
+                                                   @"a recipient to a group when "
+                                                   @"their safety "
+                                                   @"number has recently changed")
+                               contactsManager:self.recipientPicker.contactsViewHelper.contactsManager
+                                    completion:^(BOOL didConfirmIdentity) {
+                                        if (didConfirmIdentity) {
+                                            [weakSelf addRecipient:recipient];
+                                            [weakSelf.navigationController popToViewController:self animated:YES];
+                                        }
+                                    }];
+        if (didShowSNAlert) {
+            return;
+        }
+
+        [self addRecipient:recipient];
+        [self.navigationController popToViewController:self animated:YES];
+    }
 }
 
-- (BOOL)isRecipientGroupMember:(SignalServiceAddress *)address
+- (BOOL)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+     canSelectRecipient:(PickedRecipient *)recipient
 {
-    OWSAssertDebug(address.isValid);
+    return YES;
+}
 
-    return [self.memberAddresses containsObject:address];
+- (nullable NSString *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+          accessoryMessageForRecipient:(PickedRecipient *)recipient
+{
+    OWSAssertDebug(recipient.address.isValid);
+
+    BOOL isPreviousMember = [self.previousMemberRecipients containsObject:recipient];
+    BOOL isCurrentMember = [self.memberRecipients containsObject:recipient];
+    BOOL isBlocked = [self.recipientPicker.contactsViewHelper isSignalServiceAddressBlocked:recipient.address];
+
+    if (isCurrentMember && !isPreviousMember) {
+        return NSLocalizedString(
+            @"EDIT_GROUP_NEW_MEMBER_LABEL", @"An indicator that a user is a new member of the group.");
+    } else if (isBlocked) {
+        return MessageStrings.conversationIsBlocked;
+    } else {
+        return nil;
+    }
+}
+
+- (void)recipientPickerTableViewWillBeginDragging:(RecipientPickerViewController *)recipientPickerViewController
+{
+    [self.groupNameTextField resignFirstResponder];
 }
 
 #pragma mark - OWSNavigationView
