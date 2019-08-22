@@ -220,10 +220,11 @@ public extension InteractionRecord {
         serverTimestamp = row[53]
         sourceDeviceId = row[54]
         storedMessageState = row[55]
-        unknownProtocolVersionMessageSchemaVersion = row[56]
-        unregisteredAddress = row[57]
-        verificationState = row[58]
-        wasReceivedByUD = row[59]
+        storedShouldStartExpireTimer = row[56]
+        unknownProtocolVersionMessageSchemaVersion = row[57]
+        unregisteredAddress = row[58]
+        verificationState = row[59]
+        wasReceivedByUD = row[60]
     }
 }
 
