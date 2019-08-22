@@ -31,12 +31,8 @@ public class ThreadDetailsInteraction: TSInteraction {
         notImplemented()
     }
 
-    @objc public let thread: TSThread
-
     @objc
     public init(thread: TSThread, timestamp: UInt64) {
-        // We keep the thread in memory here so we don't have to query it later
-        self.thread = thread
         super.init(uniqueId: ThreadDetailsInteraction.ThreadDetailsId, timestamp: timestamp, in: thread)
     }
 

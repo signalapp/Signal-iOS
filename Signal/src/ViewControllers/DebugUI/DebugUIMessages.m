@@ -2058,7 +2058,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [DDLog flushLog];
                 id<ConversationViewItem> viewItem =
                     [[ConversationInteractionViewItem alloc] initWithInteraction:messageToQuote
-                                                                   isGroupThread:thread.isGroupThread
+                                                                          thread:thread
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
                 quotedMessage = [
@@ -2080,7 +2080,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                 id<ConversationViewItem> viewItem =
                     [[ConversationInteractionViewItem alloc] initWithInteraction:messageToQuote
-                                                                   isGroupThread:thread.isGroupThread
+                                                                          thread:thread
                                                                      transaction:transaction
                                                                conversationStyle:conversationStyle];
                 quotedMessage = [
