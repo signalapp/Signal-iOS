@@ -18,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BlockListViewController () <ContactsViewHelperDelegate>
+@interface BlockListViewController () <ContactsViewHelperDelegate, AddToBlockListDelegate>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
@@ -76,6 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"add")
                                 actionBlock:^{
                                     AddToBlockListViewController *vc = [AddToBlockListViewController new];
+                                    vc.delegate = self;
                                     [weakSelf.navigationController pushViewController:vc animated:YES];
                                 }]];
     [contents addSection:addSection];
@@ -175,6 +176,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldHideLocalNumber
 {
     return YES;
+}
+
+#pragma mark - AddToBlockListDelegate
+
+- (void)addToBlockListComplete
+{
+    [self.navigationController popToViewController:self animated:YES];
 }
 
 @end

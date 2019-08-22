@@ -5,7 +5,13 @@
 import Foundation
 
 @objc
+protocol AddToBlockListDelegate: class {
+    func addToBlockListComplete()
+}
+
+@objc
 class AddToBlockListViewController: OWSViewController {
+    @objc weak var delegate: AddToBlockListDelegate?
     let recipientPicker = RecipientPickerViewController()
 
     var blockingManager: OWSBlockingManager {
@@ -36,17 +42,6 @@ class AddToBlockListViewController: OWSViewController {
         )
     }
 
-    func pop() {
-        guard let index = navigationController?.viewControllers.firstIndex(of: self),
-            index > 0,
-            let previousViewController = navigationController?.viewControllers[index - 1] else {
-            owsFailDebug("unexpectedly not in navigation stack")
-            return
-        }
-
-        navigationController?.popToViewController(previousViewController, animated: true)
-    }
-
     func block(address: SignalServiceAddress) {
         BlockListUIUtils.showBlockAddressActionSheet(
             address,
@@ -55,7 +50,7 @@ class AddToBlockListViewController: OWSViewController {
             contactsManager: contactsManager,
             completionBlock: { [weak self] isBlocked in
                 guard isBlocked else { return }
-                self?.pop()
+                self?.delegate?.addToBlockListComplete()
             }
         )
     }
@@ -69,7 +64,7 @@ class AddToBlockListViewController: OWSViewController {
             messageSender: messageSender,
             completionBlock: { [weak self] isBlocked in
                 guard isBlocked else { return }
-                self?.pop()
+                self?.delegate?.addToBlockListComplete()
             }
         )
     }
