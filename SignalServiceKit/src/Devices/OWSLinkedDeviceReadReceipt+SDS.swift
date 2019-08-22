@@ -48,6 +48,25 @@ public struct LinkedDeviceReadReceiptRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension LinkedDeviceReadReceiptRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        linkedDeviceReadReceiptSchemaVersion = row[3]
+        messageIdTimestamp = row[4]
+        readTimestamp = row[5]
+        senderPhoneNumber = row[6]
+        senderUUID = row[7]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -128,8 +147,8 @@ extension OWSLinkedDeviceReadReceiptSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let linkedDeviceReadReceiptSchemaVersionColumn = SDSColumnMetadata(columnName: "linkedDeviceReadReceiptSchemaVersion", columnType: .int64, columnIndex: 3)
@@ -143,8 +162,8 @@ extension OWSLinkedDeviceReadReceiptSerializer {
     public static let table = SDSTableMetadata(collection: OWSLinkedDeviceReadReceipt.collection(),
                                                tableName: "model_OWSLinkedDeviceReadReceipt",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         linkedDeviceReadReceiptSchemaVersionColumn,
         messageIdTimestampColumn,

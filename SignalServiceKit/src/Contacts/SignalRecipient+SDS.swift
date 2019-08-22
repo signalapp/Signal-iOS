@@ -46,6 +46,24 @@ public struct SignalRecipientRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension SignalRecipientRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        devices = row[3]
+        recipientPhoneNumber = row[4]
+        recipientSchemaVersion = row[5]
+        recipientUUID = row[6]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -125,8 +143,8 @@ extension SignalRecipientSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let devicesColumn = SDSColumnMetadata(columnName: "devices", columnType: .blob, columnIndex: 3)
@@ -139,8 +157,8 @@ extension SignalRecipientSerializer {
     public static let table = SDSTableMetadata(collection: SignalRecipient.collection(),
                                                tableName: "model_SignalRecipient",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         devicesColumn,
         recipientPhoneNumberColumn,

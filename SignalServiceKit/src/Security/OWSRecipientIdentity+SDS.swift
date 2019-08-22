@@ -50,6 +50,26 @@ public struct RecipientIdentityRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension RecipientIdentityRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        accountId = row[3]
+        createdAt = row[4]
+        identityKey = row[5]
+        isFirstKnownKey = row[6]
+        recipientIdentitySchemaVersion = row[7]
+        verificationState = row[8]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -132,8 +152,8 @@ extension OWSRecipientIdentitySerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let accountIdColumn = SDSColumnMetadata(columnName: "accountId", columnType: .unicodeString, columnIndex: 3)
@@ -148,8 +168,8 @@ extension OWSRecipientIdentitySerializer {
     public static let table = SDSTableMetadata(collection: OWSRecipientIdentity.collection(),
                                                tableName: "model_OWSRecipientIdentity",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         accountIdColumn,
         createdAtColumn,

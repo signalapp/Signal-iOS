@@ -50,6 +50,26 @@ public struct SignalAccountRecord: SDSRecord {
     }
 }
 
+// MARK: - Row Initializer
+
+public extension SignalAccountRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    init(row: Row) {
+        id = row[0]
+        recordType = row[1]
+        uniqueId = row[2]
+        accountSchemaVersion = row[3]
+        contact = row[4]
+        hasMultipleAccountContact = row[5]
+        multipleAccountLabelText = row[6]
+        recipientPhoneNumber = row[7]
+        recipientUUID = row[8]
+    }
+}
+
 // MARK: - StringInterpolation
 
 public extension String.StringInterpolation {
@@ -133,8 +153,8 @@ extension SignalAccountSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int, columnIndex: 0)
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 1)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let accountSchemaVersionColumn = SDSColumnMetadata(columnName: "accountSchemaVersion", columnType: .int64, columnIndex: 3)
@@ -149,8 +169,8 @@ extension SignalAccountSerializer {
     public static let table = SDSTableMetadata(collection: SignalAccount.collection(),
                                                tableName: "model_SignalAccount",
                                                columns: [
-        recordTypeColumn,
         idColumn,
+        recordTypeColumn,
         uniqueIdColumn,
         accountSchemaVersionColumn,
         contactColumn,
