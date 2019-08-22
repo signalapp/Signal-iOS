@@ -468,9 +468,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     // Determine the position of the focus message _after_ performing any mutations
     // around dynamic interactions.
     if (focusMessageId != nil) {
-        result.focusMessagePosition = [self focusMessagePositionForThread:thread
-                                                              transaction:transaction.transitional_yapReadTransaction
-                                                           focusMessageId:focusMessageId];
+        result.focusMessagePosition =
+            [self focusMessagePositionForThread:thread transaction:transaction focusMessageId:focusMessageId];
     }
 
     return result;
@@ -602,36 +601,15 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 }
 
 + (nullable NSNumber *)focusMessagePositionForThread:(TSThread *)thread
-                                         transaction:(YapDatabaseReadTransaction *)transaction
+                                         transaction:(SDSAnyReadTransaction *)transaction
                                       focusMessageId:(NSString *)focusMessageId
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
     OWSAssertDebug(focusMessageId);
 
-    YapDatabaseViewTransaction *databaseView = [transaction ext:TSMessageDatabaseViewExtensionName];
-
-    NSString *_Nullable group = nil;
-    NSUInteger index;
-    BOOL success =
-        [databaseView getGroup:&group index:&index forKey:focusMessageId inCollection:TSInteraction.collection];
-    if (!success) {
-        // This might happen if the focus message has disappeared
-        // before this view could appear.
-        OWSFailDebug(@"failed to find focus message index.");
-        return nil;
-    }
-    if (![group isEqualToString:thread.uniqueId]) {
-        OWSFailDebug(@"focus message has invalid group.");
-        return nil;
-    }
-    NSUInteger count = [databaseView numberOfItemsInGroup:thread.uniqueId];
-    if (index >= count) {
-        OWSFailDebug(@"focus message has invalid index.");
-        return nil;
-    }
-    NSUInteger position = (count - index) - 1;
-    return @(position);
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    return [interactionFinder threadPositionForInteractionWithTransaction:transaction interactionId:focusMessageId];
 }
 
 + (BOOL)addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:(TSThread *)thread

@@ -49,6 +49,11 @@ protocol InteractionFinderAdapter {
     #if DEBUG
     func enumerateUnstartedExpiringMessages(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     #endif
+
+    // The "reverse" index of the interaction. e.g. the last interaction
+    // in the conversation will have position 0, the second-to-last will
+    // have position 1, etc.
+    func threadPositionForInteraction(transaction: ReadTransaction, interactionId: String) -> NSNumber?
 }
 
 // MARK: -
@@ -303,6 +308,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
     #endif
+
+    @objc
+    public func threadPositionForInteraction(transaction: SDSAnyReadTransaction, interactionId: String) -> NSNumber? {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.threadPositionForInteraction(transaction: yapRead, interactionId: interactionId)
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.threadPositionForInteraction(transaction: grdbRead, interactionId: interactionId)
+        }
+    }
 }
 
 // MARK: -
@@ -514,6 +529,34 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
                                                                              transaction: transaction)
     }
     #endif
+
+    func threadPositionForInteraction(transaction: YapDatabaseReadTransaction, interactionId: String) -> NSNumber? {
+        guard let view: YapDatabaseViewTransaction = transaction.safeViewTransaction(TSMessageDatabaseViewExtensionName) else {
+            return nil
+        }
+        var index: UInt = 0
+        var threadIdMemory: NSString?
+        let threadIdPtr = AutoreleasingUnsafeMutablePointer<NSString?>(&threadIdMemory)
+        let wasFound = view.getGroup(threadIdPtr, index: &index, forKey: interactionId, inCollection: TSInteraction.collection())
+        guard wasFound else {
+            return nil
+        }
+        guard let threadId = threadIdMemory else {
+            owsFailDebug("Missing threadId.")
+            return nil
+        }
+        guard threadId as String == self.threadUniqueId else {
+            owsFailDebug("Invalid threadId.")
+            return nil
+        }
+        let count: UInt = view.numberOfItems(inGroup: self.threadUniqueId)
+        guard index < count else {
+            owsFailDebug("Interaction has invalid index.")
+            return nil
+        }
+        let position: UInt = (count - index) - 1
+        return NSNumber(value: position)
+    }
 
     // MARK: - private
 
@@ -959,6 +1002,25 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
     }
     #endif
+
+    func threadPositionForInteraction(transaction: GRDBReadTransaction, interactionId: String) -> NSNumber? {
+        do {
+            guard let index = try sortIndex(interactionUniqueId: interactionId, transaction: transaction) else {
+                owsFailDebug("Interaction index could not be found.")
+                return nil
+            }
+            let count = self.count(transaction: transaction)
+            guard index < count else {
+                owsFailDebug("Interaction has invalid index.")
+                return nil
+            }
+            let position: UInt = (count - index) - 1
+            return NSNumber(value: position)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return nil
+        }
+    }
 }
 
 private func assertionError(_ description: String) -> Error {
