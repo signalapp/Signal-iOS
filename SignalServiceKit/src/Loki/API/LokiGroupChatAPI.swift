@@ -33,12 +33,16 @@ public final class LokiGroupChatAPI : NSObject {
         let url = URL(string: "\(serverURL)/loki/v1/get_challenge?pubKey=\(userHexEncodedPublicKey)")!
         let request = TSRequest(url: url)
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
-            guard let json = rawResponse as? JSON, let cipherText64 = json["cipherText64"] as? String, let nonce64 = json["nonce64"] as? String, let serverPubKey64 = json["serverPubKey64"] as? String, let cipherText = Data(base64Encoded: cipherText64), let nonce = Data(base64Encoded: nonce64), let serverPubKey = Data(base64Encoded: serverPubKey64) else { throw Error.tokenParsingFailed }
+            guard let json = rawResponse as? JSON, let cipherText64 = json["cipherText64"] as? String, let serverPubKey64 = json["serverPubKey64"] as? String, let cipherText = Data(base64Encoded: cipherText64), let serverPubKey = Data(base64Encoded: serverPubKey64) else {
+                throw Error.tokenParsingFailed
+            }
             
-            let ivAndCipher = nonce + cipherText
-            guard let tokenData = try? DiffieHellman.decrypt(cipherText: ivAndCipher, publicKey: serverPubKey, privateKey: identityKeyPair.privateKey) else { throw Error.tokenDecryptionFailed }
+            // Cipher text has the 16 bit iv prepended to it
+            guard let tokenData = try? DiffieHellman.decrypt(cipherText: cipherText, publicKey: serverPubKey, privateKey: identityKeyPair.privateKey), let token = String(bytes: tokenData, encoding: .utf8) else {
+                throw Error.tokenDecryptionFailed
+            }
             
-            return tokenData.base64EncodedString()
+            return token
         }
     }
     
