@@ -8,6 +8,8 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
 
+@import MediaPlayer;
+
 NS_ASSUME_NONNULL_BEGIN
 
 // A no-op delegate implementation to be used when we don't need a delegate.
@@ -95,7 +97,82 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
+    if (self.supportsBackgroundPlayback) {
+        return;
+    }
+
     [self stop];
+}
+
+- (BOOL)supportsBackgroundPlayback
+{
+    return self.audioActivity.supportsBackgroundPlayback;
+}
+
+- (void)updateNowPlayingInfo
+{
+    // Only update the now playing info if the activity supports background playback
+    if (!self.supportsBackgroundPlayback) {
+        return;
+    }
+
+    MPNowPlayingInfoCenter.defaultCenter.nowPlayingInfo = @{
+        MPMediaItemPropertyTitle : self.audioActivity.backgroundPlaybackName,
+        MPMediaItemPropertyPlaybackDuration : @(self.audioPlayer.duration),
+        MPNowPlayingInfoPropertyElapsedPlaybackTime : @(self.audioPlayer.currentTime)
+    };
+}
+
+- (void)setupRemoteCommandCenter
+{
+    // Only setup the command if the activity supports background playback
+    if (!self.supportsBackgroundPlayback) {
+        return;
+    }
+
+    __weak __typeof(self) weakSelf = self;
+
+    MPRemoteCommandCenter *commandCenter = MPRemoteCommandCenter.sharedCommandCenter;
+    [commandCenter.playCommand setEnabled:YES];
+    [commandCenter.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+        [weakSelf play];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+
+    [commandCenter.pauseCommand setEnabled:YES];
+    [commandCenter.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+        [weakSelf pause];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+
+    if (@available(iOS 9.1, *)) {
+        [commandCenter.changePlaybackPositionCommand setEnabled:YES];
+        [commandCenter.changePlaybackPositionCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+            MPRemoteCommandEvent *event) {
+            OWSAssertDebug([event isKindOfClass:[MPChangePlaybackPositionCommandEvent class]]);
+            MPChangePlaybackPositionCommandEvent *playbackChangeEvent = (MPChangePlaybackPositionCommandEvent *)event;
+            [weakSelf setCurrentTime:playbackChangeEvent.positionTime];
+            return MPRemoteCommandHandlerStatusSuccess;
+        }];
+    }
+
+    [self updateNowPlayingInfo];
+}
+
+- (void)teardownRemoteCommandCenter
+{
+    // If there's nothing left that wants background playback, disable lockscreen / control center controls
+    if (!self.audioSession.wantsBackgroundPlayback) {
+        MPRemoteCommandCenter *commandCenter = MPRemoteCommandCenter.sharedCommandCenter;
+        [commandCenter.playCommand setEnabled:NO];
+        [commandCenter.pauseCommand setEnabled:NO];
+
+        if (@available(iOS 9.1, *)) {
+            [commandCenter.changePlaybackPositionCommand setEnabled:NO];
+        }
+
+        MPNowPlayingInfoCenter.defaultCenter.nowPlayingInfo = @{};
+    }
 }
 
 #pragma mark - Methods
@@ -108,6 +185,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(success);
 
     [self setupAudioPlayer];
+
+    [self setupRemoteCommandCenter];
 
     self.delegate.audioPlaybackState = AudioPlaybackState_Playing;
     [self.audioPlayer play];
@@ -130,6 +209,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
     [self.delegate setAudioProgress:(CGFloat)[self.audioPlayer currentTime] duration:(CGFloat)[self.audioPlayer duration]];
+    [self updateNowPlayingInfo];
 
     [self endAudioActivities];
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
@@ -184,6 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self endAudioActivities];
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+    [self teardownRemoteCommandCenter];
 }
 
 - (void)endAudioActivities
@@ -208,6 +289,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.delegate setAudioProgress:(CGFloat)[self.audioPlayer currentTime]
                            duration:(CGFloat)[self.audioPlayer duration]];
+
+    [self updateNowPlayingInfo];
 }
 
 #pragma mark - Events
