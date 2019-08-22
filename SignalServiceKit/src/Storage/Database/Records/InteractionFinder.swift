@@ -46,7 +46,9 @@ protocol InteractionFinderAdapter {
 
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 
+    #if DEBUG
     func enumerateUnstartedExpiringMessages(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
+    #endif
 }
 
 // MARK: -
@@ -290,6 +292,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
+    #if DEBUG
     @objc
     public func enumerateUnstartedExpiringMessages(transaction: SDSAnyReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
         switch transaction.readTransaction {
@@ -299,6 +302,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return grdbAdapter.enumerateUnstartedExpiringMessages(transaction: grdbRead, block: block)
         }
     }
+    #endif
 }
 
 // MARK: -
@@ -503,11 +507,13 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return !dbView.isEmptyGroup(threadUniqueId)
     }
 
+    #if DEBUG
     func enumerateUnstartedExpiringMessages(transaction: YapDatabaseReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
         OWSDisappearingMessagesFinder.ydb_enumerateUnstartedExpiringMessages(withThreadId: self.threadUniqueId,
                                                                              block: block,
                                                                              transaction: transaction)
     }
+    #endif
 
     // MARK: - private
 
@@ -922,6 +928,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
     }
 
+    #if DEBUG
     func enumerateUnstartedExpiringMessages(transaction: GRDBReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
         // NOTE: We DO consult storedShouldStartExpireTimer here.
         //       We don't want to start expiration until it is true.
@@ -951,6 +958,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             owsFail("error: \(error)")
         }
     }
+    #endif
 }
 
 private func assertionError(_ description: String) -> Error {
