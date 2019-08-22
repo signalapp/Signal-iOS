@@ -8,6 +8,8 @@ import GRDBCipher
 protocol InteractionFinderAdapter {
     associatedtype ReadTransaction
 
+    // MARK: - static methods
+
     static func fetch(uniqueId: String, transaction: ReadTransaction) throws -> TSInteraction?
 
     static func mostRecentSortId(transaction: ReadTransaction) -> UInt64
@@ -22,6 +24,15 @@ protocol InteractionFinderAdapter {
 
     static func unreadCountInAllThreads(transaction: ReadTransaction) -> UInt
 
+    // The interactions should be enumerated in order from "first to expire" to "last to expire".
+    static func enumerateMessagesWithStartedPerConversationExpiration(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void)
+
+    static func interactionIdsWithExpiredPerConversationExpiration(transaction: ReadTransaction) -> [String]
+
+    static func enumerateMessagesWhichFailedToStartExpiring(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
+
+    // MARK: - instance methods
+
     func mostRecentInteraction(transaction: ReadTransaction) -> TSInteraction?
     func mostRecentInteractionForInbox(transaction: ReadTransaction) -> TSInteraction?
 
@@ -34,6 +45,8 @@ protocol InteractionFinderAdapter {
     func existsOutgoingMessage(transaction: ReadTransaction) -> Bool
 
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
+
+    func enumerateUnstartedExpiringMessages(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
 }
 
 // MARK: -
@@ -132,6 +145,37 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return YAPDBInteractionFinderAdapter.unreadCountInAllThreads(transaction: yapRead)
         case .grdbRead(let grdbRead):
             return GRDBInteractionFinderAdapter.unreadCountInAllThreads(transaction: grdbRead)
+        }
+    }
+
+    // The interactions should be enumerated in order from "next to expire" to "last to expire".
+    @objc
+    public class func enumerateMessagesWithStartedPerConversationExpiration(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            YAPDBInteractionFinderAdapter.enumerateMessagesWithStartedPerConversationExpiration(transaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            GRDBInteractionFinderAdapter.enumerateMessagesWithStartedPerConversationExpiration(transaction: grdbRead, block: block)
+        }
+    }
+
+    @objc
+    public class func interactionIdsWithExpiredPerConversationExpiration(transaction: SDSAnyReadTransaction) -> [String] {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return YAPDBInteractionFinderAdapter.interactionIdsWithExpiredPerConversationExpiration(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinderAdapter.interactionIdsWithExpiredPerConversationExpiration(transaction: grdbRead)
+        }
+    }
+
+    @objc
+    public class func enumerateMessagesWhichFailedToStartExpiring(transaction: SDSAnyReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            YAPDBInteractionFinderAdapter.enumerateMessagesWhichFailedToStartExpiring(transaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            GRDBInteractionFinderAdapter.enumerateMessagesWhichFailedToStartExpiring(transaction: grdbRead, block: block)
         }
     }
 
@@ -245,6 +289,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return grdbAdapter.existsOutgoingMessage(transaction: grdbRead)
         }
     }
+
+    @objc
+    public func enumerateUnstartedExpiringMessages(transaction: SDSAnyReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.enumerateUnstartedExpiringMessages(transaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.enumerateUnstartedExpiringMessages(transaction: grdbRead, block: block)
+        }
+    }
 }
 
 // MARK: -
@@ -291,6 +345,19 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return TSInteraction.ydb_interactions(withTimestamp: timestamp,
                                               filter: filter,
                                               with: transaction)
+    }
+
+    // The interactions should be enumerated in order from "next to expire" to "last to expire".
+    static func enumerateMessagesWithStartedPerConversationExpiration(transaction: YapDatabaseReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        OWSDisappearingMessagesFinder.ydb_enumerateMessagesWithStartedPerConversationExpiration(block, transaction: transaction)
+    }
+
+    static func interactionIdsWithExpiredPerConversationExpiration(transaction: ReadTransaction) -> [String] {
+        return OWSDisappearingMessagesFinder.ydb_interactionIdsWithExpiredPerConversationExpiration(with: transaction)
+    }
+
+    static func enumerateMessagesWhichFailedToStartExpiring(transaction: YapDatabaseReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        OWSDisappearingMessagesFinder.ydb_enumerateMessagesWhichFailedToStartExpiring(block, transaction: transaction)
     }
 
     // MARK: - instance methods
@@ -434,6 +501,12 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
             return false
         }
         return !dbView.isEmptyGroup(threadUniqueId)
+    }
+
+    func enumerateUnstartedExpiringMessages(transaction: YapDatabaseReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        OWSDisappearingMessagesFinder.ydb_enumerateUnstartedExpiringMessages(withThreadId: self.threadUniqueId,
+                                                                             block: block,
+                                                                             transaction: transaction)
     }
 
     // MARK: - private
@@ -588,7 +661,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                                                 sql: """
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
-                WHERE \(interactionColumn: .read) is 0
+                WHERE \(interactionColumn: .read) IS 0
                 """,
                 arguments: []) else {
                     owsFailDebug("count was unexpectedly nil")
@@ -598,6 +671,84 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         } catch {
             owsFailDebug("error: \(error)")
             return 0
+        }
+    }
+
+    // The interactions should be enumerated in order from "next to expire" to "last to expire".
+    static func enumerateMessagesWithStartedPerConversationExpiration(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        // NOTE: We DO NOT consult storedShouldStartExpireTimer here;
+        //       once expiration has begun we want to see it through.
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .expiresInSeconds) > 0
+        AND \(interactionColumn: .expiresAt) > 0
+        ORDER BY \(interactionColumn: .expiresAt)
+        """
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [], transaction: transaction)
+        do {
+            while let interaction = try cursor.next() {
+                var stop: ObjCBool = false
+                block(interaction, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
+    static func interactionIdsWithExpiredPerConversationExpiration(transaction: ReadTransaction) -> [String] {
+        // NOTE: We DO NOT consult storedShouldStartExpireTimer here;
+        //       once expiration has begun we want to see it through.
+        let now: UInt64 = NSDate.ows_millisecondTimeStamp()
+        let sql = """
+        SELECT \(interactionColumn: .uniqueId)
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .expiresAt) > 0
+        AND \(interactionColumn: .expiresAt) <= ?
+        """
+        let statementArguments: StatementArguments = [
+            now
+        ]
+        var result = [String]()
+        do {
+            result = try String.fetchAll(transaction.database,
+                                         sql: sql,
+                                         arguments: statementArguments)
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+        return result
+    }
+
+    static func enumerateMessagesWhichFailedToStartExpiring(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        // NOTE: We DO consult storedShouldStartExpireTimer here.
+        //       We don't want to start expiration until it is true.
+        // TODO: We could filter by .read IS TRUE for incoming messages
+        //       to improve perf.
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .storedShouldStartExpireTimer) IS TRUE
+        AND \(interactionColumn: .expiresAt) IS 0
+        """
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [], transaction: transaction)
+        do {
+            while let interaction = try cursor.next() {
+                guard let message = interaction as? TSMessage else {
+                    owsFailDebug("Unexpected object: \(type(of: interaction))")
+                    return
+                }
+                var stop: ObjCBool = false
+                block(message, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFail("error: \(error)")
         }
     }
 
@@ -668,7 +819,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(interactionColumn: .read) is 0
+                AND \(interactionColumn: .read) IS 0
                 """,
                 arguments: [threadUniqueId]) else {
                     owsFailDebug("count was unexpectedly nil")
@@ -706,7 +857,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
-        AND \(interactionColumn: .read) is 0
+        AND \(interactionColumn: .read) IS 0
         """
         let arguments: [DatabaseValueConvertible] = [threadUniqueId]
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
@@ -769,6 +920,36 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         """
         let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
         return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+    }
+
+    func enumerateUnstartedExpiringMessages(transaction: GRDBReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        // NOTE: We DO consult storedShouldStartExpireTimer here.
+        //       We don't want to start expiration until it is true.
+        // TODO: We could filter by .read IS TRUE for incoming messages
+        //       to improve perf.
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .storedShouldStartExpireTimer) IS TRUE
+        AND \(interactionColumn: .expiresAt) IS 0
+        """
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [threadUniqueId], transaction: transaction)
+        do {
+            while let interaction = try cursor.next() {
+                guard let message = interaction as? TSMessage else {
+                    owsFailDebug("Unexpected object: \(type(of: interaction))")
+                    return
+                }
+                var stop: ObjCBool = false
+                block(message, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFail("error: \(error)")
+        }
     }
 }
 

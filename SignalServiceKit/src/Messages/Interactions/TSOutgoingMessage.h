@@ -128,6 +128,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
            attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
                    customMessage:(nullable NSString *)customMessage
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
@@ -141,7 +142,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
     outgoingMessageSchemaVersion:(NSUInteger)outgoingMessageSchemaVersion
           recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
               storedMessageState:(TSOutgoingMessageState)storedMessageState
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:recipientAddressStates:storedMessageState:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:attachmentFilenameMap:customMessage:groupMetaMessage:hasLegacyMessageState:hasSyncedTranscript:isFromLinkedDevice:isVoiceMessage:legacyMessageState:legacyWasDelivered:mostRecentFailureText:outgoingMessageSchemaVersion:recipientAddressStates:storedMessageState:));
 
 // clang-format on
 

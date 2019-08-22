@@ -585,7 +585,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                                                      [newlyReadList addObject:possiblyRead];
                                                  }
                                              }];
-
+    if (error != nil) {
+        OWSFailDebug(@"Error during enumeration: %@", error);
+    }
     if (newlyReadList.count < 1) {
         return;
     }

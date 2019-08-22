@@ -54,6 +54,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 @property (nonatomic) BOOL isViewOnceMessage;
 @property (nonatomic) BOOL isViewOnceComplete;
 
+// This property is only intended to be used by GRDB queries.
+@property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
+
 @end
 
 #pragma mark -
@@ -118,6 +121,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
 {
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
@@ -141,6 +145,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _messageSticker = messageSticker;
     _quotedMessage = quotedMessage;
     _schemaVersion = schemaVersion;
+    _storedShouldStartExpireTimer = storedShouldStartExpireTimer;
 
     [self sdsFinalizeMessage];
 
@@ -497,6 +502,23 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
             [StickerManager addKnownStickerInfo:self.messageSticker.info transaction:transaction];
         }
     }
+
+    [self updateStoredShouldStartExpireTimerWithTransaction:transaction];
+}
+
+- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyWillUpdateWithTransaction:transaction];
+
+    [self updateStoredShouldStartExpireTimerWithTransaction:transaction];
+}
+
+- (void)updateStoredShouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+
+    // GRDB TODO: Ensure that this is updated when we download incoming attachments.
+    _storedShouldStartExpireTimer = [self shouldStartExpireTimerWithTransaction:transaction];
 }
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
