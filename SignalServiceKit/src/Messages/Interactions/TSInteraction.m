@@ -269,22 +269,22 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     [super anyWillInsertWithTransaction:transaction];
 
-    [self ensureIdsWithTransaction:transaction];
+    if (transaction.transitional_yapWriteTransaction != nil) {
+        [self ensureIdsWithTransaction:transaction.transitional_yapWriteTransaction];
+    }
 }
 
-- (void)ensureIdsWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)ensureIdsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    if (transaction.transitional_yapWriteTransaction == nil) {
-        return;
-    }
+    OWSAssertDebug(transaction);
+
     if (self.uniqueId.length < 1) {
         OWSFailDebug(@"Missing uniqueId.");
         return;
     }
 
     if (self.sortId == 0) {
-        self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection]
-                                                 transaction:transaction.transitional_yapWriteTransaction];
+        self.sortId = [SSKIncrementingIdFinder nextIdWithKey:[TSInteraction collection] transaction:transaction];
     }
 }
 
