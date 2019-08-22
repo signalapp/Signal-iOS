@@ -116,7 +116,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }];
     [signalAccounts sortUsingComparator:self.signalAccountComparator];
 
-    [self updateSignalAccounts:signalAccounts];
+    [self updateSignalAccounts:signalAccounts shouldSetHasLoadedContacts:NO];
 }
 
 - (dispatch_queue_t)serialQueue
@@ -600,14 +600,20 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }];
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateSignalAccounts:signalAccounts];
+            [self updateSignalAccounts:signalAccounts shouldSetHasLoadedContacts:YES];
         });
     });
 }
 
 - (void)updateSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+    shouldSetHasLoadedContacts:(BOOL)shouldSetHasLoadedContacts
 {
     OWSAssertIsOnMainThread();
+
+    self.isSetup = YES;
+    if (shouldSetHasLoadedContacts) {
+        _hasLoadedContacts = YES;
+    }
 
     if ([signalAccounts isEqual:self.signalAccounts]) {
         OWSLogDebug(@"SignalAccounts unchanged.");
@@ -633,8 +639,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     self.signalAccounts = [signalAccounts copy];
 
     [self.profileManager setContactAddresses:allAddresses];
-
-    self.isSetup = YES;
 
     [[NSNotificationCenter defaultCenter]
         postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification

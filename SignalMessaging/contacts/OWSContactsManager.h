@@ -52,6 +52,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
 @property (atomic, readonly) BOOL isSetup;
 
+// Not set until a contact fetch has completed.
+// Set even if no contacts are found.
+@property (nonatomic, readonly) BOOL hasLoadedContacts;
+
 // Request systems contacts and start syncing changes. The user will see an alert
 // if they haven't previously.
 - (void)requestSystemContactsOnce;
