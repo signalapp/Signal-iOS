@@ -359,7 +359,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // for more details.
         let messageText = DisplayableText.filterNotificationText(rawMessageText)
 
-        let senderName = contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
+        let senderName = OWSUserProfile.fetch(uniqueId: incomingMessage.authorId, transaction: transaction)?.profileName ?? contactsManager.displayName(forPhoneIdentifier: incomingMessage.authorId)
 
         let notificationTitle: String?
         switch previewType {
