@@ -458,7 +458,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     [self ensureUnreadIndicator:result
                                 thread:thread
-                           transaction:transaction.transitional_yapReadTransaction
+                           transaction:transaction
                           maxRangeSize:maxRangeSize
            blockingSafetyNumberChanges:blockingSafetyNumberChanges
         nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
@@ -477,7 +477,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
 + (void)ensureUnreadIndicator:(ThreadDynamicInteractions *)dynamicInteractions
                             thread:(TSThread *)thread
-                       transaction:(YapDatabaseReadTransaction *)transaction
+                       transaction:(SDSAnyReadTransaction *)transaction
                       maxRangeSize:(NSUInteger)maxRangeSize
        blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
     nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
@@ -498,8 +498,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         return;
     }
 
-    YapDatabaseViewTransaction *threadMessagesTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
-    OWSAssertDebug([threadMessagesTransaction isKindOfClass:[YapDatabaseViewTransaction class]]);
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
 
     // Determine unread indicator position, if necessary.
     //
@@ -512,41 +511,38 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     __block NSUInteger visibleUnseenMessageCount = 0;
     __block TSInteraction *interactionAfterUnreadIndicator = nil;
     __block BOOL hasMoreUnseenMessages = NO;
-    [threadMessagesTransaction
-        enumerateKeysAndObjectsInGroup:thread.uniqueId
-                           withOptions:NSEnumerationReverse
-                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                if (![object isKindOfClass:[TSInteraction class]]) {
-                                    OWSFailDebug(@"Expected a TSInteraction: %@", [object class]);
-                                    return;
-                                }
+    NSError *error;
+    [interactionFinder
+        enumerateInteractionsWithTransaction:transaction
+                                       error:&error
+                                       block:^(TSInteraction *interaction, BOOL *stop) {
+                                           if (interaction.isDynamicInteraction) {
+                                               // Ignore dynamic interactions, if any.
+                                               return;
+                                           }
 
-                                TSInteraction *interaction = (TSInteraction *)object;
+                                           if (interaction.sortId < firstUnseenSortId.unsignedLongLongValue) {
+                                               // By default we want the unread indicator to appear just before
+                                               // the first unread message.
+                                               *stop = YES;
+                                               return;
+                                           }
 
-                                if (interaction.isDynamicInteraction) {
-                                    // Ignore dynamic interactions, if any.
-                                    return;
-                                }
+                                           visibleUnseenMessageCount++;
 
-                                if (interaction.sortId < firstUnseenSortId.unsignedLongLongValue) {
-                                    // By default we want the unread indicator to appear just before
-                                    // the first unread message.
-                                    *stop = YES;
-                                    return;
-                                }
+                                           interactionAfterUnreadIndicator = interaction;
 
-                                visibleUnseenMessageCount++;
-
-                                interactionAfterUnreadIndicator = interaction;
-
-                                if (visibleUnseenMessageCount + 1 >= maxRangeSize) {
-                                    // If there are more unseen messages than can be displayed in the
-                                    // messages view, show the unread indicator at the top of the
-                                    // displayed messages.
-                                    *stop = YES;
-                                    hasMoreUnseenMessages = YES;
-                                }
-                            }];
+                                           if (visibleUnseenMessageCount + 1 >= maxRangeSize) {
+                                               // If there are more unseen messages than can be displayed in the
+                                               // messages view, show the unread indicator at the top of the
+                                               // displayed messages.
+                                               *stop = YES;
+                                               hasMoreUnseenMessages = YES;
+                                           }
+                                       }];
+    if (error != nil) {
+        OWSFailDebug(@"error: %@", error);
+    }
 
     if (!interactionAfterUnreadIndicator) {
         // If we can't find an interaction after the unread indicator,
