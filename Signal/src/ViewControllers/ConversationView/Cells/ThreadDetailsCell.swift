@@ -167,7 +167,7 @@ public class ThreadDetailsCell: ConversationViewCell {
                                                  comment: "The number of members in a group. Embeds {{member count}}")
             details = String(format: formatString, groupThread.groupModel.groupMembers.count)
         } else if let contactThread = threadDetails.thread as? TSContactThread {
-            if let phoneNumber = contactThread.contactAddress.phoneNumber {
+            if let phoneNumber = contactThread.contactAddress.phoneNumber, phoneNumber != contactThread.name() {
                 details = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
             }
         } else {

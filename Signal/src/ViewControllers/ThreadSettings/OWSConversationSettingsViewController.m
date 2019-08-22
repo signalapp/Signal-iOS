@@ -989,16 +989,11 @@ const CGFloat kIconViewLength = 24;
         SignalServiceAddress *recipientAddress = contactThread.contactAddress;
         NSString *_Nullable phoneNumber = recipientAddress.phoneNumber;
 
-        BOOL hasNameAndPhoneNumber = phoneNumber && ![contactThread.name isEqualToString:phoneNumber];
-        if (hasNameAndPhoneNumber) {
-            NSAttributedString *subtitle = [[NSAttributedString alloc]
-                initWithString:[PhoneNumber
-                                   bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber]];
-            addSubtitle(subtitle);
-        } else {
-            NSString *_Nullable profileName = [self.contactsManager displayNameForAddress:recipientAddress];
-            if (profileName) {
-                addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
+        if (phoneNumber.length > 0) {
+            NSString *formattedPhoneNumber =
+                [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
+            if (![contactThread.name isEqualToString:formattedPhoneNumber]) {
+                addSubtitle([[NSAttributedString alloc] initWithString:formattedPhoneNumber]);
             }
         }
 
