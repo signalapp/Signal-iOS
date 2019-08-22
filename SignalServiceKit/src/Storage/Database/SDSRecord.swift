@@ -92,5 +92,3 @@ fileprivate extension SDSRecord {
         }
     }
 }
-
-extension CGSize: DatabaseValueConvertible { }

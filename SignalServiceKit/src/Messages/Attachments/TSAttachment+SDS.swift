@@ -48,7 +48,7 @@ public struct AttachmentRecord: SDSRecord {
     public let isValidVideoCached: Bool?
     public let lazyRestoreFragmentId: String?
     public let localRelativeFilePath: String?
-    public let mediaSize: CGSize?
+    public let mediaSize: Data?
     public let mostRecentFailureLocalizedText: String?
     public let pointerType: TSAttachmentPointerType?
     public let shouldAlwaysPad: Bool?
@@ -195,7 +195,8 @@ extension TSAttachment {
             let sourceFilename: String? = record.sourceFilename
             let digest: Data? = SDSDeserialization.optionalData(record.digest, name: "digest")
             let lazyRestoreFragmentId: String? = record.lazyRestoreFragmentId
-            let mediaSize: CGSize = try SDSDeserialization.required(record.mediaSize, name: "mediaSize")
+            let mediaSizeSerialized: Data? = record.mediaSize
+            let mediaSize: CGSize = try SDSDeserialization.unarchive(mediaSizeSerialized, name: "mediaSize")
             let mostRecentFailureLocalizedText: String? = record.mostRecentFailureLocalizedText
             guard let pointerType: TSAttachmentPointerType = record.pointerType else {
                throw SDSError.missingRequiredField
@@ -752,7 +753,7 @@ class TSAttachmentSerializer: SDSSerializer {
         let isValidVideoCached: Bool? = nil
         let lazyRestoreFragmentId: String? = nil
         let localRelativeFilePath: String? = nil
-        let mediaSize: CGSize? = nil
+        let mediaSize: Data? = nil
         let mostRecentFailureLocalizedText: String? = nil
         let pointerType: TSAttachmentPointerType? = nil
         let shouldAlwaysPad: Bool? = nil

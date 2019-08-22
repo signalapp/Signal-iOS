@@ -83,7 +83,7 @@ class TSAttachmentPointerSerializer: SDSSerializer {
         let isValidVideoCached: Bool? = nil
         let lazyRestoreFragmentId: String? = model.lazyRestoreFragmentId
         let localRelativeFilePath: String? = nil
-        let mediaSize: CGSize? = model.mediaSize
+        let mediaSize: Data? = optionalArchive(model.mediaSize)
         let mostRecentFailureLocalizedText: String? = model.mostRecentFailureLocalizedText
         let pointerType: TSAttachmentPointerType? = model.pointerType
         let shouldAlwaysPad: Bool? = nil

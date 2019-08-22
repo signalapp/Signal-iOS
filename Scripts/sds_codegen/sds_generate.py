@@ -35,7 +35,8 @@ CODE_GEN_SNIPPET_MARKER_OBJC = '// --- CODE GENERATION MARKER'
 # Either this is a bug in GRDB or we're using GRDB incorrectly.
 # Until we resolve this issue, we need to encode/decode 
 # non-primitives ourselves.
-ONLY_USE_CODABLE_FOR_PRIMITIVES = True
+USE_CODABLE_FOR_PRIMITIVES = False
+USE_CODABLE_FOR_NONPRIMITIVES = False
 
 def update_generated_snippet(file_path, marker, snippet):
     # file_path = sds_common.sds_from_relative_path(relative_path)
@@ -522,13 +523,13 @@ class ParsedProperty:
         if objc_type in ('struct CGSize', 'struct CGRect', 'struct CGPoint', ):
             objc_type = objc_type[len('struct '):]
             swift_type = objc_type
-            return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=True)
+            return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=USE_CODABLE_FOR_PRIMITIVES)
         
         swift_type = self.convert_objc_class_to_swift(self.objc_type)
         if swift_type is not None:
             if self.is_objc_type_codable(objc_type):
                 # print '----- is_objc_type_codable true:', objc_type
-                return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=True)
+                return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=False)
             # print '----- is_objc_type_codable false:', objc_type
             return TypeInfo(swift_type, objc_type, should_use_blob=True, is_codable=False)
         
@@ -537,6 +538,9 @@ class ParsedProperty:
     
     # NOTE: This method recurses to unpack types like: NSArray<NSArray<SomeClassName *> *> *
     def is_objc_type_codable(self, objc_type):
+        if not USE_CODABLE_FOR_PRIMITIVES:
+            return False
+
         if objc_type in ('NSString *',):
             return True
         elif objc_type in ('struct CGSize', 'struct CGRect', 'struct CGPoint', ):
@@ -548,7 +552,7 @@ class ParsedProperty:
         elif objc_type.startswith('enum '):
             return True
         
-        if ONLY_USE_CODABLE_FOR_PRIMITIVES:
+        if not USE_CODABLE_FOR_NONPRIMITIVES:
             return False
         
         array_match = re.search(r'^NS(Mutable)?Array<(.+)> \*$', objc_type)
@@ -568,7 +572,7 @@ class ParsedProperty:
     def type_info(self):
         if self.swift_type is not None:
             should_use_blob = (self.swift_type.startswith('[') or self.swift_type.startswith('{') or is_swift_class_name(self.swift_type))
-            return TypeInfo(self.swift_type, objc_type, should_use_blob=should_use_blob, is_codable=should_use_blob)
+            return TypeInfo(self.swift_type, objc_type, should_use_blob=should_use_blob, is_codable=USE_CODABLE_FOR_PRIMITIVES)
         
         return self.try_to_convert_objc_type_to_type_info()
 
