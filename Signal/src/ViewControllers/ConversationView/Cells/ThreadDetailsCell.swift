@@ -164,7 +164,7 @@ public class ThreadDetailsCell: ConversationViewCell {
             details = String(format: formatString, groupThread.groupModel.groupMembers.count)
         case let contactThread as TSContactThread:
             let threadName = contactThread.name()
-            if let phoneNumber = contactThread.contactAddress.phoneNumber {
+            if let phoneNumber = contactThread.contactAddress.phoneNumber, phoneNumber != contactThread.name() {
                 let formattedNumber = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
                 if threadName != formattedNumber {
                     details = formattedNumber
