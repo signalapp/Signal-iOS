@@ -82,4 +82,6 @@ extension ComposeViewController: RecipientPickerDelegate {
             return MessageStrings.conversationIsBlocked
         }
     }
+
+    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
 }

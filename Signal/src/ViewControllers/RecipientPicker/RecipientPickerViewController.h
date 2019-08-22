@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RecipientPickerDelegate;
 
 @class ContactsViewHelper;
+@class PickedRecipient;
 
 @interface RecipientPickerViewController : OWSViewController
 
@@ -24,10 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL shouldShowGroups;
 /// Defaults to `NO`
 @property (nonatomic) BOOL shouldShowInvites;
+/// Defaults to `YES`
+@property (nonatomic) BOOL shouldShowAlphabetSlider;
 
 @property (nonatomic, nullable) NSString *findByPhoneNumberButtonTitle;
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
+
+@property (nonatomic, nullable) NSArray<PickedRecipient *> *pickedRecipients;
 
 @end
 

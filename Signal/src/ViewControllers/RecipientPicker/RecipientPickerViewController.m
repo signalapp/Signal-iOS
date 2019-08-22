@@ -72,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation RecipientPickerViewController
 
+@synthesize pickedRecipients = _pickedRecipients;
 
 #pragma mark - Dependencies
 
@@ -104,6 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
     _allowsSelectingUnregisteredPhoneNumbers = YES;
     _shouldShowGroups = YES;
     _shouldShowInvites = NO;
+    _shouldShowAlphabetSlider = YES;
 
     return self;
 }
@@ -317,6 +319,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateTableContents
 {
+    OWSAssertIsOnMainThread();
+
     OWSTableContents *contents = [OWSTableContents new];
 
     if (self.isNoContactsModeActive) {
@@ -325,6 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __weak __typeof(self) weakSelf = self;
+    BOOL hasSearchText = self.searchText.length > 0;
 
     // App is killed and restarted when the user changes their contact permissions, so need need to "observe" anything
     // to re-render this.
@@ -389,11 +394,28 @@ NS_ASSUME_NONNULL_BEGIN
                                         [weakSelf presentInviteFlow];
                                     }]];
     }
+
+    // Render any non-contact picked recipients
+    if (self.pickedRecipients.count > 0 && !hasSearchText) {
+        BOOL hadNonContactRecipient = NO;
+        for (PickedRecipient *recipient in self.pickedRecipients) {
+            if (![self.contactsViewHelper fetchSignalAccountForAddress:recipient.address]) {
+                hadNonContactRecipient = YES;
+                [staticSection addItem:[self itemForRecipient:recipient]];
+            }
+        }
+
+        // If we have non-contact selections, add a title to the static section
+        if (hadNonContactRecipient) {
+            staticSection.headerTitle = NSLocalizedString(@"NEW_GROUP_NON_CONTACTS_SECTION_TITLE",
+                @"a title for the selected section of the 'recipient picker' view.");
+        }
+    }
+
     if (staticSection.itemCount > 0) {
         [contents addSection:staticSection];
     }
 
-    BOOL hasSearchText = self.searchText.length > 0;
     if (hasSearchText) {
         for (OWSTableSection *section in [self contactsSectionsForSearch]) {
             [contents addSection:section];
@@ -403,47 +425,50 @@ NS_ASSUME_NONNULL_BEGIN
         // Later we'll need to offset which sections our collation indexes reference
         // by this amount. e.g. otherwise the "B" index will reference names starting with "A"
         // And the "A" index will reference the static non-collated section(s).
-        NSInteger noncollatedSections = (NSInteger)contents.sections.count;
-        for (OWSTableSection *section in [self collatedContactsSections]) {
+        NSInteger beforeContactsSectionCount = (NSInteger)contents.sections.count;
+        for (OWSTableSection *section in [self contactsSection]) {
             [contents addSection:section];
         }
-        contents.sectionForSectionIndexTitleBlock = ^NSInteger(NSString *_Nonnull title, NSInteger index) {
-            typeof(self) strongSelf = weakSelf;
-            if (!strongSelf) {
-                return 0;
-            }
 
-            // Offset the collation section to account for the noncollated sections.
-            NSInteger sectionIndex =
-                [strongSelf.collation sectionForSectionIndexTitleAtIndex:index] + noncollatedSections;
-            if (sectionIndex < 0) {
-                // Sentinal in case we change our section ordering in a surprising way.
-                OWSCFailDebug(@"Unexpected negative section index");
-                return 0;
-            }
-            if (sectionIndex >= (NSInteger)contents.sections.count) {
-                // Sentinal in case we change our section ordering in a surprising way.
-                OWSCFailDebug(@"Unexpectedly large index");
-                return 0;
-            }
+        if (self.shouldShowAlphabetSlider) {
+            contents.sectionForSectionIndexTitleBlock = ^NSInteger(NSString *_Nonnull title, NSInteger index) {
+                typeof(self) strongSelf = weakSelf;
+                if (!strongSelf) {
+                    return 0;
+                }
 
-            return sectionIndex;
-        };
-        contents.sectionIndexTitlesForTableViewBlock = ^NSArray<NSString *> *_Nonnull
-        {
-            typeof(self) strongSelf = weakSelf;
-            if (!strongSelf) {
-                return @[];
-            }
+                // Offset the collation section to account for the noncollated sections.
+                NSInteger sectionIndex =
+                    [strongSelf.collation sectionForSectionIndexTitleAtIndex:index] + beforeContactsSectionCount;
+                if (sectionIndex < 0) {
+                    // Sentinal in case we change our section ordering in a surprising way.
+                    OWSCFailDebug(@"Unexpected negative section index");
+                    return 0;
+                }
+                if (sectionIndex >= (NSInteger)contents.sections.count) {
+                    // Sentinal in case we change our section ordering in a surprising way.
+                    OWSCFailDebug(@"Unexpectedly large index");
+                    return 0;
+                }
 
-            return strongSelf.collation.sectionTitles;
-        };
+                return sectionIndex;
+            };
+            contents.sectionIndexTitlesForTableViewBlock = ^NSArray<NSString *> *_Nonnull
+            {
+                typeof(self) strongSelf = weakSelf;
+                if (!strongSelf) {
+                    return @[];
+                }
+
+                return strongSelf.collation.sectionTitles;
+            };
+        }
     }
 
     self.tableViewController.contents = contents;
 }
 
-- (NSArray<OWSTableSection *> *)collatedContactsSections
+- (NSArray<OWSTableSection *> *)contactsSection
 {
     if (self.contactsViewHelper.signalAccounts.count < 1) {
         // No Contacts
@@ -488,36 +513,49 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSMutableArray<OWSTableSection *> *contactSections = [NSMutableArray new];
 
-    NSMutableArray<NSMutableArray<SignalAccount *> *> *collatedSignalAccounts = [NSMutableArray new];
-    for (NSUInteger i = 0; i < self.collation.sectionTitles.count; i++) {
-        collatedSignalAccounts[i] = [NSMutableArray new];
-    }
-    for (SignalAccount *signalAccount in self.contactsViewHelper.signalAccounts) {
-        NSInteger section = [self.collation sectionForObject:signalAccount
-                                     collationStringSelector:@selector(stringForCollation)];
-
-        if (section < 0) {
-            OWSFailDebug(@"Unexpected collation for name:%@", signalAccount.stringForCollation);
-            continue;
+    if (self.shouldShowAlphabetSlider) {
+        NSMutableArray<NSMutableArray<SignalAccount *> *> *collatedSignalAccounts = [NSMutableArray new];
+        for (NSUInteger i = 0; i < self.collation.sectionTitles.count; i++) {
+            collatedSignalAccounts[i] = [NSMutableArray new];
         }
-        NSUInteger sectionIndex = (NSUInteger)section;
+        for (SignalAccount *signalAccount in self.contactsViewHelper.signalAccounts) {
+            NSInteger section = [self.collation sectionForObject:signalAccount
+                                         collationStringSelector:@selector(stringForCollation)];
 
-        [collatedSignalAccounts[sectionIndex] addObject:signalAccount];
-    }
+            if (section < 0) {
+                OWSFailDebug(@"Unexpected collation for name:%@", signalAccount.stringForCollation);
+                continue;
+            }
+            NSUInteger sectionIndex = (NSUInteger)section;
 
-    for (NSUInteger i = 0; i < collatedSignalAccounts.count; i++) {
-        NSArray<SignalAccount *> *signalAccounts = collatedSignalAccounts[i];
-        NSMutableArray<OWSTableItem *> *contactItems = [NSMutableArray new];
-        for (SignalAccount *signalAccount in signalAccounts) {
-            PickedRecipient *recipient = [PickedRecipient forAddress:signalAccount.recipientAddress];
-            [contactItems addObject:[self itemForRecipient:recipient]];
+            [collatedSignalAccounts[sectionIndex] addObject:signalAccount];
         }
 
-        // Don't show empty sections.
-        // To accomplish this we add a section with a blank title rather than omitting the section altogether,
-        // in order for section indexes to match up correctly
-        NSString *sectionTitle = contactItems.count > 0 ? self.collation.sectionTitles[i] : nil;
-        [contactSections addObject:[OWSTableSection sectionWithTitle:sectionTitle items:contactItems]];
+        for (NSUInteger i = 0; i < collatedSignalAccounts.count; i++) {
+            NSArray<SignalAccount *> *signalAccounts = collatedSignalAccounts[i];
+            NSMutableArray<OWSTableItem *> *contactItems = [NSMutableArray new];
+            for (SignalAccount *signalAccount in signalAccounts) {
+                PickedRecipient *recipient = [PickedRecipient forAddress:signalAccount.recipientAddress];
+                [contactItems addObject:[self itemForRecipient:recipient]];
+            }
+
+            // Don't show empty sections.
+            // To accomplish this we add a section with a blank title rather than omitting the section altogether,
+            // in order for section indexes to match up correctly
+            NSString *sectionTitle = contactItems.count > 0 ? self.collation.sectionTitles[i] : nil;
+            [contactSections addObject:[OWSTableSection sectionWithTitle:sectionTitle items:contactItems]];
+        }
+    } else {
+        OWSTableSection *contactsSection = [OWSTableSection new];
+        contactsSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
+            @"Table section header for contact listing when composing a new message");
+
+        for (SignalAccount *signalAccount in self.contactsViewHelper.signalAccounts) {
+            [contactsSection
+                addItem:[self itemForRecipient:[PickedRecipient forAddress:signalAccount.recipientAddress]]];
+        }
+
+        [contactSections addObject:contactsSection];
     }
 
     return [contactSections copy];
@@ -716,15 +754,19 @@ NS_ASSUME_NONNULL_BEGIN
     return self.searchResults.groupThreads;
 }
 
-- (void)reloadSelectedSection
+- (void)setPickedRecipients:(nullable NSArray<PickedRecipient *> *)pickedRecipients
 {
-    // If the user isn't currently search, don't update the table contents.
-    // We only show the selected section when a search is not in progress.
-    if (self.searchText.length > 0) {
-        return;
+    @synchronized(self) {
+        _pickedRecipients = pickedRecipients;
     }
-
     [self updateTableContents];
+}
+
+- (nullable NSArray<PickedRecipient *> *)pickedRecipients
+{
+    @synchronized(self) {
+        return _pickedRecipients;
+    }
 }
 
 #pragma mark - No Contacts Mode
@@ -928,6 +970,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)tableViewWillBeginDragging
 {
     [self.searchBar resignFirstResponder];
+    [self.delegate recipientPickerTableViewWillBeginDragging:self];
 }
 
 #pragma mark - ContactsViewHelperDelegate

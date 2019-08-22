@@ -20,6 +20,8 @@ protocol RecipientPickerDelegate: class {
         _ recipientPickerViewController: RecipientPickerViewController,
         accessoryMessageForRecipient recipient: PickedRecipient
     ) -> String?
+
+    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController)
 }
 
 @objc
@@ -38,6 +40,12 @@ class PickedRecipient: NSObject {
     var isGroup: Bool {
         guard case .group = identifier else { return false }
         return true
+    }
+
+    @objc
+    var address: SignalServiceAddress? {
+        guard case .address(let address) = identifier else { return nil }
+        return address
     }
 
     @objc
