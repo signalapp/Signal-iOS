@@ -484,57 +484,33 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
-// GRDB TODO: Convert to Any.
-- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
+    [super anyWillInsertWithTransaction:transaction];
+
     // StickerManager does reference counting of "known" sticker packs.
     if (self.messageSticker != nil) {
         BOOL willInsert = (self.uniqueId.length < 1
-            || nil == [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction.asAnyWrite]);
+            || nil == [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction]);
 
         if (willInsert) {
-            [StickerManager addKnownStickerInfo:self.messageSticker.info transaction:transaction.asAnyWrite];
+            [StickerManager addKnownStickerInfo:self.messageSticker.info transaction:transaction];
         }
     }
-
-    [super ydb_saveWithTransaction:transaction];
-}
-
-// GRDB TODO: Convert to Any.
-- (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    // StickerManager does reference counting of "known" sticker packs.
-    if (self.messageSticker != nil) {
-        BOOL willDelete = (self.uniqueId.length > 0
-            && nil != [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction.asAnyWrite]);
-
-        // StickerManager does reference counting of "known" sticker packs.
-        if (willDelete) {
-            [StickerManager removeKnownStickerInfo:self.messageSticker.info transaction:transaction.asAnyWrite];
-        }
-    }
-
-    [super ydb_removeWithTransaction:transaction];
-
-    [self removeAllAttachmentsWithTransaction:transaction.asAnyWrite];
 }
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillRemoveWithTransaction:transaction];
 
-    // GRDB TODO: Remove this condition once we migrate interaction writes to use
-    //            any transactions.  We just don't want to do this work twice.
-    if (transaction.transitional_yapWriteTransaction == nil) {
-        // StickerManager does reference counting of "known" sticker packs.
-        if (self.messageSticker != nil) {
-            BOOL willDelete = (self.uniqueId.length > 0
-                && nil != [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction]);
+    // StickerManager does reference counting of "known" sticker packs.
+    if (self.messageSticker != nil) {
+        BOOL willDelete = (self.uniqueId.length > 0
+            && nil != [TSMessage anyFetchWithUniqueId:self.uniqueId transaction:transaction]);
 
-            // StickerManager does reference counting of "known" sticker packs.
-            if (willDelete) {
-                [StickerManager removeKnownStickerInfo:self.messageSticker.info transaction:transaction];
-            }
+        // StickerManager does reference counting of "known" sticker packs.
+        if (willDelete) {
+            [StickerManager removeKnownStickerInfo:self.messageSticker.info transaction:transaction];
         }
     }
 }
@@ -543,11 +519,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    // GRDB TODO: Remove this condition once we migrate interaction writes to use
-    //            any transactions.  We just don't want to do this work twice.
-    if (transaction.transitional_yapWriteTransaction == nil) {
-        [self removeAllAttachmentsWithTransaction:transaction];
-    }
+    [self removeAllAttachmentsWithTransaction:transaction];
 }
 
 - (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction

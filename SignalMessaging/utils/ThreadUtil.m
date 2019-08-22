@@ -676,7 +676,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 + (nullable TSInteraction *)findInteractionInThreadByTimestamp:(uint64_t)timestamp
                                                  authorAddress:(SignalServiceAddress *)authorAddress
                                                 threadUniqueId:(NSString *)threadUniqueId
-                                                   transaction:(YapDatabaseReadTransaction *)transaction
+                                                   transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(authorAddress.isValid);
@@ -709,10 +709,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     };
 
     NSError *error;
-    NSArray<TSInteraction *> *interactions = [InteractionFinder interactionsWithTimestamp:timestamp
-                                                                                   filter:filter
-                                                                              transaction:transaction.asAnyRead
-                                                                                    error:&error];
+    NSArray<TSInteraction *> *interactions =
+        [InteractionFinder interactionsWithTimestamp:timestamp filter:filter transaction:transaction error:&error];
     if (error != nil) {
         OWSFailDebug(@"Error loading interactions: %@", error);
     }

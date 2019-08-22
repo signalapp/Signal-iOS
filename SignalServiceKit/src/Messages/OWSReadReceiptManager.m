@@ -557,36 +557,34 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
-    if (!transaction.transitional_yapWriteTransaction) {
-        return;
-    }
-
     NSMutableArray<id<OWSReadTracking>> *newlyReadList = [NSMutableArray new];
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    NSError *error;
+    [interactionFinder
+        enumerateUnseenInteractionsWithTransaction:transaction
+                                             error:&error
+                                             block:^(TSInteraction *interaction, BOOL *stop) {
+                                                 if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {
+                                                     OWSFailDebug(@"Expected to conform to OWSReadTracking: object "
+                                                                  @"with class: %@ collection: %@ "
+                                                                  @"key: %@",
+                                                         [interaction class],
+                                                         TSInteraction.collection,
+                                                         interaction.uniqueId);
+                                                     return;
+                                                 }
+                                                 id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)interaction;
+                                                 if (possiblyRead.sortId > sortId) {
+                                                     *stop = YES;
+                                                     return;
+                                                 }
 
-    [[TSDatabaseView unseenDatabaseViewExtension:transaction.transitional_yapReadTransaction]
-        enumerateKeysAndObjectsInGroup:thread.uniqueId
-                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                if (![object conformsToProtocol:@protocol(OWSReadTracking)]) {
-                                    OWSFailDebug(
-                                        @"Expected to conform to OWSReadTracking: object with class: %@ collection: %@ "
-                                        @"key: %@",
-                                        [object class],
-                                        collection,
-                                        key);
-                                    return;
-                                }
-                                id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-                                if (possiblyRead.sortId > sortId) {
-                                    *stop = YES;
-                                    return;
-                                }
-
-                                OWSAssertDebug(!possiblyRead.read);
-                                OWSAssertDebug(possiblyRead.expireStartedAt == 0);
-                                if (!possiblyRead.read) {
-                                    [newlyReadList addObject:possiblyRead];
-                                }
-                            }];
+                                                 OWSAssertDebug(!possiblyRead.read);
+                                                 OWSAssertDebug(possiblyRead.expireStartedAt == 0);
+                                                 if (!possiblyRead.read) {
+                                                     [newlyReadList addObject:possiblyRead];
+                                                 }
+                                             }];
 
     if (newlyReadList.count < 1) {
         return;
