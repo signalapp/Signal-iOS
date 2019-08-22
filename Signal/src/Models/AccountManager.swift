@@ -256,7 +256,7 @@ public class AccountManager: NSObject {
                 if FeatureFlags.allowUUIDOnlyContacts {
                     owsFailDebug("error: \(error)")
                 }
-                Logger.error("error: \(error)")
+                Logger.warn("error: \(error)")
             }.retainUntilComplete()
         }
     }

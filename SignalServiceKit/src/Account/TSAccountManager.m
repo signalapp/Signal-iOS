@@ -469,12 +469,12 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
             }
         }
         failure:^(NSURLSessionDataTask *task, NSError *error) {
-            if (!IsNSErrorNetworkFailure(error)) {
-                OWSProdError([OWSAnalyticsEvents accountsErrorVerifyAccountRequestFailed]);
+            if (IsNSErrorNetworkFailure(error)) {
+                OWSLogWarn(@"network error: %@", error.debugDescription);
+            } else {
+                OWSLogError(@"non-network error: %@", error.debugDescription);
             }
             OWSAssertDebug([error.domain isEqualToString:TSNetworkManagerErrorDomain]);
-
-            OWSLogWarn(@"Error verifying code: %@", error.debugDescription);
 
             switch (error.code) {
                 case 403: {

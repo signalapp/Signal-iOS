@@ -694,7 +694,7 @@ NSString *const kNSNotification_OWSWebSocketStateDidChange = @"kNSNotification_O
         return;
     }
 
-    OWSLogError(@"Websocket did fail with error: %@", error);
+    OWSLogWarn(@"Websocket did fail with error: %@", error);
     if ([error.domain isEqualToString:SSKWebSocketError.errorDomain]) {
         NSNumber *_Nullable statusCode = error.userInfo[SSKWebSocketError.kStatusCodeKey];
         if (statusCode.unsignedIntegerValue == 403) {
