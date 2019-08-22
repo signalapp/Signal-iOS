@@ -182,7 +182,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                  [[FindByPhoneNumberViewController alloc] initWithDelegate:weakSelf
                                                                                                 buttonText:nil
                                                                                   requiresRegisteredNumber:YES];
-                                             viewController.isPresentedInNavigationController = YES;
                                              [weakSelf.navigationController pushViewController:viewController
                                                                                       animated:YES];
                                          }]];
