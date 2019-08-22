@@ -130,6 +130,13 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             SDSKeyValueStore.collectionColumn.columnName,
                             SDSKeyValueStore.keyColumn.columnName
                 ])
+            try db.create(index: "index_interactions_on_recordType_and_threadUniqueId_and_errorType",
+                          on: InteractionRecord.databaseTableName,
+                          columns: [
+                            InteractionRecord.columnName(.recordType),
+                            InteractionRecord.columnName(.threadUniqueId),
+                            InteractionRecord.columnName(.errorType)
+                ])
 
             // Media Gallery Indices
             try db.create(index: "index_attachments_on_albumMessageId",
@@ -258,6 +265,13 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                           on: ContactQueryRecord.databaseTableName,
                           columns: [
                             ContactQueryRecord.columnName(.lastQueried)
+                ])
+
+            // Backup
+            try db.create(index: "index_attachments_on_lazyRestoreFragmentId",
+                          on: AttachmentRecord.databaseTableName,
+                          columns: [
+                            AttachmentRecord.columnName(.lazyRestoreFragmentId)
                 ])
 
             try GRDBFullTextSearchFinder.createTables(database: db)
