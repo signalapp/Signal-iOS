@@ -34,7 +34,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
 
         title = NSLocalizedString("NEW_NONCONTACT_CONVERSATION_VIEW_TITLE",
@@ -202,7 +202,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
 // MARK: - Country
 
 extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
-    func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountryCode countryCode: String, countryName: String, callingCode: String) {
+    public func countryCodeViewController(_ vc: CountryCodeViewController, didSelectCountryCode countryCode: String, countryName: String, callingCode: String) {
         updateCountry(callingCode: callingCode, countryCode: countryCode)
     }
 
@@ -250,13 +250,13 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
 }
 
 extension FindByPhoneNumberViewController: UITextFieldDelegate {
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         ViewControllerUtils.phoneNumber(textField, shouldChangeCharactersIn: range, replacementString: string, callingCode: callingCode)
         updateButtonState()
         return false
     }
 
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    public func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         tryToSelectPhoneNumber()
         return false
     }
