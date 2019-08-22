@@ -4120,28 +4120,27 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     OWSLogInfo(@"deleteLastMessages");
 
-    if (!transaction.transitional_yapWriteTransaction) {
-        OWSFailDebug(@"failure: not yet implemented for GRDB");
-        return;
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
+    NSError *error;
+    [interactionFinder enumerateInteractionIdsWithTransaction:transaction
+                                                        error:&error
+                                                        block:^(NSString *interactionId, BOOL *stop) {
+                                                            [interactionIds addObject:interactionId];
+                                                            if (interactionIds.count >= count) {
+                                                                *stop = YES;
+                                                            }
+                                                        }];
+    if (error != nil) {
+        OWSFailDebug(@"error: %@", error);
     }
-
-    YapDatabaseViewTransaction *interactionsByThread =
-        [transaction.transitional_yapWriteTransaction ext:TSMessageDatabaseViewExtensionName];
-    NSUInteger messageCount = (NSUInteger)[interactionsByThread numberOfItemsInGroup:thread.uniqueId];
-
-    NSMutableArray<NSNumber *> *messageIndices = [NSMutableArray new];
-    for (NSUInteger i = 0; i < count && i < messageCount; i++) {
-        NSUInteger messageIdx = messageCount - (1 + i);
-        [messageIndices addObject:@(messageIdx)];
-    }
-    NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
-    for (NSNumber *messageIdx in messageIndices) {
+    for (NSString *interactionId in interactionIds) {
         TSInteraction *_Nullable interaction =
-            [interactionsByThread objectAtIndex:messageIdx.unsignedIntegerValue inGroup:thread.uniqueId];
-        OWSAssertDebug(interaction);
-        [interactions addObject:interaction];
-    }
-    for (TSInteraction *interaction in interactions) {
+            [TSInteraction anyFetchWithUniqueId:interactionId transaction:transaction];
+        if (interaction == nil) {
+            OWSFailDebug(@"Couldn't load interaction.");
+            continue;
+        }
         [interaction anyRemoveWithTransaction:transaction];
     }
 }
@@ -4152,36 +4151,33 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     OWSLogInfo(@"deleteRandomRecentMessages: %zd", count);
 
-
-    if (!transaction.transitional_yapWriteTransaction) {
-        OWSFailDebug(@"failure: not yet implemented for GRDB");
-        return;
-    }
-
-    YapDatabaseViewTransaction *interactionsByThread =
-        [transaction.transitional_yapWriteTransaction ext:TSMessageDatabaseViewExtensionName];
-    NSInteger messageCount = (NSInteger)[interactionsByThread numberOfItemsInGroup:thread.uniqueId];
-
-    NSMutableArray<NSNumber *> *messageIndices = [NSMutableArray new];
     const NSInteger kRecentMessageCount = 10;
-    for (NSInteger i = 0; i < kRecentMessageCount; i++) {
-        NSInteger messageIdx = messageCount - (1 + i);
-        if (messageIdx >= 0) {
-            [messageIndices addObject:@(messageIdx)];
-        }
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
+    NSError *error;
+    [interactionFinder enumerateInteractionIdsWithTransaction:transaction
+                                                        error:&error
+                                                        block:^(NSString *interactionId, BOOL *stop) {
+                                                            [interactionIds addObject:interactionId];
+                                                            if (interactionIds.count >= kRecentMessageCount) {
+                                                                *stop = YES;
+                                                            }
+                                                        }];
+    if (error != nil) {
+        OWSFailDebug(@"error: %@", error);
     }
-    NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
-    for (NSUInteger i = 0; i < count && messageIndices.count > 0; i++) {
-        NSUInteger idx = (NSUInteger)arc4random_uniform((uint32_t)messageIndices.count);
-        NSNumber *messageIdx = messageIndices[idx];
-        [messageIndices removeObjectAtIndex:idx];
+
+    for (NSUInteger i = 0; i < count && interactionIds.count > 0; i++) {
+        NSUInteger idx = (NSUInteger)arc4random_uniform((uint32_t)interactionIds.count);
+        NSString *interactionId = interactionIds[idx];
+        [interactionIds removeObjectAtIndex:idx];
 
         TSInteraction *_Nullable interaction =
-            [interactionsByThread objectAtIndex:messageIdx.unsignedIntegerValue inGroup:thread.uniqueId];
-        OWSAssertDebug(interaction);
-        [interactions addObject:interaction];
-    }
-    for (TSInteraction *interaction in interactions) {
+            [TSInteraction anyFetchWithUniqueId:interactionId transaction:transaction];
+        if (interaction == nil) {
+            OWSFailDebug(@"Couldn't load interaction.");
+            continue;
+        }
         [interaction anyRemoveWithTransaction:transaction];
     }
 }
