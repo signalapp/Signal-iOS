@@ -55,7 +55,7 @@ public final class LokiGroupChatAPI : NSObject {
     }
     
     internal static func getToken() -> Promise<String> {
-        guard let token = storage.dbReadConnection.string(forKey: serverURL, inCollection: tokenCollection) else {
+        guard let token = storage.dbReadConnection.string(forKey: serverURL, inCollection: tokenCollection), token.count > 0 else {
             return fetchToken().then { submitToken($0) }.map { token -> String in
                 storage.dbReadWriteConnection.setObject(token, forKey: serverURL, inCollection: tokenCollection)
                 return token
