@@ -12,6 +12,7 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SDSKeyValueStore;
+@class YapDatabaseConnection;
 @class YapDatabaseReadWriteTransaction;
 
 // Although OWSDatabaseMigration is still a TSYapDatabaseObject

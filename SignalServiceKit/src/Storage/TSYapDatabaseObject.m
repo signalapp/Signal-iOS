@@ -3,10 +3,8 @@
 //
 
 #import "TSYapDatabaseObject.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -186,12 +184,19 @@ NS_ASSUME_NONNULL_BEGIN
     [self setValuesForKeysWithDictionary:latest.dictionaryValue];
 }
 
-#pragma mark - Write Hooks
+#pragma mark -
 
 - (BOOL)shouldBeSaved
 {
     return YES;
 }
+
++ (BOOL)shouldBeIndexedForFTS
+{
+    return NO;
+}
+
+#pragma mark - Write Hooks
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
