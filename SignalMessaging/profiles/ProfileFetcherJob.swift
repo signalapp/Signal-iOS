@@ -181,7 +181,7 @@ public class ProfileFetcherJob: NSObject {
         }
         ProfileFetcherJob.fetchDateMap[address] = Date()
 
-        Logger.error("getProfile: \(address)")
+        Logger.info("getProfile: \(address)")
 
         // Don't use UD for "self" profile fetches.
         var udAccess: OWSUDAccess?

@@ -18,7 +18,7 @@ import Foundation
         guard let window = CurrentAppContext().mainWindow else {
             return nil
         }
-        Logger.error("findFrontmostViewController: \(window)")
+        Logger.verbose("findFrontmostViewController: \(window)")
         guard let viewController = window.rootViewController else {
             owsFailDebug("Missing root view controller.")
             return nil
