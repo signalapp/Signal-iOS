@@ -5,13 +5,13 @@
 import Foundation
 
 @objc
-protocol FindByPhoneNumberDelegate: class {
+public protocol FindByPhoneNumberDelegate: class {
     func findByPhoneNumber(_ findByPhoneNumber: FindByPhoneNumberViewController,
                            didSelectAddress address: SignalServiceAddress)
 }
 
 @objc
-class FindByPhoneNumberViewController: OWSViewController {
+public class FindByPhoneNumberViewController: OWSViewController {
     weak var delegate: FindByPhoneNumberDelegate?
     let buttonText: String?
     let requiresRegisteredNumber: Bool
