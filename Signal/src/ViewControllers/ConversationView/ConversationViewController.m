@@ -4829,7 +4829,9 @@ typedef enum : NSUInteger {
             OWSLogInfo(@"performBatchUpdates did not finish");
         }
 
-        [self updateLastVisibleSortIdWithTransaction:transaction];
+        // We can't use the transaction parameter; this completion
+        // will be run async.
+        [self updateLastVisibleSortIdWithSneakyTransaction];
 
         if (scrollToBottom) {
             [self scrollToBottomAnimated:NO];
