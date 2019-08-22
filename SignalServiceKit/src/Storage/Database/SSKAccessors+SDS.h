@@ -20,6 +20,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface TSInteraction (SDS)
+
+// This property is only intended to be used by GRDB queries.
+@property (nonatomic, readonly) BOOL storedIsSpecialMessage;
+
+@end
+
+#pragma mark -
+
 @interface TSMessage (SDS)
 
 @property (nonatomic, readonly) NSUInteger schemaVersion;

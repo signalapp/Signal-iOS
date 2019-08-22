@@ -414,28 +414,31 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertDebug(transaction);
 
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
-    if (!transaction.transitional_yapReadTransaction) {
-        return result;
-    }
 
     // Find any "dynamic" interactions and safety number changes.
     //
     // We use different views for performance reasons.
     NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
     NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
-    [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction.transitional_yapReadTransaction]
-        enumerateKeysAndObjectsInGroup:thread.uniqueId
-                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-                                    [blockingSafetyNumberChanges addObject:object];
-                                } else if ([object isKindOfClass:[TSErrorMessage class]]) {
-                                    TSErrorMessage *errorMessage = (TSErrorMessage *)object;
-                                    OWSAssertDebug(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
-                                    [nonBlockingSafetyNumberChanges addObject:errorMessage];
-                                } else {
-                                    OWSFailDebug(@"Unexpected dynamic interaction type: %@", [object class]);
-                                }
-                            }];
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    [interactionFinder
+        enumerateSpecialMessagesWithTransaction:transaction
+                                          block:^(TSInteraction *interaction, BOOL *stop) {
+                                              if ([interaction
+                                                      isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
+                                                  TSInvalidIdentityKeyErrorMessage *errorMessage
+                                                      = (TSInvalidIdentityKeyErrorMessage *)interaction;
+                                                  [blockingSafetyNumberChanges addObject:errorMessage];
+                                              } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
+                                                  TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
+                                                  OWSAssertDebug(errorMessage.errorType
+                                                      == TSErrorMessageNonBlockingIdentityChange);
+                                                  [nonBlockingSafetyNumberChanges addObject:errorMessage];
+                                              } else {
+                                                  OWSFailDebug(
+                                                      @"Unexpected dynamic interaction type: %@", [interaction class]);
+                                              }
+                                          }];
 
     // Determine if there are "unread" messages in this conversation.
     // If we've been passed a firstUnseenInteractionTimestampParameter,
@@ -448,9 +451,17 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     if (lastUnreadIndicator) {
         firstUnseenSortId = @(lastUnreadIndicator.firstUnseenSortId);
     } else {
-        TSInteraction *_Nullable firstUnseenInteraction =
-            [[TSDatabaseView unseenDatabaseViewExtension:transaction.transitional_yapReadTransaction]
-                firstObjectInGroup:thread.uniqueId];
+        NSError *error;
+        __block TSInteraction *_Nullable firstUnseenInteraction;
+        [interactionFinder enumerateUnseenInteractionsWithTransaction:transaction
+                                                                error:&error
+                                                                block:^(TSInteraction *interaction, BOOL *stop) {
+                                                                    firstUnseenInteraction = interaction;
+                                                                    *stop = YES;
+                                                                }];
+        if (error != nil) {
+            OWSFailDebug(@"Error: %@", error);
+        }
         if (firstUnseenInteraction) {
             firstUnseenSortId = @(firstUnseenInteraction.sortId);
         }

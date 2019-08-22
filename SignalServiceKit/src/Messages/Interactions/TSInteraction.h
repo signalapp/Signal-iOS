@@ -47,9 +47,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
+          storedIsSpecialMessage:(BOOL)storedIsSpecialMessage
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:storedIsSpecialMessage:timestamp:uniqueThreadId:));
 
 // clang-format on
 
@@ -60,6 +61,10 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 @property (nonatomic, readonly) uint64_t timestamp;
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
+
+// This property is used to flag interactions that
+// require special handling in the conversation view.
+@property (nonatomic, readonly) BOOL isSpecialMessage;
 
 - (NSDate *)receivedAtDate;
 

@@ -36,6 +36,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 @property (nonatomic) uint64_t sortId;
 
+// This property is only intended to be used by GRDB queries.
+@property (nonatomic, readonly) BOOL storedIsSpecialMessage;
+
 @end
 
 @implementation TSInteraction
@@ -131,6 +134,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
+          storedIsSpecialMessage:(BOOL)storedIsSpecialMessage
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
 {
@@ -142,6 +146,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     _receivedAtTimestamp = receivedAtTimestamp;
     _sortId = sortId;
+    _storedIsSpecialMessage = storedIsSpecialMessage;
     _timestamp = timestamp;
     _uniqueThreadId = uniqueThreadId;
 
@@ -263,6 +268,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                      (unsigned long)self.timestamp];
 }
 
+- (BOOL)isSpecialMessage
+{
+    return [self isDynamicInteraction];
+}
+
 #pragma mark - Any Transaction Hooks
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -272,6 +282,20 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     if (transaction.transitional_yapWriteTransaction != nil) {
         [self ensureIdsWithTransaction:transaction.transitional_yapWriteTransaction];
     }
+
+    [self updateStoredIsSpecialMessage];
+}
+
+- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyWillUpdateWithTransaction:transaction];
+
+    [self updateStoredIsSpecialMessage];
+}
+
+- (void)updateStoredIsSpecialMessage
+{
+    _storedIsSpecialMessage = self.isSpecialMessage;
 }
 
 - (void)ensureIdsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

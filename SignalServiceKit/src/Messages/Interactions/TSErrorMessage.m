@@ -157,6 +157,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
+          storedIsSpecialMessage:(BOOL)storedIsSpecialMessage
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -180,6 +181,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
+            storedIsSpecialMessage:storedIsSpecialMessage
                          timestamp:timestamp
                     uniqueThreadId:uniqueThreadId
                      attachmentIds:attachmentIds
@@ -330,6 +332,14 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                                          }];
 
     // Ignore sendReadReceipt - it doesn't apply to error messages.
+}
+
+- (BOOL)isSpecialMessage
+{
+    if (self.errorType == TSErrorMessageNonBlockingIdentityChange) {
+        return YES;
+    }
+    return [super isSpecialMessage];
 }
 
 @end

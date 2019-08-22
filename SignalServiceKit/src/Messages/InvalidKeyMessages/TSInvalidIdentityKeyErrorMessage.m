@@ -25,6 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
+- (BOOL)isSpecialMessage
+{
+    return YES;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
