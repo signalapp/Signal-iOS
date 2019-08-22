@@ -20,7 +20,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/CountryCodeViewController.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/NewNonContactConversationViewController.h>
 #import <SignalMessaging/OWS100RemoveTSRecipientsMigration.h>
 #import <SignalMessaging/OWS101ExistingUsersBlockOnIdentityChange.h>
 #import <SignalMessaging/OWS102MoveLoggingPreferenceToUserDefaults.h>
@@ -53,7 +52,6 @@ FOUNDATION_EXPORT const unsigned char SignalMessagingVersionString[];
 #import <SignalMessaging/OWSWindowManager.h>
 #import <SignalMessaging/PrivateMethodsForMigration.h>
 #import <SignalMessaging/ScreenLockViewController.h>
-#import <SignalMessaging/SelectRecipientViewController.h>
 #import <SignalMessaging/SharingThreadPickerViewController.h>
 #import <SignalMessaging/Theme.h>
 #import <SignalMessaging/ThreadUtil.h>

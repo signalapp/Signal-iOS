@@ -3,7 +3,6 @@
 //
 
 #import "BlockListViewController.h"
-#import "AddToBlockListViewController.h"
 #import "BlockListUIUtils.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
@@ -19,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BlockListViewController () <ContactsViewHelperDelegate>
+@interface BlockListViewController () <ContactsViewHelperDelegate, AddToBlockListDelegate>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
@@ -76,7 +75,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                 @"A label for the 'add phone number' button in the block list table.")
                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"add")
                                 actionBlock:^{
-                                    AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
+                                    AddToBlockListViewController *vc = [AddToBlockListViewController new];
+                                    vc.delegate = self;
                                     [weakSelf.navigationController pushViewController:vc animated:YES];
                                 }]];
     [contents addSection:addSection];
@@ -176,6 +176,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldHideLocalNumber
 {
     return YES;
+}
+
+#pragma mark - AddToBlockListDelegate
+
+- (void)addToBlockListComplete
+{
+    [self.navigationController popToViewController:self animated:YES];
 }
 
 @end

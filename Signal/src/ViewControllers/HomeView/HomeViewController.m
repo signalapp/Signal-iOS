@@ -6,7 +6,6 @@
 #import "AppDelegate.h"
 #import "AppSettingsViewController.h"
 #import "HomeViewCell.h"
-#import "NewContactThreadViewController.h"
 #import "OWSNavigationController.h"
 #import "OWSPrimaryStorage.h"
 #import "ProfileViewController.h"
@@ -827,7 +826,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     OWSLogInfo(@"");
 
-    NewContactThreadViewController *viewController = [NewContactThreadViewController new];
+    ComposeViewController *viewController = [ComposeViewController new];
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {

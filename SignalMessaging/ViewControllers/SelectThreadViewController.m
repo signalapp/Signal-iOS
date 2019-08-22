@@ -7,7 +7,6 @@
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
-#import "NewNonContactConversationViewController.h"
 #import "OWSContactsManager.h"
 #import "OWSSearchBar.h"
 #import "OWSTableViewController.h"
@@ -30,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     ThreadViewHelperDelegate,
     ContactsViewHelperDelegate,
     UISearchBarDelegate,
-    NewNonContactConversationViewControllerDelegate,
+    FindByPhoneNumberDelegate,
     SDSDatabaseStorageObserver>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
@@ -179,10 +178,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                          @"A label the cell that lets you add a new member to a group.")
                                      customRowHeight:UITableViewAutomaticDimension
                                          actionBlock:^{
-                                             NewNonContactConversationViewController *viewController =
-                                                 [NewNonContactConversationViewController new];
-                                             viewController.nonContactConversationDelegate = weakSelf;
-                                             viewController.isPresentedInNavigationController = YES;
+                                             FindByPhoneNumberViewController *viewController =
+                                                 [[FindByPhoneNumberViewController alloc] initWithDelegate:weakSelf
+                                                                                                buttonText:nil
+                                                                                  requiresRegisteredNumber:YES];
                                              [weakSelf.navigationController pushViewController:viewController
                                                                                       animated:YES];
                                          }]];
@@ -402,12 +401,12 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-#pragma mark - NewNonContactConversationViewControllerDelegate
+#pragma mark - FindByPhoneNumberDelegate
 
-- (void)recipientAddressWasSelected:(SignalServiceAddress *)address
+- (void)findByPhoneNumber:(FindByPhoneNumberViewController *)findByPhoneNumber
+         didSelectAddress:(SignalServiceAddress *)address
 {
-    SignalAccount *signalAccount =
-        [self.contactsViewHelper fetchOrBuildSignalAccountForAddress:address];
+    SignalAccount *signalAccount = [self.contactsViewHelper fetchOrBuildSignalAccountForAddress:address];
     [self signalAccountWasSelected:signalAccount];
 }
 
