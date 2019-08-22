@@ -13,23 +13,39 @@ public final class LokiGroupChatAPI : NSObject {
         return SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: userHexEncodedPublicKey) ?? "Anonymous"
     }
     
-    private static var userHexEncodedPublicKey: String {
-        return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+    internal static var identityKeyPair: ECKeyPair {
+        return OWSIdentityManager.shared().identityKeyPair()!
     }
+    
+    private static var userHexEncodedPublicKey: String {
+        return identityKeyPair.hexEncodedPublicKey
+    }
+    
     
     public enum Error : Swift.Error {
-        case tokenParsingFailed, messageParsingFailed
+        case tokenParsingFailed, tokenDecryptionFailed, messageParsingFailed
     }
     
-    public static func getEncryptedToken() -> Promise<String> {
+    public static func fetchToken() -> Promise<String> {
         print("[Loki] Getting group chat auth token.")
-        let url = URL(string: "\(serverURL)/loki/v1/getToken")!
-        let parameters = [ "pubKey" : userHexEncodedPublicKey ]
-        let request = TSRequest(url: url, method: "POST", parameters: parameters)
+        let url = URL(string: "\(serverURL)/loki/v1/get_challenge?pubKey=\(userHexEncodedPublicKey)")!
+        let request = TSRequest(url: url)
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
-            guard let json = rawResponse as? JSON, let encryptedToken = json["cipherText64"] as? String else { throw Error.tokenParsingFailed }
-            return encryptedToken
+            guard let json = rawResponse as? JSON, let cipherText64 = json["cipherText64"] as? String, let nonce64 = json["nonce64"] as? String, let serverPubKey64 = json["serverPubKey64"] as? String, let cipherText = Data(base64Encoded: cipherText64), let nonce = Data(base64Encoded: nonce64), let serverPubKey = Data(base64Encoded: serverPubKey64) else { throw Error.tokenParsingFailed }
+            
+            let ivAndCipher = nonce + cipherText
+            guard let tokenData = try? DiffieHellman.decrypt(cipherText: ivAndCipher, publicKey: serverPubKey, privateKey: identityKeyPair.privateKey) else { throw Error.tokenDecryptionFailed }
+            
+            return tokenData.base64EncodedString()
         }
+    }
+    
+    public static func submitToken(_ token: String) -> Promise<Void> {
+        print("[Loki] Submitting group chat auth token.")
+        let url = URL(string: "\(serverURL)/loki/v1/submit_challenge")!
+        let parameters = [ "pubKey" : userHexEncodedPublicKey, "token" : token ]
+        let request = TSRequest(url: url, method: "POST", parameters: parameters)
+        return TSNetworkManager.shared().makePromise(request: request).asVoid()
     }
     
     public static func getMessages(for group: UInt) -> Promise<[LokiGroupMessage]> {

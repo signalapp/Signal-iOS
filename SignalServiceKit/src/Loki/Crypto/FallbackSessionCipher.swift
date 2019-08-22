@@ -72,7 +72,7 @@ private extension String {
     @objc public func encrypt(message: Data) -> Data? {
         guard let symmetricKey = symmetricKey else { return nil }
         do {
-            return try diffieHellmanEncrypt(plainText: message, symmetricKey: symmetricKey)
+            return try DiffieHellman.encrypt(plainText: message, symmetricKey: symmetricKey)
         } catch {
             Logger.warn("FallBackSessionCipher: Failed to encrypt message")
             return nil
@@ -86,38 +86,10 @@ private extension String {
     @objc public func decrypt(message: Data) -> Data? {
         guard let symmetricKey = symmetricKey else { return nil }
         do {
-            return try diffieHellmanDecrypt(cipherText: message, symmetricKey: symmetricKey)
+            return try DiffieHellman.decrypt(cipherText: message, symmetricKey: symmetricKey)
         } catch {
             Logger.warn("FallBackSessionCipher: Failed to decrypt message")
             return nil
         }
-    }
-    
-    // Encypt the message with the symmetric key and a 16 bit iv
-    private func diffieHellmanEncrypt(plainText: Data, symmetricKey: Data) throws -> Data {
-        let iv = Randomness.generateRandomBytes(ivLength)!
-        let ivBytes = [UInt8](iv)
-        
-        let symmetricKeyBytes = [UInt8](symmetricKey)
-        let messageBytes = [UInt8](plainText)
-        
-        let blockMode = CBC(iv: ivBytes)
-        let aes = try AES(key: symmetricKeyBytes, blockMode: blockMode)
-        let cipherText = try aes.encrypt(messageBytes)
-        let ivAndCipher = ivBytes + cipherText
-        return Data(bytes: ivAndCipher, count: ivAndCipher.count)
-    }
-    
-    // Decrypt the message with the symmetric key
-    private func diffieHellmanDecrypt(cipherText: Data, symmetricKey: Data) throws -> Data {
-        let symmetricKeyBytes = [UInt8](symmetricKey)
-        let ivBytes = [UInt8](cipherText[..<ivLength])
-        let cipherBytes = [UInt8](cipherText[ivLength...])
-        
-        let blockMode = CBC(iv: ivBytes)
-        let aes = try AES(key: symmetricKeyBytes, blockMode: blockMode)
-        let decrypted = try aes.decrypt(cipherBytes)
-        
-        return Data(bytes: decrypted, count: decrypted.count)
     }
 }
