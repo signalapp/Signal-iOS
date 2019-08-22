@@ -6,10 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
 @class SDSAnyWriteTransaction;
 @class SDSDatabaseStorage;
-@class YapDatabaseConnection;
 @class YapDatabaseReadTransaction;
 @class YapDatabaseReadWriteTransaction;
 
@@ -43,12 +41,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSString *)collection;
 
-#pragma mark - Write Hooks
+#pragma mark -
 
 // GRDB TODO: As a perf optimization, we could only call these
 //            methods for certain kinds of models which we could
 //            detect at compile time.
 @property (nonatomic, readonly) BOOL shouldBeSaved;
+
+@property (class, nonatomic, readonly) BOOL shouldBeIndexedForFTS;
 
 #pragma mark - Data Store Write Hooks
 
