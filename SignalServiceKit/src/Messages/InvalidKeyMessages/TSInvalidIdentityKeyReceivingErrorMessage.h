@@ -21,6 +21,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
+          storedIsSpecialMessage:(BOOL)storedIsSpecialMessage
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -42,7 +43,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
                         authorId:(NSString *)authorId
                     envelopeData:(nullable NSData *)envelopeData
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:errorMessageSchemaVersion:errorType:read:recipientAddress:authorId:envelopeData:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:storedIsSpecialMessage:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:errorMessageSchemaVersion:errorType:read:recipientAddress:authorId:envelopeData:));
 
 // clang-format on
 

@@ -19,6 +19,7 @@ __attribute__((deprecated)) @interface OWSAddToProfileWhitelistOfferMessage : TS
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
+          storedIsSpecialMessage:(BOOL)storedIsSpecialMessage
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -40,7 +41,7 @@ __attribute__((deprecated)) @interface OWSAddToProfileWhitelistOfferMessage : TS
                             read:(BOOL)read
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                        contactId:(NSString *)contactId
-NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:contactId:));
+NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:storedIsSpecialMessage:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:schemaVersion:storedShouldStartExpireTimer:customMessage:infoMessageSchemaVersion:messageType:read:unregisteredAddress:contactId:));
 
 // clang-format on
 
