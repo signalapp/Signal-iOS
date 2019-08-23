@@ -177,6 +177,9 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
         // If we aren't friends with the user then don't send out any receipts
         if (thread.friendRequestStatus != LKThreadFriendRequestStatusFriends) { continue; }
         
+        // Don't send any receipts for groups
+        if (thread.isGroupThread) { continue; }
+        
         OWSReceiptsForSenderMessage *message;
         NSString *receiptName;
         switch (receiptType) {
