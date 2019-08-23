@@ -145,7 +145,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
                    schemaVersion:(NSUInteger)schemaVersion
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-           attachmentFilenameMap:(NSDictionary<NSString *,NSString *> *)attachmentFilenameMap
                    customMessage:(nullable NSString *)customMessage
                 groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
            hasLegacyMessageState:(BOOL)hasLegacyMessageState
@@ -182,7 +181,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         return self;
     }
 
-    _attachmentFilenameMap = attachmentFilenameMap ? [attachmentFilenameMap mutableCopy] : [NSMutableDictionary new];
     _customMessage = customMessage;
     _groupMetaMessage = groupMetaMessage;
     _hasLegacyMessageState = hasLegacyMessageState;
