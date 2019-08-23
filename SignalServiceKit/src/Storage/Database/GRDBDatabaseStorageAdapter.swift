@@ -658,7 +658,7 @@ public extension SDSDatabaseStorage {
         case .grdb:
             return grdbStorage.databaseFileSize
         case .ydb:
-            return OWSPrimaryStorage.shared().databaseFileSize()
+            return OWSPrimaryStorage.shared?.databaseFileSize() ?? 0
         }
     }
 
@@ -667,7 +667,7 @@ public extension SDSDatabaseStorage {
         case .grdb:
             return grdbStorage.databaseWALFileSize
         case .ydb:
-            return OWSPrimaryStorage.shared().databaseWALFileSize()
+            return OWSPrimaryStorage.shared?.databaseWALFileSize() ?? 0
         }
     }
 
@@ -676,7 +676,7 @@ public extension SDSDatabaseStorage {
         case .grdb:
             return grdbStorage.databaseSHMFileSize
         case .ydb:
-            return OWSPrimaryStorage.shared().databaseSHMFileSize()
+            return OWSPrimaryStorage.shared?.databaseSHMFileSize() ?? 0
         }
     }
 }
