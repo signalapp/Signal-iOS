@@ -5,10 +5,6 @@
 import Foundation
 import GRDBCipher
 
-public enum GRDBError: Error {
-    case assertionError(description: String)
-}
-
 @objc
 public class GRDBDatabaseStorageAdapter: NSObject {
 
@@ -396,10 +392,10 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 // Rather than crash here, we should have already detected the situation earlier
                 // and exited gracefully (in the app delegate) using isDatabasePasswordAccessible.
                 // This is a last ditch effort to avoid blowing away the user's database.
-                throw GRDBError.assertionError(description: errorDescription)
+                throw OWSAssertionError(errorDescription)
             }
         } else {
-            throw GRDBError.assertionError(description: "CipherKeySpec inaccessible; not main app.")
+            throw OWSAssertionError("CipherKeySpec inaccessible; not main app.")
         }
 
         // At this point, either this is a new install so there's no existing password to retrieve
@@ -603,7 +599,6 @@ private struct GRDBKeySpecSource {
         let data = try fetchData()
 
         guard data.count == kSQLCipherKeySpecLength else {
-            // crash
             owsFail("unexpected keyspec length")
         }
 
@@ -634,7 +629,6 @@ private struct GRDBKeySpecSource {
 
     func store(data: Data) throws {
         guard data.count == kSQLCipherKeySpecLength else {
-            // crash
             owsFail("unexpected keyspec length")
         }
         try CurrentAppContext().keychainStorage().set(data: data, service: keyServiceName, key: keyName)
