@@ -71,3 +71,41 @@ public extension SDSTransactable {
         }
     }
 }
+
+// MARK: - Value Methods
+
+public extension SDSTransactable {
+    public func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) -> T) -> T {
+        var value: T!
+        read { (transaction) in
+            value = block(transaction)
+        }
+        return value
+    }
+
+    public func readReturningResult<T>(block: @escaping (SDSAnyReadTransaction) throws -> T) throws -> T {
+        var value: T!
+        var thrown: Error?
+        read { (transaction) in
+            do {
+                value = try block(transaction)
+            } catch {
+                thrown = error
+            }
+        }
+
+        if let error = thrown {
+            throw error
+        }
+
+        return value
+    }
+
+    public func writeReturningResult<T>(block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
+        var value: T!
+        write { (transaction) in
+            value = block(transaction)
+        }
+        return value
+    }
+}
