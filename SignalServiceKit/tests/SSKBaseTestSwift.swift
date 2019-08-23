@@ -11,7 +11,7 @@ public class SSKBaseTestSwift: XCTestCase {
 
     // MARK: - Dependencies
 
-    private var primaryStorage: OWSPrimaryStorage? {
+    var primaryStorage: OWSPrimaryStorage? {
         return SSKEnvironment.shared.primaryStorage
     }
 
