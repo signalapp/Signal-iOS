@@ -1493,7 +1493,7 @@ static NSTimeInterval launchStartedAt;
     if (isPublicChatSetUp) { return; }
     NSString *title = NSLocalizedString(@"Loki Public Chat", @"");
     NSData *groupID = [[[LKGroupChatAPI.serverURL stringByAppendingString:@"."] stringByAppendingString:@(LKGroupChatAPI.publicChatID).stringValue] dataUsingEncoding:NSUTF8StringEncoding];
-    TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:title memberIds:@[ OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey ] image:nil groupId:groupID];
+    TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:title memberIds:@[ OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey, LKGroupChatAPI.serverURL ] image:nil groupId:groupID];
     __block TSGroupThread *thread;
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];

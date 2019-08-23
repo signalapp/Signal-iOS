@@ -290,7 +290,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 OWSLogVerbose(@"Ignoring read receipt for self-sender.");
                 return;
             }
-
+            
+            // Don't enqueue message for group threads
+            if (message.thread.isGroupThread) { return; }
+            
             if ([self areReadReceiptsEnabled]) {
                 OWSLogVerbose(@"Enqueuing read receipt for sender.");
                 [self.outgoingReceiptManager enqueueReadReceiptForEnvelope:messageAuthorId timestamp:message.timestamp];

@@ -33,12 +33,18 @@ public final class LokiGroupChatAPI : NSObject {
         let url = URL(string: "\(serverURL)/loki/v1/get_challenge?pubKey=\(userHexEncodedPublicKey)")!
         let request = TSRequest(url: url)
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
-            guard let json = rawResponse as? JSON, let cipherText64 = json["cipherText64"] as? String, let serverPubKey64 = json["serverPubKey64"] as? String, let cipherText = Data(base64Encoded: cipherText64), let serverPubKey = Data(base64Encoded: serverPubKey64) else {
+            guard let json = rawResponse as? JSON, let cipherText64 = json["cipherText64"] as? String, let serverPubKey64 = json["serverPubKey64"] as? String, let cipherText = Data(base64Encoded: cipherText64), var serverPubKey = Data(base64Encoded: serverPubKey64) else {
                 throw Error.tokenParsingFailed
             }
             
+            // If we have length 33 then the pubkey is prefixed with 05, so we need to remove a byte
+            if (serverPubKey.count == 33) {
+                let hex = serverPubKey.hexadecimalString
+                serverPubKey = Data.data(fromHex: hex.substring(from: 2))!
+            }
+            
             // Cipher text has the 16 bit iv prepended to it
-            guard let tokenData = try? DiffieHellman.decrypt(cipherText: cipherText, publicKey: serverPubKey, privateKey: identityKeyPair.privateKey), let token = String(bytes: tokenData, encoding: .utf8) else {
+            guard let tokenData = try? DiffieHellman.decrypt(cipherText: cipherText, publicKey: serverPubKey, privateKey: identityKeyPair.privateKey), let token = String(bytes: tokenData, encoding: .utf8), token.count > 0 else {
                 throw Error.tokenDecryptionFailed
             }
             
@@ -95,7 +101,11 @@ public final class LokiGroupChatAPI : NSObject {
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
             let displayName = userDisplayName
             return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
-                guard let json = rawResponse as? JSON, let message = json["data"] as? JSON, let serverID = message["id"] as? UInt, let body = message["text"] as? String, let dateAsString = message["created_at"] as? String, let date = ISO8601DateFormatter().date(from: dateAsString) else {
+                // ISO8601DateFormatter doesn't support milliseconds for iOS 10 and below
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+
+                guard let json = rawResponse as? JSON, let message = json["data"] as? JSON, let serverID = message["id"] as? UInt, let body = message["text"] as? String, let dateAsString = message["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
                     print("[Loki] Couldn't parse messages for group chat with ID: \(group) from: \(rawResponse).")
                     throw Error.messageParsingFailed
                 }
