@@ -135,7 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic, readonly) StorageCoordinator *storageCoordinator;
-// GRDB TODO: Make this nullable.
+
 @property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 
 // This property is configured after Environment is created.

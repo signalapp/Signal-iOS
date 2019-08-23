@@ -20,6 +20,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SignalBaseTest
 
+#pragma mark - Dependencies
+
+- (nullable OWSPrimaryStorage *)primaryStorage
+{
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+#pragma mark -
+
 - (void)setUp
 {
     OWSLogInfo(@"");
