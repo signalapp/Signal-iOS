@@ -239,6 +239,7 @@
 #endif
 
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Share Public Key", @"") actionBlock:^{ [weakSelf sharePublicKey]; }]];
+    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show QR Code", @"") actionBlock:^{ [weakSelf showQRCode]; }]];
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show Seed", @"") actionBlock:^{ [weakSelf showSeed]; }]];
     [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Clear All Data", @"") actionBlock:^{ [weakSelf clearAllData]; }]];
     
@@ -501,6 +502,12 @@
     NSString *publicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
     UIActivityViewController *shareVC = [[UIActivityViewController alloc] initWithActivityItems:@[ publicKey ] applicationActivities:nil];
     [self presentViewController:shareVC animated:YES completion:nil];
+}
+
+- (void)showQRCode
+{
+    QRCodeViewController *qrCodeVC = [QRCodeViewController new];
+    [self.navigationController pushViewController:qrCodeVC animated:YES];
 }
 
 - (void)showSeed
