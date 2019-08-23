@@ -628,7 +628,7 @@ private struct GRDBKeySpecSource {
             let keyData = Randomness.generateRandomBytes(Int32(kSQLCipherKeySpecLength))
             try store(data: keyData)
         } catch {
-            owsFailDebug("Could not clear keychain: \(error)")
+            owsFail("Could not generate key for GRDB: \(error)")
         }
     }
 
