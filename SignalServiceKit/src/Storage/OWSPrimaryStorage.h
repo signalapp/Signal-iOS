@@ -16,16 +16,15 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-+ (instancetype)sharedManager NS_SWIFT_NAME(shared());
+@property (class, nonatomic, readonly, nullable) OWSPrimaryStorage *shared;
 
 @property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
+@property (class, nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
+@property (class, nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
 
 - (void)updateUIDatabaseConnectionToLatest;
-
-+ (YapDatabaseConnection *)dbReadConnection;
-+ (YapDatabaseConnection *)dbReadWriteConnection;
 
 + (nullable NSError *)migrateToSharedData;
 

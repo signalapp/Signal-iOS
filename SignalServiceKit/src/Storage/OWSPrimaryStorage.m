@@ -64,7 +64,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 
 @synthesize uiDatabaseConnection = _uiDatabaseConnection;
 
-+ (instancetype)sharedManager
++ (nullable instancetype)sharedManager
 {
     OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
 
@@ -454,7 +454,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 
 + (YapDatabaseConnection *)dbReadConnection
 {
-    return OWSPrimaryStorage.sharedManager.dbReadConnection;
+    return OWSPrimaryStorage.shared.dbReadConnection;
 }
 
 - (YapDatabaseConnection *)dbReadConnection
@@ -464,7 +464,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
-    return OWSPrimaryStorage.sharedManager.dbReadWriteConnection;
+    return OWSPrimaryStorage.shared.dbReadWriteConnection;
 }
 
 #pragma mark - Misc.

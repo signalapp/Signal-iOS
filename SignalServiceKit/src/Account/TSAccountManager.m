@@ -125,7 +125,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return SSKEnvironment.shared.sessionStore;
 }
 
-- (OWSPrimaryStorage *)primaryStorage
+- (nullable OWSPrimaryStorage *)primaryStorage
 {
     OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
 

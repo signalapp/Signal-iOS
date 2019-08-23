@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
                           messageSender:(OWSMessageSender *)messageSender
                   messageSenderJobQueue:(MessageSenderJobQueue *)messageSenderJobQueue
                          profileManager:(id<ProfileManagerProtocol>)profileManager
-                         primaryStorage:(OWSPrimaryStorage *)primaryStorage
+                         primaryStorage:(nullable OWSPrimaryStorage *)primaryStorage
                         contactsUpdater:(ContactsUpdater *)contactsUpdater
                          networkManager:(TSNetworkManager *)networkManager
                          messageManager:(OWSMessageManager *)messageManager
@@ -136,16 +136,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic, readonly) StorageCoordinator *storageCoordinator;
 // GRDB TODO: Make this nullable.
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
+@property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 
 // This property is configured after Environment is created.
 @property (atomic, nullable) id<OWSCallMessageHandler> callMessageHandler;
 // This property is configured after Environment is created.
 @property (atomic) id<NotificationsProtocol> notificationsManager;
 
-@property (atomic, readonly) YapDatabaseConnection *objectReadWriteConnection;
 @property (atomic, readonly) YapDatabaseConnection *migrationDBConnection;
-@property (atomic, readonly) YapDatabaseConnection *analyticsDBConnection;
 
 - (BOOL)isComplete;
 

@@ -48,16 +48,16 @@ public class SSKBaseTestSwift: XCTestCase {
 
     @objc
     public func yapRead(_ block: @escaping (YapDatabaseReadTransaction) -> Void) {
-        return OWSPrimaryStorage.shared().dbReadConnection.read(block)
+        return OWSPrimaryStorage.shared.dbReadConnection.read(block)
     }
 
     @objc
     public func yapWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite(block)
+        return OWSPrimaryStorage.shared.dbReadWriteConnection.readWrite(block)
     }
 
     @objc
     public func yapAsyncWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection.asyncReadWrite(block)
+        return OWSPrimaryStorage.shared.dbReadWriteConnection.asyncReadWrite(block)
     }
 }

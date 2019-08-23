@@ -184,15 +184,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseDidUpdateExternally:)
                                                      name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                   object:OWSPrimaryStorage.shared.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseWillUpdate:)
                                                      name:OWSUIDatabaseConnectionWillUpdateNotification
-                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                   object:OWSPrimaryStorage.shared.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseDidUpdate:)
                                                      name:OWSUIDatabaseConnectionDidUpdateNotification
-                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                   object:OWSPrimaryStorage.shared.dbNotificationObject];
     }
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
@@ -1541,7 +1541,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
-    YapDatabaseConnection *uiDatabaseConnection = OWSPrimaryStorage.sharedManager.uiDatabaseConnection;
+    YapDatabaseConnection *uiDatabaseConnection = OWSPrimaryStorage.shared.uiDatabaseConnection;
     if (![[uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
                                                                           inNotifications:notifications]) {
 

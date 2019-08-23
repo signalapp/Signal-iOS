@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     StorageCoordinator *storageCoordinator = [StorageCoordinator new];
     SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
+    // Unlike AppSetup, we always load YDB in the tests.
     OWSPrimaryStorage *primaryStorage = databaseStorage.yapPrimaryStorage;
 
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];

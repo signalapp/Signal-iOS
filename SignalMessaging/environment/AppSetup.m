@@ -51,7 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
 
         StorageCoordinator *storageCoordinator = [StorageCoordinator new];
         SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
-        OWSPrimaryStorage *primaryStorage = databaseStorage.yapPrimaryStorage;
+        OWSPrimaryStorage *_Nullable primaryStorage;
+        if (databaseStorage.canLoadYdb) {
+            primaryStorage = databaseStorage.yapPrimaryStorage;
+        }
 
         // AFNetworking (via CFNetworking) spools it's attachments to NSTemporaryDirectory().
         // If you receive a media message while the device is locked, the download will fail if the temporary directory

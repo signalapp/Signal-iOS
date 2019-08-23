@@ -147,14 +147,15 @@ NS_ASSUME_NONNULL_BEGIN
                                                [DebugUIMisc sharePDFs:2];
                                            }]];
 
-    [items
-        addObject:[OWSTableItem
-                      itemWithTitle:@"Increment Database Extension Versions"
-                        actionBlock:^() {
-                            for (NSString *extensionName in OWSPrimaryStorage.sharedManager.registeredExtensionNames) {
-                                [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
-                            }
-                        }]];
+    [items addObject:[OWSTableItem
+                         itemWithTitle:@"Increment Database Extension Versions"
+                           actionBlock:^() {
+                               if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+                                   for (NSString *extensionName in OWSPrimaryStorage.shared.registeredExtensionNames) {
+                                       [OWSStorage incrementVersionOfDatabaseExtension:extensionName];
+                                   }
+                               }
+                           }]];
 
     [items addObject:[OWSTableItem itemWithTitle:@"Fetch system contacts"
                                      actionBlock:^() {
@@ -243,7 +244,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(dataSource != nil);
     [dataSource setSourceFilename:fileName];
     SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource dataUTI:utiType];
-    NSData *databasePassword = [OWSPrimaryStorage.sharedManager databasePassword];
+    NSData *databasePassword = [OWSPrimaryStorage.shared databasePassword];
     attachment.captionText = [databasePassword hexadecimalString];
     [self sendAttachment:attachment thread:thread];
 }
@@ -269,7 +270,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *filePath = [OWSFileSystem temporaryFilePathWithFileExtension:@"sqlite"];
     NSString *fileName = filePath.lastPathComponent;
 
-    NSError *error = [OWSPrimaryStorage.sharedManager.newDatabaseConnection backupToPath:filePath];
+    NSError *error = [OWSPrimaryStorage.shared.newDatabaseConnection backupToPath:filePath];
     if (error != nil) {
         OWSFailDebug(@"Could not copy database file: %@.", error);
         return;

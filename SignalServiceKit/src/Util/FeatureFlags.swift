@@ -114,7 +114,7 @@ public class FeatureFlags: NSObject {
     //            new install that never had a YDB database).
     //            Soon, we won't.
     @objc
-    public static let alwaysLoadYDB = true
+    public static let alwaysLoadYDB = false
 
     @objc
     public static var storageModeDescription: String {

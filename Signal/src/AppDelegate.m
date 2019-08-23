@@ -91,10 +91,8 @@ static NSTimeInterval launchStartedAt;
     return SSKEnvironment.shared.udManager;
 }
 
-- (OWSPrimaryStorage *)primaryStorage
+- (nullable OWSPrimaryStorage *)primaryStorage
 {
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
     return SSKEnvironment.shared.primaryStorage;
 }
 

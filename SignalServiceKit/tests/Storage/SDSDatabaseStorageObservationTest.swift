@@ -84,7 +84,7 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
     // MARK: - Dependencies
 
-    private var primaryStorage: OWSPrimaryStorage {
+    private var primaryStorage: OWSPrimaryStorage? {
         return SSKEnvironment.shared.primaryStorage
     }
 

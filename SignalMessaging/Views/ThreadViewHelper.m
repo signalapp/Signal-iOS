@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ThreadViewHelper.h"
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ] view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:grouping];
 
-    self.uiDatabaseConnection = [OWSPrimaryStorage.sharedManager newDatabaseConnection];
+    self.uiDatabaseConnection = [OWSPrimaryStorage.shared newDatabaseConnection];
     [self.uiDatabaseConnection beginLongLivedReadTransaction];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModified:)
                                                      name:YapDatabaseModifiedNotification
-                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                   object:OWSPrimaryStorage.shared.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModifiedExternally:)
                                                      name:YapDatabaseModifiedExternallyNotification
@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                         name:YapDatabaseModifiedNotification
-                                                      object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                      object:OWSPrimaryStorage.shared.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                         name:YapDatabaseModifiedExternallyNotification
                                                       object:nil];

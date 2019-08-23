@@ -58,7 +58,7 @@ typedef void (^OWSDatabaseMigrationCompletion)(void);
 // These migrations are run against the YDB store.
 @interface YDBDatabaseMigration : OWSDatabaseMigration
 
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
+@property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 
 // Subclasses should override this convenience method or runUpWithCompletion.
 - (void)runUpWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
