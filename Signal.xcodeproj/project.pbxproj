@@ -561,6 +561,7 @@
 		B821F2F82272CED3002C88C0 /* AccountDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */; };
 		B821F2FA2272CEEE002C88C0 /* SeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* SeedViewController.swift */; };
 		B825848B230F94FE001B41CB /* QRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825848A230F94FE001B41CB /* QRCodeViewController.swift */; };
+		B8258493230FA5E9001B41CB /* ScanQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */; };
 		B845B4D4230CD09100D759F0 /* LokiGroupChatPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
 		B89841E322B7579F00B1BDC6 /* NewConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89841E222B7579F00B1BDC6 /* NewConversationViewController.swift */; };
@@ -1352,6 +1353,8 @@
 		B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsViewController.swift; sourceTree = "<group>"; };
 		B821F2F92272CEEE002C88C0 /* SeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedViewController.swift; sourceTree = "<group>"; };
 		B825848A230F94FE001B41CB /* QRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeViewController.swift; sourceTree = "<group>"; };
+		B8258491230FA5DA001B41CB /* ScanQRCodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScanQRCodeViewController.h; sourceTree = "<group>"; };
+		B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScanQRCodeViewController.m; sourceTree = "<group>"; };
 		B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiGroupChatPoller.swift; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
 		B89841E222B7579F00B1BDC6 /* NewConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationViewController.swift; sourceTree = "<group>"; };
@@ -2618,6 +2621,8 @@
 				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
 				B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */,
 				B825848A230F94FE001B41CB /* QRCodeViewController.swift */,
+				B8258491230FA5DA001B41CB /* ScanQRCodeViewController.h */,
+				B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */,
 			);
 			path = Loki;
 			sourceTree = "<group>";
@@ -3801,6 +3806,7 @@
 				34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,
+				B8258493230FA5E9001B41CB /* ScanQRCodeViewController.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
 				3448E15E221333F5004B052E /* OnboardingController.swift in Sources */,
 				340FC8BD204DAC8D007AEB0F /* ShowGroupMembersViewController.m in Sources */,
