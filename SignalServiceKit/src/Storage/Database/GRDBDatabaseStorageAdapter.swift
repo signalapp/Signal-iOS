@@ -109,12 +109,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             InteractionRecord.columnName(.threadUniqueId),
                             InteractionRecord.columnName(.id)
                 ])
-            try db.create(index: "index_interactions_on_id_and_timestamp",
-                          on: InteractionRecord.databaseTableName,
-                          columns: [
-                            InteractionRecord.columnName(.id),
-                            InteractionRecord.columnName(.timestamp)
-                ])
+
             try db.create(index: "index_jobs_on_label",
                           on: JobRecordRecord.databaseTableName,
                           columns: [JobRecordRecord.columnName(.label)])
