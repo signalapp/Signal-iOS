@@ -8,6 +8,7 @@ public final class LokiGroupChatAPI : NSObject {
     private static let batchCount = 8
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
     @objc public static let publicChatID = 1
+    private static let maxRetryCount: UInt = 4
     private static let tokenCollection = "LokiGroupChatTokenCollection"
     
     internal static var userDisplayName: String { return SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: userHexEncodedPublicKey) ?? "Anonymous" }
@@ -103,7 +104,13 @@ public final class LokiGroupChatAPI : NSObject {
                 let timestamp = UInt64(date.timeIntervalSince1970) * 1000
                 return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp)
             }
-        }
+            }.recover { error -> Promise<LokiGroupMessage> in
+                if let error = error as? NetworkManagerError, error.statusCode == 401 {
+                    print("[Loki] Group chat token expired; dropping it.")
+                    storage.dbReadWriteConnection.removeObject(forKey: serverURL, inCollection: tokenCollection)
+                }
+                throw error
+            }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
     @objc(getMessagesForGroup:)
