@@ -33,6 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SDSDatabaseStorage.shared;
 }
 
+- (nullable OWSPrimaryStorage *)primaryStorage
+{
+    return SSKEnvironment.shared.primaryStorage;
+}
+
 #pragma mark -
 
 - (instancetype)init
@@ -63,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.threadMappings setIsReversed:YES forGroup:grouping];
 
     if (self.databaseStorage.canLoadYdb) {
-        self.uiDatabaseConnection = [OWSPrimaryStorage.shared newDatabaseConnection];
+        self.uiDatabaseConnection = [self.primaryStorage newDatabaseConnection];
         [self.uiDatabaseConnection beginLongLivedReadTransaction];
     }
 
@@ -120,7 +125,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModified:)
                                                      name:YapDatabaseModifiedNotification
-                                                   object:OWSPrimaryStorage.shared.dbNotificationObject];
+                                                   object:self.primaryStorage.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(yapDatabaseModifiedExternally:)
                                                      name:YapDatabaseModifiedExternallyNotification
@@ -128,7 +133,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                         name:YapDatabaseModifiedNotification
-                                                      object:OWSPrimaryStorage.shared.dbNotificationObject];
+                                                      object:self.primaryStorage.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] removeObserver:self
                                                         name:YapDatabaseModifiedExternallyNotification
                                                       object:nil];
