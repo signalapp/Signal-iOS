@@ -4693,10 +4693,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                      messageSticker:messageSticker
                                                   isViewOnceMessage:NO];
 
-    if (attachmentId.length > 0 && filename.length > 0) {
-        message.attachmentFilenameMap[attachmentId] = filename;
-    }
-
     [message anyInsertWithTransaction:transaction];
     [message updateWithFakeMessageState:messageState transaction:transaction];
     if (isDelivered) {

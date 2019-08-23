@@ -208,10 +208,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     self = [super initWithCoder:coder];
 
     if (self) {
-        if (!_attachmentFilenameMap) {
-            _attachmentFilenameMap = [NSMutableDictionary new];
-        }
-
         if (self.outgoingMessageSchemaVersion < 1) {
             OWSAssertDebug(_recipientAddressStates == nil);
 
@@ -478,8 +474,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
 
     _isVoiceMessage = isVoiceMessage;
-
-    _attachmentFilenameMap = [NSMutableDictionary new];
 
     // New outgoing messages should immediately determine their
     // recipient list from current thread state.
@@ -1367,15 +1361,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     }
     [result appendString:@"]"];
     return [result copy];
-}
-
-- (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    [super removeAllAttachmentsWithTransaction:transaction];
-
-    _attachmentFilenameMap = [NSMutableDictionary new];
 }
 
 @end

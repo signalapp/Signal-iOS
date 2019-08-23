@@ -179,8 +179,6 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 @property (atomic, readonly) BOOL hasSyncedTranscript;
 @property (atomic, readonly, nullable) NSString *customMessage;
 @property (atomic, readonly, nullable) NSString *mostRecentFailureText;
-// A map of attachment id-to-"source" filename.
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, NSString *> *attachmentFilenameMap;
 
 @property (atomic, readonly) TSGroupMetaMessage groupMetaMessage;
 
