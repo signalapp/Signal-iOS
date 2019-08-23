@@ -211,11 +211,11 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
     NSMutableArray<NSString *> *interactionIds = [NSMutableArray new];
     NSError *error;
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
-    [interactionFinder enumerateInteractionIdsObjcWithTransaction:transaction
-                                                            error:&error
-                                                            block:^(NSString *key, BOOL *stop) {
-                                                                [interactionIds addObject:key];
-                                                            }];
+    [interactionFinder enumerateInteractionIdsWithTransaction:transaction
+                                                        error:&error
+                                                        block:^(NSString *key, BOOL *stop) {
+                                                            [interactionIds addObject:key];
+                                                        }];
     if (error != nil) {
         OWSFailDebug(@"Error during enumeration: %@", error);
     }

@@ -28,21 +28,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     private let databaseUrl: URL
 
-    private static let keyServiceName: String = "TSKeyChainService"
-    private static let keyName: String = "OWSDatabaseCipherKeySpec"
-    private static var keyspec: GRDBKeySpecSource {
-        return GRDBKeySpecSource(keyServiceName: keyServiceName, keyName: keyName)
-    }
-    @objc
-    public static var isKeyAccessible: Bool {
-        do {
-            return try keyspec.fetchString().count > 0
-        } catch {
-            owsFailDebug("Key not accessible: \(error)")
-            return false
-        }
-    }
-
     private let storage: GRDBStorage
 
     public var pool: DatabasePool {
@@ -51,6 +36,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     init(baseDir: URL) throws {
         databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
+
+        try GRDBDatabaseStorageAdapter.ensureDatabaseKeySpecExists(baseDir: baseDir)
 
         storage = try GRDBStorage(dbURL: databaseUrl, keyspec: GRDBDatabaseStorageAdapter.keyspec)
 
@@ -356,6 +343,102 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     func setup() throws {
         GRDBMediaGalleryFinder.setup(storage: self)
     }
+
+    // MARK: -
+
+    private static let keyServiceName: String = "GRDBKeyChainService"
+    private static let keyName: String = "GRDBDatabaseCipherKeySpec"
+    private static var keyspec: GRDBKeySpecSource {
+        return GRDBKeySpecSource(keyServiceName: keyServiceName, keyName: keyName)
+    }
+
+    @objc
+    public static var isKeyAccessible: Bool {
+        do {
+            return try keyspec.fetchString().count > 0
+        } catch {
+            owsFailDebug("Key not accessible: \(error)")
+            return false
+        }
+    }
+
+    @objc
+    public static func ensureDatabaseKeySpecExists(baseDir: URL) throws {
+
+        do {
+            _ = try keyspec.fetchString()
+            // Key exists and is valid.
+            return
+        } catch {
+            Logger.warn("Key not accessible: \(error)")
+        }
+
+        // Because we use kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly,
+        // the keychain will be inaccessible after device restart until
+        // device is unlocked for the first time.  If the app receives
+        // a push notification, we won't be able to access the keychain to
+        // process that notification, so we should just terminate by throwing
+        // an uncaught exception.
+        var errorDescription = "CipherKeySpec inaccessible. New install or no unlock since device restart?"
+        if CurrentAppContext().isMainApp {
+            let applicationState = CurrentAppContext().reportedApplicationState
+            errorDescription += ", ApplicationState: \(NSStringForUIApplicationState(applicationState))"
+        }
+        Logger.error(errorDescription)
+        Logger.flush()
+
+        if CurrentAppContext().isMainApp {
+            if CurrentAppContext().isInBackground() {
+                // Rather than crash here, we should have already detected the situation earlier
+                // and exited gracefully (in the app delegate) using isDatabasePasswordAccessible.
+                // This is a last ditch effort to avoid blowing away the user's database.
+                throw OWSAssertionError(errorDescription)
+            }
+        } else {
+            throw OWSAssertionError("CipherKeySpec inaccessible; not main app.")
+        }
+
+        // At this point, either this is a new install so there's no existing password to retrieve
+        // or the keychain has become corrupt.  Either way, we want to get back to a
+        // "known good state" and behave like a new install.
+        let databaseUrl = GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir)
+        let doesDBExist = FileManager.default.fileExists(atPath: databaseUrl.path)
+        if doesDBExist {
+            owsFailDebug("Could not load database metadata")
+        }
+
+        if !CurrentAppContext().isRunningTests {
+            // Try to reset app by deleting database.
+            resetAllStorage(baseDir: baseDir)
+        }
+
+        keyspec.generateAndStore()
+    }
+
+    @objc
+    public static func resetAllStorage(baseDir: URL) {
+        // This might be redundant but in the spirit of thoroughness...
+
+        GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: baseDir)
+
+        deleteDBKeys()
+
+        KeyBackupService.clearKeychain()
+
+        if (CurrentAppContext().isMainApp) {
+            TSAttachmentStream.deleteAttachments()
+        }
+
+        // TODO: Delete Profiles on Disk?
+    }
+
+    private static func deleteDBKeys() {
+        do {
+            try keyspec.clear()
+        } catch {
+            owsFailDebug("Could not clear keychain: \(error)")
+        }
+    }
 }
 
 // MARK: -
@@ -501,6 +584,9 @@ private struct GRDBStorage {
 // MARK: -
 
 private struct GRDBKeySpecSource {
+    // 256 bit key + 128 bit salt
+    private let kSQLCipherKeySpecLength: UInt = 48
+
     let keyServiceName: String
     let keyName: String
 
@@ -512,9 +598,7 @@ private struct GRDBKeySpecSource {
         // x'98483C6EB40B6C31A448C22A66DED3B5E5E8D5119CAC8327B655C8B5C483648101010101010101010101010101010101'
         let data = try fetchData()
 
-        // 256 bit key + 128 bit salt
-        guard data.count == 48 else {
-            // crash
+        guard data.count == kSQLCipherKeySpecLength else {
             owsFail("unexpected keyspec length")
         }
 
@@ -524,6 +608,30 @@ private struct GRDBKeySpecSource {
 
     func fetchData() throws -> Data {
         return try CurrentAppContext().keychainStorage().data(forService: keyServiceName, key: keyName)
+    }
+
+    func clear() throws {
+        Logger.info("")
+
+        try CurrentAppContext().keychainStorage().remove(service: keyServiceName, key: keyName)
+    }
+
+    func generateAndStore() {
+        Logger.info("")
+
+        do {
+            let keyData = Randomness.generateRandomBytes(Int32(kSQLCipherKeySpecLength))
+            try store(data: keyData)
+        } catch {
+            owsFail("Could not generate key for GRDB: \(error)")
+        }
+    }
+
+    func store(data: Data) throws {
+        guard data.count == kSQLCipherKeySpecLength else {
+            owsFail("unexpected keyspec length")
+        }
+        try CurrentAppContext().keychainStorage().set(data: data, service: keyServiceName, key: keyName)
     }
 }
 
