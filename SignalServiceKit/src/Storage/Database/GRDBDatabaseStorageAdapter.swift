@@ -154,8 +154,8 @@ public class GRDBDatabaseStorageAdapter: NSObject {
             try db.create(index: "index_interactions_on_uniqueId_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,
                           columns: [
-                            InteractionRecord.columnName(.uniqueId),
-                            InteractionRecord.columnName(.threadUniqueId)
+                            InteractionRecord.columnName(.threadUniqueId),
+                            InteractionRecord.columnName(.uniqueId)
                 ])
 
             // Signal Account Indices
