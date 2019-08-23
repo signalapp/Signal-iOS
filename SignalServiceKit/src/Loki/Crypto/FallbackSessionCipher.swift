@@ -72,7 +72,7 @@ private extension String {
     @objc public func encrypt(message: Data) -> Data? {
         guard let symmetricKey = symmetricKey else { return nil }
         do {
-            return try DiffieHellman.encrypt(plainText: message, symmetricKey: symmetricKey)
+            return try DiffieHellman.encrypt(message, using: symmetricKey)
         } catch {
             Logger.warn("FallBackSessionCipher: Failed to encrypt message")
             return nil
@@ -86,7 +86,7 @@ private extension String {
     @objc public func decrypt(message: Data) -> Data? {
         guard let symmetricKey = symmetricKey else { return nil }
         do {
-            return try DiffieHellman.decrypt(cipherText: message, symmetricKey: symmetricKey)
+            return try DiffieHellman.decrypt(message, using: symmetricKey)
         } catch {
             Logger.warn("FallBackSessionCipher: Failed to decrypt message")
             return nil

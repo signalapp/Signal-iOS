@@ -291,7 +291,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 return;
             }
             
-            // Don't enqueue message for group threads
+            // Don't send any receipts for groups
             if (message.thread.isGroupThread) { return; }
             
             if ([self areReadReceiptsEnabled]) {

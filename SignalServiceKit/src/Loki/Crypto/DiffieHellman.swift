@@ -2,16 +2,14 @@ import CryptoSwift
 import Curve25519Kit
 
 public enum DiffieHellman {
-    // The length of the iv
+    
     public static let ivLength: Int32 = 16;
     
-    public static func encrypt(plainText: Data, symmetricKey: Data) throws -> Data {
+    public static func encrypt(_ plainTextData: Data, using symmetricKey: Data) throws -> Data {
         let iv = Randomness.generateRandomBytes(ivLength)!
         let ivBytes = [UInt8](iv)
-        
         let symmetricKeyBytes = [UInt8](symmetricKey)
-        let messageBytes = [UInt8](plainText)
-        
+        let messageBytes = [UInt8](plainTextData)
         let blockMode = CBC(iv: ivBytes)
         let aes = try AES(key: symmetricKeyBytes, blockMode: blockMode)
         let cipherText = try aes.encrypt(messageBytes)
@@ -19,25 +17,23 @@ public enum DiffieHellman {
         return Data(bytes: ivAndCipher, count: ivAndCipher.count)
     }
     
-    public static func encrypt(plainText: Data, publicKey: Data, privateKey: Data) throws -> Data {
+    public static func encrypt(_ plainTextData: Data, publicKey: Data, privateKey: Data) throws -> Data {
         let symmetricKey = try Curve25519.generateSharedSecret(fromPublicKey: publicKey, privateKey: privateKey)
-        return try encrypt(plainText: plainText, symmetricKey: symmetricKey)
+        return try encrypt(plainTextData, using: symmetricKey)
     }
     
-    public static func decrypt(cipherText: Data, symmetricKey: Data) throws -> Data {
+    public static func decrypt(_ encryptedData: Data, using symmetricKey: Data) throws -> Data {
         let symmetricKeyBytes = [UInt8](symmetricKey)
-        let ivBytes = [UInt8](cipherText[..<ivLength])
-        let cipherBytes = [UInt8](cipherText[ivLength...])
-        
+        let ivBytes = [UInt8](encryptedData[..<ivLength])
+        let cipherBytes = [UInt8](encryptedData[ivLength...])
         let blockMode = CBC(iv: ivBytes)
         let aes = try AES(key: symmetricKeyBytes, blockMode: blockMode)
         let decrypted = try aes.decrypt(cipherBytes)
-        
         return Data(bytes: decrypted, count: decrypted.count)
     }
     
-    public static func decrypt(cipherText: Data, publicKey: Data, privateKey: Data) throws -> Data {
+    public static func decrypt(_ encryptedData: Data, publicKey: Data, privateKey: Data) throws -> Data {
         let symmetricKey = try Curve25519.generateSharedSecret(fromPublicKey: publicKey, privateKey: privateKey)
-        return try decrypt(cipherText: cipherText, symmetricKey: symmetricKey)
+        return try decrypt(encryptedData, using: symmetricKey)
     }
 }

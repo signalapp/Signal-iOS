@@ -323,10 +323,8 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 return
             }
             
-            // Disable typing indicators on public group chats
-            guard !thread.isGroupThread() else {
-                return
-            }
+            // Don't send any typing indicators for groups
+            guard !thread.isGroupThread() else { return }
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
             messageSender.sendPromise(message: message).retainUntilComplete()
