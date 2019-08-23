@@ -56,9 +56,10 @@
     __block ConversationInteractionViewItem *viewItem = nil;
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSOutgoingMessage *message = [self.messageFactory createWithTransaction:transaction];
+        TSThread *thread = [message threadWithTransaction:transaction];
 
         viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:message
-                                                                  isGroupThread:NO
+                                                                         thread:thread
                                                                     transaction:transaction
                                                               conversationStyle:self.conversationStyle];
     }];
@@ -91,9 +92,10 @@
         };
 
         TSOutgoingMessage *message = [self.messageFactory createWithTransaction:transaction];
+        TSThread *thread = [message threadWithTransaction:transaction];
 
         viewItem = [[ConversationInteractionViewItem alloc] initWithInteraction:message
-                                                                  isGroupThread:NO
+                                                                         thread:thread
                                                                     transaction:transaction
                                                               conversationStyle:self.conversationStyle];
     }];
