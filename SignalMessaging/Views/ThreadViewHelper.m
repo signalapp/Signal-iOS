@@ -5,6 +5,7 @@
 #import "ThreadViewHelper.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
@@ -24,6 +25,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation ThreadViewHelper
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (instancetype)init
 {
@@ -52,8 +62,10 @@ NS_ASSUME_NONNULL_BEGIN
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ] view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:grouping];
 
-    self.uiDatabaseConnection = [OWSPrimaryStorage.shared newDatabaseConnection];
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    if (self.databaseStorage.canLoadYdb) {
+        self.uiDatabaseConnection = [OWSPrimaryStorage.shared newDatabaseConnection];
+        [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
@@ -92,6 +104,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _shouldObserveDBModifications = shouldObserveDBModifications;
+
+    if (!self.databaseStorage.canLoadYdb) {
+        return;
+    }
 
     if (shouldObserveDBModifications) {
         [self.uiDatabaseConnection beginLongLivedReadTransaction];

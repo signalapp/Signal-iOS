@@ -31,6 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark - Utility methods
 
 + (void)performUpdateCheckWithCompletion:(VersionMigrationCompletion)completion
@@ -143,11 +148,15 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *deleteError;
         if ([fm removeItemAtPath:bloomFilterPath error:&deleteError]) {
             OWSLogInfo(@"Successfully removed bloom filter cache.");
-            [OWSPrimaryStorage.dbReadWriteConnection
-                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                    [transaction removeAllObjectsInCollection:@"TSRecipient"];
-                }];
-            OWSLogInfo(@"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
+
+            if (self.databaseStorage.canLoadYdb) {
+                [OWSPrimaryStorage.dbReadWriteConnection
+                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                        [transaction removeAllObjectsInCollection:@"TSRecipient"];
+                    }];
+                OWSLogInfo(
+                    @"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
+            }
         } else {
             OWSLogError(@"Failed to remove bloom filter cache with error: %@", deleteError.localizedDescription);
         }

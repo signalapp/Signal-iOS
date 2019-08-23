@@ -134,14 +134,6 @@ public protocol SDSDatabaseStorageObserver: AnyObject {
 // SDSDatabaseStorage.add(databaseStorageObserver:)
 class SDSDatabaseStorageObservation {
 
-    // MARK: - Dependencies
-
-    private var primaryStorage: OWSPrimaryStorage? {
-        return SSKEnvironment.shared.primaryStorage
-    }
-
-    // MARK: -
-
     init() {
         self.addYDBObservers()
     }

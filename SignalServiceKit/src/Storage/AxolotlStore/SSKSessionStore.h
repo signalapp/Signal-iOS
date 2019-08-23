@@ -10,8 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
 
-extern NSString *const OWSPrimaryStorageSessionStoreCollection;
-
 @interface SSKSessionStore : NSObject <SessionStore>
 
 - (SessionRecord *)loadSessionForAddress:(SignalServiceAddress *)address
