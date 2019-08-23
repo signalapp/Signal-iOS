@@ -42,7 +42,6 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                           sortId:(uint64_t)sortId
-          storedIsSpecialMessage:(BOOL)storedIsSpecialMessage
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
                    attachmentIds:(NSArray<NSString *> *)attachmentIds
@@ -68,7 +67,6 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
     self = [super initWithUniqueId:uniqueId
                receivedAtTimestamp:receivedAtTimestamp
                             sortId:sortId
-            storedIsSpecialMessage:storedIsSpecialMessage
                          timestamp:timestamp
                     uniqueThreadId:uniqueThreadId
                      attachmentIds:attachmentIds

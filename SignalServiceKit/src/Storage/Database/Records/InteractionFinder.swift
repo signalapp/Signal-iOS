@@ -561,13 +561,12 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
             return nil
         }
         var index: UInt = 0
-        var threadIdMemory: NSString?
-        let threadIdPtr = AutoreleasingUnsafeMutablePointer<NSString?>(&threadIdMemory)
-        let wasFound = view.getGroup(threadIdPtr, index: &index, forKey: interactionId, inCollection: TSInteraction.collection())
+        var threadIdPtr: NSString?
+        let wasFound = view.getGroup(&threadIdPtr, index: &index, forKey: interactionId, inCollection: TSInteraction.collection())
         guard wasFound else {
             return nil
         }
-        guard let threadId = threadIdMemory else {
+        guard let threadId = threadIdPtr else {
             owsFailDebug("Missing threadId.")
             return nil
         }
@@ -1034,11 +1033,28 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         SELECT *
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .threadUniqueId) = ?
-        AND \(interactionColumn: .storedIsSpecialMessage) IS TRUE
+        AND (
+            (
+                \(interactionColumn: .errorType) IS ?
+                AND \(interactionColumn: .recordType) IS ?
+            )
+            OR \(interactionColumn: .recordType) IN ( ?, ?, ? )
+        )
         """
-        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [threadUniqueId], transaction: transaction)
+        let arguments: [DatabaseValueConvertible] = [threadUniqueId,
+                                             TSErrorMessageType.nonBlockingIdentityChange.rawValue,
+                                             SDSRecordType.errorMessage.rawValue,
+                                             SDSRecordType.invalidIdentityKeyErrorMessage.rawValue,
+                                             SDSRecordType.invalidIdentityKeyReceivingErrorMessage.rawValue,
+                                             SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue
+        ]
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
         do {
             while let interaction = try cursor.next() {
+                guard interaction.isSpecialMessage else {
+                    owsFailDebug("Not isSpecialMessage.")
+                    continue
+                }
                 var stop: ObjCBool = false
                 block(interaction, &stop)
                 if stop.boolValue {

@@ -421,6 +421,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
     NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    // POSTYDB TODO: Make separate finder methods to find these messages.
     [interactionFinder
         enumerateSpecialMessagesWithTransaction:transaction
                                           block:^(TSInteraction *interaction, BOOL *stop) {

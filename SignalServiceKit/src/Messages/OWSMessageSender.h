@@ -12,7 +12,6 @@ extern const NSUInteger kOversizeTextMessageSizeThreshold;
 @class OutgoingMessagePreparer;
 @class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
-@class TSInvalidIdentityKeySendingErrorMessage;
 @class TSNetworkManager;
 @class TSOutgoingMessage;
 @class TSThread;

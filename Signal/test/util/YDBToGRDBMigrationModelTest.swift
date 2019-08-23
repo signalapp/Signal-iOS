@@ -442,13 +442,15 @@ class YDBToGRDBMigrationModelTest: SignalBaseTest {
         let contactThread2 = TSContactThread(contactAddress: SignalServiceAddress(phoneNumber: "+13213334445"))
         // Attachments
         let attachmentData1 = Randomness.generateRandomBytes(1024)
-        let attachment1 = TSAttachmentStream(attachmentWithContentType: OWSMimeTypeImageGif,
+        let attachment1 = TSAttachmentStream(contentType: OWSMimeTypeImageGif,
                                              byteCount: UInt32(attachmentData1.count),
-                                             sourceFilename: "some.gif", caption: nil, albumMessageId: nil)
+                                             sourceFilename: "some.gif", caption: nil, albumMessageId: nil,
+                                             shouldAlwaysPad: true)
         let attachmentData2 = Randomness.generateRandomBytes(2048)
-        let attachment2 = TSAttachmentStream(attachmentWithContentType: OWSMimeTypeImagePdf,
+        let attachment2 = TSAttachmentStream(contentType: OWSMimeTypeImagePdf,
                                              byteCount: UInt32(attachmentData2.count),
-                                             sourceFilename: "some.df", caption: nil, albumMessageId: nil)
+                                             sourceFilename: "some.df", caption: nil, albumMessageId: nil,
+                                             shouldAlwaysPad: true)
         // Messages
         let outgoingMessage1 = TSOutgoingMessage(in: contactThread1, messageBody: "good heavens", attachmentId: attachment1.uniqueId)
         let outgoingMessage2 = TSOutgoingMessage(in: contactThread2, messageBody: "land's sakes", attachmentId: attachment2.uniqueId)
