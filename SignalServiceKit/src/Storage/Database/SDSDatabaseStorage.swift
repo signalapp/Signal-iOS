@@ -143,6 +143,12 @@ public class SDSDatabaseStorage: SDSTransactable {
         GRDBDatabaseStorageAdapter.removeAllFiles(baseDir: baseDir)
     }
 
+    @objc
+    public func resetAllStorage() {
+        OWSStorage.resetAllStorage()
+        GRDBDatabaseStorageAdapter.resetAllStorage(baseDir: baseDir)
+    }
+
     func createYapStorage() -> YAPDBStorageAdapter {
         if !canLoadYdb {
             Logger.error("storageMode: \(FeatureFlags.storageMode).")
