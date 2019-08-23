@@ -103,11 +103,11 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 try table.createTable(database: db)
             }
 
-            try db.create(index: "index_interactions_on_id_and_threadUniqueId",
+            try db.create(index: "index_interactions_on_threadUniqueId_and_id",
                           on: InteractionRecord.databaseTableName,
                           columns: [
-                            InteractionRecord.columnName(.id),
-                            InteractionRecord.columnName(.threadUniqueId)
+                            InteractionRecord.columnName(.threadUniqueId),
+                            InteractionRecord.columnName(.id)
                 ])
             try db.create(index: "index_interactions_on_id_and_timestamp",
                           on: InteractionRecord.databaseTableName,
