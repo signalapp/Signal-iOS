@@ -138,11 +138,23 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             InteractionRecord.columnName(.errorType)
                 ])
 
+            try db.create(index: "index_message_content_job_on_uniqueId",
+                          on: MessageContentJobRecord.databaseTableName,
+                          columns: [
+                            MessageContentJobRecord.columnName(.uniqueId)
+                ])
+
             // Media Gallery Indices
             try db.create(index: "index_attachments_on_albumMessageId",
                           on: AttachmentRecord.databaseTableName,
                           columns: [AttachmentRecord.columnName(.albumMessageId),
                                     AttachmentRecord.columnName(.recordType)])
+
+            try db.create(index: "index_attachments_on_uniqueId",
+                          on: AttachmentRecord.databaseTableName,
+                          columns: [
+                            AttachmentRecord.columnName(.uniqueId)
+                ])
 
             try db.create(index: "index_interactions_on_uniqueId_and_threadUniqueId",
                           on: InteractionRecord.databaseTableName,
