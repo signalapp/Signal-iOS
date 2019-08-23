@@ -8,7 +8,7 @@ import SignalServiceKit
 @objc
 public class OWSFlatButton: UIView {
 
-    private let button: UIButton
+    public let button: UIButton
 
     private var pressedBlock : (() -> Void)?
 

@@ -39,8 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
     AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (status == AVAuthorizationStatusDenied) {
         UIAlertController *alert = [UIAlertController
-            alertControllerWithTitle:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_TITLE", @"Alert title")
-                             message:NSLocalizedString(@"MISSING_CAMERA_PERMISSION_MESSAGE", @"Alert body")
+            alertControllerWithTitle:NSLocalizedString(@"Loki Messenger needs camera access to scan QR codes.", @"")
+                             message:NSLocalizedString(@"You can enable camera access in your device settings.", @"")
                       preferredStyle:UIAlertControllerStyleAlert];
 
         UIAlertAction *openSettingsAction =

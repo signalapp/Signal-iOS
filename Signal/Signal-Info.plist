@@ -127,7 +127,7 @@
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Signal needs to use Apple Music to play media attachments.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Signal uses your camera to take photos and for video calls.</string>
+	<string>Loki Messenger needs camera access to scan QR codes.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSFaceIDUsageDescription</key>

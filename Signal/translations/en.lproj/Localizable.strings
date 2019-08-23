@@ -2607,3 +2607,10 @@
 "Update Required" = "Update Required";
 "This version of Loki Messenger is no longer supported. Please press OK to reset your account and migrate to the latest version." = "This version of Loki Messenger is no longer supported. Please press OK to reset your account and migrate to the latest version.";
 "Loki Public Chat" = "Loki Public Chat";
+"Show QR Code" = "Show QR Code";
+"This is your personal QR code. Other people can scan it to start a secure conversation with you." = "This is your personal QR code. Other people can scan it to start a secure conversation with you.";
+"Scan a QR Code Instead" = "Scan a QR Code Instead";
+"Loki Messenger needs camera access to scan QR codes." = "Loki Messenger needs camera access to scan QR codes.";
+"You can enable camera access in your device settings." = "You can enable camera access in your device settings.";
+"Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and clicking \"Show QR Code\"." = "Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and clicking \"Show QR Code\".";
+"Scan QR Code" = "Scan QR Code";
