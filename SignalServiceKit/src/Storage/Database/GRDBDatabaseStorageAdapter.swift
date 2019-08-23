@@ -110,9 +110,24 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                             InteractionRecord.columnName(.id)
                 ])
 
-            try db.create(index: "index_jobs_on_label",
+            // Durable Job Queue
+
+            try db.create(index: "index_jobs_on_label_and_id",
                           on: JobRecordRecord.databaseTableName,
-                          columns: [JobRecordRecord.columnName(.label)])
+                          columns: [JobRecordRecord.columnName(.label),
+                                    JobRecordRecord.columnName(.id)])
+
+            try db.create(index: "index_jobs_on_status_and_label_and_id",
+                          on: JobRecordRecord.databaseTableName,
+                          columns: [JobRecordRecord.columnName(.label),
+                                    JobRecordRecord.columnName(.status),
+                                    JobRecordRecord.columnName(.id)])
+
+            try db.create(index: "index_jobs_on_uniqueId",
+                          on: JobRecordRecord.databaseTableName,
+                          columns: [JobRecordRecord.columnName(.uniqueId)])
+
+            // View Once
             try db.create(index: "index_interactions_on_view_once",
                           on: InteractionRecord.databaseTableName,
                           columns: [
