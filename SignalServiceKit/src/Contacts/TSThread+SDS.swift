@@ -27,7 +27,7 @@ public struct ThreadRecord: SDSRecord {
 
     // Base class properties
     public let archivalDate: Date?
-    public let archivedAsOfMessageSortId: Bool?
+    public let archivedAsOfMessageSortId: UInt64?
     public let conversationColorName: String
     public let creationDate: Date?
     public let isArchivedByLegacyTimestampForSorting: Bool
@@ -255,7 +255,7 @@ extension TSThreadSerializer {
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
     static let archivalDateColumn = SDSColumnMetadata(columnName: "archivalDate", columnType: .int64, isOptional: true, columnIndex: 3)
-    static let archivedAsOfMessageSortIdColumn = SDSColumnMetadata(columnName: "archivedAsOfMessageSortId", columnType: .int, isOptional: true, columnIndex: 4)
+    static let archivedAsOfMessageSortIdColumn = SDSColumnMetadata(columnName: "archivedAsOfMessageSortId", columnType: .int64, isOptional: true, columnIndex: 4)
     static let conversationColorNameColumn = SDSColumnMetadata(columnName: "conversationColorName", columnType: .unicodeString, columnIndex: 5)
     static let creationDateColumn = SDSColumnMetadata(columnName: "creationDate", columnType: .int64, isOptional: true, columnIndex: 6)
     static let isArchivedByLegacyTimestampForSortingColumn = SDSColumnMetadata(columnName: "isArchivedByLegacyTimestampForSorting", columnType: .int, columnIndex: 7)
@@ -644,7 +644,7 @@ class TSThreadSerializer: SDSSerializer {
 
         // Base class properties
         let archivalDate: Date? = model.archivalDate
-        let archivedAsOfMessageSortId: Bool? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { $0.boolValue })
+        let archivedAsOfMessageSortId: UInt64? = archiveOptionalNSNumber(model.archivedAsOfMessageSortId, conversion: { $0.uint64Value })
         let conversationColorName: String = model.conversationColorName.rawValue
         let creationDate: Date? = model.creationDate
         let isArchivedByLegacyTimestampForSorting: Bool = model.isArchivedByLegacyTimestampForSorting
