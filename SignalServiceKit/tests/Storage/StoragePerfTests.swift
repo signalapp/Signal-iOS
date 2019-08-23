@@ -111,10 +111,8 @@ class SDSPerformanceTests: SSKBaseTestSwift {
 
             // cleanup for next iteration
             self.write { transaction in
-                // FIXME: there's an outstanding PR which fixes a crash in this method
-                // when using Yap.
-                // TSThread.anyRemoveAllWithInstantation(transaction: transaction)
-                // TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
+                TSThread.anyRemoveAllWithInstantation(transaction: transaction)
+                TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
                 TSThread.anyRemoveAllWithoutInstantation(transaction: transaction)
                 TSInteraction.anyRemoveAllWithoutInstantation(transaction: transaction)
             }
@@ -162,10 +160,8 @@ class SDSPerformanceTests: SSKBaseTestSwift {
 
             // cleanup for next iteration
             self.write { transaction in
-                // FIXME: there's an outstanding PR which fixes a crash in this method
-                // when using Yap.
-                // TSThread.anyRemoveAllWithInstantation(transaction: transaction)
-                // TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
+                TSThread.anyRemoveAllWithInstantation(transaction: transaction)
+                TSInteraction.anyRemoveAllWithInstantation(transaction: transaction)
                 TSThread.anyRemoveAllWithoutInstantation(transaction: transaction)
                 TSInteraction.anyRemoveAllWithoutInstantation(transaction: transaction)
             }
