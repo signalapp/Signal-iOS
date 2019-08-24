@@ -72,13 +72,6 @@ NS_SWIFT_NAME(init(uniqueId:archivalDate:archivedAsOfMessageSortId:conversationC
  */
 - (BOOL)isGroupThread;
 
-/**
- *  Returns the name of the thread.
- *
- *  @return The name of the thread.
- */
-- (NSString *)name;
-
 @property (nonatomic, readonly) ConversationColorName conversationColorName;
 
 - (void)updateConversationColorName:(ConversationColorName)colorName transaction:(SDSAnyWriteTransaction *)transaction;

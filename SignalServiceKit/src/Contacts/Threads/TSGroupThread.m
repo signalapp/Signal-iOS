@@ -229,22 +229,9 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return [self.groupModel.groupMembers containsObject:localAddress];
 }
 
-- (NSString *)name
-{
-    // TODO sometimes groupName is set to the empty string. I'm hesitent to change
-    // the semantics here until we have time to thouroughly test the fallout.
-    // Instead, see the `groupNameOrDefault` which is appropriate for use when displaying
-    // text corresponding to a group.
-    return self.groupModel.groupName ?: self.class.defaultGroupName;
-}
-
 - (NSString *)groupNameOrDefault
 {
-    if (self.groupModel.groupName.length == 0) {
-        return self.class.defaultGroupName;
-    }
-
-    return self.groupModel.groupName;
+    return self.groupModel.groupNameOrDefault;
 }
 
 + (NSString *)defaultGroupName

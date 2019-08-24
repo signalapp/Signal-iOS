@@ -362,14 +362,10 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             switch thread {
             case is TSContactThread:
                 notificationTitle = senderName
-            case is TSGroupThread:
-                var groupName = thread.name()
-                if groupName.count < 1 {
-                    groupName = MessageStrings.newGroupDefaultTitle
-                }
+            case let groupThread as TSGroupThread:
                 notificationTitle = String(format: NotificationStrings.incomingGroupMessageTitleFormat,
                                            senderName,
-                                           groupName)
+                                           groupThread.groupNameOrDefault)
             default:
                 owsFailDebug("unexpected thread: \(thread)")
                 return
@@ -419,7 +415,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         case .noNameNoPreview:
             notificationTitle = nil
         case .nameNoPreview, .namePreview:
-            notificationTitle = thread.name()
+            notificationTitle = contactsManager.displayNameWithSneakyTransaction(thread: thread)
         }
 
         let notificationBody = NotificationStrings.failedToSendBody
@@ -456,7 +452,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             notificationTitle = nil
             threadIdentifier = nil
         case .namePreview, .nameNoPreview:
-            notificationTitle = thread.name()
+            notificationTitle = contactsManager.displayName(for: thread, transaction: transaction)
             threadIdentifier = thread.uniqueId
         }
 

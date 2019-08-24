@@ -153,11 +153,10 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
     OWSAssertDebug(fromViewController);
     OWSAssertDebug(blockingManager);
 
-    NSString *groupName = groupThread.name.length > 0 ? groupThread.name : TSGroupThread.defaultGroupName;
     NSString *title = [NSString
         stringWithFormat:NSLocalizedString(@"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT",
                              @"A format for the 'block group' action sheet title. Embeds the {{group name}}."),
-        [self formatDisplayNameForAlertTitle:groupName]];
+        [self formatDisplayNameForAlertTitle:groupThread.groupNameOrDefault]];
 
     UIAlertController *actionSheet =
         [UIAlertController alertControllerWithTitle:title
@@ -240,14 +239,12 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 
     [ThreadUtil enqueueLeaveGroupMessageInThread:groupThread];
 
-    NSString *groupName = groupThread.name.length > 0 ? groupThread.name : TSGroupThread.defaultGroupName;
-
     NSString *alertTitle
         = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE", @"The title of the 'group blocked' alert.");
     NSString *alertBodyFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT",
         @"The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}.");
-    NSString *alertBody =
-        [NSString stringWithFormat:alertBodyFormat, [self formatDisplayNameForAlertMessage:groupName]];
+    NSString *alertBody = [NSString
+        stringWithFormat:alertBodyFormat, [self formatDisplayNameForAlertMessage:groupThread.groupNameOrDefault]];
 
     [self showOkAlertWithTitle:alertTitle
                        message:alertBody
@@ -272,9 +269,7 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                             completionBlock:completionBlock];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        NSString *groupName = groupThread.name.length > 0 ? groupThread.name : TSGroupThread.defaultGroupName;
         [self showUnblockGroupActionSheet:groupThread.groupModel
-                              displayName:groupName
                        fromViewController:fromViewController
                           blockingManager:blockingManager
                           completionBlock:completionBlock];
@@ -385,12 +380,10 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 }
 
 + (void)showUnblockGroupActionSheet:(TSGroupModel *)groupModel
-                        displayName:(NSString *)displayName
                  fromViewController:(UIViewController *)fromViewController
                     blockingManager:(OWSBlockingManager *)blockingManager
                     completionBlock:(nullable BlockActionCompletionBlock)completionBlock
 {
-    OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
     OWSAssertDebug(blockingManager);
 
@@ -411,7 +404,6 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
                                                             style:UIAlertActionStyleDestructive
                                                           handler:^(UIAlertAction *_Nonnull action) {
                                                               [BlockListUIUtils unblockGroup:groupModel
-                                                                                 displayName:displayName
                                                                           fromViewController:fromViewController
                                                                              blockingManager:blockingManager
                                                                              completionBlock:^(UIAlertAction *ignore) {
@@ -435,12 +427,10 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 }
 
 + (void)unblockGroup:(TSGroupModel *)groupModel
-           displayName:(NSString *)displayName
     fromViewController:(UIViewController *)fromViewController
        blockingManager:(OWSBlockingManager *)blockingManager
        completionBlock:(BlockAlertCompletionBlock)completionBlock
 {
-    OWSAssertDebug(displayName.length > 0);
     OWSAssertDebug(fromViewController);
     OWSAssertDebug(blockingManager);
 
@@ -448,7 +438,8 @@ typedef void (^BlockAlertCompletionBlock)(UIAlertAction *action);
 
     NSString *titleFormat = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT",
         @"Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}.");
-    NSString *title = [NSString stringWithFormat:titleFormat, [self formatDisplayNameForAlertMessage:displayName]];
+    NSString *title =
+        [NSString stringWithFormat:titleFormat, [self formatDisplayNameForAlertMessage:groupModel.groupNameOrDefault]];
 
     NSString *message
         = NSLocalizedString(@"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY", @"Alert body after unblocking a group.");

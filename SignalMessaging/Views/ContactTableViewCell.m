@@ -63,13 +63,13 @@ NS_ASSUME_NONNULL_BEGIN
     [self layoutSubviews];
 }
 
-- (void)configureWithThread:(TSThread *)thread
+- (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
 
     [OWSTableItem configureCell:self];
 
-    [self.cellView configureWithThread:thread];
+    [self.cellView configureWithThread:thread transaction:transaction];
 
     // Force layout, since imageView isn't being initally rendered on App Store optimized build.
     [self layoutSubviews];

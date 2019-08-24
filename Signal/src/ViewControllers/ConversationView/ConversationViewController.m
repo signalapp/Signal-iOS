@@ -1368,12 +1368,11 @@ typedef enum : NSUInteger {
             icon =
                 [[UIImage imageNamed:@"profile-outline-16"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         }
+    } else if ([self.thread isKindOfClass:TSGroupThread.class]) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+        name = groupThread.groupNameOrDefault;
     } else {
-        if (self.thread.name.length == 0) {
-            name = [MessageStrings newGroupDefaultTitle];
-        } else {
-            name = self.thread.name;
-        }
+        OWSFailDebug(@"failure: unexpected thread: %@", self.thread);
     }
     self.title = nil;
 
@@ -1899,8 +1898,12 @@ typedef enum : NSUInteger {
 
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message
 {
+    __block NSString *threadName;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        threadName = [self.contactsManager displayNameForThread:self.thread transaction:transaction];
+    }];
     NSString *alertMessage = [NSString
-        stringWithFormat:NSLocalizedString(@"CORRUPTED_SESSION_DESCRIPTION", @"ActionSheet title"), self.thread.name];
+        stringWithFormat:NSLocalizedString(@"CORRUPTED_SESSION_DESCRIPTION", @"ActionSheet title"), threadName];
 
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
                                                                    message:alertMessage
