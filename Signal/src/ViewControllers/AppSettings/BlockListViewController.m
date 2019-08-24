@@ -138,21 +138,17 @@ NS_ASSUME_NONNULL_BEGIN
                                                  conversationColorName:conversationColorName
                                                               diameter:kStandardAvatarSize];
             }
-            NSString *groupName
-                = blockedGroup.groupName.length > 0 ? blockedGroup.groupName : TSGroupThread.defaultGroupName;
-
             [blockedGroupsSection addItem:[OWSTableItem
                                               itemWithCustomCellBlock:^{
                                                   OWSAvatarTableViewCell *cell = [OWSAvatarTableViewCell new];
                                                   [cell configureWithImage:image
-                                                                      text:groupName
+                                                                      text:blockedGroup.groupNameOrDefault
                                                                 detailText:nil];
                                                   return cell;
                                               }
                                               customRowHeight:UITableViewAutomaticDimension
                                               actionBlock:^{
                                                   [BlockListUIUtils showUnblockGroupActionSheet:blockedGroup
-                                                                                    displayName:groupName
                                                                              fromViewController:weakSelf
                                                                                 blockingManager:helper.blockingManager
                                                                                 completionBlock:^(BOOL isBlocked) {

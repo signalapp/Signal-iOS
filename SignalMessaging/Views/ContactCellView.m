@@ -148,7 +148,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     [self layoutSubviews];
 }
 
-- (void)configureWithThread:(TSThread *)thread
+- (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(thread);
     self.thread = thread;
@@ -156,11 +156,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     // Update fonts to reflect changes to dynamic type.
     [self configureFontsAndColors];
 
-    NSString *threadName = thread.name;
-    if (threadName.length == 0 && [thread isKindOfClass:[TSGroupThread class]]) {
-        threadName = [MessageStrings newGroupDefaultTitle];
-    }
-
+    NSString *threadName = [self.contactsManager displayNameForThread:thread transaction:transaction];
     TSContactThread *_Nullable contactThread;
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         contactThread = (TSContactThread *)self.thread;

@@ -16,6 +16,14 @@ public class ThreadDetailsCell: ConversationViewCell {
         notImplemented()
     }
 
+    // MARK: Dependencies
+
+    var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
+    // MARK: 
+
     private let avatarContainer = UIView()
     private var avatarView: ConversationAvatarImageView?
     private let avatarDiameter: CGFloat = 112
@@ -167,7 +175,7 @@ public class ThreadDetailsCell: ConversationViewCell {
                                                  comment: "The number of members in a group. Embeds {{member count}}")
             details = String(format: formatString, groupThread.groupModel.groupMembers.count)
         } else if let contactThread = threadDetails.thread as? TSContactThread {
-            if let phoneNumber = contactThread.contactAddress.phoneNumber, phoneNumber != contactThread.name() {
+            if let phoneNumber = contactThread.contactAddress.phoneNumber, phoneNumber != self.contactsManager.displayName(for: contactThread.contactAddress) {
                 details = PhoneNumber.bestEffortFormatPartialUserSpecifiedText(toLookLikeAPhoneNumber: phoneNumber)
             }
         } else {

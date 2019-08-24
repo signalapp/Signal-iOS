@@ -194,12 +194,6 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     return !![[OWSIdentityManager sharedManager] identityKeyForAddress:self.contactAddress];
 }
 
-// TODO deprecate this? seems weird to access the displayName in the DB model
-- (NSString *)name
-{
-    return [SSKEnvironment.shared.contactsManager displayNameForAddress:self.contactAddress];
-}
-
 + (nullable SignalServiceAddress *)contactAddressFromThreadId:(NSString *)threadId
                                                   transaction:(SDSAnyReadTransaction *)transaction
 {

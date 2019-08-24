@@ -14,6 +14,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @class SDSKeyValueStore;
 @class SignalAccount;
 @class SignalServiceAddress;
+@class TSThread;
 @class UIFont;
 
 /**
@@ -92,6 +93,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 - (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 - (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
+
+- (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
+- (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread
+    NS_SWIFT_NAME(displayNameWithSneakyTransaction(thread:));
 
 @end
 

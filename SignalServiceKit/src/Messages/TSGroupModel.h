@@ -34,6 +34,8 @@ extern const int32_t kGroupIdLength;
 - (NSString *)getInfoStringAboutUpdateTo:(TSGroupModel *)model contactsManager:(id<ContactsManagerProtocol>)contactsManager;
 #endif
 
+@property (nonatomic, readonly) NSString *groupNameOrDefault;
+
 @end
 
 NS_ASSUME_NONNULL_END

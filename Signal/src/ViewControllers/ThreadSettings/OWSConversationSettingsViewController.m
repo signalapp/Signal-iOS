@@ -166,20 +166,18 @@ const CGFloat kIconViewLength = 24;
 
 - (NSString *)threadName
 {
-    NSString *threadName = self.thread.name;
+    NSString *threadName = [self.contactsManager displayNameForThreadWithSneakyTransaction:self.thread];
 
-    TSContactThread *_Nullable contactThread;
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        contactThread = (TSContactThread *)self.thread;
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        return threadName;
     }
 
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
     NSString *_Nullable phoneNumber = contactThread.contactAddress.phoneNumber;
-
     if (phoneNumber && [threadName isEqualToString:phoneNumber]) {
         threadName = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
-    } else if (threadName.length == 0 && [self isGroupThread]) {
-        threadName = [MessageStrings newGroupDefaultTitle];
     }
+
     return threadName;
 }
 
@@ -992,7 +990,8 @@ const CGFloat kIconViewLength = 24;
         if (phoneNumber.length > 0) {
             NSString *formattedPhoneNumber =
                 [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
-            if (![contactThread.name isEqualToString:formattedPhoneNumber]) {
+            if (![[self.contactsManager displayNameForThreadWithSneakyTransaction:contactThread]
+                    isEqualToString:formattedPhoneNumber]) {
                 addSubtitle([[NSAttributedString alloc] initWithString:formattedPhoneNumber]);
             }
         }

@@ -324,7 +324,9 @@ extension ConversationPickerViewController: UITableViewDataSource {
             owsFail("cell was unexpectedly nil for indexPath: \(indexPath)")
         }
 
-        cell.configure(conversationItem: conversationItem)
+        databaseStorage.uiRead { transaction in
+            cell.configure(conversationItem: conversationItem, transaction: transaction)
+        }
 
         return cell
     }
@@ -527,7 +529,7 @@ private class ConversationPickerCell: ContactTableViewCell {
 
     // MARK: - ContactTableViewCell
 
-    public func configure(conversationItem: ConversationItem) {
+    public func configure(conversationItem: ConversationItem, transaction: SDSAnyReadTransaction) {
         if conversationItem.isBlocked {
             setAccessoryMessage(MessageStrings.conversationIsBlocked)
         } else {
@@ -540,7 +542,7 @@ private class ConversationPickerCell: ContactTableViewCell {
         case .contact(let address):
             super.configure(withRecipientAddress: address)
         case .group(let groupThread):
-            super.configure(with: groupThread)
+            super.configure(with: groupThread, transaction: transaction)
         }
 
         selectionStyle = .none
