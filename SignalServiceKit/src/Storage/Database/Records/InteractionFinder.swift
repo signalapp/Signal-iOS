@@ -49,6 +49,13 @@ protocol InteractionFinderAdapter {
     #if DEBUG
     func enumerateUnstartedExpiringMessages(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     #endif
+
+    func enumerateSpecialMessages(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void)
+
+    // The "reverse" index of the interaction. e.g. the last interaction
+    // in the conversation will have position 0, the second-to-last will
+    // have position 1, etc.
+    func threadPositionForInteraction(transaction: ReadTransaction, interactionId: String) -> NSNumber?
 }
 
 // MARK: -
@@ -303,6 +310,26 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
     #endif
+
+    @objc
+    public func enumerateSpecialMessages(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.enumerateSpecialMessages(transaction: yapRead, block: block)
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.enumerateSpecialMessages(transaction: grdbRead, block: block)
+        }
+    }
+
+    @objc
+    public func threadPositionForInteraction(transaction: SDSAnyReadTransaction, interactionId: String) -> NSNumber? {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.threadPositionForInteraction(transaction: yapRead, interactionId: interactionId)
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.threadPositionForInteraction(transaction: grdbRead, interactionId: interactionId)
+        }
+    }
 }
 
 // MARK: -
@@ -514,6 +541,47 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
                                                                              transaction: transaction)
     }
     #endif
+
+    func enumerateSpecialMessages(transaction: YapDatabaseReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        guard let view: YapDatabaseViewTransaction = transaction.safeViewTransaction(TSThreadSpecialMessagesDatabaseViewExtensionName) else {
+            return
+        }
+        view.safe_enumerateKeysAndObjects(inGroup: threadUniqueId,
+                                          extensionName: TSThreadSpecialMessagesDatabaseViewExtensionName) { (_, _, object, _, stopPtr) in
+                                            guard let interaction = object as? TSInteraction else {
+                                                owsFailDebug("unexpected interaction: \(type(of: object))")
+                                                return
+                                            }
+                                            block(interaction, stopPtr)
+        }
+    }
+
+    func threadPositionForInteraction(transaction: YapDatabaseReadTransaction, interactionId: String) -> NSNumber? {
+        guard let view: YapDatabaseViewTransaction = transaction.safeViewTransaction(TSMessageDatabaseViewExtensionName) else {
+            return nil
+        }
+        var index: UInt = 0
+        var threadIdPtr: NSString?
+        let wasFound = view.getGroup(&threadIdPtr, index: &index, forKey: interactionId, inCollection: TSInteraction.collection())
+        guard wasFound else {
+            return nil
+        }
+        guard let threadId = threadIdPtr else {
+            owsFailDebug("Missing threadId.")
+            return nil
+        }
+        guard threadId as String == self.threadUniqueId else {
+            owsFailDebug("Invalid threadId.")
+            return nil
+        }
+        let count: UInt = view.numberOfItems(inGroup: self.threadUniqueId)
+        guard index < count else {
+            owsFailDebug("Interaction has invalid index.")
+            return nil
+        }
+        let position: UInt = (count - index) - 1
+        return NSNumber(value: position)
+    }
 
     // MARK: - private
 
@@ -959,6 +1027,63 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
     }
     #endif
+
+    func enumerateSpecialMessages(transaction: GRDBReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND (
+            (
+                \(interactionColumn: .errorType) IS ?
+                AND \(interactionColumn: .recordType) IS ?
+            )
+            OR \(interactionColumn: .recordType) IN ( ?, ?, ? )
+        )
+        """
+        let arguments: [DatabaseValueConvertible] = [threadUniqueId,
+                                             TSErrorMessageType.nonBlockingIdentityChange.rawValue,
+                                             SDSRecordType.errorMessage.rawValue,
+                                             SDSRecordType.invalidIdentityKeyErrorMessage.rawValue,
+                                             SDSRecordType.invalidIdentityKeyReceivingErrorMessage.rawValue,
+                                             SDSRecordType.invalidIdentityKeySendingErrorMessage.rawValue
+        ]
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
+        do {
+            while let interaction = try cursor.next() {
+                guard interaction.isSpecialMessage else {
+                    owsFailDebug("Not isSpecialMessage.")
+                    continue
+                }
+                var stop: ObjCBool = false
+                block(interaction, &stop)
+                if stop.boolValue {
+                    return
+                }
+            }
+        } catch {
+            owsFail("error: \(error)")
+        }
+    }
+
+    func threadPositionForInteraction(transaction: GRDBReadTransaction, interactionId: String) -> NSNumber? {
+        do {
+            guard let index = try sortIndex(interactionUniqueId: interactionId, transaction: transaction) else {
+                owsFailDebug("Interaction index could not be found.")
+                return nil
+            }
+            let count = self.count(transaction: transaction)
+            guard index < count else {
+                owsFailDebug("Interaction has invalid index.")
+                return nil
+            }
+            let position: UInt = (count - index) - 1
+            return NSNumber(value: position)
+        } catch {
+            owsFailDebug("error: \(error)")
+            return nil
+        }
+    }
 }
 
 private func assertionError(_ description: String) -> Error {

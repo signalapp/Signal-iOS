@@ -332,6 +332,14 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     // Ignore sendReadReceipt - it doesn't apply to error messages.
 }
 
+- (BOOL)isSpecialMessage
+{
+    if (self.errorType == TSErrorMessageNonBlockingIdentityChange) {
+        return YES;
+    }
+    return [super isSpecialMessage];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -148,15 +148,8 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             return nil;
         }
         TSInteraction *interaction = (TSInteraction *)object;
-        if ([interaction isDynamicInteraction]) {
+        if (interaction.isSpecialMessage) {
             return interaction.uniqueThreadId;
-        } else if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-            return interaction.uniqueThreadId;
-        } else if ([object isKindOfClass:[TSErrorMessage class]]) {
-            TSErrorMessage *errorMessage = (TSErrorMessage *)object;
-            if (errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange) {
-                return errorMessage.uniqueThreadId;
-            }
         }
         return nil;
     }];

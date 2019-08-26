@@ -414,28 +414,32 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertDebug(transaction);
 
     ThreadDynamicInteractions *result = [ThreadDynamicInteractions new];
-    if (!transaction.transitional_yapReadTransaction) {
-        return result;
-    }
 
     // Find any "dynamic" interactions and safety number changes.
     //
     // We use different views for performance reasons.
     NSMutableArray<TSInvalidIdentityKeyErrorMessage *> *blockingSafetyNumberChanges = [NSMutableArray new];
     NSMutableArray<TSInteraction *> *nonBlockingSafetyNumberChanges = [NSMutableArray new];
-    [[TSDatabaseView threadSpecialMessagesDatabaseView:transaction.transitional_yapReadTransaction]
-        enumerateKeysAndObjectsInGroup:thread.uniqueId
-                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                if ([object isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
-                                    [blockingSafetyNumberChanges addObject:object];
-                                } else if ([object isKindOfClass:[TSErrorMessage class]]) {
-                                    TSErrorMessage *errorMessage = (TSErrorMessage *)object;
-                                    OWSAssertDebug(errorMessage.errorType == TSErrorMessageNonBlockingIdentityChange);
-                                    [nonBlockingSafetyNumberChanges addObject:errorMessage];
-                                } else {
-                                    OWSFailDebug(@"Unexpected dynamic interaction type: %@", [object class]);
-                                }
-                            }];
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    // POSTYDB TODO: Make separate finder methods to find these messages.
+    [interactionFinder
+        enumerateSpecialMessagesWithTransaction:transaction
+                                          block:^(TSInteraction *interaction, BOOL *stop) {
+                                              if ([interaction
+                                                      isKindOfClass:[TSInvalidIdentityKeyErrorMessage class]]) {
+                                                  TSInvalidIdentityKeyErrorMessage *errorMessage
+                                                      = (TSInvalidIdentityKeyErrorMessage *)interaction;
+                                                  [blockingSafetyNumberChanges addObject:errorMessage];
+                                              } else if ([interaction isKindOfClass:[TSErrorMessage class]]) {
+                                                  TSErrorMessage *errorMessage = (TSErrorMessage *)interaction;
+                                                  OWSAssertDebug(errorMessage.errorType
+                                                      == TSErrorMessageNonBlockingIdentityChange);
+                                                  [nonBlockingSafetyNumberChanges addObject:errorMessage];
+                                              } else {
+                                                  OWSFailDebug(
+                                                      @"Unexpected dynamic interaction type: %@", [interaction class]);
+                                              }
+                                          }];
 
     // Determine if there are "unread" messages in this conversation.
     // If we've been passed a firstUnseenInteractionTimestampParameter,
@@ -448,9 +452,17 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     if (lastUnreadIndicator) {
         firstUnseenSortId = @(lastUnreadIndicator.firstUnseenSortId);
     } else {
-        TSInteraction *_Nullable firstUnseenInteraction =
-            [[TSDatabaseView unseenDatabaseViewExtension:transaction.transitional_yapReadTransaction]
-                firstObjectInGroup:thread.uniqueId];
+        NSError *error;
+        __block TSInteraction *_Nullable firstUnseenInteraction;
+        [interactionFinder enumerateUnseenInteractionsWithTransaction:transaction
+                                                                error:&error
+                                                                block:^(TSInteraction *interaction, BOOL *stop) {
+                                                                    firstUnseenInteraction = interaction;
+                                                                    *stop = YES;
+                                                                }];
+        if (error != nil) {
+            OWSFailDebug(@"Error: %@", error);
+        }
         if (firstUnseenInteraction) {
             firstUnseenSortId = @(firstUnseenInteraction.sortId);
         }
@@ -458,7 +470,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
     [self ensureUnreadIndicator:result
                                 thread:thread
-                           transaction:transaction.transitional_yapReadTransaction
+                           transaction:transaction
                           maxRangeSize:maxRangeSize
            blockingSafetyNumberChanges:blockingSafetyNumberChanges
         nonBlockingSafetyNumberChanges:nonBlockingSafetyNumberChanges
@@ -468,9 +480,8 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     // Determine the position of the focus message _after_ performing any mutations
     // around dynamic interactions.
     if (focusMessageId != nil) {
-        result.focusMessagePosition = [self focusMessagePositionForThread:thread
-                                                              transaction:transaction.transitional_yapReadTransaction
-                                                           focusMessageId:focusMessageId];
+        result.focusMessagePosition =
+            [self focusMessagePositionForThread:thread transaction:transaction focusMessageId:focusMessageId];
     }
 
     return result;
@@ -478,7 +489,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
 + (void)ensureUnreadIndicator:(ThreadDynamicInteractions *)dynamicInteractions
                             thread:(TSThread *)thread
-                       transaction:(YapDatabaseReadTransaction *)transaction
+                       transaction:(SDSAnyReadTransaction *)transaction
                       maxRangeSize:(NSUInteger)maxRangeSize
        blockingSafetyNumberChanges:(NSArray<TSInvalidIdentityKeyErrorMessage *> *)blockingSafetyNumberChanges
     nonBlockingSafetyNumberChanges:(NSArray<TSInteraction *> *)nonBlockingSafetyNumberChanges
@@ -499,8 +510,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         return;
     }
 
-    YapDatabaseViewTransaction *threadMessagesTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
-    OWSAssertDebug([threadMessagesTransaction isKindOfClass:[YapDatabaseViewTransaction class]]);
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
 
     // Determine unread indicator position, if necessary.
     //
@@ -513,41 +523,38 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     __block NSUInteger visibleUnseenMessageCount = 0;
     __block TSInteraction *interactionAfterUnreadIndicator = nil;
     __block BOOL hasMoreUnseenMessages = NO;
-    [threadMessagesTransaction
-        enumerateKeysAndObjectsInGroup:thread.uniqueId
-                           withOptions:NSEnumerationReverse
-                            usingBlock:^(NSString *collection, NSString *key, id object, NSUInteger index, BOOL *stop) {
-                                if (![object isKindOfClass:[TSInteraction class]]) {
-                                    OWSFailDebug(@"Expected a TSInteraction: %@", [object class]);
-                                    return;
-                                }
+    NSError *error;
+    [interactionFinder
+        enumerateInteractionsWithTransaction:transaction
+                                       error:&error
+                                       block:^(TSInteraction *interaction, BOOL *stop) {
+                                           if (interaction.isDynamicInteraction) {
+                                               // Ignore dynamic interactions, if any.
+                                               return;
+                                           }
 
-                                TSInteraction *interaction = (TSInteraction *)object;
+                                           if (interaction.sortId < firstUnseenSortId.unsignedLongLongValue) {
+                                               // By default we want the unread indicator to appear just before
+                                               // the first unread message.
+                                               *stop = YES;
+                                               return;
+                                           }
 
-                                if (interaction.isDynamicInteraction) {
-                                    // Ignore dynamic interactions, if any.
-                                    return;
-                                }
+                                           visibleUnseenMessageCount++;
 
-                                if (interaction.sortId < firstUnseenSortId.unsignedLongLongValue) {
-                                    // By default we want the unread indicator to appear just before
-                                    // the first unread message.
-                                    *stop = YES;
-                                    return;
-                                }
+                                           interactionAfterUnreadIndicator = interaction;
 
-                                visibleUnseenMessageCount++;
-
-                                interactionAfterUnreadIndicator = interaction;
-
-                                if (visibleUnseenMessageCount + 1 >= maxRangeSize) {
-                                    // If there are more unseen messages than can be displayed in the
-                                    // messages view, show the unread indicator at the top of the
-                                    // displayed messages.
-                                    *stop = YES;
-                                    hasMoreUnseenMessages = YES;
-                                }
-                            }];
+                                           if (visibleUnseenMessageCount + 1 >= maxRangeSize) {
+                                               // If there are more unseen messages than can be displayed in the
+                                               // messages view, show the unread indicator at the top of the
+                                               // displayed messages.
+                                               *stop = YES;
+                                               hasMoreUnseenMessages = YES;
+                                           }
+                                       }];
+    if (error != nil) {
+        OWSFailDebug(@"error: %@", error);
+    }
 
     if (!interactionAfterUnreadIndicator) {
         // If we can't find an interaction after the unread indicator,
@@ -602,36 +609,15 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 }
 
 + (nullable NSNumber *)focusMessagePositionForThread:(TSThread *)thread
-                                         transaction:(YapDatabaseReadTransaction *)transaction
+                                         transaction:(SDSAnyReadTransaction *)transaction
                                       focusMessageId:(NSString *)focusMessageId
 {
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
     OWSAssertDebug(focusMessageId);
 
-    YapDatabaseViewTransaction *databaseView = [transaction ext:TSMessageDatabaseViewExtensionName];
-
-    NSString *_Nullable group = nil;
-    NSUInteger index;
-    BOOL success =
-        [databaseView getGroup:&group index:&index forKey:focusMessageId inCollection:TSInteraction.collection];
-    if (!success) {
-        // This might happen if the focus message has disappeared
-        // before this view could appear.
-        OWSFailDebug(@"failed to find focus message index.");
-        return nil;
-    }
-    if (![group isEqualToString:thread.uniqueId]) {
-        OWSFailDebug(@"focus message has invalid group.");
-        return nil;
-    }
-    NSUInteger count = [databaseView numberOfItemsInGroup:thread.uniqueId];
-    if (index >= count) {
-        OWSFailDebug(@"focus message has invalid index.");
-        return nil;
-    }
-    NSUInteger position = (count - index) - 1;
-    return @(position);
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+    return [interactionFinder threadPositionForInteractionWithTransaction:transaction interactionId:focusMessageId];
 }
 
 + (BOOL)addThreadToProfileWhitelistIfEmptyThreadWithSneakyTransaction:(TSThread *)thread

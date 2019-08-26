@@ -61,6 +61,10 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 @property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
 
+// This property is used to flag interactions that
+// require special handling in the conversation view.
+@property (nonatomic, readonly) BOOL isSpecialMessage;
+
 - (NSDate *)receivedAtDate;
 
 - (OWSInteractionType)interactionType;

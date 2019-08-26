@@ -22,6 +22,26 @@ typedef void (^OWSThumbnailFailure)(void);
 
 - (instancetype)init NS_UNAVAILABLE;
 
+- (instancetype)initWithServerId:(UInt64)serverId
+                   encryptionKey:(NSData *)encryptionKey
+                       byteCount:(UInt32)byteCount
+                     contentType:(NSString *)contentType
+                  sourceFilename:(nullable NSString *)sourceFilename
+                         caption:(nullable NSString *)caption
+                  albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+
+- (instancetype)initForRestoreWithUniqueId:(NSString *)uniqueId
+                               contentType:(NSString *)contentType
+                            sourceFilename:(nullable NSString *)sourceFilename
+                                   caption:(nullable NSString *)caption
+                            albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+
+- (instancetype)initAttachmentWithContentType:(NSString *)contentType
+                                    byteCount:(UInt32)byteCount
+                               sourceFilename:(nullable NSString *)sourceFilename
+                                      caption:(nullable NSString *)caption
+                               albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+
 - (instancetype)initWithContentType:(NSString *)contentType
                           byteCount:(UInt32)byteCount
                      sourceFilename:(nullable NSString *)sourceFilename

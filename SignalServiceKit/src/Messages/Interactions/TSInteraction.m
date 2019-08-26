@@ -263,6 +263,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
                      (unsigned long)self.timestamp];
 }
 
+- (BOOL)isSpecialMessage
+{
+    return [self isDynamicInteraction];
+}
+
 #pragma mark - Any Transaction Hooks
 
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
