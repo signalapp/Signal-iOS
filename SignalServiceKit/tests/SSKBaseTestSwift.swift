@@ -9,6 +9,14 @@ import CocoaLumberjack
 @objc
 public class SSKBaseTestSwift: XCTestCase {
 
+    // MARK: - Dependencies
+
+    var primaryStorage: OWSPrimaryStorage? {
+        return SSKEnvironment.shared.primaryStorage
+    }
+
+    // MARK: -
+
     @objc
     public override func setUp() {
         super.setUp()
@@ -48,16 +56,28 @@ public class SSKBaseTestSwift: XCTestCase {
 
     @objc
     public func yapRead(_ block: @escaping (YapDatabaseReadTransaction) -> Void) {
-        return OWSPrimaryStorage.shared().dbReadConnection.read(block)
+        guard let primaryStorage = primaryStorage else {
+            XCTFail("Missing primaryStorage.")
+            return
+        }
+        return primaryStorage.dbReadConnection.read(block)
     }
 
     @objc
     public func yapWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite(block)
+        guard let primaryStorage = primaryStorage else {
+            XCTFail("Missing primaryStorage.")
+            return
+        }
+        return primaryStorage.dbReadWriteConnection.readWrite(block)
     }
 
     @objc
     public func yapAsyncWrite(_ block: @escaping (YapDatabaseReadWriteTransaction) -> Void) {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection.asyncReadWrite(block)
+        guard let primaryStorage = primaryStorage else {
+            XCTFail("Missing primaryStorage.")
+            return
+        }
+        return primaryStorage.dbReadWriteConnection.asyncReadWrite(block)
     }
 }

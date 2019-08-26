@@ -222,14 +222,12 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
 #pragma mark - Dependencies
 
-- (OWSPrimaryStorage *)primaryStorage
+- (nullable OWSPrimaryStorage *)primaryStorage
 {
-    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
-
     return SSKEnvironment.shared.primaryStorage;
 }
 
-- (YapDatabaseConnection *)uiDatabaseConnection
+- (nullable YapDatabaseConnection *)uiDatabaseConnection
 {
     return self.primaryStorage.uiDatabaseConnection;
 }
@@ -333,7 +331,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     self.typingIndicatorsSender = [self.typingIndicators typingAddressForThread:self.thread];
     self.collapseCutoffDate = [NSDate new];
 
-    [self.primaryStorage updateUIDatabaseConnectionToLatest];
+    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+        [self.primaryStorage updateUIDatabaseConnectionToLatest];
+    }
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         [self ensureDynamicInteractionsAndUpdateIfNecessary:NO transaction:transaction];
@@ -429,7 +429,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
             // loadNMoreMessages calls resetMapping which calls ensureDynamicInteractions,
             // which may move the unread indicator, and for scrollToUnreadIndicatorAnimated
             // to work properly, the view items need to be updated to reflect that change.
-            [self.primaryStorage updateUIDatabaseConnectionToLatest];
+            if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+                [self.primaryStorage updateUIDatabaseConnectionToLatest];
+            }
 
             [self.delegate conversationViewModelDidLoadPrevPage];
         });
@@ -1206,7 +1208,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     // Flag to ensure that we only increment once per launch.
     if (hasError) {
         OWSLogWarn(@"incrementing version of: %@", TSMessageDatabaseViewExtensionName);
-        [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
+        if (SSKFeatureFlags.storageMode == StorageModeYdb) {
+            [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
+        }
     }
 
     // Update the "break" properties (shouldShowDate and unreadIndicator) of the view items.

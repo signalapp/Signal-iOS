@@ -31,6 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
 #pragma mark - Utility methods
 
 + (void)performUpdateCheckWithCompletion:(VersionMigrationCompletion)completion
@@ -42,12 +47,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(Environment.shared);
     OWSAssertDebug(completion);
 
-    NSString *previousVersion = AppVersion.sharedInstance.lastAppVersion;
+    NSString *_Nullable lastCompletedLaunchAppVersion = AppVersion.sharedInstance.lastCompletedLaunchAppVersion;
     NSString *currentVersion = AppVersion.sharedInstance.currentAppVersion;
 
-    OWSLogInfo(@"Checking migrations. currentVersion: %@, lastRanVersion: %@", currentVersion, previousVersion);
+    OWSLogInfo(@"Checking migrations. currentVersion: %@, lastCompletedLaunchAppVersion: %@",
+        currentVersion,
+        lastCompletedLaunchAppVersion);
 
-    if (!previousVersion) {
+    if (!lastCompletedLaunchAppVersion) {
         OWSLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
         OWSDatabaseMigrationRunner *runner = [[OWSDatabaseMigrationRunner alloc] init];
         [runner assumeAllExistingMigrationsRun];
@@ -57,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    if ([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) {
+    if ([self isVersion:lastCompletedLaunchAppVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) {
         OWSLogError(@"Migrating from RedPhone no longer supported. Quitting.");
         // Not translating these as so few are affected.
         UIAlertController *alert = [UIAlertController
@@ -76,11 +83,13 @@ NS_ASSUME_NONNULL_BEGIN
         [CurrentAppContext().frontmostViewController presentAlert:alert];
     }
 
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [self.tsAccountManager isRegistered]) {
+    if ([self isVersion:lastCompletedLaunchAppVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] &&
+        [self.tsAccountManager isRegistered]) {
         [self clearVideoCache];
     }
 
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [self.tsAccountManager isRegistered]) {
+    if ([self isVersion:lastCompletedLaunchAppVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] &&
+        [self.tsAccountManager isRegistered]) {
         [self clearBloomFilterCache];
     }
 
@@ -139,11 +148,15 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *deleteError;
         if ([fm removeItemAtPath:bloomFilterPath error:&deleteError]) {
             OWSLogInfo(@"Successfully removed bloom filter cache.");
-            [OWSPrimaryStorage.dbReadWriteConnection
-                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                    [transaction removeAllObjectsInCollection:@"TSRecipient"];
-                }];
-            OWSLogInfo(@"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
+
+            if (self.databaseStorage.canLoadYdb) {
+                [OWSPrimaryStorage.dbReadWriteConnection
+                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                        [transaction removeAllObjectsInCollection:@"TSRecipient"];
+                    }];
+                OWSLogInfo(
+                    @"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
+            }
         } else {
             OWSLogError(@"Failed to remove bloom filter cache with error: %@", deleteError.localizedDescription);
         }

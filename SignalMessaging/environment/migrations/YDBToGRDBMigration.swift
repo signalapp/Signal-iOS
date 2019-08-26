@@ -108,6 +108,10 @@ extension YDBToGRDBMigration {
         return .shared()
     }
 
+    private var primaryStorage: OWSPrimaryStorage? {
+        return SSKEnvironment.shared.primaryStorage
+    }
+
     // MARK: -
 
     func run() throws {
@@ -154,7 +158,10 @@ extension YDBToGRDBMigration {
         //
         // TODO: see if we can get reasonable perf by avoiding the nested transactions and
         // instead doing work in non-overlapping batches.
-        let ydbReadConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
+        guard let primaryStorage = primaryStorage else {
+            owsFail("Missing primaryStorage.")
+        }
+        let ydbReadConnection = primaryStorage.newDatabaseConnection()
         ydbReadConnection.beginLongLivedReadTransaction()
 
         for migratorGroup in migratorGroups {

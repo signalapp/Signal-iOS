@@ -10,7 +10,7 @@ public class SDSDatabaseStorageChange: NSObject {
 
     // MARK: - Dependencies
 
-    private var primaryStorage: OWSPrimaryStorage {
+    private var primaryStorage: OWSPrimaryStorage? {
         return SSKEnvironment.shared.primaryStorage
     }
 
@@ -66,7 +66,11 @@ public class SDSDatabaseStorageChange: NSObject {
         guard let ydbNotifications = ydbNotifications else {
             return false
         }
-        let connection = self.primaryStorage.uiDatabaseConnection
+        guard let primaryStorage = self.primaryStorage else {
+            owsFailDebug("Missing primaryStorage.")
+            return false
+        }
+        let connection = primaryStorage.uiDatabaseConnection
         return connection.hasChange(forCollection: collection, in: ydbNotifications) ||
             connection.didClearCollection(collection, in: ydbNotifications)
     }
@@ -96,7 +100,11 @@ public class SDSDatabaseStorageChange: NSObject {
         guard let ydbNotifications = ydbNotifications else {
             return false
         }
-        let connection = self.primaryStorage.uiDatabaseConnection
+        guard let primaryStorage = self.primaryStorage else {
+            owsFailDebug("Missing primaryStorage.")
+            return false
+        }
+        let connection = primaryStorage.uiDatabaseConnection
         return connection.hasChange(forKey: interactionId,
                                     inCollection: TSInteraction.collection(),
                                     in: ydbNotifications)
@@ -125,14 +133,6 @@ public protocol SDSDatabaseStorageObserver: AnyObject {
 // If you wish to observe "generic" data store changes, use:
 // SDSDatabaseStorage.add(databaseStorageObserver:)
 class SDSDatabaseStorageObservation {
-
-    // MARK: - Dependencies
-
-    private var primaryStorage: OWSPrimaryStorage {
-        return SSKEnvironment.shared.primaryStorage
-    }
-
-    // MARK: -
 
     init() {
         self.addYDBObservers()

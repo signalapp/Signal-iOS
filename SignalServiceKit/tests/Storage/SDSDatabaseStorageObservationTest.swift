@@ -82,15 +82,13 @@ extension MockObserver: SDSDatabaseStorageObserver {
 
 class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
 
-    // MARK: - Dependencies
-
-    private var primaryStorage: OWSPrimaryStorage {
-        return SSKEnvironment.shared.primaryStorage
-    }
-
     // MARK: - YDB
 
     func testYDBSyncWrite() {
+        guard let primaryStorage = primaryStorage else {
+            XCTFail("Missing primaryStorage.")
+            return
+        }
 
         // Make sure there's already at least one thread.
         var someThread: TSThread?
@@ -279,6 +277,10 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
     }
 
     func testYDBAsyncWrite() {
+        guard let primaryStorage = primaryStorage else {
+            XCTFail("Missing primaryStorage.")
+            return
+        }
 
         // Make sure there's already at least one thread.
         var someThread: TSThread?
@@ -479,10 +481,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             someThread = TSContactThread.getOrCreateThread(withContactAddress: recipient, transaction: transaction)
         }
 
-        // First flush any pending notifications in OWSPrimaryStorage
-        // from setup.
-        primaryStorage.updateUIDatabaseConnectionToLatest()
-
         // First flush any pending notifications in SDSDatabaseStorageObservation
         // from setup.
         let flushExpectation = self.expectation(description: "Database Storage Observer")
@@ -670,10 +668,6 @@ class SDSDatabaseStorageObservationTest: SSKBaseTestSwift {
             let recipient = SignalServiceAddress(phoneNumber: "+1222333444")
             someThread = TSContactThread.getOrCreateThread(withContactAddress: recipient, transaction: transaction)
         }
-
-        // First flush any pending notifications in OWSPrimaryStorage
-        // from setup.
-        primaryStorage.updateUIDatabaseConnectionToLatest()
 
         // First flush any pending notifications in SDSDatabaseStorageObservation
         // from setup.

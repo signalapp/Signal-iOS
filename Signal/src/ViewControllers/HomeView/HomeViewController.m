@@ -158,6 +158,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return SDSDatabaseStorage.shared;
 }
 
+- (nullable OWSPrimaryStorage *)primaryStorage
+{
+    return SSKEnvironment.shared.primaryStorage;
+}
+
 #pragma mark -
 
 - (void)observeNotifications
@@ -184,15 +189,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseDidUpdateExternally:)
                                                      name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                   object:self.primaryStorage.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseWillUpdate:)
                                                      name:OWSUIDatabaseConnectionWillUpdateNotification
-                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                   object:self.primaryStorage.dbNotificationObject];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(uiDatabaseDidUpdate:)
                                                      name:OWSUIDatabaseConnectionDidUpdateNotification
-                                                   object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
+                                                   object:self.primaryStorage.dbNotificationObject];
     }
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
@@ -1541,7 +1546,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
-    YapDatabaseConnection *uiDatabaseConnection = OWSPrimaryStorage.sharedManager.uiDatabaseConnection;
+    YapDatabaseConnection *uiDatabaseConnection = self.primaryStorage.uiDatabaseConnection;
     if (![[uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
                                                                           inNotifications:notifications]) {
 

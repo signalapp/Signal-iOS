@@ -84,7 +84,12 @@ class YDBFullTextSearcherTest: SignalBaseTest {
     override func setUp() {
         super.setUp()
 
-        YDBFullTextSearchFinder.ensureDatabaseExtensionRegistered(storage: OWSPrimaryStorage.shared())
+        guard let primaryStorage = primaryStorage else {
+            XCTFail("Missing primaryStorage.")
+            return
+        }
+
+        YDBFullTextSearchFinder.ensureDatabaseExtensionRegistered(storage: primaryStorage)
 
         // Replace this singleton.
         SSKEnvironment.shared.contactsManager = YDBFullTextSearcherContactsManager()

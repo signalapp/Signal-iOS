@@ -120,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Dependencies
 
-- (OWSPrimaryStorage *)primaryStorage
+- (nullable OWSPrimaryStorage *)primaryStorage
 {
     OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
 

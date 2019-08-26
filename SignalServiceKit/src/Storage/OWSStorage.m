@@ -380,6 +380,11 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     return SSKEnvironment.shared.databaseStorage;
 }
 
++ (nullable OWSPrimaryStorage *)primaryStorage
+{
+    return SSKEnvironment.shared.primaryStorage;
+}
+
 #pragma mark -
 
 - (instancetype)init
@@ -477,9 +482,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     __block OWSBackgroundTask *_Nullable backgroundTask =
         [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
-    [OWSPrimaryStorage.sharedManager runSyncRegistrations];
+    [self.primaryStorage runSyncRegistrations];
 
-    [OWSPrimaryStorage.sharedManager runAsyncRegistrationsWithCompletion:^{
+    [self.primaryStorage runAsyncRegistrationsWithCompletion:^{
         OWSAssertDebug(self.isStorageReady);
 
         [self postRegistrationCompleteNotification];
@@ -512,7 +517,10 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (BOOL)isStorageReady
 {
-    return OWSPrimaryStorage.sharedManager.areAllRegistrationsComplete;
+    if (self.databaseStorage.canLoadYdb && !self.primaryStorage.areAllRegistrationsComplete) {
+        return NO;
+    }
+    return YES;
 }
 
 + (YapDatabaseOptions *)defaultDatabaseOptions
