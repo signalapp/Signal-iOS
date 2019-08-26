@@ -53,7 +53,7 @@ public class OWS1XXGRDBMigration: YDBDatabaseMigration {
     }
 
     public override var shouldBeSaved: Bool {
-        if FeatureFlags.storageMode == .grdbThrowaway {
+        if databaseStorage.shouldUseDisposableGrdb {
             // Do nothing so as to re-run every launch.
             // Useful while actively developing the migration.
             return false

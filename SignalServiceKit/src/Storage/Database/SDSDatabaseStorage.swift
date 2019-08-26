@@ -7,6 +7,10 @@ import Foundation
 @objc
 public protocol SDSDatabaseStorageDelegate {
     var storageCoordinatorState: StorageCoordinatorState { get }
+
+    var hasYdbFile: Bool { get }
+
+    var hasGrdbFile: Bool { get }
 }
 
 // MARK: -
@@ -99,10 +103,28 @@ public class SDSDatabaseStorage: SDSTransactable {
         NotificationCenter.default.removeObserver(self)
     }
 
+    // GRDB TODO: Remove
+    @objc
+    public var shouldUseDisposableGrdb: Bool {
+        if [.ydbTests, .grdbTests ].contains(FeatureFlags.storageMode) {
+            return true
+        }
+        if .grdbThrowaway == FeatureFlags.storageMode {
+            // .grdbThrowaway allows us to re-test the migration on each launch.
+            // It doesn't make sense (and won't work) if there's no YDB database
+            // to migrate.
+            //
+            // Specifically, state persisted in NSUserDefaults won't be "throw away"
+            // and this will break the app if we throw away our database.
+            return hasYdbFile
+        }
+        return false
+    }
+
     private lazy var baseDir: URL = {
         let containerUrl = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(),
                                isDirectory: true)
-        if [.grdbThrowaway, .ydbTests, .grdbTests ].contains(FeatureFlags.storageMode) {
+        if shouldUseDisposableGrdb {
             return containerUrl.appendingPathComponent(UUID().uuidString, isDirectory: true)
         } else {
             return containerUrl
@@ -410,10 +432,23 @@ extension SDSDatabaseStorage {
 
     private var storageCoordinatorState: StorageCoordinatorState {
         guard let delegate = delegate else {
-            owsFailDebug("Missing storageCoordinator.")
-            return .GRDB
+            owsFail("Missing delegate.")
         }
         return delegate.storageCoordinatorState
+    }
+
+    private var hasYdbFile: Bool {
+        guard let delegate = delegate else {
+            owsFail("Missing delegate.")
+        }
+        return delegate.hasYdbFile
+    }
+
+    private var hasGrdbFile: Bool {
+        guard let delegate = delegate else {
+            owsFail("Missing delegate.")
+        }
+        return delegate.hasGrdbFile
     }
 
     private var storageCoordinatorStateDescription: String {
