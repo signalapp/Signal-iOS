@@ -68,9 +68,6 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     //       we can ignore the "legacy" database files.
     NSString *ydbFilePath = OWSPrimaryStorage.sharedDataDatabaseFilePath;
     BOOL hasYdbFile = [OWSFileSystem fileOrFolderExistsAtPath:ydbFilePath];
-    if (SSKFeatureFlags.alwaysLoadYDB) {
-        hasYdbFile = YES;
-    }
     OWSLogVerbose(@"hasYdbFile: %d", hasYdbFile);
 
     NSString *grdbFilePath = self.databaseStorage.grdbDatabaseFileUrl.path;

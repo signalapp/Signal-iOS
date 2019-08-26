@@ -110,9 +110,6 @@ public class FeatureFlags: NSObject {
     public static var audibleErrorLogging = build.includes(.qa)
 
     @objc
-    public static let alwaysLoadYDB = false
-
-    @objc
     public static var storageModeDescription: String {
         return "\(storageMode)"
     }

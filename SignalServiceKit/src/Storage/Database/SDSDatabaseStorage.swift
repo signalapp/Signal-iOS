@@ -478,9 +478,7 @@ extension SDSDatabaseStorage {
         case .YDB, .beforeYDBToGRDBMigration, .duringYDBToGRDBMigration:
             return true
         case .GRDB:
-            // GRDB TODO: Remove this once we stop loading YDB
-            //            unless necessary.
-            return FeatureFlags.alwaysLoadYDB
+            return false
         case .ydbTests, .grdbTests:
             return true
         @unknown default:
@@ -496,9 +494,7 @@ extension SDSDatabaseStorage {
         case .YDB, .beforeYDBToGRDBMigration, .duringYDBToGRDBMigration:
             return true
         case .GRDB:
-            // GRDB TODO: Remove this once we stop loading YDB
-            //            unless necessary.
-            return FeatureFlags.alwaysLoadYDB
+            return false
         case .ydbTests, .grdbTests:
             return true
         @unknown default:
