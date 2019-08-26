@@ -116,7 +116,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }];
     [signalAccounts sortUsingComparator:self.signalAccountComparator];
 
-    [self updateSignalAccounts:signalAccounts];
+    [self updateSignalAccounts:signalAccounts shouldSetHasLoadedContacts:NO];
 }
 
 - (dispatch_queue_t)serialQueue
@@ -244,7 +244,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     } else {
         shouldClearStaleCache = YES;
     }
-    [self updateWithContacts:contacts isUserRequested:isUserRequested shouldClearStaleCache:shouldClearStaleCache];
+    [self updateWithContacts:contacts
+                      didLoad:YES
+              isUserRequested:isUserRequested
+        shouldClearStaleCache:shouldClearStaleCache];
 }
 
 - (void)systemContactsFetcher:(SystemContactsFetcher *)systemContactsFetcher
@@ -253,7 +256,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if (authorizationStatus == ContactStoreAuthorizationStatusRestricted
         || authorizationStatus == ContactStoreAuthorizationStatusDenied) {
         // Clear the contacts cache if access to the system contacts is revoked.
-        [self updateWithContacts:@[] isUserRequested:NO shouldClearStaleCache:YES];
+        [self updateWithContacts:@[] didLoad:NO isUserRequested:NO shouldClearStaleCache:YES];
     }
 }
 
@@ -462,6 +465,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 }
 
 - (void)updateWithContacts:(NSArray<Contact *> *)contacts
+                   didLoad:(BOOL)didLoad
            isUserRequested:(BOOL)isUserRequested
      shouldClearStaleCache:(BOOL)shouldClearStaleCache
 {
@@ -488,13 +492,13 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                     isUserRequested:isUserRequested
                          completion:^(NSError *_Nullable error) {
                              // TODO: Should we do this on error?
-                             [self buildSignalAccountsAndClearStaleCache:shouldClearStaleCache];
+                             [self buildSignalAccountsAndClearStaleCache:shouldClearStaleCache didLoad:didLoad];
                          }];
         });
     });
 }
 
-- (void)buildSignalAccountsAndClearStaleCache:(BOOL)shouldClearStaleCache
+- (void)buildSignalAccountsAndClearStaleCache:(BOOL)shouldClearStaleCache didLoad:(BOOL)didLoad
 {
     dispatch_async(self.serialQueue, ^{
         NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
@@ -600,14 +604,20 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }];
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self updateSignalAccounts:signalAccounts];
+            [self updateSignalAccounts:signalAccounts shouldSetHasLoadedContacts:didLoad];
         });
     });
 }
 
 - (void)updateSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
+    shouldSetHasLoadedContacts:(BOOL)shouldSetHasLoadedContacts
 {
     OWSAssertIsOnMainThread();
+
+    self.isSetup = YES;
+    if (shouldSetHasLoadedContacts) {
+        _hasLoadedContacts = YES;
+    }
 
     if ([signalAccounts isEqual:self.signalAccounts]) {
         OWSLogDebug(@"SignalAccounts unchanged.");
@@ -633,8 +643,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     self.signalAccounts = [signalAccounts copy];
 
     [self.profileManager setContactAddresses:allAddresses];
-
-    self.isSetup = YES;
 
     [[NSNotificationCenter defaultCenter]
         postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification

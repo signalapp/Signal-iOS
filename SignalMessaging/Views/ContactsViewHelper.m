@@ -31,7 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSBlockListCache *blockListCache;
 
 @property (nonatomic) BOOL shouldNotifyDelegateOfUpdatedContacts;
-@property (nonatomic) BOOL hasUpdatedContactsAtLeastOnce;
 @property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 
 @end
@@ -69,9 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
     _profileManager = [OWSProfileManager sharedManager];
 
     // We don't want to notify the delegate in the `updateContacts`.
-    self.shouldNotifyDelegateOfUpdatedContacts = YES;
     [self updateContacts];
-    self.shouldNotifyDelegateOfUpdatedContacts = NO;
+    self.shouldNotifyDelegateOfUpdatedContacts = YES;
 
     [self observeNotifications];
 
@@ -190,6 +188,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (BOOL)hasUpdatedContactsAtLeastOnce
+{
+    return self.contactsManager.hasLoadedContacts;
+}
+
 - (void)updateContacts
 {
     OWSAssertIsOnMainThread();
@@ -214,9 +217,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.nonSignalContacts = nil;
 
     // Don't fire delegate "change" events during initialization.
-    if (!self.shouldNotifyDelegateOfUpdatedContacts) {
+    if (self.shouldNotifyDelegateOfUpdatedContacts) {
         [self.delegate contactsViewHelperDidUpdateContacts];
-        self.hasUpdatedContactsAtLeastOnce = YES;
     }
 }
 
