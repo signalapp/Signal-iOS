@@ -68,6 +68,18 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                  name:kNSNotificationName_ProfileKeyDidChange
                                                object:nil];
 
+    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+        if ([self.tsAccountManager isRegisteredAndReady]) {
+            OWSAssertDebug(self.contactsManager.isSetup);
+
+            // Flush any pending changes.
+            //
+            // sendSyncContactsMessageIfNecessary will skipIfRedundant,
+            // so this won't yield redundant traffic.
+            [self sendSyncContactsMessageIfNecessary];
+        }
+    }];
+
     return self;
 }
 

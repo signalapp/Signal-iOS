@@ -607,6 +607,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertIsOnMainThread();
 
+    self.isSetup = YES;
+
     if ([signalAccounts isEqual:self.signalAccounts]) {
         OWSLogDebug(@"SignalAccounts unchanged.");
         return;
@@ -631,8 +633,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     self.signalAccounts = [signalAccounts copy];
 
     [self.profileManager setContactAddresses:allAddresses];
-
-    self.isSetup = YES;
 
     [[NSNotificationCenter defaultCenter]
         postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
