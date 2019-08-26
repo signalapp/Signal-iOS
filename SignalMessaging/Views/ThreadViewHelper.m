@@ -5,6 +5,7 @@
 #import "ThreadViewHelper.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSThread.h>
@@ -67,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
         [[YapDatabaseViewMappings alloc] initWithGroups:@[ grouping ] view:TSThreadDatabaseViewExtensionName];
     [self.threadMappings setIsReversed:YES forGroup:grouping];
 
-    if (self.databaseStorage.canLoadYdb) {
+    if (SSKFeatureFlags.storageMode == StorageModeYdb) {
         self.uiDatabaseConnection = [self.primaryStorage newDatabaseConnection];
         [self.uiDatabaseConnection beginLongLivedReadTransaction];
     }
@@ -110,7 +111,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _shouldObserveDBModifications = shouldObserveDBModifications;
 
-    if (!self.databaseStorage.canLoadYdb) {
+    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
         return;
     }
 
