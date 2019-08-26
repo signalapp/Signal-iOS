@@ -89,7 +89,7 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
             self.state = StorageCoordinatorStateYDB;
             break;
         case StorageModeGrdb:
-        case StorageModeGrdbThrowaway:
+        case StorageModeGrdbThrowawayIfMigrating:
             if (hasYdbFile && ![SSKPreferences isYdbMigrated]) {
                 self.state = StorageCoordinatorStateBeforeYDBToGRDBMigration;
 

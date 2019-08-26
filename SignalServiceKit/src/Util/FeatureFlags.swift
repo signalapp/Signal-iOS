@@ -28,9 +28,10 @@ public enum StorageMode: Int {
     // the YDB-to-GRDB migration.
     case ydb
     // Use GRDB, migrating if possible on every launch.
+    // If no YDB database exists, a throwaway db is not used.
     //
     // Supercedes grdbMigratesFreshDBEveryLaunch.
-    case grdbThrowaway
+    case grdbThrowawayIfMigrating
     // Use GRDB, migrating once if necessary.
     case grdb
     // These modes can be used while running tests.
@@ -49,8 +50,8 @@ extension StorageMode: CustomStringConvertible {
         switch self {
         case .ydb:
             return ".ydb"
-        case .grdbThrowaway:
-            return ".grdbThrowaway"
+        case .grdbThrowawayIfMigrating:
+            return ".grdbThrowawayIfMigrating"
         case .grdb:
             return ".grdb"
         case .ydbTests:
@@ -93,7 +94,7 @@ public class FeatureFlags: NSObject {
             // We should be running the tests using both .ydbTests or .grdbTests.
             return .grdbTests
         } else if build.includes(.dev) {
-            return .grdbThrowaway
+            return .grdbThrowawayIfMigrating
         } else {
             return .ydb
         }

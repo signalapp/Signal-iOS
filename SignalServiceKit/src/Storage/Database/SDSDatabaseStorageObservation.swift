@@ -139,7 +139,7 @@ class SDSDatabaseStorageObservation {
     }
 
     private func addYDBObservers() {
-        guard ![.grdb, .grdbThrowaway ].contains(FeatureFlags.storageMode) else {
+        guard ![.grdb, .grdbThrowawayIfMigrating ].contains(FeatureFlags.storageMode) else {
             return
         }
 

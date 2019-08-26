@@ -80,7 +80,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         case .ydb:
             // YDB uses a different mechanism for cross process writes.
             break
-        case .grdb, .grdbThrowaway:
+        case .grdb, .grdbThrowawayIfMigrating:
             crossProcess.callback = { [weak self] in
                 DispatchQueue.main.async {
                     self?.handleCrossProcessWrite()
@@ -109,8 +109,8 @@ public class SDSDatabaseStorage: SDSTransactable {
         if [.ydbTests, .grdbTests ].contains(FeatureFlags.storageMode) {
             return true
         }
-        if .grdbThrowaway == FeatureFlags.storageMode {
-            // .grdbThrowaway allows us to re-test the migration on each launch.
+        if .grdbThrowawayIfMigrating == FeatureFlags.storageMode {
+            // .grdbThrowawayIfMigrating allows us to re-test the migration on each launch.
             // It doesn't make sense (and won't work) if there's no YDB database
             // to migrate.
             //
@@ -202,7 +202,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         case .ydb:
             yapDatabaseQueue = yapStorage.newDatabaseQueue()
             break
-        case .grdb, .grdbThrowaway:
+        case .grdb, .grdbThrowawayIfMigrating:
             // If we're about to migrate or already migrating,
             // we need to create a YDB queue as well.
             if storageCoordinatorState == .beforeYDBToGRDBMigration ||
