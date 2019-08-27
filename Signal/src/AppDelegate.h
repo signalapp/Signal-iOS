@@ -8,6 +8,7 @@ extern NSString *const AppDelegateStoryboardMain;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
-- (void)startPublicChatPollingIfNeeded;
+- (void)createGroupChatsIfNeeded;
+- (void)startGroupChatPollersIfNeeded;
 
 @end
