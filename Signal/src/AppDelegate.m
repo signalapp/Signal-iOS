@@ -1495,10 +1495,10 @@ static NSTimeInterval launchStartedAt;
 - (NSArray *)publicChats
 {
     return @[
-             [[LKGroupChat alloc] initWithKindAsString:@"publicChat" id:@(LKGroupChatAPI.publicChatID).stringValue server:LKGroupChatAPI.publicChatServer displayName:NSLocalizedString(@"Loki Public Chat", @"") isDeletable:true],
-             [[LKGroupChat alloc] initWithKindAsString:@"rss" id:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki.network News", @"") isDeletable:true],
-             [[LKGroupChat alloc] initWithKindAsString:@"rss" id:@"loki.network.messenger-update" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Messenger updates", @"") isDeletable:false],
-             ];
+        [[LKGroupChat alloc] initWithKindAsString:@"publicChat" id:@(LKGroupChatAPI.publicChatID).stringValue server:LKGroupChatAPI.publicChatServer displayName:NSLocalizedString(@"Loki Public Chat", @"") isDeletable:true],
+        [[LKGroupChat alloc] initWithKindAsString:@"rss" id:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki News", @"") isDeletable:true],
+        [[LKGroupChat alloc] initWithKindAsString:@"rss" id:@"loki.network.messenger-update" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Messenger Updates", @"") isDeletable:false],
+    ];
 }
 
 - (void)setupPublicChatGroupsIfNeeded

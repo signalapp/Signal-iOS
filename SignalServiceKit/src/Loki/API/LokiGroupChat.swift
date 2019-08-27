@@ -13,20 +13,15 @@ public final class LokiGroupChat : NSObject {
         }
     }
     
-    @objc public var isRSS: Bool {
-        switch kind {
-        case .publicChat(let id): return false
-        case .rss(let customID): return true
-        }
-    }
-    
     @objc public var isPublicChat: Bool {
-        switch kind {
-        case .publicChat(let id): return true
-        case .rss(let customID): return false
-        }
+        if case .publicChat(_) = kind { return true } else { return false }
     }
     
+    @objc public var isRSS: Bool {
+        if case .rss(_) = kind { return true } else { return false }
+    }
+    
+    // MARK: Kind
     public enum Kind { case publicChat(id: UInt), rss(customID: String) }
     
     // MARK: Initialization
