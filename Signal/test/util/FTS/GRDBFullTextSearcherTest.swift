@@ -23,6 +23,18 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         }
     }
 
+    public func displayName(for signalAccount: SignalAccount) -> String {
+        return "Fake name"
+    }
+
+    public func displayName(for thread: TSThread, transaction: SDSAnyReadTransaction) -> String {
+        return "Fake name"
+    }
+
+    public func displayNameWithSneakyTransaction(thread: TSThread) -> String {
+        return "Fake name"
+    }
+
     func signalAccounts() -> [SignalAccount] {
         return []
     }

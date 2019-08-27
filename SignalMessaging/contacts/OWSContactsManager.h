@@ -73,17 +73,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
 
-/// The name representing this address.
-///
-/// This will be the first of the following that exists for this address:
-/// - The matching name from system contacts
-/// - The name provided on the profile
-/// - The address' phone number
-/// - The address' UUID
-- (NSString *)displayNameForAddress:(SignalServiceAddress *)address;
-- (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
-- (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
-
 /**
  * Used for sorting, respects system contacts name sort order preference.
  */
@@ -93,10 +82,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 - (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 - (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
-
-- (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
-- (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread
-    NS_SWIFT_NAME(displayNameWithSneakyTransaction(thread:));
 
 @end
 

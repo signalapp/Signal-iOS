@@ -10,12 +10,26 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyReadTransaction;
 @class SignalAccount;
 @class SignalServiceAddress;
+@class TSThread;
 @class UIImage;
 
 @protocol ContactsManagerProtocol <NSObject>
 
+/// The name representing this address.
+///
+/// This will be the first of the following that exists for this address:
+/// - The matching name from system contacts
+/// - The name provided on the profile
+/// - The address' phone number
+/// - The address' UUID
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address;
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
+- (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
+
+- (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
+- (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread
+    NS_SWIFT_NAME(displayNameWithSneakyTransaction(thread:));
+
 - (NSArray<SignalAccount *> *)signalAccounts;
 
 - (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber NS_SWIFT_NAME(isSystemContact(phoneNumber:));
