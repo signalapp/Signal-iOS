@@ -26,12 +26,9 @@ PODS:
     - HKDFKit (~> 0.0.3)
     - SignalCoreKit
     - SwiftProtobuf
-  - CocoaLumberjack (3.4.2):
-    - CocoaLumberjack/Default (= 3.4.2)
-    - CocoaLumberjack/Extensions (= 3.4.2)
-  - CocoaLumberjack/Default (3.4.2)
-  - CocoaLumberjack/Extensions (3.4.2):
-    - CocoaLumberjack/Default
+  - CocoaLumberjack (3.5.3):
+    - CocoaLumberjack/Core (= 3.5.3)
+  - CocoaLumberjack/Core (3.5.3)
   - Curve25519Kit (2.1.0):
     - CocoaLumberjack
     - SignalCoreKit
@@ -323,7 +320,7 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
   AxolotlKit: bb02741a93400b915df1be3365ad13d3768b0103
-  CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
+  CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   Curve25519Kit: b3e77b7152ebe95fee2b3fb6c955449492bc14f7
   GRDBCipher: 5d4d6f4c8397e632a35c1a6427003704556ccad4
   GRKOpenSSLFramework: 8a3735ad41e7dc1daff460467bccd32ca5d6ae3e
@@ -337,7 +334,7 @@ SPEC CHECKSUMS:
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: c2d8132cdedb95d35eb2f8ae7eac0957695d0a8b
   SignalMetadataKit: 6fa5e9a53c7f104568662521a2f3874672ff7a02
-  SignalServiceKit: c6424d6bf9b898ea2326a8bfde27b1d9d4525b67
+  SignalServiceKit: 9468fdd4ba4a461cbf4954ca602dbbe7c98c375a
   SQLCipher: 4636a257060f6f1b4e143a143028b61a2b462d0d
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322
   Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
@@ -347,4 +344,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 0108eaea01d12d2e9d6531403bfca96aa3ec58e2
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.7.5
