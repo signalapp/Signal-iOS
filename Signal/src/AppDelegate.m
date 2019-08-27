@@ -56,13 +56,6 @@ static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewContr
 static NSString *const kURLSchemeSGNLKey                = @"sgnl";
 static NSString *const kURLHostVerifyPrefix             = @"verify";
 
-static NSString *const kChatID = @"PublicChatID";
-static NSString *const kChatType = @"PublicChatType";
-static NSString *const kChatServerURL = @"PublicChatServerURL";
-static NSString *const kChatName = @"PublicChatName";
-static NSString *const kChatClosable = @"PublicChatClosable";
-static NSString *const kChatChannelID = @"PublicChatChannelID";
-
 static NSTimeInterval launchStartedAt;
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
@@ -1492,7 +1485,7 @@ static NSTimeInterval launchStartedAt;
 
 #pragma mark - Loki
 
-- (NSArray *)publicChats
+- (NSArray *)groupChats
 {
     return @[
         [[LKGroupChat alloc] initWithKindAsString:@"publicChat" id:@(LKGroupChatAPI.publicChatID).stringValue server:LKGroupChatAPI.publicChatServer displayName:NSLocalizedString(@"Loki Public Chat", @"") isDeletable:true],
@@ -1501,18 +1494,16 @@ static NSTimeInterval launchStartedAt;
     ];
 }
 
-- (void)setupPublicChatGroupsIfNeeded
+- (void)setUpGroupChatsIfNeeded
 {
-    NSArray *chats = [self publicChats];
-    NSString *ourPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    for (LKGroupChat *chat in chats) {
-        NSString *setupKey = [@"setup-" stringByAppendingString:chat.id];
+    NSArray *groupChats = self.groupChats;
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    for (LKGroupChat *chat in groupChats) {
+        NSString *userDefaultsKey = [@"isGroupChatSetUp." stringByAppendingString:chat.id];
         if (chat.isDeletable) {
-            BOOL isChatSetup = [NSUserDefaults.standardUserDefaults boolForKey:setupKey];
-            if (isChatSetup) { continue; }
+            BOOL isChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:setupKey];
+            if (isChatSetUp) { continue; }
         }
-        
-        // Create the group threads
         TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:chat.displayName memberIds:@[ ourPublicKey, chat.server ] image:nil groupId:[chat.id dataUsingEncoding:NSUTF8StringEncoding]];
         __block TSGroupThread *thread;
         [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1525,27 +1516,17 @@ static NSTimeInterval launchStartedAt;
             NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
             [thread updateWithMutedUntilDate:date transaction:transaction];
         }];
-        
         [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
         if (chat.isDeletable) {
-            [NSUserDefaults.standardUserDefaults setBool:YES forKey:setupKey];
+            [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
         }
     }
 }
 
-- (void)setUpPublicChatIfNeeded
+- (void)setUpGroupChatPollerIfNeeded
 {
-    static dispatch_once_t groupChatSetup;
-    dispatch_once(&groupChatSetup, ^{
-        [self setupPublicChatGroupsIfNeeded];
-    });
-    [self setupPublicChatPollersIfNeeded];
-}
-
-- (void)setupPublicChatPollersIfNeeded
-{
-    if (self.lokiPublicChatPoller == nil) {
-        NSArray *publicChats = [[self publicChats] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary* bindings) {
+    if (self.lokiGroupChatPoller == nil) {
+        NSArray *groupChats = [self.groupChats filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary* bindings) {
             LKGroupChat *group = (LKGroupChat *)object;
             return group.isPublicChat;
         }]];
