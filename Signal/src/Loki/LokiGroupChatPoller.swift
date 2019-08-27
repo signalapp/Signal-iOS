@@ -1,3 +1,4 @@
+import FeedKit
 
 @objc(LKGroupChatPoller)
 public final class LokiGroupChatPoller : NSObject {
@@ -9,7 +10,7 @@ public final class LokiGroupChatPoller : NSObject {
     private lazy var pollForNewMessagesInterval: TimeInterval = {
         switch group.kind {
         case .publicChat(_): return 4
-        case .rss(_): return 4//8 * 60
+        case .rss(_): return 8 * 60
         }
     }()
     
@@ -72,12 +73,31 @@ public final class LokiGroupChatPoller : NSObject {
             }
         case .rss(_):
             let url = URL(string: group.server)!
-            let parser = LokiRSSFeedParser(url: url)
-            parser.parse { items in
+            FeedParser(URL: url).parseAsync { wrapper in
+                guard case .rss(let feed) = wrapper, let items = feed.items else { return print("[Loki] Failed to parse RSS feed for: \(group.server)") }
                 items.reversed().forEach { item in
-                    print("Loki", "\(item.title ?? "nil"), \(item.description ?? "nil"), \(item.dateAsString ?? "nil")")
+                    let id = group.id.data(using: String.Encoding.utf8)!
+                    let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
+                    x1.setName(group.displayName)
+                    let x2 = SSKProtoDataMessage.builder()
+                    guard let date = item.pubDate else { return }
+                    let timestamp = UInt64(date.timeIntervalSince1970 * 1000)
+                    x2.setTimestamp(timestamp)
+                    x2.setGroup(try! x1.build())
+                    guard let title = item.title, let description = item.description else { return }
+                    x2.setBody("\(title) ... \(description)")
+                    let x3 = SSKProtoContent.builder()
+                    x3.setDataMessage(try! x2.build())
+                    let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: timestamp)
+                    x4.setSource(NSLocalizedString("Loki", comment: ""))
+                    x4.setSourceDevice(OWSDevicePrimaryDeviceId)
+                    x4.setContent(try! x3.build().serializedData())
+                    OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
+                        SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
+                    }
                 }
             }
+            
         }
     }
     
