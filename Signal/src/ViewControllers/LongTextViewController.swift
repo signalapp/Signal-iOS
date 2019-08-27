@@ -69,6 +69,10 @@ public class LongTextViewController: OWSViewController {
                                                object: OWSPrimaryStorage.shared().dbNotificationObject)
     }
 
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     // MARK: - DB
 
     @objc internal func uiDatabaseDidUpdate(notification: NSNotification) {

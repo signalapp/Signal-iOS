@@ -55,6 +55,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
 #pragma mark - Table view data source
 
 - (void)updateTableContents
