@@ -65,6 +65,8 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL didAppLaunchFail;
 @property (nonatomic) LKP2PServer *lokiP2PServer;
 @property (nonatomic) LKGroupChatPoller *lokiPublicChatPoller;
+@property (nonatomic) LKGroupChatPoller *lokiNewsPoller;
+@property (nonatomic) LKGroupChatPoller *lokiMessengerUpdatesPoller;
 
 @end
 
@@ -1485,34 +1487,60 @@ static NSTimeInterval launchStartedAt;
 
 #pragma mark - Loki
 
-- (void)setUpPublicChatIfNeeded
+- (LKGroupChat *)lokiPublicChat
 {
-    if (self.lokiPublicChatPoller != nil) { return; }
-    self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initForGroup:(NSUInteger)LKGroupChatAPI.publicChatID onServer:LKGroupChatAPI.publicChatServer];
-    BOOL isPublicChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:@"isPublicChatSetUp"];
-    if (isPublicChatSetUp) { return; }
-    NSString *title = NSLocalizedString(@"Loki Public Chat", @"");
-    NSData *groupID = [[[LKGroupChatAPI.publicChatServer stringByAppendingString:@"."] stringByAppendingString:@(LKGroupChatAPI.publicChatID).stringValue] dataUsingEncoding:NSUTF8StringEncoding];
-    TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:title memberIds:@[ OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey, LKGroupChatAPI.publicChatServer ] image:nil groupId:groupID];
-    __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
-        NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-        NSCalendar *calendar = NSCalendar.currentCalendar;
-        [calendar setTimeZone:timeZone];
-        NSDateComponents *dateComponents = [NSDateComponents new];
-        [dateComponents setYear:999];
-        NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
-        [thread updateWithMutedUntilDate:date transaction:transaction];
-    }];
-    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
-    [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"isPublicChatSetUp"];
+    return [[LKGroupChat alloc] initWithKindAsString:@"publicChat" id:@(LKGroupChatAPI.publicChatID).stringValue server:LKGroupChatAPI.publicChatServer displayName:NSLocalizedString(@"Loki Public Chat", @"") isDeletable:true];
 }
 
-- (void)startPublicChatPollingIfNeeded
+- (LKGroupChat *)lokiNews
 {
-    [self setUpPublicChatIfNeeded];
+    return [[LKGroupChat alloc] initWithKindAsString:@"rss" id:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki News", @"") isDeletable:true];
+}
+
+- (LKGroupChat *)lokiMessengerUpdates
+{
+    return [[LKGroupChat alloc] initWithKindAsString:@"rss" id:@"loki.network.messenger-update" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Loki Messenger Updates", @"") isDeletable:false];
+}
+
+- (void)createGroupChatsIfNeeded
+{
+    NSArray *allGroupChats = @[ self.lokiPublicChat, self.lokiNews, self.lokiMessengerUpdates ];
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    for (LKGroupChat *chat in allGroupChats) {
+        NSString *userDefaultsKey = [@"isSetUp." stringByAppendingString:chat.id];
+        BOOL isChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
+        if (!isChatSetUp || !chat.isDeletable) {
+            TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:chat.displayName memberIds:@[ userHexEncodedPublicKey, chat.server ] image:nil groupId:[chat.id dataUsingEncoding:NSUTF8StringEncoding]];
+            __block TSGroupThread *thread;
+            [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
+                NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+                NSCalendar *calendar = NSCalendar.currentCalendar;
+                [calendar setTimeZone:timeZone];
+                NSDateComponents *dateComponents = [NSDateComponents new];
+                [dateComponents setYear:999];
+                NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
+                [thread updateWithMutedUntilDate:date transaction:transaction];
+            }];
+            [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+            [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
+        }
+    }
+}
+
+- (void)createGroupChatPollersIfNeeded
+{
+    if (self.lokiPublicChatPoller == nil) { self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initForGroup:self.lokiPublicChat]; }
+    if (self.lokiNewsPoller == nil) { self.lokiNewsPoller = [[LKGroupChatPoller alloc] initForGroup:self.lokiNews]; }
+    if (self.lokiMessengerUpdatesPoller == nil) { self.lokiMessengerUpdatesPoller = [[LKGroupChatPoller alloc] initForGroup:self.lokiMessengerUpdates]; }
+}
+
+- (void)startGroupChatPollersIfNeeded
+{
+    [self createGroupChatPollersIfNeeded];
     [self.lokiPublicChatPoller startIfNeeded];
+    [self.lokiNewsPoller startIfNeeded];
+    [self.lokiMessengerUpdatesPoller startIfNeeded];
 }
 
 @end
