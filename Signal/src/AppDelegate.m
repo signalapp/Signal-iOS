@@ -56,6 +56,13 @@ static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewContr
 static NSString *const kURLSchemeSGNLKey                = @"sgnl";
 static NSString *const kURLHostVerifyPrefix             = @"verify";
 
+static NSString *const kChatID = @"PublicChatID";
+static NSString *const kChatType = @"PublicChatType";
+static NSString *const kChatServerURL = @"PublicChatServerURL";
+static NSString *const kChatName = @"PublicChatName";
+static NSString *const kChatClosable = @"PublicChatClosable";
+static NSString *const kChatChannelID = @"PublicChatChannelID";
+
 static NSTimeInterval launchStartedAt;
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
@@ -1485,28 +1492,93 @@ static NSTimeInterval launchStartedAt;
 
 #pragma mark - Loki
 
+- (NSArray *)publicChats
+{
+    return @[
+    @{
+        kChatID: @"chat.lokinet.org.1",
+        kChatType: @"publicChat",
+        kChatServerURL: LKGroupChatAPI.publicChatServer,
+        kChatName: NSLocalizedString(@"Loki Public Chat", @""),
+        kChatClosable: @true,
+        kChatChannelID: @(LKGroupChatAPI.publicChatID),
+        },
+    @{
+        kChatID: @"rss://loki.network/feed/",
+        kChatType: @"rss",
+        kChatServerURL: @"https://loki.network/feed/",
+        kChatName: NSLocalizedString(@"Loki.network News", @""),
+        kChatClosable: @true,
+        kChatChannelID: @1,
+        },
+    @{
+        kChatID: @"rss://loki.network/category/messenger-updates/feed/",
+        kChatType: @"rss",
+        kChatServerURL: @"https://loki.network/category/messenger-updates/feed/",
+        kChatName: NSLocalizedString(@"Messenger updates", @""),
+        kChatClosable: @false,
+        kChatChannelID: @1,
+        }
+  ];
+}
+
+- (void)setupPublicChatGroupsIfNeeded
+{
+    NSArray *chats = [self publicChats];
+    NSString *ourPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    for (NSDictionary *chat in chats) {
+        NSString *chatID = [chat objectForKey:kChatID];
+        BOOL closable = [[chat objectForKey:kChatClosable] boolValue];
+        
+        NSString *setupKey = [@"setup-" stringByAppendingString:chatID];
+        if (closable) {
+            BOOL isChatSetup = [NSUserDefaults.standardUserDefaults boolForKey:setupKey];
+            if (isChatSetup) { continue; }
+        }
+        
+        NSString *title = [chat objectForKey:kChatName];
+        NSString *serverURL = [chat objectForKey:kChatServerURL];
+        
+        // Create the group threads
+        TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:title memberIds:@[ ourPublicKey, serverURL ] image:nil groupId:[chatID dataUsingEncoding:NSUTF8StringEncoding]];
+        __block TSGroupThread *thread;
+        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
+            NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+            NSCalendar *calendar = NSCalendar.currentCalendar;
+            [calendar setTimeZone:timeZone];
+            NSDateComponents *dateComponents = [NSDateComponents new];
+            [dateComponents setYear:999];
+            NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
+            [thread updateWithMutedUntilDate:date transaction:transaction];
+        }];
+        
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+        if (closable) {
+            [NSUserDefaults.standardUserDefaults setBool:YES forKey:setupKey];
+        }
+    }
+}
+
 - (void)setUpPublicChatIfNeeded
 {
-    if (self.lokiPublicChatPoller != nil) { return; }
-    self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initForGroup:(NSUInteger)LKGroupChatAPI.publicChatID onServer:LKGroupChatAPI.publicChatServer];
-    BOOL isPublicChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:@"isPublicChatSetUp"];
-    if (isPublicChatSetUp) { return; }
-    NSString *title = NSLocalizedString(@"Loki Public Chat", @"");
-    NSData *groupID = [[[LKGroupChatAPI.publicChatServer stringByAppendingString:@"."] stringByAppendingString:@(LKGroupChatAPI.publicChatID).stringValue] dataUsingEncoding:NSUTF8StringEncoding];
-    TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:title memberIds:@[ OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey, LKGroupChatAPI.publicChatServer ] image:nil groupId:groupID];
-    __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
-        NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-        NSCalendar *calendar = NSCalendar.currentCalendar;
-        [calendar setTimeZone:timeZone];
-        NSDateComponents *dateComponents = [NSDateComponents new];
-        [dateComponents setYear:999];
-        NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
-        [thread updateWithMutedUntilDate:date transaction:transaction];
-    }];
-    [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
-    [NSUserDefaults.standardUserDefaults setBool:YES forKey:@"isPublicChatSetUp"];
+    static dispatch_once_t groupChatSetup;
+    dispatch_once(&groupChatSetup, ^{
+        [self setupPublicChatGroupsIfNeeded];
+    });
+    [self setupPublicChatPollersIfNeeded];
+}
+
+- (void)setupPublicChatPollersIfNeeded
+{
+    if (self.lokiPublicChatPoller == nil) {
+        NSArray *publicChats = [[self publicChats] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary* bindings) {
+            NSDictionary *group = (NSDictionary *)object;
+            NSString *chatType = [group objectForKey:kChatType];
+            return [chatType isEqualToString:@"publicChat"];
+        }]];
+        self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initWithGroups:publicChats];
+    }
 }
 
 - (void)startPublicChatPollingIfNeeded
