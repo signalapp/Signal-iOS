@@ -1128,6 +1128,11 @@ const CGFloat kIconViewLength = 24;
     }
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
 #pragma mark - Actions
 
 - (void)showShareProfileAlert
