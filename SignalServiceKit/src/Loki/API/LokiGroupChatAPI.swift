@@ -169,7 +169,7 @@ public final class LokiGroupChatAPI : NSObject {
                 dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
                 guard let json = rawResponse as? JSON, let messageAsJSON = json["data"] as? JSON, let serverID = messageAsJSON["id"] as? UInt, let body = messageAsJSON["text"] as? String,
                     let dateAsString = messageAsJSON["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
-                    print("[Loki] Couldn't parse messages for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
+                    print("[Loki] Couldn't parse message for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
                     throw Error.messageParsingFailed
                 }
                 let timestamp = UInt64(date.timeIntervalSince1970) * 1000
@@ -197,7 +197,7 @@ public final class LokiGroupChatAPI : NSObject {
             }
             return rawMessages.flatMap { message in
                 guard let serverID = message["id"] as? UInt else {
-                    print("[Loki] Couldn't parse message for group chat with ID: \(group) on server: \(server) from: \(message).")
+                    print("[Loki] Couldn't parse deleted message for group chat with ID: \(group) on server: \(server) from: \(message).")
                     return nil
                 }
                 let isDeleted = (message["is_deleted"] as? Bool ?? false)
