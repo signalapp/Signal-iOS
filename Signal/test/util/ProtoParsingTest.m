@@ -34,6 +34,21 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
+- (NSString *_Nonnull)displayNameForSignalAccount:(SignalAccount *)signalAccount
+{
+    return nil;
+}
+
+- (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+{
+    return @"Fake Name";
+}
+
+- (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread
+{
+    return @"Fake Name";
+}
+
 - (NSArray<SignalAccount *> *)signalAccounts
 {
     return @[];
