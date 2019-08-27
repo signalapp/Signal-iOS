@@ -81,11 +81,23 @@ public final class LokiGroupChatPoller : NSObject {
                 items.reversed().forEach { item in
                     guard let title = item.title, let description = item.description, let date = item.pubDate else { return }
                     let timestamp = UInt64(date.timeIntervalSince1970 * 1000)
-                    let body = "\(title) ... \(description)"
-                    parseGroupMessage(body: body, timestamp: timestamp, senderDisplayName: NSLocalizedString("Loki", comment: ""))
+                    let regex = try! NSRegularExpression(pattern: "<a\\s+(?:[^>]*?\\s+)?href=\"([^\"]*)\".*?>(.*?)<.*?\\/a>")
+                    var bodyAsHTML = "<b>\(title)</b>\(description)"
+                    while true {
+                        guard let match = regex.firstMatch(in: bodyAsHTML, options: [], range: NSRange(location: 0, length: bodyAsHTML.utf16.count)) else { break }
+                        let matchRange = match.range(at: 0)
+                        let urlRange = match.range(at: 1)
+                        let descriptionRange = match.range(at: 2)
+                        let url = (bodyAsHTML as NSString).substring(with: urlRange)
+                        let description = (bodyAsHTML as NSString).substring(with: descriptionRange)
+                        bodyAsHTML = (bodyAsHTML as NSString).replacingCharacters(in: matchRange, with: "\(description) (\(url))") as String
+                    }
+                    guard let bodyAsData = bodyAsHTML.data(using: String.Encoding.unicode) else { return }
+                    let options = [ NSAttributedString.DocumentReadingOptionKey.documentType : NSAttributedString.DocumentType.html ]
+                    guard let body = try? NSAttributedString(data: bodyAsData, options: options, documentAttributes: nil) else { return }
+                    parseGroupMessage(body: body.string, timestamp: timestamp, senderDisplayName: NSLocalizedString("Loki", comment: ""))
                 }
             }
-            
         }
     }
     
