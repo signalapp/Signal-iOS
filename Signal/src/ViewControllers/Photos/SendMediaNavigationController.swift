@@ -73,11 +73,6 @@ class SendMediaNavigationController: OWSNavigationController {
         doneButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
         doneButton.autoPinEdge(toSuperviewMargin: .trailing)
 
-        view.addSubview(cameraModeButton)
-        cameraModeButton.setCompressionResistanceHigh()
-        cameraModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
-        cameraModeButton.autoPinEdge(toSuperviewMargin: .leading)
-
         view.addSubview(mediaLibraryModeButton)
         mediaLibraryModeButton.setCompressionResistanceHigh()
         mediaLibraryModeButton.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: bottomButtonsCenterOffset).isActive = true
@@ -188,7 +183,6 @@ class SendMediaNavigationController: OWSNavigationController {
             isShowingMediaLibrary = false
             batchModeButton.isHidden = true
             doneButton.isHidden = true
-            cameraModeButton.isHidden = true
             mediaLibraryModeButton.isHidden = true
         case let mediaLibraryView as ImagePickerGridController:
             isShowingMediaLibrary = true
@@ -197,9 +191,6 @@ class SendMediaNavigationController: OWSNavigationController {
 
             batchModeButton.isHidden = showDoneButton || isForcingBatchSelectInMediaLibrary
             batchModeButton.isBeingPresentedOverPhotoCapture = false
-
-            cameraModeButton.isHidden = false
-            cameraModeButton.isBeingPresentedOverPhotoCapture = false
 
             mediaLibraryModeButton.isHidden = true
             mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
@@ -213,17 +204,12 @@ class SendMediaNavigationController: OWSNavigationController {
             batchModeButton.isHidden = showDoneButton
             batchModeButton.isBeingPresentedOverPhotoCapture = true
 
-            cameraModeButton.isHidden = true
-            cameraModeButton.isBeingPresentedOverPhotoCapture = true
-
             mediaLibraryModeButton.isHidden = false
             mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = true
         case is ConversationPickerViewController:
             doneButton.isHidden = true
             batchModeButton.isHidden = true
             batchModeButton.isBeingPresentedOverPhotoCapture = false
-            cameraModeButton.isHidden = true
-            cameraModeButton.isBeingPresentedOverPhotoCapture = false
             mediaLibraryModeButton.isHidden = true
             mediaLibraryModeButton.isBeingPresentedOverPhotoCapture = false
         default:
@@ -282,13 +268,6 @@ class SendMediaNavigationController: OWSNavigationController {
                                      tintColor: .ows_white,
                                      diameter: type(of: self).bottomButtonWidth,
                                      block: { [weak self] in self?.didTapBatchModeButton() })
-    }()
-
-    private lazy var cameraModeButton: SendMediaBottomButton = {
-        return SendMediaBottomButton(imageName: "camera-outline-28",
-                                     tintColor: .ows_white,
-                                     diameter: type(of: self).bottomButtonWidth,
-                                     block: { [weak self] in self?.didTapCameraModeButton() })
     }()
 
     private lazy var mediaLibraryModeButton: SendMediaBottomButton = {
