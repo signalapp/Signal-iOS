@@ -1495,52 +1495,25 @@ static NSTimeInterval launchStartedAt;
 - (NSArray *)publicChats
 {
     return @[
-    @{
-        kChatID: @"chat.lokinet.org.1",
-        kChatType: @"publicChat",
-        kChatServerURL: LKGroupChatAPI.publicChatServer,
-        kChatName: NSLocalizedString(@"Loki Public Chat", @""),
-        kChatClosable: @true,
-        kChatChannelID: @(LKGroupChatAPI.publicChatID),
-        },
-    @{
-        kChatID: @"rss://loki.network/feed/",
-        kChatType: @"rss",
-        kChatServerURL: @"https://loki.network/feed/",
-        kChatName: NSLocalizedString(@"Loki.network News", @""),
-        kChatClosable: @true,
-        kChatChannelID: @1,
-        },
-    @{
-        kChatID: @"rss://loki.network/category/messenger-updates/feed/",
-        kChatType: @"rss",
-        kChatServerURL: @"https://loki.network/category/messenger-updates/feed/",
-        kChatName: NSLocalizedString(@"Messenger updates", @""),
-        kChatClosable: @false,
-        kChatChannelID: @1,
-        }
-  ];
+             [[LKGroupChat alloc] initWithKindAsString:@"publicChat" id:@(LKGroupChatAPI.publicChatID).stringValue server:LKGroupChatAPI.publicChatServer displayName:NSLocalizedString(@"Loki Public Chat", @"") isDeletable:true],
+             [[LKGroupChat alloc] initWithKindAsString:@"rss" id:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki.network News", @"") isDeletable:true],
+             [[LKGroupChat alloc] initWithKindAsString:@"rss" id:@"loki.network.messenger-update" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Messenger updates", @"") isDeletable:false],
+             ];
 }
 
 - (void)setupPublicChatGroupsIfNeeded
 {
     NSArray *chats = [self publicChats];
     NSString *ourPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    for (NSDictionary *chat in chats) {
-        NSString *chatID = [chat objectForKey:kChatID];
-        BOOL closable = [[chat objectForKey:kChatClosable] boolValue];
-        
-        NSString *setupKey = [@"setup-" stringByAppendingString:chatID];
-        if (closable) {
+    for (LKGroupChat *chat in chats) {
+        NSString *setupKey = [@"setup-" stringByAppendingString:chat.id];
+        if (chat.isDeletable) {
             BOOL isChatSetup = [NSUserDefaults.standardUserDefaults boolForKey:setupKey];
             if (isChatSetup) { continue; }
         }
         
-        NSString *title = [chat objectForKey:kChatName];
-        NSString *serverURL = [chat objectForKey:kChatServerURL];
-        
         // Create the group threads
-        TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:title memberIds:@[ ourPublicKey, serverURL ] image:nil groupId:[chatID dataUsingEncoding:NSUTF8StringEncoding]];
+        TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:chat.displayName memberIds:@[ ourPublicKey, chat.server ] image:nil groupId:[chat.id dataUsingEncoding:NSUTF8StringEncoding]];
         __block TSGroupThread *thread;
         [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
@@ -1554,7 +1527,7 @@ static NSTimeInterval launchStartedAt;
         }];
         
         [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
-        if (closable) {
+        if (chat.isDeletable) {
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:setupKey];
         }
     }
@@ -1573,9 +1546,8 @@ static NSTimeInterval launchStartedAt;
 {
     if (self.lokiPublicChatPoller == nil) {
         NSArray *publicChats = [[self publicChats] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary* bindings) {
-            NSDictionary *group = (NSDictionary *)object;
-            NSString *chatType = [group objectForKey:kChatType];
-            return [chatType isEqualToString:@"publicChat"];
+            LKGroupChat *group = (LKGroupChat *)object;
+            return group.isPublicChat;
         }]];
         self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initWithGroups:publicChats];
     }

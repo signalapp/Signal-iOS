@@ -2,14 +2,28 @@
 @objc(LKGroupChat)
 public final class LokiGroupChat : NSObject {
     public let kind: Kind
-    public let server: String
-    public let displayName: String
-    public let isDeletable: Bool
+    @objc public let server: String
+    @objc public let displayName: String
+    @objc public let isDeletable: Bool
     
-    public var id: String {
+    @objc public var id: String {
         switch kind {
         case .publicChat(let id): return "\(server).\(id)"
-        case .rss(let customID): return customID
+        case .rss(let customID): return "rss://\(customID)"
+        }
+    }
+    
+    @objc public var isRSS: Bool {
+        switch kind {
+        case .publicChat(let id): return false
+        case .rss(let customID): return true
+        }
+    }
+    
+    @objc public var isPublicChat: Bool {
+        switch kind {
+        case .publicChat(let id): return true
+        case .rss(let customID): return false
         }
     }
     

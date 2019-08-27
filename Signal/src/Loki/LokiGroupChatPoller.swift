@@ -1,12 +1,7 @@
 
-private let kChatID = "PublicChatID"
-private let kChatChannelID = "PublicChatChannelID"
-private let kChatName = "PublicChatName"
-private let kServerURL = "PublicChatServerURL"
-
 @objc(LKGroupChatPoller)
 public final class LokiGroupChatPoller : NSObject {
-    private let groups: [[String: Any]]
+    private let groups: [LokiGroupChat]
     private var pollForNewMessagesTimer: Timer? = nil
     private var pollForDeletedMessagesTimer: Timer? = nil
     private var hasStarted = false
@@ -14,7 +9,7 @@ public final class LokiGroupChatPoller : NSObject {
     private let pollForNewMessagesInterval: TimeInterval = 4
     private let pollForDeletedMessagesInterval: TimeInterval = 32 * 60
     
-    @objc public init(groups: [[String: Any]]) {
+    @objc public init(groups: [LokiGroupChat]) {
         self.groups = groups
         super.init()
     }
@@ -34,27 +29,22 @@ public final class LokiGroupChatPoller : NSObject {
     
     private func pollForNewMessages() {
         for group in groups {
-            guard let channelID = group[kChatChannelID] as? UInt, let server = group[kServerURL] as? String else {
-                Logger.info("[Loki] Failed to get channel id or server url from group: \(group)")
+            guard case let LokiGroupChat.Kind.publicChat(channelID) = group.kind else {
+                Logger.info("[Loki] Trying to poll RSS group chat: \(group)")
                 return
             }
             
-    LokiGroupChatAPI.getMessages(for: channelID, on: server).map { [weak self] messages in
+            LokiGroupChatAPI.getMessages(for: channelID, on: group.server).map { [weak self] messages in
                 self?.handleMessages(messages: messages, group: group)
             }
         }
     }
     
-    private func handleMessages(messages: [LokiGroupMessage], group: [String: Any]) -> Void {
-        guard let groupID = group[kChatID] as? String, let groupName = group[kChatName] as? String else {
-            Logger.info("[Loki] Failed to handle messages for group: \(group))")
-            return
-        }
-        
+    private func handleMessages(messages: [LokiGroupMessage], group: LokiGroupChat) -> Void {
         messages.reversed().forEach { message in
-            let id = groupID.data(using: String.Encoding.utf8)!
+            let id = group.id.data(using: String.Encoding.utf8)!
             let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
-            x1.setName(groupName)
+            x1.setName(group.displayName)
             let x2 = SSKProtoDataMessage.builder()
             x2.setTimestamp(message.timestamp)
             x2.setGroup(try! x1.build())
