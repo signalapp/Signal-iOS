@@ -45,30 +45,33 @@ public final class LokiGroupChatPoller : NSObject {
     
     private func pollForNewMessages() {
         let group = self.group
+        func parseGroupMessage(body: String, timestamp: UInt64, senderDisplayName: String) {
+            let id = group.id.data(using: String.Encoding.utf8)!
+            let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
+            x1.setName(group.displayName)
+            let x2 = SSKProtoDataMessage.builder()
+            x2.setTimestamp(timestamp)
+            x2.setGroup(try! x1.build())
+            x2.setBody(body)
+            let x3 = SSKProtoContent.builder()
+            x3.setDataMessage(try! x2.build())
+            let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: timestamp)
+            x4.setSource(senderDisplayName)
+            x4.setSourceDevice(OWSDevicePrimaryDeviceId)
+            x4.setContent(try! x3.build().serializedData())
+            OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
+                SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
+            }
+        }
         switch group.kind {
         case .publicChat(let id):
             let _ = LokiGroupChatAPI.getMessages(for: id, on: group.server).done { messages in
                 messages.reversed().forEach { message in
-                    let id = group.id.data(using: String.Encoding.utf8)!
-                    let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
-                    x1.setName(group.displayName)
-                    let x2 = SSKProtoDataMessage.builder()
-                    x2.setTimestamp(message.timestamp)
-                    x2.setGroup(try! x1.build())
-                    x2.setBody(message.body)
-                    let x3 = SSKProtoContent.builder()
-                    x3.setDataMessage(try! x2.build())
-                    let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
                     let senderHexEncodedPublicKey = message.hexEncodedPublicKey
                     let endIndex = senderHexEncodedPublicKey.endIndex
                     let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
                     let senderDisplayName = "\(message.displayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
-                    x4.setSource(senderDisplayName)
-                    x4.setSourceDevice(OWSDevicePrimaryDeviceId)
-                    x4.setContent(try! x3.build().serializedData())
-                    OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
-                        SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
-                    }
+                    parseGroupMessage(body: message.body, timestamp: message.timestamp, senderDisplayName: senderDisplayName)
                 }
             }
         case .rss(_):
@@ -76,25 +79,10 @@ public final class LokiGroupChatPoller : NSObject {
             FeedParser(URL: url).parseAsync { wrapper in
                 guard case .rss(let feed) = wrapper, let items = feed.items else { return print("[Loki] Failed to parse RSS feed for: \(group.server)") }
                 items.reversed().forEach { item in
-                    let id = group.id.data(using: String.Encoding.utf8)!
-                    let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
-                    x1.setName(group.displayName)
-                    let x2 = SSKProtoDataMessage.builder()
-                    guard let date = item.pubDate else { return }
+                    guard let title = item.title, let description = item.description, let date = item.pubDate else { return }
                     let timestamp = UInt64(date.timeIntervalSince1970 * 1000)
-                    x2.setTimestamp(timestamp)
-                    x2.setGroup(try! x1.build())
-                    guard let title = item.title, let description = item.description else { return }
-                    x2.setBody("\(title) ... \(description)")
-                    let x3 = SSKProtoContent.builder()
-                    x3.setDataMessage(try! x2.build())
-                    let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: timestamp)
-                    x4.setSource(NSLocalizedString("Loki", comment: ""))
-                    x4.setSourceDevice(OWSDevicePrimaryDeviceId)
-                    x4.setContent(try! x3.build().serializedData())
-                    OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
-                        SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
-                    }
+                    let body = "\(title) ... \(description)"
+                    parseGroupMessage(body: body, timestamp: timestamp, senderDisplayName: NSLocalizedString("Loki", comment: ""))
                 }
             }
             
