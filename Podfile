@@ -73,6 +73,7 @@ target 'Signal' do
 
   # Loki
   pod 'GCDWebServer', '~> 3.0'
+  pod 'FeedKit', '~> 8.1'
 
   target 'SignalTests' do
     inherit! :search_paths

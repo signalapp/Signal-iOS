@@ -1509,21 +1509,22 @@ static NSTimeInterval launchStartedAt;
     for (LKGroupChat *chat in allGroupChats) {
         NSString *userDefaultsKey = [@"isSetUp." stringByAppendingString:chat.id];
         BOOL isChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
-        if (chat.isDeletable && isChatSetUp) { continue; }
-        TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:chat.displayName memberIds:@[ userHexEncodedPublicKey, chat.server ] image:nil groupId:[chat.id dataUsingEncoding:NSUTF8StringEncoding]];
-        __block TSGroupThread *thread;
-        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
-            NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
-            NSCalendar *calendar = NSCalendar.currentCalendar;
-            [calendar setTimeZone:timeZone];
-            NSDateComponents *dateComponents = [NSDateComponents new];
-            [dateComponents setYear:999];
-            NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
-            [thread updateWithMutedUntilDate:date transaction:transaction];
-        }];
-        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
-        [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
+        if (!isChatSetUp || !chat.isDeletable) {
+            TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:chat.displayName memberIds:@[ userHexEncodedPublicKey, chat.server ] image:nil groupId:[chat.id dataUsingEncoding:NSUTF8StringEncoding]];
+            __block TSGroupThread *thread;
+            [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
+                NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+                NSCalendar *calendar = NSCalendar.currentCalendar;
+                [calendar setTimeZone:timeZone];
+                NSDateComponents *dateComponents = [NSDateComponents new];
+                [dateComponents setYear:999];
+                NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
+                [thread updateWithMutedUntilDate:date transaction:transaction];
+            }];
+            [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+            [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
+        }
     }
 }
 
@@ -1538,6 +1539,8 @@ static NSTimeInterval launchStartedAt;
 {
     [self createGroupChatPollersIfNeeded];
     [self.lokiPublicChatPoller startIfNeeded];
+    [self.lokiNewsPoller startIfNeeded];
+    [self.lokiMessengerUpdatesPoller startIfNeeded];
 }
 
 @end

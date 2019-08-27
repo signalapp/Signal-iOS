@@ -9,7 +9,7 @@ public final class LokiGroupChatPoller : NSObject {
     private lazy var pollForNewMessagesInterval: TimeInterval = {
         switch group.kind {
         case .publicChat(_): return 4
-        case .rss(_): return 8 * 60
+        case .rss(_): return 4//8 * 60
         }
     }()
     
@@ -29,6 +29,7 @@ public final class LokiGroupChatPoller : NSObject {
     @objc public func startIfNeeded() {
         if hasStarted { return }
         pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForNewMessagesInterval, repeats: true) { [weak self] _ in self?.pollForNewMessages() }
+        pollForNewMessages() // Perform initial update
         if group.isPublicChat {
             pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForDeletedMessagesInterval, repeats: true) { [weak self] _ in self?.pollForDeletedMessages() }
         }
@@ -69,7 +70,14 @@ public final class LokiGroupChatPoller : NSObject {
                     }
                 }
             }
-        case .rss(let customID): break // TODO: Implement
+        case .rss(_):
+            let url = URL(string: group.server)!
+            let parser = LokiRSSFeedParser(url: url)
+            parser.parse { items in
+                items.reversed().forEach { item in
+                    print("Loki", "\(item.title ?? "nil"), \(item.description ?? "nil"), \(item.dateAsString ?? "nil")")
+                }
+            }
         }
     }
     
