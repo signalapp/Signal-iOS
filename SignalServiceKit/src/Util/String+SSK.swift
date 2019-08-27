@@ -78,9 +78,8 @@ public extension String {
         } else if #available(iOS 11, *) {
             return NSLinguisticTagger.dominantLanguage(for: self)
         } else {
-            let tagger = NSLinguisticTagger(tagSchemes: [.language], options: 0)
-            tagger.string = self
-            return tagger.tag(at: 0, scheme: .language, tokenRange: nil, sentenceRange: nil)?.rawValue
+            let nsstring = self as NSString
+            return nsstring.dominantLanguageWithLegacyLinguisticTagger
         }
     }
 
