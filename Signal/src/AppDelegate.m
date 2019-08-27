@@ -1488,7 +1488,7 @@ static NSTimeInterval launchStartedAt;
 - (void)setUpPublicChatIfNeeded
 {
     if (self.lokiPublicChatPoller != nil) { return; }
-    self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initWithGroup:(NSUInteger)LKGroupChatAPI.publicChatID];
+    self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initForGroup:(NSUInteger)LKGroupChatAPI.publicChatID onServer:LKGroupChatAPI.publicChatServer];
     BOOL isPublicChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:@"isPublicChatSetUp"];
     if (isPublicChatSetUp) { return; }
     NSString *title = NSLocalizedString(@"Loki Public Chat", @"");
