@@ -122,10 +122,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         hasLoadedView = true
     }
 
-    override public var canBecomeFirstResponder: Bool {
-        return true
-    }
-
     private func updateMode() {
         AssertIsOnMainThread()
 
