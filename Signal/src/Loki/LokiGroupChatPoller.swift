@@ -25,9 +25,9 @@ public final class LokiGroupChatPoller : NSObject {
     
     private func poll() {
         let group = self.group
-        let _ = LokiGroupChatAPI.getMessages(for: group).map { messages in
+        let _ = LokiGroupChatAPI.getMessages(for: group, on: LokiGroupChatAPI.publicChatServer).map { messages in
             messages.reversed().map { message in
-                let id = "\(LokiGroupChatAPI.serverURL).\(group)".data(using: String.Encoding.utf8)!
+                let id = "\(LokiGroupChatAPI.publicChatServer).\(group)".data(using: String.Encoding.utf8)!
                 let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
                 x1.setName(NSLocalizedString("Loki Public Chat", comment: ""))
                 let x2 = SSKProtoDataMessage.builder()
