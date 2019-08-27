@@ -901,7 +901,7 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN-ul nu se potrivește.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN-ul nu poate fi mai lung de 20 de cifre.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN-ul trebuie să conțină cel puțin 4 cifre.";
@@ -1818,7 +1818,7 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album fără nume";
 
 /* The bold portion of the explanation in the 'pin creation' view. */
-"PIN_CREATION_BOLD_EXPLANATION" = "There is no way to recover your PIN, so remember it.";
+"PIN_CREATION_BOLD_EXPLANATION" = "Nu există o modalitate prin care se poate recupera PIN-ul dvs.,  așa ca rețineți-l.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Schimbați-vă PIN-ul";
@@ -1851,7 +1851,7 @@
 "PIN_CREATION_TITLE" = "Creeați-vă PIN-ul";
 
 /* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN-ul nu poate fi mai lung de 20 de cifre.";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_CREATION_TOO_SHORT_ERROR" = "PIN-ul trebuie să conțină cel puțin 4 cifre.";
