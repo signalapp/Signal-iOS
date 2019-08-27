@@ -1,5 +1,7 @@
 import FeedKit
 
+// TODO: Move the RSS feed logic into its own file
+
 @objc(LKGroupChatPoller)
 public final class LokiGroupChatPoller : NSObject {
     private let group: LokiGroupChat
