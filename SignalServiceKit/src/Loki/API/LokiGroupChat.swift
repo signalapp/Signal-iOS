@@ -13,6 +13,7 @@ public final class LokiGroupChat : NSObject {
         }
     }
     
+    // MARK: Convenience
     @objc public var isPublicChat: Bool {
         if case .publicChat(_) = kind { return true } else { return false }
     }

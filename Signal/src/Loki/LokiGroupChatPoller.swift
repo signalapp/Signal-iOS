@@ -13,7 +13,12 @@ public final class LokiGroupChatPoller : NSObject {
         }
     }()
     
-    private let pollForDeletedMessagesInterval: TimeInterval = 32 * 60
+    private lazy var pollForDeletedMessagesInterval: TimeInterval = {
+        switch group.kind {
+        case .publicChat(_): return 32 * 60
+        case .rss(_): preconditionFailure()
+        }
+    }()
     
     @objc(initForGroup:)
     public init(for group: LokiGroupChat) {
@@ -24,7 +29,9 @@ public final class LokiGroupChatPoller : NSObject {
     @objc public func startIfNeeded() {
         if hasStarted { return }
         pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForNewMessagesInterval, repeats: true) { [weak self] _ in self?.pollForNewMessages() }
-        pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForDeletedMessagesInterval, repeats: true) { [weak self] _ in self?.pollForDeletedMessages() }
+        if group.isPublicChat {
+            pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForDeletedMessagesInterval, repeats: true) { [weak self] _ in self?.pollForDeletedMessages() }
+        }
         hasStarted = true
     }
     
