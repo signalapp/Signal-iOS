@@ -221,7 +221,6 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let expectation = self.expectation(description: "sent message")
 
         messageSender.sendMessageWasCalledBlock = { [weak messageSender] sentMessage in
-            XCTAssert(message.uniqueId != nil)
             guard sentMessage.uniqueId == message.uniqueId else {
                 XCTFail("unexpected sentMessage: \(sentMessage)")
                 return

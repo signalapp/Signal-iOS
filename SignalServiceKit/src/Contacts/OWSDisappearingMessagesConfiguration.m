@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSDisappearingMessagesConfiguration ()
 
 // Transient record lifecycle attributes.
+//
+// GRDB TODO: Ensure this is working with GRDB. Add tests?
 @property (atomic) NSDictionary *originalDictionaryValue;
 @property (atomic, getter=isNewRecord) BOOL newRecord;
 
