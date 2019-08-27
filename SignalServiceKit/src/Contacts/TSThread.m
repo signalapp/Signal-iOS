@@ -189,7 +189,15 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [SSKPreferences setHasSavedThread:YES transaction:transaction];
+    BOOL isLocalThread = NO;
+    if ([self isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)self;
+        OWSAssertDebug(contactThread.contactAddress != nil);
+        isLocalThread = contactThread.contactAddress.isLocalAddress;
+    }
+    if (!isLocalThread) {
+        [SSKPreferences setHasSavedThread:YES transaction:transaction];
+    }
 }
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
