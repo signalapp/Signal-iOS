@@ -2,32 +2,40 @@
 @objc(LKGroupChatPoller)
 public final class LokiGroupChatPoller : NSObject {
     private let group: UInt
-    private var timer: Timer? = nil
+    private let server: String
+    private var pollForNewMessagesTimer: Timer? = nil
+    private var pollForDeletedMessagesTimer: Timer? = nil
     private var hasStarted = false
     
-    private let pollInterval: TimeInterval = 4
+    private let pollForNewMessagesInterval: TimeInterval = 4
+    private let pollForDeletedMessagesInterval: TimeInterval = 120
     
-    @objc public init(group: UInt) {
+    @objc(initForGroup:onServer:)
+    public init(for group: UInt, on server: String) {
         self.group = group
+        self.server = server
         super.init()
     }
     
     @objc public func startIfNeeded() {
         if hasStarted { return }
-        timer = Timer.scheduledTimer(withTimeInterval: pollInterval, repeats: true) { [weak self] _ in self?.poll() }
+        pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForNewMessagesInterval, repeats: true) { [weak self] _ in self?.pollForNewMessages() }
+        pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForDeletedMessagesInterval, repeats: true) { [weak self] _ in self?.pollForDeletedMessages() }
         hasStarted = true
     }
     
     @objc public func stop() {
-        timer?.invalidate()
+        pollForNewMessagesTimer?.invalidate()
+        pollForDeletedMessagesTimer?.invalidate()
         hasStarted = false
     }
     
-    private func poll() {
+    private func pollForNewMessages() {
         let group = self.group
-        let _ = LokiGroupChatAPI.getMessages(for: group).map { messages in
+        let server = self.server
+        let _ = LokiGroupChatAPI.getMessages(for: group, on: server).map { messages in
             messages.reversed().map { message in
-                let id = "\(LokiGroupChatAPI.serverURL).\(group)".data(using: String.Encoding.utf8)!
+                let id = "\(server).\(group)".data(using: String.Encoding.utf8)!
                 let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
                 x1.setName(NSLocalizedString("Loki Public Chat", comment: ""))
                 let x2 = SSKProtoDataMessage.builder()
@@ -49,5 +57,9 @@ public final class LokiGroupChatPoller : NSObject {
                 }
             }
         }
+    }
+    
+    private func pollForDeletedMessages() {
+        // TODO: Implement
     }
 }

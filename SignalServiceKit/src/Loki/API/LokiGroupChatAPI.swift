@@ -2,26 +2,87 @@ import PromiseKit
 
 @objc(LKGroupChatAPI)
 public final class LokiGroupChatAPI : NSObject {
-    internal static let storage = OWSPrimaryStorage.shared()
+    private static let storage = OWSPrimaryStorage.shared()
     
-    @objc public static let serverURL = "https://chat.lokinet.org"
-    private static let batchCount = 8
+    // MARK: Settings
+    private static let fallbackBatchCount = 40
+    private static let maxRetryCount: UInt = 4
+    
+    // MARK: Public Chat
+    @objc public static let publicChatServer = "https://chat.lokinet.org"
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
     @objc public static let publicChatID = 1
-    private static let maxRetryCount: UInt = 4
-    private static let tokenCollection = "LokiGroupChatTokenCollection"
     
-    internal static var userDisplayName: String { return SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: userHexEncodedPublicKey) ?? "Anonymous" }
-    private static var userKeyPair: ECKeyPair { return OWSIdentityManager.shared().identityKeyPair()! }
-    private static var userHexEncodedPublicKey: String { return userKeyPair.hexEncodedPublicKey }
+    // MARK: Convenience
+    private static var userDisplayName: String {
+        return SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: userHexEncodedPublicKey) ?? "Anonymous"
+    }
     
+    private static var userKeyPair: ECKeyPair {
+        return OWSIdentityManager.shared().identityKeyPair()!
+    }
+    
+    private static var userHexEncodedPublicKey: String {
+        return userKeyPair.hexEncodedPublicKey
+    }
+    
+    // MARK: Error
     public enum Error : Swift.Error {
         case tokenParsingFailed, tokenDecryptionFailed, messageParsingFailed
     }
     
-    private static func getTokenFromServer() -> Promise<String> {
-        print("[Loki] Getting group chat auth token.")
-        let url = URL(string: "\(serverURL)/loki/v1/get_challenge?pubKey=\(userHexEncodedPublicKey)")!
+    // MARK: Database
+    private static let authTokenCollection = "LokiGroupChatAuthTokenCollection"
+    private static let lastMessageServerIDCollection = "LokiGroupChatLastMessageServerIDCollection"
+    private static let firstMessageServerIDCollection = "LokiGroupChatFirstMessageServerIDCollection"
+    
+    private static func getAuthTokenFromDatabase(for server: String) -> String? {
+        var result: String? = nil
+        storage.dbReadConnection.read { transaction in
+            result = transaction.object(forKey: server, inCollection: authTokenCollection) as! String?
+        }
+        return result
+    }
+    
+    private static func setAuthToken(for server: String, to newValue: String) {
+        storage.dbReadWriteConnection.readWrite { transaction in
+            transaction.setObject(newValue, forKey: server, inCollection: authTokenCollection)
+        }
+    }
+    
+    private static func getLastMessageServerID(for group: UInt, on server: String) -> UInt? {
+        var result: UInt? = nil
+        storage.dbReadConnection.read { transaction in
+            result = transaction.object(forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection) as! UInt?
+        }
+        return result
+    }
+    
+    private static func setLastMessageServerID(for group: UInt, on server: String, to newValue: UInt) {
+        storage.dbReadWriteConnection.readWrite { transaction in
+            transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
+        }
+    }
+    
+    private static func getFirstMessageServerID(for group: UInt, on server: String) -> UInt? {
+        var result: UInt? = nil
+        storage.dbReadConnection.read { transaction in
+            result = transaction.object(forKey: "\(server).\(group)", inCollection: firstMessageServerIDCollection) as! UInt?
+        }
+        return result
+    }
+    
+    private static func setFirstMessageServerID(for group: UInt, on server: String, to newValue: UInt) {
+        storage.dbReadWriteConnection.readWrite { transaction in
+            transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: firstMessageServerIDCollection)
+        }
+    }
+    
+    // MARK: Private API
+    private static func requestNewAuthToken(for server: String) -> Promise<String> {
+        print("[Loki] Requesting group chat auth token for server: \(server).")
+        let queryParameters = "pubKey=\(userHexEncodedPublicKey)"
+        let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
             guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
@@ -35,59 +96,69 @@ public final class LokiGroupChatAPI : NSObject {
             }
             // The challenge is prefixed by the 16 bit IV
             guard let tokenAsData = try? DiffieHellman.decrypt(challenge, publicKey: serverPublicKey, privateKey: userKeyPair.privateKey),
-                let token = String(bytes: tokenAsData, encoding: .utf8), token.count > 0 else {
+                let token = String(bytes: tokenAsData, encoding: .utf8) else {
                 throw Error.tokenDecryptionFailed
             }
             return token
         }
     }
     
-    internal static func submitToken(_ token: String) -> Promise<String> {
-        print("[Loki] Submitting group chat auth token.")
-        let url = URL(string: "\(serverURL)/loki/v1/submit_challenge")!
+    private static func submitAuthToken(_ token: String, for server: String) -> Promise<String> {
+        print("[Loki] Submitting group chat auth token for server: \(server).")
+        let url = URL(string: "\(server)/loki/v1/submit_challenge")!
         let parameters = [ "pubKey" : userHexEncodedPublicKey, "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         return TSNetworkManager.shared().makePromise(request: request).map { _ in token }
     }
     
-    internal static func getToken() -> Promise<String> {
-        if let token = storage.dbReadConnection.string(forKey: serverURL, inCollection: tokenCollection), token.count > 0 {
+    private static func getAuthToken(for server: String) -> Promise<String> {
+        if let token = getAuthTokenFromDatabase(for: server) {
             return Promise.value(token)
         } else {
-            return getTokenFromServer().then { submitToken($0) }.map { token -> String in
-                storage.dbReadWriteConnection.setObject(token, forKey: serverURL, inCollection: tokenCollection)
+            return requestNewAuthToken(for: server).then { submitAuthToken($0, for: server) }.map { token -> String in
+                setAuthToken(for: server, to: token)
                 return token
             }
         }
     }
     
-    public static func getMessages(for group: UInt) -> Promise<[LokiGroupMessage]> {
-        print("[Loki] Getting messages for group chat with ID: \(group).")
-        let queryParameters = "include_annotations=1&count=-\(batchCount)"
-        let url = URL(string: "\(serverURL)/channels/\(group)/messages?\(queryParameters)")!
+    // MARK: Public API
+    public static func getMessages(for group: UInt, on server: String) -> Promise<[LokiGroupMessage]> {
+        print("[Loki] Getting messages for group chat with ID: \(group) on server: \(server).")
+        var queryParameters = "include_annotations=1"
+        if let lastMessageServerID = getLastMessageServerID(for: group, on: server) {
+            queryParameters += "&since_id=\(lastMessageServerID)"
+        } else {
+            queryParameters += "&count=-\(fallbackBatchCount)"
+        }
+        let url = URL(string: "\(server)/channels/\(group)/messages?\(queryParameters)")!
         let request = TSRequest(url: url)
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
             guard let json = rawResponse as? JSON, let rawMessages = json["data"] as? [JSON] else {
-                print("[Loki] Couldn't parse messages for group chat with ID: \(group) from: \(rawResponse).")
+                print("[Loki] Couldn't parse messages for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
                 throw Error.messageParsingFailed
             }
             return rawMessages.flatMap { message in
                 guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first, let value = annotation["value"] as? JSON,
                     let serverID = message["id"] as? UInt, let body = message["text"] as? String, let hexEncodedPublicKey = value["source"] as? String, let displayName = value["from"] as? String,
                     let timestamp = value["timestamp"] as? UInt64 else {
-                        print("[Loki] Couldn't parse message for group chat with ID: \(group) from: \(message).")
+                        print("[Loki] Couldn't parse message for group chat with ID: \(group) on server: \(server) from: \(message).")
                         return nil
                 }
                 guard hexEncodedPublicKey != userHexEncodedPublicKey else { return nil }
+                let lastMessageServerID = getLastMessageServerID(for: group, on: server)
+                let firstMessageServerID = getFirstMessageServerID(for: group, on: server)
+                if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: group, on: server, to: serverID) }
+                if serverID < (firstMessageServerID ?? UInt.max) { setFirstMessageServerID(for: group, on: server, to: serverID) }
                 return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp)
             }
         }
     }
     
-    public static func sendMessage(_ message: LokiGroupMessage, to group: UInt) -> Promise<LokiGroupMessage> {
-        return getToken().then { token -> Promise<LokiGroupMessage> in
-            print("[Loki] Sending message to group chat with ID: \(group).")
-            let url = URL(string: "\(serverURL)/channels/\(group)/messages")!
+    public static func sendMessage(_ message: LokiGroupMessage, to group: UInt, on server: String) -> Promise<LokiGroupMessage> {
+        return getAuthToken(for: server).then { token -> Promise<LokiGroupMessage> in
+            print("[Loki] Sending message to group chat with ID: \(group) on server: \(server).")
+            let url = URL(string: "\(server)/channels/\(group)/messages")!
             let parameters = message.toJSON()
             let request = TSRequest(url: url, method: "POST", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
@@ -96,30 +167,53 @@ public final class LokiGroupChatAPI : NSObject {
                 // ISO8601DateFormatter doesn't support milliseconds before iOS 11
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                guard let json = rawResponse as? JSON, let message = json["data"] as? JSON, let serverID = message["id"] as? UInt, let body = message["text"] as? String,
-                    let dateAsString = message["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
-                    print("[Loki] Couldn't parse messages for group chat with ID: \(group) from: \(rawResponse).")
+                guard let json = rawResponse as? JSON, let messageAsJSON = json["data"] as? JSON, let serverID = messageAsJSON["id"] as? UInt, let body = messageAsJSON["text"] as? String,
+                    let dateAsString = messageAsJSON["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
+                    print("[Loki] Couldn't parse messages for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
                     throw Error.messageParsingFailed
                 }
                 let timestamp = UInt64(date.timeIntervalSince1970) * 1000
                 return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp)
             }
-            }.recover { error -> Promise<LokiGroupMessage> in
-                if let error = error as? NetworkManagerError, error.statusCode == 401 {
-                    print("[Loki] Group chat token expired; dropping it.")
-                    storage.dbReadWriteConnection.removeObject(forKey: serverURL, inCollection: tokenCollection)
+        }.recover { error -> Promise<LokiGroupMessage> in
+            if let error = error as? NetworkManagerError, error.statusCode == 401 {
+                print("[Loki] Group chat auth token for: \(server) expired; dropping it.")
+                storage.dbReadWriteConnection.removeObject(forKey: server, inCollection: authTokenCollection)
+            }
+            throw error
+        }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+    }
+    
+    public static func getDeletedMessageIDs(for group: UInt, on server: String) -> Promise<[UInt]> {
+        print("[Loki] Getting deleted messages for group chat with ID: \(group) on server: \(server).")
+        let firstMessageServerID = getFirstMessageServerID(for: group, on: server) ?? 0
+        let queryParameters = "is_deleted=true&since_id=\(firstMessageServerID)"
+        let url = URL(string: "\(server)/channels/\(group)/messages?\(queryParameters)")!
+        let request = TSRequest(url: url)
+        return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+            guard let json = rawResponse as? JSON, let rawMessages = json["data"] as? [JSON] else {
+                print("[Loki] Couldn't parse deleted messages for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
+                throw Error.messageParsingFailed
+            }
+            return rawMessages.flatMap { message in
+                guard let serverID = message["id"] as? UInt else {
+                    print("[Loki] Couldn't parse message for group chat with ID: \(group) on server: \(server) from: \(message).")
+                    return nil
                 }
-                throw error
-            }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+                let isDeleted = (message["is_deleted"] as? Bool ?? false)
+                return isDeleted ? serverID : nil
+            }
+        }
     }
     
-    @objc(getMessagesForGroup:)
-    public static func objc_getMessages(for group: UInt) -> AnyPromise {
-        return AnyPromise.from(getMessages(for: group))
+    // MARK: Public API (Obj-C)
+    @objc(getMessagesForGroup:onServer:)
+    public static func objc_getMessages(for group: UInt, on server: String) -> AnyPromise {
+        return AnyPromise.from(getMessages(for: group, on: server))
     }
     
-    @objc(sendMessage:toGroup:)
-    public static func objc_sendMessage(_ message: LokiGroupMessage, to group: UInt) -> AnyPromise {
-        return AnyPromise.from(sendMessage(message, to: group))
+    @objc(sendMessage:toGroup:onServer:)
+    public static func objc_sendMessage(_ message: LokiGroupMessage, to group: UInt, on server: String) -> AnyPromise {
+        return AnyPromise.from(sendMessage(message, to: group, on: server))
     }
 }

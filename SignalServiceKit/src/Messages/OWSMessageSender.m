@@ -501,7 +501,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
         [recipientIds addObject:self.tsAccountManager.localNumber];
     } else if (thread.isGroupThread) {
-        [recipientIds addObject:LKGroupChatAPI.serverURL];
+        [recipientIds addObject:LKGroupChatAPI.publicChatServer];
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
         NSString *recipientContactId = ((TSContactThread *)thread).contactIdentifier;
 
@@ -1109,12 +1109,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self messageSendDidFail:messageSend deviceMessages:deviceMessages statusCode:statusCode error:error responseData:responseData];
     };
     
-    if ([recipient.recipientId isEqualToString:LKGroupChatAPI.serverURL]) {
+    if ([recipient.recipientId isEqualToString:LKGroupChatAPI.publicChatServer]) {
         NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
         NSString *displayName = SSKEnvironment.shared.profileManager.localProfileName;
         if (displayName == nil) { displayName = @"Anonymous"; }
         LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKGroupChatAPI.publicChatMessageType timestamp:message.timestamp];
-        [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatID]
+        [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatID onServer:LKGroupChatAPI.publicChatServer]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
         })

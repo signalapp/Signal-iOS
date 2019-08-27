@@ -1488,12 +1488,12 @@ static NSTimeInterval launchStartedAt;
 - (void)setUpPublicChatIfNeeded
 {
     if (self.lokiPublicChatPoller != nil) { return; }
-    self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initWithGroup:(NSUInteger)LKGroupChatAPI.publicChatID];
+    self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initForGroup:(NSUInteger)LKGroupChatAPI.publicChatID onServer:LKGroupChatAPI.publicChatServer];
     BOOL isPublicChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:@"isPublicChatSetUp"];
     if (isPublicChatSetUp) { return; }
     NSString *title = NSLocalizedString(@"Loki Public Chat", @"");
-    NSData *groupID = [[[LKGroupChatAPI.serverURL stringByAppendingString:@"."] stringByAppendingString:@(LKGroupChatAPI.publicChatID).stringValue] dataUsingEncoding:NSUTF8StringEncoding];
-    TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:title memberIds:@[ OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey, LKGroupChatAPI.serverURL ] image:nil groupId:groupID];
+    NSData *groupID = [[[LKGroupChatAPI.publicChatServer stringByAppendingString:@"."] stringByAppendingString:@(LKGroupChatAPI.publicChatID).stringValue] dataUsingEncoding:NSUTF8StringEncoding];
+    TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:title memberIds:@[ OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey, LKGroupChatAPI.publicChatServer ] image:nil groupId:groupID];
     __block TSGroupThread *thread;
     [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
