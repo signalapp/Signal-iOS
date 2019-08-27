@@ -1114,7 +1114,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSString *displayName = SSKEnvironment.shared.profileManager.localProfileName;
         if (displayName == nil) { displayName = @"Anonymous"; }
         LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKGroupChatAPI.publicChatMessageType timestamp:message.timestamp];
-        [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatID onServer:LKGroupChatAPI.publicChatServer]
+        [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer]
         .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
         })

@@ -693,7 +693,9 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     if (OWSIdentityManager.sharedManager.identityKeyPair != nil) {
         AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
         [appDelegate createGroupChatsIfNeeded];
+        [appDelegate createRSSFeedsIfNeeded];
         [appDelegate startGroupChatPollersIfNeeded];
+        [appDelegate startRSSFeedPollersIfNeeded];
     }
 }
 

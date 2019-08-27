@@ -11,7 +11,7 @@ public final class LokiGroupChatAPI : NSObject {
     // MARK: Public Chat
     @objc public static let publicChatServer = "https://chat.lokinet.org"
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
-    @objc public static let publicChatID = 1
+    @objc public static let publicChatServerID = 1
     
     // MARK: Convenience
     private static var userDisplayName: String {
