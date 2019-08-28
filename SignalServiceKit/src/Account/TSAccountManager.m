@@ -54,7 +54,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 @interface TSAccountState : NSObject
 
 @property (nonatomic, readonly, nullable) NSString *localNumber;
-@property (nonatomic, readonly, nullable) NSUUID *uuid;
+@property (nonatomic, readonly, nullable) NSUUID *localUuid;
 @property (nonatomic, readonly, nullable) NSString *reregistrationPhoneNumber;
 
 @property (nonatomic, readonly) BOOL isRegistered;
@@ -83,7 +83,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     _localNumber = [keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
     NSString *_Nullable uuidString = [keyValueStore getString:TSAccountManager_RegisteredUUIDKey
                                                   transaction:transaction];
-    _uuid = (uuidString != nil ? [[NSUUID alloc] initWithUUIDString:uuidString] : nil);
+    _localUuid = (uuidString != nil ? [[NSUUID alloc] initWithUUIDString:uuidString] : nil);
     _reregistrationPhoneNumber = [keyValueStore getString:TSAccountManager_ReregisteringPhoneNumberKey
                                               transaction:transaction];
     _isDeregistered = [keyValueStore getBool:TSAccountManager_IsDeregisteredKey
@@ -336,7 +336,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)recordUuidForLegacyUser:(NSUUID *)uuid
 {
-    OWSAssert(self.uuid == nil);
+    OWSAssert(self.localUuid == nil);
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         @synchronized(self) {
@@ -359,6 +359,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return [self localNumberWithAccountState:[self getOrLoadAccountStateWithSneakyTransaction]];
 }
 
+- (nullable NSString *)localNumberWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self localNumberWithAccountState:[self getOrLoadAccountStateWithTransaction:transaction]];
+}
+
 - (nullable NSString *)localNumberWithAccountState:(TSAccountState *)accountState
 {
     @synchronized(self)
@@ -372,12 +377,17 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return accountState.localNumber;
 }
 
-- (nullable NSUUID *)uuid
+- (nullable NSUUID *)localUuid
 {
-    return [self uuidWithAccountState:[self getOrLoadAccountStateWithSneakyTransaction]];
+    return [self localUuidWithAccountState:[self getOrLoadAccountStateWithSneakyTransaction]];
 }
 
-- (nullable NSUUID *)uuidWithAccountState:(TSAccountState *)accountState
+- (nullable NSUUID *)localUuidWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self localUuidWithAccountState:[self getOrLoadAccountStateWithTransaction:transaction]];
+}
+
+- (nullable NSUUID *)localUuidWithAccountState:(TSAccountState *)accountState
 {
     if (!SSKFeatureFlags.allowUUIDOnlyContacts) {
         return nil;
@@ -390,7 +400,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }
     }
 
-    return accountState.uuid;
+    return accountState.localUuid;
 }
 
 + (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -402,10 +412,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 {
     TSAccountState *accountState = [self getOrLoadAccountStateWithTransaction:transaction];
 
-    if (accountState.uuid == nil && accountState.localNumber == nil) {
+    if (accountState.localUuid == nil && accountState.localNumber == nil) {
         return nil;
     } else {
-        return [[SignalServiceAddress alloc] initWithUuidString:accountState.uuid.UUIDString
+        return [[SignalServiceAddress alloc] initWithUuidString:accountState.localUuid.UUIDString
                                                     phoneNumber:accountState.localNumber];
     }
 }
@@ -420,18 +430,18 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     // We extract uuid and local number from a single instance of accountState
     // to avoid races.
     TSAccountState *accountState = [self getOrLoadAccountStateWithSneakyTransaction];
-    NSUUID *_Nullable uuid = [self uuidWithAccountState:accountState];
+    NSUUID *_Nullable localUuid = [self localUuidWithAccountState:accountState];
     NSString *_Nullable localNumber = [self localNumberWithAccountState:accountState];
 
-    if (uuid == nil && localNumber == nil) {
+    if (localUuid == nil && localNumber == nil) {
         return nil;
     } else {
-        return [[SignalServiceAddress alloc] initWithUuidString:uuid.UUIDString phoneNumber:localNumber];
+        return [[SignalServiceAddress alloc] initWithUuidString:localUuid.UUIDString phoneNumber:localNumber];
     }
 }
 
 - (void)storeLocalNumber:(NSString *)localNumber
-                    uuid:(nullable NSUUID *)uuid
+                    uuid:(nullable NSUUID *)localUuid
              transaction:(SDSAnyWriteTransaction *)transaction
 {
     // TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.allowUUIDOnlyContacts in production
@@ -441,10 +451,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     @synchronized (self) {
         [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
 
-        if (uuid == nil) {
+        if (localUuid == nil) {
             OWSAssert(!SSKFeatureFlags.allowUUIDOnlyContacts);
         } else {
-            [self.keyValueStore setString:uuid.UUIDString
+            [self.keyValueStore setString:localUuid.UUIDString
                                       key:TSAccountManager_RegisteredUUIDKey
                               transaction:transaction];
         }

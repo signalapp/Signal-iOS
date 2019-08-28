@@ -262,7 +262,7 @@ public class AccountManager: NSObject {
     }
 
     func ensureUuid() -> Promise<UUID> {
-        if let existingUuid = tsAccountManager.uuid {
+        if let existingUuid = tsAccountManager.localUuid {
             return Promise.value(existingUuid)
         }
 
@@ -270,7 +270,7 @@ public class AccountManager: NSObject {
             // It's possible this method could be called multiple times, so we check
             // again if it's been set. We dont bother serializing access since it should
             // be idempotent.
-            if let existingUuid = self.tsAccountManager.uuid {
+            if let existingUuid = self.tsAccountManager.localUuid {
                 assert(existingUuid == uuid)
                 return existingUuid
             }
