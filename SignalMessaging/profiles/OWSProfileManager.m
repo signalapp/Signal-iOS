@@ -700,8 +700,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // Rotate the stored profile key.
         AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
             [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                oldAvatarData =
-                    [self profileAvatarDataForAddress:self.tsAccountManager.localAddress transaction:transaction];
+                let localAddress = self.tsAccountManager.localAddress(with
+                                                                      : transaction) oldAvatarData
+                    = [self profileAvatarDataForAddress:transaction:transaction];
 
                 [self.localUserProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
                                                 transaction:transaction

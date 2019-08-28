@@ -92,6 +92,13 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return Environment.shared.contactsManager;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark - Durable Message Enqueue
 
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText
@@ -666,7 +673,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(authorAddress.isValid);
 
-    SignalServiceAddress *localAddress = TSAccountManager.localAddress;
+    SignalServiceAddress *_Nullable localAddress = [self.tsAccountManager localAddressWithTransaction:transaction];
     if (!localAddress.isValid) {
         OWSFailDebug(@"missing local address.");
         return nil;

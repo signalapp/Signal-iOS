@@ -379,8 +379,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return [self getOrLoadAccountStateWithSneakyTransaction].uuid;
 }
 
-// TODO: This method appears to be unused?
-- (nullable SignalServiceAddress *)storedOrCachedLocalAddress:(SDSAnyReadTransaction *)transaction
+- (nullable SignalServiceAddress *)localAddressWithAddress:(SDSAnyReadTransaction *)transaction
 {
     TSAccountState *accountState = [self getOrLoadAccountStateWithTransaction:transaction];
 

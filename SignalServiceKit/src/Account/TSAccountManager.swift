@@ -16,7 +16,7 @@ public extension TSAccountManager {
     // MARK: -
 
     class func getOrCreateLocalThread(transaction: SDSAnyWriteTransaction) -> TSThread? {
-        guard let localAddress = self.localAddress else {
+        guard let localAddress = self.localAddress(with: transaction) else {
             owsFailDebug("Missing localAddress.")
             return nil
         }
