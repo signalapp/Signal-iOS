@@ -10,7 +10,6 @@
 #import "OWSBackgroundTask.h"
 #import "OWSMessageManager.h"
 #import "OWSQueues.h"
-#import "OWSStorage.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSErrorMessage.h"
