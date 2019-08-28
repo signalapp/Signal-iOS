@@ -14,41 +14,41 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         view.backgroundColor = Theme.backgroundColor
         view.layoutMargins = .zero
 
-        let heroImage = UIImage(named: "onboarding_splash_hero")
-        let heroImageView = UIImageView(image: heroImage)
-        heroImageView.contentMode = .scaleAspectFit
-        heroImageView.layer.minificationFilter = .trilinear
-        heroImageView.layer.magnificationFilter = .trilinear
-        heroImageView.setCompressionResistanceLow()
-        heroImageView.setContentHuggingVerticalLow()
-        heroImageView.accessibilityIdentifier = "onboarding.splash." + "heroImageView"
-
         let titleLabel = self.createTitleLabel(text: NSLocalizedString("Loki Messenger", comment: ""))
         view.addSubview(titleLabel)
         titleLabel.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
         titleLabel.accessibilityIdentifier = "onboarding.splash." + "titleLabel"
 
-        let explanationLabel = UILabel()
-        explanationLabel.text = NSLocalizedString("Privacy Policy", comment: "")
-        explanationLabel.textColor = .ows_materialBlue
-        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
-        explanationLabel.numberOfLines = 0
-        explanationLabel.textAlignment = .center
-        explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.isUserInteractionEnabled = true
-        explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
-        explanationLabel.accessibilityIdentifier = "onboarding.splash." + "explanationLabel"
+        let lokiLogo = UIImage(named: "LokiLogo")
+        let lokiLogoImageView = UIImageView(image: lokiLogo)
+        lokiLogoImageView.accessibilityIdentifier = "onboarding.splash." + "lokiLogoImageView"
+        lokiLogoImageView.autoSetDimension(.height, toSize: 71)
+        lokiLogoImageView.contentMode = .scaleAspectFit
+        
+        let lokiLogoContainer = UIView()
+        view.setContentHuggingVerticalLow()
+        view.setCompressionResistanceVerticalLow()
+        lokiLogoContainer.addSubview(lokiLogoImageView)
+        
+        let privacyPolicyLabel = UILabel()
+        privacyPolicyLabel.text = NSLocalizedString("Privacy Policy", comment: "")
+        privacyPolicyLabel.textColor = .ows_materialBlue
+        privacyPolicyLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        privacyPolicyLabel.numberOfLines = 0
+        privacyPolicyLabel.textAlignment = .center
+        privacyPolicyLabel.lineBreakMode = .byWordWrapping
+        privacyPolicyLabel.isUserInteractionEnabled = true
+        privacyPolicyLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(explanationLabelTapped)))
+        privacyPolicyLabel.accessibilityIdentifier = "onboarding.splash." + "explanationLabel"
 
-        let continueButton = self.createButton(title: NSLocalizedString("BUTTON_CONTINUE",
-                                                                 comment: "Label for 'continue' button."),
-                                                    selector: #selector(continuePressed))
+        let continueButton = self.createButton(title: NSLocalizedString("BUTTON_CONTINUE", comment: "Label for 'continue' button."), selector: #selector(continuePressed))
         view.addSubview(continueButton)
         continueButton.accessibilityIdentifier = "onboarding.splash." + "continueButton"
-
+        
         let stackView = UIStackView(arrangedSubviews: [
             titleLabel,
-            UIView.vStretchingSpacer(),
-            explanationLabel,
+            lokiLogoContainer,
+            privacyPolicyLabel,
             UIView.spacer(withHeight: 24),
             continueButton
         ])
@@ -60,6 +60,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         stackView.autoPinWidthToSuperview()
         stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        lokiLogoImageView.autoCenterInSuperview()
     }
 
      // MARK: - Events
