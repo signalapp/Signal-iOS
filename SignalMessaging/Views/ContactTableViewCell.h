@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyReadTransaction;
 @class SignalServiceAddress;
 @class TSThread;
 
@@ -13,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureWithRecipientAddress:(SignalServiceAddress *)address;
 
-- (void)configureWithThread:(TSThread *)thread;
+- (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
 // This method should be called _before_ the configure... methods.
 - (void)setAccessoryMessage:(nullable NSString *)accessoryMessage;

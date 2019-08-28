@@ -1656,7 +1656,7 @@
 "ONBOARDING_PERMISSIONS_NOT_NOW_BUTTON" = "Nicht jetzt";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Signal kann dich informieren, wenn du eine Nachricht erhälst (und von wem sie ist)";
+"ONBOARDING_PERMISSIONS_TITLE" = "Signal kann dich über neue Nachrichten und deren Absender informieren";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Gib deine Rufnummer ein, um zu beginnen";

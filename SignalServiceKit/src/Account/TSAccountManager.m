@@ -204,13 +204,14 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 - (void)recordUuidForLegacyUser:(NSUUID *)uuid
 {
     OWSAssert(self.uuid == nil);
+
     @synchronized(self) {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [self.keyValueStore setString:uuid.UUIDString
-                                      key:TSAccountManager_RegisteredUUIDKey
-                              transaction:transaction];
-        }];
+        OWSAssertDebug(self.cachedUuid == nil);
     }
+
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setString:uuid.UUIDString key:TSAccountManager_RegisteredUUIDKey transaction:transaction];
+    }];
 }
 
 + (nullable NSString *)localNumber
@@ -276,7 +277,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     OWSAssertDebug(SSKFeatureFlags.allowUUIDOnlyContacts);
 
     OWSLogVerbose(@"");
-    
+
     @synchronized(self) {
         __block NSUUID *_Nullable result;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {

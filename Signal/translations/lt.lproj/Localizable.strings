@@ -901,7 +901,7 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN nesutampa.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN kodas negali būti ilgesnis 20 skaitmenų.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN kode privalo būti bent 4 skaitmenys.";
@@ -1851,7 +1851,7 @@
 "PIN_CREATION_TITLE" = "Susikurti PIN kodą";
 
 /* Label indicating that the attempted PIN is too long */
-"PIN_CREATION_TOO_LONG_ERROR" = "PIN must be no more than 20 digits.";
+"PIN_CREATION_TOO_LONG_ERROR" = "PIN kodas privalo būti sudarytas iš mažiau nei 20 skaitmenų.";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_CREATION_TOO_SHORT_ERROR" = "PIN kode privalo būti bent 4 skaitmenys.";
@@ -2622,7 +2622,7 @@
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Lipdukų paketas";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Nepavyko įkelti lipdukų paketo";
 
 /* Label for the 'uninstall sticker pack' button. */
 "STICKERS_UNINSTALL_BUTTON" = "Pašalinti";

@@ -63,7 +63,6 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
                             completionBlock:(nullable BlockActionCompletionBlock)completionBlock;
 
 + (void)showUnblockGroupActionSheet:(TSGroupModel *)groupModel
-                        displayName:(NSString *)displayName
                  fromViewController:(UIViewController *)fromViewController
                     blockingManager:(OWSBlockingManager *)blockingManager
                     completionBlock:(nullable BlockActionCompletionBlock)completionBlock;

@@ -143,7 +143,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
         TSGroupThread *groupThread
             = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
         XCTAssertNotNil(groupThread);
-        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.name);
+        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.groupNameOrDefault);
     }];
 }
 
@@ -187,7 +187,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
         TSGroupThread *groupThread
             = (TSGroupThread *)[TSGroupThread anyFetchWithUniqueId:groupThreadId transaction:transaction];
         XCTAssertNotNil(groupThread);
-        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.name);
+        XCTAssertEqualObjects(@"Newly created Group Name", groupThread.groupNameOrDefault);
     }];
 }
 

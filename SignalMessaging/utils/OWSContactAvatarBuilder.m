@@ -72,6 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter
 {
     OWSAssertDebug(diameter > 0);
+    OWSAssertDebug(TSAccountManager.localAddress != nil);
 
     return [self initWithAddress:TSAccountManager.localAddress
                        colorName:kConversationColorName_Default
@@ -89,6 +90,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable UIImage *)buildSavedImage
 {
+    if (self.address == nil) {
+        return nil;
+    }
+
     if (self.address.isLocalAddress) {
         NSString *noteToSelfCacheKey = [NSString stringWithFormat:@"%@:note-to-self", self.cacheKey];
         UIImage *_Nullable cachedAvatar =
@@ -115,7 +120,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (id)cacheKey
 {
-    return [NSString stringWithFormat:@"%@-%d", self.address.stringForDisplay, Theme.isDarkThemeEnabled];
+    if (self.address != nil) {
+        return [NSString stringWithFormat:@"%@-%d", self.address.stringForDisplay, Theme.isDarkThemeEnabled];
+    } else {
+        return [NSString stringWithFormat:@"%@-%d", self.contactName, Theme.isDarkThemeEnabled];
+    }
 }
 
 - (nullable UIImage *)buildDefaultImage

@@ -829,6 +829,38 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self cachedContactNameForAddress:address].length > 0;
 }
 
+- (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
+{
+    if ([thread isKindOfClass:TSContactThread.class]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        return [self displayNameForAddress:contactThread.contactAddress transaction:transaction];
+    } else if ([thread isKindOfClass:TSGroupThread.class]) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        return groupThread.groupNameOrDefault;
+    } else {
+        OWSFailDebug(@"unexpected thread: %@", thread);
+        return @"";
+    }
+}
+
+- (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread
+{
+    if ([thread isKindOfClass:TSContactThread.class]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        __block NSString *name;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            name = [self displayNameForAddress:contactThread.contactAddress transaction:transaction];
+        }];
+        return name;
+    } else if ([thread isKindOfClass:TSGroupThread.class]) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        return groupThread.groupNameOrDefault;
+    } else {
+        OWSFailDebug(@"unexpected thread: %@", thread);
+        return @"";
+    }
+}
+
 - (NSString *)unknownContactName
 {
     return NSLocalizedString(

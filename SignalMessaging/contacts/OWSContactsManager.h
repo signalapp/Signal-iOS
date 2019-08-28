@@ -14,6 +14,7 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @class SDSKeyValueStore;
 @class SignalAccount;
 @class SignalServiceAddress;
+@class TSThread;
 @class UIFont;
 
 /**
@@ -76,17 +77,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address;
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
 - (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
-
-/// The name representing this address.
-///
-/// This will be the first of the following that exists for this address:
-/// - The matching name from system contacts
-/// - The name provided on the profile
-/// - The address' phone number
-/// - The address' UUID
-- (NSString *)displayNameForAddress:(SignalServiceAddress *)address;
-- (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
-- (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 
 /**
  * Used for sorting, respects system contacts name sort order preference.

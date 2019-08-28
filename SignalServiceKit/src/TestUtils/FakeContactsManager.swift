@@ -12,6 +12,18 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return self.displayName(for: address)
     }
 
+    public func displayName(for signalAccount: SignalAccount) -> String {
+        return "Fake name"
+    }
+
+    public func displayName(for thread: TSThread, transaction: SDSAnyReadTransaction) -> String {
+        return "Fake name"
+    }
+
+    public func displayNameWithSneakyTransaction(thread: TSThread) -> String {
+        return "Fake name"
+    }
+
     public func signalAccounts() -> [SignalAccount] {
         return []
     }

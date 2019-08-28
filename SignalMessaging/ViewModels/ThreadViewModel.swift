@@ -28,7 +28,8 @@ public class ThreadViewModel: NSObject {
         self.threadRecord = thread
 
         self.isGroupThread = thread.isGroupThread()
-        self.name = thread.name()
+        self.name = Environment.shared.contactsManager.displayName(for: thread, transaction: transaction)
+
         self.isMuted = thread.isMuted
         self.lastMessageText = thread.lastMessageText(transaction: transaction)
         let lastInteraction = thread.lastInteractionForInbox(transaction: transaction)

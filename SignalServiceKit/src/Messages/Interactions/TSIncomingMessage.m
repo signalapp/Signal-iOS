@@ -169,23 +169,6 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     return OWSInteractionType_IncomingMessage;
 }
 
-- (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    if (!self.hasPerConversationExpiration) {
-        // Skip fetches if possible.
-        return NO;
-    }
-
-    for (NSString *attachmentId in self.attachmentIds) {
-        TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
-        if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
-            return NO;
-        }
-    }
-
-    return YES;
-}
-
 #pragma mark - OWSReadTracking
 
 - (BOOL)shouldAffectUnreadCounts

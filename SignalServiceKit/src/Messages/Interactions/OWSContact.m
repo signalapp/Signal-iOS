@@ -485,6 +485,9 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
 - (nullable TSAttachment *)avatarAttachmentWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    if (self.avatarAttachmentId == nil) {
+        return nil;
+    }
     return [TSAttachment anyFetchWithUniqueId:self.avatarAttachmentId transaction:transaction];
 }
 

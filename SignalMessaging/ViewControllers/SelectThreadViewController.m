@@ -207,28 +207,32 @@ NS_ASSUME_NONNULL_BEGIN
                                 cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                             }
 
-                            [cell configureWithThread:thread];
+                            [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                [cell configureWithThread:thread transaction:transaction];
 
-                            if (!cell.hasAccessoryText) {
-                                // Don't add a disappearing messages indicator if we've already added a "blocked" label.
-                                __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-                                [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                if (!cell.hasAccessoryText) {
+                                    // Don't add a disappearing messages indicator if we've already added a "blocked"
+                                    // label.
+                                    __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
+
                                     disappearingMessagesConfiguration =
                                         [OWSDisappearingMessagesConfiguration anyFetchWithUniqueId:thread.uniqueId
                                                                                        transaction:transaction];
-                                }];
 
-                                if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
-                                    DisappearingTimerConfigurationView *disappearingTimerConfigurationView =
-                                        [[DisappearingTimerConfigurationView alloc]
-                                            initWithDurationSeconds:disappearingMessagesConfiguration.durationSeconds];
+                                    if (disappearingMessagesConfiguration
+                                        && disappearingMessagesConfiguration.isEnabled) {
+                                        DisappearingTimerConfigurationView *disappearingTimerConfigurationView =
+                                            [[DisappearingTimerConfigurationView alloc]
+                                                initWithDurationSeconds:disappearingMessagesConfiguration
+                                                                            .durationSeconds];
 
-                                    disappearingTimerConfigurationView.tintColor = Theme.middleGrayColor;
-                                    [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
+                                        disappearingTimerConfigurationView.tintColor = Theme.middleGrayColor;
+                                        [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
 
-                                    [cell ows_setAccessoryView:disappearingTimerConfigurationView];
+                                        [cell ows_setAccessoryView:disappearingTimerConfigurationView];
+                                    }
                                 }
-                            }
+                            }];
 
                             return cell;
                         }

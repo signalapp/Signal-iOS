@@ -166,20 +166,18 @@ const CGFloat kIconViewLength = 24;
 
 - (NSString *)threadName
 {
-    NSString *threadName = self.thread.name;
+    NSString *threadName = [self.contactsManager displayNameForThreadWithSneakyTransaction:self.thread];
 
-    TSContactThread *_Nullable contactThread;
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        contactThread = (TSContactThread *)self.thread;
+    if (![self.thread isKindOfClass:[TSContactThread class]]) {
+        return threadName;
     }
 
+    TSContactThread *contactThread = (TSContactThread *)self.thread;
     NSString *_Nullable phoneNumber = contactThread.contactAddress.phoneNumber;
-
     if (phoneNumber && [threadName isEqualToString:phoneNumber]) {
         threadName = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
-    } else if (threadName.length == 0 && [self isGroupThread]) {
-        threadName = [MessageStrings newGroupDefaultTitle];
     }
+
     return threadName;
 }
 
@@ -996,7 +994,7 @@ const CGFloat kIconViewLength = 24;
 
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)self.thread;
-        NSString *threadName = contactThread.name;
+        NSString *threadName = [self.contactsManager displayNameForThreadWithSneakyTransaction:contactThread];
 
         SignalServiceAddress *recipientAddress = contactThread.contactAddress;
         NSString *_Nullable phoneNumber = recipientAddress.phoneNumber;
@@ -1151,6 +1149,11 @@ const CGFloat kIconViewLength = 24;
             [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
         }];
     }
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
 }
 
 #pragma mark - Actions

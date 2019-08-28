@@ -515,7 +515,9 @@ const UIWindowLevel UIWindowLevel_MessageActions(void)
     // By calling makeKeyAndVisible we ensure the rootViewController becomes first responder.
     // In the normal case, that means the SignalViewController will call `becomeFirstResponder`
     // on the vc on top of its navigation stack.
-    [self.rootWindow makeKeyAndVisible];
+    if (!self.rootWindow.isKeyWindow || self.rootWindow.hidden) {
+        [self.rootWindow makeKeyAndVisible];
+    }
 
     [self fixit_workAroundRotationIssue];
 }

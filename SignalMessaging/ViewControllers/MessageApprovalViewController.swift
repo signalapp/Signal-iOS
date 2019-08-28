@@ -150,12 +150,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         nameLabel.autoPinBottomToSuperviewMargin(withInset: vMargin)
 
         if let groupThread = self.thread as? TSGroupThread {
-            let groupName = (groupThread.name().count > 0
-            ? groupThread.name()
-                : MessageStrings.newGroupDefaultTitle)
-
-            nameLabel.text = groupName
-
+            nameLabel.text = groupThread.groupNameOrDefault
             return recipientRow
         }
         guard let contactThread = self.thread as? TSContactThread else {

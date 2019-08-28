@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern const CGFloat kContactCellAvatarTextMargin;
 
+@class SDSAnyReadTransaction;
 @class SignalServiceAddress;
 @class TSThread;
 
@@ -15,7 +16,7 @@ extern const CGFloat kContactCellAvatarTextMargin;
 
 - (void)configureWithRecipientAddress:(SignalServiceAddress *)address;
 
-- (void)configureWithThread:(TSThread *)thread;
+- (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)prepareForReuse;
 

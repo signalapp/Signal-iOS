@@ -154,6 +154,10 @@ class MessageDetailViewController: OWSViewController {
         }
     }
 
+    override public var canBecomeFirstResponder: Bool {
+        return true
+    }
+
     // MARK: - Create Views
 
     private func createViews() {

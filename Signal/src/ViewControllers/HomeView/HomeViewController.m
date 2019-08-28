@@ -982,6 +982,11 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self updateShouldObserveDBModifications];
 }
 
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
 #pragma mark - startup
 
 - (NSArray<ExperienceUpgrade *> *)unseenUpgradeExperiences
