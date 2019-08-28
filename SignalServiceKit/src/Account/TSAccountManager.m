@@ -217,6 +217,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 {
     OWSAssert(self.uuid == nil);
 
+    @synchronized(self) {
+        OWSAssertDebug(self.cachedUuid == nil);
+    }
+
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore setString:uuid.UUIDString key:TSAccountManager_RegisteredUUIDKey transaction:transaction];
     }];
@@ -308,17 +312,19 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
     OWSLogVerbose(@"");
 
-    __block NSUUID *_Nullable result;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        NSString *_Nullable storedString = [self.keyValueStore getString:TSAccountManager_RegisteredUUIDKey
-                                                             transaction:transaction];
+    @synchronized(self) {
+        __block NSUUID *_Nullable result;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            NSString *_Nullable storedString = [self.keyValueStore getString:TSAccountManager_RegisteredUUIDKey
+                                                                 transaction:transaction];
 
-        if (storedString != nil) {
-            result = [[NSUUID alloc] initWithUUIDString:storedString];
-            OWSAssert(result);
-        }
-    }];
-    return result;
+            if (storedString != nil) {
+                result = [[NSUUID alloc] initWithUUIDString:storedString];
+                OWSAssert(result);
+            }
+        }];
+        return result;
+    }
 }
 
 - (nullable SignalServiceAddress *)storedOrCachedLocalAddress:(SDSAnyReadTransaction *)transaction
