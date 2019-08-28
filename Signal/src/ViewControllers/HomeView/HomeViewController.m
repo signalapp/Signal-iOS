@@ -30,7 +30,6 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <StoreKit/StoreKit.h>
-#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 
