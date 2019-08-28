@@ -145,7 +145,6 @@ public final class LokiGroupChatAPI : NSObject {
                         print("[Loki] Couldn't parse message for group chat with ID: \(group) on server: \(server) from: \(message).")
                         return nil
                 }
-                guard hexEncodedPublicKey != userHexEncodedPublicKey else { return nil }
                 let lastMessageServerID = getLastMessageServerID(for: group, on: server)
                 let firstMessageServerID = getFirstMessageServerID(for: group, on: server)
                 if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: group, on: server, to: serverID) }

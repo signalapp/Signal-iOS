@@ -168,7 +168,7 @@
     [transaction setObject:messageID forKey:key inCollection:LKMessageIDCollection];
 }
 
-- (NSString *)getIDForMessageWithServerID:(NSUInteger)serverID in:(YapDatabaseReadTransaction *)transaction {
+- (NSString *_Nullable)getIDForMessageWithServerID:(NSUInteger)serverID in:(YapDatabaseReadTransaction *)transaction {
     NSString *key = [NSString stringWithFormat:@"%@", @(serverID)];
     return [transaction objectForKey:key inCollection:LKMessageIDCollection];
 }
