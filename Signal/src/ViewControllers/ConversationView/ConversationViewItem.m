@@ -1161,6 +1161,30 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)deleteAction
 {
+    // TODO: Handle deletion differently for public chats
+    if (self.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
+        
+        // If it's RSS then just proceed normally
+        if (groupThread.isRSS) {
+            [self.interaction remove];
+            return;
+        };
+        
+        // Only allow deletion on incoming and outgoing messages
+        OWSInteractionType interationType = self.interaction.interactionType;
+        if (interationType != OWSInteractionType_OutgoingMessage && interationType != OWSInteractionType_IncomingMessage) return;
+        
+        // Check that we have the server id for the message
+        TSMessage *message = (TSMessage *)self.interaction;
+        if (!message.isPublicChatMessage) return;
+        
+        // TODO: Call the group api here to delete the message
+        
+        // Just return and don't delete for now
+        return;
+    }
+    
     [self.interaction remove];
 }
 
@@ -1202,6 +1226,27 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         }
     }
     return NO;
+}
+
+- (BOOL)canDeleteGroupMessage
+{
+    if (!self.isGroupThread) return false;
+    
+    // Make sure it's a public chat and not an rss feed
+    TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
+    if (groupThread.isRSS) return false;
+    
+    // Only allow deletion on incoming and outgoing messages
+    OWSInteractionType interationType = self.interaction.interactionType;
+    if (interationType != OWSInteractionType_OutgoingMessage && interationType != OWSInteractionType_IncomingMessage) return false;
+    
+    // Make sure it's a public chat message
+    TSMessage *message = (TSMessage *)self.interaction;
+    if (!message.isPublicChatMessage) return false;
+    
+    // TODO: Disable deletion of incoming messages if we're not moderators
+
+    return true;
 }
 
 @end
