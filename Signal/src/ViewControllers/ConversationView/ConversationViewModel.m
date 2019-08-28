@@ -14,7 +14,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
