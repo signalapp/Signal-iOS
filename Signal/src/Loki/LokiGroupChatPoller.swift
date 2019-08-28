@@ -9,6 +9,9 @@ public final class LokiGroupChatPoller : NSObject {
     private let pollForNewMessagesInterval: TimeInterval = 4
     private let pollForDeletedMessagesInterval: TimeInterval = 32 * 60
     
+    private let storage = OWSPrimaryStorage.shared()
+    private let ourHexEncodedPubKey = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+    
     @objc(initForGroup:)
     public init(for group: LokiGroupChat) {
         self.group = group
@@ -31,29 +34,68 @@ public final class LokiGroupChatPoller : NSObject {
     
     private func pollForNewMessages() {
         let group = self.group
-        let _ = LokiGroupChatAPI.getMessages(for: group.serverID, on: group.server).done { messages in
+        let _ = LokiGroupChatAPI.getMessages(for: group.serverID, on: group.server).done { [weak self] messages in
+            guard let self = self else { return }
             messages.reversed().forEach { message in
                 let senderHexEncodedPublicKey = message.hexEncodedPublicKey
-                let endIndex = senderHexEncodedPublicKey.endIndex
-                let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
-                let senderDisplayName = "\(message.displayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
-                let id = group.id.data(using: String.Encoding.utf8)!
-                let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
-                x1.setName(group.displayName)
-                let x2 = SSKProtoDataMessage.builder()
-                x2.setTimestamp(message.timestamp)
-                x2.setGroup(try! x1.build())
-                x2.setBody(message.body)
-                let x3 = SSKProtoContent.builder()
-                x3.setDataMessage(try! x2.build())
-                let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
-                x4.setSource(senderDisplayName)
-                x4.setSourceDevice(OWSDevicePrimaryDeviceId)
-                x4.setContent(try! x3.build().serializedData())
-                OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
-                    SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
+                if (senderHexEncodedPublicKey != self.ourHexEncodedPubKey) {
+                    self.handleIncomingMessage(message, group: group);
+                } else {
+                    self.handleOutgoingMessage(message, group: group)
                 }
             }
+        }
+    }
+    
+    private func handleOutgoingMessage(_ message: LokiGroupMessage, group: LokiGroupChat) {
+        // Any Outgoing message should have a message server id mapped to it
+        guard let messageServerID = message.serverID else { return }
+        
+        var hasMessage = false
+        storage.newDatabaseConnection().read { transaction in
+            let id = self.storage.getIDForMessage(withServerID: UInt(messageServerID), in: transaction);
+            hasMessage = id != nil
+        }
+        
+        // Check if we already have a message for this server message
+        guard !hasMessage, let groupID = group.id.data(using: .utf8) else { return }
+        
+        // Get the thread
+        let groupThread = TSGroupThread.getOrCreateThread(withGroupId: groupID)
+        
+        // Save the message
+        let message = TSOutgoingMessage(outgoingMessageWithTimestamp: message.timestamp, in: groupThread, messageBody: message.body, attachmentIds: [], expiresInSeconds: 0, expireStartedAt: 0, isVoiceMessage: false, groupMetaMessage: .deliver, quotedMessage: nil, contactShare: nil, linkPreview: nil)
+        storage.newDatabaseConnection().readWrite { transaction in
+            message.update(withSentRecipient: group.server, wasSentByUD: false, transaction: transaction)
+            message.save(with: transaction)
+            guard let messageID = message.uniqueId else {
+                owsFailDebug("[Loki] Outgoing public chat message should have a unique id set")
+                return
+            }
+            self.storage.setIDForMessageWithServerID(UInt(messageServerID), to: messageID, in: transaction)
+        }
+    }
+    
+    private func handleIncomingMessage(_ message: LokiGroupMessage, group: LokiGroupChat) {
+        let senderHexEncodedPublicKey = message.hexEncodedPublicKey
+        let endIndex = senderHexEncodedPublicKey.endIndex
+        let cutoffIndex = senderHexEncodedPublicKey.index(endIndex, offsetBy: -8)
+        let senderDisplayName = "\(message.displayName) (...\(senderHexEncodedPublicKey[cutoffIndex..<endIndex]))"
+        let id = group.id.data(using: String.Encoding.utf8)!
+        let x1 = SSKProtoGroupContext.builder(id: id, type: .deliver)
+        x1.setName(group.displayName)
+        let x2 = SSKProtoDataMessage.builder()
+        x2.setTimestamp(message.timestamp)
+        x2.setGroup(try! x1.build())
+        x2.setBody(message.body)
+        let x3 = SSKProtoContent.builder()
+        x3.setDataMessage(try! x2.build())
+        let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
+        x4.setSource(senderDisplayName)
+        x4.setSourceDevice(OWSDevicePrimaryDeviceId)
+        x4.setContent(try! x3.build().serializedData())
+        OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
+            SSKEnvironment.shared.messageManager.throws_processEnvelope(try! x4.build(), plaintextData: try! x3.build().serializedData(), wasReceivedByUD: false, transaction: transaction)
         }
     }
     
