@@ -1115,7 +1115,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (displayName == nil) { displayName = @"Anonymous"; }
         LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:message.body type:LKGroupChatAPI.publicChatMessageType timestamp:message.timestamp];
         [[LKGroupChatAPI sendMessage:groupMessage toGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer]
-        .thenOn(OWSDispatch.sendingQueue, ^(id result) {
+        .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [OWSPrimaryStorage.sharedManager setIDForMessageWithServerID:groupMessage.serverID to:message.uniqueId in:transaction];
+            }];
             [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:false wasSentByWebsocket:false];
         })
         .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable

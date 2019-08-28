@@ -2,7 +2,7 @@ import PromiseKit
 
 @objc(LKGroupMessage)
 public final class LokiGroupMessage : NSObject {
-    public let serverID: UInt?
+    public let serverID: UInt64?
     public let hexEncodedPublicKey: String
     public let displayName: String
     public let body: String
@@ -10,7 +10,10 @@ public final class LokiGroupMessage : NSObject {
     public let timestamp: UInt64
     public let type: String
     
-    public init(serverID: UInt?, hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64) {
+    @objc(serverID)
+    public var objc_serverID: UInt64 { return serverID ?? 0 }
+    
+    public init(serverID: UInt64?, hexEncodedPublicKey: String, displayName: String, body: String, type: String, timestamp: UInt64) {
         self.serverID = serverID
         self.hexEncodedPublicKey = hexEncodedPublicKey
         self.displayName = displayName

@@ -50,7 +50,7 @@ public final class LokiGroupChatAPI : NSObject {
         }
     }
     
-    private static func getLastMessageServerID(for group: UInt, on server: String) -> UInt? {
+    private static func getLastMessageServerID(for group: UInt64, on server: String) -> UInt? {
         var result: UInt? = nil
         storage.dbReadConnection.read { transaction in
             result = transaction.object(forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection) as! UInt?
@@ -58,13 +58,13 @@ public final class LokiGroupChatAPI : NSObject {
         return result
     }
     
-    private static func setLastMessageServerID(for group: UInt, on server: String, to newValue: UInt) {
+    private static func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64) {
         storage.dbReadWriteConnection.readWrite { transaction in
             transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
         }
     }
     
-    private static func getFirstMessageServerID(for group: UInt, on server: String) -> UInt? {
+    private static func getFirstMessageServerID(for group: UInt64, on server: String) -> UInt? {
         var result: UInt? = nil
         storage.dbReadConnection.read { transaction in
             result = transaction.object(forKey: "\(server).\(group)", inCollection: firstMessageServerIDCollection) as! UInt?
@@ -72,7 +72,7 @@ public final class LokiGroupChatAPI : NSObject {
         return result
     }
     
-    private static func setFirstMessageServerID(for group: UInt, on server: String, to newValue: UInt) {
+    private static func setFirstMessageServerID(for group: UInt64, on server: String, to newValue: UInt64) {
         storage.dbReadWriteConnection.readWrite { transaction in
             transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: firstMessageServerIDCollection)
         }
@@ -123,7 +123,7 @@ public final class LokiGroupChatAPI : NSObject {
     }
     
     // MARK: Public API
-    public static func getMessages(for group: UInt, on server: String) -> Promise<[LokiGroupMessage]> {
+    public static func getMessages(for group: UInt64, on server: String) -> Promise<[LokiGroupMessage]> {
         print("[Loki] Getting messages for group chat with ID: \(group) on server: \(server).")
         var queryParameters = "include_annotations=1"
         if let lastMessageServerID = getLastMessageServerID(for: group, on: server) {
@@ -140,7 +140,7 @@ public final class LokiGroupChatAPI : NSObject {
             }
             return rawMessages.flatMap { message in
                 guard let annotations = message["annotations"] as? [JSON], let annotation = annotations.first, let value = annotation["value"] as? JSON,
-                    let serverID = message["id"] as? UInt, let body = message["text"] as? String, let hexEncodedPublicKey = value["source"] as? String, let displayName = value["from"] as? String,
+                    let serverID = message["id"] as? UInt64, let body = message["text"] as? String, let hexEncodedPublicKey = value["source"] as? String, let displayName = value["from"] as? String,
                     let timestamp = value["timestamp"] as? UInt64 else {
                         print("[Loki] Couldn't parse message for group chat with ID: \(group) on server: \(server) from: \(message).")
                         return nil
@@ -155,7 +155,7 @@ public final class LokiGroupChatAPI : NSObject {
         }
     }
     
-    public static func sendMessage(_ message: LokiGroupMessage, to group: UInt, on server: String) -> Promise<LokiGroupMessage> {
+    public static func sendMessage(_ message: LokiGroupMessage, to group: UInt64, on server: String) -> Promise<LokiGroupMessage> {
         return getAuthToken(for: server).then { token -> Promise<LokiGroupMessage> in
             print("[Loki] Sending message to group chat with ID: \(group) on server: \(server).")
             let url = URL(string: "\(server)/channels/\(group)/messages")!
@@ -167,7 +167,7 @@ public final class LokiGroupChatAPI : NSObject {
                 // ISO8601DateFormatter doesn't support milliseconds before iOS 11
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-                guard let json = rawResponse as? JSON, let messageAsJSON = json["data"] as? JSON, let serverID = messageAsJSON["id"] as? UInt, let body = messageAsJSON["text"] as? String,
+                guard let json = rawResponse as? JSON, let messageAsJSON = json["data"] as? JSON, let serverID = messageAsJSON["id"] as? UInt64, let body = messageAsJSON["text"] as? String,
                     let dateAsString = messageAsJSON["created_at"] as? String, let date = dateFormatter.date(from: dateAsString) else {
                     print("[Loki] Couldn't parse message for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
                     throw Error.messageParsingFailed
@@ -184,7 +184,7 @@ public final class LokiGroupChatAPI : NSObject {
         }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
-    public static func getDeletedMessageIDs(for group: UInt, on server: String) -> Promise<[UInt]> {
+    public static func getDeletedMessageIDs(for group: UInt64, on server: String) -> Promise<[UInt64]> {
         print("[Loki] Getting deleted messages for group chat with ID: \(group) on server: \(server).")
         let firstMessageServerID = getFirstMessageServerID(for: group, on: server) ?? 0
         let queryParameters = "is_deleted=true&since_id=\(firstMessageServerID)"
@@ -196,7 +196,7 @@ public final class LokiGroupChatAPI : NSObject {
                 throw Error.messageParsingFailed
             }
             return rawMessages.flatMap { message in
-                guard let serverID = message["id"] as? UInt else {
+                guard let serverID = message["id"] as? UInt64 else {
                     print("[Loki] Couldn't parse deleted message for group chat with ID: \(group) on server: \(server) from: \(message).")
                     return nil
                 }
@@ -208,12 +208,12 @@ public final class LokiGroupChatAPI : NSObject {
     
     // MARK: Public API (Obj-C)
     @objc(getMessagesForGroup:onServer:)
-    public static func objc_getMessages(for group: UInt, on server: String) -> AnyPromise {
+    public static func objc_getMessages(for group: UInt64, on server: String) -> AnyPromise {
         return AnyPromise.from(getMessages(for: group, on: server))
     }
     
     @objc(sendMessage:toGroup:onServer:)
-    public static func objc_sendMessage(_ message: LokiGroupMessage, to group: UInt, on server: String) -> AnyPromise {
+    public static func objc_sendMessage(_ message: LokiGroupMessage, to group: UInt64, on server: String) -> AnyPromise {
         return AnyPromise.from(sendMessage(message, to: group, on: server))
     }
 }
