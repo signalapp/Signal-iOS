@@ -47,20 +47,21 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
  *
  *  @return registered or not
  */
-@property (readonly) BOOL isRegistered;
-@property (readonly) BOOL isRegisteredAndReady;
+@property (nonatomic, readonly) BOOL isRegistered;
+@property (nonatomic, readonly) BOOL isRegisteredAndReady;
 
 /**
  *  Returns current phone number for this device, which may not yet have been registered.
  *
  *  @return E164 formatted phone number
  */
-+ (nullable NSString *)localNumber;
-- (nullable NSString *)localNumber;
+@property (nonatomic, readonly, nullable, class) NSString *localNumber;
+@property (nonatomic, readonly, nullable) NSString *localNumber;
 
-@property (readonly, nullable) NSUUID *uuid;
-@property (class, readonly, nullable) SignalServiceAddress *localAddress;
-@property (readonly, nullable) SignalServiceAddress *localAddress;
+@property (nonatomic, readonly, nullable) NSUUID *uuid;
+
+@property (nonatomic, readonly, nullable, class) SignalServiceAddress *localAddress;
+@property (nonatomic, readonly, nullable) SignalServiceAddress *localAddress;
 
 // A variant of localAddress that never opens a "sneaky" transaction.
 - (nullable SignalServiceAddress *)storedOrCachedLocalAddress:(SDSAnyReadTransaction *)transaction;
