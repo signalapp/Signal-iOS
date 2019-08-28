@@ -13,7 +13,6 @@
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "TSAccountManager.h"
-#import "TSDatabaseView.h"
 #import "TSGroupThread.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>

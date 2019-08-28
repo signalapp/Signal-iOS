@@ -32,7 +32,6 @@
 #import "TSAttachmentPointer.h"
 #import "TSCall.h"
 #import "TSContactThread.h"
-#import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"

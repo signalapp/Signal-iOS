@@ -14,7 +14,6 @@
 #import "OWSStorage.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
-#import "TSDatabaseView.h"
 #import "TSErrorMessage.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/Threading.h>

@@ -36,7 +36,6 @@
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
-#import "TSDatabaseView.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
