@@ -47,6 +47,10 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 // * Instances of TSAccountState are immutable.
 // * None of this state should change often.
 // * Whenever any of this state changes, we reload all of it.
+//
+// This cache changes all of its properties in lockstep, which
+// helps ensure consistency.  e.g. isRegistered is true IFF
+// localNumber is non-nil.
 @interface TSAccountState : NSObject
 
 @property (nonatomic, readonly, nullable) NSString *localNumber;
@@ -352,6 +356,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable NSString *)localNumber
 {
+    return [self localNumberWithAccountState:[self getOrLoadAccountStateWithSneakyTransaction]];
+}
+
+- (nullable NSString *)localNumberWithAccountState:(TSAccountState *)accountState
+{
     @synchronized(self)
     {
         NSString *awaitingVerif = self.phoneNumberAwaitingVerification;
@@ -360,10 +369,15 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }
     }
 
-    return [self getOrLoadAccountStateWithSneakyTransaction].localNumber;
+    return accountState.localNumber;
 }
 
 - (nullable NSUUID *)uuid
+{
+    return [self uuidWithAccountState:[self getOrLoadAccountStateWithSneakyTransaction]];
+}
+
+- (nullable NSUUID *)uuidWithAccountState:(TSAccountState *)accountState
 {
     if (!SSKFeatureFlags.allowUUIDOnlyContacts) {
         return nil;
@@ -376,7 +390,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         }
     }
 
-    return [self getOrLoadAccountStateWithSneakyTransaction].uuid;
+    return accountState.uuid;
 }
 
 + (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -403,13 +417,16 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable SignalServiceAddress *)localAddress
 {
+    // We extract uuid and local number from a single instance of accountState
+    // to avoid races.
     TSAccountState *accountState = [self getOrLoadAccountStateWithSneakyTransaction];
+    NSUUID *_Nullable uuid = [self uuidWithAccountState:accountState];
+    NSString *_Nullable localNumber = [self localNumberWithAccountState:accountState];
 
-    if (accountState.uuid == nil && accountState.localNumber == nil) {
+    if (uuid == nil && localNumber == nil) {
         return nil;
     } else {
-        return [[SignalServiceAddress alloc] initWithUuidString:accountState.uuid.UUIDString
-                                                    phoneNumber:accountState.localNumber];
+        return [[SignalServiceAddress alloc] initWithUuidString:uuid.UUIDString phoneNumber:localNumber];
     }
 }
 
