@@ -55,11 +55,11 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
  *
  *  @return E164 formatted phone number
  */
-+ (nullable NSString *)localNumber;
-- (nullable NSString *)localNumber;
+@property (readonly, nullable) NSString *localNumber;
+@property (readonly, nullable, class) NSString *localNumber;
 
 @property (readonly, nullable) NSUUID *uuid;
-@property (class, readonly, nullable) SignalServiceAddress *localAddress;
+@property (readonly, nullable, class) SignalServiceAddress *localAddress;
 @property (readonly, nullable) SignalServiceAddress *localAddress;
 
 // A variant of localAddress that never opens a "sneaky" transaction.

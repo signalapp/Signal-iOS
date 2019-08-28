@@ -136,7 +136,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
     }
 
     func possiblePhoneNumbers() -> [PhoneNumber] {
-        guard let localNumber = TSAccountManager.localNumber() else {
+        guard let localNumber = TSAccountManager.localNumber else {
             owsFailDebug("local number unexpectedly nil")
             return []
         }
@@ -213,7 +213,7 @@ extension FindByPhoneNumberViewController: CountryCodeViewControllerDelegate {
     }
 
     func populateDefaultCountryCode() {
-        guard let localNumber = TSAccountManager.localNumber() else {
+        guard let localNumber = TSAccountManager.localNumber else {
             return owsFailDebug("Local number unexpectedly nil")
         }
 
