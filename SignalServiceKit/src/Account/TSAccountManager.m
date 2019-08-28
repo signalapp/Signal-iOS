@@ -44,24 +44,11 @@ NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignaling
 NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_ManualMessageFetchKey";
 NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountManager_NeedsAccountAttributesUpdateKey";
 
-// We use @synchronized and db transactions often within this class.
-// There's a risk of deadlock if we try to @synchronize within a transaction
-// while another thread is trying to open a transaction while @synchronized.
-// To avoid deadlocks, we follow these guidelines:
-//
-// * Don't use either unless necessary.
-// * Only use one if possible.
-// * If both must be used, only @synchronize within a transaction.
-//
-// If we follow these guidelines:
-//
-// * We can't have deadlock since we only @synchronize within a transaction.
 @interface TSAccountManager ()
 
 @property (nonatomic, nullable) NSString *cachedLocalNumber;
 @property (nonatomic, nullable) NSUUID *cachedUuid;
 
-@property (nonatomic, nullable) NSNumber *cachedIsRegistered;
 @property (nonatomic, nullable) NSNumber *cachedIsDeregistered;
 
 @property (nonatomic) Reachability *reachability;
@@ -71,6 +58,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 #pragma mark -
 
 @implementation TSAccountManager
+
+@synthesize isRegistered = _isRegistered;
 
 - (instancetype)init
 {
@@ -156,9 +145,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)setPhoneNumberAwaitingVerification:(NSString *_Nullable)phoneNumberAwaitingVerification
 {
-    @synchronized(self) {
-        self.phoneNumberAwaitingVerification = phoneNumberAwaitingVerification;
-    }
+    _phoneNumberAwaitingVerification = phoneNumberAwaitingVerification;
 
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:kNSNotificationName_LocalNumberDidChange
                                                              object:nil
@@ -184,22 +171,14 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (BOOL)isRegistered
 {
-    // Cache this value because it is used often and requires a db transaction.
-
     @synchronized (self) {
-        if (self.cachedIsRegistered != nil) {
-            return self.cachedIsRegistered.boolValue;
+        if (_isRegistered) {
+            return YES;
+        } else {
+            // Cache this once it's true since it's called alot, involves a dbLookup, and once set - it doesn't change.
+            _isRegistered = [self storedLocalNumber] != nil;
         }
-    }
-
-    // tryToPopulateCachedValues uses a transaction, so we avoid calling it
-    // while @synchronized.
-    [self tryToPopulateCachedValues];
-
-    @synchronized(self) {
-        OWSAssertDebug(self.cachedIsRegistered != nil);
-
-        return self.cachedIsRegistered.boolValue;
+        return _isRegistered;
     }
 }
 
@@ -211,12 +190,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 - (void)didRegister
 {
     OWSLogInfo(@"didRegister");
-    __block NSString *phoneNumber;
-    __block NSUUID *uuid;
-    @synchronized(self) {
-        phoneNumber = self.phoneNumberAwaitingVerification;
-        uuid = self.uuidAwaitingVerification;
-    }
+    NSString *phoneNumber = self.phoneNumberAwaitingVerification;
+    NSUUID *uuid = self.uuidAwaitingVerification;
 
     if (!phoneNumber) {
         OWSFail(@"phoneNumber was unexpectedly nil");
@@ -230,6 +205,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         [self storeLocalNumber:phoneNumber uuid:uuid transaction:transaction];
     }];
 
+    // Warm these cached values.
+    [self isRegistered];
+    [self localNumber];
+    [self isDeregistered];
+
     [self postRegistrationStateDidChangeNotification];
 }
 
@@ -237,16 +217,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 {
     OWSAssert(self.uuid == nil);
 
-    // We don't need to @synchronize on self when writing to TSAccountManager_RegisteredUUIDKey,
-    // the write transaction is sufficient.
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        @synchronized(self) {
-            [self.keyValueStore setString:uuid.UUIDString
-                                      key:TSAccountManager_RegisteredUUIDKey
-                              transaction:transaction];
-
-            self.cachedUuid = uuid;
-        }
+        [self.keyValueStore setString:uuid.UUIDString key:TSAccountManager_RegisteredUUIDKey transaction:transaction];
     }];
 }
 
@@ -257,78 +229,55 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable NSString *)localNumber
 {
-    @synchronized(self) {
-        NSString *awaitingVerif = self.phoneNumberAwaitingVerification;
-        if (awaitingVerif) {
-            return awaitingVerif;
-        }
+    NSString *awaitingVerif = self.phoneNumberAwaitingVerification;
+    if (awaitingVerif) {
+        return awaitingVerif;
+    }
 
-        // Cache this value because it is used often and requires a db transaction.
-
-        if (self.cachedLocalNumber != nil) {
-            return self.cachedLocalNumber;
+    // Cache this since we access this a lot, and once set it will not change.
+    @synchronized(self)
+    {
+        if (self.cachedLocalNumber == nil) {
+            self.cachedLocalNumber = self.storedLocalNumber;
         }
     }
 
-    // tryToPopulateCachedValues uses a transaction, so we avoid calling it
-    // while @synchronized.
-    [self tryToPopulateCachedValues];
-
-    @synchronized(self) {
-        OWSAssertDebug(self.cachedLocalNumber != nil);
-
-        return self.cachedLocalNumber;
-    }
+    return self.cachedLocalNumber;
 }
 
-- (void)tryToPopulateCachedValues
+- (nullable NSString *)storedLocalNumber
 {
     OWSLogVerbose(@"");
+    
+    @synchronized (self) {
+        __block NSString *_Nullable result;
 
-    // GRDB TODO: Until GRDB migration is complete, we need to load this from YDB,
-    //
-    // * YAPDBJobRecordFinder uses a secondary index.
-    // * Yaps views and indices enumerate all (per whitelist or blacklist) entities when building or updating the
-    //   index. Views and indices can be built or re-built on launch.
-    // * These views and indices are built before migrations are run and "database is ready".
-    // * MessageSenderJobQueue uses SSKMessageSenderJobRecord whose invisibleMessage is an TSOutgoingMessage.
-    //   Therefore (re-)building YAPDBJobRecordFinder's index can deserialize outgoing sync messages.
-    // * OWSOutgoingSyncMessage extends TSOutgoingMessage whose deserialization initializer initWithCoder uses
-    //   TSAccountManager.localNumber.
-    // * TSAccountManager.localNumber is persisted in the database.
-    // * When we load TSAccountManager.localNumber we use the "current" database which might be GRDB. GRDB might not
-    //   be populated because the migration hasn't occurred yet.
-    //
-    // GRDB TODO: GRDB_MIGRATION_COMPLETE might eventually be replaced by a flag set at runtime.
+        // GRDB TODO: Until GRDB migration is complete, we need to load this from YDB,
+        //
+        // * YAPDBJobRecordFinder uses a secondary index.
+        // * Yaps views and indices enumerate all (per whitelist or blacklist) entities when building or updating the
+        //   index. Views and indices can be built or re-built on launch.
+        // * These views and indices are built before migrations are run and "database is ready".
+        // * MessageSenderJobQueue uses SSKMessageSenderJobRecord whose invisibleMessage is an TSOutgoingMessage.
+        //   Therefore (re-)building YAPDBJobRecordFinder's index can deserialize outgoing sync messages.
+        // * OWSOutgoingSyncMessage extends TSOutgoingMessage whose deserialization initializer initWithCoder uses
+        //   TSAccountManager.localNumber.
+        // * TSAccountManager.localNumber is persisted in the database.
+        // * When we load TSAccountManager.localNumber we use the "current" database which might be GRDB. GRDB might not
+        //   be populated because the migration hasn't occurred yet.
+        //
+        // GRDB TODO: GRDB_MIGRATION_COMPLETE might eventually be replaced by a flag set at runtime.
 #ifdef GRDB_MIGRATION_COMPLETE
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        [self tryToPopulateCachedValuesWithTransaction:transaction];
-    }];
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            result = [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
+        }];
 #else
-    [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self tryToPopulateCachedValuesWithTransaction:transaction.asAnyRead];
-    }];
+        [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            result =
+                [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction.asAnyRead];
+        }];
 #endif
-}
-
-- (void)tryToPopulateCachedValuesWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSLogVerbose(@"");
-
-    @synchronized(self) {
-        NSString *_Nullable localNumber = [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey
-                                                            transaction:transaction];
-        NSString *_Nullable uuidString = [self.keyValueStore getString:TSAccountManager_RegisteredUUIDKey
-                                                           transaction:transaction];
-        NSUUID *_Nullable uuid = (uuidString != nil ? [[NSUUID alloc] initWithUUIDString:uuidString] : nil);
-        BOOL isDeregistered = [self.keyValueStore getBool:TSAccountManager_IsDeregisteredKey
-                                             defaultValue:NO
-                                              transaction:transaction];
-
-        self.cachedLocalNumber = localNumber;
-        self.cachedUuid = uuid;
-        self.cachedIsRegistered = @(localNumber != nil);
-        self.cachedIsDeregistered = @(isDeregistered);
+        return result;
     }
 }
 
@@ -338,55 +287,59 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         return nil;
     }
 
-    @synchronized(self) {
-        NSUUID *awaitingVerif = self.uuidAwaitingVerification;
-        if (awaitingVerif) {
-            return awaitingVerif;
-        }
-
-        // Cache this value because it is used often and requires a db transaction.
-
-        if (self.cachedUuid != nil) {
-            return self.cachedUuid;
-        }
+    NSUUID *awaitingVerif = self.uuidAwaitingVerification;
+    if (awaitingVerif) {
+        return awaitingVerif;
     }
 
-    // tryToPopulateCachedValues uses a transaction, so we avoid calling it
-    // while @synchronized.
-    [self tryToPopulateCachedValues];
-
+    // Cache this since we access this a lot, and once set it will not change.
     @synchronized(self) {
+        if (self.cachedUuid == nil) {
+            self.cachedUuid = self.storedUuid;
+        }
+
         return self.cachedUuid;
     }
 }
 
+- (nullable NSUUID *)storedUuid
+{
+    OWSAssertDebug(SSKFeatureFlags.allowUUIDOnlyContacts);
+
+    OWSLogVerbose(@"");
+
+    __block NSUUID *_Nullable result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSString *_Nullable storedString = [self.keyValueStore getString:TSAccountManager_RegisteredUUIDKey
+                                                             transaction:transaction];
+
+        if (storedString != nil) {
+            result = [[NSUUID alloc] initWithUUIDString:storedString];
+            OWSAssert(result);
+        }
+    }];
+    return result;
+}
+
 - (nullable SignalServiceAddress *)storedOrCachedLocalAddress:(SDSAnyReadTransaction *)transaction
 {
-    // Cache this value because it is used often and requires a db transaction.
-    //
-    // NOTE: We do not consult uuidAwaitingVerification here.
     @synchronized(self) {
         NSString *_Nullable localNumber = self.cachedLocalNumber;
         NSString *_Nullable uuidString = self.cachedUuid.UUIDString;
 
-        if (uuidString != nil && localNumber != nil) {
-            return [[SignalServiceAddress alloc] initWithUuidString:uuidString phoneNumber:localNumber];
+        if (localNumber == nil) {
+            localNumber = [self.keyValueStore getString:TSAccountManager_RegisteredNumberKey transaction:transaction];
         }
-    }
 
-    // tryToPopulateCachedValues uses a transaction, so we avoid calling it
-    // while @synchronized.
-    [self tryToPopulateCachedValuesWithTransaction:transaction];
+        if (uuidString == nil) {
+            uuidString = [self.keyValueStore getString:TSAccountManager_RegisteredUUIDKey transaction:transaction];
+        }
 
-    @synchronized(self) {
-        NSString *_Nullable localNumber = self.cachedLocalNumber;
-        NSString *_Nullable uuidString = self.cachedUuid.UUIDString;
-
-        if (uuidString != nil && localNumber != nil) {
-            return [[SignalServiceAddress alloc] initWithUuidString:uuidString phoneNumber:localNumber];
-        } else {
+        if (uuidString == nil && localNumber == nil) {
             return nil;
         }
+
+        return [[SignalServiceAddress alloc] initWithUuidString:uuidString phoneNumber:localNumber];
     }
 }
 
@@ -397,32 +350,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable SignalServiceAddress *)localAddress
 {
-    // Cache this value because it is used often and requires a db transaction.
-    //
-    // NOTE: We do not consult uuidAwaitingVerification here.
-    @synchronized(self) {
-        NSString *_Nullable localNumber = self.cachedLocalNumber;
-        NSString *_Nullable uuidString = self.cachedUuid.UUIDString;
-
-        if (uuidString != nil && localNumber != nil) {
-            return [[SignalServiceAddress alloc] initWithUuidString:uuidString phoneNumber:localNumber];
-        }
+    if (!self.uuid && !self.localNumber) {
+        return nil;
     }
 
-    // tryToPopulateCachedValues uses a transaction, so we avoid calling it
-    // while @synchronized.
-    [self tryToPopulateCachedValues];
-
-    @synchronized(self) {
-        NSString *_Nullable localNumber = self.cachedLocalNumber;
-        NSString *_Nullable uuidString = self.cachedUuid.UUIDString;
-
-        if (uuidString != nil && localNumber != nil) {
-            return [[SignalServiceAddress alloc] initWithUuidString:uuidString phoneNumber:localNumber];
-        } else {
-            return nil;
-        }
-    }
+    return [[SignalServiceAddress alloc] initWithUuidString:self.uuid.UUIDString phoneNumber:self.localNumber];
 }
 
 - (void)storeLocalNumber:(NSString *)localNumber
@@ -433,7 +365,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     // canary assert for this TODO.
     OWSAssertDebug(!IsUsingProductionService() || !SSKFeatureFlags.allowUUIDOnlyContacts);
 
-    // We @synchronize within a transaction.
     @synchronized (self) {
         [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
 
@@ -447,13 +378,9 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
         [self.keyValueStore removeValueForKey:TSAccountManager_ReregisteringPhoneNumberKey transaction:transaction];
 
-        self.cachedLocalNumber = localNumber;
-        self.cachedUuid = uuid;
-        self.cachedIsRegistered = @(localNumber != nil);
-        // TODO: Should we update cachedIsDeregistered?
-
         self.phoneNumberAwaitingVerification = nil;
         self.uuidAwaitingVerification = nil;
+        self.cachedLocalNumber = localNumber;
     }
 }
 
@@ -483,7 +410,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         registrationID = (uint32_t)arc4random_uniform(16380) + 1;
         OWSLogWarn(@"Generated a new registrationID: %u", registrationID);
 
-        [self.keyValueStore setObject:@(registrationID)
+        [self.keyValueStore setObject:[NSNumber numberWithUnsignedInteger:registrationID]
                                   key:TSAccountManager_LocalRegistrationIdKey
                           transaction:transaction];
     }
@@ -536,10 +463,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                       failure:(void (^)(NSError *error))failureBlock
 {
     NSString *authToken = [[self class] generateNewAccountAuthenticationToken];
-    NSString *_Nullable phoneNumber;
-    @synchronized(self) {
-        phoneNumber = self.phoneNumberAwaitingVerification;
-    }
+    NSString *phoneNumber = self.phoneNumberAwaitingVerification;
 
     OWSAssertDebug(authToken);
     OWSAssertDebug(phoneNumber);
@@ -664,7 +588,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return result;
 }
 
-// TODO: We should probably cache this value.
 - (nullable NSString *)storedServerAuthToken
 {
     __block NSString *_Nullable result;
@@ -717,7 +640,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     // erode the value of this cache in the SAE.
     @synchronized(self)
     {
-        self.cachedIsRegistered = nil;
+        _isRegistered = NO;
     }
 }
 
@@ -725,21 +648,17 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (BOOL)isDeregistered
 {
-    // Cache this value because it is used often and requires a db transaction.
-
+    // Cache this since we access this a lot, and once set it will not change.
     @synchronized(self) {
-        if (self.cachedIsDeregistered != nil) {
-            return self.cachedIsDeregistered.boolValue;
+        if (self.cachedIsDeregistered == nil) {
+            [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                self.cachedIsDeregistered = @([self.keyValueStore getBool:TSAccountManager_IsDeregisteredKey
+                                                             defaultValue:NO
+                                                              transaction:transaction]);
+            }];
         }
-    }
 
-    // tryToPopulateCachedValues uses a transaction, so we avoid calling it
-    // while @synchronized.
-    [self tryToPopulateCachedValues];
-
-    @synchronized(self) {
-        OWSAssertDebug(self.cachedIsDeregistered != nil);
-
+        OWSAssertDebug(self.cachedIsDeregistered);
         return self.cachedIsDeregistered.boolValue;
     }
 }
@@ -747,26 +666,20 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 - (void)setIsDeregistered:(BOOL)isDeregistered
 {
     @synchronized(self) {
-        // Skip redundant writes. We don't have to worry about races
-        // since this value is updated based on the outcome of most network
-        // activity which is far more frequent than changes to the value.
-        // It's acceptable to be eventually consistent.
-        if (self.cachedIsDeregistered != nil && self.cachedIsDeregistered.boolValue == isDeregistered) {
+        if (self.cachedIsDeregistered && self.cachedIsDeregistered.boolValue == isDeregistered) {
             return;
         }
-    }
 
-    OWSLogWarn(@"isDeregistered: %d", isDeregistered);
+        OWSLogWarn(@"isDeregistered: %d", isDeregistered);
+
+        self.cachedIsDeregistered = @(isDeregistered);
+    }
 
     [self.databaseStorage
         asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            @synchronized(self) {
-                [self.keyValueStore setObject:@(isDeregistered)
-                                          key:TSAccountManager_IsDeregisteredKey
-                                  transaction:transaction];
-
-                self.cachedIsDeregistered = @(isDeregistered);
-            }
+            [self.keyValueStore setObject:@(isDeregistered)
+                                      key:TSAccountManager_IsDeregisteredKey
+                              transaction:transaction];
         }
         completion:^{
             [self postRegistrationStateDidChangeNotification];
@@ -777,25 +690,20 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (BOOL)resetForReregistration
 {
-    __block BOOL didFail = NO;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        // We take care to @synchronize _within_ the transaction to avoid deadlock.
-        @synchronized(self) {
-            NSString *_Nullable localNumber = self.cachedLocalNumber;
-            if (!localNumber) {
-                OWSFailDebug(@"can't re-register without valid local number.");
-                didFail = YES;
-                return;
-            }
+    @synchronized(self) {
+        NSString *_Nullable localNumber = self.localNumber;
+        if (!localNumber) {
+            OWSFailDebug(@"can't re-register without valid local number.");
+            return NO;
+        }
 
-            self.cachedIsRegistered = nil;
-            self.cachedLocalNumber = nil;
-            self.cachedUuid = nil;
-            self.cachedIsDeregistered = nil;
-
-            self.phoneNumberAwaitingVerification = nil;
-            self.uuidAwaitingVerification = nil;
-
+        _isRegistered = NO;
+        _cachedLocalNumber = nil;
+        _phoneNumberAwaitingVerification = nil;
+        _cachedUuid = nil;
+        _uuidAwaitingVerification = nil;
+        _cachedIsDeregistered = nil;
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             [self.keyValueStore removeAllWithTransaction:transaction];
 
             [self.sessionStore resetSessionStore:transaction];
@@ -803,12 +711,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
             [self.keyValueStore setObject:localNumber
                                       key:TSAccountManager_ReregisteringPhoneNumberKey
                               transaction:transaction];
-        }
-    }];
+        }];
 
-    if (didFail) {
-        return NO;
-    } else {
         [self postRegistrationStateDidChangeNotification];
 
         return YES;
@@ -827,7 +731,6 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return result;
 }
 
-// TODO: We might want to cache this state.
 - (BOOL)isReregistering
 {
     __block NSString *_Nullable reregistrationPhoneNumber;
