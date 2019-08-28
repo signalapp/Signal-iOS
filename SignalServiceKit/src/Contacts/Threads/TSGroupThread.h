@@ -16,6 +16,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 @interface TSGroupThread : TSThread
 
 @property (nonatomic, strong) TSGroupModel *groupModel;
+@property (nonatomic, readonly) BOOL isRSS;
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel

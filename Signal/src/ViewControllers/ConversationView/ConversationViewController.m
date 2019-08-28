@@ -564,6 +564,16 @@ typedef enum : NSUInteger {
     return !groupThread.isLocalUserInGroup;
 }
 
+- (BOOL)isRSSGroup
+{
+    if (![_thread isKindOfClass:[TSGroupThread class]]) {
+        return NO;
+    }
+    
+    TSGroupThread *groupThread = (TSGroupThread *)self.thread;
+    return groupThread.isRSS;
+}
+
 - (void)hideInputIfNeeded
 {
     if (_peek) {
@@ -572,7 +582,7 @@ typedef enum : NSUInteger {
         return;
     }
 
-    if (self.userLeftGroup) {
+    if (self.userLeftGroup || self.isRSSGroup) {
         self.inputToolbar.hidden = YES; // user has requested they leave the group. further sends disallowed
         [self dismissKeyBoard];
     } else {
