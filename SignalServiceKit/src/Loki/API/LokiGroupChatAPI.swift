@@ -184,7 +184,7 @@ public final class LokiGroupChatAPI : NSObject {
         }.retryingIfNeeded(maxRetryCount: maxRetryCount)
     }
     
-    public static func getDeletedMessageIDs(for group: UInt64, on server: String) -> Promise<[UInt64]> {
+    public static func getDeletedMessageServerIDs(for group: UInt64, on server: String) -> Promise<[UInt64]> {
         print("[Loki] Getting deleted messages for group chat with ID: \(group) on server: \(server).")
         let firstMessageServerID = getFirstMessageServerID(for: group, on: server) ?? 0
         let queryParameters = "is_deleted=true&since_id=\(firstMessageServerID)"

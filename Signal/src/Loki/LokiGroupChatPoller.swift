@@ -59,7 +59,7 @@ public final class LokiGroupChatPoller : NSObject {
     
     private func pollForDeletedMessages() {
         let group = self.group
-        let _ = LokiGroupChatAPI.getDeletedMessageIDs(for: group.serverID, on: group.server).done { deletedMessageServerIDs in
+        let _ = LokiGroupChatAPI.getDeletedMessageServerIDs(for: group.serverID, on: group.server).done { deletedMessageServerIDs in
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
                 let deletedMessageIDs = deletedMessageServerIDs.compactMap { storage.getIDForMessage(withServerID: UInt($0), in: transaction) }
