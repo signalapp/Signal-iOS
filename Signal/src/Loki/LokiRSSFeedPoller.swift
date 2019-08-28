@@ -35,7 +35,7 @@ public final class LokiRSSFeedPoller : NSObject {
                 guard let title = item.title, let description = item.description, let date = item.pubDate else { return }
                 let timestamp = UInt64(date.timeIntervalSince1970 * 1000)
                 let urlRegex = try! NSRegularExpression(pattern: "<a\\s+(?:[^>]*?\\s+)?href=\"([^\"]*)\".*?>(.*?)<.*?\\/a>")
-                var bodyAsHTML = "\(title)<br>\(description)"
+                var bodyAsHTML = "\(title)<br><br>\(description)".replacingOccurrences(of: "</p>", with: "</p><br>")
                 while true {
                     guard let match = urlRegex.firstMatch(in: bodyAsHTML, options: [], range: NSRange(location: 0, length: bodyAsHTML.utf16.count)) else { break }
                     let matchRange = match.range(at: 0)
