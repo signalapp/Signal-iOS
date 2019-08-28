@@ -750,24 +750,22 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         return NO;
     }
 
-    @synchronized(self) {
-        _phoneNumberAwaitingVerification = nil;
-        _uuidAwaitingVerification = nil;
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        @synchronized(self) {
+            _phoneNumberAwaitingVerification = nil;
+            _uuidAwaitingVerification = nil;
 
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            @synchronized(self) {
-                [self.keyValueStore removeAllWithTransaction:transaction];
+            [self.keyValueStore removeAllWithTransaction:transaction];
 
-                [self.sessionStore resetSessionStore:transaction];
+            [self.sessionStore resetSessionStore:transaction];
 
-                [self.keyValueStore setObject:localNumber
-                                          key:TSAccountManager_ReregisteringPhoneNumberKey
-                                  transaction:transaction];
+            [self.keyValueStore setObject:localNumber
+                                      key:TSAccountManager_ReregisteringPhoneNumberKey
+                              transaction:transaction];
 
-                [self loadAccountStateWithTransaction:transaction];
-            }
-        }];
-    }
+            [self loadAccountStateWithTransaction:transaction];
+        }
+    }];
 
     [self postRegistrationStateDidChangeNotification];
 
