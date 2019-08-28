@@ -92,7 +92,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     return Environment.shared.contactsManager;
 }
 
-- (TSAccountManager *)tsAccountManager
++ (TSAccountManager *)tsAccountManager
 {
     OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
 
