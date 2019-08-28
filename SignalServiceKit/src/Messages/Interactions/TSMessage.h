@@ -48,6 +48,12 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 @property (nonatomic) BOOL isP2P;
 // ========
 
+// Public Chat
+// ========
+@property (nonatomic) uint64_t publicChatMessageID;
+@property (nonatomic, readonly) BOOL isPublicChatMessage;
+// ========
+
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
@@ -91,6 +97,10 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 
 - (void)saveFriendRequestStatus:(LKMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 - (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+
+#pragma mark - Public Chat
+
+- (void)savePublicChatMessageID:(uint64_t)serverMessageId withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 @end
 

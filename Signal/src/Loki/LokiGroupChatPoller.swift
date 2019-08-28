@@ -44,6 +44,14 @@ public final class LokiGroupChatPoller : NSObject {
                 x2.setTimestamp(message.timestamp)
                 x2.setGroup(try! x1.build())
                 x2.setBody(message.body)
+                
+                // Pass down the message server id
+                if let messageServerID = message.serverID {
+                    let publicChatInfo = SSKProtoPublicChatInfo.builder()
+                    publicChatInfo.setServerID(messageServerID)
+                    x2.setPublicChatInfo(try! publicChatInfo.build())
+                }
+                
                 let x3 = SSKProtoContent.builder()
                 x3.setDataMessage(try! x2.build())
                 let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)
