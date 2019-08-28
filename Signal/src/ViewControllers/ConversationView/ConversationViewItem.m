@@ -9,6 +9,7 @@
 #import "OWSMessageHeaderView.h"
 #import "OWSSystemMessageCell.h"
 #import "Session-Swift.h"
+#import "AnyPromise.h"
 #import <SignalMessaging/OWSUnreadIndicator.h>
 #import <SignalServiceKit/NSData+Image.h>
 #import <SignalServiceKit/NSString+SSK.h>
@@ -1161,15 +1162,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
 
 - (void)deleteAction
 {
-    // TODO: Handle deletion differently for public chats
+    // Delete it optimistically
+    [self.interaction remove];
+    
     if (self.isGroupThread) {
+        // If it's RSS then skip
         TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
-        
-        // If it's RSS then just proceed normally
-        if (groupThread.isRSS) {
-            [self.interaction remove];
-            return;
-        };
+        if (groupThread.isRSS) return;
         
         // Only allow deletion on incoming and outgoing messages
         OWSInteractionType interationType = self.interaction.interactionType;
@@ -1179,13 +1178,12 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         TSMessage *message = (TSMessage *)self.interaction;
         if (!message.isPublicChatMessage) return;
         
-        // TODO: Call the group api here to delete the message
-        
-        // Just return and don't delete for now
-        return;
+        // Delete the message
+        [[LKGroupChatAPI deleteMessageWithServerID:message.publicChatMessageID forGroup:LKGroupChatAPI.publicChatServerID onServer:LKGroupChatAPI.publicChatServer isOurOwnMessage:interationType == OWSInteractionType_OutgoingMessage].catch(^(NSError *error) {
+            // If we fail then add the interaction back in
+            [self.interaction save];
+        }) retainUntilComplete];
     }
-    
-    [self.interaction remove];
 }
 
 - (BOOL)hasBodyTextActionContent

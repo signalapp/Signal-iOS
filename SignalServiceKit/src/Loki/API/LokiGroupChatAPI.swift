@@ -11,7 +11,7 @@ public final class LokiGroupChatAPI : NSObject {
     // MARK: Public Chat
     @objc public static let publicChatServer = "https://chat.lokinet.org"
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
-    @objc public static let publicChatServerID = 1
+    @objc public static let publicChatServerID: UInt = 1
     
     // MARK: Convenience
     private static var userDisplayName: String {
@@ -205,6 +205,31 @@ public final class LokiGroupChatAPI : NSObject {
         }
     }
     
+    public static func deleteMessageWithServerID(_ messageServerID: UInt, for group: UInt64, on server: String, isOurOwnMessage: Bool = true) -> Promise<Void> {
+        return getAuthToken(for: server).then { token -> Promise<Void> in
+            let modTag = isOurOwnMessage ? "" : "[Mod]"
+            print("[Loki]\(modTag) Deleting message with server ID: \(messageServerID) for group chat with ID: \(group) on server: \(server).")
+        
+            let endpoint = isOurOwnMessage ? "\(server)/channels/\(group)/messages/\(messageServerID)" : "\(server)/loki/v1/moderation/message/\(messageServerID)"
+            let url = URL(string: endpoint)!
+            let request = TSRequest(url: url, method: "DELETE", parameters: [:])
+            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+            return TSNetworkManager.shared().makePromise(request: request).map { result -> Void in
+                print("[Loki]\(modTag) Deleted message \(messageServerID) on server \(server).")
+            }.recover { error in
+                 // If we got 404 or 410 then message doesn't exist on the server
+                if let error = error as? NetworkManagerError, error.statusCode == 404 || error.statusCode == 410 {
+                    print("[Loki]\(modTag) Message \(messageServerID) was already deleted on the server.")
+                    return
+                }
+
+                print("[Loki]\(modTag) Failed to delete message \(messageServerID) on server \(server).")
+                throw error
+            }
+        }
+       
+    }
+    
     // MARK: Public API (Obj-C)
     @objc(getMessagesForGroup:onServer:)
     public static func objc_getMessages(for group: UInt64, on server: String) -> AnyPromise {
@@ -214,5 +239,10 @@ public final class LokiGroupChatAPI : NSObject {
     @objc(sendMessage:toGroup:onServer:)
     public static func objc_sendMessage(_ message: LokiGroupMessage, to group: UInt64, on server: String) -> AnyPromise {
         return AnyPromise.from(sendMessage(message, to: group, on: server))
+    }
+    
+    @objc (deleteMessageWithServerID:forGroup:onServer:isOurOwnMessage:)
+    public static func objc_deleteMessageWithServerID(_ messageServerID: UInt, for group: UInt64, on server: String, ourMessage: Bool = true) -> AnyPromise {
+        return AnyPromise.from(deleteMessageWithServerID(messageServerID, for: group, on: server, isOurOwnMessage: ourMessage))
     }
 }
