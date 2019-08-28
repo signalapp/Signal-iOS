@@ -129,7 +129,7 @@ public class AccountManager: NSObject {
             self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
         }.then { (uuid: UUID?) -> Promise<Void> in
             assert(!FeatureFlags.allowUUIDOnlyContacts || uuid != nil)
-            TSAccountManager.sharedInstance().uuidAwaitingVerification = uuid
+            self.tsAccountManager.uuidAwaitingVerification = uuid
             return self.accountServiceClient.updateAttributes()
         }.then {
             self.createPreKeys()
