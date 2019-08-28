@@ -1499,7 +1499,7 @@ static NSTimeInterval launchStartedAt;
 
 - (LKRSSFeed *)lokiMessengerUpdatesFeed
 {
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Loki Messenger Updates", @"") isDeletable:false];
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Loki Messenger Updates", @"") isDeletable:false];
 }
 
 - (void)createGroupChatsIfNeeded
