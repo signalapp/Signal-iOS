@@ -23,6 +23,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UIImageView *avatarView;
 @property (nonatomic) UILabel *subtitleLabel;
+@property (nonatomic) UILabel *profileNameLabel;
 @property (nonatomic) UILabel *accessoryLabel;
 @property (nonatomic) UIStackView *nameContainerView;
 @property (nonatomic) UIView *accessoryViewContainer;
@@ -82,6 +83,8 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     self.subtitleLabel = [UILabel new];
 
+    self.profileNameLabel = [UILabel new];
+
     self.accessoryLabel = [[UILabel alloc] init];
     self.accessoryLabel.textAlignment = NSTextAlignmentRight;
 
@@ -89,6 +92,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     self.nameContainerView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
+        self.profileNameLabel,
         self.subtitleLabel,
     ]];
     self.nameContainerView.axis = UILayoutConstraintAxisVertical;
@@ -110,10 +114,12 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 - (void)configureFontsAndColors
 {
     self.nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
+    self.profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.accessoryLabel.font = [UIFont ows_mediumFontWithSize:13.f];
 
     self.nameLabel.textColor = [Theme primaryColor];
+    self.profileNameLabel.textColor = [Theme secondaryColor];
     self.subtitleLabel.textColor = [Theme secondaryColor];
     self.accessoryLabel.textColor = Theme.middleGrayColor;
 }
@@ -227,6 +233,12 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         self.nameLabel.text = [self.contactsManager displayNameForAddress:self.address];
     }
 
+    if (!SSKFeatureFlags.profileDisplayChanges
+        && ![self.contactsManager hasNameInSystemContactsForAddress:self.address]) {
+        self.profileNameLabel.text = [self.contactsManager formattedProfileNameForAddress:self.address];
+        [self.profileNameLabel setNeedsLayout];
+    }
+
     [self.nameLabel setNeedsLayout];
 }
 
@@ -238,6 +250,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.accessoryMessage = nil;
     self.nameLabel.text = nil;
     self.subtitleLabel.text = nil;
+    self.profileNameLabel.text = nil;
     self.accessoryLabel.text = nil;
     for (UIView *subview in self.accessoryViewContainer.subviews) {
         [subview removeFromSuperview];

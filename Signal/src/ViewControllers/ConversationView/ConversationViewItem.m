@@ -362,7 +362,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
     [self clearCachedLayoutState];
 }
 
-- (void)setSenderName:(nullable NSString *)senderName
+- (void)setSenderName:(nullable NSAttributedString *)senderName
 {
     if ([NSObject isNullableObject:senderName equalTo:_senderName]) {
         return;

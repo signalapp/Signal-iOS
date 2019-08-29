@@ -97,7 +97,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 
 @property (nonatomic) BOOL shouldShowDate;
 @property (nonatomic) BOOL shouldShowSenderAvatar;
-@property (nonatomic, nullable) NSString *senderName;
+@property (nonatomic, nullable) NSAttributedString *senderName;
 @property (nonatomic, nullable) NSString *accessibilityAuthorName;
 @property (nonatomic) BOOL shouldHideFooter;
 @property (nonatomic) BOOL isFirstInCluster;
