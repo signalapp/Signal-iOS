@@ -10,7 +10,6 @@
 #import "SSKEnvironment.h"
 #import "SSKSessionStore.h"
 #import "TSContactThread.h"
-#import "TSDatabaseView.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyWhisperMessage.h>

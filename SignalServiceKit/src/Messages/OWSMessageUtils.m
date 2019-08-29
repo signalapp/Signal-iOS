@@ -9,7 +9,6 @@
 #import "TSAccountManager.h"
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
-#import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"

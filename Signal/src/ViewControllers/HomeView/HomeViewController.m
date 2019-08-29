@@ -13,7 +13,6 @@
 #import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "TSAccountManager.h"
-#import "TSDatabaseView.h"
 #import "TSGroupThread.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
@@ -31,7 +30,6 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <StoreKit/StoreKit.h>
-#import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 

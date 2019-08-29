@@ -234,6 +234,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 - (NSDictionary<NSString *, TSOutgoingMessageRecipientState *> *)createLegacyRecipientStateMapWithCoder:(NSCoder *)coder
 {
+    OWSAssertDebug(SSKEnvironment.shared.databaseStorage.canReadFromYdb);
     OWSAssertDebug(coder);
 
     // Determine the "overall message state."

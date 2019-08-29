@@ -10,7 +10,6 @@
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDevicesService.h>
-#import <SignalServiceKit/TSDatabaseView.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

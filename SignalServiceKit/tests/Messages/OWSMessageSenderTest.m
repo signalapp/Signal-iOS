@@ -25,10 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSUploadOperation (Testing)
 
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId
-                        dbConnection:(YapDatabaseConnection *)dbConnection
-                      networkManager:(TSNetworkManager *)networkManager;
-
 @end
 
 #pragma mark -
@@ -78,21 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSFakeUploadingService
-
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId
-                        dbConnection:(YapDatabaseConnection *)dbConnection
-                       shouldSucceed:(BOOL)shouldSucceed
-{
-    self =
-        [super initWithAttachmentId:attachmentId dbConnection:dbConnection networkManager:[OWSFakeNetworkManager new]];
-    if (!self) {
-        return self;
-    }
-
-    _shouldSucceed = shouldSucceed;
-
-    return self;
-}
 
 - (void)uploadAttachmentStream:(TSAttachmentStream *)attachmentStream
                        message:(TSOutgoingMessage *)outgoingMessage

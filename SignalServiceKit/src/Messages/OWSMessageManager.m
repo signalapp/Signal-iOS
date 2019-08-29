@@ -24,7 +24,6 @@
 #import "OWSMessageSender.h"
 #import "OWSMessageUtils.h"
 #import "OWSOutgoingReceiptManager.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSReadReceiptManager.h"
 #import "OWSRecordTranscriptJob.h"
 #import "OWSSyncGroupsRequestMessage.h"
@@ -36,7 +35,6 @@
 #import "TSAttachmentPointer.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
-#import "TSDatabaseView.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
 #import "TSIncomingMessage.h"
@@ -50,7 +48,6 @@
 #import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/SignalRecipient.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

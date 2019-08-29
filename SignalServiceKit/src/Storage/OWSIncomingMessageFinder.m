@@ -3,7 +3,7 @@
 //
 
 #import "OWSIncomingMessageFinder.h"
-#import "OWSPrimaryStorage.h"
+#import "OWSStorage.h"
 #import "TSIncomingMessage.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
