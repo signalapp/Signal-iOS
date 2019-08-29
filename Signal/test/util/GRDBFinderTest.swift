@@ -126,16 +126,7 @@ class GRDBFinderTest: SignalBaseTest {
         XCTAssertLessThan(query2.lastQueried, query3.lastQueried)
         XCTAssertLessThan(query3.lastQueried, query4.lastQueried)
 
-        Logger.verbose("Date(): \(Date().ows_millisecondsSince1970)")
-        Logger.verbose("query1: \(query1.lastQueried.ows_millisecondsSince1970)")
-        Logger.verbose("query2: \(query2.lastQueried.ows_millisecondsSince1970)")
-        Logger.verbose("query3: \(query3.lastQueried.ows_millisecondsSince1970)")
-        Logger.verbose("query4: \(query4.lastQueried.ows_millisecondsSince1970)")
-
         self.read { transaction in
-            OWSContactQuery.anyEnumerate(transaction: transaction) { (query, _) in
-                Logger.verbose("all: \(query.lastQueried.ows_millisecondsSince1970)")
-            }
             XCTAssertEqual(4, AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: Date()).count)
             // Results are unordered, so we use a set.
             XCTAssertEqual(Set([query1.uniqueId, query2.uniqueId, query3.uniqueId, query4.uniqueId]), Set(AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: Date())))
