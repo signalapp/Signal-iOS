@@ -7,6 +7,10 @@ import Foundation
 @objc
 public protocol SDSDatabaseStorageDelegate {
     var storageCoordinatorState: StorageCoordinatorState { get }
+
+    var hasYdbFile: Bool { get }
+
+    var hasGrdbFile: Bool { get }
 }
 
 // MARK: -
@@ -76,7 +80,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         case .ydb:
             // YDB uses a different mechanism for cross process writes.
             break
-        case .grdb, .grdbThrowaway:
+        case .grdb, .grdbThrowawayIfMigrating:
             crossProcess.callback = { [weak self] in
                 DispatchQueue.main.async {
                     self?.handleCrossProcessWrite()
@@ -99,10 +103,28 @@ public class SDSDatabaseStorage: SDSTransactable {
         NotificationCenter.default.removeObserver(self)
     }
 
+    // GRDB TODO: Remove
+    @objc
+    public var shouldUseDisposableGrdb: Bool {
+        if [.ydbTests, .grdbTests ].contains(FeatureFlags.storageMode) {
+            return true
+        }
+        if .grdbThrowawayIfMigrating == FeatureFlags.storageMode {
+            // .grdbThrowawayIfMigrating allows us to re-test the migration on each launch.
+            // It doesn't make sense (and won't work) if there's no YDB database
+            // to migrate.
+            //
+            // Specifically, state persisted in NSUserDefaults won't be "throw away"
+            // and this will break the app if we throw away our database.
+            return hasYdbFile
+        }
+        return false
+    }
+
     private lazy var baseDir: URL = {
         let containerUrl = URL(fileURLWithPath: OWSFileSystem.appSharedDataDirectoryPath(),
                                isDirectory: true)
-        if [.grdbThrowaway, .ydbTests, .grdbTests ].contains(FeatureFlags.storageMode) {
+        if shouldUseDisposableGrdb {
             return containerUrl.appendingPathComponent(UUID().uuidString, isDirectory: true)
         } else {
             return containerUrl
@@ -180,7 +202,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         case .ydb:
             yapDatabaseQueue = yapStorage.newDatabaseQueue()
             break
-        case .grdb, .grdbThrowaway:
+        case .grdb, .grdbThrowawayIfMigrating:
             // If we're about to migrate or already migrating,
             // we need to create a YDB queue as well.
             if storageCoordinatorState == .beforeYDBToGRDBMigration ||
@@ -410,10 +432,23 @@ extension SDSDatabaseStorage {
 
     private var storageCoordinatorState: StorageCoordinatorState {
         guard let delegate = delegate else {
-            owsFailDebug("Missing storageCoordinator.")
-            return .GRDB
+            owsFail("Missing delegate.")
         }
         return delegate.storageCoordinatorState
+    }
+
+    private var hasYdbFile: Bool {
+        guard let delegate = delegate else {
+            owsFail("Missing delegate.")
+        }
+        return delegate.hasYdbFile
+    }
+
+    private var hasGrdbFile: Bool {
+        guard let delegate = delegate else {
+            owsFail("Missing delegate.")
+        }
+        return delegate.hasGrdbFile
     }
 
     private var storageCoordinatorStateDescription: String {
@@ -478,9 +513,7 @@ extension SDSDatabaseStorage {
         case .YDB, .beforeYDBToGRDBMigration, .duringYDBToGRDBMigration:
             return true
         case .GRDB:
-            // GRDB TODO: Remove this once we stop loading YDB
-            //            unless necessary.
-            return FeatureFlags.alwaysLoadYDB
+            return false
         case .ydbTests, .grdbTests:
             return true
         @unknown default:
@@ -496,9 +529,7 @@ extension SDSDatabaseStorage {
         case .YDB, .beforeYDBToGRDBMigration, .duringYDBToGRDBMigration:
             return true
         case .GRDB:
-            // GRDB TODO: Remove this once we stop loading YDB
-            //            unless necessary.
-            return FeatureFlags.alwaysLoadYDB
+            return false
         case .ydbTests, .grdbTests:
             return true
         @unknown default:
