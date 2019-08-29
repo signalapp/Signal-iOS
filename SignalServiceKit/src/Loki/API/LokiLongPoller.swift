@@ -17,13 +17,13 @@ public final class LokiLongPoller : NSObject {
     private var userHexEncodedPublicKey: String { return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey }
 
     // MARK: Initialization
-    public init(onMessagesReceived: @escaping ([SSKProtoEnvelope]) -> Void) {
+    @objc public init(onMessagesReceived: @escaping ([SSKProtoEnvelope]) -> Void) {
         self.onMessagesReceived = onMessagesReceived
         super.init()
     }
 
     // MARK: Public API
-    public func startIfNeeded() {
+    @objc public func startIfNeeded() {
         guard !hasStarted else { return }
         print("[Loki] Started long polling.")
         hasStarted = true
@@ -31,7 +31,7 @@ public final class LokiLongPoller : NSObject {
         openConnections()
     }
 
-    public func stopIfNeeded() {
+    @objc public func stopIfNeeded() {
         guard !hasStopped else { return }
         print("[Loki] Stopped long polling.")
         hasStarted = false
