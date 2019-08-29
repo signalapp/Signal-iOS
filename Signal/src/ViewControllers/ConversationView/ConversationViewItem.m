@@ -1177,7 +1177,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     if (self.isGroupThread) {
         // If it's RSS then skip
         TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
-        if (groupThread.isRSS) return;
+        if (groupThread.isRSSFeed) return;
         
         // Only allow deletion on incoming and outgoing messages
         OWSInteractionType interationType = self.interaction.interactionType;
@@ -1241,7 +1241,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     // Make sure it's a public chat and not an rss feed
     TSGroupThread *groupThread = (TSGroupThread *)self.interaction.thread;
-    if (groupThread.isRSS) return false;
+    if (groupThread.isRSSFeed) return false;
     
     // Only allow deletion on incoming and outgoing messages
     OWSInteractionType interationType = self.interaction.interactionType;
