@@ -323,12 +323,20 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(thread);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        uint64_t readTimestamp = [NSDate ows_millisecondTimeStamp];
+        __block NSArray<id<OWSReadTracking>> *unreadMessages;
+        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+            unreadMessages = [self unreadMessagesBeforeSortId:sortId
+                                                       thread:thread
+                                                readTimestamp:readTimestamp
+                                                  transaction:transaction];
+        }];
+        if (unreadMessages.count < 1) {
+            // Avoid unnecessary writes.
+            return;
+        }
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            [self markAsReadBeforeSortId:sortId
-                                  thread:thread
-                           readTimestamp:[NSDate ows_millisecondTimeStamp]
-                                wasLocal:YES
-                             transaction:transaction];
+            [self markMessagesAsRead:unreadMessages readTimestamp:readTimestamp wasLocal:YES transaction:transaction];
         }];
     });
 }
@@ -555,6 +563,43 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
+    NSArray<id<OWSReadTracking>> *unreadMessages =
+        [self unreadMessagesBeforeSortId:sortId thread:thread readTimestamp:readTimestamp transaction:transaction];
+    if (unreadMessages.count < 1) {
+        // Avoid unnecessary writes.
+        return;
+    }
+    [self markMessagesAsRead:unreadMessages readTimestamp:readTimestamp wasLocal:wasLocal transaction:transaction];
+}
+
+- (void)markMessagesAsRead:(NSArray<id<OWSReadTracking>> *)unreadMessages
+             readTimestamp:(uint64_t)readTimestamp
+                  wasLocal:(BOOL)wasLocal
+               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(unreadMessages.count > 0);
+    OWSAssertDebug(transaction);
+
+    if (wasLocal) {
+        OWSLogError(@"Marking %lu messages as read locally.", (unsigned long)unreadMessages.count);
+    } else {
+        OWSLogError(@"Marking %lu messages as read by linked device.", (unsigned long)unreadMessages.count);
+    }
+    for (id<OWSReadTracking> readItem in unreadMessages) {
+        [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];
+    }
+}
+
+- (NSArray<id<OWSReadTracking>> *)unreadMessagesBeforeSortId:(uint64_t)sortId
+                                                      thread:(TSThread *)thread
+                                               readTimestamp:(uint64_t)readTimestamp
+                                                 transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(sortId > 0);
+    OWSAssertDebug(thread);
+    OWSAssertDebug(transaction);
+
+    // GRDB TODO: We could pass readTimestamp and sortId through to the GRDB query.
     NSMutableArray<id<OWSReadTracking>> *newlyReadList = [NSMutableArray new];
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
     NSError *error;
@@ -586,18 +631,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     if (error != nil) {
         OWSFailDebug(@"Error during enumeration: %@", error);
     }
-    if (newlyReadList.count < 1) {
-        return;
-    }
-    
-    if (wasLocal) {
-        OWSLogError(@"Marking %lu messages as read locally.", (unsigned long)newlyReadList.count);
-    } else {
-        OWSLogError(@"Marking %lu messages as read by linked device.", (unsigned long)newlyReadList.count);
-    }
-    for (id<OWSReadTracking> readItem in newlyReadList) {
-        [readItem markAsReadAtTimestamp:readTimestamp sendReadReceipt:wasLocal transaction:transaction];
-    }
+    return [newlyReadList copy];
 }
 
 #pragma mark - Settings
