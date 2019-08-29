@@ -314,4 +314,38 @@ class GRDBFinderTest: SignalBaseTest {
             XCTAssertNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: address7, andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
         }
     }
+
+    func testAnyMessageContentJobFinder() {
+
+        let finder = AnyMessageContentJobFinder()
+
+        let randomData: () -> Data = {
+            return Randomness.generateRandomBytes(32)
+        }
+
+        self.write { transaction in
+            finder.addJob(envelopeData: randomData(), plaintextData: randomData(), wasReceivedByUD: false, transaction: transaction)
+            finder.addJob(envelopeData: randomData(), plaintextData: randomData(), wasReceivedByUD: false, transaction: transaction)
+            finder.addJob(envelopeData: randomData(), plaintextData: randomData(), wasReceivedByUD: false, transaction: transaction)
+            finder.addJob(envelopeData: randomData(), plaintextData: randomData(), wasReceivedByUD: false, transaction: transaction)
+        }
+
+        self.read { transaction in
+            XCTAssertEqual(2, finder.nextJobs(batchSize: 2, transaction: transaction).count)
+            XCTAssertEqual(4, finder.nextJobs(batchSize: 10, transaction: transaction).count)
+            XCTAssertEqual(4, finder.jobCount(transaction: transaction))
+        }
+
+        self.write { transaction in
+            let batch = finder.nextJobs(batchSize: 10, transaction: transaction)
+            let firstJob = batch[0]
+            finder.removeJobs(withUniqueIds: [firstJob.uniqueId], transaction: transaction)
+        }
+
+        self.read { transaction in
+            XCTAssertEqual(2, finder.nextJobs(batchSize: 2, transaction: transaction).count)
+            XCTAssertEqual(3, finder.nextJobs(batchSize: 10, transaction: transaction).count)
+            XCTAssertEqual(3, finder.jobCount(transaction: transaction))
+        }
+    }
 }
