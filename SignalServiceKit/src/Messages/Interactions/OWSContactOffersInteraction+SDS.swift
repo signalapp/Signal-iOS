@@ -12,17 +12,17 @@ import SignalCoreKit
 // MARK: - Typed Convenience Methods
 
 @objc
-public extension TSCall {
+public extension OWSContactOffersInteraction {
     // NOTE: This method will fail if the object has unexpected type.
-    class func anyFetchCall(uniqueId: String,
-                                   transaction: SDSAnyReadTransaction) -> TSCall? {
+    class func anyFetchContactOffersInteraction(uniqueId: String,
+                                   transaction: SDSAnyReadTransaction) -> OWSContactOffersInteraction? {
         assert(uniqueId.count > 0)
 
         guard let object = anyFetch(uniqueId: uniqueId,
                                     transaction: transaction) else {
                                         return nil
         }
-        guard let instance = object as? TSCall else {
+        guard let instance = object as? OWSContactOffersInteraction else {
             owsFailDebug("Object has unexpected type: \(type(of: object))")
             return nil
         }
@@ -30,9 +30,9 @@ public extension TSCall {
     }
 
     // NOTE: This method will fail if the object has unexpected type.
-    func anyUpdateCall(transaction: SDSAnyWriteTransaction, block: (TSCall) -> Void) {
+    func anyUpdateContactOffersInteraction(transaction: SDSAnyWriteTransaction, block: (OWSContactOffersInteraction) -> Void) {
         anyUpdate(transaction: transaction) { (object) in
-            guard let instance = object as? TSCall else {
+            guard let instance = object as? OWSContactOffersInteraction else {
                 owsFailDebug("Object has unexpected type: \(type(of: object))")
                 return
             }
@@ -45,10 +45,10 @@ public extension TSCall {
 
 // The SDSSerializer protocol specifies how to insert and update the
 // row that corresponds to this model.
-class TSCallSerializer: SDSSerializer {
+class OWSContactOffersInteractionSerializer: SDSSerializer {
 
-    private let model: TSCall
-    public required init(model: TSCall) {
+    private let model: OWSContactOffersInteraction
+    public required init(model: OWSContactOffersInteraction) {
         self.model = model
     }
 
@@ -57,7 +57,7 @@ class TSCallSerializer: SDSSerializer {
     func asRecord() throws -> SDSRecord {
         let id: Int64? = nil
 
-        let recordType: SDSRecordType = .call
+        let recordType: SDSRecordType = .contactOffersInteraction
         let uniqueId: String = model.uniqueId
 
         // Base class properties
@@ -71,10 +71,10 @@ class TSCallSerializer: SDSSerializer {
         let authorId: String? = nil
         let authorPhoneNumber: String? = nil
         let authorUUID: String? = nil
-        let beforeInteractionId: String? = nil
+        let beforeInteractionId: String? = model.beforeInteractionId
         let body: String? = nil
-        let callSchemaVersion: UInt? = model.callSchemaVersion
-        let callType: RPRecentCallType? = model.callType
+        let callSchemaVersion: UInt? = nil
+        let callType: RPRecentCallType? = nil
         let configurationDurationSeconds: UInt32? = nil
         let configurationIsEnabled: Bool? = nil
         let contactId: String? = nil
@@ -89,9 +89,9 @@ class TSCallSerializer: SDSSerializer {
         let expiresAt: UInt64? = nil
         let expiresInSeconds: UInt32? = nil
         let groupMetaMessage: TSGroupMetaMessage? = nil
-        let hasAddToContactsOffer: Bool? = nil
-        let hasAddToProfileWhitelistOffer: Bool? = nil
-        let hasBlockOffer: Bool? = nil
+        let hasAddToContactsOffer: Bool? = model.hasAddToContactsOffer
+        let hasAddToProfileWhitelistOffer: Bool? = model.hasAddToProfileWhitelistOffer
+        let hasBlockOffer: Bool? = model.hasBlockOffer
         let hasLegacyMessageState: Bool? = nil
         let hasSyncedTranscript: Bool? = nil
         let incomingMessageSchemaVersion: UInt? = nil
@@ -112,7 +112,7 @@ class TSCallSerializer: SDSSerializer {
         let preKeyBundle: Data? = nil
         let protocolVersion: UInt? = nil
         let quotedMessage: Data? = nil
-        let read: Bool? = model.wasRead
+        let read: Bool? = nil
         let recipientAddress: Data? = nil
         let recipientAddressStates: Data? = nil
         let schemaVersion: UInt? = nil

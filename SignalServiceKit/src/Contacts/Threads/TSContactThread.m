@@ -63,6 +63,7 @@ isArchivedByLegacyTimestampForSorting:(BOOL)isArchivedByLegacyTimestampForSortin
               contactPhoneNumber:(nullable NSString *)contactPhoneNumber
       contactThreadSchemaVersion:(NSUInteger)contactThreadSchemaVersion
                      contactUUID:(nullable NSString *)contactUUID
+              hasDismissedOffers:(BOOL)hasDismissedOffers
 {
     self = [super initWithUniqueId:uniqueId
                       archivalDate:archivalDate
@@ -83,6 +84,7 @@ isArchivedByLegacyTimestampForSorting:isArchivedByLegacyTimestampForSorting
     _contactPhoneNumber = contactPhoneNumber;
     _contactThreadSchemaVersion = contactThreadSchemaVersion;
     _contactUUID = contactUUID;
+    _hasDismissedOffers = hasDismissedOffers;
 
     return self;
 }

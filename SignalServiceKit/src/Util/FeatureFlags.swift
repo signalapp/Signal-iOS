@@ -106,5 +106,5 @@ public class FeatureFlags: NSObject {
     public static let cameraFirstCaptureFlow = build.includes(.qa)
 
     @objc
-    static let messageRequest = build.includes(.qa)
+    public static let messageRequest = build.includes(.qa)
 }
