@@ -238,23 +238,10 @@
     // ========
 #endif
 
-    [section
-     addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"Share Public Key", @"")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share_public_key")
-                                         selector:@selector(sharePublicKey)
-                                            color:[UIColor ows_materialBlueColor]]];
-    
-    [section
-     addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"Show Seed", @"")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_seed")
-                                         selector:@selector(showSeed)
-                                            color:[UIColor ows_materialBlueColor]]];
-
-    [section
-     addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"Clear All Data", @"")
-                          accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"clear_all_data")
-                                         selector:@selector(clearAllData)
-                                            color:[UIColor ows_destructiveRedColor]]];
+    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Share Public Key", @"") actionBlock:^{ [weakSelf sharePublicKey]; }]];
+    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show QR Code", @"") actionBlock:^{ [weakSelf showQRCode]; }]];
+    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Show Seed", @"") actionBlock:^{ [weakSelf showSeed]; }]];
+    [section addItem:[OWSTableItem itemWithTitle:NSLocalizedString(@"Clear All Data", @"") actionBlock:^{ [weakSelf clearAllData]; }]];
     
     if (TSAccountManager.sharedInstance.isDeregistered) {
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
@@ -517,11 +504,20 @@
     [self presentViewController:shareVC animated:YES completion:nil];
 }
 
+- (void)showQRCode
+{
+    QRCodeViewController *qrCodeVC = [QRCodeViewController new];
+    [self.navigationController pushViewController:qrCodeVC animated:YES];
+}
+
 - (void)showSeed
 {
     NSString *title = NSLocalizedString(@"Your Seed", @"");
-    ECKeyPair *keyPair = OWSIdentityManager.sharedManager.identityKeyPair;
-    NSString *mnemonic = [LKMnemonic encodeHexEncodedString:keyPair.hexEncodedPrivateKey];
+    OWSIdentityManager *identityManager = OWSIdentityManager.sharedManager;
+    YapDatabaseConnection *databaseConnection = (YapDatabaseConnection *)[identityManager valueForKey:@"dbConnection"];
+    NSString *hexEncodedSeed = [databaseConnection objectForKey:@"LKLokiSeed" inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
+    if (hexEncodedSeed == nil) { hexEncodedSeed = identityManager.identityKeyPair.hexEncodedPrivateKey; } // Legacy account
+    NSString *mnemonic = [LKMnemonic encodeHexEncodedString:hexEncodedSeed];
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:title message:mnemonic preferredStyle:UIAlertControllerStyleAlert];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
     [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Copy", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { UIPasteboard.generalPasteboard.string = mnemonic; }]];

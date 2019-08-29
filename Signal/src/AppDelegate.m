@@ -63,7 +63,10 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
-@property (nonatomic) LKP2PServer *lokiP2PServer; // Loki
+@property (nonatomic) LKP2PServer *lokiP2PServer;
+@property (nonatomic) LKGroupChatPoller *lokiPublicChatPoller;
+@property (nonatomic) LKRSSFeedPoller *lokiNewsFeedPoller;
+@property (nonatomic) LKRSSFeedPoller *lokiMessengerUpdatesFeedPoller;
 
 @end
 
@@ -758,7 +761,7 @@ static NSTimeInterval launchStartedAt;
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             
             // Loki: Start long polling
-            [LKAPI startLongPollingIfNecessary];
+            [LKAPI startLongPollingIfNeeded];
            
             // Loki: Tell our friends that we are online
             [LKP2PAPI broadcastOnlineStatus];
@@ -1357,7 +1360,7 @@ static NSTimeInterval launchStartedAt;
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];
         
         // Start long polling
-        [LKAPI startLongPollingIfNecessary];
+        [LKAPI startLongPollingIfNeeded];
     }
 }
 
@@ -1480,6 +1483,97 @@ static NSTimeInterval launchStartedAt;
                                     __OSX_AVAILABLE(10.14)__WATCHOS_PROHIBITED __TVOS_PROHIBITED
 {
     OWSLogInfo(@"");
+}
+
+#pragma mark - Loki
+
+- (LKGroupChat *)lokiPublicChat
+{
+    return [[LKGroupChat alloc] initWithServerID:@(LKGroupChatAPI.publicChatServerID).unsignedIntegerValue server:LKGroupChatAPI.publicChatServer displayName:NSLocalizedString(@"Loki Public Chat", @"") isDeletable:true];
+}
+
+- (LKRSSFeed *)lokiNewsFeed
+{
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:NSLocalizedString(@"Loki News", @"") isDeletable:true];
+}
+
+- (LKRSSFeed *)lokiMessengerUpdatesFeed
+{
+    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:NSLocalizedString(@"Loki Messenger Updates", @"") isDeletable:false];
+}
+
+- (void)createGroupChatsIfNeeded
+{
+    LKGroupChat *publicChat = self.lokiPublicChat;
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    NSString *userDefaultsKey = [@"isGroupChatSetUp." stringByAppendingString:publicChat.id];
+    BOOL isChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
+    if (!isChatSetUp || !publicChat.isDeletable) {
+        TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:publicChat.displayName memberIds:@[ userHexEncodedPublicKey, publicChat.server ] image:nil groupId:[publicChat.id dataUsingEncoding:NSUTF8StringEncoding]];
+        __block TSGroupThread *thread;
+        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
+            NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+            NSCalendar *calendar = NSCalendar.currentCalendar;
+            [calendar setTimeZone:timeZone];
+            NSDateComponents *dateComponents = [NSDateComponents new];
+            [dateComponents setYear:999];
+            NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
+            [thread updateWithMutedUntilDate:date transaction:transaction];
+        }];
+        [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+        [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
+    }
+}
+
+- (void)createRSSFeedsIfNeeded
+{
+    NSArray *feeds = @[ self.lokiNewsFeed, self.lokiMessengerUpdatesFeed ];
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    for (LKRSSFeed *feed in feeds) {
+        NSString *userDefaultsKey = [@"isRSSFeedSetUp." stringByAppendingString:feed.id];
+        BOOL isFeedSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
+        if (!isFeedSetUp || !feed.isDeletable) {
+            TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:feed.displayName memberIds:@[ userHexEncodedPublicKey, feed.server ] image:nil groupId:[feed.id dataUsingEncoding:NSUTF8StringEncoding]];
+            __block TSGroupThread *thread;
+            [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
+                NSTimeZone *timeZone = [NSTimeZone timeZoneWithName:@"UTC"];
+                NSCalendar *calendar = NSCalendar.currentCalendar;
+                [calendar setTimeZone:timeZone];
+                NSDateComponents *dateComponents = [NSDateComponents new];
+                [dateComponents setYear:999];
+                NSDate *date = [calendar dateByAddingComponents:dateComponents toDate:[NSDate new] options:0];
+                [thread updateWithMutedUntilDate:date transaction:transaction];
+            }];
+            [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
+            [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
+        }
+    }
+}
+
+- (void)createGroupChatPollersIfNeeded
+{
+    if (self.lokiPublicChatPoller == nil) { self.lokiPublicChatPoller = [[LKGroupChatPoller alloc] initForGroup:self.lokiPublicChat]; }
+}
+
+- (void)createRSSFeedPollersIfNeeded
+{
+    if (self.lokiNewsFeedPoller == nil) { self.lokiNewsFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiNewsFeed]; }
+    if (self.lokiMessengerUpdatesFeedPoller == nil) { self.lokiMessengerUpdatesFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiMessengerUpdatesFeed]; }
+}
+
+- (void)startGroupChatPollersIfNeeded
+{
+    [self createGroupChatPollersIfNeeded];
+    [self.lokiPublicChatPoller startIfNeeded];
+}
+
+- (void)startRSSFeedPollersIfNeeded
+{
+    [self createRSSFeedPollersIfNeeded];
+    [self.lokiNewsFeedPoller startIfNeeded];
+    [self.lokiMessengerUpdatesFeedPoller startIfNeeded];
 }
 
 @end

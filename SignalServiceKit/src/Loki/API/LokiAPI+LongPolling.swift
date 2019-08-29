@@ -10,7 +10,7 @@ public extension LokiAPI {
     
     /// Start long polling.
     /// This will send a notification if new messages were received
-    @objc public static func startLongPollingIfNecessary() {
+    @objc public static func startLongPollingIfNeeded() {
         guard !isLongPolling else { return }
         isLongPolling = true
         shouldStopPolling = false

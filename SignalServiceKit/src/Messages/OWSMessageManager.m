@@ -259,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSLogInfo(@"handling decrypted envelope: %@", [self descriptionForEnvelope:envelope]);
 
-    if (!envelope.hasSource || envelope.source.length < 1 || ![ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source]) {
+    if (!envelope.hasSource || envelope.source.length < 1) {
         OWSFailDebug(@"incoming envelope has invalid source");
         return;
     }

@@ -43,6 +43,7 @@
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
 #import "RemoteVideoView.h"
+#import "ScanQRCodeViewController.h"
 #import "SignalApp.h"
 #import "UIViewController+Permissions.h"
 #import "ViewControllerUtils.h"

@@ -558,8 +558,12 @@
 		B6FE7EB71ADD62FA00A6D22F /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */; };
 		B8162F0322891AD600D46544 /* FriendRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8162F0222891AD600D46544 /* FriendRequestView.swift */; };
 		B8162F0522892C5F00D46544 /* FriendRequestViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */; };
-		B821F2F82272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */; };
-		B821F2FA2272CEEE002C88C0 /* OnboardingKeyPairViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* OnboardingKeyPairViewController.swift */; };
+		B821F2F82272CED3002C88C0 /* AccountDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */; };
+		B821F2FA2272CEEE002C88C0 /* SeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B821F2F92272CEEE002C88C0 /* SeedViewController.swift */; };
+		B825848B230F94FE001B41CB /* QRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825848A230F94FE001B41CB /* QRCodeViewController.swift */; };
+		B8258493230FA5E9001B41CB /* ScanQRCodeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */; };
+		B82584A02315024B001B41CB /* LokiRSSFeedPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */; };
+		B845B4D4230CD09100D759F0 /* LokiGroupChatPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */; };
 		B846365B22B7418B00AF1514 /* Identicon+ObjC.swift in Sources */ = {isa = PBXBuildFile; fileRef = B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */; };
 		B89841E322B7579F00B1BDC6 /* NewConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B89841E222B7579F00B1BDC6 /* NewConversationViewController.swift */; };
 		B90418E6183E9DD40038554A /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = B90418E5183E9DD40038554A /* DateUtil.m */; };
@@ -1347,8 +1351,13 @@
 		B6FE7EB61ADD62FA00A6D22F /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		B8162F0222891AD600D46544 /* FriendRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequestView.swift; sourceTree = "<group>"; };
 		B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequestViewDelegate.swift; sourceTree = "<group>"; };
-		B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingAccountDetailsViewController.swift; sourceTree = "<group>"; };
-		B821F2F92272CEEE002C88C0 /* OnboardingKeyPairViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingKeyPairViewController.swift; sourceTree = "<group>"; };
+		B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountDetailsViewController.swift; sourceTree = "<group>"; };
+		B821F2F92272CEEE002C88C0 /* SeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedViewController.swift; sourceTree = "<group>"; };
+		B825848A230F94FE001B41CB /* QRCodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeViewController.swift; sourceTree = "<group>"; };
+		B8258491230FA5DA001B41CB /* ScanQRCodeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScanQRCodeViewController.h; sourceTree = "<group>"; };
+		B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ScanQRCodeViewController.m; sourceTree = "<group>"; };
+		B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiRSSFeedPoller.swift; sourceTree = "<group>"; };
+		B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiGroupChatPoller.swift; sourceTree = "<group>"; };
 		B846365A22B7418B00AF1514 /* Identicon+ObjC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Identicon+ObjC.swift"; sourceTree = "<group>"; };
 		B89841E222B7579F00B1BDC6 /* NewConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationViewController.swift; sourceTree = "<group>"; };
 		B90418E4183E9DD40038554A /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
@@ -2609,9 +2618,14 @@
 				B8162F0222891AD600D46544 /* FriendRequestView.swift */,
 				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
 				B89841E222B7579F00B1BDC6 /* NewConversationViewController.swift */,
-				B821F2F72272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift */,
-				B821F2F92272CEEE002C88C0 /* OnboardingKeyPairViewController.swift */,
+				B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */,
+				B821F2F92272CEEE002C88C0 /* SeedViewController.swift */,
 				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
+				B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */,
+				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
+				B825848A230F94FE001B41CB /* QRCodeViewController.swift */,
+				B8258491230FA5DA001B41CB /* ScanQRCodeViewController.h */,
+				B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */,
 			);
 			path = Loki;
 			sourceTree = "<group>";
@@ -3271,6 +3285,7 @@
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
+				"${BUILT_PRODUCTS_DIR}/FeedKit/FeedKit.framework",
 				"${BUILT_PRODUCTS_DIR}/GCDWebServer/GCDWebServer.framework",
 				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
 				"${BUILT_PRODUCTS_DIR}/HKDFKit/HKDFKit.framework",
@@ -3298,6 +3313,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CryptoSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FeedKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GCDWebServer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HKDFKit.framework",
@@ -3627,6 +3643,7 @@
 				34A4C62022175C5C0042EF2E /* OnboardingProfileViewController.swift in Sources */,
 				4505C2BF1E648EA300CEBF41 /* ExperienceUpgrade.swift in Sources */,
 				EF764C351DB67CC5000D9A87 /* UIViewController+Permissions.m in Sources */,
+				B845B4D4230CD09100D759F0 /* LokiGroupChatPoller.swift in Sources */,
 				45CD81EF1DC030E7004C9430 /* SyncPushTokensJob.swift in Sources */,
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
 				4CEB78C92178EBAB00F315D2 /* OWSSessionResetJobRecord.m in Sources */,
@@ -3643,6 +3660,7 @@
 				4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */,
 				346E9D5421B040B700562252 /* RegistrationController.swift in Sources */,
 				340FC8AD204DAC8D007AEB0F /* OWSLinkedDevicesTableViewController.m in Sources */,
+				B825848B230F94FE001B41CB /* QRCodeViewController.swift in Sources */,
 				340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */,
 				4C090A1B210FD9C7001FD7F9 /* HapticFeedback.swift in Sources */,
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
@@ -3659,6 +3677,7 @@
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
 				4CB5F26720F6E1E2004D1B42 /* MenuActionsViewController.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
+				B82584A02315024B001B41CB /* LokiRSSFeedPoller.swift in Sources */,
 				24A830A22293CD0100F4CAC0 /* LokiP2PServer.swift in Sources */,
 				349ED990221B0194008045B0 /* Onboarding2FAViewController.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
@@ -3703,7 +3722,7 @@
 				4C21D5D8223AC60F00EF8A77 /* PhotoCapture.swift in Sources */,
 				4C13C9F620E57BA30089A98B /* ColorPickerViewController.swift in Sources */,
 				B8162F0522892C5F00D46544 /* FriendRequestViewDelegate.swift in Sources */,
-				B821F2FA2272CEEE002C88C0 /* OnboardingKeyPairViewController.swift in Sources */,
+				B821F2FA2272CEEE002C88C0 /* SeedViewController.swift in Sources */,
 				4CC1ECFB211A553000CC13BE /* AppUpdateNag.swift in Sources */,
 				3448E16022134C89004B052E /* OnboardingSplashViewController.swift in Sources */,
 				34B6A903218B3F63007C4606 /* TypingIndicatorView.swift in Sources */,
@@ -3721,7 +3740,7 @@
 				45F32C222057297A00A300D5 /* MediaDetailViewController.m in Sources */,
 				34B3F8851E8DF1700035BE1A /* NewGroupViewController.m in Sources */,
 				34ABC0E421DD20C500ED9469 /* ConversationMessageMapping.swift in Sources */,
-				B821F2F82272CED3002C88C0 /* OnboardingAccountDetailsViewController.swift in Sources */,
+				B821F2F82272CED3002C88C0 /* AccountDetailsViewController.swift in Sources */,
 				34D8C0271ED3673300188D7C /* DebugUIMessages.m in Sources */,
 				34DBF003206BD5A500025978 /* OWSMessageTextView.m in Sources */,
 				34D1F0B41F86D31D0066283D /* ConversationCollectionView.m in Sources */,
@@ -3793,6 +3812,7 @@
 				34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,
+				B8258493230FA5E9001B41CB /* ScanQRCodeViewController.m in Sources */,
 				B90418E6183E9DD40038554A /* DateUtil.m in Sources */,
 				3448E15E221333F5004B052E /* OnboardingController.swift in Sources */,
 				340FC8BD204DAC8D007AEB0F /* ShowGroupMembersViewController.m in Sources */,
@@ -3961,7 +3981,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SignalShareExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.share-extension";
@@ -4026,7 +4046,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SignalShareExtension/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.share-extension";
@@ -4079,7 +4099,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				INFOPLIST_FILE = SignalMessaging/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.utilities";
@@ -4152,7 +4172,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_FILE = SignalMessaging/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.loki-project.loki-messenger.utilities";
@@ -4366,7 +4386,7 @@
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Signal/Signal-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -4432,7 +4452,7 @@
 					"\"$(SRCROOT)/Libraries\"/**",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Signal/Signal-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

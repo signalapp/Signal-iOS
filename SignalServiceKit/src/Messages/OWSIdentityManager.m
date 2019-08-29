@@ -117,11 +117,16 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                                                object:nil];
 }
 
-- (void)generateNewIdentityKey
+- (void)generateNewIdentityKeyPair
 {
-    [self.dbConnection setObject:[Curve25519 generateKeyPair]
-                          forKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey
-                    inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
+    ECKeyPair *keyPair = [Curve25519 generateKeyPair];
+    [self.dbConnection setObject:keyPair forKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
+}
+
+- (void)generateNewIdentityKeyPairFromSeed:(NSData *)seed
+{
+    ECKeyPair *keyPair = [Curve25519 generateKeyPairFromSeed:seed];
+    [self.dbConnection setObject:keyPair forKey:OWSPrimaryStorageIdentityKeyStoreIdentityKey inCollection:OWSPrimaryStorageIdentityKeyStoreCollection];
 }
 
 - (void)clearIdentityKey

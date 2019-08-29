@@ -18,6 +18,7 @@
 #define LKLastMessageHashCollection @"LKLastMessageHashCollection"
 #define LKReceivedMessageHashesKey @"LKReceivedMessageHashesKey"
 #define LKReceivedMessageHashesCollection @"LKReceivedMessageHashesCollection"
+#define LKMessageIDCollection @"LKMessageIDCollection"
 
 @implementation OWSPrimaryStorage (Loki)
 
@@ -160,6 +161,16 @@
 
 - (void)removeLastMessageHashForServiceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction {
     [transaction removeObjectForKey:serviceNode inCollection:LKLastMessageHashCollection];
+}
+
+- (void)setIDForMessageWithServerID:(NSUInteger)serverID to:(NSString *)messageID in:(YapDatabaseReadWriteTransaction *)transaction {
+    NSString *key = [NSString stringWithFormat:@"%@", @(serverID)];
+    [transaction setObject:messageID forKey:key inCollection:LKMessageIDCollection];
+}
+
+- (NSString *)getIDForMessageWithServerID:(NSUInteger)serverID in:(YapDatabaseReadTransaction *)transaction {
+    NSString *key = [NSString stringWithFormat:@"%@", @(serverID)];
+    return [transaction objectForKey:key inCollection:LKMessageIDCollection];
 }
 
 @end

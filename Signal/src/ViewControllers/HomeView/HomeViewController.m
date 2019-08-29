@@ -690,6 +690,13 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { /* Do nothing */ }]];
         [self presentAlert:alert];
     }
+    if (OWSIdentityManager.sharedManager.identityKeyPair != nil) {
+        AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
+        [appDelegate createGroupChatsIfNeeded];
+        [appDelegate createRSSFeedsIfNeeded];
+        [appDelegate startGroupChatPollersIfNeeded];
+        [appDelegate startRSSFeedPollersIfNeeded];
+    }
 }
 
 - (void)applyDefaultBackButton

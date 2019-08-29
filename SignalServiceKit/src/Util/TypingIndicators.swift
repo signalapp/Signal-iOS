@@ -322,6 +322,9 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             guard delegate.areTypingIndicatorsEnabled() else {
                 return
             }
+            
+            // Don't send any typing indicators for groups
+            guard !thread.isGroupThread() else { return }
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
             messageSender.sendPromise(message: message).retainUntilComplete()

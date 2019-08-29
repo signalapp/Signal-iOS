@@ -1,6 +1,6 @@
 
 @objc(LKNewConversationViewController)
-final class NewConversationViewController : OWSViewController {
+final class NewConversationViewController : OWSViewController, OWSQRScannerDelegate {
 
     // MARK: Components
     private lazy var publicKeyTextField: UITextField = {
@@ -34,20 +34,29 @@ final class NewConversationViewController : OWSViewController {
         explanationLabel.text = NSLocalizedString("Enter the public key of the person you'd like to securely message. They can share their public key with you by going into Loki Messenger's in-app settings and clicking \"Share Public Key\".", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
-        // Button
-        let buttonFont = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
-        let buttonHeight = buttonFont.pointSize * 48 / 17
-        let startNewConversationButton = OWSFlatButton.button(title: NSLocalizedString("Next", comment: ""), font: buttonFont, titleColor: .white, backgroundColor: .lokiGreen(), target: self, selector: #selector(startNewConversationIfPossible))
-        startNewConversationButton.autoSetDimension(.height, toSize: buttonHeight)
+        // QR code button
+        let qrCodeButtonFont = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        let qrCodeButtonHeight = qrCodeButtonFont.pointSize * 48 / 17
+        let qrCodeButton = OWSFlatButton.button(title: NSLocalizedString("Scan a QR Code Instead", comment: ""), font: qrCodeButtonFont, titleColor: .lokiGreen(), backgroundColor: .clear, target: self, selector: #selector(scanQRCode))
+        qrCodeButton.setBackgroundColors(upColor: .clear, downColor: .clear)
+        qrCodeButton.autoSetDimension(.height, toSize: qrCodeButtonHeight)
+        qrCodeButton.button.contentHorizontalAlignment = .left
+        // Next button
+        let nextButtonFont = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
+        let nextButtonHeight = nextButtonFont.pointSize * 48 / 17
+        let nextButton = OWSFlatButton.button(title: NSLocalizedString("Next", comment: ""), font: nextButtonFont, titleColor: .white, backgroundColor: .lokiGreen(), target: self, selector: #selector(handleNextButtonTapped))
+        nextButton.autoSetDimension(.height, toSize: nextButtonHeight)
         // Stack view
         let stackView = UIStackView(arrangedSubviews: [
             publicKeyTextField,
             UIView.spacer(withHeight: 8),
             separator,
-            UIView.spacer(withHeight: 8),
+            UIView.spacer(withHeight: 24),
             explanationLabel,
+            UIView.spacer(withHeight: 8),
+            qrCodeButton,
             UIView.vStretchingSpacer(),
-            startNewConversationButton
+            nextButton
         ])
         stackView.axis = .vertical
         stackView.alignment = .fill
@@ -69,10 +78,35 @@ final class NewConversationViewController : OWSViewController {
         dismiss(animated: true, completion: nil)
     }
     
-    @objc private func startNewConversationIfPossible() {
+    @objc private func scanQRCode() {
+        ows_ask(forCameraPermissions: { [weak self] hasCameraAccess in
+            if hasCameraAccess {
+                let scanQRCodeVC = ScanQRCodeViewController()
+                scanQRCodeVC.delegate = self
+                self?.navigationController!.pushViewController(scanQRCodeVC, animated: true)
+            } else {
+                // Do nothing
+            }
+        })
+    }
+    
+    func controller(_ controller: OWSQRCodeScanningViewController, didDetectQRCodeWith string: String) {
+        let hexEncodedPublicKey = string
+        startNewConversationIfPossible(with: hexEncodedPublicKey)
+    }
+    
+    @objc private func handleNextButtonTapped() {
         let hexEncodedPublicKey = publicKeyTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        startNewConversationIfPossible(with: hexEncodedPublicKey)
+    }
+    
+    private func startNewConversationIfPossible(with hexEncodedPublicKey: String) {
         if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
             let alert = UIAlertController(title: NSLocalizedString("Invalid Public Key", comment: ""), message: NSLocalizedString("Please check the public key you entered and try again.", comment: ""), preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            presentAlert(alert)
+        } else if OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey == hexEncodedPublicKey {
+            let alert = UIAlertController(title: NSLocalizedString("Can't Start Conversation", comment: ""), message: NSLocalizedString("Please enter the public key of the person you'd like to message.", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
             presentAlert(alert)
         } else {

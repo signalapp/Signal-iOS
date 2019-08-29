@@ -383,7 +383,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      NSForegroundColorAttributeName : [Theme primaryColor],
                                  }]];
     } else {
-        if ([thread isMuted]) {
+        if (thread.isMuted && !thread.isGroupThread) {
             [snippetText appendAttributedString:[[NSAttributedString alloc]
                                                     initWithString:LocalizationNotNeeded(@"\ue067  ")
                                                         attributes:@{

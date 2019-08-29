@@ -1,21 +1,21 @@
 
-final class OnboardingKeyPairViewController : OnboardingBaseViewController {
+final class SeedViewController : OnboardingBaseViewController {
     private var mode: Mode = .register { didSet { if mode != oldValue { handleModeChanged() } } }
-    private var keyPair: ECKeyPair! { didSet { updateMnemonic() } }
+    private var seed: Data! { didSet { updateMnemonic() } }
     private var mnemonic: String! { didSet { handleMnemonicChanged() } }
     private var userName: String?
     
     // MARK: Components
     private lazy var registerStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ explanationLabel, UIView.spacer(withHeight: 32), mnemonicLabel, UIView.spacer(withHeight: 24), copyButton, UIView.spacer(withHeight: 8), restoreButton ])
+        let result = UIStackView(arrangedSubviews: [ explanationLabel1, UIView.spacer(withHeight: 32), mnemonicLabel, UIView.spacer(withHeight: 24), copyButton, UIView.spacer(withHeight: 8), restoreButton ])
         result.accessibilityIdentifier = "onboarding.keyPairStep.registerStackView"
         result.axis = .vertical
         return result
     }()
     
-    private lazy var explanationLabel: UILabel = {
+    private lazy var explanationLabel1: UILabel = {
         let result = createExplanationLabel(text: NSLocalizedString("Please save the seed below in a safe location. It can be used to restore your account if you lose access, or to migrate to a new device.", comment: ""))
-        result.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel"
+        result.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel1"
         result.textColor = Theme.primaryColor
         var fontTraits = result.font.fontDescriptor.symbolicTraits
         fontTraits.insert(.traitBold)
@@ -41,16 +41,32 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     }()
     
     private lazy var restoreButton: OWSFlatButton = {
-        let result = createLinkButton(title: NSLocalizedString("Restore Using Mnemonic", comment: ""), selector: #selector(switchMode))
+        let result = createLinkButton(title: NSLocalizedString("Restore Using Seed", comment: ""), selector: #selector(switchMode))
         result.accessibilityIdentifier = "onboarding.keyPairStep.restoreButton"
         result.setBackgroundColors(upColor: .clear, downColor: .clear)
         return result
     }()
     
+    private lazy var errorLabelSpacer: UIView = {
+        let result = UIView.spacer(withHeight: 32)
+        result.isHidden = true
+        return result
+    }()
+    
     private lazy var restoreStackView: UIStackView = {
-        let result = UIStackView(arrangedSubviews: [ errorLabel, UIView.spacer(withHeight: 32), mnemonicTextField, UIView.spacer(withHeight: 24), registerButton ])
+        let result = UIStackView(arrangedSubviews: [ explanationLabel2, UIView.spacer(withHeight: 32), errorLabel, errorLabelSpacer, mnemonicTextField, UIView.spacer(withHeight: 24), registerButton ])
         result.accessibilityIdentifier = "onboarding.keyPairStep.restoreStackView"
         result.axis = .vertical
+        return result
+    }()
+    
+    private lazy var explanationLabel2: UILabel = {
+        let result = createExplanationLabel(text: NSLocalizedString("Restore your account by entering your seed below.", comment: ""))
+        result.accessibilityIdentifier = "onboarding.keyPairStep.explanationLabel2"
+        result.textColor = Theme.primaryColor
+        var fontTraits = result.font.fontDescriptor.symbolicTraits
+        fontTraits.insert(.traitBold)
+        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: result.font.pointSize)
         return result
     }()
     
@@ -60,7 +76,7 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
         result.textColor = UIColor.red
         var fontTraits = result.font.fontDescriptor.symbolicTraits
         fontTraits.insert(.traitBold)
-        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: result.font.pointSize)
+        result.font = UIFont(descriptor: result.font.fontDescriptor.withSymbolicTraits(fontTraits)!, size: 12)
         return result
     }()
     
@@ -69,7 +85,7 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
         result.textColor = Theme.primaryColor
         result.font = UIFont.ows_dynamicTypeBodyClamped
         result.textAlignment = .center
-        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter Your Mnemonic", comment: ""))
+        let placeholder = NSMutableAttributedString(string: NSLocalizedString("Enter Your Seed", comment: ""))
         placeholder.addAttribute(.foregroundColor, value: Theme.placeholderColor, range: NSRange(location: 0, length: placeholder.length))
         result.attributedPlaceholder = placeholder
         result.tintColor = UIColor.lokiGreen()
@@ -104,7 +120,7 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
         super.loadView()
         setUpViewHierarchy()
         handleModeChanged() // Perform initial update
-        updateKeyPair()
+        updateSeed()
     }
     
     private func setUpViewHierarchy() {
@@ -159,14 +175,13 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
         if mode == .register { mnemonicTextField.resignFirstResponder() }
     }
     
-    private func updateKeyPair() {
-        let identityManager = OWSIdentityManager.shared()
-        identityManager.generateNewIdentityKey() // Generate and store a new identity key pair
-        keyPair = identityManager.identityKeyPair()!
+    private func updateSeed() {
+        seed = Randomness.generateRandomBytes(16)
     }
     
     private func updateMnemonic() {
-        mnemonic = Mnemonic.encode(hexEncodedString: keyPair.hexEncodedPrivateKey)
+        let hexEncodedSeed = seed!.toHexString()
+        mnemonic = Mnemonic.encode(hexEncodedString: hexEncodedSeed)
     }
     
     private func handleMnemonicChanged() {
@@ -191,25 +206,28 @@ final class OnboardingKeyPairViewController : OnboardingBaseViewController {
     }
 
     @objc private func registerOrRestore() {
-        let hexEncodedPublicKey: String
+        var seed: Data
         switch mode {
-        case .register: hexEncodedPublicKey = keyPair.hexEncodedPublicKey
+        case .register: seed = self.seed
         case .restore:
             let mnemonic = mnemonicTextField.text!
             do {
-                let hexEncodedPrivateKey = try Mnemonic.decode(mnemonic: mnemonic)
-                let keyPair = ECKeyPair.generate(withHexEncodedPrivateKey: hexEncodedPrivateKey)
-                // Use KVC to access dbConnection even though it's private
-                let databaseConnection = OWSIdentityManager.shared().value(forKey: "dbConnection") as! YapDatabaseConnection
-                // OWSPrimaryStorageIdentityKeyStoreIdentityKey is private so just use its value directly
-                databaseConnection.setObject(keyPair, forKey: "TSStorageManagerIdentityKeyStoreIdentityKey", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
-                hexEncodedPublicKey = keyPair.hexEncodedPublicKey
+                let hexEncodedSeed = try Mnemonic.decode(mnemonic: mnemonic)
+                seed = Data(hex: hexEncodedSeed)
             } catch let error {
                 let error = error as? Mnemonic.DecodingError ?? Mnemonic.DecodingError.generic
-                errorLabel.text = error.errorDescription
-                return
+                errorLabelSpacer.isHidden = false
+                return errorLabel.text = error.errorDescription
             }
         }
+        // Use KVC to access dbConnection even though it's private
+        let identityManager = OWSIdentityManager.shared()
+        let databaseConnection = identityManager.value(forKey: "dbConnection") as! YapDatabaseConnection
+        databaseConnection.setObject(seed.toHexString(), forKey: "LKLokiSeed", inCollection: OWSPrimaryStorageIdentityKeyStoreCollection)
+        if seed.count == 16 { seed = seed + seed }
+        identityManager.generateNewIdentityKeyPair(fromSeed: seed) // This also stores it
+        let keyPair = identityManager.identityKeyPair()!
+        let hexEncodedPublicKey = keyPair.hexEncodedPublicKey
         let accountManager = TSAccountManager.sharedInstance()
         accountManager.phoneNumberAwaitingVerification = hexEncodedPublicKey
         accountManager.didRegister()

@@ -266,6 +266,12 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return [self.class stableColorNameForNewConversationWithString:[self threadIdFromGroupId:groupId]];
 }
 
+- (BOOL)isRSSFeed
+{
+    NSString *groupID = [[NSString alloc] initWithData:self.groupModel.groupId encoding:NSUTF8StringEncoding];
+    return groupID != nil && [groupID hasPrefix:@"rss://"];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

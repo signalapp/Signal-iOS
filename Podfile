@@ -1,4 +1,4 @@
-platform :ios, '9.0'
+platform :ios, '10.0'
 source 'https://github.com/CocoaPods/Specs.git'
 
 use_frameworks!
@@ -73,6 +73,7 @@ target 'Signal' do
 
   # Loki
   pod 'GCDWebServer', '~> 3.0'
+  pod 'FeedKit', '~> 8.1'
 
   target 'SignalTests' do
     inherit! :search_paths

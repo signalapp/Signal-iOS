@@ -6,14 +6,10 @@
 	<dict>
 		<key>CarthageVersion</key>
 		<string>0.33.0</string>
-		<key>DateTime</key>
-		<string>Thu Jul 18 04:53:39 UTC 2019</string>
 		<key>OSXVersion</key>
-		<string>10.14.5</string>
+		<string>10.14.6</string>
 		<key>WebRTCCommit</key>
 		<string>1445d719bf05280270e9f77576f80f973fd847f8 M73</string>
-		<key>XCodeVersion</key>
-		<string>1000.1020</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -34,7 +30,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.0</string>
+	<string>1.1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -51,7 +47,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>11</string>
+	<string>12</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>
@@ -127,7 +123,7 @@
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Signal needs to use Apple Music to play media attachments.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Signal uses your camera to take photos and for video calls.</string>
+	<string>Loki Messenger needs camera access to scan QR codes.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSFaceIDUsageDescription</key>
