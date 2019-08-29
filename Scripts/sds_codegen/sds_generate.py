@@ -440,6 +440,8 @@ class ParsedProperty:
             return 'UInt'
         elif objc_type == 'int32_t':
             return 'Int32'
+        elif objc_type == 'uint32_t':
+            return 'UInt32'
         elif objc_type == 'int64_t':
             return 'Int64'
         elif objc_type == 'long long':
