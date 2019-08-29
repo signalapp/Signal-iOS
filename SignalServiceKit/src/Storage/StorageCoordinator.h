@@ -31,7 +31,7 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value);
 
 - (BOOL)isDatabasePasswordAccessible;
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 - (void)useGRDBForTests;
 - (void)useYDBForTests;
 #endif

@@ -7,7 +7,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 // This should only be used in the tests.
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 
 @interface SSKEnvironment (MockSSKEnvironment)
 

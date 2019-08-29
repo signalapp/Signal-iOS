@@ -4,7 +4,7 @@
 
 import Foundation
 
-#if DEBUG
+#if TESTABLE_BUILD
 
 @objc
 public class SSKTestKeychainStorage: NSObject, SSKKeychainStorage {
