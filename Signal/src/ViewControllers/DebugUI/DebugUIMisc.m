@@ -68,6 +68,10 @@ NS_ASSUME_NONNULL_BEGIN
                                    [ExperienceUpgrade anyRemoveAllWithoutInstantationWithTransaction:transaction];
                                }];
                            }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
+                                     actionBlock:^{
+                                         [DebugUIMisc clearHasDismissedOffers];
+                                     }]];
 
     [items addObject:[OWSTableItem
                          itemWithTitle:@"Delete disappearing messages config"
@@ -211,6 +215,32 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(countryMetadata);
     OWSSignalService.sharedInstance.manualCensorshipCircumventionCountryCode = countryCode;
     OWSSignalService.sharedInstance.isCensorshipCircumventionManuallyActivated = isEnabled;
+}
+
++ (void)clearHasDismissedOffers
+{
+    [OWSPrimaryStorage.dbReadWriteConnection
+        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
+            [transaction
+                enumerateKeysAndObjectsInCollection:[TSThread collection]
+                                         usingBlock:^(NSString *_Nonnull key, id _Nonnull object, BOOL *_Nonnull stop) {
+                                             TSThread *thread = object;
+                                             if (thread.isGroupThread) {
+                                                 return;
+                                             }
+                                             TSContactThread *contactThread = object;
+                                             [contactThreads addObject:contactThread];
+                                         }];
+            for (TSContactThread *contactThread in contactThreads) {
+                if (contactThread.hasDismissedOffers) {
+                    [contactThread anyUpdateContactThreadWithTransaction:transaction.asAnyWrite
+                                                                   block:^(TSContactThread *thread) {
+                                                                       thread.hasDismissedOffers = NO;
+                                                                   }];
+                }
+            }
+        }];
 }
 
 + (void)sendEncryptedDatabase:(TSThread *)thread

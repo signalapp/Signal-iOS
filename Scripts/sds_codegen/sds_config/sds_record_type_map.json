@@ -16,6 +16,7 @@
     "OWSAddToContactsOfferMessage": 25, 
     "OWSAddToProfileWhitelistOfferMessage": 7, 
     "OWSBackupFragment": 32, 
+    "OWSContactOffersInteraction": 22, 
     "OWSContactQuery": 57, 
     "OWSDatabaseMigration": 46, 
     "OWSDevice": 33, 

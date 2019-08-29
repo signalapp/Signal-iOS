@@ -152,7 +152,7 @@ public class ConversationMessageMapping: NSObject {
             }
         }
 
-        if canLoadMore || isNoteToSelf {
+        if canLoadMore || isNoteToSelf || !FeatureFlags.messageRequest {
             // The items need to be reversed, since we load them in reverse order.
             self.itemIds = Array(newItemIds.reversed())
         } else {

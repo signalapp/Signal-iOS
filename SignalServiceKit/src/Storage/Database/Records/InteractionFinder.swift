@@ -32,6 +32,7 @@ protocol InteractionFinderAdapter {
     func enumerateInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
     func enumerateUnseenInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
     func existsOutgoingMessage(transaction: ReadTransaction) -> Bool
+    func outgoingMessageCount(transaction: ReadTransaction) -> UInt
 
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 }
@@ -245,6 +246,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return grdbAdapter.existsOutgoingMessage(transaction: grdbRead)
         }
     }
+
+    @objc
+    public func outgoingMessageCount(transaction: SDSAnyReadTransaction) -> UInt {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.outgoingMessageCount(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.outgoingMessageCount(transaction: grdbRead)
+        }
+    }
 }
 
 // MARK: -
@@ -434,6 +445,14 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
             return false
         }
         return !dbView.isEmptyGroup(threadUniqueId)
+    }
+
+    func outgoingMessageCount(transaction: YapDatabaseReadTransaction) -> UInt {
+        guard let dbView = TSDatabaseView.threadOutgoingMessageDatabaseView(transaction) as? YapDatabaseAutoViewTransaction else {
+            owsFailDebug("unexpected view")
+            return 0
+        }
+        return dbView.numberOfItems(inGroup: threadUniqueId)
     }
 
     // MARK: - private
@@ -757,6 +776,18 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         """
         let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
         return try! Bool.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? false
+    }
+
+    func outgoingMessageCount(transaction: GRDBReadTransaction) -> UInt {
+        let sql = """
+        SELECT COUNT(*)
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .recordType) = ?
+        )
+        """
+        let arguments: StatementArguments = [threadUniqueId, SDSRecordType.outgoingMessage.rawValue]
+        return try! UInt.fetchOne(transaction.database, sql: sql, arguments: arguments) ?? 0
     }
 }
 
