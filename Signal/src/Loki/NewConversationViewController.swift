@@ -44,7 +44,7 @@ final class NewConversationViewController : OWSViewController, OWSQRScannerDeleg
         // Next button
         let nextButtonFont = UIFont.ows_dynamicTypeBodyClamped.ows_mediumWeight()
         let nextButtonHeight = nextButtonFont.pointSize * 48 / 17
-        let nextButton = OWSFlatButton.button(title: NSLocalizedString("Next", comment: ""), font: nextButtonFont, titleColor: .white, backgroundColor: .lokiGreen(), target: self, selector: #selector(startNewConversationIfPossible))
+        let nextButton = OWSFlatButton.button(title: NSLocalizedString("Next", comment: ""), font: nextButtonFont, titleColor: .white, backgroundColor: .lokiGreen(), target: self, selector: #selector(handleNextButtonTapped))
         nextButton.autoSetDimension(.height, toSize: nextButtonHeight)
         // Stack view
         let stackView = UIStackView(arrangedSubviews: [
@@ -95,12 +95,12 @@ final class NewConversationViewController : OWSViewController, OWSQRScannerDeleg
         startNewConversationIfPossible(with: hexEncodedPublicKey)
     }
     
-    private func handleNextButtonTapped() {
+    @objc private func handleNextButtonTapped() {
         let hexEncodedPublicKey = publicKeyTextField.text?.trimmingCharacters(in: .whitespaces) ?? ""
         startNewConversationIfPossible(with: hexEncodedPublicKey)
     }
     
-    @objc private func startNewConversationIfPossible(with hexEncodedPublicKey: String) {
+    private func startNewConversationIfPossible(with hexEncodedPublicKey: String) {
         if !ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
             let alert = UIAlertController(title: NSLocalizedString("Invalid Public Key", comment: ""), message: NSLocalizedString("Please check the public key you entered and try again.", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
