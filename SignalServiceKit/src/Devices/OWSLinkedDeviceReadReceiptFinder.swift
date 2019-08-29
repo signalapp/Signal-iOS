@@ -5,14 +5,14 @@
 import Foundation
 
 @objc
-class AnyLinkedDeviceReadReceiptFinder: NSObject {
+public class AnyLinkedDeviceReadReceiptFinder: NSObject {
     let grdbAdapter = GRDBLinkedDeviceReadReceiptFinder()
     let yapdbAdapter = YAPDBLinkedDeviceReadReceiptFinder()
 }
 
 extension AnyLinkedDeviceReadReceiptFinder {
     @objc(linkedDeviceReadReceiptForAddress:messageIdTimestamp:transaction:)
-    func linkedDeviceReadReceipt(for address: SignalServiceAddress, andMessageIdTimestamp timestamp: UInt64, transaction: SDSAnyReadTransaction) -> OWSLinkedDeviceReadReceipt? {
+    public func linkedDeviceReadReceipt(for address: SignalServiceAddress, andMessageIdTimestamp timestamp: UInt64, transaction: SDSAnyReadTransaction) -> OWSLinkedDeviceReadReceipt? {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.linkedDeviceReadReceipt(for: address, andMessageIdTimestamp: timestamp, transaction: transaction)
