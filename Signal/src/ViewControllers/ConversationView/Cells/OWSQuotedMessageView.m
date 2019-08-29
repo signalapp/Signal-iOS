@@ -549,7 +549,12 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         }
     } else {
         OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-        NSString *quotedAuthor = [contactsManager displayNameForAddress:self.quotedMessage.authorAddress];
+        NSString *quotedAuthor;
+        if (SSKFeatureFlags.profileDisplayChanges) {
+            quotedAuthor = [contactsManager displayNameForAddress:self.quotedMessage.authorAddress];
+        } else {
+            quotedAuthor = [contactsManager contactOrProfileNameForAddress:self.quotedMessage.authorAddress];
+        }
         quotedAuthorText = [NSString
             stringWithFormat:
                 NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",

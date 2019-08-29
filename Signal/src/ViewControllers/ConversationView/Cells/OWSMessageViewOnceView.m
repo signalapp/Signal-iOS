@@ -200,7 +200,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.senderNameLabel.textColor = self.textColor;
     self.senderNameLabel.font = OWSMessageView.senderNameFont;
-    self.senderNameLabel.text = self.viewItem.senderName;
+    self.senderNameLabel.attributedText = self.viewItem.senderName;
     self.senderNameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 }
 

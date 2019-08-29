@@ -511,7 +511,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    NSString *name;
+    NSString *_Nullable name;
+    NSAttributedString *_Nullable attributedName;
     if (thread.isGroupThread) {
         if (thread.name.length == 0) {
             name = [MessageStrings newGroupDefaultTitle];
@@ -521,12 +522,20 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         if (self.thread.threadRecord.isNoteToSelf) {
             name = MessageStrings.noteToSelf;
-        } else {
+        } else if (SSKFeatureFlags.profileDisplayChanges) {
             name = [self.contactsManager displayNameForAddress:thread.contactAddress];
+        } else {
+            attributedName = [self.contactsManager attributedContactOrProfileNameForAddress:thread.contactAddress
+                                                                                primaryFont:self.nameFont
+                                                                              secondaryFont:self.nameSecondaryFont];
         }
     }
 
-    self.nameLabel.text = name;
+    if (name && !attributedName) {
+        attributedName = [[NSAttributedString alloc] initWithString:name];
+    }
+
+    self.nameLabel.attributedText = attributedName;
 }
 
 #pragma mark - Typing Indicators

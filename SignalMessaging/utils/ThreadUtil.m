@@ -714,6 +714,11 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
 + (BOOL)hasPendingMessageRequest:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
+    // If the feature isn't enabled, do nothing.
+    if (!SSKFeatureFlags.messageRequest) {
+        return NO;
+    }
+
     // If we're creating the thread, don't show the message request view
     if (!thread.shouldThreadBeVisible) {
         return NO;

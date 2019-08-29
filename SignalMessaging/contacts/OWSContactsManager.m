@@ -614,14 +614,14 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertIsOnMainThread();
 
-    self.isSetup = YES;
-    if (shouldSetHasLoadedContacts) {
-        _hasLoadedContacts = YES;
-    }
-
     if ([signalAccounts isEqual:self.signalAccounts]) {
         OWSLogDebug(@"SignalAccounts unchanged.");
+        self.isSetup = YES;
         return;
+    }
+
+    if (shouldSetHasLoadedContacts) {
+        _hasLoadedContacts = YES;
     }
 
     NSMutableArray<SignalServiceAddress *> *allAddresses = [NSMutableArray new];
@@ -643,6 +643,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     self.signalAccounts = [signalAccounts copy];
 
     [self.profileManager setContactAddresses:allAddresses];
+
+    self.isSetup = YES;
 
     [[NSNotificationCenter defaultCenter]
         postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
@@ -889,7 +891,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     NSString *_Nullable profileName = [self.profileManager profileNameForAddress:address transaction:transaction];
 
-    if (profileName.length > 0) {
+    // We only include the profile name in the display name if the feature is enabled.
+    if (SSKFeatureFlags.profileDisplayChanges && profileName.length > 0) {
         return profileName;
     }
 
@@ -1109,6 +1112,95 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     return name;
+}
+
+#pragma mark -
+
+- (NSString *)contactOrProfileNameForAddress:(SignalServiceAddress *)address
+{
+    OWSAssertDebug(address.isValid);
+
+    // Prefer a saved name from system contacts, if available
+    NSString *_Nullable savedContactName = [self cachedContactNameForAddress:address];
+    if (savedContactName.length > 0) {
+        return savedContactName;
+    }
+
+    __block NSString *_Nullable profileName;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        profileName = [self.profileManager profileNameForAddress:address transaction:transaction];
+    }];
+
+    if (profileName.length > 0) {
+        return [[address.stringForDisplay stringByAppendingString:@" ~"] stringByAppendingString:profileName];
+    }
+
+    // else fall back to phone number / uuid
+    return address.stringForDisplay;
+}
+
+- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
+                                                     primaryFont:(UIFont *)primaryFont
+                                                   secondaryFont:(UIFont *)secondaryFont
+{
+    OWSAssertDebug(primaryFont);
+    OWSAssertDebug(secondaryFont);
+
+    return [self attributedContactOrProfileNameForAddress:address
+                                        primaryAttributes:@{
+                                            NSFontAttributeName : primaryFont,
+                                        }
+                                      secondaryAttributes:@{
+                                          NSFontAttributeName : secondaryFont,
+                                      }];
+}
+
+- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
+                                               primaryAttributes:(NSDictionary *)primaryAttributes
+                                             secondaryAttributes:(NSDictionary *)secondaryAttributes
+{
+    OWSAssertDebug(address.isValid);
+    OWSAssertDebug(primaryAttributes.count > 0);
+    OWSAssertDebug(secondaryAttributes.count > 0);
+
+    // Prefer a saved name from system contacts, if available
+    NSString *_Nullable savedContactName = [self cachedContactNameForAddress:address];
+    if (savedContactName.length > 0) {
+        return [[NSAttributedString alloc] initWithString:savedContactName attributes:primaryAttributes];
+    }
+
+    __block NSString *_Nullable profileName;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        profileName = [self.profileManager profileNameForAddress:address transaction:transaction];
+    }];
+
+    if (profileName.length > 0) {
+        NSAttributedString *result = [[NSAttributedString alloc] initWithString:address.stringForDisplay
+                                                                     attributes:primaryAttributes];
+        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:@" "]];
+        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:@"~"
+                                                                                 attributes:secondaryAttributes]];
+        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:profileName
+                                                                                 attributes:secondaryAttributes]];
+        return [result copy];
+    }
+
+    // else fall back to phone number / uuid
+    return [[NSAttributedString alloc] initWithString:address.stringForDisplay attributes:primaryAttributes];
+}
+
+- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address
+{
+    __block NSString *_Nullable profileName;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        profileName = [self.profileManager profileNameForAddress:address transaction:transaction];
+    }];
+
+    if (profileName.length > 0) {
+        return [@"~" stringByAppendingString:profileName];
+    }
+
+    return nil;
 }
 
 NS_ASSUME_NONNULL_END

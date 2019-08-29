@@ -111,7 +111,7 @@ public class ConversationMessageMapping: NSObject {
 
     @objc
     var shouldShowThreadDetails: Bool {
-        return !canLoadMore && !isNoteToSelf
+        return !canLoadMore && !isNoteToSelf && FeatureFlags.messageRequest
     }
 
     // This is the core method of the class. It updates the state to

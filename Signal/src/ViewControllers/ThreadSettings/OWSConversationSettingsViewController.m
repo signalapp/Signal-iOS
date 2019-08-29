@@ -1019,6 +1019,14 @@ const CGFloat kIconViewLength = 24;
             }
         }
 
+        if (!SSKFeatureFlags.profileDisplayChanges
+            && ![self.contactsManager hasNameInSystemContactsForAddress:recipientAddress]) {
+            NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForAddress:recipientAddress];
+            if (profileName) {
+                addSubtitle([[NSAttributedString alloc] initWithString:profileName]);
+            }
+        }
+
 #if DEBUG
         NSString *uuidText = [NSString stringWithFormat:@"UUID: %@", contactThread.contactAddress.uuid ?: @"Unknown"];
         addSubtitle([[NSAttributedString alloc] initWithString:uuidText]);

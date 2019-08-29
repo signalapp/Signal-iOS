@@ -94,6 +94,16 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (NSString *)conversationColorNameForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction;
 
+// Legacy display name helpers, once the `profileDisplayChanges` feature is enabled these can go away.
+- (NSString *)contactOrProfileNameForAddress:(SignalServiceAddress *)address;
+- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
+                                                     primaryFont:(UIFont *)primaryFont
+                                                   secondaryFont:(UIFont *)secondaryFont;
+- (NSAttributedString *)attributedContactOrProfileNameForAddress:(SignalServiceAddress *)address
+                                               primaryAttributes:(NSDictionary *)primaryAttributes
+                                             secondaryAttributes:(NSDictionary *)secondaryAttributes;
+- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address;
+
 @end
 
 NS_ASSUME_NONNULL_END
