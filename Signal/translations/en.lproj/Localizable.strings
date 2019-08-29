@@ -2617,3 +2617,5 @@
 "Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and clicking \"Show QR Code\"." = "Scan the QR code of the person you'd like to securely message. They can find their QR code by going into Loki Messenger's in-app settings and clicking \"Show QR Code\".";
 "Scan QR Code" = "Scan QR Code";
 "Loki" = "Loki";
+"Can't Start Conversation" = "Can't Start Conversation";
+"Please enter the public key of the person you'd like to message." = "Please enter the public key of the person you'd like to message.";
