@@ -8,7 +8,6 @@ import GRDBCipher
 @objc
 public extension OWSMessageDecryptJobFinder {
 
-    @objc
     func nextJob(transaction: SDSAnyReadTransaction) -> OWSMessageDecryptJob? {
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
@@ -42,11 +41,9 @@ public extension OWSMessageDecryptJobFinder {
         ORDER BY \(messageDecryptJobColumn: .createdAt)
         LIMIT 1
         """
-        let arguments: StatementArguments = []
-        return OWSMessageDecryptJob.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
+        return OWSMessageDecryptJob.grdbFetchOne(sql: sql, transaction: transaction)
     }
 
-    @objc
     func enumerateJobs(transaction: SDSAnyReadTransaction, block: @escaping (OWSMessageDecryptJob, UnsafeMutablePointer<ObjCBool>) -> Void) throws {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):

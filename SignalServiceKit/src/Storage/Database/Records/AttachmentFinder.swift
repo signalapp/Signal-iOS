@@ -126,7 +126,7 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
         WHERE \(attachmentColumn: .recordType) = \(SDSRecordType.attachmentPointer.rawValue)
         AND \(attachmentColumn: .lazyRestoreFragmentId) IS NOT NULL
         """
-        let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: [], transaction: transaction)
+        let cursor = TSAttachment.grdbFetchCursor(sql: sql, transaction: transaction)
         do {
             while let attachment = try cursor.next() {
                 guard let attachmentPointer = attachment as? TSAttachmentPointer else {

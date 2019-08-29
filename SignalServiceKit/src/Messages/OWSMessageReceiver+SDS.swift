@@ -440,20 +440,11 @@ public extension OWSMessageDecryptJob {
 
 public extension OWSMessageDecryptJob {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
+                               arguments: StatementArguments = StatementArguments(),
                                transaction: GRDBReadTransaction) -> OWSMessageDecryptJobCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return OWSMessageDecryptJobCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try MessageDecryptJobRecord.fetchCursor(statement, arguments: statementArguments)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try MessageDecryptJobRecord.fetchCursor(transaction.database, sqlRequest)
             return OWSMessageDecryptJobCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
@@ -463,13 +454,12 @@ public extension OWSMessageDecryptJob {
     }
 
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> OWSMessageDecryptJob? {
         assert(sql.count > 0)
 
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try MessageDecryptJobRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }

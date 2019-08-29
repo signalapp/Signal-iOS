@@ -483,20 +483,11 @@ public extension OWSUserProfile {
 
 public extension OWSUserProfile {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
+                               arguments: StatementArguments = StatementArguments(),
                                transaction: GRDBReadTransaction) -> OWSUserProfileCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return OWSUserProfileCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try UserProfileRecord.fetchCursor(statement, arguments: statementArguments)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try UserProfileRecord.fetchCursor(transaction.database, sqlRequest)
             return OWSUserProfileCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
@@ -506,13 +497,12 @@ public extension OWSUserProfile {
     }
 
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> OWSUserProfile? {
         assert(sql.count > 0)
 
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try UserProfileRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }

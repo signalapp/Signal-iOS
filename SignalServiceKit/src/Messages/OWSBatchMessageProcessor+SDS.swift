@@ -454,20 +454,11 @@ public extension OWSMessageContentJob {
 
 public extension OWSMessageContentJob {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
+                               arguments: StatementArguments = StatementArguments(),
                                transaction: GRDBReadTransaction) -> OWSMessageContentJobCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return OWSMessageContentJobCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try MessageContentJobRecord.fetchCursor(statement, arguments: statementArguments)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try MessageContentJobRecord.fetchCursor(transaction.database, sqlRequest)
             return OWSMessageContentJobCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
@@ -477,13 +468,12 @@ public extension OWSMessageContentJob {
     }
 
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> OWSMessageContentJob? {
         assert(sql.count > 0)
 
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try MessageContentJobRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }

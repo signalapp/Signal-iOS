@@ -448,20 +448,11 @@ public extension TSRecipientReadReceipt {
 
 public extension TSRecipientReadReceipt {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
+                               arguments: StatementArguments = StatementArguments(),
                                transaction: GRDBReadTransaction) -> TSRecipientReadReceiptCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return TSRecipientReadReceiptCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try RecipientReadReceiptRecord.fetchCursor(statement, arguments: statementArguments)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try RecipientReadReceiptRecord.fetchCursor(transaction.database, sqlRequest)
             return TSRecipientReadReceiptCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
@@ -471,13 +462,12 @@ public extension TSRecipientReadReceipt {
     }
 
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> TSRecipientReadReceipt? {
         assert(sql.count > 0)
 
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try RecipientReadReceiptRecord.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
