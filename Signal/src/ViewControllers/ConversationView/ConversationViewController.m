@@ -1354,7 +1354,8 @@ typedef enum : NSUInteger {
 
 - (void)updateNavigationTitle
 {
-    NSString *name;
+    NSString *_Nullable name;
+    NSAttributedString *_Nullable attributedName;
     UIImage *_Nullable icon;
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *thread = (TSContactThread *)self.thread;
@@ -1363,12 +1364,18 @@ typedef enum : NSUInteger {
 
         if (thread.isNoteToSelf) {
             name = MessageStrings.noteToSelf;
-        } else {
+        } else if (SSKFeatureFlags.profileDisplayChanges) {
             name = [self.contactsManager displayNameForAddress:thread.contactAddress];
+        } else {
+            attributedName =
+                [self.contactsManager attributedContactOrProfileNameForAddress:thread.contactAddress
+                                                                   primaryFont:self.headerView.titlePrimaryFont
+                                                                 secondaryFont:self.headerView.titleSecondaryFont];
         }
 
         // If the user is in the system contacts, show a badge
-        if ([self.contactsManager hasSignalAccountForAddress:thread.contactAddress]) {
+        if (SSKFeatureFlags.profileDisplayChanges &&
+            [self.contactsManager hasSignalAccountForAddress:thread.contactAddress]) {
             icon =
                 [[UIImage imageNamed:@"profile-outline-16"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
         }
@@ -1382,11 +1389,15 @@ typedef enum : NSUInteger {
 
     self.headerView.titleIcon = icon;
 
-    if ([name isEqual:self.headerView.attributedTitle]) {
+    if (name && !attributedName) {
+        attributedName = [[NSAttributedString alloc] initWithString:name];
+    }
+
+    if ([attributedName isEqual:self.headerView.attributedTitle]) {
         return;
     }
 
-    self.headerView.attributedTitle = [[NSAttributedString alloc] initWithString:name];
+    self.headerView.attributedTitle = attributedName;
 }
 
 - (void)createHeaderViews

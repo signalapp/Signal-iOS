@@ -107,4 +107,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let messageRequest = build.includes(.qa)
+
+    @objc
+    public static let profileDisplayChanges = build.includes(.qa)
 }

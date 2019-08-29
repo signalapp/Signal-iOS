@@ -235,7 +235,12 @@ class MessageDetailViewController: OWSViewController {
 
         // Sender?
         if let incomingMessage = message as? TSIncomingMessage {
-            let senderName = contactsManager.displayName(for: incomingMessage.authorAddress)
+            let senderName: String
+            if FeatureFlags.profileDisplayChanges {
+                senderName = contactsManager.displayName(for: incomingMessage.authorAddress)
+            } else {
+                senderName = contactsManager.contactOrProfileName(for: incomingMessage.authorAddress)
+            }
             rows.append(valueRow(name: NSLocalizedString("MESSAGE_METADATA_VIEW_SENDER",
                                                          comment: "Label for the 'sender' field of the 'message metadata' view."),
                                  value: senderName))
