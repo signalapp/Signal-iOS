@@ -254,12 +254,15 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 }
 
-- (void)loadAccountStateWithTransaction:(SDSAnyReadTransaction *)transaction
+- (TSAccountState *)loadAccountStateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     OWSLogVerbose(@"");
 
     // This method should only be called while @synchronized on self.
-    self.cachedAccountState = [[TSAccountState alloc] initWithTransaction:transaction keyValueStore:self.keyValueStore];
+    TSAccountState *accountState = [[TSAccountState alloc] initWithTransaction:transaction
+                                                                 keyValueStore:self.keyValueStore];
+    self.cachedAccountState = accountState;
+    return accountState;
 }
 
 - (TSAccountState *)getOrLoadAccountStateWithSneakyTransaction
@@ -271,17 +274,15 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
 
     // We avoid opening a transaction while @synchronized.
+    __block TSAccountState *accountState;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         @synchronized(self) {
-            [self loadAccountStateWithTransaction:transaction];
+            accountState = [self loadAccountStateWithTransaction:transaction];
         }
     }];
 
-    @synchronized(self) {
-        OWSAssertDebug(self.cachedAccountState != nil);
-
-        return self.cachedAccountState;
-    }
+    OWSAssertDebug(accountState != nil);
+    return accountState;
 }
 
 - (TSAccountState *)getOrLoadAccountStateWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -665,6 +666,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     return authTokenPrint;
 }
 
+// NOTE: We no longer set this for new accounts.
 - (nullable NSString *)storedSignalingKey
 {
     return [self getOrLoadAccountStateWithSneakyTransaction].serverSignalingKey;
@@ -774,6 +776,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (nullable NSString *)reregistrationPhoneNumber
 {
+    OWSAssertDebug([self isReregistering]);
+
     return [self getOrLoadAccountStateWithSneakyTransaction].reregistrationPhoneNumber;
 }
 
