@@ -264,12 +264,18 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     return [self.address compare:other.address];
 }
 
-// GRDB TODO: We might want will/did hooks for updates.
 - (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillInsertWithTransaction:transaction];
 
-    OWSLogVerbose(@"saved signal recipient: %@ (%lu)", self.address, (unsigned long)self.devices.count);
+    OWSLogVerbose(@"Inserted signal recipient: %@ (%lu)", self.address, (unsigned long)self.devices.count);
+}
+
+- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyWillUpdateWithTransaction:transaction];
+
+    OWSLogVerbose(@"Updated signal recipient: %@ (%lu)", self.address, (unsigned long)self.devices.count);
 }
 
 + (BOOL)isRegisteredRecipient:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction

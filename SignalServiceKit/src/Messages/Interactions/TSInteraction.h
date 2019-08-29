@@ -82,13 +82,13 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 
 #pragma mark Utility Method
 
-// GRDB TODO: Remove this method.
+// POST GRDB TODO: Remove this method.
 + (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
                                                     ofClass:(Class)clazz
                                             withTransaction:(YapDatabaseReadTransaction *)transaction;
 
 
-// GRDB TODO: Remove this method.
+// POST GRDB TODO: Remove this method.
 + (NSArray<TSInteraction *> *)ydb_interactionsWithTimestamp:(uint64_t)timestamp
                                                      filter:(BOOL (^_Nonnull)(TSInteraction *))filter
                                             withTransaction:(YapDatabaseReadTransaction *)transaction;

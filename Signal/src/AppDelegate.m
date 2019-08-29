@@ -336,8 +336,6 @@ static NSTimeInterval launchStartedAt;
         return;
     }
 
-    // GRDB TODO: We should consult YDB and GRDB.  This should be done via storage coordinator,
-    //            which knows which checks we need to do.
     if (![self.storageCoordinator isDatabasePasswordAccessible]) {
         OWSLogInfo(@"exiting because we are in the background and the database password is not accessible.");
 

@@ -798,7 +798,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
 
     // External database modifications (e.g. changes from another process such as the SAE)
     // are "flushed" using touchDbAsync when the app re-enters the foreground.
-    // GRDB TODO - remove touchDbAsync
+    // POST GRDB TODO - remove touchDbAsync
 }
 
 #pragma mark -
@@ -1386,7 +1386,7 @@ static const int kYapDatabaseRangeMaxLength = 25000;
         tryToAddViewItem(interaction);
     }
 
-    // GRDB TODO seems like this redundant sorting can go away with GRDB
+    // POST GRDB TODO seems like this redundant sorting can go away with GRDB
     // This will usually be redundant, but this will resolve one of the symptoms
     // of the "corrupt YDB view" issue caused by multi-process writes.
     [viewItems sortUsingComparator:^NSComparisonResult(id<ConversationViewItem> left, id<ConversationViewItem> right) {
