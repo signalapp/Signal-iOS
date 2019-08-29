@@ -763,8 +763,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         @synchronized(self) {
-            _phoneNumberAwaitingVerification = nil;
-            _uuidAwaitingVerification = nil;
+            self.phoneNumberAwaitingVerification = nil;
+            self.uuidAwaitingVerification = nil;
 
             [self.keyValueStore removeAllWithTransaction:transaction];
 
