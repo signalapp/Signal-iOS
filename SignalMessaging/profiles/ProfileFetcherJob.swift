@@ -159,7 +159,7 @@ public class ProfileFetcherJob: NSObject {
                 if remainingRetries > 0 {
                     self.getAndUpdateProfile(address: address, remainingRetries: remainingRetries - 1)
                 } else {
-                    Logger.error("failed to get profile with error: \(error)")
+                    Logger.warn("failed to get profile with error: \(error)")
                 }
             }
         }.retainUntilComplete()

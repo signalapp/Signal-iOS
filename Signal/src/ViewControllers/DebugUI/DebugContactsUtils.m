@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugContactsUtils.h"
@@ -1175,7 +1175,7 @@ NS_ASSUME_NONNULL_BEGIN
                             }
                         }
 
-                        OWSLogError(@"Saving fake contacts: %zu", contacts.count);
+                        OWSLogInfo(@"Saving fake contacts: %zu", contacts.count);
 
                         NSError *saveError = nil;
                         if (![store executeSaveRequest:request error:&saveError]) {

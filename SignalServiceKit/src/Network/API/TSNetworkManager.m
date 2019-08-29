@@ -435,7 +435,7 @@ dispatch_queue_t NetworkManagerQueue()
             break;
         }
         case 400: {
-            OWSLogError(@"The request contains an invalid parameter : %@, %@", networkError.debugDescription, request);
+            OWSLogWarn(@"The request contains an invalid parameter : %@, %@", networkError.debugDescription, request);
 
             error.isRetryable = NO;
 
@@ -443,7 +443,7 @@ dispatch_queue_t NetworkManagerQueue()
             break;
         }
         case 401: {
-            OWSLogError(@"The server returned an error about the authorization header: %@, %@",
+            OWSLogWarn(@"The server returned an error about the authorization header: %@, %@",
                 networkError.debugDescription,
                 request);
             error.isRetryable = NO;
@@ -457,7 +457,7 @@ dispatch_queue_t NetworkManagerQueue()
             break;
         }
         case 403: {
-            OWSLogError(
+            OWSLogWarn(
                 @"The server returned an authentication failure: %@, %@", networkError.debugDescription, request);
             error.isRetryable = NO;
             [self deregisterAfterAuthErrorIfNecessary:task request:request statusCode:statusCode];
@@ -465,7 +465,7 @@ dispatch_queue_t NetworkManagerQueue()
             break;
         }
         case 404: {
-            OWSLogError(@"The requested resource could not be found: %@, %@", networkError.debugDescription, request);
+            OWSLogWarn(@"The requested resource could not be found: %@, %@", networkError.debugDescription, request);
             error.isRetryable = NO;
             failureBlock(task, error);
             break;

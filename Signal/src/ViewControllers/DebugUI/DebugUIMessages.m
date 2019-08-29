@@ -401,7 +401,7 @@ NS_ASSUME_NONNULL_BEGIN
                                     linkPreviewDraft:nil
                                          transaction:transaction];
     }];
-    OWSLogError(@"sendTextMessageInThread timestamp: %llu.", message.timestamp);
+    OWSLogInfo(@"sendTextMessageInThread timestamp: %llu.", message.timestamp);
 }
 
 + (void)sendNTextMessagesInThread:(TSThread *)thread
@@ -3755,7 +3755,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                   [self sendFakeMessages:messageCount thread:contactThread];
                   [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                       NSUInteger interactionCount = [contactThread numberOfInteractionsWithTransaction:transaction];
-                      OWSLogError(@"Create fake thread: %@, interactions: %lu",
+                      OWSLogInfo(@"Create fake thread: %@, interactions: %lu",
                           phoneNumber.toE164,
                           (unsigned long)interactionCount);
                   }];
@@ -4199,7 +4199,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                     messageBody:text
                                                                    attachmentId:nil
                                                                expiresInSeconds:expiresInSeconds];
-        OWSLogError(@"insertAndDeleteNewOutgoingMessages timestamp: %llu.", message.timestamp);
+        OWSLogInfo(@"insertAndDeleteNewOutgoingMessages timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
 
@@ -4228,7 +4228,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                     messageBody:text
                                                                    attachmentId:nil
                                                                expiresInSeconds:expiresInSeconds];
-        OWSLogError(@"resurrectNewOutgoingMessages1 timestamp: %llu.", message.timestamp);
+        OWSLogInfo(@"resurrectNewOutgoingMessages1 timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
 
@@ -4276,7 +4276,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                  linkPreview:nil
                               messageSticker:nil
                            isViewOnceMessage:NO];
-        OWSLogError(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
+        OWSLogInfo(@"resurrectNewOutgoingMessages2 timestamp: %llu.", message.timestamp);
         [messages addObject:message];
     }
 

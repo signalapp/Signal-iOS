@@ -180,7 +180,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)resetAppData
 {
     // This _should_ be wiped out below.
-    OWSLogError(@"");
+    OWSLogInfo(@"");
     [DDLog flushLog];
 
     [self.databaseStorage resetAllStorage];
