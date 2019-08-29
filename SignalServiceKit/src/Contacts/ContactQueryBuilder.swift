@@ -107,7 +107,7 @@ extension ContactQueryFinder {
     }
 }
 
-struct AnyContactQueryFinder: ContactQueryFinder {
+public struct AnyContactQueryFinder: ContactQueryFinder {
     static func enumerateUniqueIds(transaction: SDSAnyReadTransaction,
                                    olderThan referenceDate: Date,
                                    block: @escaping (String, UnsafeMutablePointer<ObjCBool>) -> Void) {

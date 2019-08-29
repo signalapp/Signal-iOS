@@ -88,4 +88,83 @@ class GRDBFinderTest: SignalBaseTest {
             XCTAssertNil(AnyContactThreadFinder().contactThread(for: address7, transaction: transaction))
         }
     }
+
+    func testAnyContactQueryFinder() {
+        storageCoordinator.useGRDBForTests()
+
+        let createQuery: (String, Date) -> OWSContactQuery = { (phoneNumber, date) in
+            let nonce = Randomness.generateRandomBytes(CDSContactQuery.nonceLength)
+            return OWSContactQuery(uniqueId: phoneNumber, lastQueried: date, nonce: nonce)
+        }
+        let dateIncrement: TimeInterval = 1
+        let date0 = Date(timeIntervalSince1970: Date().timeIntervalSince1970 - 100)
+        let date1 = Date(timeIntervalSince1970: date0.timeIntervalSince1970 + dateIncrement)
+        let date2 = Date(timeIntervalSince1970: date1.timeIntervalSince1970 + dateIncrement)
+        let date3 = Date(timeIntervalSince1970: date2.timeIntervalSince1970 + dateIncrement)
+        let date4 = Date(timeIntervalSince1970: date3.timeIntervalSince1970 + dateIncrement)
+        let date5 = Date(timeIntervalSince1970: date4.timeIntervalSince1970 + dateIncrement)
+        let query1 = createQuery("+13213334441", date1)
+        let query2 = createQuery("+13213334442", date2)
+        let query3 = createQuery("+13213334443", date3)
+        let query4 = createQuery("+13213334444", date4)
+
+        XCTAssertLessThan(query1.lastQueried, query2.lastQueried)
+        XCTAssertLessThan(query2.lastQueried, query3.lastQueried)
+        XCTAssertLessThan(query3.lastQueried, query4.lastQueried)
+
+        self.read { transaction in
+            XCTAssertEqual(0, AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: Date()).count)
+        }
+
+        self.write { transaction in
+            // NOTE: Insert them out of order.
+            query4.anyInsert(transaction: transaction)
+            query1.anyInsert(transaction: transaction)
+            query3.anyInsert(transaction: transaction)
+            query2.anyInsert(transaction: transaction)
+        }
+
+        XCTAssertLessThan(query1.lastQueried, query2.lastQueried)
+        XCTAssertLessThan(query2.lastQueried, query3.lastQueried)
+        XCTAssertLessThan(query3.lastQueried, query4.lastQueried)
+
+        Logger.verbose("Date(): \(Date().ows_millisecondsSince1970)")
+        Logger.verbose("query1: \(query1.lastQueried.ows_millisecondsSince1970)")
+        Logger.verbose("query2: \(query2.lastQueried.ows_millisecondsSince1970)")
+        Logger.verbose("query3: \(query3.lastQueried.ows_millisecondsSince1970)")
+        Logger.verbose("query4: \(query4.lastQueried.ows_millisecondsSince1970)")
+
+        self.read { transaction in
+            OWSContactQuery.anyEnumerate(transaction: transaction) { (query, _) in
+                Logger.verbose("all: \(query.lastQueried.ows_millisecondsSince1970)")
+            }
+            XCTAssertEqual(4, AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: Date()).count)
+            // Results are unordered, so we use a set.
+            XCTAssertEqual(Set([query1.uniqueId, query2.uniqueId, query3.uniqueId, query4.uniqueId]), Set(AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: Date())))
+
+            XCTAssertEqual(0, AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date0).count)
+            // Results are unordered, so we use a set.
+            XCTAssertEqual(Set([]), Set(AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date0)))
+
+            XCTAssertEqual(0, AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date1).count)
+            // Results are unordered, so we use a set.
+            XCTAssertEqual(Set([]), Set(AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date1)))
+
+            XCTAssertEqual(1, AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date2).count)
+            // Results are unordered, so we use a set.
+            XCTAssertEqual(Set([query1.uniqueId]), Set(AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date2)))
+
+            XCTAssertEqual(2, AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date3).count)
+            // Results are unordered, so we use a set.
+            XCTAssertEqual(Set([query1.uniqueId, query2.uniqueId]), Set(AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date3)))
+
+            XCTAssertEqual(3, AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date4).count)
+            // Results are unordered, so we use a set.
+            XCTAssertEqual(Set([query1.uniqueId, query2.uniqueId, query3.uniqueId]), Set(AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date4)))
+
+            XCTAssertEqual(4, AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date5).count)
+            // Results are unordered, so we use a set.
+            XCTAssertEqual(Set([query1.uniqueId, query2.uniqueId, query3.uniqueId, query4.uniqueId]), Set(AnyContactQueryFinder.allRecordUniqueIds(transaction: transaction, olderThan: date5)))
+        }
+    }
 }
