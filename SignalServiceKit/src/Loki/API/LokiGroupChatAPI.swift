@@ -28,7 +28,7 @@ public final class LokiGroupChatAPI : NSObject {
     
     // MARK: Error
     public enum Error : Swift.Error {
-        case tokenParsingFailed, tokenDecryptionFailed, messageParsingFailed
+        case tokenParsingFailed, tokenDecryptionFailed, messageParsingFailed, jsonParsingFailed
     }
     
     // MARK: Database
@@ -228,6 +228,23 @@ public final class LokiGroupChatAPI : NSObject {
             }
         }
        
+    }
+    
+    public static func isCurrentUserMod(on server: String) -> Promise<Bool> {
+        return getAuthToken(for: server).then { token -> Promise<Bool> in
+            let url = URL(string: "\(server)/loki/v1/user_info")!
+            let request = TSRequest(url: url)
+            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
+            return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
+                guard let json = rawResponse as? JSON, let data = json["data"] as? JSON else {
+                    print("[Loki] Couldn't parse json for user info.")
+                    throw Error.jsonParsingFailed
+                }
+                
+                // moderator_status is not set for users that are not mods
+                return data["moderator_status"] as? Bool ?? false
+            }
+        }
     }
     
     // MARK: Public API (Obj-C)

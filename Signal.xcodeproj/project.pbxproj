@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		24684784231772CD00600430 /* LokiGroupChatModPoller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24684783231772CD00600430 /* LokiGroupChatModPoller.swift */; };
 		24A830A22293CD0100F4CAC0 /* LokiP2PServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */; };
 		2AE2882E4C2B96BFFF9EE27C /* Pods_SignalShareExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */; };
 		3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */; };
@@ -660,6 +661,7 @@
 		0F94C85CB0B235DA37F68ED0 /* Pods_SignalShareExtension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalShareExtension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C93CF3971B64E8B6C1F9AC1 /* Pods-SignalShareExtension.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalShareExtension.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalShareExtension/Pods-SignalShareExtension.test.xcconfig"; sourceTree = "<group>"; };
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
+		24684783231772CD00600430 /* LokiGroupChatModPoller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiGroupChatModPoller.swift; sourceTree = "<group>"; };
 		24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LokiP2PServer.swift; sourceTree = "<group>"; };
 		264242150E87D10A357DB07B /* Pods_SignalMessaging.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SignalMessaging.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3403B95B20EA9526001A1F44 /* OWSContactShareButtonsView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactShareButtonsView.m; sourceTree = "<group>"; };
@@ -2615,17 +2617,18 @@
 		B8439518228510E9000563FE /* Loki */ = {
 			isa = PBXGroup;
 			children = (
+				B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */,
 				B8162F0222891AD600D46544 /* FriendRequestView.swift */,
 				B8162F0422892C5F00D46544 /* FriendRequestViewDelegate.swift */,
-				B89841E222B7579F00B1BDC6 /* NewConversationViewController.swift */,
-				B821F2F72272CED3002C88C0 /* AccountDetailsViewController.swift */,
-				B821F2F92272CEEE002C88C0 /* SeedViewController.swift */,
-				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
+				24684783231772CD00600430 /* LokiGroupChatModPoller.swift */,
 				B845B4D3230CD09000D759F0 /* LokiGroupChatPoller.swift */,
+				24A830A12293CD0100F4CAC0 /* LokiP2PServer.swift */,
 				B825849F2315024B001B41CB /* LokiRSSFeedPoller.swift */,
+				B89841E222B7579F00B1BDC6 /* NewConversationViewController.swift */,
 				B825848A230F94FE001B41CB /* QRCodeViewController.swift */,
 				B8258491230FA5DA001B41CB /* ScanQRCodeViewController.h */,
 				B8258492230FA5E9001B41CB /* ScanQRCodeViewController.m */,
+				B821F2F92272CEEE002C88C0 /* SeedViewController.swift */,
 			);
 			path = Loki;
 			sourceTree = "<group>";
@@ -3627,6 +3630,7 @@
 				341F2C0F1F2B8AE700D07D6B /* DebugUIMisc.m in Sources */,
 				340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
+				24684784231772CD00600430 /* LokiGroupChatModPoller.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */,
 				34D1F0871F8678AA0066283D /* ConversationViewItem.m in Sources */,

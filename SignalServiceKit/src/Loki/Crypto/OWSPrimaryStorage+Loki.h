@@ -95,8 +95,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)setLastMessageHashForServiceNode:(NSString *)serviceNode hash:(NSString *)hash expiresAt:(u_int64_t)expiresAt transaction:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(setLastMessageHash(forServiceNode:hash:expiresAt:transaction:));
 
+# pragma mark - Public chat
+
 - (void)setIDForMessageWithServerID:(NSUInteger)serverID to:(NSString *)messageID in:(YapDatabaseReadWriteTransaction *)transaction;
 - (NSString *_Nullable)getIDForMessageWithServerID:(NSUInteger)serverID in:(YapDatabaseReadTransaction *)transaction;
+
+- (void)setIsModerator:(BOOL)isModerator forServer:(NSString *)server transaction:(YapDatabaseReadWriteTransaction *)transaction
+    NS_SWIFT_NAME(setIsModerator(_:for:transaction:));
+- (BOOL)getIsModeratorForServer:(NSString *)server transaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(getIsModerator(forServer:transaction:));
 
 @end
 

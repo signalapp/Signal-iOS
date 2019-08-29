@@ -15,6 +15,8 @@
 #import <SignalServiceKit/NSString+SSK.h>
 #import <SignalServiceKit/OWSContact.h>
 #import <SignalServiceKit/TSInteraction.h>
+#import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -197,6 +199,13 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
             _authorConversationColorName = nil;
             break;
     }
+}
+
+- (OWSPrimaryStorage *)primaryStorage
+{
+    OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
+    
+    return SSKEnvironment.shared.primaryStorage;
 }
 
 - (NSString *)itemId
@@ -1242,7 +1251,14 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     TSMessage *message = (TSMessage *)self.interaction;
     if (!message.isPublicChatMessage) return false;
     
-    // TODO: Disable deletion of incoming messages if we're not moderators
+    // Don't allow deletion if we're not mods on incoming messages
+    if (interationType == OWSInteractionType_IncomingMessage) {
+        __block BOOL isModerator;
+        [[self primaryStorage].dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            isModerator = [[self primaryStorage] getIsModeratorForServer:LKGroupChatAPI.publicChatServer transaction:transaction];
+        }];
+        if (!isModerator) return false;
+    }
 
     return true;
 }

@@ -19,6 +19,7 @@
 #define LKReceivedMessageHashesKey @"LKReceivedMessageHashesKey"
 #define LKReceivedMessageHashesCollection @"LKReceivedMessageHashesCollection"
 #define LKMessageIDCollection @"LKMessageIDCollection"
+#define LKModeratorCollection @"LKModerationCollection"
 
 @implementation OWSPrimaryStorage (Loki)
 
@@ -171,6 +172,14 @@
 - (NSString *_Nullable)getIDForMessageWithServerID:(NSUInteger)serverID in:(YapDatabaseReadTransaction *)transaction {
     NSString *key = [NSString stringWithFormat:@"%@", @(serverID)];
     return [transaction objectForKey:key inCollection:LKMessageIDCollection];
+}
+
+- (void)setIsModerator:(BOOL)isModerator forServer:(NSString *)server transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    [transaction setBool:isModerator forKey:server inCollection:LKModeratorCollection];
+}
+
+- (BOOL)getIsModeratorForServer:(NSString *)server transaction:(YapDatabaseReadTransaction *)transaction {
+    return [transaction boolForKey:server inCollection:LKModeratorCollection defaultValue:false];
 }
 
 @end
