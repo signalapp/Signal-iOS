@@ -117,9 +117,18 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 // * Don't use either unless necessary.
 // * Only use one if possible.
 // * If both must be used, only @synchronize within a transaction.
+//   _Never_ open a transaction within a @synchronized(self) block.
+// * If you update any account state in the database, reload the cache
+//   immediately.
 @interface TSAccountManager () <SDSDatabaseStorageObserver>
 
 // This property should only be accessed while @synchronized on self.
+//
+// Generally, it will nil until loaded for the first time (while warming
+// the caches) and non-nil after.
+//
+// There's an important exception: we discard (but don't reload) the cache
+// when notified of a cross-process write.
 @property (nonatomic, nullable) TSAccountState *cachedAccountState;
 
 @property (nonatomic) Reachability *reachability;
