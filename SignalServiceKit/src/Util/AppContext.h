@@ -122,7 +122,7 @@ void SetCurrentAppContext(id<AppContext> appContext);
 
 void ExitShareExtension(void);
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 void ClearCurrentAppContextForTests(void);
 #endif
 

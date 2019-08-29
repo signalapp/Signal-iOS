@@ -72,6 +72,10 @@ target 'Signal' do
   target 'SignalTests' do
     inherit! :search_paths
   end
+
+  target 'SignalPerformanceTests' do
+    inherit! :search_paths
+  end
 end
 
 target 'SignalShareExtension' do
@@ -85,6 +89,7 @@ end
 post_install do |installer|
   enable_extension_support_for_purelayout(installer)
   configure_warning_flags(installer)
+  configure_testable_build(installer)
 end
 
 # PureLayout by default makes use of UIApplication, and must be configured to be built for an extension.
@@ -116,3 +121,15 @@ def configure_warning_flags(installer)
       end
   end
 end
+
+def configure_testable_build(installer)
+  installer.pods_project.targets.each do |target|
+    target.build_configurations.each do |build_configuration|
+      next unless ["Testable Release", "Debug"].include?(build_configuration.name)
+ 
+      build_configuration.build_settings['OTHER_CFLAGS'] ||= '$(inherited) -DTESTABLE_BUILD'
+      build_configuration.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited) -DTESTABLE_BUILD'
+    end
+  end
+end
+

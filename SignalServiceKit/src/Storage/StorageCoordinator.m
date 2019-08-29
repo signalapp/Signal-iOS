@@ -154,7 +154,7 @@ NSString *NSStringFromStorageCoordinatorState(StorageCoordinatorState value)
     return YES;
 }
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 - (void)useGRDBForTests
 {
     self.state = StorageCoordinatorStateGRDBTests;
