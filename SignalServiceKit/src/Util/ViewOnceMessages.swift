@@ -344,7 +344,6 @@ class GRDBViewOnceMessageFinder: ViewOnceMessageFinder {
         """
 
         let cursor = TSInteraction.grdbFetchCursor(sql: sql,
-                                                   arguments: [],
                                                    transaction: transaction)
         var stop: ObjCBool = false
         // GRDB TODO make cursor.next fail hard to remove this `try!`

@@ -699,7 +699,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         FROM \(InteractionRecord.databaseTableName)
         WHERE \(interactionColumn: .timestamp) = ?
         """
-        let arguments: [DatabaseValueConvertible] = [timestamp]
+        let arguments: StatementArguments = [timestamp]
 
         let unfiltered = try TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction).all()
         return unfiltered.filter(filter)
@@ -778,7 +778,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         AND \(interactionColumn: .expiresAt) > 0
         ORDER BY \(interactionColumn: .expiresAt)
         """
-        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [], transaction: transaction)
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, transaction: transaction)
         do {
             while let interaction = try cursor.next() {
                 var stop: ObjCBool = false
@@ -827,7 +827,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         WHERE \(interactionColumn: .storedShouldStartExpireTimer) IS TRUE
         AND \(interactionColumn: .expiresAt) IS 0
         """
-        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: [], transaction: transaction)
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, transaction: transaction)
         do {
             while let interaction = try cursor.next() {
                 guard let message = interaction as? TSMessage else {
@@ -952,7 +952,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         WHERE \(interactionColumn: .threadUniqueId) = ?
         AND \(interactionColumn: .read) IS 0
         """
-        let arguments: [DatabaseValueConvertible] = [threadUniqueId]
+        let arguments: StatementArguments = [threadUniqueId]
         let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
         while let interaction = try cursor.next() {
             var stop: ObjCBool = false
@@ -974,7 +974,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
         WHERE \(interactionColumn: .threadUniqueId) = ?
         ORDER BY \(interactionColumn: .id) DESC
         """
-        let arguments: [DatabaseValueConvertible] = [threadUniqueId]
+        let arguments: StatementArguments = [threadUniqueId]
         let cursor = TSInteraction.grdbFetchCursor(sql: sql,
                                                    arguments: arguments,
                                                    transaction: transaction)
@@ -1060,7 +1060,7 @@ struct GRDBInteractionFinderAdapter: InteractionFinderAdapter {
             OR \(interactionColumn: .recordType) IN ( ?, ?, ? )
         )
         """
-        let arguments: [DatabaseValueConvertible] = [threadUniqueId,
+        let arguments: StatementArguments = [threadUniqueId,
                                              TSErrorMessageType.nonBlockingIdentityChange.rawValue,
                                              SDSRecordType.errorMessage.rawValue,
                                              SDSRecordType.invalidIdentityKeyErrorMessage.rawValue,
