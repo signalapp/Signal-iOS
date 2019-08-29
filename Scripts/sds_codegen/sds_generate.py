@@ -1250,18 +1250,18 @@ public class %sCursor: NSObject {
 // TODO: I've defined flavors that take a read transaction.
 //       Or we might take a "connection" if we end up having that class.
 @objc
-public extension %s {
-    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %sCursor {
+public extension %(class_name)s {
+    class func grdbFetchCursor(transaction: GRDBReadTransaction) -> %(class_name)sCursor {
         let database = transaction.database
         do {
-            let cursor = try %s.fetchCursor(database)
-            return %sCursor(cursor: cursor)
+            let cursor = try %(record_name)s.fetchCursor(database)
+            return %(class_name)sCursor(cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return %sCursor(cursor: nil)
+            return %(class_name)sCursor(cursor: nil)
         }
     }
-''' % ( str(clazz.name), str(clazz.name), record_name, str(clazz.name), str(clazz.name), )
+''' % { "class_name": str(clazz.name), "record_name": record_name }
 
         swift_body += '''
     // Fetches a single model by "unique id".
@@ -1424,43 +1424,32 @@ public extension %s {
         swift_body += '''
 // MARK: - Swift Fetch
 
-public extension %s {
+public extension %(class_name)s {
     class func grdbFetchCursor(sql: String,
-                               arguments: [DatabaseValueConvertible]?,
-                               transaction: GRDBReadTransaction) -> %sCursor {
-        var statementArguments: StatementArguments?
-        if let arguments = arguments {
-            guard let statementArgs = StatementArguments(arguments) else {
-                owsFailDebug("Could not convert arguments.")
-                return %sCursor(cursor: nil)
-            }
-            statementArguments = statementArgs
-        }
-        let database = transaction.database
+                               arguments: StatementArguments = StatementArguments(),
+                               transaction: GRDBReadTransaction) -> %(class_name)sCursor {
         do {
-            let statement: SelectStatement = try database.cachedSelectStatement(sql: sql)
-            let cursor = try %s.fetchCursor(statement, arguments: statementArguments)
-            return %sCursor(cursor: cursor)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
+            let cursor = try %(record_name)s.fetchCursor(transaction.database, sqlRequest)
+            return %(class_name)sCursor(cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return %sCursor(cursor: nil)
+            return %(class_name)sCursor(cursor: nil)
         }
     }
-
-''' % ( str(clazz.name), str(clazz.name), str(clazz.name), record_name, str(clazz.name), str(clazz.name), )
+''' % { "class_name": str(clazz.name), "record_name": record_name }
 
 
         string_interpolation_name = remove_prefix_from_class_name(clazz.name)
         swift_body += '''
     class func grdbFetchOne(sql: String,
-                            arguments: StatementArguments,
+                            arguments: StatementArguments = StatementArguments(),
                             transaction: GRDBReadTransaction) -> %s? {
         assert(sql.count > 0)
         
         do {
-            // There are significant perf benefits to using a cached statement.
-            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, adapter: nil, cached: true)
+            let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             guard let record = try %s.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
