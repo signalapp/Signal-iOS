@@ -8,6 +8,7 @@ extern NSString *const AppDelegateStoryboardMain;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
+- (void)stopLongPollerIfNeeded;
 - (void)createGroupChatsIfNeeded;
 - (void)createRSSFeedsIfNeeded;
 - (void)startGroupChatPollersIfNeeded;

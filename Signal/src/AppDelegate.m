@@ -63,7 +63,10 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL hasInitialRootViewController;
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
+
+// Loki
 @property (nonatomic) LKP2PServer *lokiP2PServer;
+@property (nonatomic) LKLongPoller *lokiLongPoller;
 @property (nonatomic) LKGroupChatPoller *lokiPublicChatPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiNewsFeedPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiMessengerUpdatesFeedPoller;
@@ -175,7 +178,7 @@ static NSTimeInterval launchStartedAt;
 
     [DDLog flushLog];
 
-    [LKAPI stopLongPolling];
+    [self stopLongPollerIfNeeded];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -194,7 +197,8 @@ static NSTimeInterval launchStartedAt;
 
     [DDLog flushLog];
     
-    [LKAPI stopLongPolling];
+    [self stopLongPollerIfNeeded];
+
     if (self.lokiP2PServer) { [self.lokiP2PServer stop]; }
 }
 
@@ -761,7 +765,7 @@ static NSTimeInterval launchStartedAt;
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
             
             // Loki: Start long polling
-            [LKAPI startLongPollingIfNeeded];
+            [self startLongPollerIfNeeded];
            
             // Loki: Tell our friends that we are online
             [LKP2PAPI broadcastOnlineStatus];
@@ -1359,8 +1363,8 @@ static NSTimeInterval launchStartedAt;
         // For non-legacy users, read receipts are on by default.
         [self.readReceiptManager setAreReadReceiptsEnabled:YES];
         
-        // Start long polling
-        [LKAPI startLongPollingIfNeeded];
+        // Loki: Start long polling
+        [self startLongPollerIfNeeded];
     }
 }
 
@@ -1404,23 +1408,6 @@ static NSTimeInterval launchStartedAt;
     [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
 
     [UIViewController attemptRotationToDeviceOrientation];
-}
-
-#pragma mark - Long polling
-
-- (void)handleNewMessagesReceived:(NSNotification *)notification
-{
-    NSArray *messages = (NSArray *)notification.userInfo[@"messages"];
-    NSLog(@"[Loki] Received %lu messages through long polling.", messages.count);
-
-    for (SSKProtoEnvelope *envelope in messages) {
-        NSData *envelopeData = [envelope serializedDataAndReturnError:nil];
-        if (envelopeData != nil) {
-            [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:envelopeData];
-        } else {
-            OWSFailDebug(@"Failed to deserialize envelope.");
-        }
-    }
 }
 
 #pragma mark - status bar touches
@@ -1486,6 +1473,34 @@ static NSTimeInterval launchStartedAt;
 }
 
 #pragma mark - Loki
+
+- (void)setUpLongPollerIfNeeded
+{
+    if (self.lokiLongPoller != nil) { return; }
+    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    if (userHexEncodedPublicKey == nil) { return; }
+    self.lokiLongPoller = [[LKLongPoller alloc] initOnMessagesReceived:^(NSArray<SSKProtoEnvelope *> *messages) {
+        for (SSKProtoEnvelope *message in messages) {
+            NSData *data = [message serializedDataAndReturnError:nil];
+            if (data != nil) {
+                [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:data];
+            } else {
+                NSLog(@"[Loki] Failed to deserialize envelope.");
+            }
+        }
+    }];
+}
+
+- (void)startLongPollerIfNeeded
+{
+    [self setUpLongPollerIfNeeded];
+    [self.lokiLongPoller startIfNeeded];
+}
+
+- (void)stopLongPollerIfNeeded
+{
+    [self.lokiLongPoller stopIfNeeded];
+}
 
 - (LKGroupChat *)lokiPublicChat
 {

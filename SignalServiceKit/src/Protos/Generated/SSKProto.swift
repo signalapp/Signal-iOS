@@ -3308,6 +3308,9 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         if let _value = profile {
             builder.setProfile(_value)
         }
+        if let _value = publicChatInfo {
+            builder.setPublicChatInfo(_value)
+        }
         return builder
     }
 
@@ -3379,6 +3382,10 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
             proto.profile = valueParam.proto
         }
 
+        @objc public func setPublicChatInfo(_ valueParam: SSKProtoPublicChatInfo) {
+            proto.publicChatInfo = valueParam.proto
+        }
+
         @objc public func build() throws -> SSKProtoDataMessage {
             return try SSKProtoDataMessage.parseProto(proto)
         }
@@ -3401,6 +3408,8 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
     @objc public let preview: [SSKProtoDataMessagePreview]
 
     @objc public let profile: SSKProtoDataMessageLokiProfile?
+
+    @objc public let publicChatInfo: SSKProtoPublicChatInfo?
 
     @objc public var body: String? {
         guard proto.hasBody else {
@@ -3449,7 +3458,8 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
                  quote: SSKProtoDataMessageQuote?,
                  contact: [SSKProtoDataMessageContact],
                  preview: [SSKProtoDataMessagePreview],
-                 profile: SSKProtoDataMessageLokiProfile?) {
+                 profile: SSKProtoDataMessageLokiProfile?,
+                 publicChatInfo: SSKProtoPublicChatInfo?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -3457,6 +3467,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         self.contact = contact
         self.preview = preview
         self.profile = profile
+        self.publicChatInfo = publicChatInfo
     }
 
     @objc
@@ -3494,6 +3505,11 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
             profile = try SSKProtoDataMessageLokiProfile.parseProto(proto.profile)
         }
 
+        var publicChatInfo: SSKProtoPublicChatInfo? = nil
+        if proto.hasPublicChatInfo {
+            publicChatInfo = try SSKProtoPublicChatInfo.parseProto(proto.publicChatInfo)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -3504,7 +3520,8 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
                                          quote: quote,
                                          contact: contact,
                                          preview: preview,
-                                         profile: profile)
+                                         profile: profile,
+                                         publicChatInfo: publicChatInfo)
         return result
     }
 
@@ -6210,6 +6227,97 @@ extension SSKProtoGroupDetails {
 
 extension SSKProtoGroupDetails.SSKProtoGroupDetailsBuilder {
     @objc public func buildIgnoringErrors() -> SSKProtoGroupDetails? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoPublicChatInfo
+
+@objc public class SSKProtoPublicChatInfo: NSObject {
+
+    // MARK: - SSKProtoPublicChatInfoBuilder
+
+    @objc public class func builder() -> SSKProtoPublicChatInfoBuilder {
+        return SSKProtoPublicChatInfoBuilder()
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoPublicChatInfoBuilder {
+        let builder = SSKProtoPublicChatInfoBuilder()
+        if hasServerID {
+            builder.setServerID(serverID)
+        }
+        return builder
+    }
+
+    @objc public class SSKProtoPublicChatInfoBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_PublicChatInfo()
+
+        @objc fileprivate override init() {}
+
+        @objc public func setServerID(_ valueParam: UInt64) {
+            proto.serverID = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoPublicChatInfo {
+            return try SSKProtoPublicChatInfo.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoPublicChatInfo.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_PublicChatInfo
+
+    @objc public var serverID: UInt64 {
+        return proto.serverID
+    }
+    @objc public var hasServerID: Bool {
+        return proto.hasServerID
+    }
+
+    private init(proto: SignalServiceProtos_PublicChatInfo) {
+        self.proto = proto
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoPublicChatInfo {
+        let proto = try SignalServiceProtos_PublicChatInfo(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_PublicChatInfo) throws -> SSKProtoPublicChatInfo {
+        // MARK: - Begin Validation Logic for SSKProtoPublicChatInfo -
+
+        // MARK: - End Validation Logic for SSKProtoPublicChatInfo -
+
+        let result = SSKProtoPublicChatInfo(proto: proto)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoPublicChatInfo {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoPublicChatInfo.SSKProtoPublicChatInfoBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoPublicChatInfo? {
         return try! self.build()
     }
 }

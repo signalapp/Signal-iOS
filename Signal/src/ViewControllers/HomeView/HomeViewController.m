@@ -680,7 +680,8 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
             [ThreadUtil deleteAllContent];
             [SSKEnvironment.shared.identityManager clearIdentityKey];
             [LKAPI clearRandomSnodePool];
-            [LKAPI stopLongPolling];
+            AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
+            [appDelegate stopLongPollerIfNeeded];
             [SSKEnvironment.shared.tsAccountManager resetForReregistration];
             UIViewController *rootViewController = [[OnboardingController new] initialViewController];
             OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:rootViewController];
