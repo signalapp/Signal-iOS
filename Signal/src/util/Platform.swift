@@ -1,9 +1,12 @@
-//  Created by Michael Kirk on 12/23/16.
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//
 
 import Foundation
 
-struct Platform {
+@objc
+class Platform: NSObject {
+    @objc
     static let isSimulator: Bool = {
         var isSim = false
         #if arch(i386) || arch(x86_64)

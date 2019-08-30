@@ -156,13 +156,14 @@ class ConversationPickerViewController: OWSViewController {
         let contactName = contactsManager.displayName(for: address,
                                                       transaction: transaction)
 
-        let contactImage = contactsManager.image(for: address,
-                                                 transaction: transaction)
+        let comparableName = contactsManager.comparableName(for: address,
+                                                            transaction: transaction)
 
         return ContactConversationItem(address: address,
                                        isBlocked: isBlocked,
                                        disappearingMessagesConfig: dmConfig,
-                                       contactName: contactName)
+                                       contactName: contactName,
+                                       comparableName: comparableName)
     }
 
     func buildConversationCollection() -> ConversationCollection {
@@ -170,13 +171,14 @@ class ConversationPickerViewController: OWSViewController {
             var recentItems: [RecentConversationItem] = []
             var contactItems: [ContactConversationItem] = []
             var groupItems: [GroupConversationItem] = []
-
+            var seenAddresses: Set<SignalServiceAddress> = Set()
             let maxRecentCount = 25
 
             let addThread = { (thread: TSThread) -> Void in
                 switch thread {
                 case let contactThread as TSContactThread:
                     let item = self.buildContactItem(contactThread.contactAddress, transaction: transaction)
+                    seenAddresses.insert(contactThread.contactAddress)
                     if recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         recentItems.append(recentItem)
@@ -203,6 +205,18 @@ class ConversationPickerViewController: OWSViewController {
             try! AnyThreadFinder().enumerateVisibleThreads(isArchived: true, transaction: transaction) { thread in
                 addThread(thread)
             }
+
+            SignalAccount.anyEnumerate(transaction: transaction) { signalAccount, _ in
+                let address = signalAccount.recipientAddress
+                guard !seenAddresses.contains(address) else {
+                    return
+                }
+                seenAddresses.insert(address)
+
+                let contactItem = self.buildContactItem(address, transaction: transaction)
+                contactItems.append(contactItem)
+            }
+            contactItems.sort()
 
             return ConversationCollection(contactConversations: contactItems,
                                           recentConversations: recentItems,

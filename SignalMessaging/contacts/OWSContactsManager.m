@@ -1096,6 +1096,34 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [[CNContactsUserDefaults sharedDefaults] sortOrder] == CNContactSortOrderGivenName;
 }
 
+- (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
+{
+    SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
+    if (signalAccount != nil) {
+        return [self comparableNameForSignalAccount:signalAccount];
+    }
+
+    NSString *_Nullable phoneNumber = signalAccount.recipientPhoneNumber;
+    if (phoneNumber != nil) {
+        Contact *_Nullable contact = self.allContactsMap[phoneNumber];
+        if (contact != nil) {
+            NSString *_Nullable comparableContactName;
+            if (self.shouldSortByGivenName) {
+                comparableContactName = contact.comparableNameFirstLast;
+            } else {
+                comparableContactName = contact.comparableNameLastFirst;
+            }
+
+            if (comparableContactName.length > 0) {
+                return comparableContactName;
+            }
+        }
+    }
+
+    // Fall back to non-contact display name.
+    return [self displayNameForAddress:address transaction:transaction];
+}
+
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
 {
     NSString *_Nullable name;

@@ -848,7 +848,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)showCameraView
 {
     [self ows_askForCameraPermissions:^(BOOL cameraGranted) {
-        if (!cameraGranted) {
+        if (!cameraGranted && !Platform.isSimulator) {
             OWSLogWarn(@"camera permission denied.");
             return;
         }
