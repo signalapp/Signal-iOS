@@ -350,6 +350,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 // This method should only be called from within a synchronized block.
 - (void)syncBlockListIfNecessary
 {
+    /*
     OWSAssertDebug(_blockedPhoneNumberSet);
 
     // If we haven't yet successfully synced the current "block list" changes,
@@ -376,6 +377,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
     OWSLogInfo(@"retrying sync of block list");
     [self sendBlockListSyncMessageWithPhoneNumbers:self.blockedPhoneNumbers groupIds:localBlockedGroupIds];
+     */
 }
 
 - (void)sendBlockListSyncMessageWithPhoneNumbers:(NSArray<NSString *> *)blockedPhoneNumbers

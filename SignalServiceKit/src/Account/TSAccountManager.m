@@ -711,6 +711,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         return [AnyPromise promiseWithValue:@(1)];
     }
 
+    return [AnyPromise promiseWithValue:@(1)];
+    
     NSDate *_Nullable updateRequestDate =
         [self.dbConnection objectForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
                            inCollection:TSAccountManager_UserAccountCollection];

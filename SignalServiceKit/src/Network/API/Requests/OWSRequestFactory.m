@@ -220,7 +220,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *path = [textSecureAccountsAPI stringByAppendingString:textSecureAttributesAPI];
 
     NSString *authKey = self.tsAccountManager.serverAuthToken;
-    OWSAssertDebug(authKey.length > 0);
+    // OWSAssertDebug(authKey.length > 0);
     NSString *_Nullable pin = [self.ows2FAManager pinCode];
 
     NSDictionary<NSString *, id> *accountAttributes = [self accountAttributesWithPin:pin authKey:authKey];
@@ -321,7 +321,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary<NSString *, id> *)accountAttributesWithPin:(nullable NSString *)pin
                                                    authKey:(NSString *)authKey
 {
-    OWSAssertDebug(authKey.length > 0);
+    // OWSAssertDebug(authKey.length > 0);
     uint32_t registrationId = [self.tsAccountManager getOrGenerateRegistrationId];
 
     BOOL isManualMessageFetchEnabled = self.tsAccountManager.isManualMessageFetchEnabled;
