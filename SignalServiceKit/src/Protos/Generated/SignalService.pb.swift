@@ -802,6 +802,16 @@ struct SignalServiceProtos_DataMessage {
   /// Clears the value of `profile`. Subsequent reads from it will return its default value.
   mutating func clearProfile() {_uniqueStorage()._profile = nil}
 
+  /// Loki: Internal public chat info
+  var publicChatInfo: SignalServiceProtos_PublicChatInfo {
+    get {return _storage._publicChatInfo ?? SignalServiceProtos_PublicChatInfo()}
+    set {_uniqueStorage()._publicChatInfo = newValue}
+  }
+  /// Returns true if `publicChatInfo` has been explicitly set.
+  var hasPublicChatInfo: Bool {return _storage._publicChatInfo != nil}
+  /// Clears the value of `publicChatInfo`. Subsequent reads from it will return its default value.
+  mutating func clearPublicChatInfo() {_uniqueStorage()._publicChatInfo = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Flags: SwiftProtobuf.Enum {
@@ -2492,6 +2502,28 @@ struct SignalServiceProtos_GroupDetails {
   fileprivate var _storage = _StorageClass.defaultInstance
 }
 
+/// Internal - DO NOT SEND
+struct SignalServiceProtos_PublicChatInfo {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  var serverID: UInt64 {
+    get {return _serverID ?? 0}
+    set {_serverID = newValue}
+  }
+  /// Returns true if `serverID` has been explicitly set.
+  var hasServerID: Bool {return self._serverID != nil}
+  /// Clears the value of `serverID`. Subsequent reads from it will return its default value.
+  mutating func clearServerID() {self._serverID = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _serverID: UInt64? = nil
+}
+
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "SignalServiceProtos"
@@ -3146,6 +3178,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     9: .same(proto: "contact"),
     10: .same(proto: "preview"),
     101: .same(proto: "profile"),
+    999: .same(proto: "publicChatInfo"),
   ]
 
   fileprivate class _StorageClass {
@@ -3160,6 +3193,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     var _contact: [SignalServiceProtos_DataMessage.Contact] = []
     var _preview: [SignalServiceProtos_DataMessage.Preview] = []
     var _profile: SignalServiceProtos_DataMessage.LokiProfile? = nil
+    var _publicChatInfo: SignalServiceProtos_PublicChatInfo? = nil
 
     static let defaultInstance = _StorageClass()
 
@@ -3177,6 +3211,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       _contact = source._contact
       _preview = source._preview
       _profile = source._profile
+      _publicChatInfo = source._publicChatInfo
     }
   }
 
@@ -3203,6 +3238,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         case 9: try decoder.decodeRepeatedMessageField(value: &_storage._contact)
         case 10: try decoder.decodeRepeatedMessageField(value: &_storage._preview)
         case 101: try decoder.decodeSingularMessageField(value: &_storage._profile)
+        case 999: try decoder.decodeSingularMessageField(value: &_storage._publicChatInfo)
         default: break
         }
       }
@@ -3244,6 +3280,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       if let v = _storage._profile {
         try visitor.visitSingularMessageField(value: v, fieldNumber: 101)
       }
+      if let v = _storage._publicChatInfo {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 999)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -3264,6 +3303,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
         if _storage._contact != rhs_storage._contact {return false}
         if _storage._preview != rhs_storage._preview {return false}
         if _storage._profile != rhs_storage._profile {return false}
+        if _storage._publicChatInfo != rhs_storage._publicChatInfo {return false}
         return true
       }
       if !storagesAreEqual {return false}
@@ -5109,6 +5149,35 @@ extension SignalServiceProtos_GroupDetails.Avatar: SwiftProtobuf.Message, SwiftP
   static func ==(lhs: SignalServiceProtos_GroupDetails.Avatar, rhs: SignalServiceProtos_GroupDetails.Avatar) -> Bool {
     if lhs._contentType != rhs._contentType {return false}
     if lhs._length != rhs._length {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_PublicChatInfo: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".PublicChatInfo"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "serverID"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularUInt64Field(value: &self._serverID)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._serverID {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_PublicChatInfo, rhs: SignalServiceProtos_PublicChatInfo) -> Bool {
+    if lhs._serverID != rhs._serverID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

@@ -7,7 +7,7 @@ public final class LokiGroupChatPoller : NSObject {
     private var hasStarted = false
     
     private let pollForNewMessagesInterval: TimeInterval = 4
-    private let pollForDeletedMessagesInterval: TimeInterval = 60
+    private let pollForDeletedMessagesInterval: TimeInterval = 20
     
     @objc(initForGroup:)
     public init(for group: LokiGroupChat) {
@@ -44,6 +44,10 @@ public final class LokiGroupChatPoller : NSObject {
                 x2.setTimestamp(message.timestamp)
                 x2.setGroup(try! x1.build())
                 x2.setBody(message.body)
+                let messageServerID = message.serverID!
+                let publicChatInfo = SSKProtoPublicChatInfo.builder()
+                publicChatInfo.setServerID(messageServerID)
+                x2.setPublicChatInfo(try! publicChatInfo.build())
                 let x3 = SSKProtoContent.builder()
                 x3.setDataMessage(try! x2.build())
                 let x4 = SSKProtoEnvelope.builder(type: .ciphertext, timestamp: message.timestamp)

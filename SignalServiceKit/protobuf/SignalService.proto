@@ -253,6 +253,7 @@ message DataMessage {
   repeated Contact            contact     = 9;
   repeated Preview            preview     = 10;
   optional LokiProfile        profile     = 101; // Loki: The current user's profile
+  optional PublicChatInfo     publicChatInfo = 999; // Loki: Internal public chat info
 }
 
 message NullMessage {
@@ -420,4 +421,9 @@ message GroupDetails {
   optional uint32 expireTimer = 6;
   optional string color       = 7;
   optional bool   blocked     = 8;
+}
+
+// Internal - DO NOT SEND
+message PublicChatInfo {
+    optional uint64 serverID = 1;
 }
