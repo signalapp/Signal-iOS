@@ -39,11 +39,11 @@ class PhotoPickerAssetItem: PhotoGridItem {
     var type: PhotoGridItemType {
         if asset.mediaType == .video {
             return .video
+        } else if #available(iOS 11, *), asset.playbackStyle == .imageAnimated {
+            return .animated
+        } else {
+            return  .photo
         }
-
-        // TODO show GIF badge?
-
-        return  .photo
     }
 
     func asyncThumbnail(completion: @escaping (UIImage?) -> Void) -> UIImage? {
