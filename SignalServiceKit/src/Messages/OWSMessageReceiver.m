@@ -542,12 +542,12 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Unexpectedly large message.");
     }
 
-    if (SSKFeatureFlags.storageMode != StorageModeYdb) {
-        // We *could* use this processing Queue for Yap *and* GRDB
-        [self.messageDecryptJobQueue enqueueEnvelopeData:envelopeData];
-    } else {
+    if (SSKFeatureFlags.storageMode == StorageModeYdb || SSKFeatureFlags.storageMode == StorageModeYdbTests) {
         [self.yapProcessingQueue enqueueEnvelopeData:envelopeData];
         [self.yapProcessingQueue drainQueue];
+    } else {
+        // We *could* use this processing Queue for Yap *and* GRDB
+        [self.messageDecryptJobQueue enqueueEnvelopeData:envelopeData];
     }
 }
 

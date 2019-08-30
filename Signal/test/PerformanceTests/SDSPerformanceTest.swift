@@ -18,9 +18,6 @@ class SDSPerformanceTest: PerformanceBaseTest {
 
     override func setUp() {
         super.setUp()
-        // Logging queries is expensive and affects the results of this test.
-        // This is restored in tearDown().
-        SDSDatabaseStorage.shouldLogDBQueries = false
         storageCoordinator.useGRDBForTests()
     }
 

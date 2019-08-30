@@ -4,7 +4,7 @@
 
 import Foundation
 
-#if DEBUG
+#if TESTABLE_BUILD
 /// A helper for tests which can initializes Signal Protocol sessions
 /// and then encrypt and decrypt messages for those sessions.
 public struct TestProtocolRunner {
@@ -171,6 +171,7 @@ public struct LocalSignalClient: SignalClient {
     }
 }
 
+var envelopeId: UInt64 = 0
 public struct FakeService {
     public let localClient: LocalSignalClient
     public let runner: TestProtocolRunner
@@ -185,8 +186,8 @@ public struct FakeService {
     }
 
     public func envelopeBuilder(fromSenderClient senderClient: SignalClient) throws -> SSKProtoEnvelope.SSKProtoEnvelopeBuilder {
-        let now = NSDate.ows_millisecondTimeStamp()
-        let builder = SSKProtoEnvelope.builder(timestamp: now)
+        envelopeId += 1
+        let builder = SSKProtoEnvelope.builder(timestamp: envelopeId)
         builder.setType(.ciphertext)
         builder.setSourceDevice(senderClient.deviceId)
 
@@ -213,9 +214,8 @@ public struct FakeService {
     }
 
     public func buildContentData() throws -> Data {
-        let messageText = "Those who stands for nothing will fall for anything"
         let dataMessageBuilder = SSKProtoDataMessage.builder()
-        dataMessageBuilder.setBody(messageText)
+        dataMessageBuilder.setBody(CommonGenerator.paragraph)
 
         let contentBuilder = SSKProtoContent.builder()
         contentBuilder.setDataMessage(try dataMessageBuilder.build())
