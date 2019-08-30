@@ -5,14 +5,14 @@
 import Foundation
 
 @objc
-class AnySignalRecipientFinder: NSObject {
+public class AnySignalRecipientFinder: NSObject {
     let grdbAdapter = GRDBSignalRecipientFinder()
     let yapdbAdapter = YAPDBSignalServiceAddressIndex()
 }
 
 extension AnySignalRecipientFinder {
     @objc(signalRecipientForAddress:transaction:)
-    func signalRecipient(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
+    public func signalRecipient(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
         switch transaction.readTransaction {
         case .grdbRead(let transaction):
             return grdbAdapter.signalRecipient(for: address, transaction: transaction)
