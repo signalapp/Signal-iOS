@@ -320,6 +320,12 @@
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Mövcud üzvlər səni yenidən qrupa əlavə edə bilərlər.";
 
+/* Action sheet that will block an unknown user. */
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Kilidlə";
+
+/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@ qrupunu kilidləyirsən?";
+
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Kilidlənmiş istifadəçi sənə zəng edə, yaxud da mesaj göndərə bilməyəcək.`";
 
@@ -710,11 +716,20 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Əlaqələrə əlavə et";
 
+/* Message shown in conversation view that offers to share your profile with a user. */
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Bu İstifadəçi ilə Profilini Paylaş";
+
+/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Bu istifadəçi sənin əlaqə siyahında deyil.";
+
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Daha Çox Mesaj Yüklənir...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Daha Çoxu Üçün Kliklə";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Bu İstifadəçini Kilidlə";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Sessiyanı sıfırlamaqla gələcəkdə %@ -dan ismarış ala biləcəksiniz, amma artıq oxunulmayan ismarışları görə bilməyəcəksiniz.";
