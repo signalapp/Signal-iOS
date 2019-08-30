@@ -141,11 +141,11 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    NSString *localNumber = [TSAccountManager localNumber];
     if (signalAccount.recipientAddress.isLocalAddress) {
         return YES;
     }
 
+    NSString *localNumber = [TSAccountManager localNumber];
     for (PhoneNumber *phoneNumber in signalAccount.contact.parsedPhoneNumbers) {
         if ([[phoneNumber toE164] isEqualToString:localNumber]) {
             return YES;

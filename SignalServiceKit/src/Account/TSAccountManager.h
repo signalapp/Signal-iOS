@@ -55,15 +55,23 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
  *
  *  @return E164 formatted phone number
  */
-+ (nullable NSString *)localNumber;
-- (nullable NSString *)localNumber;
+@property (readonly, nullable) NSString *localNumber;
+@property (readonly, nullable, class) NSString *localNumber;
 
-@property (readonly, nullable) NSUUID *uuid;
-@property (class, readonly, nullable) SignalServiceAddress *localAddress;
+- (nullable NSString *)localNumberWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(localNumber(with:));
+
+@property (readonly, nullable) NSUUID *localUuid;
+
+- (nullable NSUUID *)localUuidWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(uuid(with:));
+
+@property (readonly, nullable, class) SignalServiceAddress *localAddress;
 @property (readonly, nullable) SignalServiceAddress *localAddress;
 
-// A variant of localAddress that never opens a "sneaky" transaction.
-- (nullable SignalServiceAddress *)storedOrCachedLocalAddress:(SDSAnyReadTransaction *)transaction;
++ (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(localAddress(with:));
+- (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(localAddress(with:));
 
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,

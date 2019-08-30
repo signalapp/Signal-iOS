@@ -639,14 +639,15 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             }
         }];
 
-        NSString *_Nullable localNumber = [TSAccountManager localNumber];
+        SignalServiceAddress *_Nullable localAddress = [self.tsAccountManager localAddress];
+        NSString *_Nullable localNumber = localAddress.phoneNumber;
         if (localNumber) {
             [whitelistedPhoneNumbers removeObject:localNumber];
         } else {
             OWSFailDebug(@"Missing localNumber");
         }
 
-        NSString *_Nullable localUUID = [[TSAccountManager sharedInstance] uuid].UUIDString;
+        NSString *_Nullable localUUID = localAddress.uuidString;
         if (localUUID) {
             [whitelistedUUIDS removeObject:localUUID];
         } else {
@@ -700,8 +701,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // Rotate the stored profile key.
         AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
             [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                oldAvatarData =
-                    [self profileAvatarDataForAddress:self.tsAccountManager.localAddress transaction:transaction];
+                SignalServiceAddress *_Nullable localAddress =
+                    [self.tsAccountManager localAddressWithTransaction:transaction];
+                oldAvatarData = [self profileAvatarDataForAddress:localAddress transaction:transaction];
 
                 [self.localUserProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
                                                 transaction:transaction
