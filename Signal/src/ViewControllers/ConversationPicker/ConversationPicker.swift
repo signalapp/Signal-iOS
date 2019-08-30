@@ -156,10 +156,14 @@ class ConversationPickerViewController: OWSViewController {
         let contactName = contactsManager.displayName(for: address,
                                                       transaction: transaction)
 
+        let comparableName = contactsManager.comparableName(for: address,
+                                                            transaction: transaction)
+
         return ContactConversationItem(address: address,
                                        isBlocked: isBlocked,
                                        disappearingMessagesConfig: dmConfig,
-                                       contactName: contactName)
+                                       contactName: contactName,
+                                       comparableName: comparableName)
     }
 
     func buildConversationCollection() -> ConversationCollection {
@@ -202,9 +206,8 @@ class ConversationPickerViewController: OWSViewController {
                 addThread(thread)
             }
 
-            SignalAccount.anyEnumerate(transaction: transaction) { account, _ in
-                let address = account.recipientAddress
-
+            SignalAccount.anyEnumerate(transaction: transaction) { signalAccount, _ in
+                let address = signalAccount.recipientAddress
                 guard !seenAddresses.contains(address) else {
                     return
                 }
@@ -213,7 +216,7 @@ class ConversationPickerViewController: OWSViewController {
                 let contactItem = self.buildContactItem(address, transaction: transaction)
                 contactItems.append(contactItem)
             }
-            contactItems.sort { $0.contactName < $1.contactName }
+            contactItems.sort()
 
             return ConversationCollection(contactConversations: contactItems,
                                           recentConversations: recentItems,

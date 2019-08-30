@@ -61,6 +61,17 @@ struct ContactConversationItem {
     let isBlocked: Bool
     let disappearingMessagesConfig: OWSDisappearingMessagesConfiguration?
     let contactName: String
+    let comparableName: String
+}
+
+extension ContactConversationItem: Comparable {
+    static var contactsManager: OWSContactsManager {
+        return Environment.shared.contactsManager
+    }
+
+    public static func < (lhs: ContactConversationItem, rhs: ContactConversationItem) -> Bool {
+        return lhs.comparableName < rhs.comparableName
+    }
 }
 
 extension ContactConversationItem: ConversationItem {
