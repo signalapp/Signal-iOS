@@ -156,9 +156,6 @@ class ConversationPickerViewController: OWSViewController {
         let contactName = contactsManager.displayName(for: address,
                                                       transaction: transaction)
 
-        let contactImage = contactsManager.image(for: address,
-                                                 transaction: transaction)
-
         return ContactConversationItem(address: address,
                                        isBlocked: isBlocked,
                                        disappearingMessagesConfig: dmConfig,
