@@ -167,13 +167,14 @@ class ConversationPickerViewController: OWSViewController {
             var recentItems: [RecentConversationItem] = []
             var contactItems: [ContactConversationItem] = []
             var groupItems: [GroupConversationItem] = []
-
+            var seenAddresses: Set<SignalServiceAddress> = Set()
             let maxRecentCount = 25
 
             let addThread = { (thread: TSThread) -> Void in
                 switch thread {
                 case let contactThread as TSContactThread:
                     let item = self.buildContactItem(contactThread.contactAddress, transaction: transaction)
+                    seenAddresses.insert(contactThread.contactAddress)
                     if recentItems.count < maxRecentCount {
                         let recentItem = RecentConversationItem(backingItem: .contact(item))
                         recentItems.append(recentItem)
@@ -200,6 +201,19 @@ class ConversationPickerViewController: OWSViewController {
             try! AnyThreadFinder().enumerateVisibleThreads(isArchived: true, transaction: transaction) { thread in
                 addThread(thread)
             }
+
+            SignalAccount.anyEnumerate(transaction: transaction) { account, _ in
+                let address = account.recipientAddress
+
+                guard !seenAddresses.contains(address) else {
+                    return
+                }
+                seenAddresses.insert(address)
+
+                let contactItem = self.buildContactItem(address, transaction: transaction)
+                contactItems.append(contactItem)
+            }
+            contactItems.sort { $0.contactName < $1.contactName }
 
             return ConversationCollection(contactConversations: contactItems,
                                           recentConversations: recentItems,
