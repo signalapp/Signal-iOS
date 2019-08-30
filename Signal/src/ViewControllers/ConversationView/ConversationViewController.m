@@ -2792,6 +2792,11 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
+    if (self.peek) {
+        self.scrollDownButton.hidden = YES;
+        return;
+    }
+
     BOOL shouldShowScrollDownButton = NO;
     CGFloat scrollSpaceToBottom = (self.safeContentHeight + self.collectionView.contentInset.bottom
         - (self.collectionView.contentOffset.y + self.collectionView.frame.size.height));

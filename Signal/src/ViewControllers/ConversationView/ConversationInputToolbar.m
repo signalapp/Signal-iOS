@@ -1480,7 +1480,11 @@ const CGFloat kMaxTextViewHeight = 98;
     // our custom inputViews and in general to present it faster
     // We disable animations so this preload is invisible to the
     // user.
-    if (!self.inputTextView.isFirstResponder) {
+    //
+    // We only measure the keyboard if the toolbar isn't hidden.
+    // If it's hidden, we're likely here from a peek interaction
+    // and don't want to show the keyboard. We'll measure it later.
+    if (!self.inputTextView.isFirstResponder && !self.isHidden) {
 
         // Flag that we're measuring the system keyboard's height, so
         // even if though it won't be the first responder by the time
