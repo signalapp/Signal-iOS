@@ -598,7 +598,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return NO;
 }
 
-// GRDB TODO: Remove this override.
+// POST GRDB TODO: Remove this override.
 - (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     _storedMessageState = self.messageState;
@@ -610,14 +610,18 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 {
     [super anyWillInsertWithTransaction:transaction];
 
-    _storedMessageState = self.messageState;
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        _storedMessageState = self.messageState;
+    }
 }
 
 - (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyWillUpdateWithTransaction:transaction];
 
-    _storedMessageState = self.messageState;
+    if (transaction.transitional_yapWriteTransaction == nil) {
+        _storedMessageState = self.messageState;
+    }
 }
 
 - (BOOL)shouldStartExpireTimerWithTransaction:(SDSAnyReadTransaction *)transaction

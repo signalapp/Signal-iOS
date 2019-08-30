@@ -3489,7 +3489,7 @@ typedef enum : NSUInteger {
     [OWSReadReceiptManager.sharedManager markAsReadLocallyBeforeSortId:self.lastVisibleSortId thread:self.thread];
 }
 
-// GRBD TODO: Revisit this method.
+// GRDB TODO: Revisit this method.
 - (void)updateGroupModelTo:(TSGroupModel *)newGroupModel successCompletion:(void (^_Nullable)(void))successCompletion
 {
     __block TSGroupThread *groupThread;

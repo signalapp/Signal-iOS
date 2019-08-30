@@ -599,7 +599,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
-    // GRDB TODO: We could pass readTimestamp and sortId through to the GRDB query.
+    // POST GRDB TODO: We could pass readTimestamp and sortId through to the GRDB query.
     NSMutableArray<id<OWSReadTracking>> *newlyReadList = [NSMutableArray new];
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
     NSError *error;

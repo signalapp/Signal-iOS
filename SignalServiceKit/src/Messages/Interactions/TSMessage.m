@@ -517,7 +517,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 {
     OWSAssertDebug(transaction);
 
-    // GRDB TODO: Ensure that this is updated when we download incoming attachments.
     _storedShouldStartExpireTimer = [self shouldStartExpireTimerWithTransaction:transaction];
 }
 

@@ -607,7 +607,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        // GRDB TODO: After GRDB migration, backup MiscCollectionsToBackup().
+        // POST GRDB TODO: After GRDB migration, backup MiscCollectionsToBackup().
     }];
 
     if (aborted || self.isComplete) {
