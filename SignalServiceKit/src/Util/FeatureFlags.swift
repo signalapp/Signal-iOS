@@ -87,24 +87,16 @@ public class FeatureFlags: NSObject {
     @objc
     public static let conversationSearch = false
 
-    // This flag supercedes useGRDB.
     @objc
     public static var storageMode: StorageMode {
-        if CurrentAppContext().isRunningTests {
-            // We should be running the tests using both .ydbTests or .grdbTests.
-            return .grdbTests
-        } else if build.includes(.dev) {
-            return .grdbThrowawayIfMigrating
-        } else {
-            return .ydb
-        }
+        return .ydb
     }
 
-    // This value should eventually be .fail except for production builds
-    // where it should be .failDebug.
+    // Don't enable this flag in production.
+    // At least, not yet.
     @objc
     public static var storageModeStrictness: StorageModeStrictness {
-        return .failDebug
+        return build.includes(.beta) ? .fail : .failDebug
     }
 
     @objc
