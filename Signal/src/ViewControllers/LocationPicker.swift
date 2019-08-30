@@ -48,6 +48,16 @@ public class LocationPicker: UIViewController {
         return searchBar
     }()
 
+    private let supportsTranslucentBars: Bool = {
+        // On iOS 13.1 and later, translucent search bars
+        // within the nav item's searchController work correctly.
+        // Prior to that, they have a weird behavior when the
+        // search bar becomes first responder that we want to avoid.
+        guard #available(iOS 13.1, *) else { return false }
+
+        return true
+    }()
+
     private static let SearchTermKey = "SearchTermKey"
     private var searchTimer: Timer?
 
@@ -94,7 +104,7 @@ public class LocationPicker: UIViewController {
 
         OWSSearchBar.applyTheme(to: searchBar)
 
-        searchBar.isTranslucent = false
+        searchBar.isTranslucent = supportsTranslucentBars
 
         // When the search bar isn't translucent, it doesn't allow
         // setting the textField's backgroundColor. Instead, we need
@@ -127,7 +137,7 @@ public class LocationPicker: UIViewController {
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.navigationBar.isTranslucent = false
+        navigationController?.navigationBar.isTranslucent = supportsTranslucentBars
     }
 
     public override func viewWillDisappear(_ animated: Bool) {

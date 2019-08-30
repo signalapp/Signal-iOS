@@ -161,6 +161,7 @@ class RecentPhotoCell: UICollectionViewCell {
     static let reuseIdentifier = "RecentPhotoCell"
 
     let imageView = UIImageView()
+    let contentTypeBadgeView = UIImageView()
     let loadingIndicator = UIActivityIndicatorView(style: .whiteLarge)
 
     var item: PhotoGridItem?
@@ -175,6 +176,11 @@ class RecentPhotoCell: UICollectionViewCell {
 
         contentView.addSubview(imageView)
         imageView.autoPinEdgesToSuperviewEdges()
+
+        imageView.addSubview(contentTypeBadgeView)
+        contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 3)
+        contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
+        contentTypeBadgeView.autoSetDimensions(to: CGSize(width: 18, height: 12))
 
         loadingIndicator.layer.shadowColor = UIColor.black.cgColor
         loadingIndicator.layer.shadowOffset = CGSize(width: 0, height: 0)
@@ -198,12 +204,29 @@ class RecentPhotoCell: UICollectionViewCell {
         }
     }
 
+    var contentTypeBadgeImage: UIImage? {
+        get { return contentTypeBadgeView.image }
+        set {
+            contentTypeBadgeView.image = newValue
+            contentTypeBadgeView.isHidden = newValue == nil
+        }
+    }
+
     public func configure(item: PhotoGridItem, isLoading: Bool) {
         self.item = item
 
         image = item.asyncThumbnail { [weak self] image in
             guard let self = self, let currentItem = self.item, currentItem === item else { return }
             self.image = image
+        }
+
+        switch item.type {
+        case .video:
+            self.contentTypeBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_video")
+        case .animated:
+            self.contentTypeBadgeImage = #imageLiteral(resourceName: "ic_gallery_badge_gif")
+        case .photo:
+            self.contentTypeBadgeImage = nil
         }
 
         if isLoading { startLoading() }
