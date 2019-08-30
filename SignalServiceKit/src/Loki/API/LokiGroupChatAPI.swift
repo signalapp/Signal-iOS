@@ -28,13 +28,13 @@ public final class LokiGroupChatAPI : NSObject {
     
     // MARK: Error
     public enum Error : Swift.Error {
-        case tokenParsingFailed, tokenDecryptionFailed, messageParsingFailed
+        case tokenParsingFailed, tokenDecryptionFailed, messageParsingFailed, deletionParsingFailed
     }
     
     // MARK: Database
     private static let authTokenCollection = "LokiGroupChatAuthTokenCollection"
     private static let lastMessageServerIDCollection = "LokiGroupChatLastMessageServerIDCollection"
-    private static let firstMessageServerIDCollection = "LokiGroupChatFirstMessageServerIDCollection"
+    private static let lastDeletionServerIDCollection = "LokiGroupChatLastDeletionServerIDCollection"
     
     private static func getAuthTokenFromDatabase(for server: String) -> String? {
         var result: String? = nil
@@ -64,17 +64,17 @@ public final class LokiGroupChatAPI : NSObject {
         }
     }
     
-    private static func getFirstMessageServerID(for group: UInt64, on server: String) -> UInt? {
+    private static func getLastDeletionServerID(for group: UInt64, on server: String) -> UInt? {
         var result: UInt? = nil
         storage.dbReadConnection.read { transaction in
-            result = transaction.object(forKey: "\(server).\(group)", inCollection: firstMessageServerIDCollection) as! UInt?
+            result = transaction.object(forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection) as! UInt?
         }
         return result
     }
     
-    private static func setFirstMessageServerID(for group: UInt64, on server: String, to newValue: UInt64) {
+    private static func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64) {
         storage.dbReadWriteConnection.readWrite { transaction in
-            transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: firstMessageServerIDCollection)
+            transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
         }
     }
     
@@ -147,9 +147,7 @@ public final class LokiGroupChatAPI : NSObject {
                 }
                 guard hexEncodedPublicKey != userHexEncodedPublicKey else { return nil }
                 let lastMessageServerID = getLastMessageServerID(for: group, on: server)
-                let firstMessageServerID = getFirstMessageServerID(for: group, on: server)
                 if serverID > (lastMessageServerID ?? 0) { setLastMessageServerID(for: group, on: server, to: serverID) }
-                if serverID < (firstMessageServerID ?? UInt.max) { setFirstMessageServerID(for: group, on: server, to: serverID) }
                 return LokiGroupMessage(serverID: serverID, hexEncodedPublicKey: hexEncodedPublicKey, displayName: displayName, body: body, type: publicChatMessageType, timestamp: timestamp)
             }
         }
@@ -186,22 +184,27 @@ public final class LokiGroupChatAPI : NSObject {
     
     public static func getDeletedMessageServerIDs(for group: UInt64, on server: String) -> Promise<[UInt64]> {
         print("[Loki] Getting deleted messages for group chat with ID: \(group) on server: \(server).")
-        let firstMessageServerID = getFirstMessageServerID(for: group, on: server) ?? 0
-        let queryParameters = "is_deleted=true&since_id=\(firstMessageServerID)"
-        let url = URL(string: "\(server)/channels/\(group)/messages?\(queryParameters)")!
+        let queryParameters: String
+        if let lastDeletionServerID = getLastDeletionServerID(for: group, on: server) {
+            queryParameters = "since_id=\(lastDeletionServerID)"
+        } else {
+            queryParameters = "count=\(fallbackBatchCount)"
+        }
+        let url = URL(string: "\(server)/loki/v1/channel/\(group)/deletes?\(queryParameters)")!
         let request = TSRequest(url: url)
         return TSNetworkManager.shared().makePromise(request: request).map { $0.responseObject }.map { rawResponse in
-            guard let json = rawResponse as? JSON, let rawMessages = json["data"] as? [JSON] else {
+            guard let json = rawResponse as? JSON, let deletions = json["data"] as? [JSON] else {
                 print("[Loki] Couldn't parse deleted messages for group chat with ID: \(group) on server: \(server) from: \(rawResponse).")
-                throw Error.messageParsingFailed
+                throw Error.deletionParsingFailed
             }
-            return rawMessages.flatMap { message in
-                guard let serverID = message["id"] as? UInt64 else {
-                    print("[Loki] Couldn't parse deleted message for group chat with ID: \(group) on server: \(server) from: \(message).")
+            return deletions.flatMap { deletion in
+                guard let serverID = deletion["id"] as? UInt64, let messageServerID = deletion["message_id"] as? UInt64 else {
+                    print("[Loki] Couldn't parse deleted message for group chat with ID: \(group) on server: \(server) from: \(deletion).")
                     return nil
                 }
-                let isDeleted = (message["is_deleted"] as? Bool ?? false)
-                return isDeleted ? serverID : nil
+                let lastDeletionServerID = getLastDeletionServerID(for: group, on: server)
+                if serverID > (lastDeletionServerID ?? 0) { setLastDeletionServerID(for: group, on: server, to: serverID) }
+                return messageServerID
             }
         }
     }

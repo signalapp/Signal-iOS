@@ -7,7 +7,7 @@ public final class LokiGroupChatPoller : NSObject {
     private var hasStarted = false
     
     private let pollForNewMessagesInterval: TimeInterval = 4
-    private let pollForDeletedMessagesInterval: TimeInterval = 32 * 60
+    private let pollForDeletedMessagesInterval: TimeInterval = 60
     
     @objc(initForGroup:)
     public init(for group: LokiGroupChat) {
