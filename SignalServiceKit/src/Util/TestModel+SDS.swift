@@ -26,10 +26,13 @@ public struct TestModelRecord: SDSRecord {
     public let uniqueId: String
 
     // Base class properties
+    public let dateValue: Date?
     public let doubleValue: Double
     public let floatValue: Float
     public let int64Value: Int64
     public let nsIntegerValue: Int
+    public let nsNumberValueUsingInt64: Int64?
+    public let nsNumberValueUsingUInt64: UInt64?
     public let nsuIntegerValue: UInt
     public let uint64Value: UInt64
 
@@ -37,10 +40,13 @@ public struct TestModelRecord: SDSRecord {
         case id
         case recordType
         case uniqueId
+        case dateValue
         case doubleValue
         case floatValue
         case int64Value
         case nsIntegerValue
+        case nsNumberValueUsingInt64
+        case nsNumberValueUsingUInt64
         case nsuIntegerValue
         case uint64Value
     }
@@ -61,12 +67,15 @@ public extension TestModelRecord {
         id = row[0]
         recordType = row[1]
         uniqueId = row[2]
-        doubleValue = row[3]
-        floatValue = row[4]
-        int64Value = row[5]
-        nsIntegerValue = row[6]
-        nsuIntegerValue = row[7]
-        uint64Value = row[8]
+        dateValue = row[3]
+        doubleValue = row[4]
+        floatValue = row[5]
+        int64Value = row[6]
+        nsIntegerValue = row[7]
+        nsNumberValueUsingInt64 = row[8]
+        nsNumberValueUsingUInt64 = row[9]
+        nsuIntegerValue = row[10]
+        uint64Value = row[11]
     }
 }
 
@@ -98,18 +107,24 @@ extension TestModel {
         case .testModel:
 
             let uniqueId: String = record.uniqueId
+            let dateValue: Date? = record.dateValue
             let doubleValue: Double = record.doubleValue
             let floatValue: Float = record.floatValue
             let int64Value: Int64 = record.int64Value
             let nsIntegerValue: Int = record.nsIntegerValue
+            let nsNumberValueUsingInt64: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.nsNumberValueUsingInt64, name: "nsNumberValueUsingInt64", conversion: { NSNumber(value: $0) })
+            let nsNumberValueUsingUInt64: NSNumber? = SDSDeserialization.optionalNumericAsNSNumber(record.nsNumberValueUsingUInt64, name: "nsNumberValueUsingUInt64", conversion: { NSNumber(value: $0) })
             let nsuIntegerValue: UInt = record.nsuIntegerValue
             let uint64Value: UInt64 = record.uint64Value
 
             return TestModel(uniqueId: uniqueId,
+                             dateValue: dateValue,
                              doubleValue: doubleValue,
                              floatValue: floatValue,
                              int64Value: int64Value,
                              nsIntegerValue: nsIntegerValue,
+                             nsNumberValueUsingInt64: nsNumberValueUsingInt64,
+                             nsNumberValueUsingUInt64: nsNumberValueUsingUInt64,
                              nsuIntegerValue: nsuIntegerValue,
                              uint64Value: uint64Value)
 
@@ -156,12 +171,15 @@ extension TestModelSerializer {
     static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
     static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, columnIndex: 2)
     // Base class properties
-    static let doubleValueColumn = SDSColumnMetadata(columnName: "doubleValue", columnType: .double, columnIndex: 3)
-    static let floatValueColumn = SDSColumnMetadata(columnName: "floatValue", columnType: .double, columnIndex: 4)
-    static let int64ValueColumn = SDSColumnMetadata(columnName: "int64Value", columnType: .int64, columnIndex: 5)
-    static let nsIntegerValueColumn = SDSColumnMetadata(columnName: "nsIntegerValue", columnType: .int64, columnIndex: 6)
-    static let nsuIntegerValueColumn = SDSColumnMetadata(columnName: "nsuIntegerValue", columnType: .int64, columnIndex: 7)
-    static let uint64ValueColumn = SDSColumnMetadata(columnName: "uint64Value", columnType: .int64, columnIndex: 8)
+    static let dateValueColumn = SDSColumnMetadata(columnName: "dateValue", columnType: .int64, isOptional: true, columnIndex: 3)
+    static let doubleValueColumn = SDSColumnMetadata(columnName: "doubleValue", columnType: .double, columnIndex: 4)
+    static let floatValueColumn = SDSColumnMetadata(columnName: "floatValue", columnType: .double, columnIndex: 5)
+    static let int64ValueColumn = SDSColumnMetadata(columnName: "int64Value", columnType: .int64, columnIndex: 6)
+    static let nsIntegerValueColumn = SDSColumnMetadata(columnName: "nsIntegerValue", columnType: .int64, columnIndex: 7)
+    static let nsNumberValueUsingInt64Column = SDSColumnMetadata(columnName: "nsNumberValueUsingInt64", columnType: .int64, isOptional: true, columnIndex: 8)
+    static let nsNumberValueUsingUInt64Column = SDSColumnMetadata(columnName: "nsNumberValueUsingUInt64", columnType: .int64, isOptional: true, columnIndex: 9)
+    static let nsuIntegerValueColumn = SDSColumnMetadata(columnName: "nsuIntegerValue", columnType: .int64, columnIndex: 10)
+    static let uint64ValueColumn = SDSColumnMetadata(columnName: "uint64Value", columnType: .int64, columnIndex: 11)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -171,10 +189,13 @@ extension TestModelSerializer {
         idColumn,
         recordTypeColumn,
         uniqueIdColumn,
+        dateValueColumn,
         doubleValueColumn,
         floatValueColumn,
         int64ValueColumn,
         nsIntegerValueColumn,
+        nsNumberValueUsingInt64Column,
+        nsNumberValueUsingUInt64Column,
         nsuIntegerValueColumn,
         uint64ValueColumn
         ])
@@ -530,13 +551,16 @@ class TestModelSerializer: SDSSerializer {
         let uniqueId: String = model.uniqueId
 
         // Base class properties
+        let dateValue: Date? = model.dateValue
         let doubleValue: Double = model.doubleValue
         let floatValue: Float = model.floatValue
         let int64Value: Int64 = model.int64Value
         let nsIntegerValue: Int = model.nsIntegerValue
+        let nsNumberValueUsingInt64: Int64? = archiveOptionalNSNumber(model.nsNumberValueUsingInt64, conversion: { $0.int64Value })
+        let nsNumberValueUsingUInt64: UInt64? = archiveOptionalNSNumber(model.nsNumberValueUsingUInt64, conversion: { $0.uint64Value })
         let nsuIntegerValue: UInt = model.nsuIntegerValue
         let uint64Value: UInt64 = model.uint64Value
 
-        return TestModelRecord(id: id, recordType: recordType, uniqueId: uniqueId, doubleValue: doubleValue, floatValue: floatValue, int64Value: int64Value, nsIntegerValue: nsIntegerValue, nsuIntegerValue: nsuIntegerValue, uint64Value: uint64Value)
+        return TestModelRecord(id: id, recordType: recordType, uniqueId: uniqueId, dateValue: dateValue, doubleValue: doubleValue, floatValue: floatValue, int64Value: int64Value, nsIntegerValue: nsIntegerValue, nsNumberValueUsingInt64: nsNumberValueUsingInt64, nsNumberValueUsingUInt64: nsNumberValueUsingUInt64, nsuIntegerValue: nsuIntegerValue, uint64Value: uint64Value)
     }
 }

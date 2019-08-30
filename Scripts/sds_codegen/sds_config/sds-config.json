@@ -9,7 +9,9 @@
 		"TSAttachmentStream.cachedImageHeight": "Double",
 		"TSAttachmentStream.isValidImageCached": "Bool",
 		"TSAttachmentStream.isValidVideoCached": "Bool",
-		"OWSBackupFragment.uncompressedDataLength": "UInt64"
+		"OWSBackupFragment.uncompressedDataLength": "UInt64",
+		"TestModel.nsNumberValueUsingInt64": "Int64",
+		"TestModel.nsNumberValueUsingUInt64": "UInt64"
 	},
 	"properties_to_ignore": [
 		"OWSDynamicOutgoingMessage.block",

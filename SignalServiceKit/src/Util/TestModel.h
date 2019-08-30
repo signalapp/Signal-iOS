@@ -16,6 +16,9 @@ NSUInteger NSUIntegerMaxValue(void);
 @property (nonatomic) int64_t int64Value;
 @property (nonatomic) NSUInteger nsuIntegerValue;
 @property (nonatomic) NSInteger nsIntegerValue;
+@property (nonatomic, nullable) NSNumber *nsNumberValueUsingInt64;
+@property (nonatomic, nullable) NSNumber *nsNumberValueUsingUInt64;
+@property (nonatomic, nullable) NSDate *dateValue;
 
 - (instancetype)init;
 
@@ -27,13 +30,16 @@ NSUInteger NSUIntegerMaxValue(void);
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       dateValue:(nullable NSDate *)dateValue
                      doubleValue:(double)doubleValue
                       floatValue:(float)floatValue
                       int64Value:(int64_t)int64Value
                   nsIntegerValue:(NSInteger)nsIntegerValue
+         nsNumberValueUsingInt64:(nullable NSNumber *)nsNumberValueUsingInt64
+        nsNumberValueUsingUInt64:(nullable NSNumber *)nsNumberValueUsingUInt64
                  nsuIntegerValue:(NSUInteger)nsuIntegerValue
                      uint64Value:(uint64_t)uint64Value
-NS_SWIFT_NAME(init(uniqueId:doubleValue:floatValue:int64Value:nsIntegerValue:nsuIntegerValue:uint64Value:));
+NS_SWIFT_NAME(init(uniqueId:dateValue:doubleValue:floatValue:int64Value:nsIntegerValue:nsNumberValueUsingInt64:nsNumberValueUsingUInt64:nsuIntegerValue:uint64Value:));
 
 // clang-format on
 

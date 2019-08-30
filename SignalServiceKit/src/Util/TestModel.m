@@ -42,10 +42,13 @@ NSUInteger NSUIntegerMaxValue(void)
 // clang-format off
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       dateValue:(nullable NSDate *)dateValue
                      doubleValue:(double)doubleValue
                       floatValue:(float)floatValue
                       int64Value:(int64_t)int64Value
                   nsIntegerValue:(NSInteger)nsIntegerValue
+         nsNumberValueUsingInt64:(nullable NSNumber *)nsNumberValueUsingInt64
+        nsNumberValueUsingUInt64:(nullable NSNumber *)nsNumberValueUsingUInt64
                  nsuIntegerValue:(NSUInteger)nsuIntegerValue
                      uint64Value:(uint64_t)uint64Value
 {
@@ -55,10 +58,13 @@ NSUInteger NSUIntegerMaxValue(void)
         return self;
     }
 
+    _dateValue = dateValue;
     _doubleValue = doubleValue;
     _floatValue = floatValue;
     _int64Value = int64Value;
     _nsIntegerValue = nsIntegerValue;
+    _nsNumberValueUsingInt64 = nsNumberValueUsingInt64;
+    _nsNumberValueUsingUInt64 = nsNumberValueUsingUInt64;
     _nsuIntegerValue = nsuIntegerValue;
     _uint64Value = uint64Value;
 
