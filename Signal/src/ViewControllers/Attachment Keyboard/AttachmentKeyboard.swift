@@ -144,8 +144,9 @@ class AttachmentKeyboard: CustomKeyboard {
     override func willPresent() {
         super.willPresent()
 
-        checkPermissions()
-        updateItemSizes()
+        checkPermissions { [weak self] in
+            self?.updateItemSizes()
+        }
     }
 
     override func wasDismissed() {
@@ -167,15 +168,15 @@ class AttachmentKeyboard: CustomKeyboard {
         attachmentFormatPickerView.itemSize = CGSize(square: attachmentFormatPickerView.height())
     }
 
-    func checkPermissions() {
+    func checkPermissions(completion: @escaping () -> Void) {
         switch mediaLibraryAuthorizationStatus {
         case .authorized:
             showRecentPhotos()
         case .denied, .restricted:
             showRecentPhotosError()
         case .notDetermined:
-            PHPhotoLibrary.requestAuthorization { _ in
-                DispatchQueue.main.async { self.checkPermissions() }
+            return PHPhotoLibrary.requestAuthorization { _ in
+                DispatchQueue.main.async { self.checkPermissions(completion: completion) }
             }
         @unknown default:
             showRecentPhotosError()
@@ -196,6 +197,8 @@ class AttachmentKeyboard: CustomKeyboard {
         @unknown default:
             break
         }
+
+        completion()
     }
 }
 
