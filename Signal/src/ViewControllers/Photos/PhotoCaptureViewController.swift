@@ -364,7 +364,7 @@ class PhotoCaptureViewController: OWSViewController {
         OWSAlerts.showAlert(title: nil,
                             message: error.localizedDescription,
                             buttonTitle: CommonStrings.dismissButton,
-                            buttonAction: { [weak self] _ in /* self?.dismiss(animated: true) */ })
+                            buttonAction: { [weak self] _ in self?.dismiss(animated: true) })
     }
 
     private func updateFlashModeControl() {
