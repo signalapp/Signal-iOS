@@ -6,6 +6,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSUInteger NSUIntegerMaxValue(void)
+{
+    return NSUIntegerMax;
+}
+
 @implementation TestModel
 
 - (instancetype)init

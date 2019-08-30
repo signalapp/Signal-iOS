@@ -6,6 +6,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSUInteger NSUIntegerMaxValue(void);
+
 @interface TestModel : BaseModel
 
 @property (nonatomic) double doubleValue;
