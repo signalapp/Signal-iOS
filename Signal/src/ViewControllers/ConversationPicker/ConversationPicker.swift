@@ -632,6 +632,7 @@ private class ConversationPickerFooterView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
 
         backgroundColor = Theme.keyboardBackgroundColor
+        layoutMargins = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
 
         let topStrokeView = UIView()
         topStrokeView.backgroundColor = Theme.hairlineColor
@@ -648,6 +649,10 @@ private class ConversationPickerFooterView: UIView {
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        return CGSize.zero
     }
 
     // MARK: public
