@@ -90,6 +90,8 @@ public class FeatureFlags: NSObject {
     // This flag supercedes useGRDB.
     @objc
     public static var storageMode: StorageMode {
+        return .ydb
+
         if CurrentAppContext().isRunningTests {
             // We should be running the tests using both .ydbTests or .grdbTests.
             return .grdbTests
