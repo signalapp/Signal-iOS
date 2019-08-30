@@ -320,6 +320,12 @@
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "그룹에 있는 멤버가 나를 그룹에 다시 초대할 수 있습니다.";
 
+/* Action sheet that will block an unknown user. */
+"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "차단";
+
+/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@ 사용자를 차단하시겠습니까?";
+
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "차단된 사용자는 나에게 전화 또는 메시지를 보낼 수 없습니다.";
 
@@ -710,11 +716,20 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "주소록에 추가";
 
+/* Message shown in conversation view that offers to share your profile with a user. */
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "내 프로필을 이 사용자와 공유";
+
+/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "이 사용자는 내 연락처에 없습니다.";
+
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "메시지 더 가져오는 중…";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "탭하여 더 보기";
+
+/* Message shown in conversation view that offers to block an unknown user. */
+"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "이 사용자 차단";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "세션 초기화로 %@의 메시지를 다시 받을 수 있습니다. 이미 손상된 메시지는 복구할 수 없습니다.";
@@ -2667,7 +2682,7 @@
 "TIME_AMOUNT_MINUTES" = "%@ minutes";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@분";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS" = "%@ seconds";
