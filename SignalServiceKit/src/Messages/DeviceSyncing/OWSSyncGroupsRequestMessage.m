@@ -61,7 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
+                                                          transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoGroupContextBuilder *groupContextBuilder = [SSKProtoGroupContext builderWithId:self.groupId];
     [groupContextBuilder setType:SSKProtoGroupContextTypeRequestInfo];

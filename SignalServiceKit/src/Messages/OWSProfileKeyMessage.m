@@ -45,12 +45,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address
+                                            thread:(TSThread *)thread
                                        transaction:(SDSAnyReadTransaction *)transaction
 {
-    // TODO pass in thread.
-    OWSAssertDebug([self threadWithTransaction:transaction] != nil);
+    OWSAssertDebug(thread != nil);
 
-    SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilderWithTransaction:transaction];
+    SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilderWithThread:thread transaction:transaction];
     if (!builder) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;

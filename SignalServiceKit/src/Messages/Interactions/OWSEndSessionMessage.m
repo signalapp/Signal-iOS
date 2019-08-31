@@ -36,9 +36,10 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
+                                                          transaction:(SDSAnyReadTransaction *)transaction
 {
-    SSKProtoDataMessageBuilder *_Nullable builder = [super dataMessageBuilderWithTransaction:transaction];
+    SSKProtoDataMessageBuilder *_Nullable builder = [super dataMessageBuilderWithThread:thread transaction:transaction];
     if (!builder) {
         return nil;
     }

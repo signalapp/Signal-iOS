@@ -1614,6 +1614,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     __block NSData *_Nullable plainText;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         plainText = [messageSend.message buildPlainTextData:messageSend.recipient
+                                                     thread:messageSend.thread
                                                 transaction:transaction];
     }];
 

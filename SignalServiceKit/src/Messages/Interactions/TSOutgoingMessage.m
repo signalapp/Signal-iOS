@@ -1056,9 +1056,9 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 #pragma mark -
 
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithThread:(TSThread *)thread
+                                                          transaction:(SDSAnyReadTransaction *)transaction
 {
-    TSThread *thread = [self threadWithTransaction:transaction];
     OWSAssertDebug(thread);
 
     SSKProtoDataMessageBuilder *builder = [SSKProtoDataMessage builder];
@@ -1309,17 +1309,17 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 // recipientId is nil when building "sent" sync messages for messages sent to groups.
 - (nullable SSKProtoDataMessage *)buildDataMessage:(SignalServiceAddress *_Nullable)address
+                                            thread:(TSThread *)thread
                                        transaction:(SDSAnyReadTransaction *)transaction
 {
-    OWSAssertDebug(self.threadWithSneakyTransaction);
-    SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilderWithTransaction:transaction];
+    OWSAssertDebug(thread);
+    OWSAssertDebug([thread.uniqueId isEqualToString:self.uniqueThreadId]);
+    SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilderWithThread:thread transaction:transaction];
     if (!builder) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
     }
 
-    // TODO pass in thread.
-    TSThread *thread = [self threadWithTransaction:transaction];
     [ProtoUtils addLocalProfileKeyIfNecessary:thread
                                       address:address
                            dataMessageBuilder:builder
@@ -1334,10 +1334,14 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     return dataProto;
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+                                 thread:(TSThread *)thread
+                            transaction:(SDSAnyReadTransaction *)transaction
 {
     NSError *error;
-    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.address transaction:transaction];
+    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.address
+                                                                 thread:thread
+                                                            transaction:transaction];
     if (error || !dataMessage) {
         OWSFailDebug(@"could not build protobuf: %@", error);
         return nil;
