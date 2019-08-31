@@ -209,6 +209,8 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, nullable) MessageRequestView *messageRequestView;
 
+@property (nonatomic) UITapGestureRecognizer *tapGestureRecognizer;
+
 @end
 
 #pragma mark -
@@ -624,6 +626,9 @@ typedef enum : NSUInteger {
 
     [self.collectionView applyScrollViewInsetsFix];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _collectionView);
+
+    self.tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyBoard)];
+    [self.collectionView addGestureRecognizer:self.tapGestureRecognizer];
 
     _inputToolbar = [[ConversationInputToolbar alloc] initWithConversationStyle:self.conversationStyle];
     self.inputToolbar.inputToolbarDelegate = self;
@@ -2455,8 +2460,6 @@ typedef enum : NSUInteger {
 {
     [self prepareAudioPlayerForViewItem:viewItem attachmentStream:attachmentStream];
 
-    [self dismissKeyBoard];
-
     // Resume from where we left off
     [self.audioAttachmentPlayer setCurrentTime:viewItem.audioProgressSeconds];
 
@@ -3840,6 +3843,10 @@ typedef enum : NSUInteger {
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
 
     void (^adjustInsets)(void) = ^(void) {
+        // Changing the contentInset can change the contentOffset, so make sure we
+        // stash the current value before making any changes.
+        CGFloat oldYOffset = self.collectionView.contentOffset.y;
+
         if (!UIEdgeInsetsEqualToEdgeInsets(self.collectionView.contentInset, newInsets)) {
             self.collectionView.contentInset = newInsets;
         }
@@ -3872,7 +3879,6 @@ typedef enum : NSUInteger {
                 // This accounts for the extended layout under the navigation bar.
                 CGFloat minYOffset = -self.topLayoutGuide.length;
 
-                CGFloat oldYOffset = self.collectionView.contentOffset.y;
                 CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, minYOffset, self.safeContentHeight);
                 CGPoint newOffset = CGPointMake(0, newYOffset);
 
@@ -4579,6 +4585,13 @@ typedef enum : NSUInteger {
     cell.conversationStyle = self.conversationStyle;
 
     [cell loadForDisplay];
+
+    // This must happen after load for display, since the tap
+    // gesture doesn't get added to a view until this point.
+    if ([cell isKindOfClass:[OWSMessageCell class]]) {
+        OWSMessageCell *messageCell = (OWSMessageCell *)cell;
+        [self.tapGestureRecognizer requireGestureRecognizerToFail:messageCell.tapGestureRecognizer];
+    }
 
 #ifdef DEBUG
     // TODO: Confirm with nancy if this will work.
