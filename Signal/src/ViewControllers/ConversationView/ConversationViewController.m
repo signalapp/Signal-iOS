@@ -3865,13 +3865,17 @@ typedef enum : NSUInteger {
             // If we were scrolled away from the bottom, shift the content in lockstep with the
             // keyboard, up to the limits of the content bounds.
             CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
-            CGFloat oldYOffset = self.collectionView.contentOffset.y;
-            CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, 0, self.safeContentHeight);
-            CGPoint newOffset = CGPointMake(0, newYOffset);
 
-            // If the user is dismissing the keyboard via interactive scrolling, any additional conset offset feels
-            // redundant, so we only adjust content offset when *presenting* the keyboard (i.e. when insetChange > 0).
-            if (insetChange > 0 && newYOffset > keyboardEndFrame.origin.y) {
+            // Only update the content offset if the inset has changed.
+            if (insetChange != 0) {
+                // The content offset can go negative, up to the size of the top layout guide.
+                // This accounts for the extended layout under the navigation bar.
+                CGFloat minYOffset = -self.topLayoutGuide.length;
+
+                CGFloat oldYOffset = self.collectionView.contentOffset.y;
+                CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, minYOffset, self.safeContentHeight);
+                CGPoint newOffset = CGPointMake(0, newYOffset);
+
                 [self.collectionView setContentOffset:newOffset animated:NO];
             }
         }
