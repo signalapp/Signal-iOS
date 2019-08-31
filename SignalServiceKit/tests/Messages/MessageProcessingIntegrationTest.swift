@@ -46,13 +46,14 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
     override func setUp() {
         super.setUp()
 
+        // use the uiDatabase to be notified of DB writes so we can verify the expected
+        // changes occur
+        try! databaseStorage.grdbStorage.setupUIDatabase()
+
         // ensure local client has necessary "registered" state
         identityManager.generateNewIdentityKey()
         tsAccountManager.registerForTests(withLocalNumber: localE164Identifier, uuid: localUUID)
 
-        // use the uiDatabase to be notified of DB writes so we can verify the expected
-        // changes occur
-        try! databaseStorage.grdbStorage.setupUIDatabase()
         bobClient = FakeSignalClient.generate(e164Identifier: bobE164Identifier)
         aliceClient = FakeSignalClient.generate(e164Identifier: aliceE164Identifier)
 

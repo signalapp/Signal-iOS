@@ -7,7 +7,6 @@
 #import "MockSSKEnvironment.h"
 #import "OWSFakeCallMessageHandler.h"
 #import "OWSFakeMessageSender.h"
-#import "OWSFakeNetworkManager.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageManager.h"
 #import "OWSMessageSender.h"

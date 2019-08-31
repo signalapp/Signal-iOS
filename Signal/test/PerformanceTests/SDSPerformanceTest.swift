@@ -8,19 +8,6 @@ import SignalServiceKit
 
 class SDSPerformanceTest: PerformanceBaseTest {
 
-    // MARK: - Dependencies
-
-    var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
-    }
-
-    // MARK: -
-
-    override func setUp() {
-        super.setUp()
-        storageCoordinator.useGRDBForTests()
-    }
-
     // MARK: - Insert Messages
 
     func testYDBPerf_insertMessages() {

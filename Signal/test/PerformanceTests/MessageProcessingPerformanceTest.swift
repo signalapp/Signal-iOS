@@ -22,10 +22,6 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         return SSKEnvironment.shared.identityManager
     }
 
-    var storageCoordinator: StorageCoordinator {
-        return SSKEnvironment.shared.storageCoordinator
-    }
-
     // MARK: -
 
     let localE164Identifier = "+13235551234"
@@ -53,7 +49,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
         // for unit tests, we must manually start the decryptJobQueue
         SSKEnvironment.shared.messageDecryptJobQueue.setup()
 
-        let dbObserver = BlockObserver(block: { self.dbObserverBlock?() })
+        let dbObserver = BlockObserver(block: { [weak self] in self?.dbObserverBlock?() })
         self.dbObserver = dbObserver
         databaseStorage.add(databaseStorageObserver: dbObserver)
     }

@@ -518,6 +518,7 @@
 		4C3EF7FD2107DDEE0007EBF7 /* ParamParserTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */; };
 		4C3EF802210918740007EBF7 /* SSKProtoEnvelopeTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */; };
 		4C42960E2318E5EB00D9D240 /* MessageProcessingPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42960D2318E5EB00D9D240 /* MessageProcessingPerformanceTest.swift */; };
+		4C429610231A1AA400D9D240 /* MessageSendingPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C42960F231A1AA400D9D240 /* MessageSendingPerformanceTest.swift */; };
 		4C46361122EB98EC00185951 /* CameraFirstNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C46361022EB98EC00185951 /* CameraFirstNavigationController.swift */; };
 		4C46361322EE680700185951 /* ConversationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C46361222EE680700185951 /* ConversationPicker.swift */; };
 		4C4AE6A1224AF35700D4AF6F /* SendMediaNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4AE69F224AF21900D4AF6F /* SendMediaNavigationController.swift */; };
@@ -1336,6 +1337,7 @@
 		4C3EF7FC2107DDEE0007EBF7 /* ParamParserTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParamParserTest.swift; sourceTree = "<group>"; };
 		4C3EF801210918740007EBF7 /* SSKProtoEnvelopeTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSKProtoEnvelopeTest.swift; sourceTree = "<group>"; };
 		4C42960D2318E5EB00D9D240 /* MessageProcessingPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageProcessingPerformanceTest.swift; sourceTree = "<group>"; };
+		4C42960F231A1AA400D9D240 /* MessageSendingPerformanceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSendingPerformanceTest.swift; sourceTree = "<group>"; };
 		4C46361022EB98EC00185951 /* CameraFirstNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraFirstNavigationController.swift; sourceTree = "<group>"; };
 		4C46361222EE680700185951 /* ConversationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationPicker.swift; sourceTree = "<group>"; };
 		4C4AE69F224AF21900D4AF6F /* SendMediaNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMediaNavigationController.swift; sourceTree = "<group>"; };
@@ -2540,6 +2542,7 @@
 				4C10B1C8231778880099396B /* PerformanceBaseTest.swift */,
 				4C10B1C623176DD60099396B /* SDSPerformanceTest.swift */,
 				4C42960D2318E5EB00D9D240 /* MessageProcessingPerformanceTest.swift */,
+				4C42960F231A1AA400D9D240 /* MessageSendingPerformanceTest.swift */,
 			);
 			path = PerformanceTests;
 			sourceTree = "<group>";
@@ -4003,6 +4006,7 @@
 				4C10B19523176D250099396B /* MarqueeLabel.swift in Sources */,
 				4C10B19623176D250099396B /* OWSAnalytics.swift in Sources */,
 				4C10B1C723176DD60099396B /* SDSPerformanceTest.swift in Sources */,
+				4C429610231A1AA400D9D240 /* MessageSendingPerformanceTest.swift in Sources */,
 				4C10B1C9231778880099396B /* PerformanceBaseTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
