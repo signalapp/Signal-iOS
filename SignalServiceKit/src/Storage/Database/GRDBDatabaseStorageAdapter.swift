@@ -199,6 +199,18 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                 columns: [SignalRecipientRecord.columnName(.recipientUUID)]
             )
 
+            try db.create(
+                index: "index_signal_recipients_on_uniqueId",
+                on: SignalRecipientRecord.databaseTableName,
+                columns: [SignalRecipientRecord.columnName(.uniqueId)]
+            )
+
+            try db.create(
+                index: "index_signal_recipient_identities_on_uniqueId",
+                on: RecipientIdentityRecord.databaseTableName,
+                columns: [RecipientIdentityRecord.columnName(.uniqueId)]
+            )
+
             // Thread Indices
             try db.create(
                 index: "index_thread_on_contactPhoneNumber",
