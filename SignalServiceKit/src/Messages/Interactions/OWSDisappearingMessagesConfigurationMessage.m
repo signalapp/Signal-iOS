@@ -50,9 +50,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
+- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    SSKProtoDataMessageBuilder *_Nullable dataMessageBuilder = [super dataMessageBuilder];
+    SSKProtoDataMessageBuilder *_Nullable dataMessageBuilder = [super dataMessageBuilderWithTransaction:transaction];
     if (!dataMessageBuilder) {
         return nil;
     }

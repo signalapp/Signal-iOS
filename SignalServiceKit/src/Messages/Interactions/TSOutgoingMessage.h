@@ -193,13 +193,14 @@ NS_SWIFT_NAME(init(uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:
 /**
  * The data representation of this message, to be encrypted, before being sent.
  */
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient;
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+                            transaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  * Intermediate protobuf representation
  * Subclasses can augment if they want to manipulate the data message before building.
  */
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder;
+- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 /**
  * Should this message be synced to the users other registered devices? This is

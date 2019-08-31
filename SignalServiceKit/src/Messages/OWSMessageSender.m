@@ -1611,7 +1611,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     NSMutableArray *messagesArray = [NSMutableArray arrayWithCapacity:recipient.devices.count];
 
-    NSData *_Nullable plainText = [messageSend.message buildPlainTextData:messageSend.recipient];
+    __block NSData *_Nullable plainText;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        plainText = [messageSend.message buildPlainTextData:messageSend.recipient
+                                                transaction:transaction];
+    }];
+
     if (!plainText) {
         OWSRaiseException(InvalidMessageException, @"Failed to build message proto");
     }

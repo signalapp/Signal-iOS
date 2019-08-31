@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient transaction:(SDSAnyReadTransaction *)transaction
 {
     NSData *plainTextData = self.block(recipient);
     OWSAssertDebug(plainTextData);

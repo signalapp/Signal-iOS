@@ -75,9 +75,9 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 // This method should not be overridden, since we want to add random padding to *every* sync message
-- (nullable SSKProtoSyncMessage *)buildSyncMessage
+- (nullable SSKProtoSyncMessage *)buildSyncMessageWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    SSKProtoSyncMessageBuilder *_Nullable builder = [self syncMessageBuilder];
+    SSKProtoSyncMessageBuilder *_Nullable builder = [self syncMessageBuilderWithTransaction:transaction];
     if (!builder) {
         return nil;
     }
@@ -95,16 +95,16 @@ NS_ASSUME_NONNULL_BEGIN
     return proto;
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction;
 {
     OWSAbstractMethod();
 
     return [SSKProtoSyncMessage builder];
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient transaction:(SDSAnyReadTransaction *)transaction
 {
-    SSKProtoSyncMessage *_Nullable syncMessage = [self buildSyncMessage];
+    SSKProtoSyncMessage *_Nullable syncMessage = [self buildSyncMessageWithTransaction:transaction];
     if (!syncMessage) {
         return nil;
     }

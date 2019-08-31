@@ -120,12 +120,12 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(recipient);
 
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
-    [builder setCallMessage:[self buildCallMessage:recipient.address]];
+    builder.callMessage = [self buildCallMessage:recipient.address transaction:transaction];
 
     NSError *error;
     NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];
@@ -137,6 +137,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable SSKProtoCallMessage *)buildCallMessage:(SignalServiceAddress *)address
+                                       transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessage builder];
 
@@ -160,13 +161,12 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setBusy:self.busyMessage];
     }
 
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        TSThread *thread = [self threadWithTransaction:transaction];
-        [ProtoUtils addLocalProfileKeyIfNecessary:thread
-                                          address:address
-                               callMessageBuilder:builder
-                                      transaction:transaction];
-    }];
+    // TODO pass in thread directly.
+    TSThread *thread = [self threadWithTransaction:transaction];
+    [ProtoUtils addLocalProfileKeyIfNecessary:thread
+                                      address:address
+                           callMessageBuilder:builder
+                                  transaction:transaction];
 
     NSError *error;
     SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];

@@ -770,6 +770,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 #pragma mark - Proto Serialization
 
 + (nullable SSKProtoDataMessageContact *)protoForContact:(OWSContact *)contact
+                                             transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(contact);
 
@@ -899,7 +900,7 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value)
 
     if (contact.avatarAttachmentId) {
         SSKProtoAttachmentPointer *_Nullable attachmentProto =
-            [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId];
+            [TSAttachmentStream buildProtoForAttachmentId:contact.avatarAttachmentId transaction:transaction];
         if (!attachmentProto) {
             OWSLogError(@"could not build protobuf: %@", error);
         } else {

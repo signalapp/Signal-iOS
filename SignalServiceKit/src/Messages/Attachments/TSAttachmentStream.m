@@ -970,17 +970,11 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 // MARK: Protobuf serialization
 
 + (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
+                                                      transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(attachmentId.length > 0);
-
-    // TODO we should past in a transaction, rather than sneakily generate one in `fetch...` to make sure we're
-    // getting a consistent view in the message sending process. A brief glance shows it touches quite a bit of code,
-    // but should be straight forward.
-    __block TSAttachmentStream *_Nullable attachmentStream;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        attachmentStream =
-            [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId transaction:transaction];
-    }];
+    TSAttachmentStream *_Nullable attachmentStream =
+        [TSAttachmentStream anyFetchAttachmentStreamWithUniqueId:attachmentId transaction:transaction];
     if (attachmentStream == nil) {
         return nil;
     }

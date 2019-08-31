@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(recipient);
 

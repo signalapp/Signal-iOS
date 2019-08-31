@@ -73,12 +73,13 @@ public class TypingIndicatorMessage: TSOutgoingMessage {
     }
 
     @objc
-    public override func buildPlainTextData(_ recipient: SignalRecipient) -> Data? {
+    public override func buildPlainTextData(_ recipient: SignalRecipient, transaction: SDSAnyReadTransaction) -> Data? {
 
         let typingBuilder = SSKProtoTypingMessage.builder(timestamp: self.timestamp)
         typingBuilder.setAction(protoAction(forAction: action))
 
-        if let groupThread = self.threadWithSneakyTransaction as? TSGroupThread {
+        // TODO pass in thread instead
+        if let groupThread = self.thread(transaction: transaction) as? TSGroupThread {
             typingBuilder.setGroupID(groupThread.groupModel.groupId)
         }
 

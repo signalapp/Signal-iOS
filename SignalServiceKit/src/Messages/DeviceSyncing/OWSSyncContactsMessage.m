@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (self.attachmentIds.count != 1) {
         OWSLogError(@"expected sync contact message to have exactly one attachment, but found %lu",
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     SSKProtoAttachmentPointer *_Nullable attachmentProto =
-        [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject];
+        [TSAttachmentStream buildProtoForAttachmentId:self.attachmentIds.firstObject transaction:transaction];
     if (!attachmentProto) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;

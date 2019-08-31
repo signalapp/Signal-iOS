@@ -6,7 +6,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SSKProtoDataMessageBuilder;
 @class SignalRecipient;
 
 typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(SignalRecipient *);

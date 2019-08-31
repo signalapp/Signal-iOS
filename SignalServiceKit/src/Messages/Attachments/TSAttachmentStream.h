@@ -173,7 +173,8 @@ NS_SWIFT_NAME(init(uniqueId:albumMessageId:attachmentSchemaVersion:attachmentTyp
 
 #pragma mark - Protobuf
 
-+ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId;
++ (nullable SSKProtoAttachmentPointer *)buildProtoForAttachmentId:(nullable NSString *)attachmentId
+                                                      transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable SSKProtoAttachmentPointer *)buildProto;
 

@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - override TSOutgoingMessage
 
-- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+- (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessage builder];
 

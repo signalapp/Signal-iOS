@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction;
 {
     SSKProtoSyncMessageConfigurationBuilder *configurationBuilder = [SSKProtoSyncMessageConfiguration builder];
     configurationBuilder.readReceipts = self.areReadReceiptsEnabled;
