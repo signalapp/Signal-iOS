@@ -654,7 +654,7 @@ typedef enum : NSUInteger {
     BOOL result = [super becomeFirstResponder];
 
     if (result) {
-        [self.inputToolbar ensureFirstResponderState];
+        [self.inputToolbar clearDesiredKeyboard];
     }
 
     return result;

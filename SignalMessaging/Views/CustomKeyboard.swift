@@ -126,20 +126,17 @@ open class CustomKeyboard: UIInputView {
     }
 }
 
-private class CustomKeyboardResponder: UIView {
+private class CustomKeyboardResponder: UITextView {
     @objc public weak var customKeyboard: CustomKeyboard?
 
     init(customKeyboard: CustomKeyboard) {
         self.customKeyboard = customKeyboard
-        super.init(frame: .zero)
+        super.init(frame: .zero, textContainer: nil)
+        inputView = customKeyboard
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override public var inputView: UIView? {
-        return customKeyboard
     }
 
     public override var canBecomeFirstResponder: Bool {
