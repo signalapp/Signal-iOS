@@ -205,6 +205,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) MenuActionsViewController *menuActionsViewController;
 @property (nonatomic) CGFloat extraContentInsetPadding;
 @property (nonatomic) CGFloat contentInsetBottom;
+@property (nonatomic) CGFloat contentOffsetAdjustment;
 
 @property (nonatomic, nullable) MessageRequestView *messageRequestView;
 
@@ -2124,11 +2125,16 @@ typedef enum : NSUInteger {
         return;
     }
 
+    CGPoint contentOffset = self.collectionView.contentOffset;
+    contentOffset.y -= self.contentOffsetAdjustment;
+    self.collectionView.contentOffset = contentOffset;
+
     UIEdgeInsets contentInset = self.collectionView.contentInset;
     contentInset.top -= self.extraContentInsetPadding;
     contentInset.bottom -= self.extraContentInsetPadding;
     self.collectionView.contentInset = contentInset;
 
+    self.contentOffsetAdjustment = 0;
     self.menuActionsViewController = nil;
     self.extraContentInsetPadding = 0;
 }
@@ -2149,6 +2155,7 @@ typedef enum : NSUInteger {
         OWSFailDebug(@"Missing contentOffset.");
         return;
     }
+    self.contentOffsetAdjustment += contentOffset.CGPointValue.y - self.collectionView.contentOffset.y;
     [self.collectionView setContentOffset:contentOffset.CGPointValue animated:animated];
 }
 
